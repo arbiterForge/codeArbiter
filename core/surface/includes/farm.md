@@ -263,7 +263,7 @@ picks a model by *measurement*, not hearsay:
 | `FARM_MUTATION_WARN_BELOW` | `0.5` | Measured scores below this warn in Phase 3 unless the rejection floor applies. Unavailable or unverified measurements warn independently of this threshold. |
 | `FARM_MUTATION_ESCALATE_BELOW` | `0.1` | Score at/below this (≥5 mutants) hard-escalates. |
 | `FARM_MUTATION_CMD` | _(unset)_ | Pluggable external mutation framework hook. |
-| `FARM_RUN_ID` | _(random)_ | Pin this run's id — also the name of its artifact directory (`.farm/runs/<run-id>/`). Must be 1–64 chars of `[A-Za-z0-9._-]`; anything else is refused at startup. Reusing an id publishes over that directory's receipts, so pin a fresh one per run. |
+| `FARM_RUN_ID` | _(random)_ | Pin this run's id — also the name of its artifact directory (`.farm/runs/<run-id>/`). Must be 1–64 chars of `[A-Za-z0-9._-]`; anything else is refused at startup. Existing run IDs and resources are refused; use receipt-only recovery for retained effects or an explicit new attempt with unused identities. |
 
 ## Per-worktree setup (dependency hook)
 

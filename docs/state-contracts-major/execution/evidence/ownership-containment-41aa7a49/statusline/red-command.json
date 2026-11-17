@@ -1,0 +1,46 @@
+{
+ "argv": [
+  "C:/Python314/python.exe",
+  "-I",
+  "-S",
+  "-B",
+  "-X",
+  "utf8",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\run-selected.py",
+  "red",
+  "TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline",
+  "TestUninstall.test_legacy_owned_statusline_without_stamp_still_restores_backup",
+  "TestUninstall.test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo",
+ "exit_code": 1,
+ "outer_timeout_seconds": 30,
+ "seconds": 0.3102286000212189,
+ "source": {
+  "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+  "bytes": 22421
+ },
+ "loaded_mirror": {
+  "sha256": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+  "bytes": 22421
+ },
+ "tests": {
+  "sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+  "bytes": 61907
+ },
+ "environment_keys": [
+  "APPDATA",
+  "COMSPEC",
+  "LOCALAPPDATA",
+  "PATH",
+  "PATHEXT",
+  "PYTHONDONTWRITEBYTECODE",
+  "PYTHONNOUSERSITE",
+  "PYTHONUTF8",
+  "SYSTEMROOT",
+  "TEMP",
+  "TMP",
+  "USERPROFILE",
+  "WINDIR"
+ ]
+}

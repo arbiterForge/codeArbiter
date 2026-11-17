@@ -1,0 +1,195 @@
+{
+ "schema": "codearbiter.major.ownership-containment-repairs/1",
+ "code_commit": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "integration_base": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "statusline": "Legacy stale backup no longer overwrites a later user replacement or removal; spinner ownership stays independent.",
+ "link_audit": "Normalize root-absolute URL paths and refuse lexical host filesystem escape before target existence/read; no symlink or OS-confinement guarantee.",
+ "evidence": {
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/delivery.json": {
+   "sha256": "ee832c0738f2e829d73429ead4ff396be13cffac8fd54f5dc18679daf4f786d0",
+   "bytes": 8387,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\delivery.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/red-command.json": {
+   "sha256": "86d70234395491b24f9e7b6a7cf61925c3e7352aa3730a6ddca42da6ece7d753",
+   "bytes": 1259,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red-command.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/red-result.json": {
+   "sha256": "2d9aea15386c624bfd4829300ff67800e3ae489fdb40f7f7a96d67ba754e5d64",
+   "bytes": 127,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red-result.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/red.stderr": {
+   "sha256": "d56ad7c9a0c0eee48d69b159e4b07307992c86f57f52415abf8ef3fcda1696eb",
+   "bytes": 20284,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/red.stdout": {
+   "sha256": "8be678461c58a157987734f3937622457523e3f4204b19f26f69a56e83be92db",
+   "bytes": 1731,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\red.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/green-command.json": {
+   "sha256": "cc9f8e16a75d0ceb8f9074f398d38407f362fd4b1f52eec993a82e5cad75325c",
+   "bytes": 1273,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green-command.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/green-result.json": {
+   "sha256": "5ce414cd54dcf9c648d5480be1718d356995be4798197d6f0bac772aeb54533f",
+   "bytes": 125,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green-result.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/green.stderr": {
+   "sha256": "dbe522fec59b24d37973dd1783837df68820661d57b840dab7ee125ba8da83f8",
+   "bytes": 7942,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/green.stdout": {
+   "sha256": "12d7718e5f337b15522b3649474e58d566bc059972af4e3b5d7230fecb047065",
+   "bytes": 11646,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\green.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/preservation.json": {
+   "sha256": "2191be4f134dae2fcf1cfd9340caf26aef9dad85a98b1afc0d6175278ad844e3",
+   "bytes": 26420,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\preservation.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/statusline/independent-review.json": {
+   "sha256": "66c05c626153607f0ed7a6c1f614a10fc24fb6164e9a66cce991a6685d8f767a",
+   "bytes": 11160,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-independent-review-m6g_30p8\\review.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/delivery.json": {
+   "sha256": "0256ad7a13c76958e71215d7281e6e8edae8b1971d1bb3092a70ff97b6eafde6",
+   "bytes": 9293,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\delivery.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/outcomes.json": {
+   "sha256": "3dec153b81587754d3ac522f5e02c08b0d3792102dc09530708244717803b906",
+   "bytes": 3884,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\outcomes.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/original-backslash-red.json": {
+   "sha256": "e3fe47398e05d11c2440683b6c2e03e5a330da13e6be48ebe6e622543476ad4a",
+   "bytes": 1125,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\original-backslash-red.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/intermediate-red.json": {
+   "sha256": "2b2886d1a16f9467ccf29add141040b8b363c420cb704d0e3cfb0aa7ba605ef9",
+   "bytes": 1070,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\intermediate-red.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/green.json": {
+   "sha256": "883cd6f6c292744b499ac16332e813969155693f35f4c64ede858a1865f320f1",
+   "bytes": 1075,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\green.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/typecheck.json": {
+   "sha256": "7e939d039cd62f4707df0e47c9666b215491692315c42b5169dae6e415311580",
+   "bytes": 898,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\typecheck.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/coverage/coverage-summary.json": {
+   "sha256": "c9683aa9da2daa3dc029956d7e08d22ffb6b73bdf09707b659954e4e70129ce8",
+   "bytes": 697,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\coverage\\coverage-summary.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/original-backslash-red.stdout": {
+   "sha256": "0b6076cf7dac8eacb4cc1097a4d41a436fbce47175f28afb9fe017d7aa5a9763",
+   "bytes": 5589,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\original-backslash-red.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/original-backslash-red.stderr": {
+   "sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d",
+   "bytes": 1179,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\original-backslash-red.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/intermediate-red.stdout": {
+   "sha256": "3082b8be623ccff614576c3576059cd3c1d2e4e05bc5da981452fa640bd6995e",
+   "bytes": 5729,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\intermediate-red.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/intermediate-red.stderr": {
+   "sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d",
+   "bytes": 1179,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\intermediate-red.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/green.stdout": {
+   "sha256": "19a851d91cde11e677b0c9105de2478b97567ea8852a4a75829dc46c75c0877a",
+   "bytes": 5859,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\green.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/green.stderr": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\green.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/typecheck.stdout": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\typecheck.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/logs/typecheck.stderr": {
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\typecheck.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/original-slash/red.json": {
+   "sha256": "6df64328f1444a0efd8b8f08f6a5e8e03f31d5e91eaea118b95a05f15051d897",
+   "bytes": 1076,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\red.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/original-slash/logs/red.stdout": {
+   "sha256": "2c90d9cf7dbd403fe2dc477d94cbea413690de956e88c0117911c504ec4d8957",
+   "bytes": 5000,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\logs\\red.stdout"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/original-slash/logs/red.stderr": {
+   "sha256": "0675a1cbac99e616c72f6087f0ab41214f46d0c1259cc493e62e7861905f0de9",
+   "bytes": 899,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\logs\\red.stderr"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/link-audit/independent-review.json": {
+   "sha256": "107bad87a7eaabecb4d72fe3943286a032b582868298c3bf6752ccee1dce4191",
+   "bytes": 14133,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-containment-independent-review-v56zvds6\\review.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/root/ownership-fixes-adoption.json": {
+   "sha256": "34277a5572fa28d8e7d37f5c62918cb4fa89d8759aee1c341520d1b40514f775",
+   "bytes": 5709,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ownership-fixes-adoption.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/root/ownership-fixes-sync.log": {
+   "sha256": "0b1c50baac3042f54542c54a901f6b6762c455430f241e5159adc338ddbd0cee",
+   "bytes": 51,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ownership-fixes-sync.log"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/root/ownership-containment-fixes-review-reuse.json": {
+   "sha256": "ea120a0650ff04780feae8889added76732432baf9caf0ff179481fc6c642d3d",
+   "bytes": 4881,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ownership-containment-fixes-review-reuse.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/root/ownership-containment-fixes-integrity-summary.json": {
+   "sha256": "6a0f132957ce8bf166e3f73f140639afeceed0ef0aef8c907aa4478ec6cc0689",
+   "bytes": 432,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ownership-containment-fixes-integrity-summary.json"
+  },
+  "docs/state-contracts-major/execution/evidence/ownership-containment-41aa7a49/root/ownership-containment-fixes-intent-only.json": {
+   "sha256": "1ef496be3d9a338a7d4ce0d5d2e8f375bf721b27e5b18bf053cce8ee20300d0f",
+   "bytes": 1044,
+   "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ownership-containment-fixes-intent-only.json"
+  }
+ },
+ "additional_root_check": {
+  "command": "python -B -X utf8 -m unittest discover -s plugins/ca/hooks/tests -p test_wire_statusline.py",
+  "observed_tests": 82,
+  "seconds": 0.9,
+  "exit_code": 0,
+  "raw_output": "Retained in Codex command transcript; this entry is an observation, not a fabricated raw command receipt."
+ },
+ "verification_reuse": "Both exact candidates independently reviewed once; code commit assembly checks exact staged object hashes. No new independent review is inferred from coordinator binding.",
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED",
+ "runtime_task_promotion": false
+}

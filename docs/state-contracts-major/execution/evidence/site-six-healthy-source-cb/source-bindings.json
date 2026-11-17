@@ -1,0 +1,1238 @@
+{
+ "schema": "codearbiter.source-bindings/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "observed_root_head": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "frozen_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "declared_paths": [
+  "docs/state-contracts-major/PROGRAM.md",
+  "docs/state-contracts-major/contracts/program.json",
+  "docs/state-contracts-major/contracts/tasks.json",
+  "docs/state-contracts-major/contracts/machine-coverage.json",
+  "docs/state-contracts-major/contracts/transition-coverage.json",
+  "docs/state-contracts-major/execution/coverage-ledger.json",
+  "site/scripts/academy-wayfinding.ts",
+  "site/scripts/capture-context-examples.py",
+  "site/scripts/capture-hook-proof.ts",
+  "site/scripts/capture-statusline-themes.py",
+  "site/scripts/capture/fixture.ts",
+  "site/scripts/capture/label.ts",
+  "site/scripts/capture/normalize.ts",
+  "site/scripts/capture/py-runner.py",
+  "site/scripts/capture/render.ts",
+  "site/scripts/capture/targets.ts",
+  "site/scripts/concept-directory.ts",
+  "site/scripts/decision-evidence.ts",
+  "site/scripts/diagram-audit.ts",
+  "site/scripts/execution-maps/atlas-command.ts",
+  "site/scripts/execution-maps/atlas-model.ts",
+  "site/scripts/execution-maps/atlas-render.ts",
+  "site/scripts/execution-maps/atlas-theme.ts",
+  "site/scripts/execution-maps/atlas.ts",
+  "site/scripts/execution-maps/locations.ts",
+  "site/scripts/execution-maps/render.ts",
+  "site/scripts/generate-atlas.ts",
+  "site/scripts/generate-diagrams.ts",
+  "site/scripts/generate-product-example.py",
+  "site/scripts/guide-directory.ts",
+  "site/scripts/journey-navigation.ts",
+  "site/scripts/link-audit.ts",
+  "site/scripts/link-audit/lib.ts",
+  "site/scripts/product-example.ts",
+  "site/scripts/reference-sidebar.ts",
+  "site/scripts/rehype-base-links.ts",
+  "site/scripts/rehype-table-shell.ts",
+  "site/scripts/release-applicability.ts",
+  "site/scripts/statusline-capture.ts",
+  "site/scripts/topic-map.ts",
+  "site/scripts/version-facts.ts",
+  "site/src/content.config.ts",
+  "site/src/pages/release-applicability.json.ts",
+  "site/src/release-applicability-presentation.ts"
+ ],
+ "bindings": [
+  {
+   "path": ".github/scripts/validate_codex_plugin.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "80713a41f429ad9f24deadb1aebc41618d4d6174",
+   "sha256": "f357fc181c168795f47b4eb5cd91741a426a7122201a3a2e1b661a50e770674d",
+   "bytes": 6402,
+   "physical_sha256": "f357fc181c168795f47b4eb5cd91741a426a7122201a3a2e1b661a50e770674d",
+   "physical_bytes": 6402,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\.github\\scripts\\validate_codex_plugin.py"
+  },
+  {
+   "path": ".github/workflows/ci.yml",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "c6e1e01adc555c19f5ae9bd88e7eb52a965559c3",
+   "sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "bytes": 277146,
+   "physical_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "physical_bytes": 277146,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\.github\\workflows\\ci.yml"
+  },
+  {
+   "path": ".github/workflows/docs.yml",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "f010221123dc41a340c7c9cf8f545e6d7814b53f",
+   "sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+   "bytes": 23454,
+   "physical_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+   "physical_bytes": 23454,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\.github\\workflows\\docs.yml"
+  },
+  {
+   "path": "core/artifacts/internal/authority/receipt.go",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "f581ff6e836bb22c7f93be8193a377b09e971868",
+   "sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+   "bytes": 23009,
+   "physical_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+   "physical_bytes": 23009,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\core\\artifacts\\internal\\authority\\receipt.go"
+  },
+  {
+   "path": "core/pysrc/_provenancelib.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "790ec8470991180dacace9455d22da59fb16faec",
+   "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "bytes": 76910,
+   "physical_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "physical_bytes": 76910,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\core\\pysrc\\_provenancelib.py"
+  },
+  {
+   "path": "core/pysrc/_readinjectlib.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "eb9ac0c2ed4516450ec8607327790e3edaab8252",
+   "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "bytes": 62081,
+   "physical_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "physical_bytes": 62081,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\core\\pysrc\\_readinjectlib.py"
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "physical_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "physical_bytes": 385316,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\docs\\state-contracts-major\\contracts\\machine-coverage.json"
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/program.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "physical_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "physical_bytes": 6403,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\docs\\state-contracts-major\\contracts\\program.json"
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/tasks.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "physical_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "physical_bytes": 331224,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\docs\\state-contracts-major\\contracts\\tasks.json"
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "physical_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "physical_bytes": 3185278,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\docs\\state-contracts-major\\contracts\\transition-coverage.json"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/coverage-ledger.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "a6ffc13a708d0c488b3578d101f2e6d998b90632",
+   "sha256": "5277fbd9ddffa09ee1020efb5d45c198ab5839cfe66f7a2670175f8d73399884",
+   "bytes": 1883029,
+   "physical_sha256": "5277fbd9ddffa09ee1020efb5d45c198ab5839cfe66f7a2670175f8d73399884",
+   "physical_bytes": 1883029,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\docs\\state-contracts-major\\execution\\coverage-ledger.json"
+  },
+  {
+   "path": "docs/state-contracts-major/PROGRAM.md",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910,
+   "physical_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "physical_bytes": 7910,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\docs\\state-contracts-major\\PROGRAM.md"
+  },
+  {
+   "path": "plugins/ca/.claude-plugin/plugin.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "26f457cb019a85b58170cbcbfcbbde2936904211",
+   "sha256": "67453bdff739a5760a0bf1e4093c103b7015e62b8cd5e19cc8d6a1b41b603348",
+   "bytes": 802,
+   "physical_sha256": "67453bdff739a5760a0bf1e4093c103b7015e62b8cd5e19cc8d6a1b41b603348",
+   "physical_bytes": 802,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\plugins\\ca\\.claude-plugin\\plugin.json"
+  },
+  {
+   "path": "plugins/ca/hooks/_adrlifecyclegit.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "c762d9a12103e25d747904b923e2357e19b74004",
+   "sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "bytes": 9331,
+   "physical_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "physical_bytes": 9331,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\plugins\\ca\\hooks\\_adrlifecyclegit.py"
+  },
+  {
+   "path": "plugins/ca/hooks/_artifactauthoritylib.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "fb3089e12ddb95242a511cb7754f1e744f7bf53d",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805,
+   "physical_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "physical_bytes": 251805,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\plugins\\ca\\hooks\\_artifactauthoritylib.py"
+  },
+  {
+   "path": "plugins/ca-codex/.codex-plugin/plugin.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "bbd14aebfe23893714ec4be68bb5d8a419d642a1",
+   "sha256": "f8a491bf1477bfd1160b29545967abebf208bc36d79ff45ff3a66dd8e1c74d49",
+   "bytes": 1959,
+   "physical_sha256": "f8a491bf1477bfd1160b29545967abebf208bc36d79ff45ff3a66dd8e1c74d49",
+   "physical_bytes": 1959,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\plugins\\ca-codex\\.codex-plugin\\plugin.json"
+  },
+  {
+   "path": "plugins/ca-pi/package.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "de4d9331b051c6131472d77836f3de4536b479e0",
+   "sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+   "bytes": 289,
+   "physical_sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+   "physical_bytes": 289,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\plugins\\ca-pi\\package.json"
+  },
+  {
+   "path": "plugins/ca-pi/tools/src/compatibility.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "011fb90363563e275df72e74c9644ed3cb7f3fc4",
+   "sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+   "bytes": 2400,
+   "physical_sha256": "f96831dae362754c9579a8303650888aa0a72f00341d6659b478ef8d8625cb83",
+   "physical_bytes": 2400,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\plugins\\ca-pi\\tools\\src\\compatibility.ts"
+  },
+  {
+   "path": "site/base.mjs",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "8b0e29d037d75a98486e60aca1de636725668a9d",
+   "sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+   "bytes": 2855,
+   "physical_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+   "physical_bytes": 2855,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\base.mjs"
+  },
+  {
+   "path": "site/scripts/academy-wayfinding.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "0f944c840dda3b9d4ec2f586cbecfd84921612e5",
+   "sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+   "bytes": 2494,
+   "physical_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+   "physical_bytes": 2494,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\academy-wayfinding.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "bytes": 2494,
+    "git_blob_oid": "0f944c840dda3b9d4ec2f586cbecfd84921612e5",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture/fixture.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "cea66200255daab5ebe8fb571e15f942a1df023d",
+   "sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+   "bytes": 5689,
+   "physical_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+   "physical_bytes": 5689,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\fixture.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+    "bytes": 5689,
+    "git_blob_oid": "cea66200255daab5ebe8fb571e15f942a1df023d",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture/harness.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "d27f8a496d170fd193825865117f450148030201",
+   "sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+   "bytes": 7420,
+   "physical_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+   "physical_bytes": 7420,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\harness.ts"
+  },
+  {
+   "path": "site/scripts/capture/label.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "4c0565cc2b0284a69fa6fabcc241a3a27756f4cc",
+   "sha256": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+   "bytes": 1127,
+   "physical_sha256": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+   "physical_bytes": 1127,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\label.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+    "bytes": 1127,
+    "git_blob_oid": "4c0565cc2b0284a69fa6fabcc241a3a27756f4cc",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture/normalize.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "f75dc1c1c200f08651b9c60730c9904b0e7b6ad3",
+   "sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+   "bytes": 5051,
+   "physical_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+   "physical_bytes": 5051,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\normalize.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+    "bytes": 5051,
+    "git_blob_oid": "f75dc1c1c200f08651b9c60730c9904b0e7b6ad3",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture/py-runner.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "b823e74eab7398b87abac8e19b8a2897a7209e78",
+   "sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+   "bytes": 3410,
+   "physical_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+   "physical_bytes": 3410,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\py-runner.py",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+    "bytes": 3410,
+    "git_blob_oid": "b823e74eab7398b87abac8e19b8a2897a7209e78",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture/render.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "1aae0c2297e7a1440768a198fd6998ae69583190",
+   "sha256": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+   "bytes": 3105,
+   "physical_sha256": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+   "physical_bytes": 3105,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\render.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+    "bytes": 3105,
+    "git_blob_oid": "1aae0c2297e7a1440768a198fd6998ae69583190",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture/targets.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "2bb8c1041565e2e9355ce1ea201a404cbd872f52",
+   "sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+   "bytes": 2508,
+   "physical_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+   "physical_bytes": 2508,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture\\targets.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+    "bytes": 2508,
+    "git_blob_oid": "2bb8c1041565e2e9355ce1ea201a404cbd872f52",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture-context-examples.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "4a11b1c3adca20f36a341502659578b41dbcd190",
+   "sha256": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+   "bytes": 7263,
+   "physical_sha256": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+   "physical_bytes": 7263,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture-context-examples.py",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+    "bytes": 7263,
+    "git_blob_oid": "4a11b1c3adca20f36a341502659578b41dbcd190",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture-hook-proof.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "651711ceb18acb294e84cb4d32305dfa3a00c555",
+   "sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+   "bytes": 14922,
+   "physical_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+   "physical_bytes": 14922,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture-hook-proof.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+    "bytes": 14922,
+    "git_blob_oid": "651711ceb18acb294e84cb4d32305dfa3a00c555",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/capture-statusline-themes.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "9a1f4353d9b37f79b0d4a92fe3f791feee5b76b3",
+   "sha256": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+   "bytes": 4602,
+   "physical_sha256": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+   "physical_bytes": 4602,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\capture-statusline-themes.py",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+    "bytes": 4602,
+    "git_blob_oid": "9a1f4353d9b37f79b0d4a92fe3f791feee5b76b3",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/concept-directory.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "16f86e5859463b31072d49dc254503f31d7e93a7",
+   "sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+   "bytes": 3036,
+   "physical_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+   "physical_bytes": 3036,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\concept-directory.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+    "bytes": 3036,
+    "git_blob_oid": "16f86e5859463b31072d49dc254503f31d7e93a7",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/decision-evidence.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "33157d1648c7c025f83dedfe423620c991cf2744",
+   "sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+   "bytes": 16409,
+   "physical_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+   "physical_bytes": 16409,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\decision-evidence.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+    "bytes": 16409,
+    "git_blob_oid": "33157d1648c7c025f83dedfe423620c991cf2744",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/diagram-audit.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "a9d75e97fb5699187f566f6dfdbd1e5bbc270f83",
+   "sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+   "bytes": 4987,
+   "physical_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+   "physical_bytes": 4987,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\diagram-audit.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+    "bytes": 4987,
+    "git_blob_oid": "a9d75e97fb5699187f566f6dfdbd1e5bbc270f83",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-command.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "4dffe2c1012be1dba1b995e387e49859cd11e058",
+   "sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+   "bytes": 1043,
+   "physical_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+   "physical_bytes": 1043,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\atlas-command.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+    "bytes": 1043,
+    "git_blob_oid": "4dffe2c1012be1dba1b995e387e49859cd11e058",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "2bb5c23f265d2a2da436965191b869219b02d940",
+   "sha256": "fdd954593068ff836ae8dc231f858e9d68dd771f88f0467185340eb5d587bf06",
+   "bytes": 21566,
+   "physical_sha256": "fdd954593068ff836ae8dc231f858e9d68dd771f88f0467185340eb5d587bf06",
+   "physical_bytes": 21566,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json"
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-model.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "9740530273a057f1f7163eea90f989c3d9a6f880",
+   "sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+   "bytes": 10617,
+   "physical_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+   "physical_bytes": 10617,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\atlas-model.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+    "bytes": 10617,
+    "git_blob_oid": "9740530273a057f1f7163eea90f989c3d9a6f880",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-render.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "9c730c30a9b906b1565671a8bdc766bc9e747300",
+   "sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+   "bytes": 14537,
+   "physical_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+   "physical_bytes": 14537,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\atlas-render.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+    "bytes": 14537,
+    "git_blob_oid": "9c730c30a9b906b1565671a8bdc766bc9e747300",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-theme.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "c05f98e586ff01c0c957d853a7435c3c1d169708",
+   "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+   "bytes": 1559,
+   "physical_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+   "physical_bytes": 1559,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\atlas-theme.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "bytes": 1559,
+    "git_blob_oid": "c05f98e586ff01c0c957d853a7435c3c1d169708",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "4e0e5d5f108f03c4ac891f7692089e3b8cad22a6",
+   "sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+   "bytes": 39677,
+   "physical_sha256": "cd7c6fd358e734a61ce4b23ff2d4de8d3625cecadd802d030f3b1f0595ab2c62",
+   "physical_bytes": 40202,
+   "physical_raw_equals_commit": false,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\atlas.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "f45f22be5c2cabb7a217ecc3e9444c381cf91002c49198b8a0c6b5a5a0c90d4f",
+    "bytes": 35197,
+    "git_blob_oid": "f066c86a57b02e6f90103f5216aff2d369eaeb59",
+    "equals_current": false
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/locations.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "9f86331fbdce7919472a7adac27224f28009bd44",
+   "sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+   "bytes": 971,
+   "physical_sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+   "physical_bytes": 971,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\locations.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+    "bytes": 971,
+    "git_blob_oid": "9f86331fbdce7919472a7adac27224f28009bd44",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/model.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "56633146e41abeda40d923dbf67e58dae0d316ad",
+   "sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+   "bytes": 23779,
+   "physical_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+   "physical_bytes": 23779,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\model.ts"
+  },
+  {
+   "path": "site/scripts/execution-maps/render.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "8bf92ea6233bddc7a0cefbe08a54866f0fe4f7a3",
+   "sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+   "bytes": 7823,
+   "physical_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+   "physical_bytes": 7823,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\render.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+    "bytes": 7823,
+    "git_blob_oid": "8bf92ea6233bddc7a0cefbe08a54866f0fe4f7a3",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/execution-maps/workflows.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "78738227994d249b8e4ac39291d11da4e3cb71c9",
+   "sha256": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+   "bytes": 83393,
+   "physical_sha256": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+   "physical_bytes": 83393,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\execution-maps\\workflows.ts"
+  },
+  {
+   "path": "site/scripts/generate-atlas.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "17c02be78889ace3872e11f1d31432aacaf95df2",
+   "sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+   "bytes": 3259,
+   "physical_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+   "physical_bytes": 3259,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\generate-atlas.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+    "bytes": 3259,
+    "git_blob_oid": "17c02be78889ace3872e11f1d31432aacaf95df2",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/generate-diagrams.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "2cac0e02013e585008c41a747ec587f7b6ab8cd8",
+   "sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+   "bytes": 25309,
+   "physical_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+   "physical_bytes": 25309,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\generate-diagrams.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+    "bytes": 25309,
+    "git_blob_oid": "2cac0e02013e585008c41a747ec587f7b6ab8cd8",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/generate-product-example.py",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "13f419a4eaaad26456c7008899c9edfce3b1b1ba",
+   "sha256": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+   "bytes": 6934,
+   "physical_sha256": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+   "physical_bytes": 6934,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\generate-product-example.py",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+    "bytes": 6934,
+    "git_blob_oid": "13f419a4eaaad26456c7008899c9edfce3b1b1ba",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/guide-directory.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "b2965d8997b69947ec3ac46fcca8069482cf532d",
+   "sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+   "bytes": 3511,
+   "physical_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+   "physical_bytes": 3511,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\guide-directory.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+    "bytes": 3511,
+    "git_blob_oid": "b2965d8997b69947ec3ac46fcca8069482cf532d",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/journey-navigation.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "efa74be0ba88e17b548e8b5deda709b86faa4e61",
+   "sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+   "bytes": 5093,
+   "physical_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+   "physical_bytes": 5093,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\journey-navigation.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+    "bytes": 5093,
+    "git_blob_oid": "efa74be0ba88e17b548e8b5deda709b86faa4e61",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/link-audit/lib.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "a7212208bd1655e10cfe7c1d9d073915c550091b",
+   "sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+   "bytes": 9128,
+   "physical_sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+   "physical_bytes": 9128,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\link-audit\\lib.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+    "bytes": 9128,
+    "git_blob_oid": "a7212208bd1655e10cfe7c1d9d073915c550091b",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/link-audit.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "0094048e84cb34c6b86035b8d5dbd5c54dad5942",
+   "sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+   "bytes": 1599,
+   "physical_sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+   "physical_bytes": 1599,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\link-audit.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+    "bytes": 1599,
+    "git_blob_oid": "0094048e84cb34c6b86035b8d5dbd5c54dad5942",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/product-example.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "ca21d82dda5af6eeb6b957aa0f0764260107b6d3",
+   "sha256": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+   "bytes": 6637,
+   "physical_sha256": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+   "physical_bytes": 6637,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\product-example.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+    "bytes": 6637,
+    "git_blob_oid": "ca21d82dda5af6eeb6b957aa0f0764260107b6d3",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/reference-sidebar.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "8566dd591cc1c954209e7d925f53501ca6beef62",
+   "sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+   "bytes": 3861,
+   "physical_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+   "physical_bytes": 3861,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\reference-sidebar.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+    "bytes": 3861,
+    "git_blob_oid": "8566dd591cc1c954209e7d925f53501ca6beef62",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/rehype-base-links.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "f81353d249b55f5a8c8a4aae77a105ff5053b5fd",
+   "sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+   "bytes": 2889,
+   "physical_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+   "physical_bytes": 2889,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\rehype-base-links.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+    "bytes": 2889,
+    "git_blob_oid": "f81353d249b55f5a8c8a4aae77a105ff5053b5fd",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/rehype-table-shell.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "6d794b4bbd55049873c4884e827e289cd5d9079a",
+   "sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+   "bytes": 4379,
+   "physical_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+   "physical_bytes": 4379,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\rehype-table-shell.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+    "bytes": 4379,
+    "git_blob_oid": "6d794b4bbd55049873c4884e827e289cd5d9079a",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/release-applicability.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "72c9eff75627cd683635813fcd435e7bb40160d5",
+   "sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+   "bytes": 34817,
+   "physical_sha256": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+   "physical_bytes": 34817,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\release-applicability.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "58756ea9f7e381a5ae556c37159e55626dd923a501bf8df30d623bbd52488bac",
+    "bytes": 31151,
+    "git_blob_oid": "82350a52817cdc2888473979841c5a76f8390bd3",
+    "equals_current": false
+   }
+  },
+  {
+   "path": "site/scripts/statusline-capture.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "ba90e765371659e189dd7eab9a7a73e25018603f",
+   "sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+   "bytes": 3060,
+   "physical_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+   "physical_bytes": 3060,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\statusline-capture.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+    "bytes": 3060,
+    "git_blob_oid": "ba90e765371659e189dd7eab9a7a73e25018603f",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/topic-map.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "73387077666623d4e8a783cb40fde3698fcc3cd0",
+   "sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+   "bytes": 6126,
+   "physical_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+   "physical_bytes": 6126,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\topic-map.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+    "bytes": 6126,
+    "git_blob_oid": "73387077666623d4e8a783cb40fde3698fcc3cd0",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/scripts/version-facts.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "238e157b760c9dcb870e14102841958a6c4c0429",
+   "sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+   "bytes": 12866,
+   "physical_sha256": "41d852e30a8af7aeaf4d45dfc5186866eabcfb0c54b276243bcaeb496ff64042",
+   "physical_bytes": 12866,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\scripts\\version-facts.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "b1888c427fed1f9da78f759839dc50dd65ad3dae0d59f9ca3e1577eada56bc89",
+    "bytes": 12517,
+    "git_blob_oid": "dc68d2ecb5bcb2fa688c6e83899ae20f49d61748",
+    "equals_current": false
+   }
+  },
+  {
+   "path": "site/src/content.config.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "36086114464dcff213bd8b087bce72f8078e9660",
+   "sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+   "bytes": 1087,
+   "physical_sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+   "physical_bytes": 1087,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\src\\content.config.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "ce7c7ef825d04d234ec40f24ced4f8a52b70585988d418a81f9b71d053294215",
+    "bytes": 1087,
+    "git_blob_oid": "36086114464dcff213bd8b087bce72f8078e9660",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/src/pages/release-applicability.json.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "e6126c41c1fb4433ce576dce615e0f6467abd799",
+   "sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+   "bytes": 308,
+   "physical_sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+   "physical_bytes": 308,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\src\\pages\\release-applicability.json.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+    "bytes": 308,
+    "git_blob_oid": "e6126c41c1fb4433ce576dce615e0f6467abd799",
+    "equals_current": true
+   }
+  },
+  {
+   "path": "site/src/release-applicability-presentation.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "34c13aafc20a03ae969230b3d9aeeed6be62f145",
+   "sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+   "bytes": 1386,
+   "physical_sha256": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+   "physical_bytes": 1386,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\src\\release-applicability-presentation.ts",
+   "frozen": {
+    "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+    "sha256": "34394ebe3bb9baefebb9bccae6c5271b6ea75c18ccf488151460c8b48f5873ad",
+    "bytes": 1221,
+    "git_blob_oid": "c0db51f4a747af9bcbd027975f4257aa81cc6f68",
+    "equals_current": false
+   }
+  },
+  {
+   "path": "site/test/link-audit/lib.test.ts",
+   "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "git_blob_oid": "86f13a6184fda75fcb80293805d760b25b5e844b",
+   "sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+   "bytes": 13780,
+   "physical_sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+   "physical_bytes": 13780,
+   "physical_raw_equals_commit": true,
+   "physical_LF_equals_commit": true,
+   "private_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\sources\\site\\test\\link-audit\\lib.test.ts"
+  }
+ ],
+ "retained_evidence": {
+  "docs/state-contracts-major/execution/evidence/capture-source-d594/hook-replay-preserved.json": {
+   "sha256": "d387712c6ac4392115500f0466e749eb2f68b138b9241fef6905fddc03243d49",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only direct replay/media controller. Underlying hook/media behavior is not executed or qualified. Direct replay cannot prove installed discovery; media encoder inherits parent environment. No process confinement, current proof/media or physical cleanup result.",
+   "disposition_ids": [
+    "disposition:transitions:SX01:01",
+    "disposition:transitions:SX01:02",
+    "disposition:transitions:SX01:03",
+    "disposition:transitions:SX01:04",
+    "disposition:transitions:SX01:05",
+    "disposition:transitions:SX01:06",
+    "disposition:transitions:SX01:07"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/context-capture-mode-preserved.json": {
+   "sha256": "a60ca3c6767e88f11bac50b7508aff721c576b19bba2265c38425a7091fbe987",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Conditional source-only mode handling after capture() succeeds. Changed helper scenario cone is explicitly held. No actual current helper/capture equality or host/approval observation. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX02:02"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/statusline-capture-preserved.json": {
+   "sha256": "d3457b56543d315e6f93b34653b5c789502778a1ed3c4da0c2fd70618b29424f",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only pin/refusal and deterministic render-controller contract. Renderer import precedes isolated mocked render scope. No current pin satisfaction, import side-effect isolation, complete runtime closure, live usage/billing or installed acceptance. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX02:03",
+    "disposition:transitions:SX02:04"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/product-example-generation-preserved.json": {
+   "sha256": "ad840ae0f40cdd1fb3c163cb3e25d7aea1b56744b6ce6d7ebeddeb42482206a8",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only fixed generator on exact pinned engine and declared data. No binary/native execution, actual RED/GREEN, approval, provider, host/TUI, task acceptance or publication. Partial sequential outputs remain possible. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX02:05",
+    "disposition:transitions:SX02:06"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/product-example-consumer-preserved.json": {
+   "sha256": "d4aaa67f8e7c742d1cf008f087ad4539097593103dcca9ccdf8f7e190801d254",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only fixed data fixture consistency reader. No HTML execution, general sanitizer/native validator or authenticated execution claim. No hostile-concurrent ancestor containment or actual build result. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX02:07"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/capture-render-preserved.json": {
+   "sha256": "e162eb8fbf5c144866a70a9561bd8199adf5b0bdd53ce7bb997097216961ee0d",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only capture fence/label insertion. Full schema/freshness/build/browser/current-output validation remains separately owned; no runtime result. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX02:08"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/release-derivation-tested.json": {
+   "sha256": "d0b465656ab2f1b7b6c77a096e86de9ce0840132d614da8fdaacd1eac15a2fb1",
+   "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+   "scope": "Actual37 selected pure derivation/presentation assertions;35 unselected cases excluded. No site build, generated endpoint execution, browser, GitHub Actions process, public-release observation or production tag claim. Current successor renews only its listed finite accepted row claims using the actual68-name observation; old proof/raw objects are retained with original identities.",
+   "disposition_ids": [
+    "disposition:transitions:SX03:01",
+    "disposition:transitions:SX03:03",
+    "disposition:transitions:SX03:04",
+    "disposition:transitions:SX03:05"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/observed-publication.json": {
+   "sha256": "4efb27f7d3591c9cc8e2161ed82e1caf3ddf63b6a0b5e3cba9e28ae42e5cd6f4",
+   "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+   "scope": "Exact observed tag/source/version/draft identity distinguished from local tag/historical receipt;7actual assertions. No remote publication readback, full rendered endpoint or replay-digest qualification. Current successor renews only its listed finite accepted row claims using the actual68-name observation; old proof/raw objects are retained with original identities.",
+   "disposition_ids": [
+    "disposition:transitions:SX03:02"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/navigation-projectors-preserved.json": {
+   "sha256": "4db3fff62d761baa8d37b687eefef36d6b02d171a74a6a74a56464b6d97d07d5",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Conditional source-only projections on supplied typed/validated content/metadata. No actual content inventory/module-build availability, rendered routes, browser/reading/completion or Academy publication observed. Distinct owners validate their own membership; no universal arbitrary-input schema guard is asserted. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX06:01"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json": {
+   "sha256": "7197787486e1c129b9fafeedcdc1042fa71d5558fa5cd62b9d26a6b7792f320a",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only topic membership/title join on supplied map, lesson IDs and authored pages. No current actual map corpus, generated Academy/content availability, build, browser or source semantic truth. JSON duplicate-key rejection/whole filesystem confinement is not asserted. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX06:02"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/markdown-presentation-preserved.json": {
+   "sha256": "d408f963224d7b98474f37030da7ad67e52d47fcb55fb1d4c2a89f2975c2bcc5",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only typed HAST transforms with supplied configured base/source path. No actual generated HTML, CSS/mobile/AT/browser behavior or arbitrary untrusted input sanitization. Complex tables deliberately retain scrolling rather than inferred associations. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX06:03"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/diagram-render-preserved.json": {
+   "sha256": "792dfa862811897672e146ded1e49ca188358190a8816edf662022fbc658c869",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Conditional source-only validated teaching graph renderer and fixed sequential writer. Shared graph validator/getWorkflow body inspected; static editorial graph content is data, not runtime workflow execution, authority, semantic truth or actual generated geometry/media. No current build or complete output transaction. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX06:04"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/diagram-audit-preserved.json": {
+   "sha256": "77bd488e933ea0f30624ec8af08daee01bef5778df136da3b912172fea51477d",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only regex declared visual-grammar/conservative metric audit. Not actual browser/font shaping geometry, semantic workflow truth, required nonempty SVG inventory or rendered-artifact acceptance. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX06:05"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/decision-teaching-preserved.json": {
+   "sha256": "4d9c40a9db9a10311d9c4ea27c5d4eda855d548acbdd8c492c5267ec8fc8ca3e",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Source-only structural teaching-data validator, no source excerpt authenticity/currentness, user-choice authentication, product behavior or successful full site validation. Local href means syntactically root-local, not a checked destination. Additional frozen-family cited paths are bound solely as citation exposure/inventory required by the owning verifier; semantic mapping and all original limits are unchanged.",
+   "disposition_ids": [
+    "disposition:transitions:SX06:07"
+   ],
+   "identity_only_reused": true
+  },
+  "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json": {
+   "sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "scope": "Finite conditional source clauses only; no runtime/browser/build/installed/hosted/model/user-action or whole-task/program outcome.",
+   "disposition_ids": [
+    "disposition:transitions:S57:01",
+    "disposition:transitions:S57:02",
+    "disposition:transitions:S57:03",
+    "disposition:transitions:S57:04",
+    "disposition:transitions:S57:05",
+    "disposition:transitions:S57:06",
+    "disposition:transitions:S57:07",
+    "disposition:transitions:S59:02",
+    "disposition:transitions:S59:04",
+    "disposition:transitions:S59:05",
+    "disposition:transitions:S60:01",
+    "disposition:transitions:S60:02",
+    "disposition:transitions:S60:04",
+    "disposition:transitions:S63:02",
+    "disposition:transitions:S63:03",
+    "disposition:transitions:S63:04",
+    "disposition:transitions:S63:05",
+    "disposition:transitions:SX07:01",
+    "disposition:transitions:SX07:02",
+    "disposition:transitions:SX07:03"
+   ],
+   "identity_only_reused": true
+  }
+ },
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

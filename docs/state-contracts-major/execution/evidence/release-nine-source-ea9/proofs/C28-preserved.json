@@ -1,0 +1,127 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal46-clause C21-C29 immutable current/pinned inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/academy_promotion.py": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+  ".github/workflows/academy-promotion.yml": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C28"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/source-bindings.json",
+   "sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json",
+   "sha256": "6ba6e13d99fe68dd11863e7cf9d5be27fd43e9a9d9034eb6987e6b8bc3c487fc"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C28",
+   "frozen_row_sha256": "b76b3064c2a8469484e1f50f708ddb49e46d71f8d89c0438edf96fe13752b5af",
+   "clause_ids": [
+    "disposition:transitions:C28:01",
+    "disposition:transitions:C28:02",
+    "disposition:transitions:C28:03",
+    "disposition:transitions:C28:04",
+    "disposition:transitions:C28:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 72,
+     "end": 229,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "b74970382f28506241d7cfe1034dfe71ddb635c2064e00f0518cdeae43b4171c"
+    },
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 276,
+     "end": 294,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "b4394a995fd48c140c311e1fc79c10ac8685d3ae668ad62dec63a93ce181f8e6"
+    },
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 306,
+     "end": 329,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "476de994ce942cb19c6a3b721b17094e3f903ba47dc1fe107d01e66457a6fa4c"
+    },
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 57,
+     "end": 102,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "0f180faec27cf31824ac8d3028641113f76ee8c00c2d01750a1d49e3280fee58"
+    },
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 241,
+     "end": 286,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "a99eb59881e3ac915e0b80d85541902fb0b46d5dfc506c17c470cdb24a8d71e2"
+    },
+    {
+     "path": ".github/scripts/academy_promotion.py",
+     "start": 330,
+     "end": 338,
+     "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+     "span_sha256": "cd71891e01909ac3a43a217344f59d4ad61792051476b5e9a576f83a1308acf3"
+    },
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 57,
+     "end": 78,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "33ed76b91850f0e4b4779602b08b7dedc2ef594aec7789d31948acadc42cd6b9"
+    },
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 57,
+     "end": 94,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "1492e5ddd93c90a13e4480e558a88bcf57c3ccab2835103bf23e429cd6e6847e"
+    },
+    {
+     "path": ".github/workflows/academy-promotion.yml",
+     "start": 95,
+     "end": 108,
+     "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+     "span_sha256": "807a0058588ba769166201f0b72454629a7a6d580cd45b47c26ca97a6e57553c"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses including already advanced rows are mapped to exact current/pinned owner/caller spans. Accepted repairs and baseline overstatements are explicit per clause; no stronger execution/identity/rollback/coverage behavior is inferred. Advanced row histories are preserved.",
+   "limits": "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched."
+  }
+ ],
+ "scope": "Reasoned source-only preservation with explicit accepted/intake deltas; no actual hosted/account/installed/runtime/promotion/publication qualification.",
+ "limits": [
+  "Reasoned source conformance only. No hosted/API/account, installed/runtime/native/OS, task/scenario/human/model, promotion/publication or live containment qualification. Original runtime/evidence epochs are untouched.",
+  "All46 frozen transition rows remain literal. Exact current/pinned semantic differences and intake overstatements are explicit per clause. No failed test is relabeled N/A.",
+  "Only9 PLANNED machines and38 PLANNED edges are proposed PRESERVED. Eight advanced edges retain exact objects/status/evidence, as do all unrelated rows.",
+  "PROGRAM current implementation and accepted task/ADR direction govern; ordinary advisory warning/skip, strict admission, dependency review, actual host consent and publication authority stay distinct.",
+  "No owning validation/runtime/tests/API/network/build/install/dispatch/reviewer fleet or canonical/index/ref/marker writes; Root independent review and strict prospective admission remain pending."
+ ]
+}

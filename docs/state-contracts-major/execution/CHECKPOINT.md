@@ -1,5 +1,13 @@
 # State-contract program checkpoint
 
+PR #1117 merged into `major/state-contracts` at `ac826ed2` after exact-head CI and Docs passed: 92 checks passed, 8 skipped. Its true merge preserves source ancestry. The original normal integration Docs run passed; CI remains running with a confirmed Linux installed Pi failure. The failing phase is under original log/artifact inspection. Main #1098 stays held for Brennon testing.
+
+This local follow-up fixes legacy statusline uninstall overwriting a later user choice and link-audit filesystem escape, including Windows separators. Named original regressions and independent reviews are retained; all 82 statusline module tests pass, and the reviewed link-audit candidate has 40 passing focused tests plus scoped type checking. No installed/global-host acceptance follows from owned fixtures. Farm run-ID recovery wording and the Codex persona manual hint are corrected through their maintained owners.
+
+261 additional reviewed source dispositions bring the selected current-source total to 520 and PLANNED accounting to 322: 49 findings, 50 machines and 223 transitions. All previous advanced rows and task/runtime histories are preserved. WF33 proposals are withheld for an actual persona persistence-failure repair; no inapplicability substitution is used. Source accounting does not establish runtime, task, scenario, human or release acceptance. [Current observations](evidence/source261-owned-followup/development.json).
+
+## Previous retained checkpoint
+
 Local code commits EA9 and59d856cb repair owned shard cleanup, repeated immutable blob transport, Darwin optional observer arguments, authenticated payload projection and Windows closed failure diagnostics. The Windows shutdown cause remains UNKNOWN. All current code scopes have independent review and focused regression checks; source13 reinspection preserves all owning literal spans.
 
 The local source ledger records170 additional source-only dispositions:160PRESERVED and10narrowNOT_APPLICABLE. PLANNED accounting is583 (49findings/116machines/418transitions). Source-only assessment does not qualify runtime, host, task, human or release acceptance. Thirteen current source-only bindings supersede old active proofs after the CI argument repair; historical packets remain unchanged. [Source and code observations](evidence/source170-followup/development.json).

@@ -1,0 +1,23 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 2 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/link-audit/lib.test.ts > auditDist root-absolute dot segments > rejects root-absolute dot-segment escapes even when a sibling exists (base "/codeArbiter")
+ FAIL  test/link-audit/lib.test.ts > auditDist root-absolute dot segments > rejects root-absolute dot-segment escapes even when a sibling exists (base "")
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ test/link-audit/lib.test.ts:385:33
+    383|         expect(result.pageCount).toBe(1);
+    384|         expect(result.checked).toBe(1);
+    385|         expect(result.failures).toHaveLength(1);
+       |                                 ^
+    386|         expect(result.failures[0].message).toContain(target);
+    387|       } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/2]⎯
+

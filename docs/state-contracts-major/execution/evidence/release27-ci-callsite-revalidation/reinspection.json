@@ -1,0 +1,502 @@
+{
+ "schema": "codearbiter.release27-current-source-reinspection/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "scope": "27source-only proposals, replacing five original CI-input proof scopes; no runtime epoch or status history renewal",
+ "proofs": [
+  {
+   "family": "C01",
+   "prior": {
+    "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/proofs/C01-preserved.json",
+    "sha256": "d0a4156aafdb986d6701590194c590eeec539dd72afce0844335c783ab6aa07a",
+    "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153"
+   },
+   "cells": [
+    "disposition:machines:C01",
+    "disposition:transitions:C01:01",
+    "disposition:transitions:C01:02",
+    "disposition:transitions:C01:03",
+    "disposition:transitions:C01:04",
+    "disposition:transitions:C01:05"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "witnesses": [
+    {
+     "cell": "disposition:machines:C01",
+     "start": 17,
+     "end": 56,
+     "span_sha256": "d143446cb7ceaa6bffe21fd89bd638d34ecc8d8acfa955724c18b741f65d6bee",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 156,
+     "end": 210,
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 53,
+     "end": 142,
+     "span_sha256": "f8cf1fdc58e31b9017ca5c176a91fd0f51be3d1484d02e582775536d0c657e1c",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 156,
+     "end": 178,
+     "span_sha256": "1bc6759f456cce4a15ee268f9f40a0d15bd1c6824f513c2aaf63ce71466906c7",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 147,
+     "end": 153,
+     "span_sha256": "63b19aff3f5a555ec2eda9916ff0bae49210321b854deaf811a2573642b50384",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 5052,
+     "end": 5057,
+     "span_sha256": "067307221caf7c64e83208da961f4bc229548dfa11bda057902812c5f4a90b7f",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 545,
+     "end": 606,
+     "span_sha256": "9b6a3a44861ed5aaeb155d6180ddac3eba53ca2535ba88fc0d718ddccce37873",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 610,
+     "end": 613,
+     "span_sha256": "a924cdff3b3e6db3f1234b296c907c5d313d3ba6226289dfe5d7dba0c5805f6e",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 4910,
+     "end": 4927,
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C01",
+     "start": 5031,
+     "end": 5058,
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:01",
+     "start": 17,
+     "end": 56,
+     "span_sha256": "d143446cb7ceaa6bffe21fd89bd638d34ecc8d8acfa955724c18b741f65d6bee",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:01",
+     "start": 156,
+     "end": 210,
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:02",
+     "start": 53,
+     "end": 142,
+     "span_sha256": "f8cf1fdc58e31b9017ca5c176a91fd0f51be3d1484d02e582775536d0c657e1c",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:02",
+     "start": 156,
+     "end": 178,
+     "span_sha256": "1bc6759f456cce4a15ee268f9f40a0d15bd1c6824f513c2aaf63ce71466906c7",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:03",
+     "start": 147,
+     "end": 153,
+     "span_sha256": "63b19aff3f5a555ec2eda9916ff0bae49210321b854deaf811a2573642b50384",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:03",
+     "start": 5052,
+     "end": 5057,
+     "span_sha256": "067307221caf7c64e83208da961f4bc229548dfa11bda057902812c5f4a90b7f",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:04",
+     "start": 156,
+     "end": 210,
+     "span_sha256": "8a9e52fde65c485df56fa5d062bfb20cbe96edaf8903aadfb56e7e22f31b28b4",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:04",
+     "start": 545,
+     "end": 606,
+     "span_sha256": "9b6a3a44861ed5aaeb155d6180ddac3eba53ca2535ba88fc0d718ddccce37873",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:05",
+     "start": 610,
+     "end": 613,
+     "span_sha256": "a924cdff3b3e6db3f1234b296c907c5d313d3ba6226289dfe5d7dba0c5805f6e",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:05",
+     "start": 4910,
+     "end": 4927,
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C01:05",
+     "start": 5031,
+     "end": 5058,
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01",
+     "literal_span_unchanged": true
+    }
+   ]
+  },
+  {
+   "family": "C02",
+   "prior": {
+    "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/proofs/C02-preserved.json",
+    "sha256": "979693faa14261de0e04689aceb8dc2b0d2f40ec2b4bda0813c19ba6a4a12e9a",
+    "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153"
+   },
+   "cells": [
+    "disposition:machines:C02",
+    "disposition:transitions:C02:01",
+    "disposition:transitions:C02:02",
+    "disposition:transitions:C02:03",
+    "disposition:transitions:C02:04"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "witnesses": [
+    {
+     "cell": "disposition:machines:C02",
+     "start": 4968,
+     "end": 5037,
+     "span_sha256": "ff42c7ec51002a80b60c7db946d05be312890d744f52e0f59a8f9592f3c62e0c",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C02",
+     "start": 5031,
+     "end": 5058,
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C02",
+     "start": 5040,
+     "end": 5058,
+     "span_sha256": "4d1857be2b41df6cc0609bcee2619dc631a0554c712193c7cdac6fa091acfbf3",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C02",
+     "start": 4975,
+     "end": 5037,
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C02:01",
+     "start": 4968,
+     "end": 5037,
+     "span_sha256": "ff42c7ec51002a80b60c7db946d05be312890d744f52e0f59a8f9592f3c62e0c",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C02:02",
+     "start": 5031,
+     "end": 5058,
+     "span_sha256": "3c2ff5d09f0d00b94f9adec65624f96379b8d4c06dab99f7d4d3cbcaa1967a01",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C02:03",
+     "start": 5040,
+     "end": 5058,
+     "span_sha256": "4d1857be2b41df6cc0609bcee2619dc631a0554c712193c7cdac6fa091acfbf3",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C02:04",
+     "start": 4975,
+     "end": 5037,
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845",
+     "literal_span_unchanged": true
+    }
+   ]
+  },
+  {
+   "family": "C04",
+   "prior": {
+    "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/proofs/C04-preserved.json",
+    "sha256": "604019926837d560eb6450d6a5f12bd0103d7a58293415485505ba5a6973470a",
+    "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153"
+   },
+   "cells": [
+    "disposition:machines:C04",
+    "disposition:transitions:C04:01",
+    "disposition:transitions:C04:02",
+    "disposition:transitions:C04:04",
+    "disposition:transitions:C04:05",
+    "disposition:transitions:C04:06",
+    "disposition:transitions:C04:07"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "witnesses": [
+    {
+     "cell": "disposition:machines:C04",
+     "start": 709,
+     "end": 803,
+     "span_sha256": "e179a4265579647a605d14e5f32dfc58940bfaacabdfc319eeb289f17a924b5b",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 610,
+     "end": 641,
+     "span_sha256": "f7b3f04996b19b8fac8220a9dcc47d79691f966cd6db51e1ff27095366c246e1",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 1385,
+     "end": 1447,
+     "span_sha256": "da1ae78430a31b8346cd16bd3253944786022dfa0759b64837b35cab88e95c55",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 633,
+     "end": 707,
+     "span_sha256": "ad1324bc0e27c6458a679879d7b5c2b6b92bcc034e894e0dc00585bf63d3c691",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 1460,
+     "end": 1520,
+     "span_sha256": "502ae938007d53250cf1c014d56bd12491e2a736c55e78f7624fa136fb31cda9",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 1594,
+     "end": 1614,
+     "span_sha256": "06e1b5afb1de2e63ad7f7c9c874c38282f33f46f70ea1241c873064e3c2f0566",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 1616,
+     "end": 1671,
+     "span_sha256": "54c61947880db766130c6c81567b9a1016594094753a169d38af358d36a55832",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C04",
+     "start": 1697,
+     "end": 1821,
+     "span_sha256": "0bfd5fda857a83ea81b5f0f6cb18a0c6415534f4c59b8ca6df5af2b4f2485ddc",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:01",
+     "start": 709,
+     "end": 803,
+     "span_sha256": "e179a4265579647a605d14e5f32dfc58940bfaacabdfc319eeb289f17a924b5b",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:02",
+     "start": 610,
+     "end": 641,
+     "span_sha256": "f7b3f04996b19b8fac8220a9dcc47d79691f966cd6db51e1ff27095366c246e1",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:02",
+     "start": 1385,
+     "end": 1447,
+     "span_sha256": "da1ae78430a31b8346cd16bd3253944786022dfa0759b64837b35cab88e95c55",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:04",
+     "start": 633,
+     "end": 707,
+     "span_sha256": "ad1324bc0e27c6458a679879d7b5c2b6b92bcc034e894e0dc00585bf63d3c691",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:05",
+     "start": 1460,
+     "end": 1520,
+     "span_sha256": "502ae938007d53250cf1c014d56bd12491e2a736c55e78f7624fa136fb31cda9",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:05",
+     "start": 1594,
+     "end": 1614,
+     "span_sha256": "06e1b5afb1de2e63ad7f7c9c874c38282f33f46f70ea1241c873064e3c2f0566",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:06",
+     "start": 1616,
+     "end": 1671,
+     "span_sha256": "54c61947880db766130c6c81567b9a1016594094753a169d38af358d36a55832",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C04:06",
+     "start": 1697,
+     "end": 1821,
+     "span_sha256": "0bfd5fda857a83ea81b5f0f6cb18a0c6415534f4c59b8ca6df5af2b4f2485ddc",
+     "literal_span_unchanged": true
+    }
+   ]
+  },
+  {
+   "family": "C13",
+   "prior": {
+    "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/proofs/C13-preserved.json",
+    "sha256": "7b4598773b8144ab438276b2d8a52381330946e69690db1f3f04134ba99fa61e",
+    "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153"
+   },
+   "cells": [
+    "disposition:machines:C13",
+    "disposition:transitions:C13:01",
+    "disposition:transitions:C13:02",
+    "disposition:transitions:C13:03",
+    "disposition:transitions:C13:04"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "witnesses": [
+    {
+     "cell": "disposition:machines:C13",
+     "start": 2932,
+     "end": 2995,
+     "span_sha256": "37579e2345b47a25539b8fad287b7c10fefbeba31386759b8439248e8506ba6c",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C13",
+     "start": 2996,
+     "end": 3024,
+     "span_sha256": "60269166d68cbdc20877a91b98c20653827cce5b4ef6de0d2acfe3b71ce1fd70",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C13",
+     "start": 4975,
+     "end": 5037,
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C13",
+     "start": 4022,
+     "end": 4087,
+     "span_sha256": "370b38b60b8821bc134c3e3e0efadebd707ede8a16f2fe5ce5c45cd0374e72f1",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C13:01",
+     "start": 2932,
+     "end": 2995,
+     "span_sha256": "37579e2345b47a25539b8fad287b7c10fefbeba31386759b8439248e8506ba6c",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C13:02",
+     "start": 2996,
+     "end": 3024,
+     "span_sha256": "60269166d68cbdc20877a91b98c20653827cce5b4ef6de0d2acfe3b71ce1fd70",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C13:02",
+     "start": 4975,
+     "end": 5037,
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C13:03",
+     "start": 4022,
+     "end": 4087,
+     "span_sha256": "370b38b60b8821bc134c3e3e0efadebd707ede8a16f2fe5ce5c45cd0374e72f1",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C13:04",
+     "start": 4975,
+     "end": 5037,
+     "span_sha256": "34d74a8ead5ead44569392392dba83deb2a4573776ea91fba8fedfe60e362845",
+     "literal_span_unchanged": true
+    }
+   ]
+  },
+  {
+   "family": "C15",
+   "prior": {
+    "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/proofs/C15-preserved.json",
+    "sha256": "da9c840984c88616967192cae80231963cf0a2e568539a9de327f07fb31c06a8",
+    "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153"
+   },
+   "cells": [
+    "disposition:machines:C15",
+    "disposition:transitions:C15:01",
+    "disposition:transitions:C15:02",
+    "disposition:transitions:C15:03"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "witnesses": [
+    {
+     "cell": "disposition:machines:C15",
+     "start": 4910,
+     "end": 4927,
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222",
+     "literal_span_unchanged": true
+    }
+   ]
+  }
+ ],
+ "basis": "All original80clauses remain independently reviewed at EA9. Every affected owning CI span and all non-CI inputs are byte-identical; only the independently reviewed optional parent-argument replacements outside those spans differ.",
+ "independent_CI_delta_review_sha256": "f51e4ecfff28a5d8fdeaa5694eca0a4c270403fec4584c63e06a0c06483fd10e",
+ "original_source_review_sha256": "b86dfac8de22db55f97e5123bb1fabc0af48356024d925460e99a21373c1aa95",
+ "limits": [
+  "Raw original source inspections remain intact and identify their original epochs.",
+  "New27 proofs source current inputs at cb; unaffected35 remain at valid original EA9 epoch.",
+  "No tests, runtime, provider, API, full-owner or canonical writes."
+ ]
+}

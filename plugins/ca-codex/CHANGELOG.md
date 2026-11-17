@@ -10,6 +10,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Changed
 
+- Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.
 - Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
 - Separate recorded work progress from derived dependency readiness and independently verified checks, preserving identities, user stops and later edits across supported schema upgrades.
 - Use shared current-mode, task-discovery, context-delivery and corrected-review helpers; reconcile interrupted workflow effects through their owning receipts.

@@ -1,0 +1,118 @@
+{
+ "schema": "exact-head-watch-delivery/1",
+ "verdict": "PASS",
+ "expected_head": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "observed_head": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "base": "major/state-contracts",
+ "base_sha": "a7135d312e6f861703f14683f422d1f435260ebf",
+ "ci": {
+  "id": 44020898192,
+  "head_sha": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+  "event": "pull_request",
+  "run_attempt": 1,
+  "path": ".github/workflows/ci.yml",
+  "status": "completed",
+  "conclusion": "success",
+  "head_branch": "codex/state-contracts-source-and-shard-cleanup",
+  "created_at": "2026-11-17T04:59:24Z",
+  "updated_at": "2026-11-17T05:32:17Z"
+ },
+ "docs": {
+  "id": 44020898137,
+  "head_sha": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+  "event": "pull_request",
+  "run_attempt": 1,
+  "path": ".github/workflows/docs.yml",
+  "status": "completed",
+  "conclusion": "success",
+  "head_branch": "codex/state-contracts-source-and-shard-cleanup",
+  "created_at": "2026-11-17T04:59:24Z",
+  "updated_at": "2026-11-17T05:08:24Z"
+ },
+ "counts": {
+  "skipping": 8,
+  "pass": 92
+ },
+ "required": [
+  {
+   "bucket": "pass",
+   "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/44020898192/job/133842398634",
+   "name": "[GATE ] | [REPO] | Merge readiness",
+   "state": "SUCCESS"
+  }
+ ],
+ "terminal_receipt": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1117-cb76-watch-de57o1mu\\terminal-receipt.json",
+  "sha256": "68316a505db61642a72cd36d495f11551b195335314c0ed5ca86128a77fb5879"
+ },
+ "original_metadata": {
+  "terminal-ci-jobs.json": {
+   "sha256": "59aeb83cd76f1cbdbd4731e4a34563b05f29f9f5cbf8df2e09a9721a051158db",
+   "bytes": 634077
+  },
+  "terminal-docs-jobs.json": {
+   "sha256": "bca3f0d0de905cc3606df39dec286e8e8c94ce2c3933d21657f4dc837082d5c4",
+   "bytes": 17225
+  },
+  "terminal-ci-artifacts.json": {
+   "sha256": "7cf450986bfd7c0b5c0bf235d2de712c08115a45a1bdd373652d19b4d906bea8",
+   "bytes": 78778
+  },
+  "terminal-docs-artifacts.json": {
+   "sha256": "02d95ae3a0615b1df093752b4b9fce25a9f4304b8d584082866588d2fb79e2a5",
+   "bytes": 2913
+  },
+  "terminal-pr.json": {
+   "sha256": "a98f4da030883068cfbab3eb94a8db4da4b117d641cb756e3ecf048bcd15d233",
+   "bytes": 22881
+  }
+ },
+ "program_controls": [
+  {
+   "id": 133829983029,
+   "run_id": 44020898192,
+   "head_sha": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "run_attempt": 1,
+   "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+   "status": "completed",
+   "conclusion": "success"
+  },
+  {
+   "id": 133829983032,
+   "run_id": 44020898192,
+   "head_sha": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "run_attempt": 1,
+   "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+   "status": "completed",
+   "conclusion": "success"
+  },
+  {
+   "id": 133829983114,
+   "run_id": 44020898192,
+   "head_sha": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+   "run_attempt": 1,
+   "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+   "status": "completed",
+   "conclusion": "success"
+  }
+ ],
+ "source_join_limits": {
+  "actual_job_checkout_SHA": "NOT_INDEPENDENTLY_READ_FROM_SUCCESS_LOGS",
+  "numeric_coverage": "Successful selected coverage jobs retained; numeric metrics not acquired or inferred.",
+  "head_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+  "prospective_merge_commit": "e178f9f46c5d451fb4bcd70f2607ce624698ca44"
+ },
+ "watch_finished": true,
+ "watcher_session": 11576,
+ "no_remote_mutations": true,
+ "limits": [
+  "PR outcomes do not establish normal integration/installed/task/publication qualification.",
+  "Root alone merges; parent1098 remains draft/main-held. No retry/cancel/source/index/ref/marker mutations."
+ ],
+ "import_projection": {
+  "original_sha256": "6400589895e2018310b7e0dec5d82a37c7309f69e449698dda7716cd3f72407d",
+  "original_bytes": 3710,
+  "original_retained_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1117-cb76-watch-de57o1mu\\final-delivery.json",
+  "scope": "Two metadata keys renamed to describe public Git commit identifiers explicitly. Values and all other original content unchanged. This is a projection, not the original receipt. Original bytes remain retained. No scanner rule or allowlist changed."
+ }
+}

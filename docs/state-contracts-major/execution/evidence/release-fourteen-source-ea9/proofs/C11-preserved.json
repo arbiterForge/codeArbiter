@@ -1,0 +1,364 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+  ".github/scripts/_verdictlib.py": "79963873a258965e244fe907055e6fe3d7a06b6a90308c0261374b76dc89197b",
+  ".github/scripts/check_codex_host.py": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+  ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C11",
+  "disposition:transitions:C11:01",
+  "disposition:transitions:C11:02",
+  "disposition:transitions:C11:03",
+  "disposition:transitions:C11:04",
+  "disposition:transitions:C11:05",
+  "disposition:transitions:C11:06",
+  "disposition:transitions:C11:07",
+  "disposition:transitions:C11:08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C11",
+   "frozen_row_sha256": "b5b8f5ecbf0299ef41dfed4c642622b70a008b06f02dcd72702b15678298a0d3",
+   "clause_ids": [
+    "disposition:transitions:C11:01",
+    "disposition:transitions:C11:02",
+    "disposition:transitions:C11:03",
+    "disposition:transitions:C11:04",
+    "disposition:transitions:C11:05",
+    "disposition:transitions:C11:06",
+    "disposition:transitions:C11:07",
+    "disposition:transitions:C11:08"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 95,
+     "end": 106,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "588e79b6d310ef13ebf03ee57f5b47f2e65753cb2bb7163e6baab88741cd53b6"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 425,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "13d7dbfb16f07bddb0ee2a2f3f9afccc20d2c8f4ad53a79f5aa495a2d45063d8"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 446,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "100ed0c9a783a87d8f7e3fe9a413e147509ed72cc3a912a6fcee0bdfe549aaeb"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 437,
+     "end": 494,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "8cc6cdae6374b633211b37fd3f4d5ef374d8d2309c2f881d353e2cf2e08dbc0d"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 74,
+     "end": 92,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "345695e2c6783e99b1cf1b959d8bb74ac0c4bcccb05d81c5cf6178cc80624161"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 169,
+     "end": 188,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "4dcb4b1b400fa22c74113c413f918c6954bfe59d71e6bd55e2124908686b0b1b"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 81,
+     "end": 92,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "e28e9677441ab3e7efc74785df9be3291b1b9083dc753833dd64f42fde8fcfad"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 190,
+     "end": 199,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "d74e7aa003912248f9771872800b0b357ced704151f091071e2d47f916fa9b45"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 196,
+     "end": 326,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "c9a5ddb69e74d36539682aa18abcfd3f15ce94c4b0c0f55092a4613c5da6ddb5"
+    },
+    {
+     "path": ".github/scripts/codex_agent_routes.py",
+     "start": 221,
+     "end": 271,
+     "file_sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+     "span_sha256": "3968a07a93f012307e09a8a4496842a5d63d1243fe0660281504f575c8442e51"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 113,
+     "end": 166,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "43b44c977c87f7dba592a61f31f3726ec9d5cf36d261d81eeea73114f01cf265"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 318,
+     "end": 400,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "ef34b7ca8341a7ab1a3b617fadd0563fb386619d30df456efbaaed478bb7077c"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 74,
+     "end": 106,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "6d4a1171f4c45e84783c2e89a360d9ec396dc5e1d813c537cd757446025c8a2e"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 495,
+     "end": 510,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "c8a671fe9814f37fb51cd35264be71f3c4de80306989af6ab323a947ee4077db"
+    },
+    {
+     "path": ".github/scripts/_boundedproc.py",
+     "start": 144,
+     "end": 164,
+     "file_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+     "span_sha256": "3dc1519ef0ddcdb2a70bbec3ced57d03aa2b493f5e3626228ca0eada5bcb37ba"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:01",
+   "frozen_row_sha256": "2a8ce4ed2fcfc5dea65fd23d4aad5811d0ed70e49b5c7c13f3c19305ae67e110",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 95,
+     "end": 106,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "588e79b6d310ef13ebf03ee57f5b47f2e65753cb2bb7163e6baab88741cd53b6"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 425,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "13d7dbfb16f07bddb0ee2a2f3f9afccc20d2c8f4ad53a79f5aa495a2d45063d8"
+    }
+   ],
+   "semantic_assessment": "Optional absent/unusable Codex emits schema/status=skip, runtime null and empty results, exits0, and may append a typed skipped verdict. Version probing has its own120second bound. Skip is not host proof.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:02",
+   "frozen_row_sha256": "090aae181a5212a3df97c0fc49dcd8d5391ce58683b6b3f38aa1cb03e157faa3",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 446,
+     "end": 460,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "100ed0c9a783a87d8f7e3fe9a413e147509ed72cc3a912a6fcee0bdfe549aaeb"
+    }
+   ],
+   "semantic_assessment": "CA_REQUIRE_CODEX=1 turns absent/unusable runtime into status=fail, nonzero exit and unavailable typed outcome when requested; an optional skip cannot satisfy that required admission.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:03",
+   "frozen_row_sha256": "89a229283f23123bc5bc0c65d7d13cddda7a611b2c3acc3207e0d8cf6b2c8ed7",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 437,
+     "end": 494,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "8cc6cdae6374b633211b37fd3f4d5ef374d8d2309c2f881d353e2cf2e08dbc0d"
+    }
+   ],
+   "semantic_assessment": "Npm mode must match the checked-out version and supply qualified metadata before live install; it forces capability checking. Disposable workspace home is removed best-effort and recreated, with exact-version npm catalog only in npm mode.",
+   "intake_variances": [
+    "Ignore-errors cleanup is an attempt, not proof of successful deletion or hostile-state isolation."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:04",
+   "frozen_row_sha256": "d8a8dde1dd5d5cc9b85e910ca2a2f9531bef808b7f26d8c2c40872dab0107ece",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 74,
+     "end": 92,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "345695e2c6783e99b1cf1b959d8bb74ac0c4bcccb05d81c5cf6178cc80624161"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 169,
+     "end": 188,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "4dcb4b1b400fa22c74113c413f918c6954bfe59d71e6bd55e2124908686b0b1b"
+    }
+   ],
+   "semantic_assessment": "The real host marketplace-add result is recorded; nonzero returns immediately before plugin install. All _run calls now use the bounded subprocess owner.",
+   "intake_variances": [
+    "R-07 replaces the baseline unbounded host command wait with a300second command bound and reported cleanup outcome; no provider turn is introduced."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:05",
+   "frozen_row_sha256": "b360abec97b52c1c67246e26173cd9ec69af6038426cc035b2fe3e1212b0db88",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 81,
+     "end": 92,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "e28e9677441ab3e7efc74785df9be3291b1b9083dc753833dd64f42fde8fcfad"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 190,
+     "end": 199,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "d74e7aa003912248f9771872800b0b357ced704151f091071e2d47f916fa9b45"
+    }
+   ],
+   "semantic_assessment": "Real codex plugin add ca-codex@codearbiter is executed through _run; nonzero records failure and prevents later readback. Source copying is not substituted for host installation.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:06",
+   "frozen_row_sha256": "307a92ab69b6de1a61c455a89793c8d5439c9a3c732f72283cd1cf771b55ee6f",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 196,
+     "end": 326,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "c9a5ddb69e74d36539682aa18abcfd3f15ce94c4b0c0f55092a4613c5da6ddb5"
+    },
+    {
+     "path": ".github/scripts/codex_agent_routes.py",
+     "start": 221,
+     "end": 271,
+     "file_sha256": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092",
+     "span_sha256": "3968a07a93f012307e09a8a4496842a5d63d1243fe0660281504f575c8442e51"
+    }
+   ],
+   "semantic_assessment": "Readback requires exactly one installed/enabled listing and expected version, one matching cache version, installed hook inventory/target scripts and literal/generic agent resources. Source-copy version parity does not prove enforcement or a live hook event.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:07",
+   "frozen_row_sha256": "9abcdacf2a8516d61054928253c68db635095513b7992738ba31de92dc822929",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 113,
+     "end": 166,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "43b44c977c87f7dba592a61f31f3726ec9d5cf36d261d81eeea73114f01cf265"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 318,
+     "end": 400,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "ef34b7ca8341a7ab1a3b617fadd0563fb386619d30df456efbaaed478bb7077c"
+    }
+   ],
+   "semantic_assessment": "Requested qualified metadata checks the complete installed member set and each size/SHA256. Capability mode loads the installed bridge/parser, restores caller module state, and requires repository operations/default enabled with runtime_downloads=false. The optional exchange observer is transparent and reentrant.",
+   "intake_variances": [
+    "Accepted R-06 verdict separation and the reviewed Codex nested-observer correction preserve actual installed dependency/capability ownership; source inspection is not installed execution."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C11:08",
+   "frozen_row_sha256": "2aee331d446e10d39a5c2ba53842314df74be57f67f969301dde241ed2f2a6af",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 74,
+     "end": 106,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "6d4a1171f4c45e84783c2e89a360d9ec396dc5e1d813c537cd757446025c8a2e"
+    },
+    {
+     "path": ".github/scripts/check_codex_host.py",
+     "start": 495,
+     "end": 510,
+     "file_sha256": "ced71d6b20fe30c25ec7b5cb8cde191cd8ef7e72008b904bfa8dcbd3c4adc6b4",
+     "span_sha256": "c8a671fe9814f37fb51cd35264be71f3c4de80306989af6ab323a947ee4077db"
+    },
+    {
+     "path": ".github/scripts/_boundedproc.py",
+     "start": 144,
+     "end": 164,
+     "file_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+     "span_sha256": "3dc1519ef0ddcdb2a70bbec3ced57d03aa2b493f5e3626228ca0eada5bcb37ba"
+    }
+   ],
+   "semantic_assessment": "Finally attempts recursive home removal with ignore_errors. Accumulated failures emit fail/rejected, successful checks emit pass/verified; unexpected exceptions may still escape before final JSON. Host subprocess waits are now bounded and retain partial timeout/containment diagnostics; no provider turn is invoked.",
+   "intake_variances": [
+    "The frozen no-timeout fact is replaced by accepted R-07, not preserved. Cleanup outcomes are reported; a timeout or best-effort directory removal does not prove descendant quiescence."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

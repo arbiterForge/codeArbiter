@@ -1,0 +1,181 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+  "tools/statusline-screenshot.py": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a"
+ },
+ "disposition_ids": [
+  "disposition:machines:T11",
+  "disposition:transitions:T11:01",
+  "disposition:transitions:T11:02",
+  "disposition:transitions:T11:03",
+  "disposition:transitions:T11:04"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:T11",
+   "frozen_row_sha256": "a3585e18650a91f5ef53650fc13687d00abee9f3367792a9f12bad4e4bd6b767",
+   "clause_ids": [
+    "disposition:transitions:T11:01",
+    "disposition:transitions:T11:02",
+    "disposition:transitions:T11:03",
+    "disposition:transitions:T11:04"
+   ],
+   "witnesses": [
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 44,
+     "end": 52,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "0a21240c13552f50c1a42e27d9b1826c3ee33110358690aa08efbfd68a0b008a"
+    },
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 55,
+     "end": 186,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "d71b5fd3e844852790ed053bb821d5c1431130e55b2ab3453b2430eaf74cd985"
+    },
+    {
+     "path": "tools/owned_output.py",
+     "start": 20,
+     "end": 120,
+     "file_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+     "span_sha256": "fa0ce81bcc4332696b8d6cc3147f84f7b688e68aa92cdfc5bf1017b1868268ef"
+    }
+   ],
+   "semantic_assessment": "All 4 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "Accepted T-01 fixes unchecked producer output. Zero-exit stderr is not separately an error; this remains a mock illustration and no actual screenshot is generated here.",
+    "Accepted T-01 replaces the old tail-only temporary cleanup; no hard-kill or crash cleanup guarantee is inferred.",
+    "Current output uses the requested absolute parent, not the frozen default-parent-only behavior. Launch failure need not have a browser handle to close.",
+    "Accepted T-01 fixes prior partial fixture leakage. Publication is not simultaneous multi-file visibility, crash durability or live-user usage proof; temporary and rollback cleanup errors can still propagate."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T11:01",
+   "frozen_row_sha256": "ebf1a17d827b900a61ff6e66832be35a016d17fde25b42671b1946d13dc17f6f",
+   "witnesses": [
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 44,
+     "end": 52,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "0a21240c13552f50c1a42e27d9b1826c3ee33110358690aa08efbfd68a0b008a"
+    },
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 55,
+     "end": 186,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "d71b5fd3e844852790ed053bb821d5c1431130e55b2ab3453b2430eaf74cd985"
+    }
+   ],
+   "semantic_assessment": "Current source runs the real renderer twice against synthetic earlier/current transcript payloads and an isolated ledger. Each call has a thirty-second timeout, requires zero exit and nonempty decoded/ANSI-stripped stdout before image work. Repository/workspace state is real checkout data.",
+   "intake_variances": [
+    "Accepted T-01 fixes unchecked producer output. Zero-exit stderr is not separately an error; this remains a mock illustration and no actual screenshot is generated here."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T11:02",
+   "frozen_row_sha256": "5ffdf845f657b844b614be1c1b7b221bc674bf059a14f670da8d257af6c7bc8a",
+   "witnesses": [
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 55,
+     "end": 186,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "d71b5fd3e844852790ed053bb821d5c1431130e55b2ab3453b2430eaf74cd985"
+    }
+   ],
+   "semantic_assessment": "Supported SGR values become escaped HTML spans in the owned TemporaryDirectory. Malformed color values can still raise; current context-manager cleanup covers ordinary exception exits. Unsupported formatting is not silently a real UI observation.",
+   "intake_variances": [
+    "Accepted T-01 replaces the old tail-only temporary cleanup; no hard-kill or crash cleanup guarantee is inferred."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T11:03",
+   "frozen_row_sha256": "53856e1cf446d27075f9ea56332bfcaa5b50e53c71ad134142495bf768580ab5",
+   "witnesses": [
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 55,
+     "end": 186,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "d71b5fd3e844852790ed053bb821d5c1431130e55b2ab3453b2430eaf74cd985"
+    }
+   ],
+   "semantic_assessment": "Available Chromium/page/.wrap are prerequisites. Playwright launches once, waits two hundred fifty milliseconds and screenshots into owned staging; try/finally closes a successfully launched browser and validates PNG signature/nonempty content. Errors propagate before publishing final output.",
+   "intake_variances": [
+    "Current output uses the requested absolute parent, not the frozen default-parent-only behavior. Launch failure need not have a browser handle to close."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T11:04",
+   "frozen_row_sha256": "589867fae67a5d6c92138da18416dd589d943406853a8f19cbc42be72f0de03a",
+   "witnesses": [
+    {
+     "path": "tools/statusline-screenshot.py",
+     "start": 55,
+     "end": 186,
+     "file_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+     "span_sha256": "d71b5fd3e844852790ed053bb821d5c1431130e55b2ab3453b2430eaf74cd985"
+    },
+    {
+     "path": "tools/owned_output.py",
+     "start": 20,
+     "end": 120,
+     "file_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+     "span_sha256": "fa0ce81bcc4332696b8d6cc3147f84f7b688e68aa92cdfc5bf1017b1868268ef"
+    }
+   ],
+   "semantic_assessment": "Owned transcripts/ledger/HTML are scoped under TemporaryDirectory. Only fully rendered PNG bytes and an explicit illustration/source-hash sidecar reach owned_output.publish_files. Its guarded staging/backups/lock rollback preserves existing outputs on ordinary publication failure; rollback failure retains recovery material.",
+   "intake_variances": [
+    "Accepted T-01 fixes prior partial fixture leakage. Publication is not simultaneous multi-file visibility, crash durability or live-user usage proof; temporary and rollback cleanup errors can still propagate."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "T11 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

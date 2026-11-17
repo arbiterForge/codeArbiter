@@ -1,0 +1,161 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "site/scripts/capture-hook-proof.ts": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+  "site/scripts/capture/fixture.ts": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+  "site/scripts/capture/harness.ts": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+  "site/scripts/capture/normalize.ts": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+  "site/scripts/capture/py-runner.py": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX01"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX01",
+   "frozen_row_sha256": "8d98e9a1ab2af155ed9931ccde8c100943059763a9982b784e95c03461b4febe",
+   "clause_ids": [
+    "disposition:transitions:SX01:01",
+    "disposition:transitions:SX01:02",
+    "disposition:transitions:SX01:03",
+    "disposition:transitions:SX01:04",
+    "disposition:transitions:SX01:05",
+    "disposition:transitions:SX01:06",
+    "disposition:transitions:SX01:07"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/capture/fixture.ts",
+     "start": 1,
+     "end": 147,
+     "file_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+     "span_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 208,
+     "end": 239,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "9b69754c598cf90066cb6731e7ab14cdd22489c522618aa5821f68997f160119"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 209,
+     "end": 283,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "9bffb97d0ac0c9df57027f140c0dac52b2373508afd3ee5e0f912974120c5116"
+    },
+    {
+     "path": "site/scripts/capture/harness.ts",
+     "start": 101,
+     "end": 132,
+     "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+     "span_sha256": "36d9680b92cc0e2d2543f517e47f2e8063d3a9d24a421b60a12cb436aac259d2"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 239,
+     "end": 312,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "a1acc44b980c1d49053c5a1ad8e2ca26ede910a81877b8205e956a0e640ea077"
+    },
+    {
+     "path": "site/scripts/capture/py-runner.py",
+     "start": 41,
+     "end": 93,
+     "file_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+     "span_sha256": "26a67151d7d8046047e0ec8b9427b257a4eee57bce7e8bc65b30ed1f9bc74271"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 286,
+     "end": 331,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "3257f6092a278ab78697efab6dfed294dfc212723354b187a3b18f7eadd8360c"
+    },
+    {
+     "path": "site/scripts/capture/normalize.ts",
+     "start": 1,
+     "end": 119,
+     "file_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+     "span_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 1,
+     "end": 207,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "d605de8bc438fbb814bb1daeb34513f8c9157a495e4dc44912d79b7f67096cce"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 319,
+     "end": 350,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "a08fa8765b1daaa81c8b4d3744346e1b2a3ef3903ba530326a5557ed4c9816c7"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 329,
+     "end": 350,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "b2bc578e6393071fef0b8fa9f6e20dd7cef62cbbab41b68327217521463ac2f0"
+    },
+    {
+     "path": "site/scripts/capture-hook-proof.ts",
+     "start": 350,
+     "end": 368,
+     "file_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+     "span_sha256": "d7ea0a64f76f2cfd93792b284bd3d787af70d72d4ab7bd245413f5e16f7fe1e0"
+    },
+    {
+     "path": "site/scripts/capture/fixture.ts",
+     "start": 125,
+     "end": 147,
+     "file_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+     "span_sha256": "e952792e8817e2299a3f387a9961e476e21fda574d7e1edb84e012976c11396e"
+    }
+   ],
+   "semantic_assessment": "All literal source clauses inspected, including retained advanced edges. Named accepted changes and narrow controller/fixture/runtime limits remain explicit in the clause matrix; this machine proposal is source-only.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  }
+ ],
+ "scope": "Only named PLANNED source-conformance cells; all advanced evidence retained. SX06 machine/edge excluded for containment finding.",
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

@@ -8,6 +8,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Changed
 
+- Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.
 - Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
 - Require HTTPS outside the existing literal loopback exception; refuse external HTTP configuration and broker redirects before exposing their headers or body to the child (ADR-0049).
 - Major state-contract program (in progress on major/state-contracts; final notes at freeze).

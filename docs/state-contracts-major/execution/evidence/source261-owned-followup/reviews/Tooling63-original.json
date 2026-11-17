@@ -1,0 +1,384 @@
+{
+ "schema": "codearbiter.private-source-conformance-peer-review/1",
+ "verdict": "FINDINGS",
+ "reviewer": "/root/acceptance_security_review",
+ "independence": "Proposal authored by /root/ci_repair_review; reviewer did not author or mutate any proposal or canonical source.",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\delivery.json",
+  "sha256": "3bb27e3b6d8f1719ea7d4124dbfe786d5665cfae7a5888e652661bdcba3d9125",
+  "bytes": 15278
+ },
+ "findings": [
+  {
+   "id": "TOOLING-T10-06-PROSE-01",
+   "severity": "LOW",
+   "kind": "SOURCE_EVIDENCE_PROSE_MISMATCH",
+   "clause": "T10:06",
+   "packet_path": "clause-inspection.json",
+   "line": 6009,
+   "mirrors": [
+    {
+     "path": "authored-clause-data.json",
+     "line": 1908
+    },
+    {
+     "path": "clause-inspection.json",
+     "line": 6010
+    },
+    {
+     "path": "proofs/T10-preserved.json",
+     "line": 230
+    }
+   ],
+   "source_path": "tools/statusline-bench.py",
+   "source_lines": [
+    367,
+    381
+   ],
+   "observed_statement": "Current run mode rejects unknown or empty scenario selections before measurement",
+   "actual": "cmd_run converts omitted/empty args.scenario to an empty set, chooses all known scenarios via wanted or known, and runs that full population. It rejects unknown requested names. validate_comparison separately rejects empty measured scenario maps.",
+   "desired_statement": "Run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection and source/runtime metadata. Empty measured populations are rejected by comparison, not by that request-default branch.",
+   "required_change": "Correct only these four mirrored prose leaves plus dependent hashes/filemap/CAS seals in a fresh immutable successor. No production change or test replay needed. Preserve original sealed packet.",
+   "effect": "Evidence wording only; no source implementation finding. Existing63-cell CAS mappings and85 other clauses can be reused by exact joins."
+  }
+ ],
+ "coverage": {
+  "families": [
+   "C30",
+   "C31",
+   "C32",
+   "C34",
+   "C35",
+   "C36",
+   "T01",
+   "T02",
+   "T03",
+   "T04",
+   "T05",
+   "T06",
+   "T07",
+   "T08",
+   "T09",
+   "T10",
+   "T11"
+  ],
+  "literal_clauses": 86,
+  "source_assessments_pass": 85,
+  "prose_correction_required": [
+   "T10:06"
+  ],
+  "CAS_rows": 63,
+  "machines": 16,
+  "edges": 47,
+  "advanced_rows_retained": 39,
+  "held_machine": "T05",
+  "adoption_files": 20,
+  "proofs": 16,
+  "current_source_files": 39,
+  "pinned_baseline_files": 19,
+  "current_witnesses": 154,
+  "inherited_proof_hashes": 19
+ },
+ "joins": {
+  "result": "PASS",
+  "checks": [
+   "Private inventory hashes/byte lengths and delivery seal verified",
+   "All39 source raw Git bytes/OIDs at cb76 verified; physical content matched at inspection, including any LF normalization",
+   "All19 frozen owner snapshots match fd7 Git bytes",
+   "All86 literal frozen rows and154 exact source/span hashes verified",
+   "All63 expected ledger preimages/status/evidence and frozen-contract SHA verified; current selected rows matched at inspection",
+   "Each63 proposed row changes only status, appended source evidence and explanatory note",
+   "Each CAS proof hash, disposition ID, positive input hash and raw-reference hash joins exact filemap sources",
+   "All39 advanced objects/histories retained, T05 machine held, no task/scenario/runtime epoch or approval inferred"
+  ]
+ },
+ "reuse": {
+  "after_prose_correction": "Reuse85 unaffected clause judgments, all source oracles, frozen/current/input/advanced-row and CAS joins if actual bytes unchanged; recheck four mirrored leaves and dependent digest graph only.",
+  "inherited": "Existing19 retained proof copies/scopes remain historical. Their hashes were checked; no runtime evidence rerun, renewed or relabeled.",
+  "policy": "Reused previously consumed installed security/reviewer contract and complete policy; source-only review introduces no permission, secret, crypto, deploy or dependency waiver."
+ },
+ "scope_notes": [
+  "C30 bounds supplied review interval but creation alone is not freshness/authentication; packet reader has no byte/depth cap and proposal admits that analytical overstatement.",
+  "C31 preserves exact local staged two-leg/merge-parent admission and committed verified-export boundary; unkeyed digests/reviewer labels do not authenticate human review.",
+  "C32 accepted HW21/R04 keeps removal approval separate, public hidden-draft absence unknown, and tag identity distinct from mutable Release target label. Postpublication record I/O may still fail.",
+  "T02 truthful timeout-log qualification and unkeyed profile provenance; no achieved Go/platform metric claimed.",
+  "C36 separate readiness/completion deadlines, direct/stub versus real-spawn modes, cleanup uncertainty and historical timing populations stay distinct.",
+  "T03 default top-level outcomes and opt-in slash observations retain separate semantics; skips are explicit.",
+  "T04 exact workflow bytes/current committed attribution; counterfactual critical path is not hosted speedup.",
+  "T05 held manual persona hint remains unqualified, all advanced edges unchanged.",
+  "T08 material structure remains quality-unassessed and cannot aggregate PASS; real model execution requires separate authority.",
+  "T09 supplied-installation guard and inherited builder cone are conditional source facts, not installation provenance or measured improvement.",
+  "T10 original producer/population/harness repairs remain accepted; only request-default wording needs correction.",
+  "T11 requires successful nonempty renderer/PNG and owned publication with rollback limits; mock illustration is not live UI/account usage."
+ ],
+ "private_subjects": {
+  "adoption-filemap.json": {
+   "sha256": "877c255cfed7d5fbcdc0c2b5adb73d6e9b76bcaf03ee0576cbc59ceeb2acbe02",
+   "bytes": 7313
+  },
+  "author-limits.json": {
+   "sha256": "04302aa1525d0bcfe307fe1e8a0fb7dda2f85d1121b98078898bc5d31dabf034",
+   "bytes": 818
+  },
+  "authored-clause-data.json": {
+   "sha256": "d68af00a5dadbae30bf7434dc6b89358b44bd52d12757024d58c379d1cd82f61",
+   "bytes": 85891
+  },
+  "cas-proposal.json": {
+   "sha256": "e399a3157c25aa499c7eae77267e58bf28cf7516d586c7d77fbca54e569443c2",
+   "bytes": 145690
+  },
+  "clause-inspection.json": {
+   "sha256": "a4b165b714607fc3364dd7dc958d021163f53354b1104f8f0b5a121ef2d1857f",
+   "bytes": 292478
+  },
+  "inherited/000-C36-two-tested.json": {
+   "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+   "bytes": 9932
+  },
+  "inherited/001-parity-instruction-preserved.json": {
+   "sha256": "1a8e3042be8718d6fffe637efd80ff7d436a7117bb81ea0b9e434d81d9922817",
+   "bytes": 2272
+  },
+  "inherited/002-preserved-source-contract.json": {
+   "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+   "bytes": 3251
+  },
+  "inherited/003-ci20-replay.json": {
+   "sha256": "e05fc8e55ba02067e780d430480a6878329735d32c7cc2c631149210dd5da860",
+   "bytes": 2986
+  },
+  "inherited/004-reader-fixtures.json": {
+   "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+   "bytes": 2706
+  },
+  "inherited/005-draft-example-driver-preserved.json": {
+   "sha256": "c16f73329b372423a2769c2a1b922e47e3c59fd84673f6b5590747fa5900b59c",
+   "bytes": 4900
+  },
+  "inherited/006-parity-fixture-git-preserved.json": {
+   "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5",
+   "bytes": 2381
+  },
+  "inherited/007-release-provenance-scope-preserved.json": {
+   "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+   "bytes": 6688
+  },
+  "inherited/008-tested.json": {
+   "sha256": "529fd6065616ceff9bf0e3209ef9f48f183460f5ccd4be77d2db843fb713ba41",
+   "bytes": 48631
+  },
+  "inherited/009-source-old60-preserved.json": {
+   "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0",
+   "bytes": 16810
+  },
+  "inherited/010-source-packaging27.json": {
+   "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+   "bytes": 8291
+  },
+  "inherited/011-preserved.json": {
+   "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+   "bytes": 18890
+  },
+  "inherited/012-impact-planner-preserved.json": {
+   "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+   "bytes": 6983
+  },
+  "inherited/013-knowledge-measurement-preserved.json": {
+   "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd",
+   "bytes": 6018
+  },
+  "inherited/014-artifact-coverage-preserved.json": {
+   "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+   "bytes": 9518
+  },
+  "inherited/015-audit-exceptions-preserved.json": {
+   "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575",
+   "bytes": 6203
+  },
+  "inherited/016-schema-io-ordering-preserved.json": {
+   "sha256": "be7b695e5643ba4066c4a5d89269c32bc277149eb8713fb581e0d5743eb1f92d",
+   "bytes": 5659
+  },
+  "inherited/017-ci20-workflow-identity.json": {
+   "sha256": "d2b6ecb2e4cd7f71ba5f3eb9e72e7db947dcf9865ad28a6d0af28ae89071db3c",
+   "bytes": 2331
+  },
+  "inherited/018-measurement-verdict-controls.json": {
+   "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8",
+   "bytes": 3192
+  },
+  "inherited-evidence-inventory.json": {
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507",
+   "bytes": 77420
+  },
+  "owner-baseline-current.diff": {
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301",
+   "bytes": 162578
+  },
+  "proofs/C30-preserved.json": {
+   "sha256": "4df2678419a010758fd74df66a9237f2977e7866b1535093b26145e657764231",
+   "bytes": 12311
+  },
+  "proofs/C31-preserved.json": {
+   "sha256": "9497e3b2eb1794870024f9e1ca553552510ab71c74bb2db8481ce19827de0188",
+   "bytes": 12989
+  },
+  "proofs/C32-preserved.json": {
+   "sha256": "0431e309f084cca384e94c2627f3319952be82d26218677438454bc68c667f70",
+   "bytes": 20525
+  },
+  "proofs/C34-preserved.json": {
+   "sha256": "8f2880f1570aa333c662e6a117b10c345be8912a6822e51d76b7c81ec2b72cb1",
+   "bytes": 5639
+  },
+  "proofs/C35-preserved.json": {
+   "sha256": "61e8bc00f85e81a9b17ed6b1d94e8ee6f9172f86057065d57e112005278309a5",
+   "bytes": 4687
+  },
+  "proofs/C36-preserved.json": {
+   "sha256": "c4afd0911b84ae2f28f87a95aa1228530d0b8a7aa02c81c25a123af109eec31c",
+   "bytes": 11073
+  },
+  "proofs/T01-preserved.json": {
+   "sha256": "e8f338a68d2b6342104d6aad522617987131b53e1af63dcee50104e74e398dce",
+   "bytes": 5429
+  },
+  "proofs/T02-preserved.json": {
+   "sha256": "951eb905ad228fc7f216f44907bba7462ff370ee9b0ceed0987d4912e71914f4",
+   "bytes": 7683
+  },
+  "proofs/T03-preserved.json": {
+   "sha256": "91a7a4885a15f88a88fcfe0680d4e1ec57d2dcc5b15acf896d052bdcf7482391",
+   "bytes": 14209
+  },
+  "proofs/T04-preserved.json": {
+   "sha256": "2faf332819dd682a4de689842b5f76d425450b21da56b13d8c806b0f1740059e",
+   "bytes": 11029
+  },
+  "proofs/T06-preserved.json": {
+   "sha256": "e91363a611c11d82435298b3b274b613f132e5fb9afdd3164360998ee1e1bf5a",
+   "bytes": 5128
+  },
+  "proofs/T07-preserved.json": {
+   "sha256": "ff9584f46463509cd80451dda2b88c3d54d4e18863f8dff95bd41f013f9af581",
+   "bytes": 6344
+  },
+  "proofs/T08-preserved.json": {
+   "sha256": "ca14510debfc538711022cd95e81e1d2231526fba83dac1fc6a63c6c93f04512",
+   "bytes": 11285
+  },
+  "proofs/T09-preserved.json": {
+   "sha256": "22891d6babeb2d76a4c73c381a84f61a54bfd8d6bbaac0f2da4a006dbac72e81",
+   "bytes": 4848
+  },
+  "proofs/T10-preserved.json": {
+   "sha256": "da84aae23ee517f6230f97962ef39d7ffd3514021fbbf28e0d0d7292951dc259",
+   "bytes": 12988
+  },
+  "proofs/T11-preserved.json": {
+   "sha256": "6afe0e04820db09f14e4261d29c35e89f59ad8c132b94ff9f6d9d40e7b357845",
+   "bytes": 10525
+  },
+  "selected-machines.json": {
+   "sha256": "87491bdbaf5e4229280c4c2bdabbac5b6d8257378bf6450ea5971b48a0dfab16",
+   "bytes": 18718
+  },
+  "selected-transitions.json": {
+   "sha256": "9421ba3efa838aae81414e648a40a3ea531ec73a745398624ec4d53544426043",
+   "bytes": 110211
+  },
+  "source-bindings-before.json": {
+   "sha256": "301638c8786022717c921b64a30c1dffbbd388e94246e16d62e856a3af0bb3c6",
+   "bytes": 11644
+  },
+  "source-bindings-expanded-before.json": {
+   "sha256": "ee1304050b8267b9fa03b4eac16af2e6c496ffa3f72108fcb207ecce327d6037",
+   "bytes": 16055
+  },
+  "source-bindings.json": {
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa",
+   "bytes": 23865
+  },
+  "source-config.json": {
+   "sha256": "be83a15fcea484e75d6ba29e550d3f6c3c684bb161472174a2532f17fe17912a",
+   "bytes": 4922
+  },
+  "source-context.json": {
+   "sha256": "a7a071ef9d356dc843ba983bdcc7e3c72ca9b4ee9588b2ec28b92d24f1bc2f9b",
+   "bytes": 14833
+  },
+  "source-input.txt": {
+   "sha256": "86a3f679c3ad9e84ce95d0eb9a73fb66d21e22accecab4651d057272e98e42e2",
+   "bytes": 19901
+  },
+  "summary.json": {
+   "sha256": "9bab99b03c69e11547420dcf8ae60570f7863614785da3ae3447162933f10cd3",
+   "bytes": 1328
+  },
+  "validation.json": {
+   "sha256": "3d2bb54c9e09c96c30d37eee965389f58ff3aa9978aa0fd2836d56b1c053f6d6",
+   "bytes": 452
+  }
+ },
+ "review_inputs": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\delivery.json",
+   "sha256": "3bb27e3b6d8f1719ea7d4124dbfe786d5665cfae7a5888e652661bdcba3d9125",
+   "bytes": 15278
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\clause-inspection.json",
+   "sha256": "a4b165b714607fc3364dd7dc958d021163f53354b1104f8f0b5a121ef2d1857f",
+   "bytes": 292478
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa",
+   "bytes": 23865
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\cas-proposal.json",
+   "sha256": "e399a3157c25aa499c7eae77267e58bf28cf7516d586c7d77fbca54e569443c2",
+   "bytes": 145690
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\adoption-filemap.json",
+   "sha256": "877c255cfed7d5fbcdc0c2b5adb73d6e9b76bcaf03ee0576cbc59ceeb2acbe02",
+   "bytes": 7313
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507",
+   "bytes": 77420
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301",
+   "bytes": 162578
+  }
+ ],
+ "own_proofs": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-tooling63-independent-review-45x_czd7\\input-delivery.json",
+   "sha256": "3bb27e3b6d8f1719ea7d4124dbfe786d5665cfae7a5888e652661bdcba3d9125",
+   "bytes": 15278
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-tooling63-independent-review-45x_czd7\\source-verification.json",
+   "sha256": "ffe6a9c2c03750783eae924a3415e1dbd7757dd42559fe6c4dcf2e1c4cf5f8b7",
+   "bytes": 14011
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-tooling63-independent-review-45x_czd7\\joins.json",
+   "sha256": "ba109287250de51722a7dc1ee7ab37795019908f8c9ca3e19e4d6eebdfd854b6",
+   "bytes": 647
+  }
+ ],
+ "limits": [
+  "Source-only inspection. No test, runtime/benchmark/native/Go/Node/browser/provider/install/network/API/strict-owner execution. No canonical/index/ref/marker/ledger writes.",
+  "Review bounds this exact cb76 proposal and its inspected source bytes. Root HEAD advancement does not restamp these proofs or qualify current runtime.",
+  "This is one independent review with a LOW evidence finding. Root owns successor adoption and original strict-owner admission; no index OIDs or staged-candidate approval invented."
+ ]
+}

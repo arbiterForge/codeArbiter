@@ -1,0 +1,217 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+  ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+  ".github/scripts/release_target.py": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+  ".github/scripts/tag_publication_receipt.py": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+  "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C17"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C17",
+   "frozen_row_sha256": "c44d9ea6a92618351d828a89969f7b87e5a7c421496e9292684c94796ee6577d",
+   "clause_ids": [
+    "disposition:transitions:C17:01",
+    "disposition:transitions:C17:02",
+    "disposition:transitions:C17:03",
+    "disposition:transitions:C17:04",
+    "disposition:transitions:C17:05",
+    "disposition:transitions:C17:06",
+    "disposition:transitions:C17:07",
+    "disposition:transitions:C17:08",
+    "disposition:transitions:C17:09",
+    "disposition:transitions:C17:10",
+    "disposition:transitions:C17:11"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 155,
+     "end": 238,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "d8f229a04fee9e95eaf2501eff18b7afa546d3ba47f40c4cb8bffdde47476416"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 281,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "a6b7184cc89a34158a3600f700360aeda31ff0aadd7742600df69ea0806a7e61"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 133,
+     "end": 222,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8c3592253f7932774fcc32b078e006534246a066f7f5d170487c5b66c5208981"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 174,
+     "end": 196,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a6727afd22d18cdc25520a2a36c5235ae67b7354ecef44af8466c1af3c54a047"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 288,
+     "end": 301,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a6afbc02e55b8ed8044e2b022689bc6299b6a9b9be1e3f1f1d6efd30c40e06e2"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 303,
+     "end": 340,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "1e8b566f3675eaa54fee5adec6f049f2fe604f20dba13794c0b9175538413452"
+    },
+    {
+     "path": ".github/scripts/tag_publication_receipt.py",
+     "start": 137,
+     "end": 170,
+     "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+     "span_sha256": "f17657b8597ae4e7dfeaf341bea75c4782a432d8cef5a8dfb029360f763539f6"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 342,
+     "end": 358,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "fa7de73866265da50043d8ce7ba45c17c6b21abf040d4197eb11b101725392f4"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 143,
+     "end": 152,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "8596753120ef2edde033e10370cdc2e41612c4b5bfcc5a01fb4bc7b60c597b5e"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 360,
+     "end": 383,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "463030119de0e4bd2ca093f6d9901c7e2e4cfff50227be9e495c5a6360aea203"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 155,
+     "end": 183,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "6a31eb6af2e84cb163c57e0105c8fb3fbac733fda7257de6420f7255e7bd6c01"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 385,
+     "end": 451,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "3b40b1f9f85c450f895ca5ffbe1ca1bca5e84290cc072bb52c7684b7e67ed4dc"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 224,
+     "end": 251,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "217437a769f117e1ad82c4db0466d623eb4d32df7975cbb8d47dee509f045ee3"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 273,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "ecb7222a6e93ae35bb0f3349bc10bbbb1bf5e314fb23591c6492b4866aae4b88"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 453,
+     "end": 505,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8fadb1333660a3564af67b5e84fc4f0e7aa3792f603908f144a63d4f93311e40"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 507,
+     "end": 526,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "c9c43d74152c72034540f9ca9d77b94a73636cc1f1f447d9d06b22dad8432fda"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 186,
+     "end": 238,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "faf383657492895ff8f2a51da1a3c884ccc058b76a2580d2fdcaa7331449aa62"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 528,
+     "end": 573,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "43bbbb15205a0bb58bb02ac5235fe562eb39252283f007d35f83fd4e9889c7d5"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 302,
+     "end": 311,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "5f25c28cec7c2c37b8b5a5d70ffa2b984c2a8e7dae063c2b22a2e44d72726848"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 551,
+     "end": 573,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "0b460572530cfdac386eb5a30c04d41779025188b28f9dd9ad3a66a0b21eb873"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 186,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "1c4be3c459bc5b426967e8a8ea46bbf3f0599ae175593483baf784b5a7ee97f3"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

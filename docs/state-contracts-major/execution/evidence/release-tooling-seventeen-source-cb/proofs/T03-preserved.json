@@ -1,0 +1,273 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+ },
+ "disposition_ids": [
+  "disposition:machines:T03",
+  "disposition:transitions:T03:01",
+  "disposition:transitions:T03:02",
+  "disposition:transitions:T03:03",
+  "disposition:transitions:T03:04",
+  "disposition:transitions:T03:05",
+  "disposition:transitions:T03:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:T03",
+   "frozen_row_sha256": "710b503ffa411fd66320e0d85e958209a66566d9d630a790419a46173fa57fdc",
+   "clause_ids": [
+    "disposition:transitions:T03:01",
+    "disposition:transitions:T03:02",
+    "disposition:transitions:T03:03",
+    "disposition:transitions:T03:04",
+    "disposition:transitions:T03:05",
+    "disposition:transitions:T03:06"
+   ],
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 46,
+     "end": 51,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "bddb85ad7be264d70ae0c560d1fabde54b7a1b2cf7b624fefaebdd8cb244e33e"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 54,
+     "end": 65,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "daa28aa686e8d882aa0831c5268ce921b6da75f4591e02b90d383b8ee256306a"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 147,
+     "end": 262,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "38d8dbac1f701e5457d8276940571c4ea52a87a13888e5ec181744828b971127"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 68,
+     "end": 72,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "5614affd26a06373626251c5a259e88ca121780fcfd6e5f171d60357a9afe747"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 75,
+     "end": 86,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "61b95c4cf308e111aad1f941780d67dd69930b62a34df09aa0832e9fc7f9cfbd"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 93,
+     "end": 135,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "1b4f955cf5f0f58ccf997128d1a2c99f6b50e19326856da5e72537fea59bccef"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 59,
+     "end": 87,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+     "span_sha256": "ab585c53cb43a0269970a1f875b3ecb578b4484da64ffbddef6379f661f3ac89"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "No stronger finite-positive duration contract is inferred beyond the actual accepted duration grammar.",
+    "This subprocess.run timeout settles the direct child, not an asserted descendant-tree containment guarantee.",
+    "Native Q02 additive slash retention is opt-in. Default top-level-only API is not silently reinterpreted as complete child coverage.",
+    "Cleanup remains ordinary temporary-file cleanup, not proof against process death or unknown descendant handles."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T03:01",
+   "frozen_row_sha256": "cc1d73c659a2769a4475b94cf55e9d13f5d82febb84c4bd8c5e853ae0013dea9",
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 46,
+     "end": 51,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "bddb85ad7be264d70ae0c560d1fabde54b7a1b2cf7b624fefaebdd8cb244e33e"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 54,
+     "end": 65,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "daa28aa686e8d882aa0831c5268ce921b6da75f4591e02b90d383b8ee256306a"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 147,
+     "end": 262,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "38d8dbac1f701e5457d8276940571c4ea52a87a13888e5ec181744828b971127"
+    }
+   ],
+   "semantic_assessment": "Jobs are constrained to 1..64, hints and Go duration syntax are validated, package enumeration must succeed. Packages with tests compile once into the owned temporary directory with an eighteen-hundred-second build bound; missing binary/compile/parse failure stops.",
+   "intake_variances": [
+    "No stronger finite-positive duration contract is inferred beyond the actual accepted duration grammar."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T03:02",
+   "frozen_row_sha256": "cf3ee30453eb01ee08c835675590de84252a8d4f012fb3dce19765ce0e9fc21a",
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 68,
+     "end": 72,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "5614affd26a06373626251c5a259e88ca121780fcfd6e5f171d60357a9afe747"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 75,
+     "end": 86,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "61b95c4cf308e111aad1f941780d67dd69930b62a34df09aa0832e9fc7f9cfbd"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 147,
+     "end": 262,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "38d8dbac1f701e5457d8276940571c4ea52a87a13888e5ec181744828b971127"
+    }
+   ],
+   "semantic_assessment": "Each compiled binary lists actual Test/Example/Fuzz target names under a six-hundred-second bound. Chunks preserve exact names; timing hints affect ordering/balance only and cannot remove membership. Listing/duration failure refuses.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T03:03",
+   "frozen_row_sha256": "229ea202770e4cc0ed5996054c5d3816ab97707c85e4501631702fad6a0ebff9",
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 93,
+     "end": 135,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "1b4f955cf5f0f58ccf997128d1a2c99f6b50e19326856da5e72537fea59bccef"
+    },
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 147,
+     "end": 262,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "38d8dbac1f701e5457d8276940571c4ea52a87a13888e5ec181744828b971127"
+    }
+   ],
+   "semantic_assessment": "At most the declared worker count runs exact anchored target patterns. Direct test binary count=1 uses the requested Go timeout plus one hundred twenty seconds outer margin and test2json conversion. Outer timeout preserves captured partial streams and marks code=-1.",
+   "intake_variances": [
+    "This subprocess.run timeout settles the direct child, not an asserted descendant-tree containment guarantee."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T03:04",
+   "frozen_row_sha256": "2ea04105daaa9eb3acc2073f1d1b4c8f98676eb58dcb207a762b46ed00d0e8c7",
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 93,
+     "end": 135,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "1b4f955cf5f0f58ccf997128d1a2c99f6b50e19326856da5e72537fea59bccef"
+    }
+   ],
+   "semantic_assessment": "Default collection records top-level pass/fail/skip only; repeated terminal events become repeated and stray/fail/missing names refuse acceptance. Current opt-in observation additionally retains bounded slash-child terminals, detects duplicates, and rejects failed children.",
+   "intake_variances": [
+    "Native Q02 additive slash retention is opt-in. Default top-level-only API is not silently reinterpreted as complete child coverage."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T03:05",
+   "frozen_row_sha256": "73244f5d399bcbf15aed0312029678b0237b55af62c7bb1242a14d160d6801db",
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 147,
+     "end": 262,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "38d8dbac1f701e5457d8276940571c4ea52a87a13888e5ec181744828b971127"
+    },
+    {
+     "path": ".github/scripts/_contextverificationlib.py",
+     "start": 59,
+     "end": 87,
+     "file_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+     "span_sha256": "ab585c53cb43a0269970a1f875b3ecb578b4484da64ffbddef6379f661f3ac89"
+    }
+   ],
+   "semantic_assessment": "Global join requires every expected top-level target, zero chunk return codes, no stray events and only pass/skip outcomes. Counts report skipped targets explicitly. Opt-in observation binds source before/after and raw named children; neither default group completeness nor a skip proves substantive body execution.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T03:06",
+   "frozen_row_sha256": "7f088666979462324f023e6f18e9b867434a51f0d157d323dd0064c77e167920",
+   "witnesses": [
+    {
+     "path": "tools/go_test_parallel.py",
+     "start": 147,
+     "end": 262,
+     "file_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+     "span_sha256": "38d8dbac1f701e5457d8276940571c4ea52a87a13888e5ec181744828b971127"
+    }
+   ],
+   "semantic_assessment": "Any failed/repeated/stray/missing outcome or process failure returns one, prints bounded failed output/missing names, and exits the TemporaryDirectory scope. Partial successes are not reused as a complete run; cause correction precedes retry.",
+   "intake_variances": [
+    "Cleanup remains ordinary temporary-file cleanup, not proof against process death or unknown descendant handles."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "T03 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

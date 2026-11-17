@@ -1,0 +1,138 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review: literal100clause/current-source/callee/pinned-baseline inspection; no execution or independent-self-review"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+  "core/artifacts/internal/operations/farm_projection.go": "1572ede5a88343cefb1cfc87cdc1a5a2fb5de3ae0eb7fb2a266846e39751114f",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+  "plugins/ca-pi/tools/src/farm.ts": "f3d58821846db2eb235571bda19485199c70ea4d21b8d162e0a976308d7f14fa",
+  "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+  "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+  "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+  "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+  "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+  "plugins/ca/tools/farm.ts": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+  "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+  "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+ },
+ "disposition_ids": [
+  "disposition:machines:S32"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/farm-twelve-source-ea9/source-bindings.json",
+   "sha256": "f1c80dc6fb32d804476cb4c08c0300f1c1a558a663ff0966a7d528ebd1673ae3"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/farm-twelve-source-ea9/clause-inspection.json",
+   "sha256": "17c0b4ad1a0a2a788ca694ae5ef47a5d2edf7dad6a27c07482b8677d1475b1aa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/farm-twelve-source-ea9/inherited-evidence-inventory.json",
+   "sha256": "19672882618a89df5e884b32bfc17348014e7b6210d33ff6ba4e2839f9caf7c7"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S32",
+   "frozen_row_sha256": "cab7b0d9abb641d1c062f5af940c88b820d5cd9b08bb4193cf78254c710a7b13",
+   "clause_ids": [
+    "disposition:transitions:S32:01",
+    "disposition:transitions:S32:02",
+    "disposition:transitions:S32:03",
+    "disposition:transitions:S32:04",
+    "disposition:transitions:S32:05",
+    "disposition:transitions:S32:06",
+    "disposition:transitions:S32:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3295,
+     "end": 3300,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "3282f36e5e7993c42486d538cd278d935e846a21a3fd96755a7208c9d4e56ba6"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3208,
+     "end": 3274,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "ee24b214e1433bf27dd26b9088e5af615de9fc6564a08359cf7a5a832e790789"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3313,
+     "end": 3316,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "00258c9821972682bea16fc457b15903e3ae0899534b19ed2b28e66cc4516333"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3321,
+     "end": 3337,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "c40df6a17fd4e84d09fd5a0f0826098d0075f3d90e7455fcf9aad3e4292085ff"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 2760,
+     "end": 2767,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "f3e36b21e80d629860a613affd574073ae12acf24fff5d7614830d6a359480bc"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3338,
+     "end": 3348,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "6ceceea18770c1f69c80e5fbe3014f291590c0dd0282b9622ea86d06c9a9d123"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3350,
+     "end": 3353,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "a262286d72a97674448bed58159004bac9a00916a58b1c2f6dda7349861b5776"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3356,
+     "end": 3367,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "1ce128e236a49d00896f68cb8fb2fa20e072a4e111da384575d75c03014a434a"
+    },
+    {
+     "path": "plugins/ca/tools/farm.ts",
+     "start": 3353,
+     "end": 3367,
+     "file_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+     "span_sha256": "e60ca2535f16e11f9d1e2c1c4c82aaa2a565c4cbf1006dc8f9b2fc05423ac3ba"
+    }
+   ],
+   "semantic_assessment": "All literal guards/effects/retries are mapped individually in the shared inspection, with named accepted changes and explicit pinned/current analytical exceptions. Existing advanced rows remain historical unchanged records, not newly executed or universally requalified runtime proof.",
+   "limits": "Reasoned literal pinned/current source conformance only. No farm/provider/model/Claude execution, paid/network/API operation, package/native/SDK/Docker build, installed-host/OS/TUI/human qualification or new test run."
+  }
+ ],
+ "scope": "Source-only machine/literal conformance with exact exceptions; no runtime/task qualification.",
+ "limits": [
+  "Reasoned literal pinned/current source conformance only. No farm/provider/model/Claude execution, paid/network/API operation, package/native/SDK/Docker build, installed-host/OS/TUI/human qualification or new test run.",
+  "Actual PROGRAM/accepted tasks govern analytical intake overstatements; every material exception or named replacement is explicit. No stronger unsupported fatality, body/output cap, deadline, rollback or containment guarantee is invented.",
+  "Only23 actual PLANNED cells are proposed:12 machines and11 edges. All89 advanced edges and complete prior histories/runtime epochs are retained exactly; no task/scenario/main/publication promotion.",
+  "Source bytes and row hashes establish cooperative identity/integrity, not execution authority, external authenticity or hostile same-user containment. Root alone owns independent review, prospective strict admission and canonical adoption.",
+  "No observation here that adjacent farm.js exists/fresh/matches TS or that any installed native artifact admits this plan. No typed binding/valid hash is fresh user consent or ordinary progress permission."
+ ]
+}

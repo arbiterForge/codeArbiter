@@ -1,0 +1,213 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/ci20_baseline.py": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+  "tools/ci20_inventory.py": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a"
+ },
+ "disposition_ids": [
+  "disposition:machines:T04",
+  "disposition:transitions:T04:01",
+  "disposition:transitions:T04:02",
+  "disposition:transitions:T04:04",
+  "disposition:transitions:T04:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:T04",
+   "frozen_row_sha256": "fd9e05aea9651c0ef3a9fcea967c206518a67d67a3fa40419ec142a8344e572e",
+   "clause_ids": [
+    "disposition:transitions:T04:01",
+    "disposition:transitions:T04:02",
+    "disposition:transitions:T04:03",
+    "disposition:transitions:T04:04",
+    "disposition:transitions:T04:05",
+    "disposition:transitions:T04:06"
+   ],
+   "witnesses": [
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 116,
+     "end": 188,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "812e0f479bb6776e660cdcb5c187aa350072d324448a7be6987aaeedd00cdb08"
+    },
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 191,
+     "end": 200,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "0e8928f3b3b772a7d1ea8ce58ccbe2b914210c4a479cf7852240df531c04b484"
+    },
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 54,
+     "end": 65,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "303de4223ee61c6fd5cfe54fa717f571adad84141596007cba24157b598f3243"
+    },
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 80,
+     "end": 113,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "2c6417f6032c9b3ab2dfb1e698330a5b73f66338aefccf4ccc492dce0b275eae"
+    },
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 203,
+     "end": 220,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "c112d1af72abd1178a027713606eae0a6eff1b0f3ac401cb20f896d2c648c873"
+    },
+    {
+     "path": "tools/ci20_inventory.py",
+     "start": 17,
+     "end": 110,
+     "file_sha256": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+     "span_sha256": "42ba750fbdf1d1ab77ca5c397a28b9f08d1edc4aa99360e98c1f65b10d23dbd7"
+    },
+    {
+     "path": "tools/ci20_inventory.py",
+     "start": 48,
+     "end": 110,
+     "file_sha256": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+     "span_sha256": "e87deeb88ef3566e7bc8a24a34af41a2e73fd6568c3a7383107036f6fdb485fb"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "Accepted T-01 adds exact workflow byte binding; completed is not necessarily successful.",
+    "The inventory writer remains exists-check plus write_text, not atomic exclusive create; the baseline collector has a different exclusive writer.",
+    "Accepted T-01 fixes the frozen attribution defect. The old TESTED observation remains historical and is not a claim that the old defective effect is preserved."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T04:01",
+   "frozen_row_sha256": "ced40cb3198fa3852a0c03da1990989ae60336e5ecff0c8f557b50ec184c1534",
+   "witnesses": [
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 116,
+     "end": 188,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "812e0f479bb6776e660cdcb5c187aa350072d324448a7be6987aaeedd00cdb08"
+    },
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 191,
+     "end": 200,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "0e8928f3b3b772a7d1ea8ce58ccbe2b914210c4a479cf7852240df531c04b484"
+    }
+   ],
+   "semantic_assessment": "Historical collection requires a full checkout HEAD, matching run.head_sha and completed run status. Current bound_workflow_bytes requires literal workflow bytes equal the recorded commit before parsing/hash attribution. Pending, wrong source, malformed or dirty workflow refuses.",
+   "intake_variances": [
+    "Accepted T-01 adds exact workflow byte binding; completed is not necessarily successful."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T04:02",
+   "frozen_row_sha256": "16037966788cd832d98b3bec380639bbce8effaa1dda87c55c8a9bb62a4a0973",
+   "witnesses": [
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 116,
+     "end": 188,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "812e0f479bb6776e660cdcb5c187aa350072d324448a7be6987aaeedd00cdb08"
+    },
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 54,
+     "end": 65,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "303de4223ee61c6fd5cfe54fa717f571adad84141596007cba24157b598f3243"
+    }
+   ],
+   "semantic_assessment": "Jobs are paginated with a one-hundred-page bound and exact total_count/unique IDs; each must map to exactly one workflow group. Every conclusion, step and timing is retained. Missing/duplicate/ambiguous population refuses rather than trimming evidence.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T04:04",
+   "frozen_row_sha256": "64d4c2ed7113ab5e34c147b7e4e52cb0adc3c4de36b140675d06955a1c5206d3",
+   "witnesses": [
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 203,
+     "end": 220,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "c112d1af72abd1178a027713606eae0a6eff1b0f3ac401cb20f896d2c648c873"
+    }
+   ],
+   "semantic_assessment": "A new output path is exclusive-created for JSON carrying actual trigger-to-last-job timing, source/workflow identity and caveats. Existing output refuses. Non-success completed runs remain representable with all conclusions visible.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:T04:05",
+   "frozen_row_sha256": "be6cfd588895882dbba6017a2c52e038b0bbbd4d03848a41a7ddbafd3d2c6c02",
+   "witnesses": [
+    {
+     "path": "tools/ci20_baseline.py",
+     "start": 191,
+     "end": 200,
+     "file_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+     "span_sha256": "0e8928f3b3b772a7d1ea8ce58ccbe2b914210c4a479cf7852240df531c04b484"
+    },
+    {
+     "path": "tools/ci20_inventory.py",
+     "start": 17,
+     "end": 110,
+     "file_sha256": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+     "span_sha256": "42ba750fbdf1d1ab77ca5c397a28b9f08d1edc4aa99360e98c1f65b10d23dbd7"
+    }
+   ],
+   "semantic_assessment": "The inventory requires baseline source==checkout HEAD and live branch protection containing required merge-readiness. It reads exact committed workflow bytes plus actions/commands/counts and other workflow hashes, then writes its inventory.",
+   "intake_variances": [
+    "The inventory writer remains exists-check plus write_text, not atomic exclusive create; the baseline collector has a different exclusive writer."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "T04 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

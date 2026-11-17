@@ -1,0 +1,83 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "site/scripts/statusline-capture.ts": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX07",
+   "frozen_row_sha256": "274ca604abe4871f989038c57f7aef13eba82d8f5aa5eea7173de07fcd6cfb86",
+   "clause_ids": [
+    "disposition:transitions:SX07:01",
+    "disposition:transitions:SX07:02",
+    "disposition:transitions:SX07:03"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/statusline-capture.ts",
+     "start": 1,
+     "end": 18,
+     "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+     "span_sha256": "b187bcbb6159bad7b826ed8f2e28817ef766ec9bf5be43739b71a8d9ee229052"
+    },
+    {
+     "path": "site/scripts/statusline-capture.ts",
+     "start": 19,
+     "end": 39,
+     "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+     "span_sha256": "1d22014e8276e6957aad592653cc47bebfbab958a921dcf84481befd66dc0bcc"
+    },
+    {
+     "path": "site/scripts/statusline-capture.ts",
+     "start": 40,
+     "end": 53,
+     "file_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+     "span_sha256": "785e55325318bad4cddd2bccb4dbcda74151b8a796beeb86f1d7186560e0c72b"
+    }
+   ],
+   "semantic_assessment": "All literal source clauses inspected, including retained advanced edges. Named accepted changes and narrow controller/fixture/runtime limits remain explicit in the clause matrix; this machine proposal is source-only.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  }
+ ],
+ "scope": "Only named PLANNED source-conformance cells; all advanced evidence retained. SX06 machine/edge excluded for containment finding.",
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

@@ -1,0 +1,101 @@
+{
+ "result": "PASS_PRIVATE_SOURCE_PREVIEW",
+ "proposals": [
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fourteen-source-ea9-u361eouy\\delivery.json",
+   "sha256": "96f407282234de71ed35e1af10108d864598237f77c86d61969fafd082ff9736",
+   "cells": 35,
+   "skipped_old_epoch_cells": [
+    "disposition:machines:C01",
+    "disposition:machines:C02",
+    "disposition:machines:C04",
+    "disposition:machines:C13",
+    "disposition:machines:C15",
+    "disposition:transitions:C01:01",
+    "disposition:transitions:C01:02",
+    "disposition:transitions:C01:03",
+    "disposition:transitions:C01:04",
+    "disposition:transitions:C01:05",
+    "disposition:transitions:C02:01",
+    "disposition:transitions:C02:02",
+    "disposition:transitions:C02:03",
+    "disposition:transitions:C02:04",
+    "disposition:transitions:C04:01",
+    "disposition:transitions:C04:02",
+    "disposition:transitions:C04:04",
+    "disposition:transitions:C04:05",
+    "disposition:transitions:C04:06",
+    "disposition:transitions:C04:07",
+    "disposition:transitions:C13:01",
+    "disposition:transitions:C13:02",
+    "disposition:transitions:C13:03",
+    "disposition:transitions:C13:04",
+    "disposition:transitions:C15:01",
+    "disposition:transitions:C15:02",
+    "disposition:transitions:C15:03"
+   ],
+   "skip_reason": "Only these27 proof inputs changed with three reviewed optional Pi argument replacements. Reuse35 unchanged epoch proofs;27 replacement source-only proofs revalidate byte-identical owning spans at cb. Original packet/history untouched."
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release27-current-source-pfy5ra21\\delivery.json",
+   "sha256": "08774024715f1d85e576b48129f88eba1c53ef255f4c69802d89f83810004250",
+   "cells": 27,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\delivery.json",
+   "sha256": "a28b30449b653e958f13c66594148ac78a3b9f2961a282e0e20fdfce7ef7d0e2",
+   "cells": 23,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\delivery.json",
+   "sha256": "38c9ef449f2c2cbdbc695448868cd235353e025c1d8f985041ba5bc0465720e1",
+   "cells": 47,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\delivery.json",
+   "sha256": "08bb1f5af417b9f69b2939c167dd1abe72234a06842b5574a6a7b00c05145700",
+   "cells": 33,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-tooling63-prose-successor-o9af06pz\\delivery.json",
+   "sha256": "f3f1926f1c6464aafb187c8c2663dac7483bbf4613664374a466b500c2f7a624",
+   "cells": 63,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\delivery.json",
+   "sha256": "1d04cbcbac7b37e9c8b04b257b93eeebfbf02a6666bc5f56280b2c1f046c4992",
+   "cells": 18,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-healthy15-mechanical-kjr_wsbo\\delivery.json",
+   "sha256": "ba68c34d8db849bd6e7e08dba9045486d032b6843de71b3c95087c979825e37f",
+   "cells": 15,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  }
+ ],
+ "adoption_sha256": "6cf0ac341bdebee1a111c46f45ee8f3381a20f00cb3713acbc99611d5ed7b374",
+ "strict_projection_sha256": "2a3f07e751794e901a4700de2ac9ad2e683d3ba96e7a2630f0da4039a97ce92c",
+ "cells": 261,
+ "records": 520,
+ "planned": {
+  "findings": 49,
+  "machines": 50,
+  "transitions": 223,
+  "total": 322
+ },
+ "root_state_unchanged": true,
+ "full_owner_called": false
+}

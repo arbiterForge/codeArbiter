@@ -1,0 +1,143 @@
+{
+ "schema": "codearbiter.private-independent-source-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "reviewer": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "observed_head": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "candidate": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\delivery.json",
+  "sha256": "1d04cbcbac7b37e9c8b04b257b93eeebfbf02a6666bc5f56280b2c1f046c4992"
+ },
+ "full_subjects": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a",
+   "bytes": 64441,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\source-bindings.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991",
+   "bytes": 218041,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\clause-inspection.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88",
+   "bytes": 3904,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\findings.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742",
+   "bytes": 21897,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\owner-baseline-current.diff",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX01-preserved.json",
+   "sha256": "4f537dcc1068208249fead3cfecee3e12f6f52149fbcc239ee5af14da7b35458",
+   "bytes": 8082,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\proofs\\SX01-preserved.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX02-preserved.json",
+   "sha256": "e270062319a9ca0a1a849c9352de8b6b9c7053576efe1af840331895a18eae8d",
+   "bytes": 9789,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\proofs\\SX02-preserved.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX03-preserved.json",
+   "sha256": "cb75f613dcca70dcde89ffecbd42ca560f44501c6e5f64e3181d000409e046f5",
+   "bytes": 9326,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\proofs\\SX03-preserved.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+   "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef",
+   "bytes": 11484,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\proofs\\SX04-preserved.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
+   "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
+   "bytes": 16851,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\proofs\\SX05-preserved.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX07-preserved.json",
+   "sha256": "15d246c08daeaafd11fd313d41b053b5eb30c0d1bdffdd41016b840cd4c3aace",
+   "bytes": 4764,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-seven-source-cb-4e07ver5\\proofs\\SX07-preserved.json",
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "scope": {
+  "families": [
+   "SX01",
+   "SX02",
+   "SX03",
+   "SX04",
+   "SX05",
+   "SX07"
+  ],
+  "source_only_cells": 18,
+  "machines": 6,
+  "edges": 12,
+  "literal_clauses_in_accepted_families": 34,
+  "SX06_excluded_pending": [
+   "machines:SX06",
+   "transitions:SX06:06"
+  ],
+  "retained_advanced_rows": 28
+ },
+ "assessment": [
+  "Source procedures remain conditional: capture invocation/media, imported helper/render fixtures, native fixture generators, validators and build projectors are not reported as new runtime, browser, installed discovery, approval or task acceptance.",
+  "R-08 keeps selected local tag/source applicability separate from exact observed Release state. Actions dirty:false is expressly not independent clean-worktree proof; source digest is not full dependency or host registration equivalence.",
+  "Atlas finite pinned-source checks, reviewed graph/route membership, one-step owner redirect, retired-route boxes, theme escaping and sequential exports match literal guarded clauses. Current pin satisfaction/export/browser behavior is not claimed.",
+  "SX06 machine/containment edge remain pending at the actual source epoch; its separate later code fix is neither retroactively inserted nor used to qualify cb. All28 advanced evidence histories/limits are exact.",
+  "Atlas literal Git LF source and physical CRLF source are intentionally different hashes with exact LF-normalized equality. Git cleanliness is not raw-byte equality; no normalization/mutation or executable-runtime equality claim is made."
+ ],
+ "checks": {
+  "adoption_subjects": 10,
+  "row_CAS_current_exact": 18,
+  "frozen_semantic_hashes_and_raw_joins_exact": true,
+  "retained_rows_current_exact": 28,
+  "pending_rows_current_exact": 2,
+  "immutable_source_records": 62,
+  "baseline_records": 38,
+  "declared_positive_inputs_current": 33,
+  "original_active_proof_hashes": 15,
+  "witness_spans_in_accepted_families": 62,
+  "no_runtime_or_owner_replay": true
+ },
+ "current_binding_readback": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site18-independent-review-qfqkjnzq\\current-binding-readback.json",
+  "sha256": "c0b68f6d222b3c2bbc59947a1f96dad0dc9cf818b2689bac17271be5c504d565"
+ },
+ "limits": [
+  "Independent read-only source review plus private metadata/hash joins only; no tests/runtime/owner validation/API/network/install/provider/fleet or canonical/index/ref/marker writes.",
+  "Observation epoch remains immutablecb; current HEAD movement and physical transport are recorded separately. No whole-task/main/publication/runtime qualification or fabricated staged OID.",
+  "Root owns strict original-owner prospective admission and canonical adoption."
+ ]
+}

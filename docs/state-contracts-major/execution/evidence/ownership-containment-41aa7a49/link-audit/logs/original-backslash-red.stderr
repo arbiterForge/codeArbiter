@@ -1,0 +1,25 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 4 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "/codeArbiter", target "/codeArbiter/..\\outside.html")
+ FAIL  test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "", target "/..\\outside.html")
+ FAIL  test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "/codeArbiter", target "..\\outside.html")
+ FAIL  test/link-audit/lib.test.ts > auditDist filesystem containment > refuses a backslash sibling escape (base "", target "..\\outside.html")
+AssertionError: expected [] to have a length of 1 but got +0
+
+- Expected
++ Received
+
+- 1
++ 0
+
+ ❯ test/link-audit/lib.test.ts:431:31
+    429|       expect(result.pageCount).toBe(1);
+    430|       expect(result.checked).toBe(1);
+    431|       expect(result.failures).toHaveLength(1);
+       |                               ^
+    432|       expect(result.failures[0].message).toContain(target);
+    433|     } finally {
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/4]⎯
+
