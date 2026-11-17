@@ -1,0 +1,1971 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "4c785732b25f372c36cd75306703029b072a0a70",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-055",
+  "positive_input_join": {
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "plugins/ca-sandbox/README.md": {
+      "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "bytes": 6301,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+        "bytes": 6301
+      }
+    },
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": {
+      "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "bytes": 9931,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+        "bytes": 9931
+      }
+    },
+    "plugins/ca-sandbox/tools/build-pinned-base.test.ts": {
+      "sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+      "bytes": 16274,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+        "bytes": 16274
+      }
+    },
+    "plugins/ca-sandbox/tools/build.test.ts": {
+      "sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+      "bytes": 24171,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+        "bytes": 24171
+      }
+    },
+    "plugins/ca-sandbox/tools/build.ts": {
+      "sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "bytes": 45428,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+        "bytes": 45428
+      }
+    },
+    "plugins/ca-sandbox/tools/builder-observation.test.ts": {
+      "sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+      "bytes": 5292,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+        "bytes": 5292
+      }
+    },
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": {
+      "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+      "bytes": 14542,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+        "bytes": 14542
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": {
+      "sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+      "bytes": 7576,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+        "bytes": 7576
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": {
+      "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "bytes": 8027,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+        "bytes": 8027
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside.js": {
+      "sha256": "b5f962b4b435de3d5b4d86680b0939314ea1307780072d0e8c29f2a279876521",
+      "bytes": 22303,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b5f962b4b435de3d5b4d86680b0939314ea1307780072d0e8c29f2a279876521",
+        "bytes": 22303
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": {
+      "sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+      "bytes": 25522,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+        "bytes": 25522
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside.ts": {
+      "sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+      "bytes": 20507,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+        "bytes": 20507
+      }
+    },
+    "plugins/ca-sandbox/tools/cli-resolve.test.ts": {
+      "sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+      "bytes": 5038,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+        "bytes": 5038
+      }
+    },
+    "plugins/ca-sandbox/tools/cli.test.ts": {
+      "sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+      "bytes": 15035,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+        "bytes": 15035
+      }
+    },
+    "plugins/ca-sandbox/tools/cli.ts": {
+      "sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "bytes": 19688,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+        "bytes": 19688
+      }
+    },
+    "plugins/ca-sandbox/tools/cp.test.ts": {
+      "sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+      "bytes": 30095,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+        "bytes": 30095
+      }
+    },
+    "plugins/ca-sandbox/tools/cp.ts": {
+      "sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+      "bytes": 4997,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+        "bytes": 4997
+      }
+    },
+    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": {
+      "sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+      "bytes": 4077,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+        "bytes": 4077
+      }
+    },
+    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts": {
+      "sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+      "bytes": 9777,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+        "bytes": 9777
+      }
+    },
+    "plugins/ca-sandbox/tools/create.test.ts": {
+      "sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+      "bytes": 23146,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+        "bytes": 23146
+      }
+    },
+    "plugins/ca-sandbox/tools/create.ts": {
+      "sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "bytes": 24777,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+        "bytes": 24777
+      }
+    },
+    "plugins/ca-sandbox/tools/deadline.test.ts": {
+      "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "bytes": 18656,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+        "bytes": 18656
+      }
+    },
+    "plugins/ca-sandbox/tools/dephash.test.ts": {
+      "sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+      "bytes": 4693,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+        "bytes": 4693
+      }
+    },
+    "plugins/ca-sandbox/tools/dephash.ts": {
+      "sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "bytes": 3730,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+        "bytes": 3730
+      }
+    },
+    "plugins/ca-sandbox/tools/destroy.ts": {
+      "sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "bytes": 17156,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+        "bytes": 17156
+      }
+    },
+    "plugins/ca-sandbox/tools/docker-gate.test.ts": {
+      "sha256": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+      "bytes": 7120,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+        "bytes": 7120
+      }
+    },
+    "plugins/ca-sandbox/tools/docker-gate.ts": {
+      "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "bytes": 6847,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+        "bytes": 6847
+      }
+    },
+    "plugins/ca-sandbox/tools/docker.ts": {
+      "sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "bytes": 12838,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+        "bytes": 12838
+      }
+    },
+    "plugins/ca-sandbox/tools/exec.test.ts": {
+      "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+      "bytes": 8337,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+        "bytes": 8337
+      }
+    },
+    "plugins/ca-sandbox/tools/exec.ts": {
+      "sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "bytes": 10180,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+        "bytes": 10180
+      }
+    },
+    "plugins/ca-sandbox/tools/installed-bundle.test.ts": {
+      "sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+      "bytes": 11483,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+        "bytes": 11483
+      }
+    },
+    "plugins/ca-sandbox/tools/layering.test.ts": {
+      "sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+      "bytes": 10041,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+        "bytes": 10041
+      }
+    },
+    "plugins/ca-sandbox/tools/lifecycle.test.ts": {
+      "sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+      "bytes": 21824,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+        "bytes": 21824
+      }
+    },
+    "plugins/ca-sandbox/tools/mounts.test.ts": {
+      "sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+      "bytes": 3609,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+        "bytes": 3609
+      }
+    },
+    "plugins/ca-sandbox/tools/mounts.ts": {
+      "sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+      "bytes": 6410,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+        "bytes": 6410
+      }
+    },
+    "plugins/ca-sandbox/tools/multistack.test.ts": {
+      "sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+      "bytes": 8968,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+        "bytes": 8968
+      }
+    },
+    "plugins/ca-sandbox/tools/native-build-inputs.test.ts": {
+      "sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+      "bytes": 5667,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+        "bytes": 5667
+      }
+    },
+    "plugins/ca-sandbox/tools/network.test.ts": {
+      "sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+      "bytes": 18983,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+        "bytes": 18983
+      }
+    },
+    "plugins/ca-sandbox/tools/network.ts": {
+      "sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "bytes": 12291,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+        "bytes": 12291
+      }
+    },
+    "plugins/ca-sandbox/tools/package-lock.json": {
+      "sha256": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "bytes": 64185,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+        "bytes": 64185
+      }
+    },
+    "plugins/ca-sandbox/tools/package.json": {
+      "sha256": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+      "bytes": 918,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+        "bytes": 918
+      }
+    },
+    "plugins/ca-sandbox/tools/registry.ts": {
+      "sha256": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+      "bytes": 10407,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+        "bytes": 10407
+      }
+    },
+    "plugins/ca-sandbox/tools/run.test.ts": {
+      "sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+      "bytes": 8614,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+        "bytes": 8614
+      }
+    },
+    "plugins/ca-sandbox/tools/run.ts": {
+      "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "bytes": 9135,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+        "bytes": 9135
+      }
+    },
+    "plugins/ca-sandbox/tools/sandbox.js": {
+      "sha256": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+      "bytes": 66855,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+        "bytes": 66855
+      }
+    },
+    "plugins/ca-sandbox/tools/smoke.test.ts": {
+      "sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+      "bytes": 484,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+        "bytes": 484
+      }
+    },
+    "plugins/ca-sandbox/tools/smoke.ts": {
+      "sha256": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+      "bytes": 271,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+        "bytes": 271
+      }
+    },
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": {
+      "sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+      "bytes": 10611,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+        "bytes": 10611
+      }
+    },
+    "plugins/ca-sandbox/tools/supply-chain.test.ts": {
+      "sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+      "bytes": 18739,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+        "bytes": 18739
+      }
+    },
+    "plugins/ca-sandbox/tools/teardown.test.ts": {
+      "sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+      "bytes": 24360,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+        "bytes": 24360
+      }
+    },
+    "plugins/ca-sandbox/tools/tsconfig.json": {
+      "sha256": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+      "bytes": 414,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+        "bytes": 414
+      }
+    },
+    "plugins/ca-sandbox/tools/vitest.config.ts": {
+      "sha256": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+      "bytes": 2411,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+        "bytes": 2411
+      }
+    }
+  },
+  "current_input_membership": [],
+  "build_toolchain_advisory_scope": {
+    "root": "plugins/ca-sandbox/tools",
+    "assessment": "The finite Docker client, build/cache provenance, network and lifecycle claims use the checked-in source, esbuild output and local instruction contracts. The lock also supports historical tests, whose original results remain historical. No group predicate claims npm audit passes, dependency immunity, or new installed/runtime completion.",
+    "id": "GHSA-fc5q-39xc-vjpf",
+    "version": "4.0.7",
+    "npm_lock_dev_flag": true,
+    "tracked_tool_namespace_tree": "83179a0707fdbb446c16e836062c67225f2517e8",
+    "exact_lock_sha256": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "exact_manifest_sha256": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "limits": "Retaining a confirmed source predicate accepts no security exception. These npm dependency bytes and the impacted hosted gate remain security-relevant. No installed node_modules tree, npm pass, untrusted globs, hosted behavior, runtime freshness or mitigation is claimed."
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:S47",
+      "frozen_record": {
+        "machine_id": "S47",
+        "name": "Sandbox Docker client request lifecycle",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-C02",
+          "SBX-C03"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-20"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "f0c59d49b38eb9cdc6acb7fb94fd3269f44b018f655cc56eba478105d0960b46",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Sandbox Docker client request lifecycle. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S49",
+      "frozen_record": {
+        "machine_id": "S49",
+        "name": "Sandbox dependency-image cache and build fallback",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-C01",
+          "SBX-C03",
+          "SBX-D01",
+          "SBX-D03"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 9,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/dephash.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-19",
+          "SEQ-30",
+          "SEQ-20"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "cbf4bb3c6b7c85358c3ad8716c19aef49fab9969aee075d09d5dbbca16e31240",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Sandbox dependency-image cache and build fallback. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+          "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S50",
+      "frozen_record": {
+        "machine_id": "S50",
+        "name": "Sandbox network policy planning and enforcement",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-D03",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-D03"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "209625c5644202eb38a7146f4efa203d9fb45524c34cade559cc5843588b3b03",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Sandbox network policy planning and enforcement. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S51",
+      "frozen_record": {
+        "machine_id": "S51",
+        "name": "Sandbox Claude-inside admission, network firewall and teardown",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-C03",
+          "SBX-D04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-20",
+          "SEQ-30"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "c18c0b4bc3546f03e6dc50563509e6eb8ba320a36286f56882cda762785d0765",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Sandbox Claude-inside admission, network firewall and teardown. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S52",
+      "frozen_record": {
+        "machine_id": "S52",
+        "name": "Sandbox exec and copy side effects",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-C02",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-C02"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cp.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/exec.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-20"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "2a8bafff185fec3834e118e8e240ff825ca2379369e18b99e6c54ed2c34dc6c9",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Sandbox exec and copy side effects. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+          "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S54",
+      "frozen_record": {
+        "machine_id": "S54",
+        "name": "Sandbox CLI cancellation and command outcome mapping",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-D04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "4874fd99b04b82670419eaf27cc496c3366984a59e818f74c02c05f3b72a21b2",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Sandbox CLI cancellation and command outcome mapping. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+          "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:SW02",
+      "frozen_record": {
+        "machine_id": "SW02",
+        "name": "Claude-inside credential workflow and five BLOCK phases",
+        "domain": "Sandbox operational instructions",
+        "kind": "model-guided",
+        "owner": "sandbox",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "SBX-D04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 14,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "4633547e980c3475e7e6dc46787102b26267b5788640a0327ed35e5de484be3b",
+      "group": "source-group-055",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Claude-inside credential workflow and five BLOCK phases. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+          "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S47:05",
+      "frozen_record": {
+        "transition_id": "S47:05",
+        "machine_id": "S47",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "output bound exceeded",
+          "guard": "first failure reason",
+          "to": "overflow latched",
+          "effects": "SIGKILL Docker client; report ordinary exit 1 with bounded error.",
+          "failure_retry": "No distinct overflow bit reaches exec cleanup policy; killing CLI does not prove container workload stopped.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/docker.ts",
+              "symbol": "runDocker bounded subprocess",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+              "lines": "1-325"
+            }
+          ],
+          "from": "running",
+          "transition_id": "S47:05"
+        },
+        "task_ids": [
+          "SBX-C02",
+          "SBX-C03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-20"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5b79f38051abd38cfb8efd2861ffdd3ce8465c6f0d8b252370fa45cdd87ed523",
+      "group": "source-group-055",
+      "assessment": "Current accepted SBX-C02 behavior carries an explicit overflow/lost-observation bit into exec stop+independent inspection. Frozen no-overflow-bit prose describes the corrected baseline defect; do not claim it preserved or infer workload death from Docker client death alone.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S50:02",
+      "frozen_record": {
+        "transition_id": "S50:02",
+        "machine_id": "S50",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "clone phase",
+          "guard": "temporary source acquisition allowed",
+          "to": "clone bridge",
+          "effects": "Use temporary bridge network; disconnect after clone before handing off runtime state.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/network.ts",
+              "symbol": "network planner/firewall installation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+              "lines": "1-272"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/run.ts",
+              "symbol": "NETWORKED_POLICIES and runtime planning",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+              "lines": "1-219"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "network option handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            }
+          ],
+          "from": "clone helper",
+          "transition_id": "S50:02"
+        },
+        "task_ids": [
+          "SBX-D03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "0f2a09e5450ffc3f24331770ab3b08fff129c1d713f2957bbed3c449bc9127ac",
+      "group": "source-group-055",
+      "assessment": "Separate temporary clone connectivity and explicit standalone firewall helper from ordinary CLI policy, which stays offline/unavailable for unsupported allowlist. Failed setup requires caller containment; helper existence is not ordinary allowlist implementation or live network proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S50:03",
+      "frozen_record": {
+        "transition_id": "S50:03",
+        "machine_id": "S50",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "egress-allowlist request",
+          "guard": "supported helper caller; NET_ADMIN; explicit hosts",
+          "to": "allowlist configuring",
+          "effects": "Resolve permitted names, configure DNS and iptables allow rules, set default-drop last.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/network.ts",
+              "symbol": "network planner/firewall installation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+              "lines": "1-272"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/run.ts",
+              "symbol": "NETWORKED_POLICIES and runtime planning",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+              "lines": "1-219"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "network option handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            }
+          ],
+          "from": "standalone network helper",
+          "transition_id": "S50:03"
+        },
+        "task_ids": [
+          "SBX-D03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "beffe2b150e93208bc3207e20b75d84dff37a55a0ac41ff8729f174a5cc8643d",
+      "group": "source-group-055",
+      "assessment": "Separate temporary clone connectivity and explicit standalone firewall helper from ordinary CLI policy, which stays offline/unavailable for unsupported allowlist. Failed setup requires caller containment; helper existence is not ordinary allowlist implementation or live network proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S50:04",
+      "frozen_record": {
+        "transition_id": "S50:04",
+        "machine_id": "S50",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "all commands succeed",
+          "guard": "required resolution and firewall setup complete",
+          "to": "allowlist enforced",
+          "effects": "Container may reach only admitted destinations according to helper policy.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/network.ts",
+              "symbol": "network planner/firewall installation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+              "lines": "1-272"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/run.ts",
+              "symbol": "NETWORKED_POLICIES and runtime planning",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+              "lines": "1-219"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "network option handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            }
+          ],
+          "from": "allowlist configuring",
+          "transition_id": "S50:04"
+        },
+        "task_ids": [
+          "SBX-D03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "7e36373a3cd9b870f40382487a39a214e71638e7252323262f224e6cdcd04710",
+      "group": "source-group-055",
+      "assessment": "Separate temporary clone connectivity and explicit standalone firewall helper from ordinary CLI policy, which stays offline/unavailable for unsupported allowlist. Failed setup requires caller containment; helper existence is not ordinary allowlist implementation or live network proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S50:05",
+      "frozen_record": {
+        "transition_id": "S50:05",
+        "machine_id": "S50",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "resolution/firewall failure",
+          "guard": "before final default-drop may occur",
+          "to": "failed configuration",
+          "effects": "Return failure; caller must destroy or otherwise contain container.",
+          "failure_retry": "Helper existence does not mean ordinary CLI allowlist flag is wired to it; current run integration remains offline.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/network.ts",
+              "symbol": "network planner/firewall installation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+              "lines": "1-272"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/run.ts",
+              "symbol": "NETWORKED_POLICIES and runtime planning",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+              "lines": "1-219"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "network option handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            }
+          ],
+          "from": "allowlist configuring",
+          "transition_id": "S50:05"
+        },
+        "task_ids": [
+          "SBX-D03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6459234f2dcaded2cac9e48e1cbfd0c007f7eda370bb2861dfaaf1aefb51af21",
+      "group": "source-group-055",
+      "assessment": "Separate temporary clone connectivity and explicit standalone firewall helper from ordinary CLI policy, which stays offline/unavailable for unsupported allowlist. Failed setup requires caller containment; helper existence is not ordinary allowlist implementation or live network proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S50:06",
+      "frozen_record": {
+        "transition_id": "S50:06",
+        "machine_id": "S50",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "disconnect",
+          "guard": "clone complete",
+          "to": "detached",
+          "effects": "Remove temporary connectivity; verify via command result where caller implements check.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/network.ts",
+              "symbol": "network planner/firewall installation",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+              "lines": "1-272"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/run.ts",
+              "symbol": "NETWORKED_POLICIES and runtime planning",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+              "lines": "1-219"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "network option handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            }
+          ],
+          "from": "clone bridge",
+          "transition_id": "S50:06"
+        },
+        "task_ids": [
+          "SBX-D03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "78a3571cd15c891ee2d3f3f06ba8ee9e27a36df6cdd294275e74c8f292652cd5",
+      "group": "source-group-055",
+      "assessment": "Separate temporary clone connectivity and explicit standalone firewall helper from ordinary CLI policy, which stays offline/unavailable for unsupported allowlist. Failed setup requires caller containment; helper existence is not ordinary allowlist implementation or live network proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S51:03",
+      "frozen_record": {
+        "transition_id": "S51:03",
+        "machine_id": "S51",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "networked policy",
+          "guard": "requires root firewall setup",
+          "to": "firewall pending",
+          "effects": "Install allowlist rules inside container.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+              "symbol": "createClaudeInside and cleanup",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+              "lines": "1-399"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "CLI workflow",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            }
+          ],
+          "from": "container running",
+          "transition_id": "S51:03"
+        },
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-20",
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "72f0332c7fee6d6e872d900a3aeb5dcb5faa67dc7cce72faf4d944c4e61fa11b",
+      "group": "source-group-055",
+      "assessment": "Token-only Claude container firewall and caller-directed cleanup stay distinct from source volume lifecycle. Current header/usage phases are guidance, not binary-enforced completion. Preserve token/argv/co-mount constraints, no actual credential/provider/network observation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S51:04",
+      "frozen_record": {
+        "transition_id": "S51:04",
+        "machine_id": "S51",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "firewall succeeds",
+          "guard": "all expected commands zero",
+          "to": "ready",
+          "effects": "Return usable container identity.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+              "symbol": "createClaudeInside and cleanup",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+              "lines": "1-399"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "CLI workflow",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            }
+          ],
+          "from": "firewall pending",
+          "transition_id": "S51:04"
+        },
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-20",
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5400cc0c31a871c15b532eabed365b9d909f3490de4a7a416a6895c0ac38ecc1",
+      "group": "source-group-055",
+      "assessment": "Token-only Claude container firewall and caller-directed cleanup stay distinct from source volume lifecycle. Current header/usage phases are guidance, not binary-enforced completion. Preserve token/argv/co-mount constraints, no actual credential/provider/network observation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S51:06",
+      "frozen_record": {
+        "transition_id": "S51:06",
+        "machine_id": "S51",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "session finishes / caller destroy",
+          "guard": "caller-directed cleanup",
+          "to": "stopped or unknown",
+          "effects": "Stop/remove container; home-volume lifecycle belongs to caller, not implicit source checkout cleanup.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+              "symbol": "createClaudeInside and cleanup",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+              "lines": "1-399"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "CLI workflow",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            }
+          ],
+          "from": "ready",
+          "transition_id": "S51:06"
+        },
+        "task_ids": [
+          "SBX-C03",
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-20",
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "fc133915ea62c14dbd1ca391a037f41b814036cb1f4d49fe1d8499abddbb51ea",
+      "group": "source-group-055",
+      "assessment": "Token-only Claude container firewall and caller-directed cleanup stay distinct from source volume lifecycle. Current header/usage phases are guidance, not binary-enforced completion. Preserve token/argv/co-mount constraints, no actual credential/provider/network observation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+          "sha256": "b673fabaeed20ad82375240a58c39f871ea9273a6692cbe92928da130497c266",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "plugins/ca-sandbox/tools/cli.test.ts",
+      "old_span": [
+        300,
+        362
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "68a254c1514a366e855606fba26e6e620cd17679311dde73423f050013f54c80",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          300,
+          362
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          300,
+          362
+        ]
+      ],
+      "actual0ef_file_sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/docker.ts",
+      "old_span": [
+        1,
+        325
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          325
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          325
+        ]
+      ],
+      "actual0ef_file_sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/build.ts",
+      "old_span": [
+        1,
+        616
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "e3e5b7273bc5c2aaad3b56ed6d96d21dc3c74f6d2d08c052a40d11f1061f9f2a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          616
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          616
+        ]
+      ],
+      "actual0ef_file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/create.ts",
+      "old_span": [
+        1,
+        480
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "35479196dcf742619fcac9039e1df30546e0788d93759ef26d6932a37fb8ad9b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          480
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          480
+        ]
+      ],
+      "actual0ef_file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/dephash.ts",
+      "old_span": [
+        1,
+        82
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          82
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          82
+        ]
+      ],
+      "actual0ef_file_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/cli.ts",
+      "old_span": [
+        1,
+        496
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          496
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          496
+        ]
+      ],
+      "actual0ef_file_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/network.ts",
+      "old_span": [
+        1,
+        272
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          272
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          272
+        ]
+      ],
+      "actual0ef_file_sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/run.ts",
+      "old_span": [
+        1,
+        219
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "6e3ba86a44b0f67d126eaaed58821c2c11d4622ed990c02726672adfc96f788d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          219
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          219
+        ]
+      ],
+      "actual0ef_file_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+      "old_span": [
+        1,
+        399
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "af1e1fe8bd5a6b00a9425f665c82b731becf1227b4dd948b52b52a937b4d18a6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          399
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          399
+        ]
+      ],
+      "actual0ef_file_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/cp.ts",
+      "old_span": [
+        1,
+        110
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          110
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          110
+        ]
+      ],
+      "actual0ef_file_sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/exec.ts",
+      "old_span": [
+        1,
+        208
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "7dbacd6deedf684de1eed1dc01cd1cfccbf922bed751e8cdebcf8fe96b87477a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          208
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          208
+        ]
+      ],
+      "actual0ef_file_sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+      "old_span": [
+        1,
+        163
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          163
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          163
+        ]
+      ],
+      "actual0ef_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+      "old_span": [
+        1,
+        153
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          153
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+      "actual0ef_spans": [
+        [
+          1,
+          153
+        ]
+      ],
+      "actual0ef_file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [
+    {
+      "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "older_witness": {
+        "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "old_span": [
+          1,
+          205
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+        "block_sha256_LF": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-sandbox16.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "sandbox-normative-boundaries",
+          "paths": [
+            "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "plugins/ca-sandbox/tools/claude-inside.js"
+          ],
+          "assessment": "Actual command/skill/catalog/README use separate container and volume discovery snapshots, not globalt0 or arbitrary new-resource preservation. Claude-inside header/usage identify phases as guidance and preserve real token/argv/policy/co-mount guards. Prior complete finite SW/source65 analyses apply; no model execution, default global destruction, consumer maintainer prerequisites or new approval ceremony."
+        }
+      ]
+    }
+  ],
+  "reused_helper_assessments": [
+    {
+      "id": "sandbox-normative-boundaries",
+      "paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside.js"
+      ],
+      "assessment": "Actual command/skill/catalog/README use separate container and volume discovery snapshots, not globalt0 or arbitrary new-resource preservation. Claude-inside header/usage identify phases as guidance and preserve real token/argv/policy/co-mount guards. Prior complete finite SW/source65 analyses apply; no model execution, default global destruction, consumer maintainer prerequisites or new approval ceremony."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}
