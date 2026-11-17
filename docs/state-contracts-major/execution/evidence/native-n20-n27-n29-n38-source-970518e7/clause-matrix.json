@@ -1,0 +1,325 @@
+[
+  {
+    "transition_id": "N20:01",
+    "machine_id": "N20",
+    "literal_frozen_clause": {
+      "event": "contextual read",
+      "guard": "whole record fits budget; exact selection/vector/manifest/budget for continuation",
+      "effects": "Return whole records; persist page token or context ticket in infrastructure.",
+      "failure_retry": "Invalid cursor/oversize refuses; not a side-effect-free read."
+    },
+    "source_spans": "read/read.go:69-195,320-382; store/infrastructure.go:154-163",
+    "guard_assessment": "Context resolves the selected symbol and linked records; Page accepts budget4096..65536, exact page-purpose/artifact/symbol/budget, vector+manifest and valid advancing offset.",
+    "effect_assessment": "Only whole items fit; issue persists content-addressed immutable page token or completed context ticket in owned infrastructure; complete=true only at end.",
+    "retry_assessment": "Invalid/stale cursor or first oversized record refuses; PutContextToken validates digest/4096B and create-or-compare. Contextual read is not side-effect-free.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N20:02",
+    "machine_id": "N20",
+    "literal_frozen_clause": {
+      "event": "contributing model/evidence changes",
+      "guard": "vector/manifest mismatch on resume",
+      "effects": "Refuse continuation under old identity.",
+      "failure_retry": "Restart coherent read; ticket grants no permission or comprehension."
+    },
+    "source_spans": "read/read.go:69-195,320-382",
+    "guard_assessment": "Context reacquires contributing document identities, authority vector and selected-item manifest for every Page call.",
+    "effect_assessment": "Vector/manifest mismatch returns STALE_CURSOR before returning the resumed page.",
+    "retry_assessment": "Caller restarts a coherent selection; package comment expressly says delivery is not comprehension/approval/permission.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N20:03",
+    "machine_id": "N20",
+    "literal_frozen_clause": {
+      "event": "exact / exact-batch / outline / plan-verification",
+      "guard": "selected IDs and current model/full identity as required; valid offset; bounded whole items",
+      "effects": "Return no ticket and context_complete=false; continuation identity prevents mixed artifact versions.",
+      "failure_retry": "Invalid/stale selection or a single oversized record refuses, never returns nonadvancing page."
+    },
+    "source_spans": "read/read.go:197-318,400-446; operations/engine.go:322-407; core/pysrc/_artifactlib.py:1279-1350",
+    "guard_assessment": "Exact resolves selected ID; batch validates all IDs, current model and offset before page; outline continuation matches model; plan-verification matches full identity; whole items respect budget.",
+    "effect_assessment": "No token/ticket is issued. Exact/batch/verification explicitly return context_complete=false; Outline omits the field and returns only bounded record summaries/next_offset.",
+    "retry_assessment": "Invalid/stale selection or oversized first item refuses/nonadvancing page cannot succeed. Python outline consumer checks identity/advancement separately; only contextual_pages requires a Boolean completeness flag.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N20:04",
+    "machine_id": "N20",
+    "literal_frozen_clause": {
+      "event": "CheckTicket",
+      "guard": "exact current context selection and full delivery offset",
+      "effects": "Validate retained ticket only.",
+      "failure_retry": "No production call sites currently consume CheckTicket; ordinary task-start ignores historical ticket."
+    },
+    "source_spans": "read/read.go:383-399; operations/assistive.go:166-200; operations/protocol.go:426-429",
+    "guard_assessment": "CheckTicket validates context purpose, artifact/symbol, current vector/manifest and full delivered offset.",
+    "effect_assessment": "Only retained cooperative ticket validity is checked; no permission granted.",
+    "retry_assessment": "No production Go call site consumes CheckTicket (definition plus two test calls only); ordinary task-start selects current progress guard and does not consult historical context_ticket.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N27:01",
+    "machine_id": "N27",
+    "literal_frozen_clause": {
+      "event": "repair-preview",
+      "guard": "canonical artifact target; embedded model validates",
+      "effects": "Return current/desired byte hashes and warning view-only edits discarded; no semantic model change.",
+      "failure_retry": "Invalid embedded model cannot be repaired by guessing."
+    },
+    "source_spans": "operations/engine.go:562-596; operations/mutations.go:504-506",
+    "guard_assessment": "canonicalArtifactPath admits only safe .codearbiter/specs|plans/name.html; bounded bytes decode and model.Check succeeds before rendering.",
+    "effect_assessment": "Preview returns old/proposed byte hashes, normative-unchanged flag and explicit view-edit-discard warning; no Commit call in preview branch.",
+    "retry_assessment": "Malformed embedded model/render errors return; there is no guessing or reconstruction of invalid normative data.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N27:02",
+    "machine_id": "N27",
+    "literal_frozen_clause": {
+      "event": "repair-apply",
+      "guard": "exact current bytes and proposed render hash still match",
+      "effects": "Journal old rendered bytes and replace with canonical rendering, normative unchanged.",
+      "failure_retry": "Stale preview rejects; operation implemented but absent in Names/capabilities list."
+    },
+    "source_spans": "operations/engine.go:562-617; operations/protocol.go:51-68; operations/descriptors.go:83-87; store/transaction.go:193-213,268-432",
+    "guard_assessment": "Apply requires exact current old-byte SHA and proposed render SHA; general Run replay/pending handling precedes dispatch.",
+    "effect_assessment": "Commit journals before-images and replaces canonical rendered bytes only; normative model is unchanged.",
+    "retry_assessment": "Stale preview returns REVISION_CONFLICT; exact operation replay returns historical result. NT-03 intentionally changes frozen discovery limitation: repair-apply now advertised by the closed descriptor table.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N27:03",
+    "machine_id": "N27",
+    "literal_frozen_clause": {
+      "event": "export",
+      "guard": "safe create-only export destination; rendering valid",
+      "effects": "Write derived noncanonical HTML with companion path removed; preserve canonical document.",
+      "failure_retry": "Existing output target refuses overwrite; same operation replays."
+    },
+    "source_spans": "operations/capture_export.go:144-182; operations/engine.go:141-160; store/transaction.go:268-432",
+    "guard_assessment": "Resolved valid canonical artifact/current model SHA; safe create-only direct .codearbiter/exports/name.html target.",
+    "effect_assessment": "Clone removes companion_path; canonical render becomes standalone noncanonical export; original pair untouched.",
+    "retry_assessment": "Commit nil Before enforces absent target and refuses overwrite; same-ID/request Run replay precedes current-source checks.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N29:01",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "work-update start",
+      "guard": "CAS and valid native owner",
+      "effects": "Set start date; atomically stage mapped external desire if configured.",
+      "failure_retry": "Any other source state rejects duplicate start."
+    },
+    "source_spans": "operations/work.go:81-104,289-323,731-874; operations/work_coordination.go:150-243",
+    "guard_assessment": "Valid project/work identity, no legacy board owner, exact revision+model CAS and queued source state.",
+    "effect_assessment": "Clone becomes active with start date; mapped desire is staged only in the clone and committed atomically with local progress.",
+    "retry_assessment": "New duplicate start from any nonqueued state refuses; exact operation replay is handled before handler.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N29:02",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "work-update complete",
+      "guard": "CAS",
+      "effects": "Set complete date; checks remain unknown; stage mapped desire.",
+      "failure_retry": "Does not assert tests, accepted plan, merged PR or delivered release."
+    },
+    "source_spans": "operations/work.go:795-801,845-874; operations/work_coordination.go:150-243",
+    "guard_assessment": "Same owner/CAS gate; only queued or active can complete.",
+    "effect_assessment": "Set complete/date and stage mapped desire; no assignment to check_status or plan/PR/release acceptance.",
+    "retry_assessment": "Other source states refuse; neither completion nor mapped intent asserts delivery or executed tests.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N29:03",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "work-update reopen",
+      "guard": "CAS",
+      "effects": "Clear completion date; ensure started date; stage mapped reopen desire.",
+      "failure_retry": "Other source state rejects."
+    },
+    "source_spans": "operations/work.go:802-810,845-874; operations/work_coordination.go:150-243",
+    "guard_assessment": "Same owner/CAS gate; only complete can reopen.",
+    "effect_assessment": "Set active, clear completed_at, ensure started_at; stage mapped reopen desire in same clone.",
+    "retry_assessment": "Other source states refuse; prior independent delivery observation/check fields remain stored.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N29:04",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "work-update archive",
+      "guard": "CAS",
+      "effects": "Archive local work; no mapped lifecycle action (only start/complete/reopen map).",
+      "failure_retry": "No unarchive operation; archived remains archived under progress commands."
+    },
+    "source_spans": "operations/work.go:811-815,845-874",
+    "guard_assessment": "Same owner/CAS; archive refuses already archived.",
+    "effect_assessment": "Set archived. Only start/complete/reopen call coordinateWorkTransition, so archive sends no mapped lifecycle action.",
+    "retry_assessment": "No unarchive action; start/complete/reopen guards reject archived. Descriptive updates retain archived state.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N29:05",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "rename / attach / set-cycle",
+      "guard": "valid fields/companion identity; CAS",
+      "effects": "Update descriptive/cycle references without inventing progress/check results.",
+      "failure_retry": "Broken selected attachments refuse."
+    },
+    "source_spans": "operations/work.go:258-287,752-790; operations/protocol.go:405-422",
+    "guard_assessment": "CAS plus closed request action/field grammar. Attach resolves selected spec/plan and exact companion relation; rename nonempty title; set-cycle requires explicit value/null.",
+    "effect_assessment": "Only selected descriptive/cycle/attachment fields change; lifecycle/check fields untouched.",
+    "retry_assessment": "Broken selected attachment refuses during checkWorkBinding. This does not require unrelated broken attachments to block every descriptive operation.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N29:06",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "observe-delivery",
+      "guard": "validated repository/PR URL/number/time/state",
+      "effects": "Persist observed delivery independently of complete/check status.",
+      "failure_retry": "A merged PR never auto-completes work or marks tests passed."
+    },
+    "source_spans": "operations/work.go:816-844,849-874; schema/work.schema.json:46-60",
+    "guard_assessment": "Owner/CAS plus bounded GitHub repository, positive PR number, finite state and canonical UTC timestamp.",
+    "effect_assessment": "Construct exact GitHub PR URL and persist delivery_observation separately from work state/check status.",
+    "retry_assessment": "Malformed observation refuses; merged is stored observation only, never automatic completion or passing check.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N29:07",
+    "machine_id": "N29",
+    "literal_frozen_clause": {
+      "event": "all implemented progress writers",
+      "guard": "normal APIs",
+      "effects": "Read/view/schema expose passed/failed but no native public transition writes them.",
+      "failure_retry": "Do not claim implemented check-status update merely because schema permits it."
+    },
+    "source_spans": "operations/work.go:230,731-874; operations/work_adopt.go:547; operations/descriptors.go:176-183; schema/work.schema.json:40-45",
+    "guard_assessment": "Create/adopt initialize check_status unknown; public request vocabulary has no setter.",
+    "effect_assessment": "All progress updates preserve check status; stored passed/failed remain readable schema vocabulary.",
+    "retry_assessment": "NT-07 adds explicit capability schema_only_values metadata instead of inventing a transition or proof producer.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N38:01",
+    "machine_id": "N38",
+    "literal_frozen_clause": {
+      "event": "propose passed/failed command",
+      "guard": "literal argv only; observation ref and binding exact argv/cwd/prerequisites; valid identity hashes",
+      "effects": "Accept bounded inert claim for context rendering; native does not execute command or load an actual verifier observation merely from this label.",
+      "failure_retry": "Declared/unknown must carry null ref+binding; passed/failed with mismatching binding refuses."
+    },
+    "source_spans": "contextdocument/contract.go:282-396; contextdocument/render.go:121-130",
+    "guard_assessment": "Only literal argv supports passed/failed; nonempty observation reference and valid hashes; binding argv/cwd/prerequisite order equals command declaration.",
+    "effect_assessment": "Accept inert declared command claim/rendering; no execution or authenticated observation loading from this label.",
+    "retry_assessment": "Declared/unknown require null reference+binding; unsupported state/declaration mismatch refuses; legacy rendered states are labelled historical.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N38:02",
+    "machine_id": "N38",
+    "literal_frozen_clause": {
+      "event": "propose typed claim",
+      "guard": "closed state vocabulary; evidence refs and valid source/consumer paths",
+      "effects": "Retain declared meaning distinct from source revalidation and permission.",
+      "failure_retry": "No automatic promotion to approved policy."
+    },
+    "source_spans": "contextdocument/contract.go:141-175,177-280; contextdocument/render.go:84-97",
+    "guard_assessment": "Closed entry keys and state vocabularies; bounded nonempty evidence refs; actual CWD/map paths/constraint scope use relative/validate.Path. Fact source_ref and consumer_ref are bounded text, not filesystem path validators.",
+    "effect_assessment": "Preserve observed/inferred/proposed and existing_applicable/observed_upstream/proposed_adoption as inert claims; source/consumer labels remain typed references.",
+    "retry_assessment": "No approved policy state or automatic authorization. Frozen phrase valid source/consumer paths is corrected only to this existing grammar; no stronger validation or permissions invented.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N38:03",
+    "machine_id": "N38",
+    "literal_frozen_clause": {
+      "event": "propose semantic review",
+      "guard": "closed unreviewed/reviewed/identity_acknowledged shape; reviewed requires reference",
+      "effects": "Retain reference and provenance; apply independently reacquires source bytes/membership.",
+      "failure_retry": "A review label is not authenticated review authority."
+    },
+    "source_spans": "contextdocument/operations.go:199-264,310-346; operations/context_assistive.go:48-104",
+    "guard_assessment": "Closed v2 provenance/claim/review shape, unique field/claim IDs; reviewed requires bounded reference.",
+    "effect_assessment": "Keep reference/evidence/authority-reference strings as claims; preview and nonreplayed ApplyOrdinary reacquire ValidateCurrentEvidence.",
+    "retry_assessment": "Malformed provenance refuses; review label is not authenticated authority. Exact journal replay returns its historical outcome rather than fresh applicability.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "PRESERVED"
+  },
+  {
+    "transition_id": "N38:04",
+    "machine_id": "N38",
+    "literal_frozen_clause": {
+      "event": "preview/apply/finalize source check",
+      "guard": "allowed nonsensitive ASCII path; exact hash in two reads",
+      "effects": "Read bounded content twice; current hash must equal recorded evidence.",
+      "failure_retry": "SOURCE_EVIDENCE_CONFLICT; no silent refresh."
+    },
+    "source_spans": "contextdocument/evidence.go:37-68,320-368; contextdocument/operations.go:310-350",
+    "guard_assessment": "Content path is canonical supported ASCII/nonsensitive; two bounded1MiB no-follow store reads must each match recorded SHA.",
+    "effect_assessment": "Compare current source to exact recorded evidence before new apply; no digest restamping.",
+    "retry_assessment": "Missing/changed/during-read mutation returns SOURCE_EVIDENCE_CONFLICT; unsupported sensitive/nonASCII path refuses.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  },
+  {
+    "transition_id": "N38:05",
+    "machine_id": "N38",
+    "literal_frozen_clause": {
+      "event": "current evidence check",
+      "guard": "one of seven finite selectors; nonoverlapping ASCII scopes; 1024 files/128 directories",
+      "effects": "Recompute sorted membership including explicit vendor/generated/nested-repository exclusions; check directory stability.",
+      "failure_retry": "Bounds/read failures unknown; Unicode/noncanonical paths unsupported instead of guessed parity."
+    },
+    "source_spans": "contextdocument/evidence.go:16-35,69-315",
+    "guard_assessment": "Seven finite selectors;1..16 nonoverlapping ASCII scopes;1024 files/128 directories; entries reject case collision/links/nonregular data.",
+    "effect_assessment": "Canonical sorted membership includes vendor/generated/nested-repository/submodule exclusions; directories are listed before/after for stability.",
+    "retry_assessment": "Bounds/unavailable/changed directory are UNKNOWN; unsupported names/scopes are UNSUPPORTED, never guessed Python Unicode parity.",
+    "source_conformance": "SUPPORTED_CURRENT_AS_IS",
+    "new_execution": false,
+    "existing_edge_status": "TESTED"
+  }
+]

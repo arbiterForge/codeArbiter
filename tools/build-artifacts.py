@@ -192,6 +192,8 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--output", type=Path)
     parser.add_argument("--skip-tests", action="store_true", help="development only; marks binary unqualified")
+    parser.add_argument("--npm-binding-observations", type=Path,
+                        help="opt-in original Python/npm producer identities; no second test run")
     parser.add_argument("--test-observation", type=Path,
                         help="create-only named outcomes from the existing native module test run")
     parser.add_argument("--qualify-existing", type=Path)
@@ -201,7 +203,7 @@ def main():
                         help="CI only: qualify off-host from the native builder's same-run stamp")
     args = parser.parse_args()
     if args.qualify_existing is not None or args.qualification_output is not None:
-        if args.output is not None or args.skip_tests or args.test_observation is not None or args.qualify_existing is None or args.qualification_output is None:
+        if args.output is not None or args.skip_tests or args.test_observation is not None or args.npm_binding_observations is not None or args.qualify_existing is None or args.qualification_output is None:
             parser.error("qualification mode requires --qualify-existing and --qualification-output only")
         write_qualification(args.qualify_existing.resolve(strict=True),
                             args.qualification_output.absolute(),
@@ -215,6 +217,8 @@ def main():
         parser.error("--output is required when building a candidate")
     if args.context_native_observation is not None or args.native_binding is not None:
         parser.error("--context-native-observation and --native-binding require qualification mode")
+    if args.skip_tests and args.npm_binding_observations is not None:
+        parser.error("--npm-binding-observations requires actual native tests")
     if args.skip_tests and args.test_observation is not None:
         parser.error("--test-observation requires the actual native tests")
     repo = Path(__file__).resolve().parents[1]
@@ -222,6 +226,13 @@ def main():
     output = args.output.resolve()
     output.mkdir(parents=True, exist_ok=True)
     env = dict(os.environ, GOTOOLCHAIN="local", GOPROXY="off", GOSUMDB="off", CGO_ENABLED="0")
+    env.pop("CA_NATIVE_NPM_BINDING_OBSERVATION_DIR", None)
+    if args.npm_binding_observations is not None:
+        identities = args.npm_binding_observations.resolve()
+        if identities.exists() or identities.is_relative_to(repo):
+            parser.error("npm identities require a new external owned directory")
+        identities.mkdir(mode=0o700)
+        env["CA_NATIVE_NPM_BINDING_OBSERVATION_DIR"] = str(identities)
     goos = subprocess.check_output(["go", "env", "GOOS"], env=env, text=True).strip()
     goarch = subprocess.check_output(["go", "env", "GOARCH"], env=env, text=True).strip()
     if goos not in {"linux", "darwin", "windows"}:

@@ -1,0 +1,188 @@
+{
+  "format": "codearbiter.site-machine-source-inspection/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine": "S58",
+  "full_frozen_machine": {
+    "machine_id": "S58",
+    "name": "Site guide-directory filter",
+    "domain": "Pi, farm, sandbox, site and packaging",
+    "kind": "implemented",
+    "owner": "site",
+    "closure_task": "Q-01",
+    "task_ids": [
+      "Q-01"
+    ],
+    "explicit_machine_task_ids": [],
+    "source_intersection_task_ids": [],
+    "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "status": "NOT_RUN",
+    "transition_count": 3,
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/GuideDirectory.astro",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/guide-filter.ts"
+    ],
+    "proposed_composed_scenario_ids": [],
+    "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+    "evidence": []
+  },
+  "assessment": "Three-clause SOURCE-ONLY filter conformance; no particular content corpus, browser or accessibility acceptance.",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:S58:01",
+      "baseline": {
+        "event": "input/category change",
+        "guard": "query NFKC-normalized and bounded",
+        "to": "filtered or no matches",
+        "effects": "Require every normalized term and selected category; update cards, empty groups, count and no-results message.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/guide-filter.ts",
+            "symbol": "filter predicates",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/guide-filter.ts",
+            "lines": "1-12"
+          },
+          {
+            "path": "site/src/components/GuideDirectory.astro",
+            "symbol": "directory interaction",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/GuideDirectory.astro",
+            "lines": "1-129"
+          }
+        ],
+        "from": "all visible or filtered",
+        "transition_id": "S58:01"
+      },
+      "frozen_row_sha256": "aa638dfa2ded7f2f5bf98d7f09fbf735437712697369917fef121fc99083b996",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "ea44c4b0092f43f0838b4878c14853ce3bc04e8163c829cc8d9bce7a67761d98",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "NFKC/lowercase/whitespace-normalized query is bounded to160 characters; every term and the selected category jointly control cards, groups, count and no-results state.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/guide-filter.ts",
+          "start": 1,
+          "end": 12,
+          "file_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/GuideDirectory.astro",
+          "start": 1,
+          "end": 129,
+          "file_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S58:02",
+      "baseline": {
+        "event": "clear",
+        "guard": "user action",
+        "to": "cleared/all visible",
+        "effects": "Clear query/category as implemented; return focus to input.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/guide-filter.ts",
+            "symbol": "filter predicates",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/guide-filter.ts",
+            "lines": "1-12"
+          },
+          {
+            "path": "site/src/components/GuideDirectory.astro",
+            "symbol": "directory interaction",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/GuideDirectory.astro",
+            "lines": "1-129"
+          }
+        ],
+        "from": "filtered/no matches",
+        "transition_id": "S58:02"
+      },
+      "frozen_row_sha256": "44a0835f3ecd1f95a0a4167955b660c5658f94d2a3a3917162ed79d96219549d",
+      "current_edge_status": "TESTED",
+      "current_edge_row_sha256": "ea44c4b0092f43f0838b4878c14853ce3bc04e8163c829cc8d9bce7a67761d98",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Clear resets both query and category, recomputes the view, and focuses the query field.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/guide-filter.ts",
+          "start": 1,
+          "end": 12,
+          "file_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/GuideDirectory.astro",
+          "start": 1,
+          "end": 129,
+          "file_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S58:03",
+      "baseline": {
+        "event": "disconnect",
+        "guard": "element removed",
+        "to": "disconnected",
+        "effects": "Abort event listeners.",
+        "failure_retry": "No history/network/storage effects; this is view state only.",
+        "source": [
+          {
+            "path": "site/src/scripts/guide-filter.ts",
+            "symbol": "filter predicates",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/guide-filter.ts",
+            "lines": "1-12"
+          },
+          {
+            "path": "site/src/components/GuideDirectory.astro",
+            "symbol": "directory interaction",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/GuideDirectory.astro",
+            "lines": "1-129"
+          }
+        ],
+        "from": "connected",
+        "transition_id": "S58:03"
+      },
+      "frozen_row_sha256": "3496c156a153184017e1deb480c23d12f0afa835fe97170afd29d5a59de063ab",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "d6d6258200baa1d5f601dad879b758b0594dfd6207282cf2a700aaf669c05dbc",
+      "current_contract_note": null,
+      "guard_effect_retry_assessment": "Disconnect aborts owned event listeners; filtering does not write history/storage or issue network requests.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/guide-filter.ts",
+          "start": 1,
+          "end": 12,
+          "file_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/src/components/GuideDirectory.astro",
+          "start": 1,
+          "end": 129,
+          "file_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [],
+      "new_edge_disposition": null
+    }
+  ],
+  "input_join_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+    "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+  },
+  "existing_conformance_reuse": [],
+  "accepted_changes": "BUILD-G01 replaces delete-first with complete staged owned publication for S64/S67. Existing analytical corrections stay exactly as committed. gen.ts now forwards skipped-call-site annotations; serial stage ordering is unchanged.",
+  "dependency_boundary": "Conditional control flow given valid declared DOM/content/model inputs; no particular corpus, generated build or external Academy checkout was admitted or executed.",
+  "observation": "Source inspection/hash comparison only. No tests, validators, browser, commands under test, build, runtime, network or provider were executed."
+}

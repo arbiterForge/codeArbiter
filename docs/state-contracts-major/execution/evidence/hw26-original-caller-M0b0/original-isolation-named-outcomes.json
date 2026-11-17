@@ -1,0 +1,349 @@
+{
+  "schema": "hw26-original-named-isolation-outcomes/1",
+  "source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "ci_run_id": 43960617519,
+  "original_job_id": 133626907404,
+  "artifact_id": 14273384064,
+  "archive_sha256": "e83665c1ba045b2fe2f0adccba8b350e387ea9b6dc2120d1eaaa040ddd76eb2f",
+  "members": [
+    {
+      "path": "pi-vitest-named.json",
+      "sha256": "e3bea4e5c4c18665b3d6333ab39415ce46c55d19241dab3ba22b997ae501cd32"
+    },
+    {
+      "path": "pi-vitest-observation.json",
+      "sha256": "deb975f20061826372a777dffe02e889bc22228cf8e96cf25f9870981b152ba3"
+    }
+  ],
+  "all_tests": {
+    "passed": 1102,
+    "skipped": 2
+  },
+  "selected": [
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch puts no task, prompt, or credential in exact discovery-disabled argv",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch rejects relative, missing, duplicate, and unsupported launch identities before spawn",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch uses a bounded two-record stdin handshake with a random correlation unrelated to task content",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires exact keys and value shapes for every accepted Pi JSONL event",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch Pi 1.1 settlement requires its exact boolean aborted outcome",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch Pi 1.1 assistant durationMs accepts only the source-defined bounded record shape",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch Pi 1.1 toolResult durationMs accepts only the source-defined bounded record shape",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch Pi 1.1 tool_execution_end durationMs accepts only the source-defined bounded record shape",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch Pi 1.1 settlement aborted=false preserves terminal outcome and cleanup",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch Pi 1.1 settlement aborted=true preserves terminal outcome and cleanup",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch names the isolation stage in the degraded diagnostic without leaking any error detail",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch refuses to launch when the operator's selected-provider config cannot be projected credential-blind",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch removes the private isolation root when the launch throws after the environment is prepared",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch a delegation channel cleanup failure cannot strand the isolated environment",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch none cleanup outcome preserves actual delegated effects in the structured result",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch channel cleanup outcome preserves actual delegated effects in the structured result",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch environment cleanup outcome preserves actual delegated effects in the structured result",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch spawns exact Node and withholds the task until a correlated handshake success",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch never fabricates completion when a valid lifecycle exits nonzero",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch decodes JSONL correctly when a multibyte output character is split across chunks",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch never writes task content after failed or uncorrelated handshake acknowledgement",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires correlated task acceptance and an ordered post-task lifecycle before completion",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires one exact digest-only RPC confirm attestation before handshake acknowledgement",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns the fixed degraded result before spawn for an invalid launch identity",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns the fixed degraded result without spawning a pre-cancelled request",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns the fixed degraded result and removes private auth after spawn throws",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'error event'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'cancellation'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'malformed protocol'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'line overflow'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'stream overflow'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'stderr overflow'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'early close'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch returns fixed degraded and preserves operator auth for 'timeout'",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch awaits one idempotent cancelled tree cleanup even when close never arrives",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch awaits one idempotent protocol_error tree cleanup even when close never arrives",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch awaits one idempotent protocol_overflow tree cleanup even when close never arrives",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch awaits one idempotent startup_failure tree cleanup even when close never arrives",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch maps timeout and early close to verified cleanup and resolves despite kill refusal",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch fails closed before capability or handshake bytes when containment readiness is unavailable",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch replays cancellation that lands during async spawn before any capability or task bytes",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch replays cancellation that lands during async readiness before any capability or task bytes",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch does not launch when cancellation lands during canonical validation",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch detects a contained child that closed before listener installation without waiting for timeout",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch public runPiChild is a two-argument production-bound entry with no dependency override",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch routes stdin EPIPE and early close before or after handshake through fixed degraded",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch fails degraded without the inherited fd3 capability pipe",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch requires a successful final assistant bound to the requested provider and model",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch fails closed when assistant output contains an exact provider environment credential value",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch fails closed when assistant output contains an exact projected stored auth credential value",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch fails closed when assistant output contains an exact delegation bearer credential value",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch binds launch paths to current Node, supported Pi identity, and the generated ca-pi role catalog",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 exact Pi child launch generates exact author/reviewer roles from canonical charters",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter keeps mutators blocked for an ambient marker until one private nonce is consumed",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter missing marker, malformed nonce, and replay never release enforcement",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter missing, malformed, or mismatched fd3 capability never releases enforcement",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter attestation context mismatch, unavailable UI, or rejected confirmation never marks ready",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/runner-isolation.test.ts:Task 6 enforcement-only child adapter registers no public aliases, dispatch, farm, or recursive orchestration",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract permission audit is append-only and rejects attacker-controlled row fields",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract permission audit rejects hardlinks and nonregular sinks",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract permission audit rejects validation-open path swaps and opened-handle mismatches",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract permission audit creates exclusively and rejects a hardlink raced into an absent target",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool project_write_anywhere without echoing attacker input",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool __proto__ without echoing attacker input",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool constructor without echoing attacker input",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool prototype without echoing attacker input",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract admits no provider credential at all and excludes farm/auth bleed",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract an obsolete session_start cannot mint readiness after shutdown and reactivation",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract farm authorization rejects a lease replaced while enabled-state proof is pending",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract farm runner rechecks the identical lifecycle lease after filesystem awaits and before spawn",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract pins CodeQL and scans both TypeScript sources and shipped JavaScript",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract security evidence output is result-code-only even with secret-bearing ambient values",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:ADR-0014 adversarial promotion contract SARIF high gate reports only a fixed code and count",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries creation failure propagates before auth, redirection and exit registration",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+      "result": "passed"
+    },
+    {
+      "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries successful setup registers owned exit cleanup and never restores the test-process environment",
+      "result": "passed"
+    }
+  ],
+  "selected_scope": "original Windows Vitest security22 + runner58, including real disposable preload assertions and explicitly mocked adverse fixtures",
+  "limits": [
+    "Unit/fixture outcomes are not an installed author or global cleanup guarantee.",
+    "No re-execution or generic qualification-reader basename fallback."
+  ]
+}

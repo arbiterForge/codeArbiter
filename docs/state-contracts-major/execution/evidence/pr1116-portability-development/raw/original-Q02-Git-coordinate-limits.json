@@ -1,0 +1,17 @@
+{
+  "job_id": 133680466949,
+  "original_chosen_git_path": "UNKNOWN: failing assertions do not retain shutil.which result",
+  "actual_shell_git_bash_seen": true,
+  "Q02_step_literals": {
+    "git/cmd/git.exe": false,
+    "git/bin/git.exe": false,
+    "git/mingw64/bin/git.exe": false
+  },
+  "log_anywhere_layout_literals_not_chosen_test_identity": {
+    "git/cmd/git.exe": false,
+    "git/bin/git.exe": true,
+    "git/mingw64/bin/git.exe": false
+  },
+  "no_runtime_replay": true,
+  "scope": "Original log only; earlier action acquisition Git paths are not proof of the in-test PATH selection"
+}

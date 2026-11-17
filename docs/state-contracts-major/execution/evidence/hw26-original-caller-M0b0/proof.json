@@ -1,0 +1,137 @@
+{
+  "schema": "hw26-original-caller-qualification-proposal/1",
+  "at": "2026-11-16T23:19:45.801643+00:00",
+  "source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "current_source": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "ci_run_id": 43960617519,
+  "ci": "SUCCESS",
+  "docs": "FAILURE",
+  "whole_normal_verdict": "BLOCK",
+  "scope_verdict": "SCOPED_ORIGINAL_FACTS_PASS_WITH_EXPLICIT_RETENTION_LIMITS",
+  "canonical_adoption": "PROPOSAL_ONLY",
+  "task": "HW-26",
+  "benchmark": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-original-caller-evidence-0ukr0fqv\\original-benchmark-proof.json",
+    "bytes": 3892,
+    "sha256": "173b379ac4e1263b756af58935904eaceeb7578bac952d2aca92519a66e89d29"
+  },
+  "real_installed_callers": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-original-caller-evidence-0ukr0fqv\\original-installed-caller-admission.json",
+    "bytes": 27095,
+    "sha256": "6adf1c711c5854cc81fccc7bb0b52c30fd26093ccc5a404d448ce2cfb33564ef"
+  },
+  "original_named_isolation_tests": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-original-caller-evidence-0ukr0fqv\\original-isolation-named-outcomes.json",
+    "bytes": 19012,
+    "sha256": "1de765416bb52f7b3751bd5e09966854da2f1c5d68cac3eb2c356f8d33498246"
+  },
+  "source_joins": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-original-caller-evidence-0ukr0fqv\\expanded-source-joins.json",
+    "bytes": 7983,
+    "sha256": "198e78199533bd1eb8f0862fae89d65cf96a6b0b2966a2ed4111db2affcde58a"
+  },
+  "isolation": {
+    "actual_windows_fixture_outcomes": 80,
+    "security": 22,
+    "runner": 58,
+    "all_selected_passed_zero_skip": true,
+    "actual_disposable_home_guards": [
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+        "result": "passed"
+      },
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+        "result": "passed"
+      },
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+        "result": "passed"
+      },
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home",
+        "result": "passed"
+      }
+    ],
+    "controlled_setup_failure_and_exit_guards": [
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries creation failure propagates before auth, redirection and exit registration",
+        "result": "passed"
+      },
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+        "result": "passed"
+      },
+      {
+        "id": "vitest:plugins/ca-pi/tools/test/security.test.ts:disposable-home setup failure and exit boundaries successful setup registers owned exit cleanup and never restores the test-process environment",
+        "result": "passed"
+      }
+    ],
+    "configuration_preload": "Vitest setupFiles resolves setup-disposable-home.ts from config URL; same source M and current",
+    "best_effort_cleanup": "Exact owned temp root removal on exit catches failure; abrupt termination can leave residue; no live-user cleanup promise",
+    "scope": "unit/fixture guard outcomes; adverse runner processes and setup I/O are mocked, not functional authorship"
+  },
+  "negative_installed_profile_controls": {
+    "original_step": {
+      "name": "Test closed installed Pi observer and trusted CI wiring",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 14,
+      "started_at": "2026-11-16T21:44:15Z",
+      "completed_at": "2026-11-16T21:44:18Z"
+    },
+    "original_log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\original-job-133626907074.log",
+      "bytes": 85993,
+      "sha256": "96d47704600a4724801e856a51f513f70b7b8e5604cd9604916259f107dff5aa"
+    },
+    "original_summaries": [
+      {
+        "line": 500,
+        "tests": 16,
+        "seconds": 2.287
+      },
+      {
+        "line": 505,
+        "tests": 17,
+        "seconds": 0.179
+      }
+    ],
+    "owning_observer_methods": [
+      "test_bootstrap_failure_retains_attached_source_checkout_diagnostic",
+      "test_failed_installed_membership_is_saved_before_refusal",
+      "test_one_actual_method_and_one_actual_platform_cell_are_returned",
+      "test_wrong_identity_profile_acquisition_or_second_payload_refuses",
+      "test_failed_skipped_or_invented_test_doctor_overclaim_and_drift_refuse",
+      "test_actual_rpc_child_environment_disables_installed_python_bytecode_before_effect",
+      "test_graph_captures_full_regular_members_and_declared_posix_bin_link",
+      "test_escaping_or_directory_link_refuses_without_following",
+      "test_existing_installer_and_original_worker_each_run_once_after_production_admission",
+      "test_production_refusal_prevents_runtime_or_rpc_effects",
+      "test_failed_install_is_recorded_before_refusal_and_rpc_does_not_run",
+      "test_worker_timeout_and_drift_retain_completion_and_never_emit_success",
+      "test_cleanup_unknown_retains_completion_and_cannot_emit",
+      "test_changed_physical_source_shim_refuses_before_any_non_git_process",
+      "test_foreign_private_cached_mechanism_refuses_and_restores_before_effects",
+      "test_bound_public_source_reaches_actual_production_verifier_refusal_without_effects"
+    ],
+    "scope": "16 actual pure/owned-fixture observer tests plus17 distinct wiring tests, not 33 installed runtime executions"
+  },
+  "adoption_refs": {
+    "implementation[2]": "three actual reviewed Pi1.5.0 caller/profile/lock/package/runtime/graph joins, not PATH helper alone",
+    "implementation[3]": "existing one Linux benchmark and source-guarded100/5/105 protocol, fixture bridge/native labels explicit; no duplicate C36 family",
+    "implementation[4]": "document best-effort cleanup/residue, supported by source and controlled fixture callback failure",
+    "implementation[0]": "unchanged preload source and retained original real disposable-home guards",
+    "implementation[1]": "dummy credentials/exact roots: real guard outcomes plus controlled setup/runner fixtures, kept separate"
+  },
+  "remaining_limits": [
+    "Raw historical benchmark ready/complete records,100 raw timings, exact benchmark-job runtime binaries and emitted bundle digests were not retained; do not copy another job/platform binary digest onto this benchmark.",
+    "Original successful command and unchanged producer checks support the reported sample/protocol counts; direct raw phase telemetry remains unretained.",
+    "No actual abrupt-hard-kill residue observation was retained here; controlled setup/cleanup fixtures and normal installed cleanup are separate facts.",
+    "Three actual installed callers prove command discovery/alias/keyed status/doctor isolation; doctor remains DEGRADED/no-parent-ui and no authored tool effect or consent is inferred.",
+    "Source equality M->current supports unchanged helper semantics only; exact installed package/runtime qualification remains bound to M, not a newly built current package.",
+    "HW-26 has PI-D07 as a downstream consumer; no provider/model/authorship dependency is inferred for these bounded facts.",
+    "No rerun/install/provider/auth-store/global/canonical operation; only four named missing original data objects acquired once under supplied context."
+  ],
+  "new_product_defect_claims": []
+}

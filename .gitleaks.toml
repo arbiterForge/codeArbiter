@@ -93,6 +93,17 @@ useDefault = true
 
 [[allowlists]]
 description = """
+Public SHA-256 of the 76 JSON.stringify(DUMMY_AUTH) bytes defined in
+plugins/ca-pi/tools/test/setup-disposable-home.ts, retained as dummy_auth_sha256
+in docs/state-contracts-major/execution/evidence/hw26-owned-abrupt-ef63f8c3/evidence-proposal.json.
+It hashes the source's fixed dummy-disposable-home-not-a-credential fixture;
+no credential input or access authority is involved. Only this exact complete
+digest value is exempted. Every file and all other values remain scanned.
+"""
+regexes = ['''\Af4f8713476abb65177a0ca5df5e6e304da4917297f01ff9121c7276bb85c6143\z''']
+
+[[allowlists]]
+description = """
 Canonical secret-detection corpus literals (architecture-001), which live in
 plugins/ca/hooks/secret-detection-corpus.json and are inlined as test input by
 .github/scripts/test_hooklib.py, plugins/ca/tools/farm.unit.test.ts, and the
@@ -347,3 +358,20 @@ regexes = [
   '''\A8aee8b6d4f9f62cf3776cda1305fb18763e2aade7e13cea5bbe699112df85214\z''',
   '''\A222aa60f8555aea9311703c68edaaa8eba0888ea29bfb4a49b37f98e0811ee2d\z''',
 ]
+
+# Verified public Git provenance in original PR1116-bbc6 failure diagnostics.
+[[allowlists]]
+description = "Exact public bbc6f39d PR head, three immutable Git blob OIDs and their independently recomputed SHA-256 source digests. The API_head/API_oid labels caused generic key detection; these identifiers carry no secret input or access authority. Only these seven complete values are exempted."
+regexes = [
+  '''\A1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810\z''',
+  '''\A2384ad748dcc9c96f79ae9e17230997e04910923\z''',
+  '''\A75965cb808c4022355b8235a321b117f075d6b5f\z''',
+  '''\Ab7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f\z''',
+  '''\Ab8ff83ebe880655e2e1cdf06a37ef7c569abe283\z''',
+  '''\Abbc6f39d688296e56ae6f3d5543e018f93288a7a\z''',
+  '''\Ad203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab\z''',
+]
+
+[[allowlists]]
+description = "Exact public PR1116 head f5dff55e, independently verified against the Git commit and live PR head. Retained original Linux progress and successful Windows diagnostic records label it API head; it is a public source identifier with no access authority. Only this complete value is exempted."
+regexes = ['''\Af5dff55e71530806c58a5dd6c352935d369ac5ae\z''']

@@ -5,6 +5,7 @@ Run as a required step in each hook matrix cell. These checks complement,
 not replace, actionlint, workflow review, and actual native-host execution.
 """
 from __future__ import annotations
+import ast
 import hashlib
 import json
 import re
@@ -48,12 +49,13 @@ RECOVERY_COMMANDS = (
     'python .github/scripts/test_review_resubmission.py',
 )
 # sha256(compact JSON of the ordered pre-partition command list). This binds
-# the guard to all 75 reviewed command steps without duplicating the workflow here.
+# the guard to all 76 reviewed command steps without duplicating the workflow here.
 # Release-workflow and Codex identity regressions run in separate native steps.
 # The guard matrix, ca-codex adapter and dual-host store suites have no direct
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
-COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
+PREVIOUS_COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
+COMMANDS_SHA256 = 'ded35eea9a75a8ec9d9a4d76e986dd48763f4258962945ffd527bb0c20d85974'
 HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n"
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
@@ -91,6 +93,38 @@ PYTHON_SOURCE_ROLES = {
           --output "${{ runner.temp }}/python-publisher-observation.json"
           -- .github/scripts/test_generated_output.py
 """,
+    'Prepare Q02 implementation source-test inputs': r"""      - name: Prepare Q02 implementation source-test inputs
+        id: q02_source_prepare
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile major-readiness-implementation-v1
+          --output "${{ runner.temp }}/q02-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+""",
+    'Observe original Q02 readiness implementation tests': r"""      - name: Observe original Q02 readiness implementation tests
+        id: q02_readiness_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile major-readiness-implementation-v1
+          --source-payload "${{ runner.temp }}/q02-source-inputs"
+          --output "${{ runner.temp }}/python-q02-readiness-observation.json"
+          -- .github/scripts/test_major_readiness.py
+""",
+    'Observe original Q02 publication guard tests': r"""      - name: Observe original Q02 publication guard tests
+        id: q02_release_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile major-readiness-implementation-v1
+          --source-payload "${{ runner.temp }}/q02-source-inputs"
+          --output "${{ runner.temp }}/python-q02-release-observation.json"
+          -- .github/scripts/test_release_workflow.py
+""",
     'Observe original skill-proof freshness tests': r"""      - name: Observe original skill-proof freshness tests
         id: python_proof_observed
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
@@ -113,6 +147,18 @@ PYTHON_SOURCE_ROLES = {
           include-hidden-files: true
           overwrite: false
 """,
+    'Upload Q02 implementation source-test inputs': r"""      - name: Upload Q02 implementation source-test inputs
+        id: q02_source_upload
+        if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.q02_source_prepare.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-q02-implementation
+          path: ${{ runner.temp }}/q02-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+""",
     'Retain original Python source-test observations': r"""      - name: Retain original Python source-test observations
         if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -126,7 +172,7 @@ PYTHON_SOURCE_ROLES = {
 """,
     'Emit original Python source qualification report': r"""      - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -136,7 +182,10 @@ PYTHON_SOURCE_ROLES = {
             --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>" \
             --observation "publisher=${{ runner.temp }}/python-publisher-observation.json" \
             --observation "skill-proof=${{ runner.temp }}/python-proof-observation.json" \
-            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}"
+            --observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json" \
+            --observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json" \
+            --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
+            --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}"
           python -c 'import json,os; from pathlib import Path; record=json.loads((Path(os.environ["RUNNER_TEMP"])/"qualification.json").read_text()); job_id=record["job_id"]; assert type(job_id) is int and job_id > 0; out=open(os.environ["GITHUB_OUTPUT"],"a",encoding="utf-8"); print("artifact_name=major-qualification-"+str(job_id),file=out); out.close()'
 """,
     'Upload major qualification report': r"""      - name: Upload major qualification report
@@ -210,7 +259,9 @@ def python_source_roles(block: str) -> dict[str,str]:
     expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in PYTHON_SOURCE_ROLES]
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
     for name,entry in (('Test interrupted output publication','test_generated_output.py'),
-                       ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py')):
+                       ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
+                       ('Test authenticated major readiness admission and refusal','test_major_readiness.py'),
+                       ('Run hosted release-workflow contract tests','test_release_workflow.py')):
         selected=[step for step in steps if step.startswith('      - name: '+name+'\n')]
         require(len(selected)==1 and command(selected[0])=='python .github/scripts/'+entry
                 and re.findall(r'^        if: (.*)$',selected[0],re.M)==[
@@ -240,7 +291,7 @@ def validate(
     expected_counts: dict[str, int] | None = None,
 ) -> dict[str,int]:
     if expected_counts is None:
-        expected_counts={'contracts':74,'isolation':1,'guard':1,'setup':3,'native_setup':1}
+        expected_counts={'contracts':75,'isolation':1,'guard':1,'setup':3,'native_setup':1}
     block=job_block(text,'hooks')
     pre=block.split('    steps:\n',1)[0]
     require(pre.count(MATRIX)==1,'Expected exactly the reviewed four-cell matrix')
@@ -285,7 +336,9 @@ def validate(
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
         observed_original = roles and cmd in ('python .github/scripts/test_generated_output.py',
-                                               'python .github/scripts/test_check_skill_proof_fresh.py')
+                                               'python .github/scripts/test_check_skill_proof_fresh.py',
+                                               'python .github/scripts/test_major_readiness.py',
+                                               'python .github/scripts/test_release_workflow.py')
         if not observed_original:
             require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
     require(counters['native_setup']==1,'Expected exactly one ordinary native qualification')
@@ -503,7 +556,7 @@ class SourceQualificationRoleTests(unittest.TestCase):
             counters=validate(self.current())
         except ValueError as error:
             self.fail(str(error))
-        self.assertEqual(counters,{'contracts':74,'isolation':1,'guard':1,'setup':3,'native_setup':1})
+        self.assertEqual(counters,{'contracts':75,'isolation':1,'guard':1,'setup':3,'native_setup':1})
 
     def test_folded_scalar_keeps_every_interpolation_and_argument(self):
         block=('      - name: fixed\n        run: >-\n'
@@ -514,7 +567,7 @@ class SourceQualificationRoleTests(unittest.TestCase):
 
     def test_source_roles_cannot_change_guards_repeat_original_tests_or_forward_credentials(self):
         text=self.current()
-        self.assertEqual(validate(text)['contracts'],74)
+        self.assertEqual(validate(text)['contracts'],75)
         for before,after in (
             ("id: python_source_prepare\n        if: matrix.os == 'windows-latest'", "id: python_source_prepare\n        if: matrix.os == 'ubuntu-latest'"),
             ('-- .github/scripts/test_generated_output.py','-- .github/scripts/test_generated_output.py; python .github/scripts/test_generated_output.py'),
@@ -533,6 +586,125 @@ class SourceQualificationRoleTests(unittest.TestCase):
         with self.assertRaises(ValueError):validate(text.replace(observer,observer+observer,1))
         unknown="      - name: unreviewed source command\n        if: matrix.partition == 'all' || matrix.partition == 'contracts'\n        run: python unreviewed.py\n"
         with self.assertRaises(ValueError):validate(text.replace(block,block+unknown,1))
+
+    def test_q02_roles_refuse_changed_profile_payload_results_and_authority(self):
+        text=self.current();block=job_block(text,'hooks');self.assertEqual(validate(text)['contracts'],75)
+        changes=(
+            ('Prepare Q02 implementation source-test inputs','--source-profile major-readiness-implementation-v1','--source-profile python-hooks-v1'),
+            ('Prepare Q02 implementation source-test inputs','q02-source-inputs','foreign-source-inputs'),
+            ('Observe original Q02 readiness implementation tests','-- .github/scripts/test_major_readiness.py','-- .github/scripts/test_major_readiness.py -k partial'),
+            ('Observe original Q02 publication guard tests','-- .github/scripts/test_release_workflow.py','-- .github/scripts/unreviewed.py'),
+            ('Emit original Python source qualification report','--observation "q02-readiness=${{ runner.temp }}/python-q02-readiness-observation.json"','--observation "unknown=${{ runner.temp }}/python-q02-readiness-observation.json"'),
+            ('Emit original Python source qualification report','--observation "q02-release=${{ runner.temp }}/python-q02-release-observation.json"',''),
+            ('Emit original Python source qualification report','major-source-inputs-q02-implementation=${{ github.workspace }}','major-source-inputs-q02-implementation=${{ runner.temp }}'),
+            ('Emit original Python source qualification report',"steps.q02_source_upload.outcome == 'success'",'true'),
+            ('Emit original Python source qualification report',"steps.q02_readiness_observed.outcome == 'success'",'true'),
+            ('Prepare Q02 implementation source-test inputs','        shell: bash\n','        env:\n          GH_TOKEN: ${{ github.token }}\n        shell: bash\n'),
+            ('Upload Q02 implementation source-test inputs','actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9','actions/upload-artifact@'+'0'*40),
+            ('Upload Q02 implementation source-test inputs','include-hidden-files: true','include-hidden-files: false'),
+            ('Upload Q02 implementation source-test inputs','overwrite: false','overwrite: true'),
+        )
+        for name,before,after in changes:
+            original=PYTHON_SOURCE_ROLES[name];self.assertIn(before,original)
+            changed=text.replace(original,original.replace(before,after,1),1)
+            with self.subTest(role=name,field=before),self.assertRaises(ValueError):validate(changed)
+        observed=PYTHON_SOURCE_ROLES['Observe original Q02 readiness implementation tests']
+        with self.assertRaises(ValueError):validate(text.replace(observed,observed+observed,1))
+        for name in ('Test authenticated major readiness admission and refusal','Run hosted release-workflow contract tests'):
+            fallback=next(step for step in step_blocks(block) if step.startswith('      - name: '+name+'\n'))
+            exclusive="(matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')"
+            self.assertIn(exclusive,fallback)
+            with self.subTest(fallback=name),self.assertRaises(ValueError):
+                validate(text.replace(fallback,fallback.replace(exclusive,"matrix.partition == 'all' || matrix.partition == 'contracts'"),1))
+
+    def test_exact_hw04_addition_preserves_all_prior_ordered_commands(self):
+        text=self.current();block=job_block(text,'hooks');roles=python_source_roles(block)
+        commands=[command(step) for step in step_blocks(block) if step not in roles.values()
+                  and command(step) not in (None,NATIVE_PREPARE_COMMAND,GUARD)]
+        added=NPM_PURE_COMMAND
+        self.assertEqual(commands.count(added),1)
+        self.assertEqual(len(commands),76)
+        previous=[value for value in commands if value!=added]
+        self.assertEqual(len(previous),75)
+        self.assertEqual(command_digest(previous),PREVIOUS_COMMANDS_SHA256)
+        self.assertEqual(command_digest(commands),COMMANDS_SHA256)
+        owned=next(step for step in step_blocks(block) if command(step)==added)
+        with self.assertRaises(ValueError):validate(text.replace(owned,'',1))
+        with self.assertRaises(ValueError):validate(text.replace(owned,owned+owned,1))
+        changed=owned.replace(added,'python .github/scripts/unreviewed.py')
+        with self.assertRaises(ValueError):validate(text.replace(owned,changed,1))
+
+
+
+NPM_PURE_COMMAND = 'python .github/scripts/test_npm_binding_observation.py AdmissionTests IdentityLimitTests RuntimePortabilityTests'
+NPM_PRODUCER_COMMAND = 'python .github/scripts/test_npm_binding_observation.py ProducerBoundaryTests'
+NPM_NATIVE_STEP = ('      - name: Test original Python npm binding producer on the qualified runtime\n'
+                   '        run: ' + NPM_PRODUCER_COMMAND + '\n')
+NPM_NATIVE_BUILD = '      - name: Build native qualified candidate\n        run: >-\n          python tools/build-artifacts.py\n          --output "${{ runner.temp }}/artifact-candidate"\n          --test-observation "${{ runner.temp }}/native-tests.json"\n          --npm-binding-observations "${{ runner.temp }}/native-npm-binding-identities"\n'
+
+def validate_native_npm_owner(text: str) -> None:
+    native = job_block(text, 'artifact-native-build')
+    steps = step_blocks(native)
+    require(steps.count(NPM_NATIVE_STEP) == 1, 'Pinned native runtime producer unit missing or repeated')
+    require(steps.count(NPM_NATIVE_BUILD) == 1, 'Original native builder command changed or repeated')
+    require(steps.index(NPM_NATIVE_STEP) < steps.index(NPM_NATIVE_BUILD), 'Producer unit must precede original builder')
+    setup = ('      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0\n'
+             '        with:\n          python-version: "3.14"\n')
+    require(steps.count(setup) == 1 and steps.index(setup) < steps.index(NPM_NATIVE_STEP), 'Producer requires original pinned Python 3.14 setup')
+    platforms = re.findall(r'^            expected_platform: (\S+)$', native, re.M)
+    require(sorted(platforms) == ['darwin/amd64','darwin/arm64','linux/amd64','linux/arm64','windows/amd64','windows/arm64'], 'Producer must retain all six native platforms')
+    require('    runs-on: ${{ matrix.os }}\n' in native, 'Native runtime platform routing changed')
+    hooks = job_block(text, 'hooks')
+    selected = [command(step) for step in step_blocks(hooks) if command(step) and 'test_npm_binding_observation.py' in command(step)]
+    require(selected == [NPM_PURE_COMMAND], 'Hook npm controls must be exactly the three runtime-independent classes')
+    native_selected = [command(step) for step in steps if command(step) and 'test_npm_binding_observation.py' in command(step)]
+    require(native_selected == [NPM_PRODUCER_COMMAND], 'Native producer must execute once without filtering its method')
+
+
+class NpmRuntimeOwnerTests(unittest.TestCase):
+    def current(self):
+        return (Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+
+    def test_full_runtime_producer_uses_each_pinned_native_runtime_once(self):
+        try:
+            validate_native_npm_owner(self.current())
+        except ValueError as error:
+            self.fail(str(error))
+
+    def test_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes(self):
+        text=self.current();validate_native_npm_owner(text)
+        native=job_block(text,'artifact-native-build')
+        changes=(
+            (NPM_NATIVE_STEP,''),
+            (NPM_NATIVE_STEP,NPM_NATIVE_STEP+NPM_NATIVE_STEP),
+            (NPM_NATIVE_STEP,NPM_NATIVE_STEP.replace('        run:', '        if: false\n        run:')),
+            (NPM_NATIVE_STEP+NPM_NATIVE_BUILD,NPM_NATIVE_BUILD+NPM_NATIVE_STEP),
+            ('python-version: "3.14"','python-version: "3.x"'),
+            ('setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0','setup-python@'+'0'*40),
+            ('expected_platform: linux/arm64','expected_platform: linux/amd64'),
+            (NPM_NATIVE_BUILD,NPM_NATIVE_BUILD.replace('python tools/build-artifacts.py','python tools/other.py')),
+            (NPM_PRODUCER_COMMAND,NPM_PRODUCER_COMMAND+' -k subset'),
+        )
+        for before,after in changes:
+            self.assertIn(before,native)
+            with self.subTest(field=before),self.assertRaises(ValueError):
+                validate_native_npm_owner(text.replace(native,native.replace(before,after,1),1))
+        for replacement in (NPM_PRODUCER_COMMAND,NPM_PURE_COMMAND.replace(' RuntimePortabilityTests',''),NPM_PURE_COMMAND+' ProducerBoundaryTests'):
+            with self.subTest(hooks=replacement),self.assertRaises(ValueError):
+                validate_native_npm_owner(text.replace(NPM_PURE_COMMAND,replacement,1))
+
+    def test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods(self):
+        path=Path(__file__).with_name('test_npm_binding_observation.py')
+        tree=ast.parse(path.read_text(encoding='utf8'))
+        classes={node.name:{m.name for m in node.body if isinstance(m,(ast.FunctionDef,ast.AsyncFunctionDef)) and m.name.startswith('test_')}
+                 for node in tree.body if isinstance(node,ast.ClassDef)}
+        selected={'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'}
+        self.assertEqual(set(classes),selected|{'ProducerBoundaryTests'})
+        self.assertEqual(sum(len(classes[name]) for name in selected),20)
+        self.assertEqual(len(classes['ProducerBoundaryTests']),1)
+        self.assertEqual(NPM_PURE_COMMAND.split()[2:],['AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'])
+        self.assertEqual(NPM_PRODUCER_COMMAND.split()[2:],['ProducerBoundaryTests'])
+        self.assertEqual(sum(map(len,classes.values())),21)
 
 
 def main() -> int:

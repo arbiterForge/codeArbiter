@@ -2497,7 +2497,7 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
             return {**component,'native_binding':{**component['native_binding'],
                     'module_sha256':req_arg['native_module_sha256']['windows']}}
         native_module.authenticate_component=mock.Mock(side_effect=authenticated)
-        emitted=private/'emitted.json'
+        emitted=private/'qualification.json'
         with mock.patch.dict(sys.modules,{'major_native_observation':native_module}), \
              mock.patch.dict(os.environ,GITHUB_SHA=before['source_commit'],GITHUB_RUN_ID='7'), \
              mock.patch.object(owner,'ROOT',self.root),mock.patch.object(owner,'validate_emitter_environment'), \
@@ -3041,6 +3041,272 @@ class SdkPythonSourceProfileTests(unittest.TestCase):
                 else:attribution.side_effect=owner.readiness.ReadinessError("original source uploader refused")
                 with self.subTest(failure=failure),self.assertRaises(owner.readiness.ReadinessError):
                     owner.readiness.produce(requirements,[source,artifact],modified)
+
+
+
+Q02_FIXTURE_SELECTORS = {'readiness': ('python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_valid_receipt_is_non_circular', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_publication_task_cannot_enter_prepublication_population', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_wrong_source_tree_run_and_manifests_refuse', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_forged_untrusted_run_refuses', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_missing_expired_wrong_archive_refuses', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_unknown_skipped_missing_duplicate_cells_refuse', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_caller_pass_cannot_replace_successful_named_job', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_wrong_or_expired_payload_artifact_refuses', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_distributed_settlement_is_not_prepublication', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_exact_member_readback_is_required_by_live_verification', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_unsettled_version_mismatch_never_bypasses_major_qualification', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_receipt_only_does_not_repeat_publication', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_malformed_marker_is_not_an_ordinary_release_escape', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_matching_candidate_without_required_readiness_remains_pending', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_producer_requires_original_executed_reports', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_producer_refuses_reports_without_the_named_jobs_upload_step', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_interned_report_payloads_preserve_exact_archive_and_member_admission', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_complete_frozen_population_receipt_fits_existing_json_bound', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_unfinished_program_cannot_produce_readiness', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_archive_members_reject_traversal_symlink_duplicates_and_empty', 'python:.github/scripts/test_major_readiness.py:__main__.ReadinessTest.test_first_effect_gate_precedes_tag_and_keeps_pi_provenance_check', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_completed_metadata_does_not_clear_authoritative_confirmation', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_preserved_rows_do_not_admit_a_nonexistent_evidence_commit', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_existing_evidence_commit_does_not_make_an_unavailable_reference_valid', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_complete_reviewed_population_preserves_local_origin_and_non_circularity', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_complete_population_does_not_reopen_resolved_history_prose', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_complete_population_rejects_missing_or_changed_raw_proof_and_inputs', 'python:.github/scripts/test_major_readiness.py:__main__.CompletedPopulationTest.test_complete_population_rejects_a_review_that_does_not_cover_the_row', 'python:.github/scripts/test_major_readiness.py:__main__.UploadAttributionTest.test_exact_successful_upload_has_original_attribution', 'python:.github/scripts/test_major_readiness.py:__main__.UploadAttributionTest.test_artifact_service_clock_offset_does_not_override_authenticated_step_log', 'python:.github/scripts/test_major_readiness.py:__main__.UploadAttributionTest.test_original_actions_log_utf8_bom_is_accepted', 'python:.github/scripts/test_major_readiness.py:__main__.UploadAttributionTest.test_report_name_and_json_job_id_do_not_replace_successful_upload_step', 'python:.github/scripts/test_major_readiness.py:__main__.UploadAttributionTest.test_another_jobs_artifact_or_different_digest_or_window_refuses', 'python:.github/scripts/test_major_readiness.py:__main__.UploadAttributionTest.test_metadata_and_step_timestamps_still_require_wellformed_aware_values', 'python:.github/scripts/test_major_readiness.py:__main__.ProgramProducingGuardTest.test_finite_producer_catalog_does_not_require_unfinished_program_to_be_ready', 'python:.github/scripts/test_major_readiness.py:__main__.ProgramProducingGuardTest.test_program_push_is_producing_only_and_publication_reader_stays_main_only'), 'release': ('python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_releases_follow_successful_main_ci_and_manual_retry', 'python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_preflight_requires_a_successful_same_repo_main_push', 'python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_dispatch_is_refused_off_the_default_branch', 'python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_each_run_releases_its_own_commit_from_its_own_manifests', 'python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_every_publisher_receives_the_selected_source_and_ci_run', 'python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_workflow_run_event_binds_its_own_run', 'python:.github/scripts/test_release_workflow.py:__main__.IndependenceTest.test_every_release_job_depends_only_on_the_preflight', 'python:.github/scripts/test_release_workflow.py:__main__.IndependenceTest.test_each_release_job_gates_only_on_its_own_eligibility', 'python:.github/scripts/test_release_workflow.py:__main__.IndependenceTest.test_one_targets_planning_error_does_not_block_the_others', 'python:.github/scripts/test_release_workflow.py:__main__.IndependenceTest.test_each_release_job_serializes_only_with_itself', 'python:.github/scripts/test_release_workflow.py:__main__.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit', 'python:.github/scripts/test_release_workflow.py:__main__.ConsumerSafetyGateTest.test_package_cohort_is_verified_before_anything_is_published', 'python:.github/scripts/test_release_workflow.py:__main__.ConsumerSafetyGateTest.test_attached_package_reads_back_byte_identical', 'python:.github/scripts/test_release_workflow.py:__main__.ConsumerSafetyGateTest.test_release_goes_public_only_after_every_channel', 'python:.github/scripts/test_release_workflow.py:__main__.ConsumerSafetyGateTest.test_receipt_is_written_after_the_release_is_public', 'python:.github/scripts/test_release_workflow.py:__main__.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads', 'python:.github/scripts/test_release_workflow.py:__main__.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite', 'python:.github/scripts/test_release_workflow.py:__main__.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry')}
+
+
+@contextmanager
+def q02_python_source_fixture():
+    """Synthetic transport controls, never an executed Q02 product qualification."""
+    with tempfile.TemporaryDirectory(prefix="ca-q02-python-profile-") as temporary:
+        base=Path(temporary).resolve();repo=base/"repo";repo.mkdir()
+        canonical=Path(os.environ.get("CA_Q02_CANONICAL_ROOT",owner.ROOT))
+        paths=getattr(owner,"Q02_SOURCE_PATHS",frozenset((".github/scripts/test_major_readiness.py",".github/scripts/test_release_workflow.py")))
+        for relative in paths:
+            target=repo/relative;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes((canonical/relative).read_bytes())
+        counter=base/"counter"
+        for key,script in (("readiness","test_major_readiness.py"),("release","test_release_workflow.py")):
+            classes={}
+            for selector in Q02_FIXTURE_SELECTORS[key]:
+                cls,method=selector.rsplit(":",1)[1].removeprefix("__main__.").split(".")
+                classes.setdefault(cls,[]).append(method)
+            program="import unittest,pathlib\n"+f"p=pathlib.Path({str(counter)!r});p.write_text((p.read_text() if p.exists() else '')+{key[0]!r})\n"
+            for cls,methods in classes.items():
+                program+=f"class {cls}(unittest.TestCase):\n"
+                for method in methods:program+=f" def {method}(self): self.assertTrue(True)\n"
+            program+="if __name__=='__main__': unittest.main()\n"
+            (repo/".github/scripts"/script).write_text(program,encoding="utf-8",newline="\n")
+        git=shutil.which("git");assert git
+        env={k:v for k,v in os.environ.items() if k.upper() in ("SYSTEMROOT","WINDIR","SYSTEMDRIVE","COMSPEC","PATHEXT")}
+        env.update(PATH=os.pathsep.join([str(Path(git).parent),str(Path(sys.executable).parent)]),
+                   HOME=str(base),USERPROFILE=str(base),GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM="1",
+                   GIT_AUTHOR_NAME="fixture",GIT_AUTHOR_EMAIL="fixture@invalid",GIT_COMMITTER_NAME="fixture",GIT_COMMITTER_EMAIL="fixture@invalid",
+                   GITHUB_RUN_ID="7",PYTHONDONTWRITEBYTECODE="1")
+        with mock.patch.dict(os.environ,env,clear=True):
+            for args in (["init"],["config","core.autocrlf","false"],["add","."],["-c","commit.gpgsign=false","commit","-qm","Q02 fixture"]):
+                run_git_phase([git,"-C",str(repo),*args],phase="init" if args[0] in ("init","config") else "index" if args[0]=="add" else "commit",trace_dir=base)
+            yield {"base":base,"repo":repo,"staged":base/"staged","counter":counter,
+                   "profile":"major-readiness-implementation-v1","job":"[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+                   "payload":"major-source-inputs-q02-implementation","cell":"task:Q-02"}
+
+
+class Q02ReadinessSourceProfileTests(unittest.TestCase):
+    def original(self,f):
+        owner.prepare_source_payload(f["repo"],f["staged"],f["job"],f["profile"])
+        observed={}
+        for key,script in (("readiness","test_major_readiness.py"),("release","test_release_workflow.py")):
+            output=f["base"]/(key+".json")
+            self.assertEqual(owner.observe_python(f["repo"],".github/scripts/"+script,[],output,f["staged"],f["profile"]),0)
+            observed[key]=owner.load_json(output)
+        self.assertEqual(f["counter"].read_text(),"rr")
+        return observed
+
+    def selection(self,f):
+        return {"schema":owner.SELECTIONS,"groups":[{"id":"q02-"+key,"job":f["job"],"payload_name":f["payload"],"observation":key,
+                "proof_kind":"source-test","selectors":list(selectors),"cells":[f["cell"]],
+                "scope":"Synthetic transport fixture; no production readiness or publication claim"}
+                for key,selectors in Q02_FIXTURE_SELECTORS.items()]}
+
+    def authenticate(self,f):
+        buffer=io.BytesIO()
+        with zipfile.ZipFile(buffer,"w") as archive:
+            for p in f["staged"].rglob("*"):
+                if p.is_file():archive.writestr(p.relative_to(f["staged"]).as_posix(),p.read_bytes())
+        req={**owner.source_identity(f["repo"],f["profile"]),"ci_run_id":7,"cells":[f["cell"]],"cell_jobs":{f["cell"]:f["job"]}}
+        job={"id":9,"name":f["job"],"status":"in_progress","conclusion":None,
+             "steps":[{"name":"Upload Q02 implementation source-test inputs","status":"completed","conclusion":"success"}]}
+        with mock.patch.object(owner.readiness,"artifact_bytes",return_value=buffer.getvalue()), \
+             mock.patch.object(owner.readiness,"validate_upload",side_effect=AssertionError("active job has no completed log")):
+            payload=owner.authenticated_payload({"id":8,"name":f["payload"]},req,f["repo"],source_job=job)
+        return req,payload
+
+    def build(self,f,observed,selection=None):
+        if "authenticated" not in f:f["authenticated"]=self.authenticate(f)
+        req,payload=copy.deepcopy(f["authenticated"]);selection=selection or self.selection(f)
+        cells=selection["groups"][0]["cells"];req.update(cells=cells,cell_jobs={c:f["job"] for c in cells})
+        return owner.build_report(req,job_name=f["job"],job_id=9,selections=selection,observations=observed,payloads={f["payload"]:payload})
+
+    def test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task(self):
+        with q02_python_source_fixture() as f:
+            try:observed=self.original(f)
+            except ValueError as error:self.fail("Original source observer cannot carry Q02's own readiness invocation: "+str(error))
+            self.assertEqual({t["id"] for value in observed.values() for t in value["tests"]},{s for values in Q02_FIXTURE_SELECTORS.values() for s in values})
+            report=self.build(f,observed)
+            self.assertEqual([row["cell"] for row in report["results"]],["task:Q-02"])
+            self.assertEqual(report["results"][0]["executed_population"],sum(map(len,Q02_FIXTURE_SELECTORS.values())))
+
+    def test_q02_requires_all_original_named_assertions_and_refuses_skip_failure_duplicate(self):
+        with q02_python_source_fixture() as f:
+            observed=self.original(f)
+            for failure in ("omitted","skipped","failed","duplicate","empty-selection"):
+                bad=copy.deepcopy(observed);selection=self.selection(f)
+                if failure=="omitted":bad["readiness"]["tests"].pop()
+                elif failure=="duplicate":bad["readiness"]["tests"].append(copy.deepcopy(bad["readiness"]["tests"][0]))
+                elif failure=="empty-selection":selection["groups"][0]["selectors"]=selection["groups"][0]["selectors"][:1]
+                else:bad["readiness"]["tests"][0]["result"]=failure
+                with self.subTest(failure=failure),self.assertRaises(ValueError):self.build(f,bad,selection)
+
+    def test_q02_never_relabels_final_main_other_tasks_installed_or_old_profile(self):
+        with q02_python_source_fixture() as f:
+            observed=self.original(f)
+            for cell in ("task:Q-03","task:P-02","scenario:SEQ-01","installed:pi:windows:1.5.0"):
+                selection=self.selection(f);
+                for group in selection["groups"]:group["cells"]=[cell]
+                with self.subTest(cell=cell),self.assertRaises(ValueError):self.build(f,observed,selection)
+            for kind in ("native-module","retained-archive-cli","live-host"):
+                selection=self.selection(f)
+                for group in selection["groups"]:group["proof_kind"]=kind
+                with self.subTest(kind=kind),self.assertRaisesRegex(ValueError,"Q02 implementation requires original source"):
+                    self.build(f,observed,selection)
+            for profile in (owner.SOURCE_PROFILE,owner.SDK_SOURCE_PROFILE,"unreviewed-task-profile"):
+                bad=copy.deepcopy(observed);bad["readiness"]["source_input_binding"]["profile"]=profile
+                with self.subTest(profile=profile),self.assertRaises(ValueError):self.build(f,bad)
+
+    def test_q02_filtered_or_foreign_entrypoint_refuses_before_execution(self):
+        with q02_python_source_fixture() as f:
+            owner.prepare_source_payload(f["repo"],f["staged"],f["job"],f["profile"])
+            for script,args in ((".github/scripts/test_major_readiness.py",["ReadinessTest"]),
+                                (".github/scripts/major_readiness.py",["verify"]),
+                                (".github/scripts/test_major_readiness.py",["--help"])):
+                with self.subTest(script=script,args=args),self.assertRaises(ValueError):
+                    owner.observe_python(f["repo"],script,args,f["base"]/"absent.json",f["staged"],f["profile"])
+            self.assertFalse(f["counter"].exists());self.assertFalse((f["base"]/"absent.json").exists())
+
+    def test_final_reader_authenticates_q02_source_upload_and_unchanged_owner_job(self):
+        cell="task:Q-02";job_name="[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:archive.writestr("source-member",b"inert")
+        content=raw.getvalue();members=owner.readiness.members(content)
+        source={"id":8,"name":"major-source-inputs-q02-implementation"};artifact={"id":10,"name":"major-qualification-9"}
+        job={"id":9,"name":job_name,"status":"completed","conclusion":"success"}
+        req={"source_commit":"a"*40,"source_tree":"b"*40,"ci_run_id":7,"cells":[cell],"cell_jobs":{cell:job_name},"required_artifact_names":[source["name"]]}
+        report={"schema":"codearbiter-major-qualification/2",**{key:req[key] for key in ("source_commit","source_tree","ci_run_id")},"job_id":9,
+          "payloads":[{"artifact_id":8,"archive_sha256":owner.readiness.digest(content),"members":members}],
+          "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["python",".github/scripts/test_major_readiness.py"],"exit_code":0}],"selected_population":1,"executed_population":1,"payload_artifact_id":8}]}
+        jobs=[job,{"id":11,"name":"major readiness producer"}]
+        with mock.patch.object(owner.readiness,"read_artifact_json",return_value=report), \
+             mock.patch.object(owner.readiness,"artifact_bytes",return_value=content), \
+             mock.patch.object(owner.readiness,"validate_upload") as attribution:
+            owner.readiness.produce(req,[source,artifact],jobs)
+            self.assertEqual(attribution.call_args_list,[mock.call(job,artifact,"Upload major qualification report"),
+                mock.call(job,source,"Upload Q02 implementation source-test inputs")])
+            for failure in ("wrong-owner","in-progress","upload-refused"):
+                modified=copy.deepcopy(jobs);requirements=copy.deepcopy(req)
+                attribution.side_effect=None
+                if failure=="wrong-owner":
+                    modified[0]["name"]="other";requirements["cell_jobs"][cell]="other"
+                elif failure=="in-progress":modified[0].update(status="in_progress",conclusion=None)
+                else:attribution.side_effect=owner.readiness.ReadinessError("original source uploader refused")
+                with self.subTest(failure=failure),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.produce(requirements,[source,artifact],modified)
+
+    def test_q02_ci_keeps_two_original_invocations_exact_once_and_trusted_emission(self):
+        from test_ci_impact import workflow_jobs
+        hooks=workflow_jobs((owner.ROOT/".github/workflows/ci.yml").read_text(encoding="utf-8"))["hooks"]
+        def check(text):
+            for script,identifier in (("test_major_readiness.py","q02_readiness_observed"),("test_release_workflow.py","q02_release_observed")):
+                self.assertEqual(text.count("run: python .github/scripts/"+script),1)
+                self.assertEqual(text.count("-- .github/scripts/"+script+"\n"),1)
+                self.assertEqual(text.count("id: "+identifier),1)
+            self.assertEqual(text.count("id: q02_source_prepare"),1)
+            self.assertEqual(text.count("id: q02_source_upload"),1)
+            self.assertLess(text.index("id: q02_source_prepare"),text.index("id: q02_readiness_observed"))
+            self.assertLess(text.index("id: q02_release_observed"),text.index("id: q02_source_upload"))
+            for title in ("Test authenticated major readiness admission and refusal","Run hosted release-workflow contract tests"):
+                fallback=text.split("- name: "+title+"\n",1)[1].split("      - name:",1)[0]
+                self.assertIn("if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')",fallback)
+            emit=text.split("id: python_qualification_emit",1)[1].split("- name: Upload major qualification report",1)[0]
+            for value in ("github.event_name == 'push'","github.ref == 'refs/heads/main'","github.ref == 'refs/heads/major/state-contracts'",
+                          "hashFiles('.github/integration-candidate.json') != ''","steps.q02_source_upload.outcome == 'success'",
+                          "steps.q02_readiness_observed.outcome == 'success'","steps.q02_release_observed.outcome == 'success'",
+                          '--payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}"'):
+                self.assertIn(value,emit)
+            self.assertNotIn('GH_TOKEN:',text.split('- name: Emit original Python source qualification report',1)[0])
+        check(hooks)
+        for bad in (hooks.replace('-- .github/scripts/test_major_readiness.py\n','-- .github/scripts/test_major_readiness.py ReadinessTest\n',1),
+                    hooks.replace('-- .github/scripts/test_release_workflow.py\n','',1),
+                    hooks+'\n-- .github/scripts/test_release_workflow.py\n',
+                    hooks.replace("github.event_name == 'push'","github.event_name != 'pull_request'"),
+                    hooks.replace("steps.q02_source_upload.outcome == 'success'","true")):
+            with self.subTest(mutation=len(bad)),self.assertRaises(AssertionError):check(bad)
+        maps=json.loads((owner.ROOT/".github/major-test-selections.json").read_text(encoding="utf-8"))
+        groups=[g for g in maps["groups"] if "task:Q-02" in g["cells"]]
+        self.assertEqual({x for g in groups for x in g["selectors"]},set(owner.Q02_REQUIRED_SELECTORS))
+        self.assertEqual({g["payload_name"] for g in groups},{owner.Q02_SOURCE_PAYLOAD})
+
+
+class QualificationOutputFilenameTests(unittest.TestCase):
+    """Real emit CLI/file writer and unchanged singleton archive reader."""
+
+    def emit(self, base, name):
+        fixture=ReportTest();fixture.setUp()
+        repo=base/'repo';(repo/'.github').mkdir(parents=True,exist_ok=True)
+        (repo/'.github/major-test-selections.json').write_text(json.dumps(fixture.map),encoding='utf8')
+        observation=base/'native.json';observation.write_text(json.dumps(fixture.observation),encoding='utf8')
+        output=base/name
+        job={'name':'owning native job','id':9,'status':'in_progress'}
+        env={'GITHUB_ACTIONS':'true','GITHUB_REPOSITORY':owner.readiness.REPOSITORY,
+             'GITHUB_REF':'refs/heads/major/state-contracts','GITHUB_EVENT_NAME':'push',
+             'GITHUB_SHA':fixture.req['source_commit'],'GITHUB_RUN_ID':'7'}
+        with mock.patch.dict(os.environ,env),mock.patch.object(owner,'source_identity',return_value={
+                'source_commit':fixture.req['source_commit'],'source_tree':'b'*40,'clean':True}), \
+             mock.patch.object(owner.readiness,'collect',return_value=(fixture.req,None,
+                 [{'name':'candidate','id':8}],[job])) as collect, \
+             mock.patch.object(owner,'authenticated_payload',return_value=fixture.payload) as payload, \
+             mock.patch('sys.stderr',new=io.StringIO()):
+            result=owner.main(['emit','--repo',str(repo),'--output',str(output),
+                '--job-name',job['name'],'--observation','native='+str(observation),
+                '--payload-root','candidate='+str(base)])
+        return result,output,fixture,collect.call_count,payload.call_count
+
+    def test_emit_refuses_noncanonical_report_names_before_metadata_or_write(self):
+        for name in ('pi-qualification.json','sandbox-qualification.json','pi-sdk-qualification.json'):
+            with self.subTest(name=name),tempfile.TemporaryDirectory(prefix='ca-report-name-') as raw:
+                code,path,_,collect,payload=self.emit(Path(raw).resolve(),name)
+                self.assertEqual(code,1,'a valid emitter must refuse an archive basename its reader cannot consume')
+                self.assertFalse(path.exists())
+                self.assertEqual((collect,payload),(0,0))
+
+    def test_canonical_emit_archive_roundtrips_unchanged_exact_filename_reader(self):
+        with tempfile.TemporaryDirectory(prefix='ca-report-canonical-') as raw:
+            code,path,fixture,collect,payload=self.emit(Path(raw).resolve(),'qualification.json')
+            self.assertEqual((code,collect,payload),(0,1,1))
+            self.assertEqual(owner.load_json(path),fixture.build())
+            archive=io.BytesIO()
+            with zipfile.ZipFile(archive,'w') as zipped:zipped.writestr(path.name,path.read_bytes())
+            with mock.patch.object(owner.readiness,'artifact_bytes',return_value=archive.getvalue()):
+                self.assertEqual(owner.readiness.read_artifact_json({'id':8},fixture.req,'qualification.json'),fixture.build())
+            wrong=io.BytesIO()
+            with zipfile.ZipFile(wrong,'w') as zipped:zipped.writestr('pi-sdk-qualification.json',path.read_bytes())
+            with mock.patch.object(owner.readiness,'artifact_bytes',return_value=wrong.getvalue()):
+                with self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.read_artifact_json({'id':8},fixture.req,'qualification.json')
+
+    def test_original_non_emit_operations_keep_arbitrary_output_filenames(self):
+        with tempfile.TemporaryDirectory(prefix='ca-other-output-') as raw:
+            base=Path(raw).resolve()
+            with mock.patch.object(owner,'prepare_source_payload') as prepare, \
+                 mock.patch.object(owner,'observe_python',return_value=0) as python, \
+                 mock.patch.object(owner,'observe_vitest',return_value=0) as vitest, \
+                 mock.patch.object(owner,'validate_emitter_environment') as emitter:
+                self.assertEqual(owner.main(['prepare-source','--output',str(base/'inputs')]),0)
+                self.assertEqual(owner.main(['observe-python','--output',str(base/'observed.json'),'entry.py']),0)
+                self.assertEqual(owner.main(['observe-vitest','--output',str(base/'vitest.json')]),0)
+                prepare.assert_called_once();python.assert_called_once();vitest.assert_called_once();emitter.assert_not_called()
+            with mock.patch.object(owner,'load_json',return_value={'source_commit':'a'*40}), \
+                 mock.patch.object(owner,'git',return_value='b'*40), \
+                 mock.patch.object(owner,'admit_go',return_value={'fixture':'inert'}), \
+                 mock.patch.object(owner,'validate_emitter_environment') as emitter:
+                self.assertEqual(owner.main(['admit-go','--output',str(base/'go.json'),
+                    '--observation','raw.json','--native-binding','stamp.json']),0)
+                self.assertEqual(json.loads((base/'go.json').read_bytes()),{'fixture':'inert'})
+                self.assertTrue((base/'go.json').is_file());emitter.assert_not_called()
+
+    def test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name(self):
+        import re
+        source=(Path(__file__).resolve().parents[2]/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        blocks=re.split(r'(?m)^      - ',source)
+        emitters=[block for block in blocks if re.search(r'python(?: -B)? \.github/scripts/major_qualification_report\.py emit\b',block)]
+        self.assertGreaterEqual(len(emitters),7)
+        for block in emitters:
+            output=re.search(r'--output\s+"([^"]+)"',block)
+            self.assertIsNotNone(output)
+            self.assertEqual(output.group(1).rsplit('/',1)[-1],'qualification.json',block.splitlines()[0])
+        for legacy in ('pi-qualification.json','sandbox-qualification.json','pi-sdk-qualification.json'):
+            self.assertNotIn(legacy,source)
 
 
 if __name__ == "__main__":

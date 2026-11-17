@@ -1,0 +1,104 @@
+{
+  "source_anchor": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "basis": "current staged physical HW04+Q02 composition, not immutable parent tree",
+  "candidate_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\candidate",
+  "subjects": [
+    {
+      "path": ".github/scripts/major_qualification_report.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\candidate\\.github\\scripts\\major_qualification_report.py",
+      "preimage_sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+      "sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+      "bytes": 139525,
+      "companion_only": false
+    },
+    {
+      "path": ".github/scripts/test_major_qualification_report.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+      "preimage_sha256": "80f457af85ecabdf01727cddef50deb6b28f5ae70abf9d055038dfe141beac5b",
+      "sha256": "06d3be8d73964a7870f162456ac63a1af0ceb4d8a8375fc80487887a242017e4",
+      "bytes": 252474,
+      "companion_only": false
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\candidate\\.github\\workflows\\ci.yml",
+      "preimage_sha256": "860e6cd9a5bdc0d42060bdb61ce605d36a4495a5fcfec0f1a7ae528b66577dba",
+      "sha256": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+      "bytes": 275520,
+      "companion_only": false
+    },
+    {
+      "path": ".github/scripts/test_ci_impact.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\candidate\\.github\\scripts\\test_ci_impact.py",
+      "preimage_sha256": "84d578f610f8b63a34b5a9ef434ce8b61742b628c7e6bb42886d994da735315a",
+      "sha256": "671118235de1877c4f8788b6da4d134db0019989c9a4fe105858bc37853504e1",
+      "bytes": 328129,
+      "companion_only": true
+    }
+  ],
+  "main_patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proposal.patch",
+    "sha256": "595b0fa13a4e21be35c2a6a2b8ef30ed712a95a08138f858e110a196ab1fc8f7"
+  },
+  "SDK_role_companion_patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\sdk-role-companion.patch",
+    "sha256": "8dee3b5b829bafe11c156e86467c5cdc506a60f718956acd94359d37e7a3b94d"
+  },
+  "filemap_sha256": "022b15e905c2ef74857506c0c8d5ebf6ec1e3731b501d80ab54a2fda21f94261",
+  "records": {
+    "proper-target-red.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proper-target-red.json",
+      "sha256": "329b1744317072c8748a526a823851dccf506940a399bc7281785f189a006e2f"
+    },
+    "proper-target-red.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proper-target-red.stderr",
+      "sha256": "9193897cf712da9639d09bfea705174cafd92f784d348bcf61c576063bf9fecf"
+    },
+    "proper-focused-green.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proper-focused-green.json",
+      "sha256": "46ba961331ad666fa0d70295d5553831b796544658509d13123fe3732da842a0"
+    },
+    "proper-focused-green.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\proper-focused-green.stderr",
+      "sha256": "191fa8b0d27073443694349d1885182cf8f50dc0f32533bff767832e78221832"
+    },
+    "initial-setup-failure.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\initial-setup-failure.json",
+      "sha256": "400320822febac81761e8c968f7324ab2676b42593d87129bb5aef4ff28471ee"
+    },
+    "target-red.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\target-red.stderr",
+      "sha256": "47aee76ae9de5eccced793fa8e2d035ba72970eaa690728a367f9fc20794444b"
+    },
+    "focused-green.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\focused-green.json",
+      "sha256": "ca409840ebc650f9c9d5c3dcdb8b47b0b812439adc13219b171e361fba24f0f6"
+    },
+    "focused-green.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\focused-green.stderr",
+      "sha256": "c9b5e7520360bdf798bad44f768101430daf14f0bba9b79141652a8490e70664"
+    },
+    "static-guards.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\static-guards.json",
+      "sha256": "bd522b928ab0e26bbc6c51708191ac506c6867d5ffbd370380e412ccd3f255f5"
+    },
+    "scope.md": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-canonical-qualification-filename-fix-l8hj69go\\scope.md",
+      "sha256": "74e43fec832297b2edb9621c11b4647f28259a0c08858919ddea16e3248b89f8"
+    }
+  },
+  "actual_result": {
+    "proper_RED_methods": 2,
+    "proper_RED_assertion_failures": 4,
+    "new_target_methods_PASS": 4,
+    "existing_SDK_exact_role_PASS": 1,
+    "existing_SDK_merge_group_delegation_ERROR": 1,
+    "unittest_seconds": 0.127,
+    "outer_seconds": 0.49384559999452904
+  },
+  "separate_blocker": "Existing staged Q02 Hook emitter role mismatch; Hook block unchanged by this patch",
+  "readiness_reader_sha256_unchanged": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+  "no_reader_fallback": true,
+  "qualification": false,
+  "canonical_writes": false
+}

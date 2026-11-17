@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-source-disposition-fixture-green-deommho9\\run.py"
+  ],
+  "exit_code": 0,
+  "seconds": 14.93,
+  "source_sha256": "240f881349afde9f0fd4b1d0894ef3bfec68deef1f56d0cef332a42c00a093fe",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e5b665d7aff37df4063f5449ef4758c95923740e44c86b630c51b0b4486898dc",
+  "scope": "All original source-disposition fixture cases with explicitly disabled unrelated new opt-in native task; real native-task fixtures unchanged."
+}

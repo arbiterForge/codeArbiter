@@ -1,0 +1,14 @@
+{
+  "public_digest_green_exit": 0,
+  "different_canary_negative_exit": 1,
+  "different_canary_detected_line": 2,
+  "actual_contract_methods": [
+    "WorkflowContractTest.test_the_secret_scan_allowlist_stays_narrow_and_value_scoped",
+    "WorkflowContractTest.test_exact_quoted_secret_waivers_remain_single_values",
+    "WorkflowContractTest.test_quoted_secret_waivers_cannot_leave_the_literal_scope",
+    "WorkflowContractTest.test_quoted_literal_does_not_allow_path_or_target_waivers",
+    "WorkflowContractTest.test_a_broad_secret_scan_waiver_is_rejected_by_the_narrowness_contract"
+  ],
+  "contract_exit": 0,
+  "config_sha256": "b7ce6a01ce59b6fc3b502e065b7adc48e3b4a32c6c79e5f187288c9237c380e4"
+}

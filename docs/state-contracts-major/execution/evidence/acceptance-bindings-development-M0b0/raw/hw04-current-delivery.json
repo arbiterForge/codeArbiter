@@ -1,0 +1,255 @@
+{
+  "source_epoch": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "actual_final_readback_head": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "candidate_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate",
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\filemap.json",
+    "sha256": "3033d83d66757119a1d09ddd72acc2e81d16a1e1f2a5a9b2549252c8891d7611"
+  },
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\proposal.patch",
+    "sha256": "240b69c4ae8b54e750241c90541e4e9564cffab6b2d7165f9680261b66e19dc9"
+  },
+  "subjects": [
+    {
+      "path": ".github/scripts/npm_binding_observation.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\scripts\\npm_binding_observation.py",
+      "sha256": "cfedbbdd5b2f8e69027062303302ee704183a34a2cfead8b7ac1c160623e72c8",
+      "bytes": 20655,
+      "preimage_literal_sha256": null,
+      "preimage_physical_sha256": null,
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "250d4a3b2c253ced6770fb3ab46d6a9387ff26be96135684fb095e2536783a32"
+    },
+    {
+      "path": ".github/scripts/test_npm_binding_observation.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\scripts\\test_npm_binding_observation.py",
+      "sha256": "53713ae085613051fd47acdf62b45a32aea7d5e3281fd1fab141c6c5dfa7ebfb",
+      "bytes": 18012,
+      "preimage_literal_sha256": null,
+      "preimage_physical_sha256": null,
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "d8d5486b827900065ce05263eb04ef967088fdd62bea87fc99ece183743f5165"
+    },
+    {
+      "path": ".github/scripts/major_readiness.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\scripts\\major_readiness.py",
+      "sha256": "175a4198d0cb45de0e6b199e76b815e91e573b149f0ffacd601fe93db78d2b10",
+      "bytes": 82516,
+      "preimage_literal_sha256": "86c228db98213273feb121ec581a98f41243deb3b6cab02fb5eea978ffa52c05",
+      "preimage_physical_sha256": "86c228db98213273feb121ec581a98f41243deb3b6cab02fb5eea978ffa52c05",
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "175a4198d0cb45de0e6b199e76b815e91e573b149f0ffacd601fe93db78d2b10"
+    },
+    {
+      "path": ".github/scripts/major_native_observation.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\scripts\\major_native_observation.py",
+      "sha256": "d91f5b5f5b5ece6e4ddc67d7d572d4e505ff21bc07d58cd5965305f56558913e",
+      "bytes": 185096,
+      "preimage_literal_sha256": "31df6868c60d56b0040c639b865431795c8ecf9f08b2c870b4c1cf1571243a03",
+      "preimage_physical_sha256": "31df6868c60d56b0040c639b865431795c8ecf9f08b2c870b4c1cf1571243a03",
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "d91f5b5f5b5ece6e4ddc67d7d572d4e505ff21bc07d58cd5965305f56558913e"
+    },
+    {
+      "path": "tools/build-artifacts.py",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\tools\\build-artifacts.py",
+      "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "bytes": 15051,
+      "preimage_literal_sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+      "preimage_physical_sha256": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\workflows\\ci.yml",
+      "sha256": "f36e3c38df2f84369fad9d4d31b98df31f3c530d31e567fce071bfce94eb4db3",
+      "bytes": 272750,
+      "preimage_literal_sha256": "88b8154ad664c670f2111f045c14ffba259b50f5ec589062047f90695ab2dbf6",
+      "preimage_physical_sha256": "88b8154ad664c670f2111f045c14ffba259b50f5ec589062047f90695ab2dbf6",
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "f36e3c38df2f84369fad9d4d31b98df31f3c530d31e567fce071bfce94eb4db3"
+    },
+    {
+      "path": ".github/major-qualification-policy.json",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\.github\\major-qualification-policy.json",
+      "sha256": "71c287edd8ebb92eac35314c40f0d23a73c3b63646e356af78ac54ceec8567d8",
+      "bytes": 7872,
+      "preimage_literal_sha256": "93d4061c9067e6fcc6ea4efe5b434067c15591e9ae2d28fdb618acfbfb31d98e",
+      "preimage_physical_sha256": "93d4061c9067e6fcc6ea4efe5b434067c15591e9ae2d28fdb618acfbfb31d98e",
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "71c287edd8ebb92eac35314c40f0d23a73c3b63646e356af78ac54ceec8567d8"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\candidate\\core\\artifacts\\internal\\evidence\\launch_binding_limits_test.go",
+      "sha256": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810",
+      "bytes": 6780,
+      "preimage_literal_sha256": "49eed36e4a9bdc684cbd14f28177355265be3026932791ddf40b3637c1b7c05d",
+      "preimage_physical_sha256": "49eed36e4a9bdc684cbd14f28177355265be3026932791ddf40b3637c1b7c05d",
+      "physical_equals_literal_after_lf_normalization": true,
+      "successor_preimage_sha256": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810"
+    }
+  ],
+  "tests": {
+    "original_producer_RED": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\target-red.json",
+      "sha256": "1fedf708c98216f8218ff11beb31f18566ef0c6cc201f3281bce999d6c86fc6a"
+    },
+    "same_target_GREEN": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\producer-green-attempt.json",
+      "sha256": "eae92ce808f4248c508a58036b841bb3ea6302116195b2c0b3c0ef210971d295"
+    },
+    "producer_on_current_observer_plus_six_admission_controls_GREEN": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\owning-green-attempt2.json",
+      "sha256": "b748ad02b3d67091b54a3e41065af709a52c45b0e0d2c2cdcd8d61423cd17527"
+    },
+    "final_eight_admission_controls_GREEN": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\admission-final.json",
+      "sha256": "8e17bf0c8a3fc145a366e3a3ec9932c46afe197181a74c2a0a2c559cfd82f7cd"
+    },
+    "retained_fixture_bookkeeping_ERROR": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\admission-attempt1.json",
+      "sha256": "6a3ab31c5a807f253df4d262906a852c138303c9ecd246b776c6b9a1fd01b24b"
+    },
+    "static_guards": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\static-guards.json",
+      "sha256": "1fd0ffeb622be3d4ac120e036a730db521c3b1065d007b1beed92d5fc54ffcc3"
+    }
+  },
+  "scope": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\scope-and-cost.md",
+    "sha256": "4fe1f6af53f12623ac3ea93a0187cfe0a597e70cc71521693995695caa5d50dc"
+  },
+  "actual_results": {
+    "approved_large_readonly_RED": 1,
+    "approved_large_readonly_GREEN": 1,
+    "affected_methods_PASS": 12,
+    "affected_methods_SKIP": 0,
+    "unittest_seconds": 15.374,
+    "outer_seconds": 15.669442999991588,
+    "Go_execution": false,
+    "Node_npm_execution": false
+  },
+  "preserved": {
+    "native40_recipe_data_AST": true,
+    "native16_job_bindings": true,
+    "five_member_native_archive": true,
+    "old_Go_test_parent_bodies": true,
+    "Core1_Docs2_source3_native4_envelopes": true
+  },
+  "qualification": false,
+  "canonical_writes": false,
+  "all_six_real_producer_integration": "REQUIRED_AFFECTED_HOSTED_CI",
+  "immutable_predecessor": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\observer-import-successor\\delivery.json",
+    "sha256": "478c096771664ed8060f4094bc100ed4785c04a7642305ed42857af6dea567ee"
+  },
+  "required_selectors": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\observer-import-successor\\required-selectors.json",
+    "sha256": "881d43a02aa279c8c93add3cf326cc5f51a5e79010875ed2e5df3c96c5f2aaf3",
+    "counts": {
+      "darwin/amd64": 70,
+      "darwin/arm64": 70,
+      "linux/amd64": 70,
+      "linux/arm64": 70,
+      "windows/amd64": 71,
+      "windows/arm64": 71
+    }
+  },
+  "correction": "Bounded streaming tool/runtime identity avoids old64MiB allocation/refusal; source limits separate.",
+  "changed_from_predecessor": [
+    ".github/scripts/npm_binding_observation.py",
+    ".github/scripts/test_npm_binding_observation.py"
+  ],
+  "successor_patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\two-subject-successor.patch",
+    "sha256": "393726f445ac1c2b103758e11a0c729244436e4df04af70f9c4a579541ee7ef4"
+  },
+  "actual_refinement_records": {
+    "approved-large-red.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\approved-large-red.json",
+      "sha256": "2f1d62df960241b14fb1662b0124997ea8e7ec86788ee870a5087e75bb1ed910"
+    },
+    "approved-large-red.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\approved-large-red.stderr",
+      "sha256": "a496cd09dff85fa10c7f0d3d521d5ddfdf2f176db530b8c3f7fa1d1aeed62e2e"
+    },
+    "approved-large-green.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\approved-large-green.json",
+      "sha256": "26d742c5a0dc01e49aed6fd278a663ca2dfd1907d2d029e452074acdad2c8503"
+    },
+    "approved-large-green.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\approved-large-green.stderr",
+      "sha256": "189dc77d9e2d41e51e68defa341329c79cf08f677bfd7725b595b9561be11149"
+    },
+    "affected-controls.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\affected-controls.json",
+      "sha256": "d04ee6f508921336d3085724ac17fa76283f8d0db0d335553bcda13f920475d0"
+    },
+    "affected-controls.stdout": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\affected-controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "affected-controls.stderr": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\affected-controls.stderr",
+      "sha256": "37a4463d60f8ef90f2e72f4d51890edbaa37c9b9be5cd894a74d48709582e9d2"
+    },
+    "affected-controls-bootstrap.py": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\affected-controls-bootstrap.py",
+      "sha256": "ba3dc58c171982f435a83160f882be96c59af9b5cc60647afd1835e2510e12f8"
+    },
+    "runtime-snapshot-timings.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\runtime-snapshot-timings.json",
+      "sha256": "1d87c72a5018fe6889e78a4e905cecb1b037df921022f9fa2aa38691a011673f"
+    },
+    "scope-and-cost.md": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\scope-and-cost.md",
+      "sha256": "4fe1f6af53f12623ac3ea93a0187cfe0a597e70cc71521693995695caa5d50dc"
+    }
+  },
+  "runtime_snapshot_measurements": [
+    {
+      "seconds": 6.404994999989867,
+      "files": 7995,
+      "directories": 350,
+      "bytes": 231630395
+    },
+    {
+      "seconds": 6.531596699991496,
+      "files": 7995,
+      "directories": 350,
+      "bytes": 231630395
+    }
+  ],
+  "explicit_limits": {
+    "identity_file_bytes": 536870912,
+    "source_file_bytes": 67108864,
+    "source_aggregate_bytes": 16777216,
+    "runtime_aggregate_bytes": 536870912,
+    "sidecar_JSON_bytes": 4194304,
+    "stream_chunk_bytes": 1048576
+  },
+  "predecessor_final_capture": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\observer-import-successor\\owning-green.json",
+    "sha256": "4a8ba919d48898d203330ff7e70c11020e32f1e504ceda4ab0aa562f49c61afa",
+    "methods_passed": 9,
+    "methods_failed": 0,
+    "methods_skipped": 0,
+    "unittest_seconds": 12.465,
+    "outer_seconds": 12.699623799999245
+  },
+  "final_actual_capture": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\affected-controls.json",
+    "sha256": "d04ee6f508921336d3085724ac17fa76283f8d0db0d335553bcda13f920475d0",
+    "methods_passed": 12,
+    "methods_failed": 0,
+    "methods_skipped": 0,
+    "unittest_seconds": 15.374
+  },
+  "predecessor_scope": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\observer-import-successor\\scope-and-witnesses.md",
+    "sha256": "d19e5766697c0892d98a06615e472b48ccd22b577209a29fce23dc00d15e8afd"
+  }
+}

@@ -1096,10 +1096,21 @@ def runtime_requirements(req):
     owner.require(isinstance(modules, dict) and set(modules) == {'posix', 'windows'}
                   and all(isinstance(v, str) and owner.DIGEST.fullmatch(v) for v in modules.values()),
                   'native composition lacks immutable module identity')
+    launch_cells = set()
+    if 'launch_binding_tasks' in req or 'launch_binding_inputs' in req:
+        import npm_binding_observation as launch
+        launch.tasks(req.get('launch_binding_tasks'))
+        owner.require(isinstance(req.get('launch_binding_inputs'), dict) and req['launch_binding_inputs'],
+                      'npm binding source inputs missing')
+        launch_cells = {'task:' + task for task in req['launch_binding_tasks']}
+        owner.require(launch_cells < set(cells) and not launch_cells.intersection(recipes),
+                      'npm binding task/runtime population differs')
+    consumed = set(recipes) | launch_cells
     return {**{key: value for key, value in req.items()
-               if key not in ('native_compositions', 'native_module_sha256')},
-            'cells': [cell for cell in cells if cell not in recipes],
-            'cell_jobs': {cell: job for cell, job in jobs.items() if cell not in recipes}}
+               if key not in ('native_compositions', 'native_module_sha256',
+                              'launch_binding_tasks', 'launch_binding_inputs')},
+            'cells': [cell for cell in cells if cell not in consumed],
+            'cell_jobs': {cell: job for cell, job in jobs.items() if cell not in consumed}}
 
 
 def _document(zipped, path, limit):
@@ -1191,13 +1202,19 @@ def admit(req, artifacts, jobs, *, run=None, producing=False):
     owner.validate_run(run, req, producing=producing)
     owner.require(type(run.get('run_attempt')) is int and run['run_attempt'] > 0,
                   'native composition original run attempt missing')
-    platforms = sorted({platform for recipe in req['native_compositions'].values() for platform in recipe})
+    recipes = copy.deepcopy(req['native_compositions'])
+    if req.get('launch_binding_tasks'):
+        import npm_binding_observation as launch
+        import ci20_native_binding as binding_owner
+        for task in launch.tasks(req['launch_binding_tasks']):
+            recipes['task:' + task] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
+    platforms = sorted({platform for recipe in recipes.values() for platform in recipe})
     components = {platform: _component(req, run, artifacts, jobs, platform) for platform in platforms}
     owner.require(len({c['job_id'] for c in components.values()}) == len(platforms)
                   and len({c['artifact_id'] for c in components.values()}) == len(platforms),
                   'native component jobs or archives alias multiple platforms')
     results, used = [], {platform: set() for platform in platforms}
-    for cell, recipe in sorted(req['native_compositions'].items()):
+    for cell, recipe in sorted(recipes.items()):
         requirements = []
         for platform, selectors in sorted(recipe.items()):
             component = components[platform]
@@ -1221,7 +1238,35 @@ def admit(req, artifacts, jobs, *, run=None, producing=False):
     for platform, component in sorted(components.items()):
         retained.append({**component, 'tests': sorted(
             [test for test in component['tests'] if test['id'] in used[platform]], key=lambda t: t['id'])})
-    return {'schema': ADMISSION, 'source_commit': req['source_commit'], 'source_tree': req['source_tree'],
+    launch_components = {}
+    if req.get('launch_binding_tasks'):
+        import npm_binding_observation as launch
+        import ci20_native_binding as binding_owner
+        for platform in sorted(binding_owner.PLATFORMS):
+            component = components[platform]
+            runner = next(name for name, target in binding_owner.RUNNERS.items() if target == platform)
+            matches = [item for item in artifacts if item.get('name') == launch.ARTIFACT + runner]
+            owner.require(len(matches) == 1, 'original npm binding archive missing or repeated')
+            artifact = matches[0]
+            job = next(job for job in jobs if job['id'] == component['job_id'])
+            owner.validate_upload(job, artifact, launch.UPLOAD)
+            archive = owner.artifact_bytes(artifact, req)
+            members = owner.members(archive)
+            owner.require({m['path'] for m in members} == {f'workspaces-{n}.json' for n in launch.COUNTS},
+                          'npm binding archive membership differs')
+            observed = []
+            with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+                for count in launch.COUNTS:
+                    raw = _document(zipped, f'workspaces-{count}.json', launch.SIDECAR_JSON_LIMIT)
+                    launch.validate(raw, {**req, 'run_attempt': run['run_attempt']}, platform, count)
+                    observed.append({'workspace_count': count,
+                        'record_sha256': owner.digest(zipped.read(f'workspaces-{count}.json')),
+                        'runtime_sha256': owner.digest(json.dumps(raw['runtime_before'],sort_keys=True,separators=(',',':')).encode()),
+                        'bindings_sha256': raw['bindings_sha256'], 'launch_files': raw['launch_files']})
+            launch_components[platform] = {'platform':platform,'job_id':job['id'],'artifact_id':artifact['id'],
+                'archive_sha256':owner.digest(archive),'members':members,'observations':observed}
+    return {**({'launch_components':launch_components} if launch_components else {}),
+            'schema': ADMISSION, 'source_commit': req['source_commit'], 'source_tree': req['source_tree'],
             'ci_run_id': req['ci_run_id'], 'run_attempt': run['run_attempt'],
             'results': results, 'components': retained}
 

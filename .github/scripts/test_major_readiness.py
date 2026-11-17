@@ -353,9 +353,14 @@ class CompletedPopulationTest(unittest.TestCase):
                                                          'sha256': 'e' * 64, 'commit': 'f' * 40}])
 
     def setUp(self):
+        # This fixture exercises reviewed source dispositions. The opt-in
+        # launch-binding task's original native archives have their own fixture.
+        policy = json.loads((self.repo / '.github/major-qualification-policy.json').read_bytes())
+        policy['native_launch_binding_tasks'] = []
         self.overrides = {
             owner.CORPUS + 'execution/progress.json': json.dumps(self.progress).encode(),
             owner.CORPUS + 'execution/coverage-ledger.json': json.dumps(self.ledger).encode(),
+            '.github/major-qualification-policy.json': json.dumps(policy).encode(),
             '.codearbiter/open-questions.md': b'# Open questions\n_None open._\n',
         }
 

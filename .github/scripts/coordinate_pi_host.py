@@ -81,8 +81,10 @@ def main(argv=None):
     for name in ('repo','stage','package-root','workspace','output-root'):
         parser.add_argument('--'+name,type=Path,required=True)
     parser.add_argument('--expected-platform',choices=PLATFORMS,required=True)
+    parser.add_argument('--parent-author-fixture',action='store_true')
     a=parser.parse_args(argv);a.repo=a.repo.resolve(strict=True)
     require(program_mode(os.environ,(a.repo/'.github/integration-candidate.json').is_file()),'not a trusted explicit program push')
+    require(not a.parent_author_fixture or a.expected_platform=='linux/amd64','parent author requires installed Linux owner')
     require(not a.output_root.exists() and not a.output_root.is_symlink(),'new coordinator output required')
     a.output_root.mkdir();state={'phase':'bootstrap'}
     try:
@@ -155,6 +157,7 @@ def _run_control(a,cold,producer,private,state,runtime):
             state['phase']='reviewed-install-and-original-rpc'
             config={'repo':str(a.repo),'workspace':str(a.workspace),'output':str(a.output_root/'producer'),
                 'stage':str(a.stage),'packages':str(a.package_root),'expected':expected,**runtime}
+            if getattr(a,'parent_author_fixture',False):config['parent_author_fixture']=True
             return producer.produce(config,authenticated_payloads=authenticated)
         def read_acquisition():return producer.load(a.output_root/'producer/runtime-acquisition.json')
         def report(observed,acquisition):

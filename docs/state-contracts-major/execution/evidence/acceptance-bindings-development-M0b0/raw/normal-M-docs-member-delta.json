@@ -1,0 +1,38 @@
+{
+  "source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "docs_run_id": 43960617323,
+  "job_id": 133626715454,
+  "artifact_id": 14273618423,
+  "zip_sha256": "4ca7a0eeb5f43823cee98ab1f895cd0290d5f5a39c235670c15d53bb93dcde5e",
+  "zip_bytes": 6576642,
+  "tar_sha256": "1c3f96aeb1b568b3636f1528e6641378ceff51c5f7ab2d03f735f49a8f2159d5",
+  "passive_archive_manifest": "PASS",
+  "owners": {
+    ".github/scripts/site_playwright_observation.py": {
+      "bytes": 39661,
+      "sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1"
+    },
+    ".github/scripts/pages_readiness.py": {
+      "bytes": 11508,
+      "sha256": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871"
+    }
+  },
+  "archive_count": 465,
+  "served_count": 466,
+  "archive_only": [],
+  "served_only": [
+    {
+      "path": "workflow-atlas/.gitignore",
+      "mode": 420,
+      "size": 95,
+      "sha256": "28dcfad064474adbf78987dc8d4fbf8f26130bc857b6c81f86afb360c5a306ed"
+    }
+  ],
+  "different": [],
+  "equal_count": 465,
+  "qualification": false,
+  "limits": [
+    "Original authenticated upload and retained observation only; no build/browser/runtime replay.",
+    "Pure maintained archive parser passed unchanged; equality failure is not waived."
+  ]
+}

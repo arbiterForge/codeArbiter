@@ -1,0 +1,185 @@
+{
+  "schema": "codearbiter.major.owner-bash-development/1",
+  "recorded_at": "2026-11-17T00:47:35.994883+00:00",
+  "basis_commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "source_subjects": {
+    ".github/workflows/ci.yml": {
+      "sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+      "bytes": 275749
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "sha256": "a4039de1bf1434718fe6b8cc3d43232ff897b2d7767f33b46eee109bb3f7cbe7",
+      "bytes": 48826
+    },
+    ".github/scripts/test_release_workflow.py": {
+      "sha256": "0e24dac61bdfd26e9ff3edb988333624acde9206ec47b2ee620f60860e4de82d",
+      "bytes": 41703
+    }
+  },
+  "original_hosted": {
+    "CI": {
+      "run": 43983045996,
+      "result": "failure"
+    },
+    "Docs": {
+      "run": 43983045676,
+      "result": "success"
+    },
+    "checks": {
+      "passed": 86,
+      "failed": 6,
+      "skipped": 8
+    },
+    "required_merge_readiness": "failure",
+    "all_six_native_builders": "PASS",
+    "all_three_program_integrity": "PASS"
+  },
+  "corrections": [
+    "Keep the identical runtime-dependent npm producer unit and its30-second deadline on all six qualified Python3.14 native jobs. Hook3.x retains17 pure controls; source checks prove disjoint complete18-method ownership. No observer/test-body/deadline relaxation and no CPython3.15 runtime admission.",
+    "Use samefile for path identity across macOS /var aliases and Windows short names. Discover Bash from declared Git entrypoint including mingw32/64/libexec/git-core; resolving a linked Git target first must not discard its declared installation. Shell bodies and publication/receipt assertions remain unchanged. Original hosted selected Git path is UNKNOWN."
+  ],
+  "actual_local_checks": {
+    "canonical_partition_wiring": {
+      "passed": 52,
+      "seconds": 0.124
+    },
+    "private_pure_npm": {
+      "passed": 17,
+      "seconds": 11.292
+    },
+    "bash": {
+      "passed": 9,
+      "unittest_seconds": 10.153,
+      "supervisor_seconds": 10.343,
+      "original_real_shell_methods": 5,
+      "discovery_methods": 4
+    },
+    "farm": {
+      "passed": 1,
+      "tasks": 12,
+      "test_seconds": 4.3174079,
+      "supervisor_seconds": 5.147094,
+      "node": "24.22.1",
+      "original_hosted_node": "20.20.2",
+      "original_cause": "UNKNOWN",
+      "structured_handoff_validated": false
+    }
+  },
+  "farm_limits": [
+    "Actual local run kept canonical sources/dependencies unchanged and retained bounded owned-process observation. Different Node version does not reproduce or explain original timeout.",
+    "Two earlier local controller/import setup failures executed no original product timeout reproduction. The structured handoff failed a historical check-ID link and remains unvalidated; raw local PASS is separately retained.",
+    "Farm source, test workload, concurrency and60000ms deadline are unchanged; no Farm fix or flake/deadlock diagnosis is claimed. Complete fresh exact-head hosted checks remain mandatory."
+  ],
+  "cleanup": {
+    "action": "Optional deletion of two owned diagnostic dependency copies",
+    "result": "AUTOMATIC_APPROVAL_REVIEW_REJECTED",
+    "reason": "blocked by policy",
+    "deletion_executed": false,
+    "copies_remain": true
+  },
+  "observations": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/hosted/terminal-receipt.json",
+      "sha256": "36f98988fc2cfa9995cc2767afbb12360c4de733210c8cb1661ab13001876a37",
+      "bytes": 57679,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\terminal-receipt.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/hosted/watch-delivery.json",
+      "sha256": "939a6815f37babbb5d5a4d889be8603f3cdabb89c206038e27c25d78639b1796",
+      "bytes": 2312,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\watch-delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/hosted/first-failure-closed-handoff.json",
+      "sha256": "9943d5adb86421d516d13963e7b258c6f3e666efcc532009e902a49392290796",
+      "bytes": 2285,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\first-failure-closed-handoff.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/hosted/second-failure-closed-handoff.json",
+      "sha256": "e18ad7dfaa47929cd1c877e7290815a02978eaa02f2af3908d371d978dbc25ef",
+      "bytes": 1467,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\second-failure-closed-handoff.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/hosted/additional-failures-closed-handoff.json",
+      "sha256": "614c633d67c89d80c6aafc76380c7686aec2d3de439e855a66d8b29063cbb25b",
+      "bytes": 6219,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\additional-failures-closed-handoff.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/npm-owner/delivery.json",
+      "sha256": "c83e089d888037af5cff2e3b0049153387b2920e48ebe9de4e1a33d8674b94fe",
+      "bytes": 3293,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/npm-owner/assertion-red.json",
+      "sha256": "1ce7c50cd136c433e4e39dcfeea95cbaea4311f5787e952fa089a344f1fad701",
+      "bytes": 1540,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\assertion-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/npm-owner/wiring-green.json",
+      "sha256": "981add6550574ec6eead1eaa74b44dc8095f6deccb165f4f01144228b036f2f5",
+      "bytes": 1455,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\wiring-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/npm-owner/pure-green.json",
+      "sha256": "d28852423709e2d0a8ed3ce82a8ece23746c61b07cb5d36b503a2187fda58388",
+      "bytes": 1583,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\pure-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/bash-internal-red/result.json",
+      "sha256": "0244dd68b7d49ee0ca100de0c07a182caf3826bec9fea06d7ccdd1331ad34ed9",
+      "bytes": 1513,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-Git-internal-layout-red-vluacx8y\\result.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/bash-declared-red/result.json",
+      "sha256": "cbcfbf44a0ad5d5187b6e8071b64422cccf5bc3437b6699e2c39e44a36f066b5",
+      "bytes": 1056,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-bash-declared-internal-target-red-e5fc7spc\\result.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/bash-green/result.json",
+      "sha256": "081fe6e56c6e5101330ccd2fef9259a9be9feb7c98d33216d8b68738fa4fcec5",
+      "bytes": 1561,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-bash-declared-internal-green-tbp8vz5_\\result.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/farm-local/delivery.json",
+      "sha256": "8cb2de128b85a2c66a8053159df0920611e3c9d87ff9a69ccbbac96630b45af1",
+      "bytes": 10687,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-bounded-canonical-source-6ic7x90d\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/farm-local/actual-result.json",
+      "sha256": "ec5520cd30f6458e319639f7548be3a29ac1b7a717554544a8cfd3aef6694349",
+      "bytes": 4760,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-bounded-canonical-source-6ic7x90d\\actual-result.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/farm-local/phase-observations.json",
+      "sha256": "6a2fb6a4556c8f8aa7c79144e2855148828fa247d1fc7a5b6e233d90e4f67500",
+      "bytes": 13270,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-bounded-canonical-source-6ic7x90d\\phase-observations.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-owner-bash-development/farm-local/validation.json",
+      "sha256": "674a61b55641fa38752f1745872aaebcd6d4744530e15a3ec0c529616608b71b",
+      "bytes": 312,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-bounded-canonical-source-6ic7x90d\\validation.json"
+    }
+  ],
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "program_qualification": false,
+  "limits": [
+    "Original producer3.15 timeout cause remains UNKNOWN. New six-platform producer unit routing requires actual hosted execution.",
+    "Parent1098 remains draft and held from main for user testing. Publication is unauthorized."
+  ]
+}

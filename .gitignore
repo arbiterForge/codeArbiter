@@ -70,6 +70,9 @@ site/dist/
 site/.astro/
 site/*.log
 
+# Build-owned Atlas downloads. Keep authoring metadata outside public assets.
+/site/public/workflow-atlas/
+
 # Generated reference output — regenerated deterministically by `npm run gen`
 # (wired into predev/prebuild), so it is not committed. The generator + its tests
 # are the reviewable source of truth; the hand-written narrative pages directly

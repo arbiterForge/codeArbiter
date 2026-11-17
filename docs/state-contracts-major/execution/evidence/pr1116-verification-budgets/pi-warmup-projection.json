@@ -1,0 +1,193 @@
+{
+  "schema": "f5-original-provider-warmup-closed/1",
+  "source_api_head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+  "run_id": 44002348079,
+  "attempt": 1,
+  "job_id": 133769377667,
+  "artifact_id": 14292539141,
+  "archive_sha256": "08bda4399ea9a5b6c4cd53d731955b16116ee2a3e7ebf91fcc70585d11ddd17b",
+  "warmup_receipts": [
+    {
+      "member": "rpc-native-warmup-df7gz5xc.json",
+      "sha256": "e454da320e93b4b867332967f08d435d138202cf9db65bddf1dbca5da1749f30",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 409,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 9068,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": [
+        "rpc-shutdown-observed-wzale30r.json"
+      ]
+    },
+    {
+      "member": "rpc-native-warmup-3fyct2wb.json",
+      "sha256": "82731cc36b20498a8757d6d90e736d77363df630c6d670d406d4a3f08f5caf3a",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 59,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 4268,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": []
+    },
+    {
+      "member": "rpc-native-warmup-dqz1ixci.json",
+      "sha256": "ecdec61b753bae3a3358da4cf40c641131e71b26eeca281a98b1d8a62dff35a6",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 58,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 636,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": [
+        "rpc-shutdown-observed-1yqjv8lm.json"
+      ]
+    },
+    {
+      "member": "rpc-native-warmup-ezwdc7pe.json",
+      "sha256": "e6a9f9b4bb409f06040e0494d292ae69dbc3a7ee1b9ec3bcd0b4295e8f711143",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 57,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 9936,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": [
+        "rpc-shutdown-la4hirtn.json"
+      ]
+    },
+    {
+      "member": "rpc-native-warmup-jhmu8krr.json",
+      "sha256": "0c7f3bb289b4ceacc2ffdcfad307ac1ba311e5698b2b52efc22e08676cb6d2db",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 61,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 9996,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": [
+        "rpc-shutdown-observed-98am43ps.json"
+      ]
+    },
+    {
+      "member": "rpc-native-warmup-y7c8m1ot.json",
+      "sha256": "ce2923e0ac79049639c85f79850b0980a6c3cc55119d88c4b91133883356ba9a",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 56,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 10148,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": [
+        "rpc-shutdown-observed-pvvz_42o.json"
+      ]
+    },
+    {
+      "member": "rpc-native-warmup-x9n1qxno.json",
+      "sha256": "3501130ace81c404787203464550e421dfece9235315eaee7218f45ed1037a1e",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 56,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 2568,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": []
+    },
+    {
+      "member": "rpc-native-warmup-ydkhioc8.json",
+      "sha256": "c4f325a57ae24f15601769f94059cacd256f4c7bd5bb7896efa8f72ba622fe14",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 56,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 1812,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": []
+    },
+    {
+      "member": "rpc-native-warmup-zvwfjgvv.json",
+      "sha256": "328640b2dcd92fb1b6a82745ee6509073ecbdad8bd4aa736d5041dcad7b710d7",
+      "schemaVersion": 1,
+      "kind": "protected-provider-warm-preflight",
+      "status": "complete",
+      "profile": "sdk-v1",
+      "filesHashed": 3,
+      "phase": "provider-hash-dbghelp",
+      "failure": null,
+      "elapsedMs": 56,
+      "timed_out": false,
+      "containment": "exited",
+      "processId": 2924,
+      "targetState": "spawned",
+      "retained_shutdown_same_pid_members": []
+    }
+  ],
+  "native_sidecars": [
+    {
+      "member": "rpc-native-exit-l58u7uxz.json",
+      "pid": 9936,
+      "status": "captured",
+      "profile": "sdk-v1",
+      "threads": 11,
+      "worker_attached": true,
+      "worker_detached": true,
+      "diagnostic_phase": "worker-result",
+      "diagnostic_failure": null
+    }
+  ],
+  "limits": [
+    "These actual retained successful-job diagnostics qualify only diagnostic execution/provenance.",
+    "No old7040 causal fix, current live stack or installed/native qualification is inferred.",
+    "Only PID equality joins retained records; absence of matching shutdown member is not a failure or an invented case identity.",
+    "Archive read only; no extraction, runtime, debugger, SDK or archived code executed."
+  ]
+}

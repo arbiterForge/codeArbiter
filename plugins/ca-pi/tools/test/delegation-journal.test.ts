@@ -2,7 +2,7 @@ import { access, mkdtemp, mkdir, readFile, writeFile, rm, symlink, rename, link,
 import { execFileSync } from "node:child_process";
 import { tmpdir } from "node:os";
 import { join } from "node:path";
-import { afterEach, describe, expect, test } from "vitest";
+import { afterEach, beforeEach, describe, expect, test } from "vitest";
 import { openDelegationJournal, readDelegationRecovery, resolveGitCommonDir } from "../src/delegation-journal.ts";
 import { DELEGATION_PROFILE, operationId } from "../src/delegation-contract.ts";
 import type { JournalRecord } from "../src/delegation-contract.ts";
@@ -21,6 +21,16 @@ function claim(): JournalRecord {
     target: "test.txt", targetHash: "absent" };
 }
 describe("parent delegated operation journal", () => {
+  let overfullJournal: NonNullable<Awaited<ReturnType<typeof openDelegationJournal>>>;
+  beforeEach(async ({ task }) => {
+    if (task.name !== "an overfull journal is unavailable rather than an apparently empty recovery scan") return;
+    const root = await fixture(); const journal = (await openDelegationJournal(root))!;
+    for (let offset = 0; offset < 4097; offset += 64) {
+      await Promise.all(Array.from({ length: Math.min(64, 4097 - offset) }, (_, index) =>
+        writeFile(join(journal.root, `retained-unknown-${offset + index}`), "")));
+    }
+    overfullJournal = journal;
+  }, 60_000);
   test("an actual default Git main and linked worktree positively share the common owner", async () => {
     const main = await fixture(); const worktree = await fixture(); const inert = join(main, "empty-config"); await mkdir(inert);
     const env = { PATH: process.env.PATH, SystemRoot: process.env.SystemRoot, WINDIR: process.env.WINDIR,
@@ -154,12 +164,8 @@ describe("parent delegated operation journal", () => {
     expect(await openDelegationJournal(root)).toBeUndefined();
   });
   test("an overfull journal is unavailable rather than an apparently empty recovery scan", async () => {
-    const root = await fixture(); const journal = (await openDelegationJournal(root))!;
-    for (let offset = 0; offset < 4097; offset += 64) {
-      await Promise.all(Array.from({ length: Math.min(64, 4097 - offset) }, (_, index) =>
-        writeFile(join(journal.root, `retained-unknown-${offset + index}`), "")));
-    }
+    const journal = overfullJournal;
     await expect(journal.unresolved()).rejects.toThrow("scan");
     expect(await journal.claim(claim())).toEqual({ state: "unavailable" });
-  });
+  }, 5_000);
 });

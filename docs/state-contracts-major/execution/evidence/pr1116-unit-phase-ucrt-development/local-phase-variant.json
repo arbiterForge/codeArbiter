@@ -1,0 +1,82 @@
+{
+  "kind": "bounded-npm-producer-diagnosis",
+  "disposition": "unresolved",
+  "actual_failed_checkout": "2b4db6f13ecf55e16baf85a7915e053ef8ff355d",
+  "API_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "original_linux_phase_counts_bytes": "UNKNOWN",
+  "local_variant": {
+    "os": "Windows",
+    "python": "3.14.6",
+    "passive_profile": true,
+    "exit_code": 0,
+    "seconds": 10.91047209998942,
+    "source_tool_stable": true,
+    "runtime": [
+      {
+        "bytes": 231630395,
+        "completed_bytes": 231630395,
+        "completed_identities": 7995,
+        "completed_seconds": 5.44511619998957,
+        "directories": 350,
+        "files": 7995,
+        "links": 0,
+        "ordinal": 1,
+        "started_seconds": 0.05062490000273101
+      },
+      {
+        "bytes": 231630395,
+        "completed_bytes": 231630395,
+        "completed_identities": 7995,
+        "completed_seconds": 10.846061399992323,
+        "directories": 350,
+        "files": 7995,
+        "links": 0,
+        "ordinal": 2,
+        "started_seconds": 5.481835999991745
+      }
+    ]
+  },
+  "paths": {
+    "before.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\before.json",
+      "sha256": "f083ce70fc0c0f2581482243a968c9b440979550f374db1b22db6c309d0fadce"
+    },
+    "actual-result.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\actual-result.json",
+      "sha256": "9d92626da46f1846858cd282a3dd155b8a9e3d1444eb43c8ac7a7ef0d70bc124"
+    },
+    "phase-progress.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\phase-progress.json",
+      "sha256": "c8febcf63dd6acad0c3410f13aee50e490f95e09e067f889acf7080b21321a57"
+    },
+    "passive-helper-code.txt": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\passive-helper-code.txt",
+      "sha256": "2bf9c3a9ecf493cd801362906a42e89742a71c3491b9266b0f053041d4a42101"
+    },
+    "debug-handoff.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\debug-handoff.json",
+      "sha256": "9c0279fdf9e86b0024fd0e799a97c9dd21f276666681a874a4ad0ef3781d2084"
+    },
+    "handoff-validation.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\handoff-validation.json",
+      "sha256": "524edc5798c58313b17d3e2467747bd33b7f77626e0d87de8b52a2b4b4b5bbe4"
+    },
+    "handoff-validation.stdout": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\handoff-validation.stdout",
+      "sha256": "25591fd511f86fd0a39f1f5104ed21f2a790ae52258c77f3bb7646accf35473c"
+    },
+    "stdout.log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\stdout.log",
+      "sha256": "29dd63613262c35357bd79aca9216189e80e752fad11fb6b3a6fc16c246eb439"
+    },
+    "stderr.log": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "checkout-source-join": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-checkout-join-z3ol14lu\\join.json",
+      "sha256": "a76d0ef486c997b4914c18b822c990b115197ac10e5d5a497b0be825547ab643"
+    }
+  },
+  "next": "Closed phase retention at actual original Linux timeout, no performance/deadline change."
+}

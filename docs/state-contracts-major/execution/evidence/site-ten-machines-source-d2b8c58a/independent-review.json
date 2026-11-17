@@ -1,0 +1,1042 @@
+{
+  "schema": "codearbiter.independent-combined-review/1",
+  "recorded_at": "2026-11-16T23:12:57.726561+00:00",
+  "reviewer": "Codex /root/acceptance_security_review",
+  "verdict": "PASS_WITH_LOW_FINDING",
+  "findings": [
+    {
+      "id": "SITE-SOURCE-01",
+      "severity": "LOW",
+      "category": "evidence accuracy",
+      "cell": "disposition:transitions:S56:05",
+      "title": "Refresh runs after both successful and failed save",
+      "files": [
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-machines-source-p_ci5nmi\\clause-matrix.json",
+          "line": 236
+        },
+        {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-machines-source-p_ci5nmi\\raw\\S56-inspection.json",
+          "line": 257
+        }
+      ],
+      "source": {
+        "path": "site/src/components/AcademyBookmark.astro",
+        "line": 62,
+        "end": 64,
+        "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90"
+      },
+      "actual": "The listener calls saveBookmark, then calls refresh() unconditionally, then chooses explicit success/failure status text from the saved result.",
+      "incorrect_statement": "Explicit save validates current lesson membership, writes only the scoped bookmark key, and refreshes display only on successful write.",
+      "desired_statement": "Explicit save validates current lesson membership and writes only the scoped bookmark key. The listener refreshes the display after either save result, then reports success or failure explicitly.",
+      "remediation": "Correct only the S56:05 assessment in both packet representations and update dependent raw-proof, machine-fragment, matrix, filemap and candidate digests in a successor. Preserve original reviewed packet; no production change or test run needed.",
+      "impact": "Wording error in source evidence only; underlying source contract is supported. Review of the remaining65 clauses remains valid.",
+      "status": "OPEN; Root acknowledged and will request bounded author successor before adoption."
+    }
+  ],
+  "triage": {
+    "critical": 0,
+    "high": 0,
+    "medium": 0,
+    "low": 1
+  },
+  "scope": "First independent finite source-conformance review of new ten-machine site proposal only. All66 literal frozen clauses inspected; remaining65 PASS, one source-evidence wording correction required. No whole-feature fleet/repeated prior review.",
+  "head": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-machines-source-p_ci5nmi\\delivery.json",
+    "sha256": "82d7a749e02892639c38444d5b9ae9d971a5462f8e1b8d9311c7a9d15c02f8fc"
+  },
+  "root_private_candidate": {
+    "adoption": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-source-preview-cx6mljgd\\adoption.json",
+    "sha256": "3345787cf849eb1b176fc8f5e53506166636dc7cb8ff7cf408a0c8f925dd2ad2",
+    "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-source-preview-cx6mljgd\\candidate",
+    "applied": false,
+    "file_count": 26,
+    "ledger_preimage_sha256": "2fed4333494c80f571bf910ac2266763d08a199ea28de8cb9e3a190120f04bc1",
+    "ledger_successor_sha256": "3abfe09c6b99a046f972a15876c3460aaa06275fd8b344525177f693175857d0"
+  },
+  "full_subjects": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+      "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa",
+      "bytes": 21338
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S56-inspection.json",
+      "sha256": "03e34e3b57b8f0d3196a18de030641a9976c72bba5740ce95ff85b4d41a30b03",
+      "bytes": 20071
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S56-preserved.json",
+      "sha256": "c547de595aa8456a18d0b3388b082e6128576e498857c3b633c409d04d77b735",
+      "bytes": 6935
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S57-inspection.json",
+      "sha256": "c458171cd6bbefc5284052f549876920a9dd3d6408fff046bb66d164b12cae53",
+      "bytes": 37870
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S57-preserved.json",
+      "sha256": "d40b4c9a75da21be28fcf63a5871fabd500eb5643b4192e7248d93d49d29355f",
+      "bytes": 6938
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S58-inspection.json",
+      "sha256": "d9c1964545bf256b7a976fef15ab8696d62773091cee36a2b0dff59982ff5d2b",
+      "bytes": 8938
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S58-preserved.json",
+      "sha256": "ecb120859dc235d5991f8af86f819eb5c224e0119a0fb1892500925e4d81a017",
+      "bytes": 5084
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S59-inspection.json",
+      "sha256": "fbc8224b124ad1ec5b3cca22dbc1a64b278124c1dfb0771148b3e61fcc75a79f",
+      "bytes": 40535
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S59-preserved.json",
+      "sha256": "38b6db27c67902ff0aba0f08ade584377996627d5c05c5a140ef6278ee04e134",
+      "bytes": 8097
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S60-inspection.json",
+      "sha256": "b9073576bfab0c56258e3d815032334898d959054adac6c9e905c05faef1ba9c",
+      "bytes": 32947
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S60-preserved.json",
+      "sha256": "2073c43795452a28220e8a4cad6999b11eb57052d6fcd7a14da85e8d22c9b947",
+      "bytes": 6030
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "sha256": "1c5dd5e463ec3a94467ff424ef642508ccdf186950e2a6594d44c84e470cf6f5",
+      "bytes": 65555
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7",
+      "bytes": 7321
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S63-inspection.json",
+      "sha256": "1f06b903bc448fbad0d4f8da43c0864b1e7da872f565e05e69b6514cceac4f79",
+      "bytes": 31395
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S63-preserved.json",
+      "sha256": "acff28c887626ca6c3904e9803f6586366c70950dc615365df5ec9103f003aa5",
+      "bytes": 6489
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S64-inspection.json",
+      "sha256": "1535941793d97207b45f6b600901694f6302321406253f88c57dd78c57a60251",
+      "bytes": 27541
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S64-preserved.json",
+      "sha256": "6807369c351f2015d16afd2bd19766379ce329c4c278cecff70430830f5e0c03",
+      "bytes": 8159
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S66-inspection.json",
+      "sha256": "9e08ddf412ef9ceb509e1fe1a2bff598cd8675a4b14e0497ce07f8a8c35570b5",
+      "bytes": 36830
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S66-preserved.json",
+      "sha256": "b8dfe15dea7216bf6f677e537bee842d6aa58050eb8fbdb0f9edd676749cfd16",
+      "bytes": 7792
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S67-inspection.json",
+      "sha256": "4a918fcda4fd68b3f6e6262c2681d1215c5fd7ad1f55baaf17a7304a2f075f63",
+      "bytes": 41252
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S67-preserved.json",
+      "sha256": "f311bea0458aa7fe7a5d47bd52848a6714f084438f2a9183a4cc702c81923ae4",
+      "bytes": 7069
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/clause-matrix.json",
+      "sha256": "9942c17a9c424ffccad24847b94322707b04e8bc1aba3ec617dafe8715d99fee",
+      "bytes": 249460
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/machine-fragments.json",
+      "sha256": "b4044f828bb71af1fae7a01e5d38ecac9acf80decb94e07fb4dea78bfbaae3d5",
+      "bytes": 12261
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/retained-source-reuse.json",
+      "sha256": "6088ee05f5ea1dee56833e570116b2f815249523f269ea597fd5acc4ae297428",
+      "bytes": 43628
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/checks.json",
+      "sha256": "a5131ee2be62af124995ac11dae70dbe67d4a25632e011235903674b1e48ec40",
+      "bytes": 643
+    },
+    {
+      "path": "docs/state-contracts-major/execution/coverage-ledger.json",
+      "sha256": "3abfe09c6b99a046f972a15876c3460aaa06275fd8b344525177f693175857d0",
+      "bytes": 1774641
+    }
+  ],
+  "input_consumption": {
+    "delivery.json": {
+      "sha256": "82d7a749e02892639c38444d5b9ae9d971a5462f8e1b8d9311c7a9d15c02f8fc",
+      "bytes": 1631
+    },
+    "clause-matrix.json": {
+      "sha256": "9942c17a9c424ffccad24847b94322707b04e8bc1aba3ec617dafe8715d99fee",
+      "bytes": 249460
+    },
+    "source-joins.json": {
+      "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa",
+      "bytes": 21338
+    },
+    "retained-source-reuse.json": {
+      "sha256": "6088ee05f5ea1dee56833e570116b2f815249523f269ea597fd5acc4ae297428",
+      "bytes": 43628
+    },
+    "machine-fragments.json": {
+      "sha256": "b4044f828bb71af1fae7a01e5d38ecac9acf80decb94e07fb4dea78bfbaae3d5",
+      "bytes": 12261
+    },
+    "filemap.json": {
+      "sha256": "f3641463463b7bd836ea6d6b42801739b65a509e3c423cfd16c257de6d0e089e",
+      "bytes": 8076
+    },
+    "checks.json": {
+      "sha256": "a5131ee2be62af124995ac11dae70dbe67d4a25632e011235903674b1e48ec40",
+      "bytes": 643
+    },
+    "frozen-selected-rows.json": {
+      "sha256": "f871cbf481f1d3df1b9b9d7980c27b84cb0e6451079841e3611cda29bbdb4203",
+      "bytes": 117375
+    },
+    "site-ten-source-private-peer-input.txt": {
+      "sha256": "61141b3cca8a21bb790481aa5325b2c264d21a7ee73ba17b07bd078dd8fa655b",
+      "bytes": 27205
+    },
+    "site-ten-source-private-peer-context.json": {
+      "sha256": "f87f94519e9229f3f2ff5a81d9a9ce3d8d3ccafa8e4ac8b67984655cfa3fcc77",
+      "bytes": 20848
+    }
+  },
+  "inventory_proof": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-independent-review-p8g9tped\\inventory.json",
+    "sha256": "9e2a04791b65caf0a021659eb1bca67d321c4057391317d1685751b41071dcfe",
+    "all26_manifest_file_hashes_and_bytes_equal": true,
+    "all46_immutable_A_current_HEAD_physical_joins_equal": true,
+    "all14_prior_proofs_and_complete_declared_immutable_current_inputs_equal": true
+  },
+  "coverage": {
+    "machines": {
+      "S56": 8,
+      "S57": 7,
+      "S58": 3,
+      "S59": 5,
+      "S60": 5,
+      "S61": 13,
+      "S63": 5,
+      "S64": 5,
+      "S66": 8,
+      "S67": 7
+    },
+    "literal_clauses": 66,
+    "pass": 65,
+    "wording_correction": 1,
+    "frozen_clause_membership_exact": true,
+    "frozen_row_hash_errors": [],
+    "complete_clause_bindings": [
+      {
+        "cell": "disposition:transitions:S56:01",
+        "frozen_row_sha256": "2dc23b9462f5be8e51efb77e420180b2803e309bfe6c3d5eb86aa01776538325",
+        "assessment_sha256": "f2dda0d9803273219c86f8a97e6d86269153bcc9bad4b1cdae5212a4d5265d5e",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:02",
+        "frozen_row_sha256": "7d815e40ec31813d50b746bd83bb76e76d666f4f5bc2eb0527e94e10c92e05fe",
+        "assessment_sha256": "3650a128b41d7cf515fe9995f2435679e9b38f4dede48ee4ed3a229854fc3c9b",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:03",
+        "frozen_row_sha256": "328c6e957c848f9353d3911d699396a183a59abd68871fb68c46347518f6e841",
+        "assessment_sha256": "df37a201e87db58b07eaeb06af7a5a691c4c1606fc37e8a75203cb743120cdb6",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:04",
+        "frozen_row_sha256": "7f64d37aaea1dfbd9264fe962efa535f0253ebdd5a6c114ee46839163a766dfc",
+        "assessment_sha256": "258d0db7b1dad96bd1965e9a1fa5b387d6e80c72a99cba29c9be1d10e911433b",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:05",
+        "frozen_row_sha256": "9796c123a49eb7198fb4e24ace0031bf306b0e6aac4c6c962e3b4cd130ad54f4",
+        "assessment_sha256": "68b7855a02538e14f45e5179aea87b2be630df08bfe100e89e2f16b9deaabddb",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:06",
+        "frozen_row_sha256": "31378c5bef60febc7b666ad1c363b7292238ca3e4521331b31e33e87989f992e",
+        "assessment_sha256": "11f3dda04519e05951d33f7f04a1c76bed9230a0266811b159f7312b283a3244",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:07",
+        "frozen_row_sha256": "229ea7f59ad7bda43b6c24cf16a245c32b4ff6d92f7bc8ae38e9a52dd644671d",
+        "assessment_sha256": "79a09e37d883a377be61ec2fd5ccdde123f88c1368fac7cd5ea279a79f8343ce",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S56:08",
+        "frozen_row_sha256": "334ad721c62764327b006112a18223c7324638d89c0fd2fe8c76192ae7336441",
+        "assessment_sha256": "6b7cccd38e3be0eaa5a2f1d54ca3bfd30965289fcb0c4e00f452d8a5ba64a295",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S57:01",
+        "frozen_row_sha256": "4ac4f745a2953a1629a0adb600b620c66b324dc11ef64238a6d703b5914fe2ae",
+        "assessment_sha256": "ca5331d09fa330ef51804aeca9e4040a8ee4474ce50a9ef3e74126b9f1de8f44",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S57:02",
+        "frozen_row_sha256": "dda1862ea89f90aa6ddd805da33f31412dc3eca9a14f45cb56f6ce9bb0b23c8e",
+        "assessment_sha256": "832745e44017d1cfb6d954b99e889050dae3131144e318a66080e71ecfc427f5",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S57:03",
+        "frozen_row_sha256": "0406299c07da8c9c95ab4b4383deba37e3910089eb297e79f125aaa29e71fb1b",
+        "assessment_sha256": "d7e11a07e82d895e702354eb4b6af75aad94aab82d3edf360c88588dd6c69720",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S57:04",
+        "frozen_row_sha256": "ef3566752045dceccb8d3c7f326c2e3922dcef6e04f33f729319171594eb2177",
+        "assessment_sha256": "ac66dfb7c130260710be5adb81f00c042309ce917795fc1f4e90e84da844936e",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S57:05",
+        "frozen_row_sha256": "3ac3abec2c92aa8cbc0026646fa3e0eefb38dcee74aa9af35e782c1258ce069c",
+        "assessment_sha256": "4012f49b56dbc74c20392bcad36335d723a341a45e28a57edfb2fdc35e34cec8",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S57:06",
+        "frozen_row_sha256": "d643863cfea7e20baa5f7df429061e25747e0428c901ee33234199ab689e1ef7",
+        "assessment_sha256": "77435d3e5cd3e0f2ed1a2eb65f5a43751b6326ac66bb2b857fec4e688d655b9c",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S57:07",
+        "frozen_row_sha256": "56a7556c50618d741d82639a0e2b7fd4d92e9a65db0b17b0e6cd176efb70c1cf",
+        "assessment_sha256": "7fddf58dbeead9cff34e83b4debc57094dffc096d4cac5eac1d810a55ff3918d",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S58:01",
+        "frozen_row_sha256": "aa638dfa2ded7f2f5bf98d7f09fbf735437712697369917fef121fc99083b996",
+        "assessment_sha256": "f0f867ae1480238aa52315322c4915a849ff5e21e38990ad9e54f1247a9500ba",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S58:02",
+        "frozen_row_sha256": "44a0835f3ecd1f95a0a4167955b660c5658f94d2a3a3917162ed79d96219549d",
+        "assessment_sha256": "bb3b2dc0d86d57ddd416e219ced38dddcd9e2cb73516288854e358c90023cda2",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S58:03",
+        "frozen_row_sha256": "3496c156a153184017e1deb480c23d12f0afa835fe97170afd29d5a59de063ab",
+        "assessment_sha256": "a693b6e6c3953f6a5dba02fb63806a90a0ce95783d206708822301a8d99b9310",
+        "witness_count": 2,
+        "existing_exception": false
+      },
+      {
+        "cell": "disposition:transitions:S59:01",
+        "frozen_row_sha256": "2746c7282977449c8aeaabeaf4509b2504403c10d80607cdb120938b8f0172f0",
+        "assessment_sha256": "582e3cc03c8c89176ecec93d6ac18a1a36cd75e085471e32ee2e3596881207dc",
+        "witness_count": 4,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S59:02",
+        "frozen_row_sha256": "2a19709e62073748338b62700412c9bc775e47e0029474e33e118ecc49f188b2",
+        "assessment_sha256": "1699d638562fdc2f9013434d1bc3d2a0e85313f6341a7cc6f7e6df4006e2c300",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S59:03",
+        "frozen_row_sha256": "19cfb47e71df913845d0be1935c0616c0805903f08c5146a183fdd69e9fc5624",
+        "assessment_sha256": "38ffc6d943de352237aebdc9664f6f18f74592c8bed53950616a96a902cfa455",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S59:04",
+        "frozen_row_sha256": "938303fbcd7819fa7814047cf93fbf64479e8e59a7e512ad2b3e4564c225a355",
+        "assessment_sha256": "e19221d49861c92d91af1f78cf271438abdf90780e85b8f0434a40809e5a7186",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S59:05",
+        "frozen_row_sha256": "0aa3c22cbdd44ecdb65dbd96fefd29da3be218693a4bfb1677a57c2c0bd14ad0",
+        "assessment_sha256": "a1d16e89fe8d3a72ba272fbbc2e7e771ed32d02d038b9b7d86461af4014422f3",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S60:01",
+        "frozen_row_sha256": "6340d7d4d027de83742eb0e6d273eb4d339db2641731d6d6de0aaac83de314da",
+        "assessment_sha256": "c766a94252654c2fcd3290f2f43e7d8b270b6de6bb02a27621b8318e2e63041a",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S60:02",
+        "frozen_row_sha256": "5e7c87f5688fda379ea231a027df1edd989c235277eb1d536ff666ef282fd630",
+        "assessment_sha256": "32d82ec693d2e6a5ee8da348f502cfe17eec76e64b21a33aea68b4a7b81c0ab1",
+        "witness_count": 4,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S60:03",
+        "frozen_row_sha256": "20b49d8e03660e8e69a8c6d29341b1b3fa357c472bbcbb649f044746ea58a616",
+        "assessment_sha256": "95724c6850d58878afc0b4403a32008dc2b4c330afbd8b33b4d0215c14e900c7",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S60:04",
+        "frozen_row_sha256": "3b3f40b86b9aa01234f9647765749c909e4a26642f1810864fad0e01a69750d4",
+        "assessment_sha256": "e751249c6a846ee0afe36a2fa09a24b962e6c9f5049629cdc907d7e86c115251",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S60:05",
+        "frozen_row_sha256": "52bfa7e032e35d63f01f37da4d1f53f99bb7ee4e36f2c539b75e505259b82206",
+        "assessment_sha256": "6b5c8950dfcd2061278c39b1bfbba95c7db791f6f3a64f7ccb1fd60879f8773b",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:01",
+        "frozen_row_sha256": "2b4034b6b56fdc4c627e3a816c6e33a13ee3290c00172d5f992ae3b6012d213a",
+        "assessment_sha256": "f963787127c050645836a1069d42d71fc948a6e8fb66f3a82d64a2a38e1ea994",
+        "witness_count": 5,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:02",
+        "frozen_row_sha256": "22e360e09399b60025277496031eade88921aeeb88fb048066574b1fe025ace9",
+        "assessment_sha256": "cd40d2f4d2d53819eee8bed3b7cf4295c3867f69f67d2a149fc1616663e19829",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:03",
+        "frozen_row_sha256": "ba2ae4a53da095ad9e9adcef976fc9de58b147422b9067edddb2f44edc2718b9",
+        "assessment_sha256": "d89cfa36321ac469a1e010875189a8ec69eb2f2f4e441f4a0f490445eaaa7f4a",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:04",
+        "frozen_row_sha256": "3560146e9743225ab5d3cb897786f8c99ab80c7d5e2f3336fd05b2b747d7be09",
+        "assessment_sha256": "0324227ab891a84225a2228941dab43de4cee268cb5531754e28d86eb57d79c3",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:05",
+        "frozen_row_sha256": "b88f724a86720166139b17191116582ae1bc04e9b7dab9b1748942c0abd3b417",
+        "assessment_sha256": "034f810b46998877ab7dc57999807fb9c1b7e580e60f95d91854c32c1890b5a4",
+        "witness_count": 4,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:06",
+        "frozen_row_sha256": "cfa834ec173072919028c4902317d3710d13f08e60235dd25aca011e48410bb7",
+        "assessment_sha256": "6f81bb9c519e3c0a10bf88df8473b74446db089d087a7fcdf1c940df3966ef14",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:07",
+        "frozen_row_sha256": "e458227ce3a505f0ee31656758c3656943a0ed3d41ad2178496874d05c08b5e6",
+        "assessment_sha256": "11b074568cc1225694f617056eabcc2d992b4aeeced7a367888013e3ae3cdc88",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:08",
+        "frozen_row_sha256": "bcdb1f7b29b4e7cf59e3e8c973d9c8cadfaa1ca00857fefae63d92389fd2509b",
+        "assessment_sha256": "e60bc1761a05cebb577579d07ae12876886963b20812870de4e233a8c80e2299",
+        "witness_count": 4,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:09",
+        "frozen_row_sha256": "ee7cb89e9e1e9b3cd524b8c011dee23caa8e6b4931397abfdff5356ab5476326",
+        "assessment_sha256": "c76352b9d2c34be44eaded65e5c95f04c8424791b174b07bfb2d8161b750388b",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:10",
+        "frozen_row_sha256": "5bd75cd295eb99a9edea7e7e6f24ba3f73b10d6befaa66e373f6411a782410f5",
+        "assessment_sha256": "74beddcc4cae0f2cd5d465e13f831a320db1d9cc3d24aab2f0a6a160f2cbb261",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:11",
+        "frozen_row_sha256": "9a18f99b6334e0a69c22c7d98b8134f9fa2350933cddc1ba65880cc38cfabe50",
+        "assessment_sha256": "b131e68edbd1bdae83aada2333eb8d5d7b708a3ce1377fdd0e05c7072ea39345",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:12",
+        "frozen_row_sha256": "b90a352ceb33a8ed875613dfe0be25c3957898d99503e093724ebd36ba62de9d",
+        "assessment_sha256": "59d540a846b5896f05367e3674fba7fbbf31c1654db372ca31ed42361bbdc4a5",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S61:13",
+        "frozen_row_sha256": "33ff2779abfb50ffcf77781d24a712c43d221cc83e3af3f831f7d71f4e8db692",
+        "assessment_sha256": "59df6a410fccd03a90ff80dd9ba8782970f49efe6aa972a4a9e411f938c6b42c",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S63:01",
+        "frozen_row_sha256": "582c8b21abb265be37b7b8fd7f61b32ce79faa1ff82f97c7f2309cacfb315b83",
+        "assessment_sha256": "3bd7e18b0d69211b9a515cf51ca39aa285424c27445f0d3342672e8f7be19995",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S63:02",
+        "frozen_row_sha256": "405eb04b425536387582c779a0893689761bcd5a9e15ecb413ed9489b3c82f4c",
+        "assessment_sha256": "55c9a400570319317147a5f9d44124dc462ae21606f21edb10524e2cc2ddfb2f",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S63:03",
+        "frozen_row_sha256": "9c27d15e9e881eba0b67212c2cb5851e17e1153fe02b4de7270fbfa2e9e8b714",
+        "assessment_sha256": "423524f6ce6c1eba1354bc8b98188a0190f253cc197207f34eb10785e74ca242",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S63:04",
+        "frozen_row_sha256": "37123204e20327c84e4bb6685ce5a97e192c7c488395e1c767c79a4aa4e0de65",
+        "assessment_sha256": "f3b3f779fad13c77572e0b8d4d0d7838dbe34ee2a59ccf28a4074e3412787c40",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S63:05",
+        "frozen_row_sha256": "ec7073230fdbd23bc3f9e2952a404c3cb7031422184b1fe3a1214bcbc3e56a00",
+        "assessment_sha256": "939d609d89ad447323a244866098aadef1b6b168ea51d580224f78df33515b02",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S64:01",
+        "frozen_row_sha256": "a91c1b70799250c07e2d1c88792a3b70d17cefe843899ce0684723b5939fe108",
+        "assessment_sha256": "7122bc69592f6735b548f1730678c60df4e3d3b575a87ec8cc20b854184f5d4d",
+        "witness_count": 5,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S64:02",
+        "frozen_row_sha256": "a84b6fd8ede374e1a5ddf359e72933bbed6116cc52b72b82c7933ff40e12244f",
+        "assessment_sha256": "ff308bd70e504bdc6710f1b875d992615aac030ea464fefa19153f8618d5a04e",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S64:03",
+        "frozen_row_sha256": "b54771b08e744db230255342c0793b2ea9665b378422a9a14f21aae1b2ea73b8",
+        "assessment_sha256": "a45c78ef8c8dd97eb964776817b8164a79c8cca9b0bd5918d519f2d71acf223e",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S64:04",
+        "frozen_row_sha256": "7da282967342505664e8789bf8eb183d47830d4dc5ec618d10dc9187e9e0d7c7",
+        "assessment_sha256": "3385fd4414f198978ffc7b8e2eacfe66ab75cbe15b52af4e1d9509517f6dd92f",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S64:05",
+        "frozen_row_sha256": "4ed935e3c55d71865f608b4c4e12457330c214c64d253a5aaad1fe24a58bf07a",
+        "assessment_sha256": "19e42959cca8d4e9938b712d94102016c8010519a87f62af490cbc061f4f3df6",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:01",
+        "frozen_row_sha256": "a3ee8b6b5b9a4f54be75cc8bb6b6bae78662186bd90f8ecfb559edaea2cc5bc6",
+        "assessment_sha256": "da5815d5f5d4074bde7c7e8286c26a49c93fb789939e3c8f24fd7de4db91aa6e",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:02",
+        "frozen_row_sha256": "bceb2cab6adf20e4aa75e8bca9d6d1525a1ec1198dfc5d7112d5b44761f7c57b",
+        "assessment_sha256": "eeb14eac81d4b6262d94193efafd9e2afdcad833d7b97825956ba1898104be41",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:03",
+        "frozen_row_sha256": "cd613baf66a3c18abca06d2c2c5cc15331df020c35608552367c5fa74f1e7814",
+        "assessment_sha256": "f3a8aef66d691154d1c9eb439ada47c3ab008ad6226851f416330304207fff4d",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:04",
+        "frozen_row_sha256": "2e8b84cae3b84f6428135ccb3337af9906bca95632277605994030c3366c000f",
+        "assessment_sha256": "0ddc03881441072ea5f69094e4c133f027ad607a3f660e99e6b618bd9b9f4a3d",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:05",
+        "frozen_row_sha256": "a0b8e1af8aa4ec5a8c9bfa3ce2cf2357969be6cb4e11a7775980c880e7c037b6",
+        "assessment_sha256": "6cb14edddc76602afd6e981f210891c16392585162a4482e680629d0160649ad",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:06",
+        "frozen_row_sha256": "b020233448ed92ea82346baf79c8b9375b442f1aa957d227ffa0318bd0f305ce",
+        "assessment_sha256": "0a6d8c6d57a983361ea4cbf8a57f600e63a59b019e641e7b674911ca9e5496d2",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:07",
+        "frozen_row_sha256": "b81947c8b3223fe7c2fcd4d4cc6b2e207040c37d6a10159bf691d6be4aced829",
+        "assessment_sha256": "fb7735de85e5981015f7b05924d94d2146666cf686d386a2d0955df2fd9608d6",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S66:08",
+        "frozen_row_sha256": "306c7bb3c375666a64e0341f6c7a64da1e12989ef721bd3c1a932b98238342c5",
+        "assessment_sha256": "d13095e6e99aabe4704af246676a20651f93fdf1e41300b7eb98597cc75bde7c",
+        "witness_count": 1,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:01",
+        "frozen_row_sha256": "53dc18ee2a32580f7c8896c97d07bde1f7d0ca24c65abd21d28e2433d99b97e0",
+        "assessment_sha256": "ee5854a8e0e7e8590c41271fa8e9d5e52ba88c9efe1cd15cb8f5c90f2ca4936b",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:02",
+        "frozen_row_sha256": "5620382f3188ef536692f0b99014002f16e06f18fc7e1b166ec9ec344c593a4e",
+        "assessment_sha256": "3d5e8ce81bd74d286acee51340a415e31911b59a574db3e8db27b29ce7f1666b",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:03",
+        "frozen_row_sha256": "1feb56580248465c358787566a5f3b7e7e34a2d972b15dc34f8ba1422578a5bd",
+        "assessment_sha256": "a6abc55a0fbe809ea9eac98b6982d68f71c4611f074ff42553dac42ec0f360ac",
+        "witness_count": 6,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:04",
+        "frozen_row_sha256": "26b9e42b3ea8d1d4121d35b08840a9cc7f11254446c33453668cdcff8b4ceb18",
+        "assessment_sha256": "e0524ea8ea10ecdb94bda7013c4d6f12d52b3af7e1381588733fbbdb7c347dd9",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:05",
+        "frozen_row_sha256": "ee042ea67687239c08b69aa12abc91938a37efe10335d7fddf96a22189744a19",
+        "assessment_sha256": "09eb08e1a58afc152bed0ddd4adcbb109a91d7833c533366e818d040c824c2d0",
+        "witness_count": 3,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:06",
+        "frozen_row_sha256": "eb5261ded38e1b685bb8af5e86b70bec60c113a85b8a9bc93be13d457c816eac",
+        "assessment_sha256": "a46fffabd82b2470d2d0942481ebd71c50c7a657d1677e8aeea2ad3f06db06d6",
+        "witness_count": 2,
+        "existing_exception": true
+      },
+      {
+        "cell": "disposition:transitions:S67:07",
+        "frozen_row_sha256": "897e54598f1f85543b3db5a8dec552d060cb1de592f328c4730ae36629112740",
+        "assessment_sha256": "6c7195a18fca94a64936675289c896f8143b2d58075c9069ffa8115d908f26fd",
+        "witness_count": 3,
+        "existing_exception": true
+      }
+    ]
+  },
+  "source_input_sha256": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/scripts/academy-source.ts": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+    "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+    "site/scripts/capture-hook-proof.ts": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+    "site/scripts/capture/fixture.ts": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+    "site/scripts/capture/harness.ts": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+    "site/scripts/capture/normalize.ts": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+    "site/scripts/capture/py-runner.py": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+    "site/scripts/capture/run.ts": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+    "site/scripts/capture/targets.ts": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+    "site/scripts/capture/verify.ts": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+    "site/scripts/decision-evidence.ts": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+    "site/scripts/execution-maps/atlas-model.ts": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+    "site/scripts/execution-maps/atlas-render.ts": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+    "site/scripts/execution-maps/atlas-theme.ts": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "site/scripts/execution-maps/model.ts": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+    "site/scripts/execution-maps/render.ts": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+    "site/scripts/gen.ts": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+    "site/scripts/generate-academy.ts": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+    "site/scripts/generator/generate.ts": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/topic-map.ts": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+    "site/src/components/AcademyBookmark.astro": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+    "site/src/components/AcademyCommandPreferences.astro": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+    "site/src/components/AcademyOverview.astro": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+    "site/src/components/CaTocList.astro": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+    "site/src/components/ContextExplorer.astro": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+    "site/src/components/DecisionEvidence.astro": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+    "site/src/components/ExampleChoices.astro": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+    "site/src/components/ExecutionMap.astro": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+    "site/src/components/GuideDirectory.astro": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+    "site/src/components/TableOfContents.astro": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+    "site/src/components/ThemeProvider.astro": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+    "site/src/components/ThemeSelect.astro": "1d23b1a99cef5d224e7bfc7423ae8b93a0aad07ff4801379492866fe58426d27",
+    "site/src/components/WorkflowAtlas.astro": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+    "site/src/scripts/academy-bookmark.ts": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+    "site/src/scripts/academy-command-preferences.ts": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+    "site/src/scripts/execution-map-navigation.ts": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+    "site/src/scripts/guide-filter.ts": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+    "site/src/scripts/workflow-atlas.ts": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+    "site/src/styles/workflow-atlas.css": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+  },
+  "reuse": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+      "sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "input_count": 11,
+      "all_declared_inputs_current": true,
+      "scope": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "input_count": 8,
+      "all_declared_inputs_current": true,
+      "scope": "Only valid-rendered Atlas client/markup control flow. Client import of Atlas model is type-only; renderer data selectors/templates/native dialog were inspected. Upstream loadAtlas source freshness, generation/data/source map, theme/CSS geometry and actual browser/print/download behavior are outside this guarded edge and are NOT qualified."
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/source-clauses-preserved.json",
+      "sha256": "ee3594d17a7a758a56d7fd791d5f59f2b7885a221dfe61ee7d00be46f6898171",
+      "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "result": "PRESERVED",
+      "input_count": 6,
+      "all_declared_inputs_current": true,
+      "scope": "Four explicit source clauses only; no original/current runtime claim from literal equality."
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S59-01-not-applicable.json",
+      "sha256": "6c1943297978c8bac83c1a6c29eeaf0b7fdc3d9369b97f322329dc216194c611",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "input_count": 8,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S59-03-not-applicable.json",
+      "sha256": "9d5f306b9c1796a5b255f46bb0815e45e9a2b1ba7bec5fb92b29cb0b9bbf8a7d",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "input_count": 8,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-10-not-applicable.json",
+      "sha256": "5e0632ac6fa5f47dd09190e5cb97364b6fd5e68215dc9d9a7b9e65e7058e5d32",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "input_count": 7,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-11-not-applicable.json",
+      "sha256": "16b5cc21caf103922b7752832e3150be5cd7a706abc61b1f7d6342921943c917",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "input_count": 7,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S63-01-not-applicable.json",
+      "sha256": "b37ee5820e87c6135c08fcac2b9c87fb49f483ddb31f917e39577e7269440992",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "input_count": 7,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S67-01-not-applicable.json",
+      "sha256": "682e34402a40cb9df8ac547020cb7043a5e71ac59075e3e0650a25335639531e",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "input_count": 7,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+      "sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "input_count": 27,
+      "all_declared_inputs_current": true,
+      "scope": "Finite conditional source clauses only; no runtime/browser/build/installed/hosted/model/user-action or whole-task/program outcome."
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+      "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "input_count": 9,
+      "all_declared_inputs_current": true,
+      "scope": "Conditional source-clause control flow only; dynamic corpus/DOM data are preconditions, not observed accepted outputs. No runtime transport/dependency completeness claim."
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+      "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "input_count": 8,
+      "all_declared_inputs_current": true,
+      "scope": "Conditional source-clause control flow only; dynamic corpus/DOM data are preconditions, not observed accepted outputs. No runtime transport/dependency completeness claim."
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+      "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "NOT_APPLICABLE",
+      "input_count": 8,
+      "all_declared_inputs_current": true,
+      "scope": null
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/navigation-preserved.json",
+      "sha256": "e8d0f1376bbf56499547359be8d30fe0d61e54c5a579a65aa4ca3b2129228c6f",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "input_count": 5,
+      "all_declared_inputs_current": true,
+      "scope": "Conditional source-clause control flow only; dynamic corpus/DOM data are preconditions, not observed accepted outputs. No runtime transport/dependency completeness claim."
+    }
+  ],
+  "cas": [
+    {
+      "machine": "S56",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S57",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S58",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S59",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S60",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S61",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S63",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S64",
+      "old_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S66",
+      "old_row_sha256": "dfca9d26004d61785dd8539f3db4f90cfaa57443ea286b580fccb801119294cb",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    },
+    {
+      "machine": "S67",
+      "old_row_sha256": "cf92f12423303019c67c70d0d4dbfca2dc857bac0a3277d8fa8d6417461cf789",
+      "expected_before_equal": true,
+      "before_hash_equal": true,
+      "proposed_after_equal": true
+    }
+  ],
+  "ledger_diff": [
+    "/machines/S64/candidate_contract_note",
+    "/machines/S64/status",
+    "/machines/S64/evidence",
+    "/machines/S56/candidate_contract_note",
+    "/machines/S56/status",
+    "/machines/S56/evidence",
+    "/machines/S59/candidate_contract_note",
+    "/machines/S59/status",
+    "/machines/S59/evidence",
+    "/machines/S66/candidate_contract_note",
+    "/machines/S66/status",
+    "/machines/S66/evidence",
+    "/machines/S60/candidate_contract_note",
+    "/machines/S60/status",
+    "/machines/S60/evidence",
+    "/machines/S63/candidate_contract_note",
+    "/machines/S63/status",
+    "/machines/S63/evidence",
+    "/machines/S58/candidate_contract_note",
+    "/machines/S58/status",
+    "/machines/S58/evidence",
+    "/machines/S67/candidate_contract_note",
+    "/machines/S67/status",
+    "/machines/S67/evidence",
+    "/machines/S61/candidate_contract_note",
+    "/machines/S61/status",
+    "/machines/S61/evidence",
+    "/machines/S57/candidate_contract_note",
+    "/machines/S57/status",
+    "/machines/S57/evidence"
+  ],
+  "preservation": {
+    "all_edges_rows_proofs_status_history_equal": true,
+    "all_nonmachine_ledger_groups_equal": true,
+    "tasks_runtime_epochs_unmodified": true,
+    "six_existing_analytical_corrections": [
+      "S59:01",
+      "S59:03",
+      "S61:10",
+      "S61:11",
+      "S63:01",
+      "S67:01"
+    ],
+    "four_existing_BUILD_G01_retired_states": [
+      "S64:02",
+      "S64:05",
+      "S67:04",
+      "S67:06"
+    ],
+    "exceptions": "Original NOT_APPLICABLE edges and accepted scoped-change rationale retained; no new waiver/N-A or literal preservation of repaired delete-first bugs."
+  },
+  "review_basis": [
+    "Read all66 frozen guard/effect/retry clauses, current ledger notes, all66 new assessments/witnesses, ten raw/proof scope and input mappings, machine CAS and all14 retained conformance/correction proof scopes.",
+    "Directly inspected actual bookmark, preferences/copy, directory filter, four heterogeneous disclosure/choice owners, contained fragment navigation, Atlas lifecycle/navigation/geometry/print/export, TOC/theme, generator sequencing/staging/publisher rollback, capture fixture/harness/freshness/disposal, and Academy source/installer/wayfinding/topic/render seams.",
+    "Exact source hashes allow bounded reuse of prior conformance packets with their original source epoch, result and limitations. Coverage is conditional control-flow source inspection, not an execution footprint or current dynamic corpus admission."
+  ],
+  "limits": [
+    "No tests, validators, reruns, Go/npm/Node/native/browser/API/network or dependency acquisition. Only read-only Git/file/source/JSON/hash inspection; no repository/index/ref/marker writes.",
+    "No browser/clipboard/geometry/focus/print/dialog/download or assistive/user acceptance. Valid generated DOM/model inputs remain explicit preconditions.",
+    "No actual capture/helper/media/host run or physically successful cleanup; complete child-process imports and OS closure not established.",
+    "No actual external Academy corpus/checkout acceptance or proof every guide/action equals nested HEAD. Installer/checksum exact-byte guard is separate and preserved.",
+    "No whole-site transaction, crash journey or general rollback guarantee. BUILD-G01 conditional staged-owner publication and cross-owner partial failure limits retained.",
+    "Only ten machine-level PLANNED to SOURCE_ONLY PRESERVED proposals; no edge/task/scenario/runtime/installed/model/user qualification, main readiness or publication claim. New817 PLANNED count is accounting, not missing-feature count.",
+    "Root strict-owner preview/adoption is separately owned. PR1116 stays frozen at ef63; parent1098/main held for user testing; publication unauthorized.",
+    "Successor may reuse entire review except exact S56:05 wording and its dependent digest closure; no reread of remaining65 or fleet required."
+  ],
+  "read_only": {
+    "repository_index_refs_context_markers_written": false,
+    "writes": "Own fresh Temp only"
+  }
+}

@@ -1,0 +1,29 @@
+{
+  "schema": "hw26-owned-abrupt-exit-case/1",
+  "status": "PASS",
+  "case_count": 1,
+  "ready_observed": true,
+  "owned_pid": 64968,
+  "kill_requested_on_owned_handle": true,
+  "termination": "Python Popen.kill on owned Windows process handle",
+  "exit_code": 1,
+  "kernel_wait_returned": true,
+  "seconds": 0.09771,
+  "deadline_seconds": 5.0,
+  "captured_bytes": {
+    "stdout": 3184,
+    "stderr": 0
+  },
+  "reason": null,
+  "residue_preserved": true,
+  "cleanup_attempted": false,
+  "fake_operator_sentinel_unchanged": true,
+  "plan_sha256": "6cf6adee568ce5361d8735d396fb1b7a776b7a360644599cc1cf8dddc5171220",
+  "stdout_sha256": "fe8a21b5f6527f73dfa210fc8eaf0829a6d6abcd618343e967fd48aafe405d74",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "limits": [
+    "One Windows/Node24.22.1 actual setup-module hard-kill case, not M historical runtime or all-platform qualification.",
+    "Actual setup/observer filesystem calls are confined/recorded and spawn/network entry points deny calls; no complete OS/DLL syscall trace claimed.",
+    "No real operator auth store, Pi/provider/model, package install, dependency/global/canonical effects or benchmark replay."
+  ]
+}

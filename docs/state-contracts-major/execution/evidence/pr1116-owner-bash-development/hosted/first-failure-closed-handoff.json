@@ -1,0 +1,55 @@
+{
+  "source_commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "repository": "arbiterForge/codeArbiter",
+  "PR": 1116,
+  "event": "pull_request",
+  "run_id": 43983045996,
+  "run_attempt": 1,
+  "job_id": 133704233851,
+  "job_name": "Coverage union  <os: windows-latest>",
+  "failed_step": "Coverage (blob)",
+  "test_file": "plugins/ca/tools/farm.test.ts",
+  "test_line": 2611,
+  "test_name": "farm artifact publication (#397 / #387) > #387: the unavailable-diff list is bounded and still reports the true total",
+  "closed_error": "Test timed out in60000ms",
+  "observed_case_ms": 63103,
+  "suite": {
+    "files_pass": 14,
+    "files_fail": 1,
+    "tests_pass": 966,
+    "tests_fail": 1,
+    "tests_skip": 3,
+    "total": 970
+  },
+  "fixture_contract": {
+    "tasks": 12,
+    "concurrency": 6,
+    "actual_gate_subprocesses": true,
+    "fault": "owned regular file at diffs directory path",
+    "post_run_assertions": [
+      "exit0",
+      "unavailable_total12",
+      "bounded list<=11",
+      "Markdown12-task count"
+    ]
+  },
+  "assertion_reach": "Awaited runFarm did not return before case timeout; post-run behavioral assertions not reached",
+  "original_log": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\011-first-failed-job-log.stdout",
+    "sha256": "cbee78287578cb92e102076f8facefa93455c43f8e4a007b4b669cceecdf3185",
+    "bytes": 77127
+  },
+  "source_comparison": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\first-failure-source-comparison.json",
+    "sha256": "24ce2964625b061fa4f343a85d3b4de37131daed74d79a4016d731ee4750d3cd"
+  },
+  "cause": "UNKNOWN: original log does not identify awaited task/gate/child phase or timing root cause",
+  "next_smallest_discriminator": "Retain bounded per-run fixed-phase/owned child progress before natural timeout/cleanup, preserving12task/6worker case and current deadlines. Root to select scoped diagnostic/fix from original source; no replay or guessed timeout change.",
+  "watch": "Sole42232 continues remaining-terminal",
+  "qualification": false,
+  "actions": [
+    "Authenticated original failed-job metadata/log only",
+    "Read immutable source/predecessor joins; no source/test execution",
+    "No rerun/cancel/merge or canonical writes"
+  ]
+}

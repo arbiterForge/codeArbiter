@@ -1,0 +1,69 @@
+{
+  "schema": "exact-head-watch-delivery/1",
+  "head": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "pull_request": 1116,
+  "base": "major/state-contracts",
+  "runs": {
+    "ci": {
+      "id": 43983045996,
+      "event": "pull_request",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure"
+    },
+    "docs": {
+      "id": 43983045676,
+      "event": "pull_request",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "checks": {
+    "skipping": 8,
+    "fail": 6,
+    "pass": 86
+  },
+  "head_authenticated": true,
+  "all_jobs_terminal": true,
+  "all_checks_terminal": true,
+  "required": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133719907023",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "merge_readiness": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133719907023",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "verdict": "BLOCK",
+  "foreground_session": 42232,
+  "watch_exit_code": 1,
+  "terminal_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\terminal-receipt.json",
+    "sha256": "36f98988fc2cfa9995cc2767afbb12360c4de733210c8cb1661ab13001876a37"
+  },
+  "failure_handoffs": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\first-failure-closed-handoff.json",
+      "sha256": "9943d5adb86421d516d13963e7b258c6f3e666efcc532009e902a49392290796"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\second-failure-closed-handoff.json",
+      "sha256": "e18ad7dfaa47929cd1c877e7290815a02978eaa02f2af3908d371d978dbc25ef"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-15c57-watch-owned\\additional-failures-closed-handoff.json",
+      "sha256": "614c633d67c89d80c6aafc76380c7686aec2d3de439e855a66d8b29063cbb25b"
+    }
+  ],
+  "qualification": "No whole-run, installed, task or main/publication qualification. All six native builders and all three Program integrity jobs succeeded as individual PR jobs only.",
+  "mutations": []
+}

@@ -1,0 +1,44 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-pi-native-warm-preflight-e4b86kn8\\\\candidate\\\\.github\\\\scripts');suite=unittest.defaultTestLoader.loadTestsFromNames(['test_pi_package.DebuggerInboxTests', 'test_pi_package.PiPackageTests.test_rpc_native_shutdown_identity_refuses_foreign_or_unknown_handles', 'test_pi_package.PiPackageTests.test_rpc_native_shutdown_transport_has_one_deadline_and_aggregate_cap', 'test_pi_package.PiPackageTests.test_rpc_native_shutdown_fixed_debugger_profile_and_private_sidecar']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate",
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "exit_code": 0,
+  "duration_seconds": 0.8455359000072349,
+  "before": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\test_pi_package.py": "6203048ac492e05c07c6ab5975d7ae2d4ac87af0794c33664641aab667f066fe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_rpc_timeout.py": "48811d5ef208b7371a67bacb9d193453235068db55081d030c9b1ed0caccca83",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_dbgeng.py": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "after": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\test_pi_package.py": "6203048ac492e05c07c6ab5975d7ae2d4ac87af0794c33664641aab667f066fe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_rpc_timeout.py": "48811d5ef208b7371a67bacb9d193453235068db55081d030c9b1ed0caccca83",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_dbgeng.py": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "source_tool_stable": true
+}

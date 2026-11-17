@@ -1,0 +1,138 @@
+{
+  "M": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "current": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "subjects": {
+    "plugins/ca-pi/tools/test/benchmark-boundary.ts": {
+      "M": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699
+      },
+      "current": {
+        "sha256": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+        "bytes": 2699
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/live-pi-host.ts": {
+      "M": {
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+        "bytes": 3266
+      },
+      "current": {
+        "sha256": "f7a18740703b17afc33423561a63c08958473a17b1b2443e1a4c0d414e4e3d7b",
+        "bytes": 3266
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+      "M": {
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729
+      },
+      "current": {
+        "sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+        "bytes": 2729
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/runner-isolation.test.ts": {
+      "M": {
+        "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+        "bytes": 100540
+      },
+      "current": {
+        "sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+        "bytes": 100540
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/test/security.test.ts": {
+      "M": {
+        "sha256": "1b532cf9e318d207eba294cab4aa66431d25170f71dce50bda2200c62acc36ec",
+        "bytes": 30138
+      },
+      "current": {
+        "sha256": "1b532cf9e318d207eba294cab4aa66431d25170f71dce50bda2200c62acc36ec",
+        "bytes": 30138
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/pi_benchmark.py": {
+      "M": {
+        "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+        "bytes": 16181
+      },
+      "current": {
+        "sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+        "bytes": 16181
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/test_pi_benchmark.py": {
+      "M": {
+        "sha256": "be4264e341133e7c197ff2059d7311eab83033ab8f3bf760ad590629785db32c",
+        "bytes": 6271
+      },
+      "current": {
+        "sha256": "be4264e341133e7c197ff2059d7311eab83033ab8f3bf760ad590629785db32c",
+        "bytes": 6271
+      },
+      "byte_equal": true
+    },
+    ".github/scripts/observe_pi_installed_rpc.py": {
+      "M": {
+        "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+        "bytes": 25934
+      },
+      "current": {
+        "sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+        "bytes": 25934
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/vitest.config.ts": {
+      "M": {
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558
+      },
+      "current": {
+        "sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+        "bytes": 2558
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/package.json": {
+      "M": {
+        "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+        "bytes": 505
+      },
+      "current": {
+        "sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+        "bytes": 505
+      },
+      "byte_equal": true
+    },
+    "plugins/ca-pi/tools/package-lock.json": {
+      "M": {
+        "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+        "bytes": 63619
+      },
+      "current": {
+        "sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+        "bytes": 63619
+      },
+      "byte_equal": true
+    },
+    ".github/workflows/ci.yml": {
+      "M": {
+        "sha256": "88b8154ad664c670f2111f045c14ffba259b50f5ec589062047f90695ab2dbf6",
+        "bytes": 272037
+      },
+      "current": {
+        "sha256": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+        "bytes": 275520
+      },
+      "byte_equal": false
+    }
+  }
+}

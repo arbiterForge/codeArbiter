@@ -1,0 +1,232 @@
+{
+  "schema": "codearbiter.major.portability-development/1",
+  "recorded_at": "2026-11-16T23:39:42.686903+00:00",
+  "basis_commit": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "source_subjects": {
+    ".github/scripts/npm_binding_observation.py": {
+      "sha256": "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab",
+      "bytes": 24383
+    },
+    ".github/scripts/test_npm_binding_observation.py": {
+      "sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f",
+      "bytes": 26997
+    },
+    ".github/scripts/major_native_observation.py": {
+      "sha256": "8966db335dd225490a1404e80ff24936333585402ac055ac9742e11c648434a6",
+      "bytes": 185114
+    },
+    ".github/scripts/test_state_contracts_integration.py": {
+      "sha256": "fb6130709350e42f97bc66a135bc96b0dc3ce33571f0a1d17b7d85214184f268",
+      "bytes": 53090
+    },
+    ".github/scripts/test_release_workflow.py": {
+      "sha256": "6ab07368324e26edf7a9bd6a274fb65ecbc14caee2e2da9f73958686ee343dbf",
+      "bytes": 39632
+    },
+    ".gitleaks.toml": {
+      "sha256": "b7ce6a01ce59b6fc3b502e065b7adc48e3b4a32c6c79e5f187288c9237c380e4",
+      "bytes": 19656
+    }
+  },
+  "original_hosted": {
+    "CI": {
+      "run": 43976088053,
+      "result": "failure"
+    },
+    "Docs": {
+      "run": 43976087894,
+      "result": "success"
+    },
+    "checks": {
+      "passed": 62,
+      "failed": 10,
+      "skipped": 13
+    },
+    "required_merge_readiness": "failure"
+  },
+  "causes_and_repairs": [
+    "Ubuntu Hook CPython3.15.2 exceeds old8192 inventory entries; exact full original population remains unknown. Coherent finite file/directory/entry/JSON budgets replace the arbitrary smaller budgets, preserving512MiB aggregate identity bytes and enforcing remaining bytes before each hash.",
+    "Mac Hook3.15.2 and actual Darwin native3.14 workspace producers refuse linked runtime entries. Original link coordinates/types/targets remain unknown. New closed link map retains inert readlink/lstat identities without traversing targets; consumed imports must still resolve to captured regular runtime/source files. Unsupported reparse and changing identities refuse.",
+    "Program-integrity expected Hook guard omitted the three already-adopted Q02 success predicates. Only the exact expected literal changes; production workflow, token scope and all existing mutants remain unchanged.",
+    "Windows Q02 original publication suite has5 real-Bash discovery failures. observe_python does not modify environment; its new Bash shell can select a different Windows Git layout. The exact original chosen Git path is unretained. Root independently reproduced all5 failures with actual Git/mingw64/bin on PATH while installation Bash exists. A shared test-owner resolver recognizes cmd/bin/mingw32/bin/mingw64/bin and refuses unknown/missing installations; original shell bodies and publication/receipt assertions remain strict.",
+    "The full-file scanner flagged the public SHA256 of the fixed76-byte DUMMY_AUTH JSON as a generic key. Root independently recomputed it from public source and confirmed the exact scanner secret group. One fully anchored complete-value waiver follows the existing scanner policy; every path and other value remains scanned. The same-file different synthetic canary still fails, and all5 existing narrowness controls pass. Original evidence bytes remain unchanged."
+  ],
+  "actual_local_checks": {
+    "runtime_target_RED": {
+      "named_methods": 2,
+      "cause": "Real owned8193 regular files and real owned links hit original guards; no import/setup substitution."
+    },
+    "portable_GREEN": {
+      "passed": 18,
+      "skipped": 0,
+      "seconds": 13.388,
+      "scope": "Includes all12 original npm methods plus6 new controls; all12 original method ASTs unchanged."
+    },
+    "original_Windows_token_method_GREEN": {
+      "passed": 1,
+      "seconds": 0.011,
+      "no_mock_or_import_seam": true
+    },
+    "real_Git_layout_RED": {
+      "original_methods": 5,
+      "failures": 5,
+      "actual_git": "C:/Program Files/Git/mingw64/bin/git.EXE",
+      "actual_installation_bash_exists": true
+    },
+    "real_Git_layout_GREEN": {
+      "passed": 7,
+      "seconds": 10.565,
+      "scope": "Same5 original Bash/receipt methods plus2 discovery controls; real Git/Bash, closed dummy publication providers."
+    },
+    "public_fixture_digest_scanner": {
+      "original_full_file_scan": "One generic-api-key finding on a verified public fixture digest; no credential input.",
+      "exact_public_value_green": true,
+      "different_value_same_file_negative_detected": true,
+      "narrowness_methods_passed": 5,
+      "seconds": 0.018
+    }
+  },
+  "retained_acceptance": {
+    "HW15": "../hw15-published-rollback-M0b0/proof.json",
+    "HW26_originals": "../hw26-original-caller-M0b0/proof.json",
+    "HW26_new_abrupt_case": "../hw26-owned-abrupt-ef63f8c3/evidence-proposal.json",
+    "source_only_site": "../site-ten-machines-source-d2b8c58a/correction-record.json"
+  },
+  "observations": [
+    {
+      "path": "raw/portable-delivery.json",
+      "sha256": "633f297fdcd9116b1f4dc23e3ac3bdde772fced9b9eba27270fc33302180b6ea",
+      "bytes": 5092
+    },
+    {
+      "path": "raw/portable-guards.json",
+      "sha256": "0acec1f0ffa63f6c270e68362bce53466a8accb3e0075aa2bcba2df57bdf3227",
+      "bytes": 928
+    },
+    {
+      "path": "raw/portable-target-red.json",
+      "sha256": "c08e36980fdbff9d511028d102539bfdade7f37a06d09b3ee3f279ae07ecdd28",
+      "bytes": 1189
+    },
+    {
+      "path": "raw/portable-target-red.stderr",
+      "sha256": "396fd0dd1a9a3d3311561e87818be239c2e40f48cb63831f57c5d849fbc15dc9",
+      "bytes": 3121
+    },
+    {
+      "path": "raw/portable-18-green.json",
+      "sha256": "436c0ce87ec87c0fb7a0c4113fd06d88bd23f939c1fbfb6117724b61fa370b83",
+      "bytes": 1977
+    },
+    {
+      "path": "raw/portable-18-green.stderr",
+      "sha256": "d84cc70dfb5a6f6db466fbba5ea73c835ef9014a191db24a26cbbae63af420da",
+      "bytes": 3470
+    },
+    {
+      "path": "raw/portable-initial-controller-setup.json",
+      "sha256": "966e9a836498e88c2ec545ecfc1c6113066255d50471a378872b7e59c65a1a8b",
+      "bytes": 2086
+    },
+    {
+      "path": "raw/portable-initial-controller-setup.stderr",
+      "sha256": "6045029c2e2e1197969271caf9ebd2b12624ba995bc87c1557fff43428e5aa20",
+      "bytes": 3719
+    },
+    {
+      "path": "raw/Root-original-token-method-green.json",
+      "sha256": "54331a4d43153d7977ee65820a310a43e7489e6bc42bf0aa9bd16085d6d8fc19",
+      "bytes": 1031
+    },
+    {
+      "path": "raw/Root-original-token-method-green.stderr",
+      "sha256": "e5939ae6a228846e1d3f14ca233df9d6896f753ecbc62c21f79c2b15f30de7cb",
+      "bytes": 319
+    },
+    {
+      "path": "raw/real-Git-layout-red.json",
+      "sha256": "b1f8a68a5cfbda23fe342b053ba8bfd38d2e75025634e04b3aab97a801f54fb8",
+      "bytes": 1639
+    },
+    {
+      "path": "raw/real-Git-layout-red.stdout",
+      "sha256": "0e148d49e6f7fc13628e4736d44df6c33e52b7e142f23755a2921d54d3ab637e",
+      "bytes": 80
+    },
+    {
+      "path": "raw/real-Git-layout-red.stderr",
+      "sha256": "81f3199854b9b7a829fb0352800e3ec2ec6790cb55b65640067cefd04977e0a0",
+      "bytes": 4936
+    },
+    {
+      "path": "raw/real-Git-layout-green.json",
+      "sha256": "82cd6cc22d6aadd0f37003ea09f55b1be2f61621a824a67854e4427159d37212",
+      "bytes": 1932
+    },
+    {
+      "path": "raw/real-Git-layout-green.stderr",
+      "sha256": "de04a5d561620d3d6c3e59b143daacc5cc487c6985b3e4ef2adcf2074bb2da91",
+      "bytes": 1387
+    },
+    {
+      "path": "raw/original-ef63-terminal.json",
+      "sha256": "f366ce9a8e3840dcd39cebe683d39cb1ff41c2402dfaaeb211ced2ca4e71b3f2",
+      "bytes": 53792
+    },
+    {
+      "path": "raw/original-ef63-watch-delivery.json",
+      "sha256": "133893fdb7595639fe3087beb1d054ef94c9be057bebed51741f50bdb459cbfe",
+      "bytes": 2719
+    },
+    {
+      "path": "raw/original-ef63-failure-table.json",
+      "sha256": "447757824c43a575427d5768fe8eb05cf9a47b9d4d77557744bdca9efc3eedb9",
+      "bytes": 5093
+    },
+    {
+      "path": "raw/original-ef63-native-Q02-classification.json",
+      "sha256": "06f63eeed868ee6cdcf40551c50548e3c83513737a1a5b0f0e372bbf124527c6",
+      "bytes": 2780
+    },
+    {
+      "path": "raw/original-Q02-Git-coordinate-limits.json",
+      "sha256": "f5c1988b29430f0c1b564676ad6bdbd81c073f508d235be7cdcd66bdb717432b",
+      "bytes": 611
+    },
+    {
+      "path": "raw/site-ten-root-adoption.json",
+      "sha256": "046913294cddb8276c8ac14daaa3ea869e4234258633029d3dd68395b0a26c3f",
+      "bytes": 14337
+    },
+    {
+      "path": "raw/site-ten-before-wording-correction-strict.json",
+      "sha256": "76bbe56d4b6f8cb01ab8ee0fcba834e3ee8298b5d9185525bf5266d6eaf27a02",
+      "bytes": 20306
+    },
+    {
+      "path": "raw/public-dummy-digest-proof.json",
+      "sha256": "bc0865b4e09ca9389d3dea2f4f12914b9f12fe87bd8905fd9e7d8ce1fc4c908e",
+      "bytes": 454
+    },
+    {
+      "path": "raw/public-dummy-digest-scan-controls.json",
+      "sha256": "5c2e1298a4b322fb6926f81aca08f6100e2dcd27ebfd91d38ca10e5ab053803f",
+      "bytes": 700
+    },
+    {
+      "path": "raw/public-dummy-digest-narrowness.stderr",
+      "sha256": "f95a0ae3ee2a51dd3f047289403872e6f8b81339a30be075a0ef627dc9ea7fa0",
+      "bytes": 937
+    }
+  ],
+  "limits": [
+    "The first portable combined invocation failed at test module controller import with0assertions; retained separately, not product RED. Root then ran the original token method in the real checkout without an import adapter.",
+    "Prior source-only site preview predates one explicitly corrected statement/digest closure. Final staged integrity must authenticate the actual corrected candidate.",
+    "Fresh full exact-head CI and Docs remain required before child merge. Four original native builder platforms passing do not qualify the entire six-platform task or the new source epoch.",
+    "Actual runtime counts/link targets remain unknown where not retained; no unsupported interpreter is admitted for the native3.14 profile.",
+    "Old normalM CI succeeds/Docs fails; none of these facts promote task statuses, renew runtime epochs, explain unrelated retained unknowns, merge parent1098 or authorize publication."
+  ],
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "program_qualification": false
+}

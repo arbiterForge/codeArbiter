@@ -1,0 +1,516 @@
+{
+  "format": "codearbiter.site-machine-source-inspection/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine": "S64",
+  "full_frozen_machine": {
+    "machine_id": "S64",
+    "name": "Site reference-generation pipeline and partial output",
+    "domain": "Pi, farm, sandbox, site and packaging",
+    "kind": "implemented",
+    "owner": "site",
+    "closure_task": "Q-01",
+    "task_ids": [
+      "BUILD-G01",
+      "Q-01"
+    ],
+    "explicit_machine_task_ids": [],
+    "source_intersection_task_ids": [
+      "BUILD-G01"
+    ],
+    "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "status": "NOT_RUN",
+    "transition_count": 5,
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/gen.ts",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts"
+    ],
+    "proposed_composed_scenario_ids": [
+      "SEQ-29"
+    ],
+    "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+    "evidence": []
+  },
+  "assessment": "Five-clause SOURCE-ONLY generator ordering and owned-output conformance under accepted BUILD-G01 staged publication, retaining S64:02/:05 retired-state records and independent cross-owner partial failure. No literal delete-first preservation or whole-site transaction/build claim.",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:S64:01",
+      "baseline": {
+        "event": "generate site sources",
+        "guard": "capture inventory nonempty and all recorded source hashes current",
+        "to": "models built",
+        "effects": "Validate captures before reference generation; collect/parse/curate command/catalog/host availability/skill pairs in memory.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/gen.ts",
+            "symbol": "main generation order",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/gen.ts",
+            "lines": "1-134"
+          },
+          {
+            "path": "site/scripts/generator/generate.ts",
+            "symbol": "generateReference",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+            "lines": "1-479"
+          }
+        ],
+        "from": "preflight",
+        "transition_id": "S64:01"
+      },
+      "frozen_row_sha256": "a91c1b70799250c07e2d1c88792a3b70d17cefe843899ce0684723b5939fe108",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "273546566f27f9d61d65ca9aa3b7dd5d580903369b3234e0d056fdbc48c17fd8",
+      "current_contract_note": "Source-clause-only; Nonempty capture inventory and all listed current source hashes are checked before reference generation. Missing/malformed/stale captures fail the CLI. Reference collector/parser/catalog/curated admission calls precede rendering and publisher invocation; this is conditional source control-flow, not a claim the current external corpus was executed/admitted. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance.",
+      "guard_effect_retry_assessment": "Capture records must be nonempty and their source hashes current before reference model collection/parse/curation/catalog rendering. Conditional source checks are not an observation of a particular current build.",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 31,
+          "end": 43,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 99,
+          "end": 125,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 239,
+          "end": 271,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 46,
+          "end": 99,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 121,
+          "end": 131,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+          "proof_sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d",
+          "mapping": {
+            "cell": "disposition:transitions:S64:01",
+            "witnesses": [
+              {
+                "path": "site/scripts/gen.ts",
+                "start": 31,
+                "end": 43,
+                "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+              },
+              {
+                "path": "site/scripts/generator/generate.ts",
+                "start": 99,
+                "end": 125,
+                "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+              },
+              {
+                "path": "site/scripts/generator/generate.ts",
+                "start": 239,
+                "end": 271,
+                "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+              },
+              {
+                "path": "site/scripts/capture/verify.ts",
+                "start": 46,
+                "end": 99,
+                "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+              },
+              {
+                "path": "site/scripts/capture/verify.ts",
+                "start": 121,
+                "end": 131,
+                "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+              }
+            ],
+            "assessment": "Nonempty capture inventory and all listed current source hashes are checked before reference generation. Missing/malformed/stale captures fail the CLI. Reference collector/parser/catalog/curated admission calls precede rendering and publisher invocation; this is conditional source control-flow, not a claim the current external corpus was executed/admitted.",
+            "frozen_row_sha256": "a91c1b70799250c07e2d1c88792a3b70d17cefe843899ce0684723b5939fe108"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S64:02",
+      "baseline": {
+        "event": "render reference",
+        "guard": "all models admitted",
+        "to": "reference replacement",
+        "effects": "Render expected reference files; clean generated command/skill/agent/lens/index destinations before writing new files.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/gen.ts",
+            "symbol": "main generation order",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/gen.ts",
+            "lines": "1-134"
+          },
+          {
+            "path": "site/scripts/generator/generate.ts",
+            "symbol": "generateReference",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+            "lines": "1-479"
+          }
+        ],
+        "from": "models built",
+        "transition_id": "S64:02"
+      },
+      "frozen_row_sha256": "a84b6fd8ede374e1a5ddf359e72933bbed6116cc52b72b82c7933ff40e12244f",
+      "current_edge_status": "NOT_APPLICABLE",
+      "current_edge_row_sha256": "7f17313cb4dd291f02809ad183fd37972aae2ab5886050ca1504f883302b496c",
+      "current_contract_note": "BUILD-G01 deliberately replaces clean-before-write reference publication. Current generate assembles all expected files in memory then publishOwnedFiles stages/verifies bytes and removes stale owned targets only during controlled promotion. Thus the specific old deletion-before-writing state is retired; successful stale cleanup remains implemented.",
+      "guard_effect_retry_assessment": "Accepted BUILD-G01 change retained: reference output is assembled completely in memory and promoted by the owned staged publisher. Old delete-before-write intermediate is retired; stale owned removal is controlled promotion.",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 1,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 1,
+          "end": 460,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+          "proof_sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1",
+          "mapping": {
+            "cell": "disposition:transitions:S64:02",
+            "rationale": "BUILD-G01 deliberately replaces clean-before-write reference publication. Current generate assembles all expected files in memory then publishOwnedFiles stages/verifies bytes and removes stale owned targets only during controlled promotion. Thus the specific old deletion-before-writing state is retired; successful stale cleanup remains implemented.",
+            "frozen_row_sha256": "a84b6fd8ede374e1a5ddf359e72933bbed6116cc52b72b82c7933ff40e12244f"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S64:03",
+      "baseline": {
+        "event": "writes complete",
+        "guard": "no I/O/render error",
+        "to": "later pages generating",
+        "effects": "Generate hook/config/changelog pages, then Academy source/topic map/pages, then release applicability.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/gen.ts",
+            "symbol": "main generation order",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/gen.ts",
+            "lines": "1-134"
+          },
+          {
+            "path": "site/scripts/generator/generate.ts",
+            "symbol": "generateReference",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+            "lines": "1-479"
+          }
+        ],
+        "from": "reference replacement",
+        "transition_id": "S64:03"
+      },
+      "frozen_row_sha256": "b54771b08e744db230255342c0793b2ea9665b378422a9a14f21aae1b2ea73b8",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "c80680b301e80fd2dad3141e175f034738d72c38efde05644bebf6bbed42e5ff",
+      "current_contract_note": "Source-clause-only; Only after generate returns does CLI render/write hooks, configuration and optional existing changelog, then load Academy source/topic map, publish Academy and finally generate release applicability. Exceptions propagate or terminate preflight nonzero. No global transaction is implied across distinct output owners. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance.",
+      "guard_effect_retry_assessment": "Successful reference generation returns before hooks/config/optional changelog/Academy/topic/page/release-applicability stages. This serial dependency is preserved without claiming one whole-site transaction.",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 43,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+          "proof_sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d",
+          "mapping": {
+            "cell": "disposition:transitions:S64:03",
+            "witnesses": [
+              {
+                "path": "site/scripts/gen.ts",
+                "start": 43,
+                "end": 134,
+                "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+              }
+            ],
+            "assessment": "Only after generate returns does CLI render/write hooks, configuration and optional existing changelog, then load Academy source/topic map, publish Academy and finally generate release applicability. Exceptions propagate or terminate preflight nonzero. No global transaction is implied across distinct output owners.",
+            "frozen_row_sha256": "b54771b08e744db230255342c0793b2ea9665b378422a9a14f21aae1b2ea73b8"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S64:04",
+      "baseline": {
+        "event": "all stages finish",
+        "guard": "all required output produced",
+        "to": "complete",
+        "effects": "Return build success.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/scripts/gen.ts",
+            "symbol": "main generation order",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/gen.ts",
+            "lines": "1-134"
+          },
+          {
+            "path": "site/scripts/generator/generate.ts",
+            "symbol": "generateReference",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+            "lines": "1-479"
+          }
+        ],
+        "from": "later pages generating",
+        "transition_id": "S64:04"
+      },
+      "frozen_row_sha256": "7da282967342505664e8789bf8eb183d47830d4dc5ec618d10dc9187e9e0d7c7",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "fd3e34bdeca71f94ba44bb9e89e47e631eca112accf88b4fe13a2338d7658438",
+      "current_contract_note": "Source-clause-only; Reference helper returns only after owned publication returns. Top-level CLI reaches its final completion log only after Academy and release applicability return; thrown required-stage errors cannot reach the ordinary successful end. This is the serial completion guard for invoked stages, not a completeness assertion about unobserved output bytes. Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance.",
+      "guard_effect_retry_assessment": "The final successful completion message occurs only after all required awaited stages return.",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 119,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 454,
+          "end": 459,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+          "proof_sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d",
+          "mapping": {
+            "cell": "disposition:transitions:S64:04",
+            "witnesses": [
+              {
+                "path": "site/scripts/gen.ts",
+                "start": 119,
+                "end": 134,
+                "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+              },
+              {
+                "path": "site/scripts/generator/generate.ts",
+                "start": 454,
+                "end": 459,
+                "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+              }
+            ],
+            "assessment": "Reference helper returns only after owned publication returns. Top-level CLI reaches its final completion log only after Academy and release applicability return; thrown required-stage errors cannot reach the ordinary successful end. This is the serial completion guard for invoked stages, not a completeness assertion about unobserved output bytes.",
+            "frozen_row_sha256": "7da282967342505664e8789bf8eb183d47830d4dc5ec618d10dc9187e9e0d7c7"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S64:05",
+      "baseline": {
+        "event": "I/O/parser/render error",
+        "guard": "earlier stages may have written/deleted outputs",
+        "to": "partial output",
+        "effects": "Throw and fail build without whole-output-tree rollback.",
+        "failure_retry": "Rerun from fixed source rebuilds output; failed generation is not an atomic artifact publish.",
+        "source": [
+          {
+            "path": "site/scripts/gen.ts",
+            "symbol": "main generation order",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/gen.ts",
+            "lines": "1-134"
+          },
+          {
+            "path": "site/scripts/generator/generate.ts",
+            "symbol": "generateReference",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/generate.ts",
+            "lines": "1-479"
+          }
+        ],
+        "from": "replacement or later stage",
+        "transition_id": "S64:05"
+      },
+      "frozen_row_sha256": "4ed935e3c55d71865f608b4c4e12457330c214c64d253a5aaad1fe24a58bf07a",
+      "current_edge_status": "NOT_APPLICABLE",
+      "current_edge_row_sha256": "aeb70c22fe2822677a8f2a8a832ecba6bc13ca00f17a286454cb0d0038bc03f3",
+      "current_contract_note": "BUILD-G01 deliberately replaces unconditional partial-output-on-error within reference publication. Render errors occur before publication; publisher failure rolls applied files back or retains an explicit unusable marker/journal if recovery fails. Other later CLI owners can already have published, so no global transaction or whole-tree rollback is claimed.",
+      "guard_effect_retry_assessment": "Accepted BUILD-G01 change retained: reference render failure precedes publication; promotion failure restores before-images or retains an unusable marker/journal. Independently completed earlier/later owners are not globally rolled back.",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 1,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 1,
+          "end": 460,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "coverage": "Complete cited owner read; precise control flow explained in assessment."
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+          "proof_sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1",
+          "mapping": {
+            "cell": "disposition:transitions:S64:05",
+            "rationale": "BUILD-G01 deliberately replaces unconditional partial-output-on-error within reference publication. Render errors occur before publication; publisher failure rolls applied files back or retains an explicit unusable marker/journal if recovery fails. Other later CLI owners can already have published, so no global transaction or whole-tree rollback is claimed.",
+            "frozen_row_sha256": "4ed935e3c55d71865f608b4c4e12457330c214c64d253a5aaad1fe24a58bf07a"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    }
+  ],
+  "input_join_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+    "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+  },
+  "existing_conformance_reuse": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+      "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/normalize.ts",
+          "recorded_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "actual_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "recorded_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "actual_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/gen.ts",
+          "recorded_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "actual_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "recorded_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "actual_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/owned-output.ts",
+          "recorded_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "actual_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+      "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/gen.ts",
+          "recorded_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "actual_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "recorded_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "actual_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "recorded_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "actual_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/owned-output.ts",
+          "recorded_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "actual_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "recorded_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "actual_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "accepted_changes": "BUILD-G01 replaces delete-first with complete staged owned publication for S64/S67. Existing analytical corrections stay exactly as committed. gen.ts now forwards skipped-call-site annotations; serial stage ordering is unchanged.",
+  "dependency_boundary": "Conditional control flow given valid declared DOM/content/model inputs; no particular corpus, generated build or external Academy checkout was admitted or executed.",
+  "observation": "Source inspection/hash comparison only. No tests, validators, browser, commands under test, build, runtime, network or provider were executed."
+}

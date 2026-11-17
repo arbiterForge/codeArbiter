@@ -1,0 +1,32 @@
+{
+  "status": "READY_FOR_ROOT_COMPOSITION_AND_INDEPENDENT_REVIEW",
+  "source_epoch": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "source_tree_equal_basis": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "changed_paths": [
+    ".github/scripts/major_qualification_report.py",
+    ".github/scripts/test_major_qualification_report.py",
+    ".github/scripts/major_readiness.py",
+    ".github/workflows/ci.yml",
+    ".github/major-qualification-policy.json",
+    ".github/major-test-selections.json"
+  ],
+  "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\final\\implementation.patch",
+  "patch_sha256": "4c318ee8c644198f7839e239ebb0adb193f80364d59520682102f485fdbb2e67",
+  "source_freeze_sha256": "a18082e39ac95383b2b9bcfb89146dc591d784b8414bbb1026eba294f3820803",
+  "filemap_sha256": "d5790d462718ec6756a1f8e882c0030a9dbf305be1ccdf4d988a70850f4c34fb",
+  "profile": "major-readiness-implementation-v1",
+  "qualified_scope_ceiling": [
+    "task:Q-02"
+  ],
+  "original_entrypoints_once_each": [
+    ".github/scripts/test_major_readiness.py",
+    ".github/scripts/test_release_workflow.py"
+  ],
+  "required_original_selectors": 54,
+  "source_positive_paths": 599,
+  "local_controls": "six new pure outer controls + two reused old cap controls; see results actual epochs/limits",
+  "hosted_Q02_report": "NOT_RUN / future genuine trusted integration execution",
+  "canonical_writes": false,
+  "main_Q03_publication_barrier": "UNCHANGED",
+  "ledger_or_task_promotion": "NONE"
+}

@@ -1,0 +1,34 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "Q02ReadinessSourceProfileTests",
+    "BoundSourcePayloadTests.test_python_source_profile_cannot_qualify_other_software_or_tasks",
+    "SdkPythonSourceProfileTests.test_sdk_one_cell_cap_and_python_identity_refuse_skip_duplicate_and_relabel"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-task-binding-rfl6v67r",
+  "exit_code": 1,
+  "elapsed_seconds": 96.6730478000245,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7031afdb1194b4d6df9a326aa929395d479f43d1495c61f6ab8b49d377087ec6",
+  "test_sha256": "c83b3e78f220b591d81710b199b529d2f9c9c49390a5288ecb40b20397b0ec93",
+  "owner_sha256": "ac4ebe7377ba8376cb7ac0ba8043137ff3a9a00fd799268845a27dffec046997",
+  "private_environment_keys": [
+    "CA_Q02_CANONICAL_ROOT",
+    "COMSPEC",
+    "HOME",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONPYCACHEPREFIX",
+    "SYSTEMDRIVE",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ]
+}

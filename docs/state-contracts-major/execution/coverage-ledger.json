@@ -1821,8 +1821,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite five-clause SOURCE-ONLY recovery conformance. Preserve prepared/terminal replay, complete all-target/material preflight, outside-edit refusal and retained journal/history. Inherited wording corrected: missing material may report CORRUPT_JOURNAL; early I/O may propagate directly, while terminal acknowledgement uncertainty uses COMMIT_OUTCOME_UNKNOWN. No general undo or race-free same-user sandbox claim."
   },
   "N04": {
    "owner": "native",
@@ -1832,8 +1840,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY conformance with named accepted NT05/NT09 feature-gated non-work0.3.4 extension alongside old0.3.0/1/2 and work0.3.3. Reads do not upgrade/re-certify; writes never downgrade. Typed retirement and current progress semantics are explicit changes, not literal preservation of old defects. No installed/old-client migration acceptance."
   },
   "N05": {
    "owner": "native",
@@ -1880,8 +1896,16 @@
     "NT-05",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY readiness/reference/decision/coverage conformance. Ready remains an explicit validation/strict-consumer boundary; it never becomes a second ADR43 permission gate on ordinary authorized independent work. NT05 typed tombstones retain historical ownership without inferred kind. No executed decision/user/model acceptance."
   },
   "N08": {
    "owner": "native",
@@ -1966,8 +1990,16 @@
     "NT-11",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite five-clause SOURCE-ONLY optional strict receipt-consumer conformance. Explicit accepted ADR0046/NT09 supersedes N10:02 destructive dependent STALE overwrites while preserving progress/history and deriving assessment. Ordinary no-receipt progress stays outside strict approval/snapshot gates (ADR43). NT11 fresh corrected attempts do not reopen old terminal evidence; no host attempt/runtime acceptance."
   },
   "N11": {
    "owner": "native",
@@ -2032,8 +2064,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+     "ref": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+     "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY ordinary caller observation versus explicit legacy receipt assessment. Definition changes yield unknown without rewriting history; strict receipt replacement deletes only selected observation and retains evidence. NT05/NT09 monotonic versioning preserved. No observed fact/user choice/host authority fabricated."
   },
   "N13": {
    "owner": "native",
@@ -2326,8 +2366,16 @@
     "NT-09",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite four-clause SOURCE-ONLY conformance. Explicit inherited-description correction for N20:03: Outline omits context_complete and issues no completed ticket; only contextual pages assert completeness. No literal false field is claimed or added. NT-06 preserves read-mode/effect separation. All existing edge states/proofs/runtime epochs remain unchanged."
   },
   "N21": {
    "owner": "native",
@@ -2590,8 +2638,16 @@
     "NT-10",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite three-clause SOURCE-ONLY conformance including named authorized NT-03 change: repair-apply is now advertised by the finite descriptor table, superseding only the frozen absent-in-Names limitation. Existing repair preview/CAS/journal/replay and create-only standalone export remain; no runtime/task/installed acceptance."
   },
   "N28": {
    "owner": "native",
@@ -2655,8 +2711,16 @@
     "NT-07",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite seven-clause SOURCE-ONLY conformance of owner/CAS/lifecycle/descriptive/delivery boundaries. NT-07 explicitly labels schema-only passed/failed; no public setter or inferred check result. Mapping stages local intent only, never provider delivery. All edge states/proofs/history unchanged."
   },
   "N30": {
    "owner": "native",
@@ -2953,8 +3017,16 @@
     "NT-02",
     "NT-12"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "970518e787c13f82d688a79a55b683ed60225752",
+     "ref": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+     "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0"
+    }
+   ],
+   "candidate_contract_note": "Finite five-clause SOURCE-ONLY conformance. Explicit inherited-description correction for N38:02: fact source_ref/consumer_ref are bounded inert text references; actual CWD/map/scope path fields have path grammar. No filesystem validation of every reference or new approved-policy authority is claimed. Source evidence is independently reacquired. Existing edge/runtime histories unchanged."
   },
   "N39": {
    "owner": "native",
@@ -4010,8 +4082,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S02": {
    "owner": "pi",
@@ -4023,8 +4102,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S03": {
    "owner": "pi",
@@ -4044,8 +4130,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S04-preserved.json",
+     "sha256": "d1cb7ba91228ca49b8cc9daaa737c08612cff5003f145d526bd7461bd620d2fd"
+    }
+   ]
   },
   "S05": {
    "owner": "pi",
@@ -4055,8 +4148,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S05-preserved.json",
+     "sha256": "4ec8f82dc73dcb23d9bf16faa5a9080e03094e8dc92051f89beeddd9594e0594"
+    }
+   ]
   },
   "S06": {
    "owner": "pi",
@@ -4633,8 +4733,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S43": {
    "owner": "release-and-tooling",
@@ -4642,8 +4749,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S44": {
    "owner": "release-and-tooling",
@@ -4651,8 +4765,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S44-preserved.json",
+     "sha256": "3f09f6d19f52bcc10c17b168190c09c253d1e1ce0bbe6f8ca19550c222fcba36"
+    }
+   ]
   },
   "S45": {
    "owner": "release-and-tooling",
@@ -4660,8 +4781,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S45-preserved.json",
+     "sha256": "24c7b167d0a92703b7063a4b0379542ae32960e15d17dd44596821e394178001"
+    }
+   ]
   },
   "S46": {
    "owner": "release-and-tooling",
@@ -4669,8 +4797,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S47": {
    "owner": "sandbox",
@@ -4947,8 +5082,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S56-preserved.json",
+     "sha256": "cb99d1b409c2d883931e859a1e48ab8376e8a4866755acedc7a3dacb98305cf0"
+    }
+   ],
+   "candidate_contract_note": "Eight-clause SOURCE-ONLY bookmark/owned listener conformance. Valid generated inventory is a precondition; bookmark state is not verified learning progress."
   },
   "S57": {
    "owner": "site",
@@ -4956,8 +5099,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S57-preserved.json",
+     "sha256": "d40b4c9a75da21be28fcf63a5871fabd500eb5643b4192e7248d93d49d29355f"
+    }
+   ],
+   "candidate_contract_note": "Seven-clause SOURCE-ONLY preferences/copy conformance, including the actual no-cross-tab/no-disconnect baseline limitation; no clipboard/browser observation."
   },
   "S58": {
    "owner": "site",
@@ -4965,8 +5116,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S58-preserved.json",
+     "sha256": "ecb120859dc235d5991f8af86f819eb5c224e0119a0fb1892500925e4d81a017"
+    }
+   ],
+   "candidate_contract_note": "Three-clause SOURCE-ONLY filter conformance; no particular content corpus, browser or accessibility acceptance."
   },
   "S59": {
    "owner": "site",
@@ -4974,8 +5133,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S59-preserved.json",
+     "sha256": "38b6db27c67902ff0aba0f08ade584377996627d5c05c5a140ef6278ee04e134"
+    }
+   ],
+   "candidate_contract_note": "Five-clause SOURCE-ONLY heterogeneous selection/disclosure conformance with existing S59:01/:03 analytical baseline corrections retained. No invented common initialization or tab-widget feature."
   },
   "S60": {
    "owner": "site",
@@ -4983,8 +5150,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S60-preserved.json",
+     "sha256": "2073c43795452a28220e8a4cad6999b11eb57052d6fcd7a14da85e8d22c9b947"
+    }
+   ],
+   "candidate_contract_note": "Five-clause SOURCE-ONLY literal contained fragment/chapter navigation conformance; actual browser focus/history behavior is unexecuted."
   },
   "S61": {
    "owner": "site",
@@ -4992,8 +5167,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+     "sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7"
+    }
+   ],
+   "candidate_contract_note": "Thirteen-clause SOURCE-ONLY Atlas client conformance with existing S61:10/:11 print-description corrections retained. Valid rendered model is a precondition; no SVG geometry/browser/print/dialog/user acceptance."
   },
   "S62": {
    "owner": "site",
@@ -5018,8 +5201,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S63-preserved.json",
+     "sha256": "acff28c887626ca6c3904e9803f6586366c70950dc615365df5ec9103f003aa5"
+    }
+   ],
+   "candidate_contract_note": "Five-clause SOURCE-ONLY TOC/forced-dark conformance with existing S63:01 arbitrary-layout-observer correction retained; no new observer/theme feature or real layout/assistive acceptance."
   },
   "S64": {
    "owner": "site",
@@ -5028,8 +5219,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S64-preserved.json",
+     "sha256": "6807369c351f2015d16afd2bd19766379ce329c4c278cecff70430830f5e0c03"
+    }
+   ],
+   "candidate_contract_note": "Five-clause SOURCE-ONLY generator ordering and owned-output conformance under accepted BUILD-G01 staged publication, retaining S64:02/:05 retired-state records and independent cross-owner partial failure. No literal delete-first preservation or whole-site transaction/build claim."
   },
   "S65": {
    "owner": "site",
@@ -5063,8 +5262,16 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S66-preserved.json",
+     "sha256": "b8dfe15dea7216bf6f677e537bee842d6aa58050eb8fbdb0f9edd676749cfd16"
+    }
+   ],
+   "candidate_contract_note": "Eight-clause SOURCE-ONLY capture validation/failure/disposal-control conformance. Disposal is invoked with bounded retries; successful physical cleanup and actual target/media/runtime freshness are not observed."
   },
   "S67": {
    "owner": "site",
@@ -5073,8 +5280,16 @@
     "BUILD-G01",
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+     "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S67-preserved.json",
+     "sha256": "f311bea0458aa7fe7a5d47bd52848a6714f084438f2a9183a4cc702c81923ae4"
+    }
+   ],
+   "candidate_contract_note": "Seven-clause SOURCE-ONLY Academy admission/staged publication conformance under BUILD-G01, retaining S67:01 unsupported strict-schema/gitlink correction and S67:04/:06 retired intermediates. Working guide/action reads and external-repository acceptance limits remain explicit."
   },
   "S68": {
    "owner": "packaging",
@@ -23280,8 +23495,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:02": {
    "owner": "pi",
@@ -23295,8 +23517,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:03": {
    "owner": "pi",
@@ -23310,8 +23539,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:04": {
    "owner": "pi",
@@ -23325,8 +23561,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:05": {
    "owner": "pi",
@@ -23340,8 +23583,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:06": {
    "owner": "pi",
@@ -23355,8 +23605,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:07": {
    "owner": "pi",
@@ -23370,8 +23627,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:08": {
    "owner": "pi",
@@ -23385,8 +23649,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:09": {
    "owner": "pi",
@@ -23400,8 +23671,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S01:10": {
    "owner": "pi",
@@ -23415,8 +23693,15 @@
     "PI-L01",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S01-preserved.json",
+     "sha256": "84d73b9d4e5c7c3351838f8d1844c1c3d3ea5ec646f3b67e4776da13a0f3371e"
+    }
+   ]
   },
   "S02:01": {
    "owner": "pi",
@@ -23428,8 +23713,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:02": {
    "owner": "pi",
@@ -23441,8 +23733,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:03": {
    "owner": "pi",
@@ -23454,8 +23753,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:04": {
    "owner": "pi",
@@ -23467,8 +23773,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:05": {
    "owner": "pi",
@@ -23480,8 +23793,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:06": {
    "owner": "pi",
@@ -23493,8 +23813,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:07": {
    "owner": "pi",
@@ -23506,8 +23833,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:08": {
    "owner": "pi",
@@ -23519,8 +23853,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:09": {
    "owner": "pi",
@@ -23532,8 +23873,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:10": {
    "owner": "pi",
@@ -23545,8 +23893,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:11": {
    "owner": "pi",
@@ -23558,8 +23913,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:12": {
    "owner": "pi",
@@ -23571,8 +23933,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:13": {
    "owner": "pi",
@@ -23584,8 +23953,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S02:14": {
    "owner": "pi",
@@ -23597,8 +23973,15 @@
     "PI-D05",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+     "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    }
+   ]
   },
   "S03:01": {
    "owner": "pi",
@@ -23749,8 +24132,15 @@
     "PI-D02",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+     "ref": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S03-preserved.json",
+     "sha256": "63c871efaf5f794f4c34b9fe7eacb7eb207d1d60798e150a46519303bd0d3d81"
+    }
+   ]
   },
   "S03:08": {
    "owner": "pi",
@@ -31404,8 +31794,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S42:02": {
    "owner": "release-and-tooling",
@@ -31413,8 +31810,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S42:03": {
    "owner": "release-and-tooling",
@@ -31422,8 +31826,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S42:04": {
    "owner": "release-and-tooling",
@@ -31431,8 +31842,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S42:05": {
    "owner": "release-and-tooling",
@@ -31440,8 +31858,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S42:06": {
    "owner": "release-and-tooling",
@@ -31449,8 +31874,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S42:07": {
    "owner": "release-and-tooling",
@@ -31458,8 +31890,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S42-preserved.json",
+     "sha256": "ccbdf531b4e7e01ecc96b9b3ad0978b44dcd4319a2b68e8c0738d1cb4e4b9059"
+    }
+   ]
   },
   "S43:01": {
    "owner": "release-and-tooling",
@@ -31467,8 +31906,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:02": {
    "owner": "release-and-tooling",
@@ -31476,8 +31922,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:03": {
    "owner": "release-and-tooling",
@@ -31485,8 +31938,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:04": {
    "owner": "release-and-tooling",
@@ -31494,8 +31954,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:05": {
    "owner": "release-and-tooling",
@@ -31503,8 +31970,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:06": {
    "owner": "release-and-tooling",
@@ -31512,8 +31986,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:07": {
    "owner": "release-and-tooling",
@@ -31521,8 +32002,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:08": {
    "owner": "release-and-tooling",
@@ -31530,8 +32018,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S43:09": {
    "owner": "release-and-tooling",
@@ -31539,8 +32034,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S43-preserved.json",
+     "sha256": "ff5ab9491d336ff4919cb77f7c79686ee8816b9bba839f75e677001eb8ece569"
+    }
+   ]
   },
   "S44:01": {
    "owner": "release-and-tooling",
@@ -31692,8 +32194,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S45-preserved.json",
+     "sha256": "24c7b167d0a92703b7063a4b0379542ae32960e15d17dd44596821e394178001"
+    }
+   ]
   },
   "S45:02": {
    "owner": "release-and-tooling",
@@ -31701,8 +32210,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S45-preserved.json",
+     "sha256": "24c7b167d0a92703b7063a4b0379542ae32960e15d17dd44596821e394178001"
+    }
+   ]
   },
   "S45:03": {
    "owner": "release-and-tooling",
@@ -31710,8 +32226,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S45-preserved.json",
+     "sha256": "24c7b167d0a92703b7063a4b0379542ae32960e15d17dd44596821e394178001"
+    }
+   ]
   },
   "S45:04": {
    "owner": "release-and-tooling",
@@ -31719,8 +32242,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S45-preserved.json",
+     "sha256": "24c7b167d0a92703b7063a4b0379542ae32960e15d17dd44596821e394178001"
+    }
+   ]
   },
   "S45:05": {
    "owner": "release-and-tooling",
@@ -31728,8 +32258,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S45-preserved.json",
+     "sha256": "24c7b167d0a92703b7063a4b0379542ae32960e15d17dd44596821e394178001"
+    }
+   ]
   },
   "S46:01": {
    "owner": "release-and-tooling",
@@ -31737,8 +32274,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:02": {
    "owner": "release-and-tooling",
@@ -31746,8 +32290,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:03": {
    "owner": "release-and-tooling",
@@ -31755,8 +32306,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:04": {
    "owner": "release-and-tooling",
@@ -31764,8 +32322,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:05": {
    "owner": "release-and-tooling",
@@ -31773,8 +32338,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:06": {
    "owner": "release-and-tooling",
@@ -31782,8 +32354,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:07": {
    "owner": "release-and-tooling",
@@ -31791,8 +32370,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:08": {
    "owner": "release-and-tooling",
@@ -31800,8 +32386,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S46:09": {
    "owner": "release-and-tooling",
@@ -31809,8 +32402,15 @@
    "task_ids": [
     "Q-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "PRESERVED",
+   "evidence": [
+    {
+     "kind": "conformance-check",
+     "commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+     "ref": "docs/state-contracts-major/execution/evidence/release-five-source-15c/proofs/S46-preserved.json",
+     "sha256": "f8e0b37c6db47c4333bd6eda02c540c57e2fd64944e4e3055b5359cbdaf684b3"
+    }
+   ]
   },
   "S47:01": {
    "owner": "sandbox",

@@ -1,0 +1,773 @@
+{
+  "source_commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "ci_run_id": 43960617519,
+  "run_attempt": 1,
+  "ci": "SUCCESS",
+  "docs": "FAILURE",
+  "whole_normal_verdict": "BLOCK",
+  "objects": [
+    {
+      "system": "linux",
+      "job_id": 133660327575,
+      "artifact_id": 14276374630,
+      "archive_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\artifact-14276374630.zip",
+      "archive_sha256": "85e6650e916852ccc4b786bddde55d20703f4d9740b9f7a13998e6714c9c79dc",
+      "bytes": 4587482,
+      "uploader": "Retain original Pi coordinator and execution records",
+      "original_log_sha256": "9b84672f23cdf99ccef8df357bc57ee5e2173517c06ad83804b588149fed2530",
+      "members": [
+        {
+          "path": "coordinator-complete.json",
+          "sha256": "3c85d0e0c60a125b7b10e0dcedb625d7a7230c4bcb8f6e4f28d387a735ba7918"
+        },
+        {
+          "path": "coordinator-inputs.json",
+          "sha256": "8fb771419501c0f876075599b69ce0079c27d74ddc8b8c59442f65763486c0e1"
+        },
+        {
+          "path": "producer/cleanup.json",
+          "sha256": "ad1ed6243ea081e7d97d9e7bf7443870a40e1ea693c6c7fb4a35354451f1de93"
+        },
+        {
+          "path": "producer/install-exit.json",
+          "sha256": "5f76c65cfa8028986f23e6f9b6bf9f04bb5055eb688809bb6bf5ba01fa66088b"
+        },
+        {
+          "path": "producer/installed-after.json",
+          "sha256": "2e2678f079a5fcc7e108edca131b1a4ade45cb1751a1ccfe1073bf37a95b5eae"
+        },
+        {
+          "path": "producer/observation.json",
+          "sha256": "edd41d93abc9126d8a5821a57acb69220c522c036b072ca4be7b09eb09f5e7b4"
+        },
+        {
+          "path": "producer/original-test-result.json",
+          "sha256": "a9e95c63ae11e88adc72f69d433020aff03c074e2af398261257095ed565c624"
+        },
+        {
+          "path": "producer/production-admission.json",
+          "sha256": "86e883b8e5724d77257776b6505dd3acbfea8625689e8cca3954be8b94ceafbc"
+        },
+        {
+          "path": "producer/route-alias.json",
+          "sha256": "b1874313dc02f44cf19f7f1565b3663ffdf3191ab7d7f66cfb9cfd315c3bd188"
+        },
+        {
+          "path": "producer/route-bare.json",
+          "sha256": "265dd34e73bcb4ed06a16735b4bba96b71261bf48656f7dc310fa9315eea8f74"
+        },
+        {
+          "path": "producer/route-doctor.json",
+          "sha256": "1b61049b47d7894ddf7b7850227422d4e723f880bb25dd68299676092e9977e3"
+        },
+        {
+          "path": "producer/runtime-acquisition.json",
+          "sha256": "0d7e1dba55f9e9f46b461ea1ee861170e27c42a998180470481c835b0f96e20c"
+        },
+        {
+          "path": "producer/worker-exit.json",
+          "sha256": "c4367890ee84b44b36b4b2ed5d71c4773bbb58b0fe00a3a5eae489e9a23b21bd"
+        },
+        {
+          "path": "producer/worker-result.json",
+          "sha256": "dfd94ef0932e38331238f84c297a285b8320c4a8c91dabdcff28d7435e58fffe"
+        },
+        {
+          "path": "production-admission.json",
+          "sha256": "064698b57be8d6c6ce49dbfd88f048904f16028ee41cc0bc8818ab52d3c677e1"
+        },
+        {
+          "path": "qualification.json",
+          "sha256": "630d728689b75a6860c2155f42854aaeba8975edd2f5a10a16dc7e7f00e170d9"
+        }
+      ],
+      "document_index": {
+        "coordinator-complete.json": {
+          "type": "dict",
+          "keys": [
+            "phase",
+            "source_commit",
+            "run_id",
+            "job_id"
+          ]
+        },
+        "coordinator-inputs.json": {
+          "type": "dict",
+          "keys": [
+            "source_commit",
+            "source_tree",
+            "run_id",
+            "attempt",
+            "job_id",
+            "platform",
+            "consumed"
+          ]
+        },
+        "producer/cleanup.json": {
+          "type": "dict",
+          "keys": [
+            "complete"
+          ]
+        },
+        "producer/install-exit.json": {
+          "type": "dict",
+          "keys": [
+            "argv",
+            "returncode",
+            "timed_out",
+            "containment",
+            "stdout_sha256",
+            "stderr_sha256"
+          ]
+        },
+        "producer/installed-after.json": {
+          "type": "dict",
+          "keys": [
+            "members"
+          ]
+        },
+        "producer/observation.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "source_stable",
+            "proof_kind",
+            "producer",
+            "argv",
+            "exit_code",
+            "tests",
+            "installed_binding"
+          ]
+        },
+        "producer/original-test-result.json": {
+          "type": "dict",
+          "keys": [
+            "id",
+            "run_count",
+            "failures",
+            "errors",
+            "skips",
+            "result",
+            "failure_sha256"
+          ]
+        },
+        "producer/production-admission.json": {
+          "type": "dict",
+          "keys": [
+            "source_commit",
+            "ci_run_id",
+            "promotion_sha256",
+            "cohort_sha256",
+            "require_production"
+          ]
+        },
+        "producer/route-alias.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/route-bare.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/route-doctor.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/runtime-acquisition.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "producer_job_id",
+            "version",
+            "prefix",
+            "fresh_prefix",
+            "source_locks",
+            "command",
+            "runtime_before",
+            "runtime_after",
+            "graph_after"
+          ]
+        },
+        "producer/worker-exit.json": {
+          "type": "dict",
+          "keys": [
+            "argv",
+            "returncode",
+            "timed_out",
+            "containment",
+            "stdout_sha256",
+            "stderr_sha256"
+          ]
+        },
+        "producer/worker-result.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "test",
+            "routes",
+            "doctor",
+            "source_before",
+            "source_after",
+            "runtime_before",
+            "runtime_after",
+            "graph_before",
+            "graph_after",
+            "payload_before",
+            "payload_after",
+            "installed_before",
+            "installed_after"
+          ]
+        },
+        "production-admission.json": {
+          "type": "dict",
+          "keys": [
+            "require_production",
+            "source_commit",
+            "cohort_sha256",
+            "promotion_sha256"
+          ]
+        },
+        "qualification.json": {
+          "type": "dict",
+          "keys": [
+            "schema",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "job_id",
+            "results",
+            "payloads"
+          ]
+        }
+      }
+    },
+    {
+      "system": "windows",
+      "job_id": 133660327768,
+      "artifact_id": 14276329768,
+      "archive_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\artifact-14276329768.zip",
+      "archive_sha256": "d56531a5e29c71d94afc8dc07bfdeaf8af742e5b34bea23c6fedf9929f6777e2",
+      "bytes": 4590716,
+      "uploader": "Retain original Pi coordinator and execution records",
+      "original_log_sha256": "a08504a494e59fa7c2446ef78a6c8c7cb160e40e40c59f01b4f0567c20f59ccc",
+      "members": [
+        {
+          "path": "coordinator-complete.json",
+          "sha256": "799a6f50dfa5117770debb7237de9a398da92b63230168f912eb45f230047cf4"
+        },
+        {
+          "path": "coordinator-inputs.json",
+          "sha256": "b18dd977f57a1fdbadfcb2486c4ebd313660216a79f27b85966e6634aeff54ed"
+        },
+        {
+          "path": "producer/cleanup.json",
+          "sha256": "ad1ed6243ea081e7d97d9e7bf7443870a40e1ea693c6c7fb4a35354451f1de93"
+        },
+        {
+          "path": "producer/install-exit.json",
+          "sha256": "9cad414b83194faa13d487a533b29c016b7fd13175dd71a0111a7de6d54b3560"
+        },
+        {
+          "path": "producer/installed-after.json",
+          "sha256": "27422e226594496cc1836884945eff1d77e0920c9ef63882745168b9c11587d8"
+        },
+        {
+          "path": "producer/observation.json",
+          "sha256": "1cfccb3e7014526f7d5dcee9624c0e23663b4ed8a31c1f4648e2c58256a59fae"
+        },
+        {
+          "path": "producer/original-test-result.json",
+          "sha256": "a9e95c63ae11e88adc72f69d433020aff03c074e2af398261257095ed565c624"
+        },
+        {
+          "path": "producer/production-admission.json",
+          "sha256": "86e883b8e5724d77257776b6505dd3acbfea8625689e8cca3954be8b94ceafbc"
+        },
+        {
+          "path": "producer/route-alias.json",
+          "sha256": "9036ce1df9fe6424582daff575cd48cc5d1d436ab54cdb765d118f4ee4dcfe36"
+        },
+        {
+          "path": "producer/route-bare.json",
+          "sha256": "b236f363d376364dcd764cda4c8b76145d8b42a6b6fadbabd85d8171ddcecfd6"
+        },
+        {
+          "path": "producer/route-doctor.json",
+          "sha256": "2a357e529688a1f0f74cfb61c83eb30af52bb0f4a4736c5b80f981078270c85c"
+        },
+        {
+          "path": "producer/runtime-acquisition.json",
+          "sha256": "b17003360f76bea8e0acc03d2a29e67e3b5385034f5387316efc7b81680cda33"
+        },
+        {
+          "path": "producer/worker-exit.json",
+          "sha256": "534fcd9c0912f8b67b3f673a347dac8cc91a47ef823522a4e916d1ee3d81332a"
+        },
+        {
+          "path": "producer/worker-result.json",
+          "sha256": "f5f1319bcb1be2d0c8088088930c9334503b3f8e402849f4d79162b2815d31ff"
+        },
+        {
+          "path": "production-admission.json",
+          "sha256": "78e8160bb2f8209a49e4517801f46884fd6f74eb958a278d733d2190503f9897"
+        },
+        {
+          "path": "qualification.json",
+          "sha256": "0665f2f204453511644bf3f1a58e8678be69c6f74ac1e9fa2836b7398826b301"
+        }
+      ],
+      "document_index": {
+        "coordinator-complete.json": {
+          "type": "dict",
+          "keys": [
+            "phase",
+            "source_commit",
+            "run_id",
+            "job_id"
+          ]
+        },
+        "coordinator-inputs.json": {
+          "type": "dict",
+          "keys": [
+            "source_commit",
+            "source_tree",
+            "run_id",
+            "attempt",
+            "job_id",
+            "platform",
+            "consumed"
+          ]
+        },
+        "producer/cleanup.json": {
+          "type": "dict",
+          "keys": [
+            "complete"
+          ]
+        },
+        "producer/install-exit.json": {
+          "type": "dict",
+          "keys": [
+            "argv",
+            "returncode",
+            "timed_out",
+            "containment",
+            "stdout_sha256",
+            "stderr_sha256"
+          ]
+        },
+        "producer/installed-after.json": {
+          "type": "dict",
+          "keys": [
+            "members"
+          ]
+        },
+        "producer/observation.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "source_stable",
+            "proof_kind",
+            "producer",
+            "argv",
+            "exit_code",
+            "tests",
+            "installed_binding"
+          ]
+        },
+        "producer/original-test-result.json": {
+          "type": "dict",
+          "keys": [
+            "id",
+            "run_count",
+            "failures",
+            "errors",
+            "skips",
+            "result",
+            "failure_sha256"
+          ]
+        },
+        "producer/production-admission.json": {
+          "type": "dict",
+          "keys": [
+            "source_commit",
+            "ci_run_id",
+            "promotion_sha256",
+            "cohort_sha256",
+            "require_production"
+          ]
+        },
+        "producer/route-alias.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/route-bare.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/route-doctor.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/runtime-acquisition.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "producer_job_id",
+            "version",
+            "prefix",
+            "fresh_prefix",
+            "source_locks",
+            "command",
+            "runtime_before",
+            "runtime_after",
+            "graph_after"
+          ]
+        },
+        "producer/worker-exit.json": {
+          "type": "dict",
+          "keys": [
+            "argv",
+            "returncode",
+            "timed_out",
+            "containment",
+            "stdout_sha256",
+            "stderr_sha256"
+          ]
+        },
+        "producer/worker-result.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "test",
+            "routes",
+            "doctor",
+            "source_before",
+            "source_after",
+            "runtime_before",
+            "runtime_after",
+            "graph_before",
+            "graph_after",
+            "payload_before",
+            "payload_after",
+            "installed_before",
+            "installed_after"
+          ]
+        },
+        "production-admission.json": {
+          "type": "dict",
+          "keys": [
+            "require_production",
+            "source_commit",
+            "cohort_sha256",
+            "promotion_sha256"
+          ]
+        },
+        "qualification.json": {
+          "type": "dict",
+          "keys": [
+            "schema",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "job_id",
+            "results",
+            "payloads"
+          ]
+        }
+      }
+    },
+    {
+      "system": "darwin",
+      "job_id": 133660327626,
+      "artifact_id": 14276984395,
+      "archive_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-normal-M0b0-watch-2h4aggb0\\artifact-14276984395.zip",
+      "archive_sha256": "ebc4ad9e92bd95106d078e7ff96980871f550a8aecd3454aa22d4f8cd272dbf6",
+      "bytes": 4588033,
+      "uploader": "Retain original Pi coordinator and execution records",
+      "original_log_sha256": "e45b5f096fd4718920305d63421659871085345ff10b0f2f41a110be7f4b9647",
+      "members": [
+        {
+          "path": "coordinator-complete.json",
+          "sha256": "6909c259b737d3e71249b2c61d25eb68bd6383e590f7f1c248dde9abaaf450a4"
+        },
+        {
+          "path": "coordinator-inputs.json",
+          "sha256": "c4c52e8ce22d087b4fa4aac967a0d63625541cddc70fdfa89420cdae5f711d7d"
+        },
+        {
+          "path": "producer/cleanup.json",
+          "sha256": "ad1ed6243ea081e7d97d9e7bf7443870a40e1ea693c6c7fb4a35354451f1de93"
+        },
+        {
+          "path": "producer/install-exit.json",
+          "sha256": "f0df4404c74e94d34e73e4b17672b2c8cefc295b279515c952f8ac72a284a371"
+        },
+        {
+          "path": "producer/installed-after.json",
+          "sha256": "b1b5083ada80c19ac53da3ac8fe37ad8a6a84fc428dc170774cf28e93eb7f59d"
+        },
+        {
+          "path": "producer/observation.json",
+          "sha256": "588f963eab29464b40fd69d6a957a9f65ddc0b15e4d2e226aa2a2dee96b3f851"
+        },
+        {
+          "path": "producer/original-test-result.json",
+          "sha256": "a9e95c63ae11e88adc72f69d433020aff03c074e2af398261257095ed565c624"
+        },
+        {
+          "path": "producer/production-admission.json",
+          "sha256": "86e883b8e5724d77257776b6505dd3acbfea8625689e8cca3954be8b94ceafbc"
+        },
+        {
+          "path": "producer/route-alias.json",
+          "sha256": "17fde80f5f6a6c1e3325b4d13982c5227d89310adb01729c5cbd377f64a31230"
+        },
+        {
+          "path": "producer/route-bare.json",
+          "sha256": "00b15fe9606e5eba358ab7fa147b22eecfd81e485c53d57f5d042e96072907f2"
+        },
+        {
+          "path": "producer/route-doctor.json",
+          "sha256": "6d052212181eec713bc6ff39bb2acb367813a02cb93b6bbfb4e9a970053df559"
+        },
+        {
+          "path": "producer/runtime-acquisition.json",
+          "sha256": "70cba93223ba79e3916072b23dc32f996f34e317d8df4f2f0904ed9cb81b6e52"
+        },
+        {
+          "path": "producer/worker-exit.json",
+          "sha256": "12fe0417f62aa39b67b4d00b71452c1b33e6cff26031069417686fc7b35a7cb0"
+        },
+        {
+          "path": "producer/worker-result.json",
+          "sha256": "5c010ef962b09942bf4af4ae764c793152b6bc1c3d8bcab64f905af2a956af2f"
+        },
+        {
+          "path": "production-admission.json",
+          "sha256": "064698b57be8d6c6ce49dbfd88f048904f16028ee41cc0bc8818ab52d3c677e1"
+        },
+        {
+          "path": "qualification.json",
+          "sha256": "44a35838c6c6956921fa7bd0f5ae8d8baac5e33859af95c3e91c2bbc9a1869e7"
+        }
+      ],
+      "document_index": {
+        "coordinator-complete.json": {
+          "type": "dict",
+          "keys": [
+            "phase",
+            "source_commit",
+            "run_id",
+            "job_id"
+          ]
+        },
+        "coordinator-inputs.json": {
+          "type": "dict",
+          "keys": [
+            "source_commit",
+            "source_tree",
+            "run_id",
+            "attempt",
+            "job_id",
+            "platform",
+            "consumed"
+          ]
+        },
+        "producer/cleanup.json": {
+          "type": "dict",
+          "keys": [
+            "complete"
+          ]
+        },
+        "producer/install-exit.json": {
+          "type": "dict",
+          "keys": [
+            "argv",
+            "returncode",
+            "timed_out",
+            "containment",
+            "stdout_sha256",
+            "stderr_sha256"
+          ]
+        },
+        "producer/observation.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "source_stable",
+            "proof_kind",
+            "producer",
+            "argv",
+            "exit_code",
+            "tests",
+            "installed_binding"
+          ]
+        },
+        "producer/original-test-result.json": {
+          "type": "dict",
+          "keys": [
+            "id",
+            "run_count",
+            "failures",
+            "errors",
+            "skips",
+            "result",
+            "failure_sha256"
+          ]
+        },
+        "producer/installed-after.json": {
+          "type": "dict",
+          "keys": [
+            "members"
+          ]
+        },
+        "producer/production-admission.json": {
+          "type": "dict",
+          "keys": [
+            "source_commit",
+            "ci_run_id",
+            "promotion_sha256",
+            "cohort_sha256",
+            "require_production"
+          ]
+        },
+        "producer/route-alias.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/route-bare.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/runtime-acquisition.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "producer_job_id",
+            "version",
+            "prefix",
+            "fresh_prefix",
+            "source_locks",
+            "command",
+            "runtime_before",
+            "runtime_after",
+            "graph_after"
+          ]
+        },
+        "producer/route-doctor.json": {
+          "type": "dict",
+          "keys": [
+            "name",
+            "records",
+            "settings"
+          ]
+        },
+        "producer/worker-exit.json": {
+          "type": "dict",
+          "keys": [
+            "argv",
+            "returncode",
+            "timed_out",
+            "containment",
+            "stdout_sha256",
+            "stderr_sha256"
+          ]
+        },
+        "producer/worker-result.json": {
+          "type": "dict",
+          "keys": [
+            "format",
+            "test",
+            "routes",
+            "doctor",
+            "source_before",
+            "source_after",
+            "runtime_before",
+            "runtime_after",
+            "graph_before",
+            "graph_after",
+            "payload_before",
+            "payload_after",
+            "installed_before",
+            "installed_after"
+          ]
+        },
+        "production-admission.json": {
+          "type": "dict",
+          "keys": [
+            "require_production",
+            "source_commit",
+            "cohort_sha256",
+            "promotion_sha256"
+          ]
+        },
+        "qualification.json": {
+          "type": "dict",
+          "keys": [
+            "schema",
+            "source_commit",
+            "source_tree",
+            "ci_run_id",
+            "job_id",
+            "results",
+            "payloads"
+          ]
+        }
+      }
+    }
+  ],
+  "limits": [
+    "Original archived data only, no generic qualification-reader fallback, runtime execution, installation or auth-store inspection.",
+    "Caller observations are discovery/isolation only; no functional authorship claim."
+  ]
+}

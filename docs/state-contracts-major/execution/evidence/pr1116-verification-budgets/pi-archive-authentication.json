@@ -1,0 +1,109 @@
+{
+  "schema": "original-pi-diagnostic-archive-authentication/1",
+  "result": "PASS",
+  "diagnostic_only": true,
+  "source_api_head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+  "run": 44002348079,
+  "attempt": 1,
+  "job": 133769377667,
+  "artifact_id": 14292539141,
+  "name": "pi-rpc-diagnostics-windows-latest-1.5.0",
+  "zip_sha256": "08bda4399ea9a5b6c4cd53d731955b16116ee2a3e7ebf91fcc70585d11ddd17b",
+  "zip_bytes": 8328,
+  "metadata_sha256": "247eabae788bd27cf2bcbf5860ff268b45d1520f6eab8f1088ff65733154f553",
+  "job_metadata_sha256": "060338f97c0786fe9d7641e61b6d08ee93969ac3d5cd2db937063c9c69d67330",
+  "original_job_log_sha256": "a497e4b6f63d22f9c07ed1395a17a7fd5cee28472e51d4b70f662583e23a6e15",
+  "uploader": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+  "original_finalization_log_line": 491,
+  "workflow_source_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+  "members": [
+    {
+      "name": "rpc-native-exit-l58u7uxz.json",
+      "bytes": 10345,
+      "sha256": "5373a425cc816e8bf52e02c40e6f520c06547074a95c0e59e3b7426496444fa2"
+    },
+    {
+      "name": "rpc-native-warmup-df7gz5xc.json",
+      "bytes": 263,
+      "sha256": "e454da320e93b4b867332967f08d435d138202cf9db65bddf1dbca5da1749f30"
+    },
+    {
+      "name": "rpc-native-warmup-3fyct2wb.json",
+      "bytes": 262,
+      "sha256": "82731cc36b20498a8757d6d90e736d77363df630c6d670d406d4a3f08f5caf3a"
+    },
+    {
+      "name": "rpc-native-warmup-dqz1ixci.json",
+      "bytes": 261,
+      "sha256": "ecdec61b753bae3a3358da4cf40c641131e71b26eeca281a98b1d8a62dff35a6"
+    },
+    {
+      "name": "rpc-native-warmup-ezwdc7pe.json",
+      "bytes": 262,
+      "sha256": "e6a9f9b4bb409f06040e0494d292ae69dbc3a7ee1b9ec3bcd0b4295e8f711143"
+    },
+    {
+      "name": "rpc-native-warmup-jhmu8krr.json",
+      "bytes": 262,
+      "sha256": "0c7f3bb289b4ceacc2ffdcfad307ac1ba311e5698b2b52efc22e08676cb6d2db"
+    },
+    {
+      "name": "rpc-native-warmup-y7c8m1ot.json",
+      "bytes": 263,
+      "sha256": "ce2923e0ac79049639c85f79850b0980a6c3cc55119d88c4b91133883356ba9a"
+    },
+    {
+      "name": "rpc-native-warmup-x9n1qxno.json",
+      "bytes": 262,
+      "sha256": "3501130ace81c404787203464550e421dfece9235315eaee7218f45ed1037a1e"
+    },
+    {
+      "name": "rpc-native-warmup-ydkhioc8.json",
+      "bytes": 262,
+      "sha256": "c4f325a57ae24f15601769f94059cacd256f4c7bd5bb7896efa8f72ba622fe14"
+    },
+    {
+      "name": "rpc-native-warmup-zvwfjgvv.json",
+      "bytes": 262,
+      "sha256": "328640b2dcd92fb1b6a82745ee6509073ecbdad8bd4aa736d5041dcad7b710d7"
+    },
+    {
+      "name": "rpc-shutdown-3s9uh8v4.json",
+      "bytes": 409,
+      "sha256": "7d38c3bbf56f12de68e0e1997886446dbfd31c4b08608c476d59019e61bd0db7"
+    },
+    {
+      "name": "rpc-shutdown-la4hirtn.json",
+      "bytes": 1117,
+      "sha256": "9506fc795d090df58644e3c09594c6cf166f6fa6d42862163c834da543a51a04"
+    },
+    {
+      "name": "rpc-shutdown-observed-1yqjv8lm.json",
+      "bytes": 970,
+      "sha256": "4118f0940bebbc576b1b4bacf9f2158a21058687ce780f7360641a97d53b3704"
+    },
+    {
+      "name": "rpc-shutdown-observed-98am43ps.json",
+      "bytes": 971,
+      "sha256": "95d464b52d191bce00f4bba3b694d8ca5724b38c2c6c3d6e202322bd13836d92"
+    },
+    {
+      "name": "rpc-shutdown-observed-pvvz_42o.json",
+      "bytes": 969,
+      "sha256": "050fbd21f9506ac0d133f6520cf1c405b8968aa33537ca5bbfe4b322570f832d"
+    },
+    {
+      "name": "rpc-shutdown-observed-wzale30r.json",
+      "bytes": 971,
+      "sha256": "0cb6847d53776f17a940a2b31a085b2228f897f5f3f268c808ad57ae61ee3c2b"
+    },
+    {
+      "name": "rpc-shutdown-pvdk1lxq.json",
+      "bytes": 579,
+      "sha256": "2ce0bebb06b6278313ac7e437c9d76e1c2cdf9ff696fc34bd0062e0eaa2babab"
+    }
+  ],
+  "total_member_bytes": 18690,
+  "no_extraction_or_execution": true,
+  "original_natural_discovery_case": "PASS; observed-shutdown original command PASS, individual diagnostics assessed separately"
+}

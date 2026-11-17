@@ -1,0 +1,33 @@
+test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task (__main__.Q02ReadinessSourceProfileTests.test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task) ... FAIL
+
+======================================================================
+FAIL: test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task (__main__.Q02ReadinessSourceProfileTests.test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-q02-task-binding-rfl6v67r\candidate\.github\scripts\test_major_qualification_report.py", line 3123, in test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task
+    try:observed=self.original(f)
+                 ~~~~~~~~~~~~~^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-q02-task-binding-rfl6v67r\candidate\.github\scripts\test_major_qualification_report.py", line 3088, in original
+    owner.prepare_source_payload(f["repo"],f["staged"],f["job"],f["profile"])
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-q02-task-binding-rfl6v67r\candidate\.github\scripts\major_qualification_report.py", line 941, in prepare_source_payload
+    spec = source_profile(profile)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-q02-task-binding-rfl6v67r\candidate\.github\scripts\major_qualification_report.py", line 755, in source_profile
+    require(type(profile) is str and profile in TS_PROFILE_PATHS, "unknown source input profile")
+    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-q02-task-binding-rfl6v67r\candidate\.github\scripts\major_qualification_report.py", line 46, in require
+    raise ValueError(reason)
+ValueError: unknown source input profile
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-q02-task-binding-rfl6v67r\candidate\.github\scripts\test_major_qualification_report.py", line 3124, in test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task
+    except ValueError as error:self.fail("Original source observer cannot carry Q02's own readiness invocation: "+str(error))
+                               ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Original source observer cannot carry Q02's own readiness invocation: unknown source input profile
+
+----------------------------------------------------------------------
+Ran 1 test in 0.477s
+
+FAILED (failures=1)

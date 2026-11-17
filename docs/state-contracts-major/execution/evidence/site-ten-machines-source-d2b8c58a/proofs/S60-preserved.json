@@ -1,0 +1,123 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite all-clause site-machine source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "site/scripts/execution-maps/model.ts": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+    "site/scripts/execution-maps/render.ts": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+    "site/src/components/ExecutionMap.astro": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+    "site/src/scripts/execution-map-navigation.ts": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+  },
+  "disposition_ids": [
+    "disposition:machines:S60"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S60-inspection.json",
+      "sha256": "b9073576bfab0c56258e3d815032334898d959054adac6c9e905c05faef1ba9c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+      "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+    }
+  ],
+  "scope": "Five-clause SOURCE-ONLY literal contained fragment/chapter navigation conformance; actual browser focus/history behavior is unexecuted.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S60",
+      "frozen_row_sha256": "77c993a5ec951908b2c3a139f1c6470340d5bbcda2235d2609c41e09bdc13b3f",
+      "assessment": "Five-clause SOURCE-ONLY literal contained fragment/chapter navigation conformance; actual browser focus/history behavior is unexecuted.",
+      "clauses": [
+        "disposition:transitions:S60:01",
+        "disposition:transitions:S60:02",
+        "disposition:transitions:S60:03",
+        "disposition:transitions:S60:04",
+        "disposition:transitions:S60:05"
+      ],
+      "witnesses": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "start": 1,
+          "end": 62,
+          "file_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "start": 1,
+          "end": 8463,
+          "file_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "start": 1,
+          "end": 6291,
+          "file_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "start": 1,
+          "end": 75131,
+          "file_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/surfaces-tasks.json",
+          "start": 1,
+          "end": 2613,
+          "file_sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/execution-maps/model.ts",
+          "start": 1,
+          "end": 549,
+          "file_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/scripts/execution-maps/render.ts",
+          "start": 1,
+          "end": 111,
+          "file_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "start": 1,
+          "end": 138,
+          "file_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 1,
+          "end": 75,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "role": "cited owner/callee or frozen governing contract"
+        }
+      ],
+      "limits": [
+        "All existing edge rows, statuses, runtime proof references and epochs remain unchanged.",
+        "Reasoned source-only conformance includes explicitly named accepted changes/corrections; no fresh executed observation."
+      ]
+    }
+  ],
+  "limits": [
+    "No Q-01/task/scenario completion, installed/platform/model/user/browser/assistive/clipboard/print acceptance, publication or main readiness.",
+    "No whole-site atomicity, general filesystem cleanup guarantee, or arbitrary dynamic corpus admission.",
+    "Six existing unsupported analytical descriptions and four BUILD-G01 retired intermediates remain in their original NOT_APPLICABLE records; no new N/A or waiver."
+  ]
+}

@@ -1,0 +1,33 @@
+{
+  "source_epoch": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "source_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+  "source_original": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\test\\setup-disposable-home.ts",
+  "source_copy": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\source\\setup-disposable-home.ts",
+  "node": "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+  "python": "C:\\Python314\\python.exe",
+  "python_version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "python_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "child_sha256": "16816dffc9c5bbcf79c498e75fc28df74a9d07319c31eded3e195cc8c347beda",
+  "supervisor_sha256": "4e79fe096f590591598f4e1d1182fc58f1139bb8a31da239aa3a9f544d4892aa",
+  "argv": [
+    "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "--experimental-strip-types",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\child.mjs"
+  ],
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\fake-operator-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\fake-operator-home",
+    "PI_CODING_AGENT_DIR": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\fake-operator-home\\.pi\\agent",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\tmp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0\\tmp"
+  },
+  "outer_seconds": 5.0,
+  "per_stream_cap": 1048576,
+  "case_count": 1,
+  "fixture_parent": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw26-abrupt-owned-iq7azdd0",
+  "fake_operator_sentinel_sha256": "de92ca38da685991178a060752929e4e71a2d972646bdb531da6d607a92bb533",
+  "cleanup_requested": false
+}

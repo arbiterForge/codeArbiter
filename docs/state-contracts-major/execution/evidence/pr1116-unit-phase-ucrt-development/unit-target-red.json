@@ -1,0 +1,39 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-npm-producer-progress-test-change-3gdogo2h\\\\candidate\\\\.github\\\\scripts'); suite=unittest.defaultTestLoader.loadTestsFromNames(['test_npm_binding_observation.IdentityLimitTests.test_actual_owned_timeout_retains_closed_last_producer_phase']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\candidate",
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "exit_code": 1,
+  "duration_seconds": 0.5179096999927424,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "170b3ef962027d6e3f7cd165cebfaa9a34e79432789874a29877f7a199fa3b44",
+  "subjects": {
+    ".github/workflows/ci.yml": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+    ".github/scripts/test_hook_ci_partition.py": "a4039de1bf1434718fe6b8cc3d43232ff897b2d7767f33b46eee109bb3f7cbe7",
+    ".github/scripts/test_npm_binding_observation.py": "4e9b09814841c8ca14899968e03c3f13656749456d1a442710a0bc0a09150bb7"
+  }
+}

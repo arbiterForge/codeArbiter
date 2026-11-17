@@ -1,0 +1,28 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-acceptance-composed-tests-jep47qxp\\run.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "selectors": [
+    "test_npm_binding_observation",
+    "test_major_native_observation",
+    "test_major_qualification_report.Q02ReadinessSourceProfileTests.test_closed_readiness_profile_preserves_original_once_and_emits_only_implementation_task",
+    "test_major_qualification_report.Q02ReadinessSourceProfileTests.test_final_reader_authenticates_q02_source_upload_and_unchanged_owner_job",
+    "test_major_qualification_report.Q02ReadinessSourceProfileTests.test_q02_ci_keeps_two_original_invocations_exact_once_and_trusted_emission",
+    "test_major_qualification_report.Q02ReadinessSourceProfileTests.test_q02_filtered_or_foreign_entrypoint_refuses_before_execution",
+    "test_major_qualification_report.Q02ReadinessSourceProfileTests.test_q02_never_relabels_final_main_other_tasks_installed_or_old_profile",
+    "test_major_qualification_report.Q02ReadinessSourceProfileTests.test_q02_requires_all_original_named_assertions_and_refuses_skip_failure_duplicate",
+    "test_major_readiness.CompletedPopulationTest.test_complete_reviewed_population_preserves_local_origin_and_non_circularity"
+  ],
+  "exit_code": 1,
+  "seconds": 146.675,
+  "stdout_sha256": "ad27e40a38a217dbb2476721afbec59bc8c1c749a907ec32109e4248b6fccb86",
+  "stderr_sha256": "20facded8e725e7ce08e1ba0cb1d4bb2b5993b57921b2d1e7d18b3e1e56bb007",
+  "scope": "Composed-source focused local execution; not hosted task or all-platform proof"
+}

@@ -1,0 +1,131 @@
+{
+  "format": "codearbiter.pi-observed-windows-provider-warm-preflight/1",
+  "source_epoch": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+  "basis": "Observed current Root physical preimages; Root UCRT worker context retained separately by hash. No whole-checkout/fresh-host qualification claim.",
+  "subjects": [
+    {
+      "path": ".github/scripts/_windows_rpc_timeout.py",
+      "preimage_sha256": "d7a3edcfecee163a97bd8689dbdbbbf9d5304ccea7c53175d1d571a560b7a3fa",
+      "sha256": "48811d5ef208b7371a67bacb9d193453235068db55081d030c9b1ed0caccca83",
+      "bytes": 28134,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\_windows_rpc_timeout.py",
+      "canonical_current_sha256": "d7a3edcfecee163a97bd8689dbdbbbf9d5304ccea7c53175d1d571a560b7a3fa"
+    },
+    {
+      "path": ".github/scripts/test_pi_package.py",
+      "preimage_sha256": "023b5c8c41eedaebbe2f5334ecf3000de3e840e2a425d43828b48057e6b4ed7b",
+      "sha256": "6203048ac492e05c07c6ab5975d7ae2d4ac87af0794c33664641aab667f066fe",
+      "bytes": 316146,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\scripts\\test_pi_package.py",
+      "canonical_current_sha256": "023b5c8c41eedaebbe2f5334ecf3000de3e840e2a425d43828b48057e6b4ed7b"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "preimage_sha256": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f",
+      "sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+      "bytes": 277135,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\candidate\\.github\\workflows\\ci.yml",
+      "canonical_current_sha256": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f"
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\implementation.patch",
+    "sha256": "1b7355182984fe446270628a696b5888ec377f39012212774c28c56bdb4004b9"
+  },
+  "original_diagnosis": {
+    "path": "C:/Users/brenn/AppData/Local/Temp/ca-bbc6-pi-native-readonly-diagnosis-q1umf4q8/debug-handoff.json",
+    "sha256": "c7c1bb89cdecb8884e79fa24785ecc32e25258f2d414bf7d6bcd3ddbbf634577",
+    "disposition": "unresolved original Pi cause; protected hash preflight prevented same-PID stack"
+  },
+  "verification": {
+    "proper_original_ordering_RED": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\preflight-target-red.json",
+      "methods": 1,
+      "failures": 1,
+      "seconds": 0.03,
+      "oracle": "Observed Windows target reached Popen without preflight; natural/nonWindows vectors remained no-preflight."
+    },
+    "proper_uncertain_transport_RED": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\transport-uncertain-assertion-red.json",
+      "methods": 1,
+      "failures": 1,
+      "seconds": 0.046,
+      "oracle": "Uncertain helper launch/transport erroneously reached target; must block without claiming original RPC ran."
+    },
+    "final_GREEN": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\final-preflight-green.json",
+      "named_outcomes": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\named-outcomes.json",
+      "methods": 18,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "seconds": 0.685,
+      "outer_seconds": 0.8455359000072349,
+      "source_tool_stable": true
+    },
+    "compile": {
+      "files": 2,
+      "mechanism": "compile(bytes,path,exec), no output/cache"
+    },
+    "retained_intermediate_results": [
+      "preflight-target-green.json",
+      "corrected-target-green.json",
+      "preflight-affected-green.json",
+      "transport-uncertain-red.json"
+    ]
+  },
+  "preservation": {
+    "all_old_native_parent_function_ASTs_unchanged": true,
+    "fresh_authority_literal_span_sha256": {
+      "_digest": "5ea326d34520f92d5683c8db64883ca9e87c61e5b11d5e2e865913add18dcc3c",
+      "_tool_profile": "53d30b58385091ba4b0475b28271aa801054bc07622df63493b3db771a2b3367",
+      "_bound_tool_profile": "9d3cd45f1fbd2928771d7df58bef3baae3f5cd106c2b92e98f278ba1a534fcf3",
+      "_debugger": "8c65b05af1949f29405769dd6c10bab6a99e7f55ca11afc541c46d8b0d537bff",
+      "capture": "8e8a0981c4a0bcfc34784dee58b47622033d8fe28147f6efc886f58afc29c08e",
+      "retain_failure": "ef493d9220a2f5d41f97c1a732f6f3723332fe2ffad1e063f392b71c0f6d4b2a"
+    },
+    "all_original_test_method_ASTs_unchanged": true,
+    "original_test_methods": 93,
+    "new_test_methods": [
+      [
+        "DebuggerInboxTests",
+        "test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes"
+      ],
+      [
+        "DebuggerInboxTests",
+        "test_hash_only_warm_records_are_closed_not_authority_and_pid_associated"
+      ],
+      [
+        "DebuggerInboxTests",
+        "test_owned_hash_only_control_uses_existing_deadline_cleanup_owner"
+      ],
+      [
+        "DebuggerInboxTests",
+        "test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution"
+      ]
+    ],
+    "separate_Root_UCRT_worker_context_sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "worker_source_not_edited": true,
+    "original30s_RPC_and5s_failure_capture_budgets_unchanged": true,
+    "no_hashes_returned_or_cached_as_authority": true,
+    "CI_only_one_added_warm_receipt_glob": true
+  },
+  "implementation": {
+    "selection": "Only _observe_shutdown additional fixtures call optional native preflight; native preflight returnsNone without effects on nonWindows. Natural original cases unchanged.",
+    "owned_hash_child": "Same absolute canonical _windows_rpc_timeout.py and sys.executable, fixed -I -S -B -X utf8 --preflight-provider; minimal credential-blind private profile; stdinDEVNULL/close_fds/hidden startup.",
+    "budget": "Existing _boundedproc.run(timeout=5.0) enforces child execution/communicate deadline. Original owner bounded termination/taskkill/grace phases are separate; this is NOT a claim of strict5-second total wall time.",
+    "no_target_or_debugger": "Hash-only CLI calls existing protected _tool_profile; no target PID/handle/OpenProcess or DbgEng import/load/attach/worker before original failure. Only OS protected-system-directory lookup may be needed for inbox selection.",
+    "result": "Closed status/profile/filecount/phase/failure/elapsed only. Computed hashes are discarded; original failure and worker perform all fresh complete hashes literally unchanged.",
+    "contained_failure": "Closed child refusal, malformed output with exited owner, and contained preflight timeout do not skip or replace original RPC case.",
+    "uncontained_failure": "Explicit unconfirmed owner or exception after attempted launch blocks target and retains None processId/targetState not-spawned; no claim original RPC ran.",
+    "retention": "Distinct rpc-native-warmup-*.json under existing original uploader; same action pin/guard/retention and old JSON schemas unchanged."
+  },
+  "limits": [
+    "No actual Pi/Node/CDB/DbgEng/SDK/protectedDLL hashing or provider replay. Pure controls use mocked preflight child factory; one owned tiny ordinary Python sleep/timeout control exercises existing cleanup owner.",
+    "The owned tiny timeout control ran in the intermediate15 and final18 scopes; no existing runtime/Pi fixture was replayed.",
+    "Pre-warming may improve availability; it has not been demonstrated to recover a stack or fix original PID7040 timeout. Original cause remains UNKNOWN.",
+    "Clock-checked protected reads remain in a separately owned hard-deadline child; supervisor local file setup/record I/O and inherited cleanup bounds remain distinct from its execution budget.",
+    "No source/index/ref/marker/proof/status/remote mutation; only private candidate/raw/receipt files. Root owns stage/integration/exact-head hosted verification."
+  ],
+  "setup_history": "Initial hook-patch controller matched an unrelated repeated reader declaration and stopped after adding only native helpers; its failed intermediate run is retained. Corrected owner-local hook patch before observed GREEN. Initial uncertain-transport vector surfaced RuntimeError then was expressed as a proper assertion RED before fix; both retained."
+}

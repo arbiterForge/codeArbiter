@@ -1,0 +1,10 @@
+{
+  "fixture": "SHA256 of publicly defined DUMMY_AUTH bytes, not credential input",
+  "dummy_json_bytes": 76,
+  "computed_sha256": "f4f8713476abb65177a0ca5df5e6e304da4917297f01ff9121c7276bb85c6143",
+  "secret_group_equals_public_digest": true,
+  "red_exit": 1,
+  "RuleID": "generic-api-key",
+  "evidence_source": "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+  "source_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53"
+}

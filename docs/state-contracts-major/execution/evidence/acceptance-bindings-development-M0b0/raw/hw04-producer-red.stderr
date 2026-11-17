@@ -1,0 +1,15 @@
+test_original_python_producer_exports_opt_in_consumed_identities (test_npm_binding_observation.ProducerBoundaryTests.test_original_python_producer_exports_opt_in_consumed_identities) ... FAIL
+
+======================================================================
+FAIL: test_original_python_producer_exports_opt_in_consumed_identities (test_npm_binding_observation.ProducerBoundaryTests.test_original_python_producer_exports_opt_in_consumed_identities)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-hw04-launch-binding-feature-i7lca186\candidate\.github\scripts\test_npm_binding_observation.py", line 52, in test_original_python_producer_exports_opt_in_consumed_identities
+    self.assertTrue(sidecar.is_file(), 'original producer must retain its opt-in consumed Python/npm identity')
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : original producer must retain its opt-in consumed Python/npm identity
+
+----------------------------------------------------------------------
+Ran 1 test in 0.061s
+
+FAILED (failures=1)

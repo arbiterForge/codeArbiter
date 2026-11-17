@@ -928,6 +928,22 @@ export default function registerCaptureProvider(pi: any) {
         )
     if _rpc_command is not None:
         command = _rpc_command
+    provider_warmup = None
+    if _observe_shutdown:
+        try:
+            from _windows_rpc_timeout import preflight_provider
+            provider_warmup = preflight_provider(home)
+        except Exception:
+            pass  # unavailable warm reads do not replace the RPC case
+        if provider_warmup is not None and provider_warmup.get("containment") == "unconfirmed":
+            try:
+                from _windows_rpc_timeout import retain_preflight
+                selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+                if selected:
+                    retain_preflight(provider_warmup, None, Path(selected))
+            except Exception:
+                pass
+            raise AssertionError("Pi provider hash helper containment unconfirmed; RPC target not spawned")
     process = subprocess.Popen(
         command,
         cwd=cwd,
@@ -942,6 +958,14 @@ export default function registerCaptureProvider(pi: any) {
         start_new_session=os.name != "nt",
         creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
     )
+    if provider_warmup is not None:
+        try:
+            from _windows_rpc_timeout import retain_preflight
+            selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+            if selected:
+                retain_preflight(provider_warmup, process.pid, Path(selected))
+        except Exception:
+            pass
     reader: threading.Thread | None = None
     stderr_reader: threading.Thread | None = None
     # Stderr is diagnostic only: drain raw bytes so malformed UTF-8 cannot stop
@@ -5346,6 +5370,150 @@ def platform_package_suites():
 
 
 class DebuggerInboxTests(unittest.TestCase):
+    def test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes(self):
+        import _windows_rpc_timeout as native
+        import _boundedproc as bounded
+        from types import SimpleNamespace
+        current=sys.modules[__name__]
+        for mode in ('refused','launch-error','timeout','uncontained','malformed'):
+            with self.subTest(mode=mode),tempfile.TemporaryDirectory() as raw:
+                root=Path(raw).resolve();cwd=root/'cwd';cwd.mkdir();retained=root/'retained';retained.mkdir();order=[]
+                def preflight(argv,**kwargs):
+                    order.append('preflight')
+                    if mode=='launch-error':raise OSError('PRIVATE_WARM_CANARY')
+                    def communicate(timeout):
+                        if mode in ('timeout','uncontained') and timeout==5.0:raise subprocess.TimeoutExpired('owned-hash-only',5.0)
+                        if mode=='refused':
+                            return json.dumps({'schemaVersion':1,'kind':'protected-provider-warm-read','status':'unavailable',
+                                'profile':None,'filesHashed':0,'phase':'provider-hash-dbgeng','failure':'refused','elapsedMs':1}),''
+                        return ('{bad PRIVATE_WARM_CANARY' if mode=='malformed' else ''),''
+                    return SimpleNamespace(returncode=0,communicate=communicate)
+                def target(*args,**kwargs):order.append('target');raise RuntimeError('inert-target-stop')
+                os_model=SimpleNamespace(name='nt',environ=os.environ)
+                startup=lambda:SimpleNamespace(dwFlags=0,wShowWindow=0)
+                with mock.patch.dict(os.environ,{'CA_PI_RPC_DIAGNOSTICS_DIR':str(retained)}), \
+                     mock.patch.object(native,'os',os_model),mock.patch.object(bounded,'_VerifierProcess',side_effect=preflight), \
+                     mock.patch.object(bounded,'terminate_tree',return_value='unconfirmed' if mode=='uncontained' else 'terminated'), \
+                     mock.patch.object(current,'live_pi_cli',return_value=(sys.executable,root/'unused-cli')), \
+                     mock.patch.object(current,'read_json',return_value={'packages':['inert']}), \
+                     mock.patch.object(subprocess,'run',return_value=subprocess.CompletedProcess([],0,'','')), \
+                     mock.patch.object(subprocess,'Popen',side_effect=target), \
+                     mock.patch.object(subprocess,'STARTUPINFO',side_effect=startup,create=True), \
+                     mock.patch.object(subprocess,'STARTF_USESHOWWINDOW',1,create=True), \
+                     mock.patch.object(subprocess,'SW_HIDE',0,create=True):
+                    if mode in ('uncontained','launch-error'):
+                        with self.assertRaises((AssertionError,RuntimeError)) as caught:
+                            run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=True)
+                        self.assertIsInstance(caught.exception,AssertionError,'uncertain hash-helper ownership must block target spawn')
+                        self.assertIn('containment unconfirmed; RPC target not spawned',str(caught.exception))
+                        self.assertEqual(order,['preflight'])
+                        files=list(retained.glob('rpc-native-warmup-*.json'));self.assertEqual(len(files),1)
+                        value=json.loads(files[0].read_bytes());self.assertIsNone(value['processId'])
+                        self.assertEqual(value['targetState'],'not-spawned');self.assertEqual(value['containment'],'unconfirmed')
+                        self.assertNotIn('PRIVATE_WARM_CANARY',files[0].read_text())
+                    else:
+                        with self.assertRaisesRegex(RuntimeError,'inert-target-stop'):
+                            run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=True)
+                        self.assertEqual(order,['preflight','target'])
+
+    def test_hash_only_warm_records_are_closed_not_authority_and_pid_associated(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        original=native.os
+        def reads(deadline,*,_progress):
+            self.assertGreater(deadline,time.monotonic())
+            self.assertLessEqual(deadline-time.monotonic(),5.0)
+            _progress['phase']='provider-hash-dbghelp'
+            return 'sdk-v1',Path('unused'),dict.fromkeys(('cdb.exe','dbgeng.dll','dbghelp.dll'),'PRIVATE_HASH_CANARY')
+        with mock.patch.object(native,'os',SimpleNamespace(name='nt')), \
+             mock.patch.object(native,'_tool_profile',side_effect=reads) as hashing, \
+             mock.patch.object(native,'WindowsKernel',side_effect=AssertionError('no target query')), \
+             mock.patch.object(native,'_debugger',side_effect=AssertionError('no debugger')):
+            child=native.provider_warm_read()
+        hashing.assert_called_once();self.assertEqual(child['status'],'complete')
+        self.assertEqual(child['filesHashed'],3);self.assertNotIn('PRIVATE_HASH_CANARY',json.dumps(child))
+        self.assertNotIn('hashes',child);self.assertNotIn('toolHashes',child)
+        parent={**child,'kind':'protected-provider-warm-preflight','timed_out':False,'containment':'exited'}
+        self.assertTrue(native._warm_valid(parent,supervised=True))
+        with tempfile.TemporaryDirectory() as raw:
+            root=Path(raw).resolve()
+            fresh=root/'first-observed-case'
+            retained=native.retain_preflight(parent,77,fresh)
+            self.assertIsNotNone(retained,'first observed case must create its diagnostic directory')
+            self.assertEqual(json.loads((fresh/retained).read_bytes())['processId'],77)
+            first=native.retain_preflight(parent,77,root);second=native.retain_preflight(parent,77,root)
+            self.assertIsNotNone(first);self.assertNotEqual(first,second)
+            row=json.loads((root/first).read_bytes());self.assertEqual(row['processId'],77)
+            self.assertEqual(row['targetState'],'spawned')
+            for changed in ({**parent,'private':'PRIVATE_WARM_CANARY'},{**parent,'phase':[]},
+                            {**parent,'filesHashed':True},{**parent,'containment':'unconfirmed'}):
+                self.assertFalse(native._warm_valid(changed,supervised=True))
+                self.assertIsNone(native.retain_preflight(changed,77,root))
+        # Only the helper CLI/main is new; these authority functions must still
+        # call full provider hashing, and never consume the warm record.
+        source=Path(native.__file__).read_text(encoding='utf8')
+        tree=ast.parse(source)
+        for name in ('_debugger','_bound_tool_profile'):
+            node=next(n for n in tree.body if isinstance(n,ast.FunctionDef) and n.name==name)
+            calls=[n for n in ast.walk(node) if isinstance(n,ast.Call)]
+            self.assertTrue(any(isinstance(n.func,ast.Name) and n.func.id==('_tool_profile' if name=='_debugger' else '_digest') for n in calls))
+            self.assertNotIn('preflight',ast.get_source_segment(source,node))
+        ci=(REPO/'.github/workflows/ci.yml').read_text(encoding='utf8')
+        self.assertEqual(ci.count('${{ runner.temp }}/ca-pi-rpc-diagnostics/rpc-native-warmup-*.json'),1)
+
+    def test_owned_hash_only_control_uses_existing_deadline_cleanup_owner(self):
+        import _boundedproc as bounded
+        with tempfile.TemporaryDirectory() as raw:
+            root=Path(raw).resolve();owned=[];start=bounded.start
+            env={k:v for k,v in os.environ.items() if k.upper() in ('SYSTEMROOT','WINDIR','COMSPEC','PATHEXT')}
+            env.update(PATH='',HOME=str(root),USERPROFILE=str(root),TEMP=str(root),TMP=str(root))
+            def record(*args,**kwargs):
+                child=start(*args,**kwargs);owned.append(child);return child
+            with mock.patch.object(bounded,'start',side_effect=record):
+                result=bounded.run([sys.executable,'-I','-S','-B','-X','utf8','-c',
+                    'import time; print("owned-hash-control-ready",flush=True); time.sleep(10)'],
+                    timeout=0.15,cwd=root,env=env,stdin=subprocess.DEVNULL)
+            self.assertTrue(result.timed_out);self.assertIn(result.containment,('terminated','exited'))
+            self.assertEqual(len(owned),1);self.assertIsNotNone(owned[0].poll())
+            self.assertEqual(owned[0].stdin,None)
+
+    def test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution(self):
+        import _windows_rpc_timeout as native
+        import _boundedproc as bounded
+        from types import SimpleNamespace
+        current=sys.modules[__name__]
+        for observed,windows,expect in ((True,True,['preflight','target']),(False,True,['target']),(True,False,['target'])):
+            with self.subTest(observed=observed,windows=windows),tempfile.TemporaryDirectory() as raw:
+                root=Path(raw).resolve();cwd=root/'cwd';cwd.mkdir();order=[]
+                report={'schemaVersion':1,'kind':'protected-provider-warm-read','status':'complete',
+                        'profile':'sdk-v1','filesHashed':3,'phase':'provider-hash-dbghelp','failure':None,'elapsedMs':1}
+                def preflight(argv,**kwargs):
+                    order.append('preflight')
+                    self.assertEqual(argv,[sys.executable,'-I','-S','-B','-X','utf8',str(Path(native.__file__).resolve()),'--preflight-provider'])
+                    self.assertEqual(kwargs['stdin'],subprocess.DEVNULL)
+                    self.assertTrue(kwargs['close_fds'])
+                    self.assertEqual(kwargs['env'].get('PATH'),'')
+                    self.assertFalse(any(k in kwargs['env'] for k in ('GH_TOKEN','GITHUB_TOKEN','OPENAI_API_KEY','_NT_SYMBOL_PATH','PYTHONPATH')))
+                    def communicate(timeout):
+                        self.assertEqual(timeout,5.0)
+                        return json.dumps(report),''
+                    return SimpleNamespace(returncode=0,communicate=communicate)
+                def target(*args,**kwargs):
+                    order.append('target');raise RuntimeError('inert-target-stop')
+                os_model=SimpleNamespace(name='nt' if windows else 'posix',environ=os.environ)
+                startup=lambda:SimpleNamespace(dwFlags=0,wShowWindow=0)
+                with mock.patch.object(native,'os',os_model),mock.patch.object(bounded,'_VerifierProcess',side_effect=preflight), \
+                     mock.patch.object(current,'live_pi_cli',return_value=(sys.executable,root/'unused-cli')), \
+                     mock.patch.object(current,'read_json',return_value={'packages':['inert']}), \
+                     mock.patch.object(subprocess,'run',return_value=subprocess.CompletedProcess([],0,'','')), \
+                     mock.patch.object(subprocess,'Popen',side_effect=target), \
+                     mock.patch.object(subprocess,'STARTUPINFO',side_effect=startup,create=True), \
+                     mock.patch.object(subprocess,'STARTF_USESHOWWINDOW',1,create=True), \
+                     mock.patch.object(subprocess,'SW_HIDE',0,create=True):
+                    with self.assertRaisesRegex(RuntimeError,'inert-target-stop'):
+                        run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=observed)
+                self.assertEqual(order,expect,'observed Windows target spawned without bounded hash-only preflight')
+
     def test_collector_provider_attribution_distinguishes_missing_refused_and_deadline(self):
         import _windows_rpc_timeout as native
         from types import SimpleNamespace
