@@ -1752,6 +1752,7 @@ jobs:
       # own isolated home, caches, temp and npm configuration and runs the binary
       # with an empty environment, so sharing the runner does not warm the next.
       - name: Create one isolated receipt directory per host
+        if: ${{ !cancelled() }}
         run: python -c "import os,sys; [os.makedirs(os.path.join(sys.argv[1], 'cold-' + h)) for h in ('claude', 'codex', 'pi')]" "${{ runner.temp }}"
       - name: Cold-execute the complete exact-package claude workflow
         id: cold_claude
@@ -3343,7 +3344,44 @@ jobs:
         # publication-ready. Q-02 retains its strict all-current main barrier.
         run: python .github/scripts/check_state_contracts_integration.py
       - name: Test partial-program integrity and historical applicability
-        run: python .github/scripts/test_state_contracts_integration.py
+        id: program_integrity_observed
+        shell: bash
+        env:
+          OBSERVE_PROGRAM_INTEGRITY: ${{ matrix.os == 'windows-latest' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' }}
+        run: |
+          if [ "$OBSERVE_PROGRAM_INTEGRITY" = true ]; then
+            python -B .github/scripts/major_qualification_report.py prepare-source \
+              --repo . --source-profile program-integrity-source-v1 \
+              --output "${{ runner.temp }}/program-integrity-source-inputs" \
+              --job-name "[CHECK] | [REPO] | Program integrity  <os: windows-latest>"
+            python -B .github/scripts/major_qualification_report.py observe-python \
+              --repo . --source-profile program-integrity-source-v1 \
+              --source-payload "${{ runner.temp }}/program-integrity-source-inputs" \
+              --output "${{ runner.temp }}/program-integrity-observation.json" \
+              -- .github/scripts/test_state_contracts_integration.py
+          else
+            python .github/scripts/test_state_contracts_integration.py
+          fi
+      - name: Upload program integrity source-test inputs
+        if: ${{ matrix.os == 'windows-latest' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.program_integrity_observed.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-program-integrity
+          path: ${{ runner.temp }}/program-integrity-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original program integrity observation
+        if: ${{ matrix.os == 'windows-latest' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.program_integrity_observed.outcome == 'success' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: program-integrity-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/program-integrity-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
 
   hooks:
     name: "[CHECK] | [CORE] | Hook contract  <os: ${{ matrix.os }} · partition: ${{ matrix.partition }}>"
@@ -3584,8 +3622,18 @@ jobs:
         # settle an obligation, and Git-common state is never verification input.
         run: python .github/scripts/test_workflow_recovery_contract.py
       - name: Test shared native manifest contract
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         run: python .github/scripts/test_artifact_manifest_contract.py
+      - name: Observe original shared native manifest contract
+        id: native_manifest_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-native-manifest-observation.json"
+          -- .github/scripts/test_artifact_manifest_contract.py
       - name: Prepare Python source-test inputs
         id: python_source_prepare
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
@@ -3963,7 +4011,7 @@ jobs:
           overwrite: false
       - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.native_manifest_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3982,6 +4030,7 @@ jobs:
             --observation "finite-cf06=${{ runner.temp }}/python-finite-cf06-observation.json" \
             --observation "finite-bounded-reader=${{ runner.temp }}/python-finite-bounded-reader-observation.json" \
             --observation "finite-git-channel=${{ runner.temp }}/python-finite-git-channel-observation.json" \
+            --observation "finite-native-manifest=${{ runner.temp }}/python-finite-native-manifest-observation.json" \
             --observation "finite-tf02=${{ runner.temp }}/python-finite-tf02-observation.json" \
             --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
             --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}" \

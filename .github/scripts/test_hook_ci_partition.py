@@ -241,6 +241,17 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                               '          --output "${{ runner.temp '
                                               '}}/python-finite-hookf01-observation.json"\n'
                                               '          -- .github/scripts/test_prompt_submit.py\n',
+ 'Observe original shared native manifest contract': (
+                          '      - name: Observe original shared native manifest contract\n'
+                          '        id: native_manifest_observed\n'
+                          "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+                          '        shell: bash\n'
+                          '        run: >-\n'
+                          '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+                          '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                          '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+                          '          --output "${{ runner.temp }}/python-finite-native-manifest-observation.json"\n'
+                          '          -- .github/scripts/test_artifact_manifest_contract.py\n'),
  'Prepare Python source-test inputs': '      - name: Prepare Python source-test inputs\n'
                                       '        id: python_source_prepare\n'
                                       "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
@@ -480,6 +491,7 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      "steps.single_cf06_observed.outcome == 'success' && "
                                                      "steps.bounded_reader_observed.outcome == 'success' && "
                                                      "steps.git_channel_observed.outcome == 'success' && "
+                                                     "steps.native_manifest_observed.outcome == 'success' && "
                                                      "steps.single_tf02_observed.outcome == 'success' && "
                                                      "steps.single_hook_upload.outcome == 'success' }}\n"
                                                      '        shell: bash\n'
@@ -513,6 +525,8 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      '}}/python-finite-cf06-observation.json" \\\n'
                                                      '            --observation "finite-bounded-reader=${{ runner.temp }}/python-finite-bounded-reader-observation.json" \\\n'
                                                      '            --observation "finite-git-channel=${{ runner.temp }}/python-finite-git-channel-observation.json" \\\n'
+                                                     '            --observation "finite-native-manifest=${{ runner.temp '
+                                                     '}}/python-finite-native-manifest-observation.json" \\\n'
                                                      '            --observation "finite-tf02=${{ runner.temp '
                                                      '}}/python-finite-tf02-observation.json" \\\n'
                                                      '            --payload-root '
@@ -606,6 +620,7 @@ def python_source_roles(block: str) -> dict[str,str]:
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
     for name,entry in (('Run sync-core tool unit tests','test_sync_core.py'),
                        ('Run surface-generator unit tests','test_build_surface.py'),
+                       ('Test shared native manifest contract', 'test_artifact_manifest_contract.py'),
                        ('Test interrupted output publication','test_generated_output.py'),
                        ('Run read-only review funnel contract','test_review_funnel.py'),
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
@@ -621,6 +636,10 @@ def python_source_roles(block: str) -> dict[str,str]:
                 and re.findall(r'^        if: (.*)$',selected[0],re.M)==[
                     "(matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')"],
                 'Python source observer must replace one original invocation on its exact cell')
+    manifest_fallback = next(step for step in steps if step.startswith('      - name: Test shared native manifest contract\n'))
+    require(steps.index(manifest_fallback) + 1
+            == steps.index(PYTHON_SOURCE_ROLES['Observe original shared native manifest contract']),
+            'Manifest observer must replace its original Windows command in place')
     require(sum('.github/scripts/test_boundedproc.py' in (command(step) or '') for step in steps) == 2,
             'bounded reader suite must run once in each original partition')
     direct_channel = [step for step in steps if step.startswith("      - name: Run per-target release planner and Git channel contracts\n")]
@@ -854,6 +873,7 @@ def validate(
                                                'python .github/scripts/test_sync_core.py',
                                                'python .github/scripts/test_build_surface.py',
                                                'python .github/scripts/test_generated_output.py',
+                                               'python .github/scripts/test_artifact_manifest_contract.py',
                                                'python .github/scripts/test_check_skill_proof_fresh.py',
                                                'python .github/scripts/test_major_readiness.py',
                                                'python .github/scripts/test_release_workflow.py',

@@ -1939,6 +1939,135 @@ try {
                     else:
                         self.assertNotEqual(result["identity"], "matched")
 
+    def _native_progress_fixture(self, root, *, failure=None, expired_after=False):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        image = root.resolve(strict=True) / "node.exe"
+        image.write_bytes(b"owned process image")
+        now = [0.0]
+        class Kernel:
+            reads = []
+            closed = []
+            snapshots = 0
+            def open(self, pid): return 22
+            def close(self, handle): self.closed.append(handle)
+            def snapshot(self, handle):
+                self.snapshots += 1
+                return {"pid": 99 if failure == "identity" else 33, "created": 44,
+                        "image": str(image), "state": "running", "exitCode": None,
+                        "cpuTimes": {"kernelTime100ns": self.snapshots * 100,
+                                     "userTime100ns": self.snapshots * 200}}
+            def process_counters(self, handle, deadline):
+                self.reads.append((handle, deadline))
+                if failure == "query": raise OSError("PRIVATE_COUNTER_ERROR")
+                return {"readOperations": len(self.reads), "writeOperations": len(self.reads) * 2,
+                        "otherOperations": 3, "readBytes": 4, "writeBytes": 5, "otherBytes": 6,
+                        "handleCount": 7, "PRIVATE_EXTRA": "PRIVATE_COUNTER_VALUE"}
+        kernel = Kernel()
+        if failure == "missing": kernel.process_counters = None
+        def debug(*args):
+            if expired_after: now[0] = 5.1
+            return {"status": "unavailable", "threads": [], "truncated": False}
+        debugger = mock.Mock(side_effect=debug)
+        process = SimpleNamespace(pid=33, _handle=11)
+        with mock.patch.object(native.time, "monotonic", side_effect=lambda: now[0]):
+            result = native.capture(process, image, _kernel=kernel, _debugger=debugger)
+        return result, kernel, debugger, process
+
+    def test_rpc_native_shutdown_progress_is_identity_bound_and_preserves_failure(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result, kernel, debugger, process = self._native_progress_fixture(Path(directory))
+        self.assertIn("processProgress", result, "failed native wait must retain passive process progress")
+        before, after = result["processProgress"]["before"], result["processProgress"]["after"]
+        self.assertEqual((before["kernelTime100ns"], after["kernelTime100ns"]), (200, 300))
+        self.assertEqual((before["userTime100ns"], after["userTime100ns"]), (400, 600))
+        self.assertEqual((before["writeOperations"], after["writeOperations"]), (2, 4))
+        self.assertEqual(before["handleCount"], 7)
+        self.assertEqual(kernel.reads, [(11, 5.0), (11, 5.0)])
+        self.assertEqual(kernel.closed, [22])
+        self.assertEqual(vars(process), {"pid": 33, "_handle": 11})
+        self.assertEqual(debugger.call_count, 1)
+        self.assertEqual(result["identity"], "matched")
+        self.assertEqual(result["outcome"], "original-failure")
+        self.assertNotIn("PRIVATE_", json.dumps(result))
+
+    def test_rpc_native_shutdown_progress_is_optional_and_never_queries_foreign_process(self):
+        for failure in ("query", "missing", "identity"):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                result, kernel, debugger, _ = self._native_progress_fixture(Path(directory), failure=failure)
+                if failure == "identity":
+                    self.assertEqual(result["processProgress"], {"before": None, "after": None})
+                    self.assertEqual(kernel.reads, [])
+                    self.assertEqual(debugger.call_count, 0)
+                else:
+                    self.assertEqual(result["identity"], "matched")
+                    self.assertEqual(result["processProgress"]["before"]["kernelTime100ns"], 200)
+                    self.assertIsNone(result["processProgress"]["before"]["writeBytes"])
+                    self.assertEqual(debugger.call_count, 1)
+                self.assertEqual(result["outcome"], "original-failure")
+                self.assertNotIn("PRIVATE_", json.dumps(result))
+
+    def test_rpc_native_shutdown_progress_uses_only_remaining_original_budget(self):
+        with tempfile.TemporaryDirectory() as directory:
+            result, kernel, debugger, _ = self._native_progress_fixture(Path(directory), expired_after=True)
+        self.assertEqual(kernel.reads, [(11, 5.0)])
+        self.assertEqual(result["processProgress"]["after"]["kernelTime100ns"], 300)
+        self.assertIsNone(result["processProgress"]["after"]["writeOperations"])
+        self.assertEqual(result["elapsedMs"], 5100)
+        self.assertEqual(result["outcome"], "original-failure")
+        self.assertEqual(debugger.call_args.args[-1], 5.0)
+
+    def test_rpc_native_shutdown_progress_projects_only_closed_numeric_values(self):
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        values = {"readOperations": True, "writeOperations": -1, "otherOperations": 2**64,
+                  "readBytes": "PRIVATE_COUNTER_VALUE", "writeBytes": 2**64 - 1,
+                  "otherBytes": 0, "handleCount": 2**32}
+        kernel = SimpleNamespace(process_counters=lambda handle, deadline: values)
+        snapshot = {"cpuTimes": {"kernelTime100ns": True, "userTime100ns": 2**64}}
+        with mock.patch.object(native.time, "monotonic", return_value=0):
+            projected = native._process_progress(kernel, 11, snapshot, 5.0)
+        self.assertEqual(projected, {"kernelTime100ns": None, "userTime100ns": None,
+            "readOperations": None, "writeOperations": None, "otherOperations": None,
+            "readBytes": None, "writeBytes": 2**64 - 1, "otherBytes": 0, "handleCount": None})
+        self.assertNotIn("PRIVATE_", json.dumps(projected))
+
+    def test_rpc_native_shutdown_progress_typed_queries_are_optional_and_budgeted(self):
+        import ctypes
+        import _windows_rpc_timeout as native
+        from types import SimpleNamespace
+        for mode in ("ok", "false", "raise", "missing", "spent", "spent-after-io"):
+            with self.subTest(mode=mode):
+                now = [6.0 if mode == "spent" else 0.0]
+                seen = []
+                class Query:
+                    def __init__(self, kind): self.kind = kind
+                    def __call__(self, handle, destination):
+                        self_test.assertEqual(handle, 11)
+                        seen.append(self.kind)
+                        if mode == "raise": raise OSError("PRIVATE_COUNTER_CALL")
+                        if mode == "false": return False
+                        if self.kind == "io":
+                            value = ctypes.cast(destination, ctypes.POINTER(native._IoCounters)).contents
+                            for index, (field, _) in enumerate(value._fields_, 1): setattr(value, field, index)
+                            if mode == "spent-after-io": now[0] = 6.0
+                        else:
+                            ctypes.cast(destination, ctypes.POINTER(native.wintypes.DWORD)).contents.value = 17
+                        return True
+                self_test = self
+                kernel = object.__new__(native.WindowsKernel)
+                kernel.api = (SimpleNamespace() if mode == "missing" else
+                              SimpleNamespace(GetProcessIoCounters=Query("io"), GetProcessHandleCount=Query("handles")))
+                with mock.patch.object(native.time, "monotonic", side_effect=lambda: now[0]):
+                    result = kernel.process_counters(11, 5.0)
+                if mode in ("ok", "spent-after-io"):
+                    self.assertEqual([result[field] for field in ("readOperations", "writeOperations", "otherOperations",
+                                     "readBytes", "writeBytes", "otherBytes")], [1, 2, 3, 4, 5, 6])
+                    self.assertEqual(result.get("handleCount"), 17 if mode == "ok" else None)
+                else: self.assertEqual(result, {})
+                self.assertEqual(seen, [] if mode in ("missing", "spent") else ["io"] if mode == "spent-after-io" else ["io", "handles"])
+                self.assertNotIn("PRIVATE_", json.dumps(result))
+
     def test_rpc_native_shutdown_transport_has_one_deadline_and_aggregate_cap(self):
         import _windows_rpc_timeout as native
         from types import SimpleNamespace

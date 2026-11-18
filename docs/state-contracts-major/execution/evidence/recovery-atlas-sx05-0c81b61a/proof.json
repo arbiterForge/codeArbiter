@@ -1,0 +1,48 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Current Atlas recovery catalog conformance"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/execution-maps/atlas-command.ts": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+    "site/scripts/execution-maps/atlas-model.ts": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+    "site/scripts/execution-maps/atlas-render.ts": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+    "site/scripts/execution-maps/atlas-theme.ts": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "site/scripts/execution-maps/atlas.ts": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+    "site/scripts/generate-atlas.ts": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "51cfe697e1e167f829dfbe8604df40a138aa95118942fd88b8a60468f0f67122",
+    "site/scripts/execution-maps/atlas-assistive.test.ts": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318"
+  },
+  "disposition_ids": [
+    "disposition:machines:SX05",
+    "disposition:transitions:SX05:01",
+    "disposition:transitions:SX05:02",
+    "disposition:transitions:SX05:03",
+    "disposition:transitions:SX05:04",
+    "disposition:transitions:SX05:05",
+    "disposition:transitions:SX05:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/inspection.json",
+      "sha256": "5419b63f4738eaba286747f9ddb1283471417affc84b6364b726d1fb30be099f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+      "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+    }
+  ],
+  "scope": "Seven existing SX05 source-only clauses, under the exact two-blob recovery refresh.",
+  "limits": [
+    "Historical raw evidence and status are preserved. Source conformance does not qualify installed, runtime, human or published behavior."
+  ]
+}

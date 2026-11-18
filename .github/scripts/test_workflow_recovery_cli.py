@@ -278,6 +278,32 @@ class InstalledRecoveryTest(InstalledRecoveryFixture, unittest.TestCase):
         self.assertLess(elapsed, 4)
         self.assertEqual(before, {p.relative_to(store).as_posix(): p.read_bytes() for p in store.rglob("*") if p.is_file()})
 
+    def test_automatic_scan_uses_validated_worktree_without_git_root_rediscovery(self):
+        _, registered = self.cli("claude", "register", {"candidates": [self.offer()]})
+        self.assertTrue(registered["durable"])
+        script = ("import sys,json;sys.path.insert(0,sys.argv[1]);import _workflowrecoverylib as r;"
+                  "print(json.dumps(r.automatic_snapshot(sys.argv[2])))")
+        for host in ("claude", "codex", "pi"):
+            with self.subTest(host=host):
+                hooks = self.hosts[host] / "hooks"
+                helper = hooks / "workflow-recovery.py"
+                original = helper.read_bytes()
+                helper.write_bytes(original.replace(
+                    b"import hostapi\n",
+                    b"import hostapi\ndef unexpected_rediscovery(*args, **kwargs):\n"
+                    b"    raise AssertionError('automatic scan rediscovered Git root')\n"
+                    b"hostapi.git_toplevel = unexpected_rediscovery\n", 1))
+                try:
+                    process = subprocess.run([sys.executable, "-B", "-c", script, str(hooks), str(self.root)],
+                                             env=self.environment(host), cwd=self.root, capture_output=True,
+                                             text=True, timeout=10)
+                finally:
+                    helper.write_bytes(original)
+                self.assertEqual(process.returncode, 0, process.stderr)
+                observed = json.loads(process.stdout)
+                self.assertEqual(observed["status"], "complete", observed)
+                self.assertEqual(observed["pending"], 1)
+
     def test_old_install_read_preserves_pending_recovery_and_targets(self):
         _, registered = self.cli("claude", "register", {"candidates": [self.offer()]})
         self.assertTrue(registered["durable"])

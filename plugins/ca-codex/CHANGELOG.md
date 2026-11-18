@@ -10,6 +10,7 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ### Changed
 
+- Reuse the validated worktree for automatic recovery scans, avoiding a second Git process within the existing one-second deadline.
 - Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
 - Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
 - Attribute task-lock ignore-rule initialization to its actual owner in generated init guidance.

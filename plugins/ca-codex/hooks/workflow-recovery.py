@@ -36,6 +36,7 @@ def _parser():
     registration.add_argument("--input", help="Bounded local JSON file instead of stdin")
     scan = sub.add_parser("scan", help="Read one page without creating or repairing anything")
     scan.add_argument("--cursor")
+    scan.add_argument("--root-bound", action="store_true", help=argparse.SUPPRESS)
     get = sub.add_parser("get", help="Read one exact obligation")
     get.add_argument("--obligation-id", required=True)
     sub.add_parser("repair", help="Explicitly repair a retained record/index transaction under its OS lock")
@@ -91,7 +92,10 @@ def main(argv=None):
                     request["replacement"] = args.replacement
                 elif args.action == "restore-authority":
                     request["authority_source"] = args.authority_source
-            result = recovery.dispatch(project_root(), args.action, request)
+            # The automatic parent has already discovered and validated this
+            # worktree. The scan still revalidates storage and activation.
+            root = Path.cwd() if args.action == "scan" and args.root_bound else project_root()
+            result = recovery.dispatch(root, args.action, request)
         except recovery.RecoveryError as exc:
             result = {"status": "unavailable", "reason": exc.reason, "durable": False}
         except (OSError, ValueError, TypeError):

@@ -1,0 +1,107 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "33529946a2dd18c7a4ea5cd75140227ec7bb5650",
+  "prior_source_checkpoint": "05e73c5c2501c71d069304c1a6b1b8cd5ae9a706",
+  "parent_source": "c9cea20530ecfc4cb4b61e8317a1b0f8b298442f",
+  "delta": {
+    ".github/scripts/test_ci_impact.py": {
+      "before": "b8f94688ecaaf10662f3e213cf66296e1bb58f7b8cb10942a44dc60307de27ea",
+      "current": "fb43147b2548207265f630f976f83e2fe447a5491d88af2a193c9889bd3a4f19",
+      "assessment": "Only the exact existing cold isolation contract assertion is strengthened to recognize the new setup predicate."
+    },
+    ".github/scripts/test_workflow_recovery_cli.py": {
+      "before": "7cfbafaf0012eb9114d6c050b08727e7f3dc51f3d41c6752518d6454c0aaf03d",
+      "current": "dcabdeb750fab02b973f331f3902ec93a716d7328539fb04718c6a66c27e12f5",
+      "assessment": "One added installed fixture forbids a second Git-root lookup on the automatic route and still requires the same already registered pending obligation; prior fixtures are byte/AST-identical."
+    },
+    ".github/workflows/ci.yml": {
+      "before": "d6ce20ed5f84dd1c841aca08e0c294f08cb993c7e9c054615dcfaabdf45cab82",
+      "current": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+      "assessment": "Only isolated receipt directory setup adds the same not-cancelled guard as the individual cold host steps, which preserves their independent diagnostic/effect paths after an earlier host fails. Directory identity, original three host commands, strict aggregate/actual release-producing prerequisites and checks remain unchanged."
+    },
+    "CHANGELOG.md": {
+      "before": "8015dd7754ef2f4fe8975b270895cf3236bb8211b75147fcd4c61525fa98c6e2",
+      "current": "03f8f9182d85e2efd196af9092eba6680ba904ecd98f13f4d7c38483782db34b",
+      "assessment": "One unversioned unreleased-intent entry is added, retaining all existing version headings and release history. No package version or publication is claimed."
+    },
+    "core/pysrc/_workflowrecoverylib.py": {
+      "before": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "current": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing. The same Codex PreTool entry, dispatch, context behavior, and protected operation gates remain. Its shared recovery library changes only the automatic read-only snapshot handoff. Existing inactive, invalid storage, unavailable/partial and readonly behavior stays bounded, and non-scan commands retain ordinary root discovery."
+    },
+    "core/pysrc/workflow-recovery.py": {
+      "before": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+      "current": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing."
+    },
+    "plugins/ca-codex/CHANGELOG.md": {
+      "before": "f13ec3650f7814695fc3dbcbd85edfa5d803998bb117c9facfc01156914206b1",
+      "current": "9a57fec642f5faf4dfc3e29f519cba60a686ba21bc259cfba9eae6446555d85d",
+      "assessment": "One unversioned unreleased-intent entry is added, retaining all existing version headings and release history. No package version or publication is claimed."
+    },
+    "plugins/ca-codex/hooks/_workflowrecoverylib.py": {
+      "before": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "current": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing. The same Codex PreTool entry, dispatch, context behavior, and protected operation gates remain. Its shared recovery library changes only the automatic read-only snapshot handoff. Existing inactive, invalid storage, unavailable/partial and readonly behavior stays bounded, and non-scan commands retain ordinary root discovery."
+    },
+    "plugins/ca-codex/hooks/workflow-recovery.py": {
+      "before": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+      "current": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing."
+    },
+    "plugins/ca-pi/CHANGELOG.md": {
+      "before": "cfcf14a202d93cfb1cf4cbf47ffaca8579df17e12ceca80dab2093b67feb597d",
+      "current": "83e852125a0ca389af6d07a9f2564260fa61d586695b24e2678944c69901942b",
+      "assessment": "One unversioned unreleased-intent entry is added, retaining all existing version headings and release history. No package version or publication is claimed."
+    },
+    "plugins/ca-pi/hooks/_workflowrecoverylib.py": {
+      "before": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "current": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing. The same Codex PreTool entry, dispatch, context behavior, and protected operation gates remain. Its shared recovery library changes only the automatic read-only snapshot handoff. Existing inactive, invalid storage, unavailable/partial and readonly behavior stays bounded, and non-scan commands retain ordinary root discovery."
+    },
+    "plugins/ca-pi/hooks/workflow-recovery.py": {
+      "before": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+      "current": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing."
+    },
+    "plugins/ca/hooks/_workflowrecoverylib.py": {
+      "before": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "current": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing. The same Codex PreTool entry, dispatch, context behavior, and protected operation gates remain. Its shared recovery library changes only the automatic read-only snapshot handoff. Existing inactive, invalid storage, unavailable/partial and readonly behavior stays bounded, and non-scan commands retain ordinary root discovery."
+    },
+    "plugins/ca/hooks/workflow-recovery.py": {
+      "before": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+      "current": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+      "assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing."
+    }
+  },
+  "reviewed_patch_sha256": "c832c791770e2e98fcdf36496fa02c206eba4bdd7d89914c9289b35e748a384f",
+  "canonical_review_receipt_provided_sha256": "05cbdc62b2023232bb21353aea8a6f542fcacc62ea01b98dec29d96f6289227c",
+  "canonical_staged_source_projection": {
+    "applicable": 1607,
+    "population": 1739,
+    "stale": 132,
+    "provided_sha256": "0b0474ad547fba50f31e77a72d45537b123a0d11829be78548e5a174a6050bc1"
+  },
+  "release_intent_only": {
+    "CHANGELOG.md": {
+      "line": 19,
+      "sha256": "ca9c756bd357855ac98ff46da5cfe4043321ba0eeb042f229f4b1c8f8250c0c1",
+      "status": "UNRELEASED_ENTRY_ONLY"
+    },
+    "plugins/ca-codex/CHANGELOG.md": {
+      "line": 13,
+      "sha256": "ca9c756bd357855ac98ff46da5cfe4043321ba0eeb042f229f4b1c8f8250c0c1",
+      "status": "UNRELEASED_ENTRY_ONLY"
+    },
+    "plugins/ca-pi/CHANGELOG.md": {
+      "line": 11,
+      "sha256": "ca9c756bd357855ac98ff46da5cfe4043321ba0eeb042f229f4b1c8f8250c0c1",
+      "status": "UNRELEASED_ENTRY_ONLY"
+    }
+  },
+  "workflow_recovery_assessment": "WF-14 and its four source transitions retain bounded registered recovery and selected-owner isolation. The parent uses the already validated RecoveryStore root for one read-only child scan. The private scan flag takes the inherited cwd, while dispatch still independently checks activation/storage binding; every ordinary command keeps project_root. Frozen read-only statuses, explicit repair and mutation owners, bounded retry and failure reporting remain existing.",
+  "codex_pretool_assessment": "The same Codex PreTool entry, dispatch, context behavior, and protected operation gates remain. Its shared recovery library changes only the automatic read-only snapshot handoff. Existing inactive, invalid storage, unavailable/partial and readonly behavior stays bounded, and non-scan commands retain ordinary root discovery.",
+  "cold_host_setup_assessment": "Only isolated receipt directory setup adds the same not-cancelled guard as the individual cold host steps, which preserves their independent diagnostic/effect paths after an earlier host fails. Directory identity, original three host commands, strict aggregate/actual release-producing prerequisites and checks remain unchanged.",
+  "affected_scope": "Exact 132 previously applicable pure-source rows across 18 proof groups. Original runtime/manual/installed/hosted evidence remains historical."
+}

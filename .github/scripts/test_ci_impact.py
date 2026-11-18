@@ -239,6 +239,30 @@ def reviewed_mapped_work_event_guards(block: str) -> set[str]:
     return set(expected.values())
 
 
+def reviewed_program_source_event_guards(block: str) -> set[str]:
+    """Only the two original Program integrity uploads omit merge-group handling."""
+    push = ("matrix.os == 'windows-latest' && github.event_name == 'push' && "
+            "(github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && "
+            "hashFiles('.github/integration-candidate.json') != ''")
+    predicate = "${{ " + push + " && steps.program_integrity_observed.outcome == 'success' }}"
+    names = ("Upload program integrity source-test inputs", "Retain original program integrity observation")
+    steps = re.split(r"(?m)^      - name: ", block)[1:]
+    for name in names:
+        matches = [step for step in steps if step.splitlines()[0] == name]
+        if len(matches) != 1 or re.findall(r"(?m)^        if: ([^\n]+)$", matches[0]) != [predicate]:
+            raise ValueError("Program integrity upload is missing or its original predicate changed")
+    if re.findall(r"(?m)^\s+if: ([^\n]+)$", block).count(predicate) != len(names):
+        raise ValueError("Program integrity upload predicate is reused")
+    original = [step for step in steps if step.splitlines()[0] ==
+                "Test partial-program integrity and historical applicability"]
+    if (len(original) != 1 or re.search(r"(?m)^        (?:if|continue-on-error):", original[0])
+            or "OBSERVE_PROGRAM_INTEGRITY: ${{ " + push + " }}" not in original[0]
+            or "          else\n            python .github/scripts/test_state_contracts_integration.py\n          fi\n"
+            not in original[0]):
+        raise ValueError("Program integrity original merge-group test is conditional or missing")
+    return {predicate}
+
+
 def reviewed_sdk_source_event_guards(ci: str, block: str) -> set[str]:
     """Exempt only the exact authenticated SDK report role, never its suite."""
     if (not block.startswith("  ca-pi-checks:\n")
@@ -3096,6 +3120,21 @@ class WorkflowContractTest(unittest.TestCase):
             "have nothing to satisfy the required merge-readiness context",
         )
 
+    def test_program_integrity_report_guard_cannot_exempt_another_step(self):
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        block = workflow_jobs(ci)["program-integrity"]
+        predicate, = reviewed_program_source_event_guards(block)
+        mutations = (
+            block.replace("        if: " + predicate, "        if: false", 1),
+            block.replace("        id: program_integrity_observed",
+                          "        if: " + predicate + "\n        id: program_integrity_observed", 1),
+            block.replace("            python .github/scripts/test_state_contracts_integration.py",
+                          "            true", 1),
+        )
+        for changed in mutations:
+            with self.subTest(changed=changed != block), self.assertRaises(ValueError):
+                reviewed_program_source_event_guards(changed)
+
     def test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group(self):
         # Issue #383, the half of it a trigger alone does NOT fix.  `ci-passed`
         # accepts `skipped` as success - that is exactly what ADR-0007 path
@@ -3126,6 +3165,9 @@ class WorkflowContractTest(unittest.TestCase):
             vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools", "tools") else set()
             mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
             sdk_guards = reviewed_sdk_source_event_guards(ci, block) if job_id == "ca-pi-checks" else set()
+            program_guards = reviewed_program_source_event_guards(block) if job_id == "program-integrity" else set()
+            reviewed_guards = (cold_guards | source_guards | impact_guards | vitest_guards |
+                               mapped_guards | sdk_guards | program_guards)
             # Job-level AND step-level conditions: a step gated to
             # pull_request drops its evidence just as quietly as a job does,
             # and the secret scan's commit-range step is one of those.
@@ -3138,7 +3180,7 @@ class WorkflowContractTest(unittest.TestCase):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
                     continue
-                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards or condition in sdk_guards or condition in impact_guards:
+                if condition in reviewed_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue
@@ -4979,6 +5021,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # One job per platform; each host runs as its own isolated step with its
         # own receipt artifact, and a failing host never hides the others.
         self.assertNotIn("matrix.host", cold)
+        self.assertIn("Create one isolated receipt directory per host\n"
+                      "        if: ${{ !cancelled() }}\n", cold)
         cold_hosts = cold.split("Create one isolated receipt directory per host", 1)[1]
         for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
                         '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',

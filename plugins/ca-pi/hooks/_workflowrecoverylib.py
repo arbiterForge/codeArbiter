@@ -2155,7 +2155,7 @@ def automatic_snapshot(root):
         # in ordinary older installs. This cheap filesystem probe itself is not
         # advertised as a hard deadline for arbitrary mounted filesystems.
         try:
-            RecoveryStore(root).open()
+            store = RecoveryStore(root).open()
         except FileNotFoundError:
             return snapshot(root, result={"status": "absent", "items": [], "bytes_read": 0})
         import shutil
@@ -2177,7 +2177,8 @@ def automatic_snapshot(root):
         env.update(PATH=os.pathsep.join(directories), PYTHONIOENCODING="utf-8", PYTHONUTF8="1",
                    PYTHONDONTWRITEBYTECODE="1", CODEARBITER_PYTHON_EXECUTABLE=sys.executable,
                    CODEARBITER_GIT_EXECUTABLE=str(git), PLUGIN_ROOT=str(plugin))
-        result = subprocess.run([sys.executable, "-B", str(helper), "scan"], cwd=root, env=env,
+        result = subprocess.run([sys.executable, "-B", str(helper), "scan", "--root-bound"],
+                                cwd=store.root, env=env,
                                 capture_output=True, timeout=AUTOMATIC_TIMEOUT_SECONDS)
         if len(result.stdout) > BOUNDS["scan_max_bytes"]:
             raise RecoveryError("corrupt-record")

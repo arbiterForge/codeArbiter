@@ -1044,7 +1044,34 @@ CATALOG_SCRIPT = ".github/scripts/test_command_catalog.py"
 CATALOG_FINDING_CELL = "disposition:findings:W-F08"
 CATALOG_COMMAND_PATHS = frozenset("plugins/ca/commands/" + PurePosixPath(path).name
     for path in SOURCE_PATHS if path.startswith("core/surface/commands/") and path.endswith(".md"))
+PROGRAM_INTEGRITY_PROFILE = "program-integrity-source-v1"
+PROGRAM_INTEGRITY_SCRIPT = ".github/scripts/test_state_contracts_integration.py"
 PYTHON_COMPONENT_PROFILES = {
+    PROGRAM_INTEGRITY_PROFILE: {
+        "job": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+        "payload": "major-source-inputs-program-integrity",
+        "upload": "Upload program integrity source-test inputs",
+        "scripts": (PROGRAM_INTEGRITY_SCRIPT,),
+        # The original integrity checker authenticates every frozen member against
+        # the pinned MANIFEST. Bind that manifest and the live fixture inputs here.
+        "paths": frozenset((
+            PROGRAM_INTEGRITY_SCRIPT,
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/check_state_contracts_integration.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/workflows/ci.yml",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_gitexec.py",
+            "docs/state-contracts-major/MANIFEST.json",
+            "docs/state-contracts-major/execution/coverage-ledger.json",
+            "docs/state-contracts-major/execution/progress.json",
+            "docs/state-contracts-major/execution/tools/coverage_ledger.py",
+            "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+        )),
+    },
     ROUTE_RELEASE_SOURCE_PROFILE: ROUTE_RELEASE_SOURCE,
     CATALOG_SOURCE_PROFILE: {
         "job": "[CHECK] | [CA  ] | Documentation consistency",
@@ -1869,6 +1896,7 @@ Q02_FINDING_RECIPES = {
 # Single-owner finding routes use existing unfiltered commands. Shared source
 # transport grants no multi-owner, whole-task, model or installed-host claim.
 _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
+ '.github/fixtures/artifact-release-manifest.json',
  '.claude-plugin/marketplace.json',
  'plugins/ca/skills/debug/SKILL.md', 'plugins/ca/skills/debug/references/preparation.md',
  'plugins/ca-codex/routines/debug/SKILL.md', 'plugins/ca-codex/routines/debug/references/preparation.md',
@@ -2687,6 +2715,17 @@ PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
 ))
 
 PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_artifact_manifest_contract.py", "finite-native-manifest", {
+        "disposition:transitions:hooks:native-client:02": (
+            "ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation",
+            "ManifestContract.test_installed_contract_is_derived_from_canonical_source",
+            "ManifestContract.test_parser_bounds_utf8_bytes_before_parsing",
+            "ManifestContract.test_shared_declarations_and_negative_cases",
+        ),
+    },
+))
+
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
     ".github/scripts/test_boundedproc.py", "finite-bounded-reader", {
         "disposition:findings:C-F08": (
             "CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
@@ -3350,7 +3389,45 @@ RECOVERY_TRANSITION_CASES = {
 }
 
 
+PROGRAM_INTEGRITY_CASES = {
+    "disposition:added_transitions:P02:added-frozen-anchor": (
+        "IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+        "IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+    ),
+    "disposition:added_transitions:P02:added-origin-mix": (
+        "IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+    ),
+    "disposition:added_transitions:P02:added-original-tamper": (
+        "IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+        "IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+    ),
+    "disposition:added_transitions:P02:added-selected-gate": (
+        "IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+        "IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate",
+    ),
+    "disposition:added_transitions:P02:added-stale-history": (
+        "IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+        "IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+        "IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+    ),
+    "disposition:added_transitions:P02:added-unknown-input": (
+        "IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+    ),
+}
+
+
+def program_integrity_component(cases):
+    return source_component(
+        PROGRAM_INTEGRITY_PROFILE, PROGRAM_INTEGRITY_SCRIPT, "program-integrity-observation-",
+        "Retain original program integrity observation", "program-integrity-observation.json", cases,
+    )
+
+
 SOURCE_FINDING_COMPOSITIONS = {
+    **{cell: (program_integrity_component(cases),) for cell, cases in PROGRAM_INTEGRITY_CASES.items()},
     **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
     DEBUG_RESUBMISSION_FINDING: (
         source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
@@ -3591,8 +3668,12 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     readiness.validate_run(run, req, producing=producing)
     readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
     rows, payloads = {}, {}
-    recovery = transition_runtime = None
-    transition_cells = RECOVERY_TRANSITION_CASES.keys() & set(cells)
+    recovery = None
+    shared_cells = (RECOVERY_TRANSITION_CASES.keys() | PROGRAM_INTEGRITY_CASES.keys()) & set(cells)
+    selectors_by_profile, shared_evidence = {}, {}
+    for cell in shared_cells:
+        component, = SOURCE_FINDING_COMPOSITIONS[cell]
+        selectors_by_profile.setdefault(component["profile"], set()).update(component["selectors"])
     for cell in cells:
         if cell in RECOVERY_FINDING_CELLS:
             if recovery is None:
@@ -3602,14 +3683,13 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
             continue
         components, owners, captures, capture_members = [], {}, {}, set()
         for component in SOURCE_FINDING_COMPOSITIONS[cell]:
-            if cell in transition_cells:
-                if transition_runtime is None:
-                    # These cells share one original command. Authenticate the selected union once,
-                    # then retain each cell's own selectors in its result.
-                    transition_cases = {case for selected in transition_cells for case in RECOVERY_TRANSITION_CASES[selected]}
-                    transition_runtime = source_component_evidence(
-                        recovery_runtime_component(transition_cases), req, run, artifacts, jobs)
-                original, payload = transition_runtime
+            if cell in shared_cells:
+                profile = component["profile"]
+                if profile not in shared_evidence:
+                    # Each of these profiles binds one original command for the selected cells.
+                    shared_evidence[profile] = source_component_evidence(
+                        {**component, "selectors": sorted(selectors_by_profile[profile])}, req, run, artifacts, jobs)
+                original, payload = shared_evidence[profile]
                 evidence = {**original, "selectors": component["selectors"]}
             else:
                 evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)

@@ -1,0 +1,73 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "33529946a2dd18c7a4ea5cd75140227ec7bb5650",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound recovery root, independent cold setup, unchanged prior source scopes"
+  },
+  "inputs": {
+    ".github/workflows/ci.yml": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/artifact-coverage.py": "447b1cd6b06c737e3a020d97a8999b1a66ed833ca2da1356dd3e362c818cec8b"
+  },
+  "disposition_ids": [
+    "disposition:machines:T02",
+    "disposition:transitions:T02:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/source-delta-review.json",
+      "sha256": "e2d9524a82f02903493339d64c4d1c4c6afe67a4c02f4b5eb1f3b3e97cbe6bae"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-manifest-source-54c5ec00/proof-16.json",
+      "sha256": "4c003087603c14c817210c49cbb5d76a257188a3c1f9a809abce005790116178"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/p02-manifest-source-54c5ec00/proof-16.json",
+    "sha256": "4c003087603c14c817210c49cbb5d76a257188a3c1f9a809abce005790116178",
+    "original_code": "54c5ec002ddc7af216a04d8bc1bc83184c368bbc",
+    "stored_at": "05e73c5c2501c71d069304c1a6b1b8cd5ae9a706"
+  },
+  "scope": "T02 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+  "changed_paths": [
+    ".github/workflows/ci.yml"
+  ],
+  "limits": [
+    "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+    "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+    "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+    "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+    "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "This source renewal preserves each prior finite clause. The new original-result routes were not promoted.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Only native coverage source behavior and existing status are affirmed. No hosted, installed or runtime evidence was advanced.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; the newly routed claims are outside this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; no new runtime claims are part of this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ]
+}
