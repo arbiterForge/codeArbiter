@@ -1,0 +1,125 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "8bf4cfbe62806a78fd750f01108037c69b611e98",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Original-owner route delta and literal finite source/applicability preservation"
+  },
+  "inputs": {
+    ".github/scripts/check_sandbox_docker_layers.py": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+    ".github/workflows/ci.yml": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-sandbox/tools/__tests__/isolation.test.ts": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+    "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+    "plugins/ca-sandbox/tools/build.test.ts": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+    "plugins/ca-sandbox/tools/builder-observation.test.ts": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+    "plugins/ca-sandbox/tools/cli-resolve.test.ts": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+    "plugins/ca-sandbox/tools/cli.test.ts": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+    "plugins/ca-sandbox/tools/cp.test.ts": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+    "plugins/ca-sandbox/tools/create.test.ts": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+    "plugins/ca-sandbox/tools/dephash.test.ts": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "plugins/ca-sandbox/tools/exec.test.ts": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+    "plugins/ca-sandbox/tools/installed-bundle.test.ts": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+    "plugins/ca-sandbox/tools/layering.test.ts": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+    "plugins/ca-sandbox/tools/lifecycle.test.ts": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+    "plugins/ca-sandbox/tools/mounts.test.ts": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+    "plugins/ca-sandbox/tools/multistack.test.ts": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+    "plugins/ca-sandbox/tools/native-build-inputs.test.ts": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+    "plugins/ca-sandbox/tools/network.test.ts": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+    "plugins/ca-sandbox/tools/run.test.ts": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+    "plugins/ca-sandbox/tools/smoke.test.ts": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+    "plugins/ca-sandbox/tools/supply-chain.test.ts": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+    "plugins/ca-sandbox/tools/teardown.test.ts": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c"
+  },
+  "disposition_ids": [
+    "disposition:machines:C10",
+    "disposition:transitions:C10:01",
+    "disposition:transitions:C10:02",
+    "disposition:transitions:C10:03"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/source-delta-review.json",
+      "sha256": "05938adb97a326d4f877382e44599484331bbd3de369b90acd2dabda5fb77d5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-12.json",
+      "sha256": "b364258286014e4e03641bcacfa71199aabd01a87c6a2f9afd4173335d4419d0"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-12.json",
+    "sha256": "b364258286014e4e03641bcacfa71199aabd01a87c6a2f9afd4173335d4419d0",
+    "original_code": "33529946a2dd18c7a4ea5cd75140227ec7bb5650",
+    "stored_at": "00fd5fff97189598083e762e9c54fba8b01c1f62"
+  },
+  "scope": {
+    "source_only": true,
+    "families": [
+      "C10"
+    ],
+    "complete_machine": true,
+    "inspected_all_literal_clauses": [
+      "disposition:transitions:C10:01",
+      "disposition:transitions:C10:02",
+      "disposition:transitions:C10:03"
+    ],
+    "existing_advanced_rows_unchanged": [],
+    "intake_variances": [
+      {
+        "id": "C10-DECLARATION-GRAMMAR",
+        "cells": [
+          "C10:01",
+          "C10"
+        ],
+        "classification": "ANALYTICAL_INTAKE_SCOPE_CORRECTION",
+        "statement": "Recognized double-quoted literal calls and unique source/name sites are scanned; per-file names deduplicate, malformed/unrecognized calls are not parsed as TypeScript errors. Complete source coverage applies to actual supported declarations. Sentinel proves starts, and caller success supplies test-run completion separately. No new TS parser, finishes receipt or container feature invented."
+      }
+    ]
+  },
+  "changed_paths": [
+    ".github/workflows/ci.yml",
+    "membership:.github/scripts"
+  ],
+  "limits": [
+    "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+    "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+    "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "This source renewal preserves each prior finite clause. The new original-result routes were not promoted.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; the newly routed claims are outside this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; no new runtime claims are part of this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Preserve frozen exact owners and scoped guard/effect/retry. Changed CI/test paths add observer-only routes or inspected read-only Doc evidence alongside unchanged bound control blocks.",
+    "No execution, installation, release, task or hosted result is changed or established."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "aceb12697eca7d0fd2b4637bf8416ea30fdecfeb12a29b9f85684c16ad0d6bdd"
+    }
+  ]
+}

@@ -1,0 +1,930 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "8bf4cfbe62806a78fd750f01108037c69b611e98",
+  "source_tree": "434c5f739a3ac56a4c11c9839fd5ff17c23c9b2c",
+  "prior_source_checkpoint": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+  "preflight": false,
+  "delta": {
+    ".github/major-qualification-policy.json": {
+      "base_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+      "current_sha256": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b"
+    },
+    ".github/major-test-selections.json": {
+      "base_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+      "current_sha256": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83"
+    },
+    ".github/scripts/_pi_rpc_profile.py": {
+      "base_sha256": "3445e2c19c84fbd8a338d538dabf3b1e71610720e527dcd564c0a52156e57d60",
+      "current_sha256": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632"
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "base_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+      "current_sha256": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97"
+    },
+    ".github/scripts/major_readiness.py": {
+      "base_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+      "current_sha256": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+    },
+    ".github/scripts/site_component_observation.py": {
+      "base_sha256": null,
+      "current_sha256": "8b75c628a126d7bdda908dc3adccbd10be7b855639390f8c59d44bcbbc338249"
+    },
+    ".github/scripts/site_playwright_observation.py": {
+      "base_sha256": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+      "current_sha256": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba"
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "base_sha256": "fb43147b2548207265f630f976f83e2fe447a5491d88af2a193c9889bd3a4f19",
+      "current_sha256": "0b3e30951a7c907d8f4a764feee1c3d5ab8d9d5821b42c6a3aeeb3e32d3fe403"
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "base_sha256": "dcd9a880b669f54027e4a929e41139f854e7ff65b6d47e8fd7d0bf0dc188b72e",
+      "current_sha256": "9df8e37b6382e3110462ff4241cf5d84d57fa1ac2f6a94be24e1b0721144ba73"
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "base_sha256": "ae23ee7290e49a85453c1d55365fc47153d4ad95542dd61ee0d78e8c1d480a35",
+      "current_sha256": "3ef5009423bf9887816b581dd85fefec13ea3c5ec32dd5dc25df6731989eb2c6"
+    },
+    ".github/scripts/test_pi_ci_wiring.py": {
+      "base_sha256": "660ac9316fb59777ab13980e126bc523e661ddbf8f58793de81984d9159a9169",
+      "current_sha256": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef"
+    },
+    ".github/scripts/test_site_component_observation.py": {
+      "base_sha256": null,
+      "current_sha256": "1aa420e3dee3e25a3b02b4ea9aae0b6f966e2b20342f5c529f624c09e3eef4e3"
+    },
+    ".github/scripts/test_site_playwright_observation.py": {
+      "base_sha256": "1bfa760f2ee57e2543eaddaa24fc43dc73e953933955c45e9bd22c52dc82084d",
+      "current_sha256": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3"
+    },
+    ".github/workflows/ci.yml": {
+      "base_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+      "current_sha256": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91"
+    },
+    ".github/workflows/docs.yml": {
+      "base_sha256": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+      "current_sha256": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172"
+    },
+    "site/playwright.components.config.ts": {
+      "base_sha256": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+      "current_sha256": "a754c185ecb38521688fdf1dcc946d6539c8dbab4974ded2733914077c6cc370"
+    }
+  },
+  "reviewed_patch_sha256": "4750fb07c0a7c916095bf83d0b69739980d4ac2bbf8bbc4c11b3858a97a90cc2",
+  "strict_inventory_sha256": "13385093396407795100ce892dc238d9e165429be8d6a0672ae7e094ee56e91e",
+  "finite_source_assessments": {
+    "core_hooks": "Only the existing Hook job changes. Two original routing/classifier commands keep disjoint direct fallbacks and one Windows contracts observer each. Both named streams now require success in old normal push metadata emission. Core event, changes, required/advisory aggregate, engine/cold, recovery, coverage, auto-release candidate and pre-tag job blocks are byte-identical.",
+    "site": "Documents-only trigger additions cover the two new paths; existing event semantics and site-check stay exact. Build continues one mandatory component invocation using the same project, Chrome, command, timeout/workers and zero retries. Program push assigns additive named capture/report uploads under the original read-only job. The original browser gate onward, all deployment paths and release/applicability authority remain byte-identical. Closed source additionally binds the component producer, tests and config for the six C29 rows.",
+    "descriptor": "Windows comparison removes only the filename-derived execute bits from descriptor equivalence; final path matches full lstat identity, size/bounds, no symlinks, all other fstat identities and refusal rules stay enforced. POSIX comparisons are unchanged.",
+    "namespace": {
+      "positive_references": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/site_playwright_observation.py",
+        ".github/scripts/test_ci_impact.py",
+        ".github/scripts/test_major_qualification_report.py",
+        ".github/scripts/test_site_component_observation.py"
+      ],
+      "new_ordinary_files": [
+        "site_component_observation.py",
+        "test_site_component_observation.py"
+      ],
+      "directory_files_before": 284,
+      "directory_files_after": 286,
+      "casefold_unique": true,
+      "assessment": "New paths are unique non-shadowing regular module/test names. Actual import references are confined to the closed Docs observer, tests and readiness dispatch, with explicit metadata/fixture references. Existing hermetic per-module discovery remains limited to its hook test directory. Previously bound namespace owners outside these Docs routes remain bounded; the same compiler and Python scope declarations are retained."
+    },
+    "reporter": "Readiness runtime decoding accepts one typed component layer with a closed recursive Core verification. Existing source applicability, input ownership, trust and exact population checks are unchanged. Report writer exposes only exact two Hook selector sets and named positive installed Pi command cells in existing Windows pinned profile. The single changed legacy fixture now requires the exact SF11 component job, payload, role, proof kind and selectors. Original authority suite's discovery/shard commands, source manifest identity and fail-closed joins remain unchanged.",
+    "runtime_boundary": "Historical positions/inputs remain at their authenticated source epochs. This proof is current finite source conformance only. It establishes no installed, runtime, hosted or publication outcome."
+  },
+  "fixture_only_delta_sha256": "e38cbc6a2514151d3dd3ea6fa53ad81be330186692d9f4cb1d693121d5a055cf",
+  "unchanged_historical_test_results_now_source_stale": [
+    "disposition:findings:SF11",
+    "disposition:findings:SF16",
+    "disposition:machines:S55",
+    "disposition:transitions:S55:01",
+    "disposition:transitions:S55:02",
+    "disposition:transitions:S55:03",
+    "disposition:transitions:S55:04",
+    "disposition:transitions:S55:05",
+    "disposition:transitions:S55:06",
+    "disposition:transitions:S55:07",
+    "disposition:transitions:S55:08",
+    "disposition:transitions:S55:09",
+    "disposition:transitions:S55:10",
+    "disposition:transitions:S55:11",
+    "disposition:transitions:S56:01",
+    "disposition:transitions:S56:02",
+    "disposition:transitions:S56:04",
+    "disposition:transitions:S56:05",
+    "disposition:transitions:S56:06",
+    "disposition:transitions:S58:01",
+    "disposition:transitions:S58:02",
+    "disposition:transitions:S62:05"
+  ],
+  "groups": [
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-13.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:findings:C-F03",
+        "disposition:machines:S48",
+        "disposition:machines:S77",
+        "disposition:transitions:S48:01",
+        "disposition:transitions:S48:02",
+        "disposition:transitions:S48:03",
+        "disposition:transitions:S48:04",
+        "disposition:transitions:S48:05",
+        "disposition:transitions:S48:08",
+        "disposition:transitions:S77:01",
+        "disposition:transitions:S77:02",
+        "disposition:transitions:S77:03",
+        "disposition:transitions:S77:04",
+        "disposition:transitions:S77:05",
+        "disposition:transitions:S77:06",
+        "disposition:transitions:S77:07",
+        "disposition:transitions:S77:08",
+        "disposition:transitions:S77:09",
+        "disposition:transitions:C05:02",
+        "disposition:transitions:C05:03",
+        "disposition:transitions:C15:04",
+        "disposition:transitions:C16:03",
+        "disposition:transitions:C17:01",
+        "disposition:transitions:C17:02",
+        "disposition:transitions:C17:03",
+        "disposition:transitions:C17:04",
+        "disposition:transitions:C17:05",
+        "disposition:transitions:C17:06",
+        "disposition:transitions:C17:07",
+        "disposition:transitions:C17:08",
+        "disposition:transitions:C17:09",
+        "disposition:transitions:C17:11",
+        "disposition:transitions:T01:01",
+        "disposition:transitions:T01:02",
+        "disposition:transitions:T01:03",
+        "disposition:transitions:T01:04",
+        "disposition:transitions:T01:05",
+        "disposition:transitions:SW01:02",
+        "disposition:transitions:SW01:03",
+        "disposition:transitions:SW01:04",
+        "disposition:transitions:SW01:05",
+        "disposition:transitions:SW01:06",
+        "disposition:transitions:SW01:07",
+        "disposition:transitions:SW01:08",
+        "disposition:transitions:SW01:09",
+        "disposition:transitions:SW01:10",
+        "disposition:transitions:SW01:11",
+        "disposition:transitions:SW01:12",
+        "disposition:transitions:SW01:13",
+        "disposition:transitions:SW01:14",
+        "disposition:transitions:SW01:15",
+        "disposition:transitions:SW01:17",
+        "disposition:transitions:SW01:18",
+        "disposition:transitions:SW01:19",
+        "disposition:transitions:SW01:20",
+        "disposition:transitions:SW01:21",
+        "disposition:transitions:SW01:22",
+        "disposition:transitions:SW01:23",
+        "disposition:transitions:SW01:24"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-07.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:WF-08",
+        "disposition:machines:WF-16",
+        "disposition:machines:WF-18",
+        "disposition:machines:WF-21",
+        "disposition:machines:WF-23",
+        "disposition:machines:WF-27",
+        "disposition:machines:WF-28",
+        "disposition:machines:WF-29",
+        "disposition:machines:WF-30",
+        "disposition:machines:RT-01",
+        "disposition:machines:RT-02",
+        "disposition:machines:CC-01",
+        "disposition:machines:CC-02",
+        "disposition:machines:CC-03",
+        "disposition:machines:CC-04",
+        "disposition:machines:CC-05",
+        "disposition:transitions:WF-27:01",
+        "disposition:transitions:WF-27:02",
+        "disposition:transitions:WF-27:03",
+        "disposition:transitions:WF-27:04",
+        "disposition:transitions:WF-27:05",
+        "disposition:transitions:WF-28:01",
+        "disposition:transitions:WF-28:02",
+        "disposition:transitions:WF-28:03",
+        "disposition:transitions:WF-28:04",
+        "disposition:transitions:WF-28:05",
+        "disposition:transitions:WF-28:06",
+        "disposition:transitions:WF-28:07",
+        "disposition:transitions:WF-28:08",
+        "disposition:transitions:WF-29:01",
+        "disposition:transitions:WF-29:02",
+        "disposition:transitions:WF-29:03",
+        "disposition:transitions:WF-29:04",
+        "disposition:transitions:WF-29:05",
+        "disposition:transitions:WF-29:06",
+        "disposition:transitions:WF-29:07",
+        "disposition:transitions:WF-29:08",
+        "disposition:transitions:WF-29:09",
+        "disposition:transitions:WF-29:10",
+        "disposition:transitions:WF-30:01",
+        "disposition:transitions:WF-30:02",
+        "disposition:transitions:WF-30:03",
+        "disposition:transitions:WF-30:04",
+        "disposition:transitions:RT-01:01",
+        "disposition:transitions:RT-01:02",
+        "disposition:transitions:RT-01:03",
+        "disposition:transitions:RT-01:04",
+        "disposition:transitions:RT-01:05",
+        "disposition:transitions:RT-01:06",
+        "disposition:transitions:RT-02:01",
+        "disposition:transitions:RT-02:02",
+        "disposition:transitions:RT-02:03",
+        "disposition:transitions:RT-02:04",
+        "disposition:transitions:CC-01:01",
+        "disposition:transitions:CC-01:02",
+        "disposition:transitions:CC-01:03",
+        "disposition:transitions:CC-01:04",
+        "disposition:transitions:CC-01:05",
+        "disposition:transitions:CC-02:01",
+        "disposition:transitions:CC-02:02",
+        "disposition:transitions:CC-02:03",
+        "disposition:transitions:CC-02:04",
+        "disposition:transitions:CC-02:05",
+        "disposition:transitions:CC-02:06",
+        "disposition:transitions:CC-02:07",
+        "disposition:transitions:CC-02:08",
+        "disposition:transitions:CC-02:09",
+        "disposition:transitions:CC-03:01",
+        "disposition:transitions:CC-03:02",
+        "disposition:transitions:CC-03:03",
+        "disposition:transitions:CC-03:04",
+        "disposition:transitions:CC-03:05",
+        "disposition:transitions:CC-03:06",
+        "disposition:transitions:CC-03:07",
+        "disposition:transitions:CC-04:01",
+        "disposition:transitions:CC-04:02",
+        "disposition:transitions:CC-04:03",
+        "disposition:transitions:CC-04:04",
+        "disposition:transitions:CC-04:05",
+        "disposition:transitions:CC-04:06",
+        "disposition:transitions:CC-05:01",
+        "disposition:transitions:CC-05:02",
+        "disposition:transitions:CC-05:03",
+        "disposition:transitions:CC-05:04",
+        "disposition:transitions:CC-05:05",
+        "disposition:transitions:CC-05:06"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-22.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:hooks:read-context",
+        "disposition:machines:hooks:hook-admission",
+        "disposition:machines:hooks:protected-state",
+        "disposition:machines:hooks:shell-parser",
+        "disposition:machines:hooks:context-scout",
+        "disposition:machines:hooks:append-conflict",
+        "disposition:machines:hooks:legacy-context-recovery",
+        "disposition:machines:hooks:git-install",
+        "disposition:machines:hooks:git-dispatch",
+        "disposition:machines:hooks:task-lock-exclusion",
+        "disposition:machines:hooks:display-git-probes",
+        "disposition:machines:S34",
+        "disposition:machines:S35",
+        "disposition:machines:S36",
+        "disposition:machines:S37",
+        "disposition:machines:S38",
+        "disposition:transitions:hooks:read-context:01",
+        "disposition:transitions:hooks:read-context:02",
+        "disposition:transitions:hooks:read-context:03",
+        "disposition:transitions:hooks:read-context:04",
+        "disposition:transitions:hooks:read-context:05",
+        "disposition:transitions:hooks:read-context:06",
+        "disposition:transitions:hooks:hook-admission:01",
+        "disposition:transitions:hooks:hook-admission:02",
+        "disposition:transitions:hooks:hook-admission:03",
+        "disposition:transitions:hooks:hook-admission:04",
+        "disposition:transitions:hooks:hook-admission:05",
+        "disposition:transitions:hooks:protected-state:01",
+        "disposition:transitions:hooks:protected-state:02",
+        "disposition:transitions:hooks:protected-state:03",
+        "disposition:transitions:hooks:protected-state:04",
+        "disposition:transitions:hooks:protected-state:05",
+        "disposition:transitions:hooks:protected-state:06",
+        "disposition:transitions:hooks:protected-state:07",
+        "disposition:transitions:hooks:shell-parser:01",
+        "disposition:transitions:hooks:shell-parser:02",
+        "disposition:transitions:hooks:shell-parser:03",
+        "disposition:transitions:hooks:shell-parser:04",
+        "disposition:transitions:hooks:shell-parser:05",
+        "disposition:transitions:hooks:push:01",
+        "disposition:transitions:hooks:push:02",
+        "disposition:transitions:hooks:push:03",
+        "disposition:transitions:hooks:push:05",
+        "disposition:transitions:hooks:context-provenance:01",
+        "disposition:transitions:hooks:context-provenance:02",
+        "disposition:transitions:hooks:context-provenance:03",
+        "disposition:transitions:hooks:context-provenance:04",
+        "disposition:transitions:hooks:context-provenance:05",
+        "disposition:transitions:hooks:context-provenance:06",
+        "disposition:transitions:hooks:context-provenance:07",
+        "disposition:transitions:hooks:context-snapshot:02",
+        "disposition:transitions:hooks:context-snapshot:03",
+        "disposition:transitions:hooks:context-snapshot:04",
+        "disposition:transitions:hooks:context-snapshot:06",
+        "disposition:transitions:hooks:context-scout:01",
+        "disposition:transitions:hooks:context-scout:02",
+        "disposition:transitions:hooks:context-scout:03",
+        "disposition:transitions:hooks:context-scout:04",
+        "disposition:transitions:hooks:context-scout:05",
+        "disposition:transitions:hooks:context-scout:06",
+        "disposition:transitions:hooks:context-delivery:01",
+        "disposition:transitions:hooks:context-delivery:03",
+        "disposition:transitions:hooks:context-delivery:04",
+        "disposition:transitions:hooks:context-delivery:05",
+        "disposition:transitions:hooks:context-delivery:06",
+        "disposition:transitions:hooks:append-conflict:01",
+        "disposition:transitions:hooks:append-conflict:02",
+        "disposition:transitions:hooks:append-conflict:03",
+        "disposition:transitions:hooks:append-conflict:04",
+        "disposition:transitions:hooks:append-conflict:05",
+        "disposition:transitions:hooks:legacy-context-recovery:01",
+        "disposition:transitions:hooks:legacy-context-recovery:02",
+        "disposition:transitions:hooks:legacy-context-recovery:03",
+        "disposition:transitions:hooks:legacy-context-recovery:04",
+        "disposition:transitions:hooks:legacy-context-recovery:05",
+        "disposition:transitions:hooks:git-install:01",
+        "disposition:transitions:hooks:git-install:02",
+        "disposition:transitions:hooks:git-install:03",
+        "disposition:transitions:hooks:git-install:04",
+        "disposition:transitions:hooks:git-install:05",
+        "disposition:transitions:hooks:git-install:06",
+        "disposition:transitions:hooks:git-dispatch:01",
+        "disposition:transitions:hooks:git-dispatch:02",
+        "disposition:transitions:hooks:git-dispatch:03",
+        "disposition:transitions:hooks:git-dispatch:04",
+        "disposition:transitions:hooks:git-dispatch:05",
+        "disposition:transitions:hooks:git-dispatch:06",
+        "disposition:transitions:hooks:git-dispatch:07",
+        "disposition:transitions:hooks:task-lock-exclusion:01",
+        "disposition:transitions:hooks:task-lock-exclusion:02",
+        "disposition:transitions:hooks:task-lock-exclusion:03",
+        "disposition:transitions:hooks:task-lock-exclusion:04",
+        "disposition:transitions:hooks:task-lock-exclusion:05",
+        "disposition:transitions:hooks:tribunal-inventory:01",
+        "disposition:transitions:hooks:tribunal-inventory:03",
+        "disposition:transitions:hooks:tribunal-run:01",
+        "disposition:transitions:hooks:tribunal-run:02",
+        "disposition:transitions:hooks:tribunal-run:04",
+        "disposition:transitions:hooks:tribunal-run:05",
+        "disposition:transitions:hooks:tribunal-run:06",
+        "disposition:transitions:hooks:tribunal-run:07",
+        "disposition:transitions:hooks:tribunal-run:08",
+        "disposition:transitions:hooks:tribunal-lock-leads:01",
+        "disposition:transitions:hooks:tribunal-lock-leads:02",
+        "disposition:transitions:hooks:tribunal-lock-leads:03",
+        "disposition:transitions:hooks:tribunal-lock-leads:04",
+        "disposition:transitions:hooks:tribunal-lock-leads:05",
+        "disposition:transitions:hooks:display-git-probes:01",
+        "disposition:transitions:hooks:display-git-probes:02",
+        "disposition:transitions:hooks:display-git-probes:03",
+        "disposition:transitions:S34:01",
+        "disposition:transitions:S34:02",
+        "disposition:transitions:S34:03",
+        "disposition:transitions:S34:04",
+        "disposition:transitions:S34:05",
+        "disposition:transitions:S34:06",
+        "disposition:transitions:S34:07",
+        "disposition:transitions:S35:01",
+        "disposition:transitions:S35:02",
+        "disposition:transitions:S35:03",
+        "disposition:transitions:S35:04",
+        "disposition:transitions:S35:05",
+        "disposition:transitions:S36:01",
+        "disposition:transitions:S36:02",
+        "disposition:transitions:S36:03",
+        "disposition:transitions:S36:04",
+        "disposition:transitions:S36:05",
+        "disposition:transitions:S36:06",
+        "disposition:transitions:S36:07",
+        "disposition:transitions:S37:01",
+        "disposition:transitions:S37:02",
+        "disposition:transitions:S37:03",
+        "disposition:transitions:S37:04",
+        "disposition:transitions:S37:05",
+        "disposition:transitions:S37:06",
+        "disposition:transitions:S37:07",
+        "disposition:transitions:S37:08",
+        "disposition:transitions:S37:09",
+        "disposition:transitions:S38:01",
+        "disposition:transitions:S38:02",
+        "disposition:transitions:S38:03",
+        "disposition:transitions:S38:05",
+        "disposition:transitions:S38:06"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-022-proof.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:hooks:taskwrite",
+        "disposition:transitions:hooks:work-owner:01",
+        "disposition:transitions:hooks:work-owner:02",
+        "disposition:transitions:hooks:work-owner:04",
+        "disposition:transitions:hooks:work-owner:05",
+        "disposition:transitions:hooks:work-owner:06",
+        "disposition:transitions:hooks:work-owner:07",
+        "disposition:transitions:hooks:work-owner:08",
+        "disposition:transitions:hooks:work-owner:09",
+        "disposition:transitions:hooks:work-owner:10",
+        "disposition:transitions:hooks:taskwrite:01",
+        "disposition:transitions:hooks:taskwrite:02",
+        "disposition:transitions:hooks:taskwrite:03",
+        "disposition:transitions:hooks:taskwrite:04",
+        "disposition:transitions:hooks:taskwrite:05",
+        "disposition:transitions:hooks:taskwrite:06",
+        "disposition:transitions:hooks:taskwrite:07",
+        "disposition:transitions:hooks:taskwrite:08"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-031-proof.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:S68",
+        "disposition:transitions:S68:01",
+        "disposition:transitions:S68:02",
+        "disposition:transitions:S68:03",
+        "disposition:transitions:S68:04",
+        "disposition:transitions:S68:05",
+        "disposition:transitions:S68:06",
+        "disposition:transitions:S68:07"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-054-proof.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:S69",
+        "disposition:machines:S71",
+        "disposition:machines:S72",
+        "disposition:machines:S73",
+        "disposition:machines:S74",
+        "disposition:transitions:S69:01",
+        "disposition:transitions:S69:02",
+        "disposition:transitions:S69:03",
+        "disposition:transitions:S69:04",
+        "disposition:transitions:S69:05",
+        "disposition:transitions:S69:06",
+        "disposition:transitions:S71:01",
+        "disposition:transitions:S71:02",
+        "disposition:transitions:S71:03",
+        "disposition:transitions:S71:04",
+        "disposition:transitions:S71:07",
+        "disposition:transitions:S72:07",
+        "disposition:transitions:S73:11",
+        "disposition:transitions:S74:01",
+        "disposition:transitions:S74:02",
+        "disposition:transitions:S74:05",
+        "disposition:transitions:S74:06",
+        "disposition:transitions:S74:07",
+        "disposition:transitions:S74:10",
+        "disposition:transitions:C34:01",
+        "disposition:transitions:C34:02",
+        "disposition:transitions:C34:03"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-04.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C01",
+        "disposition:transitions:C01:01",
+        "disposition:transitions:C01:02",
+        "disposition:transitions:C01:03",
+        "disposition:transitions:C01:04",
+        "disposition:transitions:C01:05"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-05.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C02",
+        "disposition:transitions:C02:01",
+        "disposition:transitions:C02:02",
+        "disposition:transitions:C02:03",
+        "disposition:transitions:C02:04"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-06.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C04",
+        "disposition:transitions:C04:01",
+        "disposition:transitions:C04:02",
+        "disposition:transitions:C04:04",
+        "disposition:transitions:C04:05",
+        "disposition:transitions:C04:06",
+        "disposition:transitions:C04:07"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-10.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C05"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-01.json"
+      ],
+      "inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C06",
+        "disposition:transitions:C06:01",
+        "disposition:transitions:C06:02",
+        "disposition:transitions:C06:03",
+        "disposition:transitions:C06:04"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-11.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C09",
+        "disposition:transitions:C09:01",
+        "disposition:transitions:C09:02"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-12.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C10",
+        "disposition:transitions:C10:01",
+        "disposition:transitions:C10:02",
+        "disposition:transitions:C10:03"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-07.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C13",
+        "disposition:transitions:C13:01",
+        "disposition:transitions:C13:02",
+        "disposition:transitions:C13:03",
+        "disposition:transitions:C13:04"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-08.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C15",
+        "disposition:transitions:C15:01",
+        "disposition:transitions:C15:02",
+        "disposition:transitions:C15:03"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/historical-docs-sandbox-source-9889e5fa/proof-01.json"
+      ],
+      "inputs": [
+        ".github/scripts/site_playwright_observation.py",
+        ".github/workflows/docs.yml"
+      ],
+      "stale": [
+        ".github/scripts/site_playwright_observation.py",
+        ".github/workflows/docs.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C29",
+        "disposition:transitions:C29:01",
+        "disposition:transitions:C29:02",
+        "disposition:transitions:C29:03",
+        "disposition:transitions:C29:04",
+        "disposition:transitions:C29:05"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-03.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C32",
+        "disposition:transitions:C32:01",
+        "disposition:transitions:C32:02",
+        "disposition:transitions:C32:03",
+        "disposition:transitions:C32:04",
+        "disposition:transitions:C32:05",
+        "disposition:transitions:C32:06",
+        "disposition:transitions:C32:07"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-02.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml",
+        ".github/workflows/docs.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml",
+        ".github/workflows/docs.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:machines:C35"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-02.json"
+      ],
+      "inputs": [
+        ".github/workflows/docs.yml"
+      ],
+      "stale": [
+        ".github/workflows/docs.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:SX03",
+        "disposition:transitions:SX03:06"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-09.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:SX04",
+        "disposition:transitions:SX04:01",
+        "disposition:transitions:SX04:02",
+        "disposition:transitions:SX04:03",
+        "disposition:transitions:SX04:04"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-16.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:T02",
+        "disposition:transitions:T02:02"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-025-proof.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:transitions:N05:01",
+        "disposition:transitions:N05:02",
+        "disposition:transitions:N05:03",
+        "disposition:transitions:N06:01",
+        "disposition:transitions:N08:01",
+        "disposition:transitions:N08:02",
+        "disposition:transitions:N10:05",
+        "disposition:transitions:N19:02"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-027-proof.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:transitions:S75:02",
+        "disposition:transitions:S75:03",
+        "disposition:transitions:S75:04",
+        "disposition:transitions:S75:06",
+        "disposition:transitions:S75:07"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-14.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:transitions:C15:05"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/proof-15.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml",
+        ".github/workflows/docs.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml",
+        ".github/workflows/docs.yml",
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:transitions:C35:01",
+        "disposition:transitions:C35:02",
+        "disposition:transitions:C35:03",
+        "disposition:transitions:C35:04"
+      ]
+    },
+    {
+      "locator": [
+        "6e6c4e669262b07f79a2c6ba19956c40a6f692d7",
+        "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-056-proof.json"
+      ],
+      "inputs": [],
+      "stale": [
+        "membership:.github/scripts"
+      ],
+      "affected_cells": [
+        "disposition:transitions:T09:01",
+        "disposition:transitions:T09:02",
+        "disposition:transitions:T09:03",
+        "disposition:transitions:T09:04"
+      ]
+    }
+  ]
+}
