@@ -5970,7 +5970,8 @@ class DebuggerInboxTests(unittest.TestCase):
                      mock.patch.object(subprocess,'Popen',side_effect=target), \
                      mock.patch.object(subprocess,'STARTUPINFO',side_effect=startup,create=True), \
                      mock.patch.object(subprocess,'STARTF_USESHOWWINDOW',1,create=True), \
-                     mock.patch.object(subprocess,'SW_HIDE',0,create=True):
+                     mock.patch.object(subprocess,'SW_HIDE',0,create=True), \
+                     mock.patch.object(subprocess,'CREATE_NEW_PROCESS_GROUP',0x200,create=True):
                     with self.assertRaisesRegex(RuntimeError,'inert-target-stop'):
                         run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=observed)
                 self.assertEqual(order, expect, 'Windows diagnostic target must follow bounded hash-only preflight')
