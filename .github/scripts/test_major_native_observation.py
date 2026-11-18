@@ -1084,6 +1084,42 @@ EXPECTED_NATIVE_RECIPES = {
 }
 
 
+WINDOWS_CONTEXT_CELLS = (
+    'disposition:findings:N-F01',
+    *('disposition:machines:' + machine for machine in ('N16', 'N21', 'N22')),
+    *(f'disposition:transitions:N16:{index:02d}' for index in range(1, 5)),
+    *(f'disposition:transitions:N21:{index:02d}' for index in range(1, 7)),
+    *(f'disposition:transitions:N22:{index:02d}' for index in range(1, 4)),
+    'disposition:transitions:N38:01', 'disposition:transitions:N38:04', 'disposition:transitions:N38:05',
+)
+
+
+WINDOWS_WORK_CELLS = (
+    'disposition:findings:N-F04', 'disposition:findings:N-F10',
+    *('disposition:machines:' + machine for machine in ('N09', 'N11', 'N13', 'N14')),
+    *(f'disposition:transitions:N01:{index:02d}' for index in (3, 4, 5)),
+    *(f'disposition:transitions:N06:{index:02d}' for index in (2, 3, 4)),
+    *(f'disposition:transitions:N11:{index:02d}' for index in (1, 2, 4)),
+    'disposition:transitions:N12:01',
+    *(f'disposition:transitions:N14:{index:02d}' for index in (2, 4, 5)),
+)
+
+
+WINDOWS_STORE_AND_PROJECT_CELLS = (
+    'disposition:findings:N-F08',
+    *('disposition:machines:' + machine for machine in ('N23', 'N24', 'N28', 'N30', 'N31', 'N34', 'N35')),
+    'disposition:transitions:N20:03',
+    *(f'disposition:transitions:N23:{index:02d}' for index in range(1, 4)),
+    'disposition:transitions:N24:01', 'disposition:transitions:N24:03',
+    *(f'disposition:transitions:N27:{index:02d}' for index in range(1, 4)),
+    *(f'disposition:transitions:N28:{index:02d}' for index in range(1, 5)),
+    *(f'disposition:transitions:N30:{index:02d}' for index in range(1, 5)),
+    *(f'disposition:transitions:N31:{index:02d}' for index in range(1, 7)),
+    *(f'disposition:transitions:N34:{index:02d}' for index in range(1, 6)),
+    *(f'disposition:transitions:N35:{index:02d}' for index in range(1, 4)),
+)
+
+
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.source='a'*40;self.tree='b'*40;self.module='c'*64
@@ -1402,11 +1438,44 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                 files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
             self.rewrite(platform,extend)
 
+    def windows_recipes(self, cells, expected_digest):
+        import major_native_observation as native
+
+        self.assertTrue(set(cells) <= native.RECIPES.keys(), 'finite Windows route is missing')
+        selected = native.selected_recipes(sorted(cells))
+        encoded = json.dumps(selected, sort_keys=True, separators=(',', ':')).encode()
+        self.assertEqual(readiness.digest(encoded), expected_digest)
+        return selected
+
+    def windows_context_recipes(self):
+        # Original D482 per-cell vectors authenticated against retained Windows results.
+        return self.windows_recipes(
+            WINDOWS_CONTEXT_CELLS, '86c0668e903fe26da79760ddcc099abbb21fce1424ff19fb4b6fb319e780d405')
+
+    def windows_work_recipes(self):
+        return self.windows_recipes(
+            WINDOWS_WORK_CELLS, '304e98cec21d2c01ae9e26d00b5e6c467078a9fd5b807c6d805080cd0bbbbdf1')
+
+    def windows_store_and_project_recipes(self):
+        return self.windows_recipes(
+            WINDOWS_STORE_AND_PROJECT_CELLS,
+            '4b95fd890d68b442717799b14b8ff10469c43c5dbd4afb8453f312bec4e0da29')
+
+    def windows_ordinary_recipes(self):
+        return {
+            **self.windows_context_recipes(),
+            **self.windows_work_recipes(),
+            **self.windows_store_and_project_recipes(),
+        }
+
+    def expected_native_recipes(self):
+        return {**EXPECTED_NATIVE_RECIPES, **self.windows_ordinary_recipes()}
+
     def test_current_progress_recipes_keep_all_original_routes_and_complete_required_children(self):
         import major_native_observation as native
         self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
         self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
-        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
+        self.assertEqual(native.RECIPES, self.expected_native_recipes())
         self._select_progress_contracts()
         record=self.produce()
         self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
@@ -1451,7 +1520,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
         self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
         policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
-        self.assertEqual(policy['native_composite_cells'], sorted(EXPECTED_NATIVE_RECIPES))
+        self.assertEqual(policy['native_composite_cells'], sorted(self.expected_native_recipes()))
         parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
         children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
         for platform,required in selected[cell].items():
@@ -1588,6 +1657,8 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             **dict.fromkeys(recipes, 'major qualification / native')}
         for platform in self.raw:
             selectors = sorted({name for recipe in recipes.values() for name in recipe.get(platform, [])})
+            if not selectors:
+                continue
             def extend(files):
                 raw = json.loads(files['native-tests.json'])
                 identities = [name.split(':', 2)[1:] for name in selectors]
@@ -1601,6 +1672,28 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                 files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
             self.rewrite(platform, extend)
 
+    def test_windows_ordinary_scopes_reuse_one_exact_original_component(self):
+        recipes = self.windows_ordinary_recipes()
+        self._select_cli_contracts(recipes)
+        record = self.produce()
+        components = record['native']['components']
+        self.assertEqual([component['platform'] for component in components], ['windows/amd64'])
+        self.assertEqual({row['cell']: row['components'][0]['selectors'] for row in record['native']['results']},
+                         {cell: recipe['windows/amd64'] for cell, recipe in recipes.items()})
+        self.assertEqual(self.verify(record)['state'], 'PREPUBLICATION_READY')
+
+        selector = recipes['disposition:transitions:N38:01']['windows/amd64'][0]
+        package, test = selector.split(':', 2)[1:]
+        def add_skipped_child(files):
+            raw = json.loads(files['native-tests.json'])
+            raw['subtests'].append({'package': package, 'test': test + '/inert-child', 'result': 'skip'})
+            files['native-tests.json'] = json.dumps(raw).encode()
+            stamp = json.loads(files['ci20-native-tested.json'])
+            files['native-observation.json'] = json.dumps(reports.admit_go(raw, stamp, self.tree)).encode()
+        self.rewrite('windows/amd64', add_skipped_child)
+        with self.assertRaisesRegex(readiness.ReadinessError, 'required child skipped'):
+            self.produce()
+
     def test_cli_route_joins_sorted_twenty_policy_and_all_original_components(self):
         import major_native_observation as native
         cell = 'disposition:transitions:N37:01'
@@ -1609,7 +1702,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         except readiness.ReadinessError as error:
             self.fail('Complete CLI boundary has no canonical composition route: ' + str(error))
         self.assertEqual(selected, CLI_EXPECTED)
-        expected = EXPECTED_NATIVE_RECIPES
+        expected = self.expected_native_recipes()
         self.assertEqual(native.RECIPES, expected)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         cells = policy['native_composite_cells']
@@ -1689,7 +1782,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             {'N02:01': 40, 'N02:02': 27, 'N02:03': 31, 'N02:04': 17, 'N03:03': 3})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
+        self.assertEqual(native.RECIPES, self.expected_native_recipes())
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
@@ -1789,7 +1882,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         self.assertEqual(counts, {'N03:04': 5, 'N03:05': 83, 'N04:02': 11, 'N04:03': 13})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
+        self.assertEqual(native.RECIPES, self.expected_native_recipes())
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
@@ -1915,7 +2008,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED}
         self.assertEqual(len(old), 29)
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
+        self.assertEqual(native.RECIPES, self.expected_native_recipes())
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
@@ -2013,7 +2106,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED}
         self.assertEqual(len(old), 32)
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
+        self.assertEqual(native.RECIPES, self.expected_native_recipes())
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
@@ -2111,7 +2204,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         self.assertEqual(len(old), 37)
         self.assertFalse(set(old).intersection(CREATION_REVIEW_ACCEPT_EXPECTED))
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
+        self.assertEqual(native.RECIPES, self.expected_native_recipes())
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
