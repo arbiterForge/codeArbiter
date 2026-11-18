@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Keep evidence authentication outside the immutable Git I/O budget  (from github:arbiterForge/codeArbiter:actions:44314217993:134836490325)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:44314217993:134836490325
+  - Desc: The macOS Program integrity check exhausted the immutable Git reader deadline while the validation owner holds a cross-evidence transaction. Keep total Git transport time and per-query bounds while allowing authentication between reads, and preserve evidence checks.
+  - Work type: fix
+  - Work ID: WORK-3B7671FEA2E08A2ECC32E2E0AA7717E6
+  - Work operation ID: work-7fe8f0ce3556889ed407447fc272add817543018
 - [~] Complete the major state-contracts integration program  (from github:arbiterForge/codeArbiter:pull/1098)  (started 2026-11-14)
   - Work origin: github:arbiterForge/codeArbiter:pull/1098
   - Desc: Complete the accepted specification and qualification tracked by PR1098 and docs/state-contracts-major/contracts/tasks.json through major/state-contracts; preserve author worktrees and hold main and publication for Brennon testing.
