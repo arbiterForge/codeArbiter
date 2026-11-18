@@ -1,0 +1,36 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+  "prior_source_checkpoint": "3ca700daad93dae8168011d4843a1c0e494e27f7",
+  "delta": {
+    ".github/scripts/test_artifact_coverage.py": {
+      "before": "6667e865845607982835a0790e0ee0c82fc1ea557739217ec386e8f6754fafe1",
+      "current": "d36cd475ea8585da003aecf9c7ae5128773a1a515c4e9beb60c1a5540c754a78",
+      "assessment": "Only two added focused test cases assert original nonzero rejection and absence of metadata/raw fixture text in the public projection, and bounded Go timeout identity projection."
+    },
+    "tools/artifact-coverage.py": {
+      "before": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "current": "447b1cd6b06c737e3a020d97a8999b1a66ed833ca2da1356dd3e362c818cec8b",
+      "assessment": "A ValueError subtype preserves failure status and exit while attaching a six-field diagnostic. The hashes and raw failure log stay separate; package output is drawn from the existing package inventory and test names use bounded ASCII identities. All prior positive profile collection, validation and summary logic is unchanged."
+    }
+  },
+  "T02_source_scope": {
+    "T02": "Collect and summarize keep original native program, populations, passed state, threshold and refusal semantics. Only local unit failure diagnosis is projected.",
+    "T02:01": "Admission, output path guard, package and input discovery, offline atomic Go argv and 900s timeout stay unchanged.",
+    "T02:02": "The same unit nonzero or subprocess timeout causes INVALID and CLI exit 1. No validation/publication path or metadata.json is reached. Unit stdout/stderr is retained in the same owned unit.log when available. Hosted output includes only a bounded source-shaped failure projection, not raw log text.",
+    "T02:03": "Success-only profile validation, source stability and exclusive metadata-last are unchanged.",
+    "T02:04": "Integration metadata calculation and assurance limits are unchanged.",
+    "T02:05": "Exact platform/source/toolchain/profile and instrumentation population join and block union are unchanged.",
+    "T02:06": "Incomplete required platform population and nonzero verdict remain unchanged.",
+    "T02:07": "Missing required integration provision and nonzero verdict remain unchanged.",
+    "T02:08": "Minimum compare and nonzero insufficient-coverage verdict remain unchanged.",
+    "T02:09": "Complete, threshold-met summary provides the same numeric metrics and zero exit, with the same unmeasured fields."
+  },
+  "canonical_staged_source_projection": {
+    "applicable": 1729,
+    "population": 1739,
+    "stale": 10,
+    "provided_sha256": "caab816313377897646570f2377cfc3ce98b63a98f7bf87a54a39c78cf6df24d"
+  },
+  "affected_scope": "Ten current T02 source dispositions bind the changed coverage helper only. No claim of actual hosted Go execution or macOS failure cause."
+}

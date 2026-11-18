@@ -8656,9 +8656,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
-     "ref": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/proof-04.json",
-     "sha256": "3fae013c30aa2bbd4f0141e8e8bb73b62ec63152cb5d9c6fd80f2f875a44daae"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-01.json",
+     "sha256": "d46fd9d679c1e2544c6a09c532a1b3bdebfccb852592107e4c8a56379142dda8"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current/callee assessment in docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json; explicit intake limits/accepted deltas; no tool/host/task/runtime qualification.",
@@ -8690,6 +8690,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-03.json",
      "sha256": "0c207551a3db919e8ff38957cc3e3039b267f66c8ce8d44fb20dcba088dbf3e3",
      "ref_commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
+     "ref": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/proof-04.json",
+     "sha256": "3fae013c30aa2bbd4f0141e8e8bb73b62ec63152cb5d9c6fd80f2f875a44daae",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
     }
    ]
   },
@@ -57735,12 +57742,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; Collect checks target equals supported local Go/host platform and expected platform, refuses output inside module or an existing output, hashes bounded regular module bytes excluding .git and discovers package inventory before creating output. Offline Go environment and fixed atomic coverpkg command are constructed; no run is made by this inspection. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; Collect checks target equals supported local Go/host platform and expected platform, refuses output inside module or an existing output, hashes bounded regular module bytes excluding .git and discovers package inventory before creating output. Offline Go environment and fixed atomic coverpkg command are constructed; no run is made by this inspection. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:02": {
    "owner": "release-and-tooling",
@@ -57752,9 +57768,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
-     "ref": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/proof-04.json",
-     "sha256": "3fae013c30aa2bbd4f0141e8e8bb73b62ec63152cb5d9c6fd80f2f875a44daae"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-01.json",
+     "sha256": "d46fd9d679c1e2544c6a09c532a1b3bdebfccb852592107e4c8a56379142dda8"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current/callee assessment in docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json; explicit intake limits/accepted deltas; no tool/host/task/runtime qualification.",
@@ -57786,6 +57802,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-03.json",
      "sha256": "0c207551a3db919e8ff38957cc3e3039b267f66c8ce8d44fb20dcba088dbf3e3",
      "ref_commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
+     "ref": "docs/state-contracts-major/execution/evidence/named-routes-source-f5206e73/proof-04.json",
+     "sha256": "3fae013c30aa2bbd4f0141e8e8bb73b62ec63152cb5d9c6fd80f2f875a44daae",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
     }
    ]
   },
@@ -57799,12 +57822,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; Successful unit output must validate atomic profile/source bounds. Optional integration profiles require exact sidecar shape, source/platform/toolchain/profile digest, and all source bytes are rehashed before exclusive metadata.json is written last. Foreign/malformed/stale data or source drift raises; earlier partial owned output can remain without completed metadata. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; Successful unit output must validate atomic profile/source bounds. Optional integration profiles require exact sidecar shape, source/platform/toolchain/profile digest, and all source bytes are rehashed before exclusive metadata.json is written last. Foreign/malformed/stale data or source drift raises; earlier partial owned output can remain without completed metadata. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:04": {
    "owner": "release-and-tooling",
@@ -57816,12 +57848,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; Integration sidecar creation compares original source identity to current whole module, local native platform/toolchain and valid atomic profile, then returns bound profile SHA and identity. Digests are unkeyed consistency checks; actual prior binary exercise is caller responsibility. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; Integration sidecar creation compares original source identity to current whole module, local native platform/toolchain and valid atomic profile, then returns bound profile SHA and identity. Digests are unkeyed consistency checks; actual prior binary exercise is caller responsibility. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:05": {
    "owner": "release-and-tooling",
@@ -57833,12 +57874,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; Summarize requires unique supported expected platforms, finite threshold, exact source/toolchain/packages/unit command, exact unit/integration file inventory and digest, valid bounded profiles and shared instrumentation layouts. Statement-count conflicts and final source drift refuse. Covered blocks are unioned by hit, not suite totals. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; Summarize requires unique supported expected platforms, finite threshold, exact source/toolchain/packages/unit command, exact unit/integration file inventory and digest, valid bounded profiles and shared instrumentation layouts. Statement-count conflicts and final source drift refuse. Covered blocks are unioned by hit, not suite totals. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:06": {
    "owner": "release-and-tooling",
@@ -57850,12 +57900,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; After profile/identity validation, missing expected platform yields PARTIAL with exact present/missing lists; CLI accepts only COLLECTED or COMPLETE and therefore returns nonzero. Absent platform contributes no claimed execution. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; After profile/identity validation, missing expected platform yields PARTIAL with exact present/missing lists; CLI accepts only COLLECTED or COMPLETE and therefore returns nonzero. Absent platform contributes no claimed execution. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:07": {
    "owner": "release-and-tooling",
@@ -57867,12 +57926,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; With platform population complete, require-integration checks each executable package has a covered integration block and emits MISSING_INTEGRATION plus missing platform details; unit-only data cannot satisfy this branch and CLI returns nonzero. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; With platform population complete, require-integration checks each executable package has a covered integration block and emits MISSING_INTEGRATION plus missing platform details; unit-only data cannot satisfy this branch and CLI returns nonzero. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:08": {
    "owner": "release-and-tooling",
@@ -57884,12 +57952,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; Only after required populations complete, achieved statement percentage is compared to the caller finite minimum; lower value yields BELOW_MINIMUM and nonzero CLI. No built-in workflow threshold or execution is asserted. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; Only after required populations complete, achieved statement percentage is compared to the caller finite minimum; lower value yields BELOW_MINIMUM and nonzero CLI. No built-in workflow threshold or execution is asserted. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T02:09": {
    "owner": "release-and-tooling",
@@ -57901,12 +57978,21 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
-     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
-     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     "commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+     "ref": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/proof-02.json",
+     "sha256": "877d838ab45b47f7fd83664cd80c1ab83a75aa537674608482096f5a58f9b5d3"
     }
    ],
-   "candidate_contract_note": "Source-clause-only; Complete requested populations and absent/met threshold yield COMPLETE with statement totals/coverage and explicit lines/branches not_measured. CLI returns zero only this/collect success. Report format is a metric, not a native qualification receipt. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   "candidate_contract_note": "Source-clause-only; Complete requested populations and absent/met threshold yield COMPLETE with statement totals/coverage and explicit lines/branches not_measured. CLI returns zero only this/collect success. Report format is a metric, not a native qualification receipt. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "evidence_history": [
+    {
+     "kind": "conformance-check",
+     "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+     "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+     "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+     "ref_commit": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+    }
+   ]
   },
   "T03:01": {
    "owner": "release-and-tooling",

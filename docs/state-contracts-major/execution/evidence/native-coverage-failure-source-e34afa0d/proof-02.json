@@ -1,0 +1,50 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "e34afa0d8d02beab9baefad7f957b21d5979c617",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Same native coverage source predicates and bounded unit refusal diagnostic"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/artifact-coverage.py": "447b1cd6b06c737e3a020d97a8999b1a66ed833ca2da1356dd3e362c818cec8b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T02:01",
+    "disposition:transitions:T02:03",
+    "disposition:transitions:T02:04",
+    "disposition:transitions:T02:05",
+    "disposition:transitions:T02:06",
+    "disposition:transitions:T02:07",
+    "disposition:transitions:T02:08",
+    "disposition:transitions:T02:09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-coverage-failure-source-e34afa0d/source-delta-review.json",
+      "sha256": "038caadf144e0dbb2eb1d69d3ff145ddf98759eb830d4d681081960a8d7db8d7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+    "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+    "original_code": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "stored_at": "3ca700daad93dae8168011d4843a1c0e494e27f7"
+  },
+  "scope": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+  "changed_paths": [
+    "tools/artifact-coverage.py"
+  ],
+  "limits": [
+    "Only native coverage source behavior and existing status are affirmed. No hosted, installed or runtime evidence was advanced.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ]
+}
