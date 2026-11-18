@@ -762,6 +762,47 @@ TS_PROFILE_JOBS["farm-tools-v1"] = "[CHECK] | [CA  ] | Farm dispatcher contract"
 TS_PROFILE_PAYLOADS["farm-tools-v1"] = "major-source-inputs-farm-dispatcher"
 TS_PROFILE_UPLOADS["farm-tools-v1"] = "Upload Farm source-test inputs"
 TS_PROFILE_CELLS["farm-tools-v1"] = frozenset((
+    "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01",
+    "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01",
+    "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01",
+    "disposition:transitions:S22:01",
+    "disposition:transitions:S23:02",
+    "disposition:transitions:S23:03",
+    "disposition:transitions:S23:04",
+    "disposition:transitions:S23:05",
+    "disposition:transitions:S23:06",
+    "disposition:transitions:S23:09",
+    "disposition:transitions:S23:10",
+    "disposition:transitions:S23:11",
+    "disposition:transitions:S23:12",
+    "disposition:transitions:S24:01",
+    "disposition:transitions:S24:04",
+    "disposition:transitions:S24:05",
+    "disposition:transitions:S24:06",
+    "disposition:transitions:S24:07",
+    "disposition:transitions:S24:08",
+    "disposition:transitions:S24:09",
+    "disposition:transitions:S24:10",
+    "disposition:transitions:S24:11",
+    "disposition:transitions:S24:12",
+    "disposition:transitions:S24:13",
+    "disposition:transitions:S24:14",
+    "disposition:transitions:S25:01",
+    "disposition:transitions:S25:07",
+    "disposition:transitions:S26:03",
+    "disposition:transitions:S29:02",
+    "disposition:transitions:S29:03",
+    "disposition:transitions:S29:05",
+    "disposition:transitions:S30:02",
+    "disposition:transitions:S30:03",
+    "disposition:transitions:S30:04",
+    "disposition:transitions:S30:05",
+    "disposition:transitions:S31:06",
+    "disposition:transitions:S32:01",
+    "disposition:transitions:S32:02",
+    "disposition:transitions:S32:03",
+    "disposition:transitions:S32:04",
+    "disposition:transitions:S32:07",
     "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:01",
     "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:02",
     "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:03",
@@ -3173,7 +3214,114 @@ ROUTE_GENERATOR_REVIEW_COMPONENT = route_generator_component((
 ))
 
 
+def recovery_runtime_component(cases):
+    return source_component(
+        RECOVERY_RUNTIME_PROFILE, RECOVERY_RUNTIME_SCRIPT, "workflow-recovery-runtime-observation-",
+        "Retain original workflow recovery runtime observation", "workflow-recovery-runtime-observation.json",
+        (f"RecoveryRuntimeTest.{case}" for case in cases),
+    )
+
+
+# Per-cell meanings come from the software48 Recovery tested.json semantic mapping.
+RECOVERY_TRANSITION_CASES = {
+    "disposition:added_transitions:WR-01": (
+        "test_process_crash_at_each_registration_commit_boundary",
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    ),
+    "disposition:added_transitions:WR-02": (
+        "test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+        "test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+        "test_partial_registration_retains_exact_completed_and_remaining_ids",
+    ),
+    "disposition:added_transitions:WR-03": (
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    ),
+    "disposition:added_transitions:WR-04": (
+        "test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    ),
+    "disposition:added_transitions:WR-05": (
+        "test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    ),
+    "disposition:added_transitions:WR-06": (
+        "test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    ),
+    "disposition:added_transitions:WR-07": (
+        "test_blocking_decision_is_not_demoted_or_confirmed",
+        "test_changed_source_is_held_without_touching_target",
+        "test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+    ),
+    "disposition:added_transitions:WR-08": (
+        "test_deferred_decision_and_decline_commit_once_after_response_loss",
+        "test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    ),
+    "disposition:added_transitions:WR-09": (
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    ),
+    "disposition:added_transitions:WR-10": (
+        "test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ),
+    "disposition:added_transitions:WR-11": (
+        "test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ),
+    "disposition:added_transitions:WR-12": (
+        "test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+    ),
+    "disposition:added_transitions:WR-13": (
+        "test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+    ),
+    "disposition:added_transitions:WR-14": (
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+        "test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    ),
+    "disposition:added_transitions:WR-15": (
+        "test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+        "test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+        "test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+    ),
+    "disposition:added_transitions:WR-16": (
+        "test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+        "test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+    ),
+    "disposition:added_transitions:WR-17": (
+        "test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+    ),
+    "disposition:added_transitions:WR-18": (
+        "test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+    ),
+    "disposition:added_transitions:WR-19": (
+        "test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+    ),
+    "disposition:added_transitions:WR-20": (
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ),
+    "disposition:added_transitions:WR-21": (
+        "test_linked_followup_uses_existing_fields_without_reopening_settled_history",
+    ),
+    "disposition:added_transitions:WR-22": (
+        "test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_post_commit_failure_reports_observed_record_without_false_no_effect",
+        "test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    ),
+}
+
+
 SOURCE_FINDING_COMPOSITIONS = {
+    **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
     DEBUG_RESUBMISSION_FINDING: (
         source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
             "Retain original locked debug reference observation", "debug-reference-observation.json", (
@@ -3413,7 +3561,8 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     readiness.validate_run(run, req, producing=producing)
     readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
     rows, payloads = {}, {}
-    recovery = None
+    recovery = transition_runtime = None
+    transition_cells = RECOVERY_TRANSITION_CASES.keys() & set(cells)
     for cell in cells:
         if cell in RECOVERY_FINDING_CELLS:
             if recovery is None:
@@ -3423,7 +3572,17 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
             continue
         components, owners, captures, capture_members = [], {}, {}, set()
         for component in SOURCE_FINDING_COMPOSITIONS[cell]:
-            evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
+            if cell in transition_cells:
+                if transition_runtime is None:
+                    # These cells share one original command. Authenticate the selected union once,
+                    # then retain each cell's own selectors in its result.
+                    transition_cases = {case for selected in transition_cells for case in RECOVERY_TRANSITION_CASES[selected]}
+                    transition_runtime = source_component_evidence(
+                        recovery_runtime_component(transition_cases), req, run, artifacts, jobs)
+                original, payload = transition_runtime
+                evidence = {**original, "selectors": component["selectors"]}
+            else:
+                evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
             components.append(evidence)
             identity = (evidence["job_id"], payload["artifact_id"])
             readiness.require(owners.setdefault(component["profile"], identity) == identity,
@@ -3448,19 +3607,17 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     return rows, payloads
 
 
-RECOVERY_RUNTIME_COMPONENT = source_component(
-    RECOVERY_RUNTIME_PROFILE, RECOVERY_RUNTIME_SCRIPT, "workflow-recovery-runtime-observation-",
-    "Retain original workflow recovery runtime observation", "workflow-recovery-runtime-observation.json", (
-        "RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
-        "RecoveryRuntimeTest.test_every_declared_producer_captures_before_terminal_effect",
-        "RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
-        "RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
-        "RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
-        "RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
-        "RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
-        "RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
-        "RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
-    ))
+RECOVERY_RUNTIME_COMPONENT = recovery_runtime_component((
+    "test_denial_and_explicit_stop_are_not_cleared_by_correction",
+    "test_every_declared_producer_captures_before_terminal_effect",
+    "test_legacy_origin_in_archive_is_reused_without_recreating_work",
+    "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    "test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+    "test_partial_registration_retains_exact_completed_and_remaining_ids",
+    "test_process_crash_after_target_and_during_settlement_never_duplicates",
+    "test_process_crash_at_each_registration_commit_boundary",
+    "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+))
 RECOVERY_COMPONENTS = (RECOVERY_RUNTIME_COMPONENT,
     source_component(RECOVERY_RUNTIME_PROFILE, ".github/scripts/test_workflow_recovery_cli.py",
         "workflow-recovery-cli-observation-", "Retain original workflow recovery CLI observation",

@@ -1073,6 +1073,24 @@ RECIPES.update({cell: {platform: list(required) for platform in _PROGRESS_PLATFO
     for cell, required in _CREATION_REVIEW_ACCEPT_ASSERTIONS.items()})
 
 
+# Exact named progress-preservation tests on the Windows native suite.
+RECIPES["disposition:findings:N-F03"] = {"windows/amd64": [
+    "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+    for name in (
+        "TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+        "TestAssistiveScopedFactsKeepIndependentWorkMoving",
+        "TestCheckConflictsRespectDefinitionAndSourceScope",
+        "TestDependencyInvalidationPreservesIndependentStops",
+        "TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+        "TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof",
+        "TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+        "TestTaskCheckCASReplaySourceChangesAndPresentationEdits",
+        "TestTaskCheckLatestFailureOverridesPriorPassAndSkipsUnknown",
+        "TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability",
+    )
+]}
+
+
 def selected_recipes(cells):
     import major_readiness as owner
     owner.require(isinstance(cells, list) and len(cells) <= len(RECIPES)

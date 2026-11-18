@@ -895,6 +895,93 @@ if __name__ == "__main__":
                                                   'result': 'passed'}])
             self.assertEqual(observed['proof_kind'], 'source-test')
 
+    def test_recovery_transition_cells_use_one_original_runtime_upload_with_exact_selectors(self):
+        import major_qualification_report as reports
+
+        repo = Path(__file__).resolve().parents[2]
+        frozen = (repo / 'docs/state-contracts-major/execution/evidence/software48-current-7ac01607'
+                  / 'recovery/tested.json')
+        contract = json.loads(frozen.read_bytes())
+        component = reports.RECOVERY_RUNTIME_COMPONENT
+        profile, script = component['profile'], component['script']
+        spec = reports.source_profile(profile)
+        prefix = f'python:{script}:__main__.'
+        expected = {'disposition:added_transitions:' + row['transition_id']:
+                    sorted(prefix + name.split('.', 1)[1] for name in row['observed_named_assertions'])
+                    for row in contract['semantic_mapping']}
+        cells = sorted(expected)
+        self.assertEqual((len(cells), len({name for names in expected.values() for name in names})), (22, 27))
+        policy = json.loads((repo / '.github/major-qualification-policy.json').read_bytes())
+        self.assertEqual(sorted(set(policy['source_finding_composite_cells']) & set(cells)), cells)
+        self.assertEqual({cell: reports.SOURCE_FINDING_COMPOSITIONS[cell][0]['selectors'] for cell in cells}, expected)
+
+        job = dict(self.jobs[0], name=spec['job'], steps=[])
+        files = {path: b'owned fixture' for path in sorted(spec['paths'])}
+        manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=self.req['source_commit'],
+                        source_tree=self.req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                        workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                            bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+        manifest_bytes = json.dumps(manifest).encode()
+        files[reports.SOURCE_MANIFEST] = manifest_bytes
+        source = self.archive(spec['payload'], job, spec['upload'], files)
+        req = dict(self.req, cells=cells, source_finding_composite_cells=cells,
+                   cell_jobs=dict.fromkeys(cells, 'major qualification / workflow-recovery'),
+                   source_finding_inputs={profile: reports.source_member_digest(manifest['members'])})
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            reports.source_finding_evidence(req, self.artifacts, [job], run=self.run)
+
+        tests = [dict(id=prefix + row['id'].split('.', 1)[1], result='passed')
+                 for row in contract['original_named_results']]
+        self.assertEqual(len(tests), 29)
+        observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'],
+            source_tree=req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
+            proof_kind='source-test', producer='python-test-result-observer', argv=['python', script], exit_code=0,
+            source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                      manifest_sha256=owner.digest(manifest_bytes)), tests=tests)
+        def upload(outcomes):
+            return self.archive(component['artifact_prefix'] + req['source_commit'] + '-7-3', job,
+                component['upload'], {component['member']: json.dumps(dict(observed, tests=outcomes)).encode()})
+
+        log_key = f'actions/jobs/{job["id"]}/logs'
+        source_log = self.logs[log_key]
+        missing = next(name for name in expected[cells[0]] if name not in expected[cells[-1]])
+        upload([test for test in tests if test['id'] != missing])
+        with self.assertRaisesRegex(owner.ReadinessError, 'selected named test missing'):
+            reports.source_finding_evidence(req, self.artifacts, [job], run=self.run)
+        single = dict(req, cells=cells[-1:], source_finding_composite_cells=cells[-1:])
+        rows, _ = reports.source_finding_evidence(single, self.artifacts, [job], run=self.run)
+        self.assertEqual(list(rows), single['cells'])
+        self.artifacts.pop()
+        job['steps'].pop()
+        self.logs[log_key] = source_log
+
+        capture = upload(tests)
+        jobs = [job, self.jobs[-1]]
+        with mock.patch.object(owner, 'artifact_bytes', wraps=owner.artifact_bytes) as download:
+            record = owner.produce(req, self.artifacts, jobs)
+        self.assertEqual([call.args[0]['id'] for call in download.call_args_list], [source['id'], capture['id']])
+        self.assertEqual([row['cell'] for row in record['results']], cells)
+        for row in record['results']:
+            self.assertEqual(row['evidence_artifact_ids'], [source['id']])
+            self.assertEqual(len(row['source_components']), 1)
+            result = row['source_components'][0]
+            self.assertEqual(result['selectors'], expected[row['cell']])
+            self.assertEqual(result['observation_artifact_id'], capture['id'])
+            self.assertNotIn('consumed_native_installation', result)
+        readiness = self.archive('major-readiness-' + req['source_commit'], jobs[-1],
+                                 'Upload major readiness record', {'major-readiness.json': b'{}'})
+        args = dict(record=record, requirements=req, run=self.run, artifact=readiness,
+                    archive_digest=readiness['digest'][7:], jobs=jobs, build_artifacts=self.artifacts)
+        self.assertEqual(owner.verify(**args)['state'], 'PREPUBLICATION_READY')
+        forged = copy.deepcopy(record)
+        forged['results'][0]['source_components'][0]['selectors'] = expected[cells[-1]]
+        with self.assertRaisesRegex(owner.ReadinessError, 'readiness differs from original component evidence'):
+            owner.verify(**dict(args, record=forged))
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            reports.source_finding_evidence(req, self.artifacts, [dict(job, run_attempt=2)], run=self.run)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            reports.source_finding_evidence(req, [*self.artifacts, dict(capture, id=1000)], [job], run=self.run)
+
     def test_recovery_runtime_reader_authenticates_only_the_original_nine_cases(self):
         import major_qualification_report as reports
 
