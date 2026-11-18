@@ -945,7 +945,7 @@ export default function registerCaptureProvider(pi: any) {
         command = _rpc_command
     provider_warmup = None
     diagnostic_dir = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
-    if os.name == "nt" and (_observe_shutdown or diagnostic_dir):
+    if _observe_shutdown or (os.name == "nt" and diagnostic_dir):
         try:
             from _windows_rpc_timeout import preflight_provider
             provider_warmup = preflight_provider(home)
