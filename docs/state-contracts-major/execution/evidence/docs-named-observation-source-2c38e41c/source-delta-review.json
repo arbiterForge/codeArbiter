@@ -1,0 +1,46 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+  "prior_source_checkpoint": "be7c3f55a0579caea8c878a89abfc85d3cb0770b",
+  "delta": {
+    ".github/scripts/site_vitest_observation.py": {
+      "before": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+      "current": "44134c8aea7ffef5f153ac770d26f4e3c920b0d6e2701aa45c80aa5a67c9a37d",
+      "assessment": "The original single compound coverage call, deadline, checked inputs, attached raw file identity, per-name validation, source drift guard, stable positive emission and Pages prerequisites retain their exact checks. A named-result parser error now always writes the existing exclusive bounded three-field refusal. An original nonzero exit is preserved. If the child exited zero but result identity is ambiguous or unreadable, the observer returns 1. The refusal cannot satisfy the unchanged successful qualification reader."
+    },
+    ".github/scripts/test_site_vitest_observation.py": {
+      "before": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+      "current": "3c5d8dddcd9f4c05990200d48f5827fc4ec834b8fa7810155150fafa629dbaf8",
+      "assessment": "The sole new fixture provides duplicate outcome names with a matching aggregate count after an original zero exit. It demands exactly one child launch, exit 1 and only the existing closed refusal fields. No assertion of test execution is made by this proof."
+    },
+    "site/scripts/academy-wayfinding.test.ts": {
+      "before": "5d601e59b5c27766edcd389fc025ef4cf92d0eb2c841a11e99cc7e4a94845d6b",
+      "current": "1d656375bc73d178c84f434096dfcb988785cbd7f696d7d0a17eb551fc6f838f",
+      "assessment": "Only three parameter tables introduce explicit invariant per-case title labels. Reconstructing the older inputs, assertion bodies and complete surrounding fixture yields byte-identical prior source. The groups have five, two and seven cases. Their new names can be admitted only by the same strict duplicate-refusing reader."
+    }
+  },
+  "covered_scope": "C29:02 retains its precondition, success and failure outcomes. The added bounded refusal is failure diagnostics only. The C29 event, build admission, browser, Pages prerequisites and deployment remain unchanged.",
+  "exact_parameter_group_labels": {
+    "navigation": [
+      "a duplicate lesson",
+      "a missing successor",
+      "a self-referencing successor",
+      "an invalid lesson ID",
+      "an unpublished track"
+    ],
+    "curriculum": [
+      "release",
+      "commit"
+    ],
+    "bookmark": [
+      "a null value",
+      "an array",
+      "an incomplete object",
+      "malformed JSON",
+      "an oversized record",
+      "a URL in the lesson field",
+      "a completion field"
+    ]
+  },
+  "added_regression": "OriginalDocsSourceTests.test_observer_retains_only_a_refusal_when_successful_test_names_collide"
+}
