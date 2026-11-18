@@ -375,3 +375,11 @@ regexes = [
 [[allowlists]]
 description = "Exact public PR1116 head f5dff55e, independently verified against the Git commit and live PR head. Retained original Linux progress and successful Windows diagnostic records label it API head; it is a public source identifier with no access authority. Only this complete value is exempted."
 regexes = ['''\Af5dff55e71530806c58a5dd6c352935d369ac5ae\z''']
+
+[[allowlists]]
+description = "Public SHA-256 of site/src/curated/agents/auth-crypto-reviewer.md at 00fd5fff, retained in original Docs test evidence"
+regexes = ['\A1c1eb80f37baaedbac7bab11fbf2a6d3aaa5b611766ff5f334fca4c42036ca60\z']
+
+[[allowlists]]
+description = "Public SHA-256 of site/src/curated/skills/secret-handling.md at 00fd5fff, retained in original Docs test evidence"
+regexes = ['\A9618d05e232a2630d19e34b41e6e1ddc9f3900fb629b9ef239be963c3778f61e\z']

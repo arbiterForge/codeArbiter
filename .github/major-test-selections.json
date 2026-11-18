@@ -2021,6 +2021,30 @@
       "scope": "Original dependent-conflict transition instructions for explicit global stops and independent authorized continuation."
     },
     {
+      "id": "finite-release-receipt",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-receipt",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_target.py:__main__.EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+        "python:.github/scripts/test_release_target.py:__main__.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state",
+        "python:.github/scripts/test_release_target.py:__main__.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+        "python:.github/scripts/test_release_target.py:__main__.CompletionModelTests.test_another_sources_unfinished_version_is_refused_with_its_owner",
+        "python:.github/scripts/test_release_target.py:__main__.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+        "python:.github/scripts/test_release_target.py:__main__.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+        "python:.github/scripts/test_release_target.py:__main__.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+        "python:.github/scripts/test_release_target.py:__main__.FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+        "python:.github/scripts/test_release_target.py:__main__.ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused",
+        "python:.github/scripts/test_release_target.py:__main__.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it",
+        "python:.github/scripts/test_release_target.py:__main__.CompositionContractTests.test_existing_receipt_is_read_back_and_verified"
+      ],
+      "cells": [
+        "disposition:findings:C-F01"
+      ],
+      "scope": "Original per-target planner and recovery assertions for a public release with a missing receipt."
+    },
+    {
       "id": "finite-release-library-s44-01",
       "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
       "payload_name": "major-source-inputs-hooks-single-owner",

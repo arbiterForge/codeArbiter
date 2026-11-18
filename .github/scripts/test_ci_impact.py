@@ -22,6 +22,7 @@ import unittest
 from unittest import mock
 from pathlib import Path
 from test_hook_ci_partition import reviewed_python_source_event_guards, reviewed_impact_source_event_guards, impact_source_roles
+from test_hook_ci_partition import reviewed_statusline_source_event_guards
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -3160,7 +3161,8 @@ class WorkflowContractTest(unittest.TestCase):
         for job_id in enforced:
             block = jobs.get(job_id, "")
             cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
-            source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
+            source_guards = (reviewed_python_source_event_guards(block) | reviewed_statusline_source_event_guards(block)
+                             if job_id == "hooks" else set())
             impact_guards = reviewed_impact_source_event_guards(block) if job_id == "ci-impact" else set()
             vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools", "tools") else set()
             mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()

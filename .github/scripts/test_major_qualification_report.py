@@ -4597,6 +4597,43 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'selected named test missing'):
             build()
 
+    def test_release_receipt_finding_requires_the_exact_original_planner_assertions(self):
+        history = owner.ROOT / ('docs/state-contracts-major/execution/evidence/'
+                                'release-receipt-current-74057')
+        proof = owner.load_json(history / 'c-f01-tested.json')
+        assertions = owner.load_json(history / 'assertion-map.json')['finding']
+        cell, = proof['disposition_ids']
+        script = '.github/scripts/test_release_target.py'
+        key = 'finite-release-receipt'
+        selectors = [f'python:{script}:__main__.' + name.removeprefix('test_release_target.')
+                     for name in assertions['named_assertion_ids']]
+        self.assertEqual(len(set(selectors)), 11)
+        selections = owner.load_json(owner.ROOT / '.github/major-test-selections.json')
+        _, spec, req, payload, observed, _, _ = self.fixture('disposition:findings:T-F02')
+        self.assertFalse(set(proof['inputs']).difference(spec['paths']))
+        self.assertEqual(spec['paths'].difference(owner._HOOK_SINGLE_OWNER_PATHS), {
+            '.github/actions/publish-target/action.yml',
+            'docs/state-contracts-major/contracts/transition-coverage.json',
+        })
+        policy = owner.load_json(owner.ROOT / '.github/major-qualification-policy.json')
+        self.assertEqual(policy['cell_job_bindings'][cell], spec['job'])
+        group, = [item for item in selections['groups'] if item['cells'] == [cell]]
+        self.assertEqual(group['selectors'], selectors)
+        self.assertEqual(group['observation'], key)
+        req.update(cells=[cell], cell_jobs={cell: spec['job']})
+        observed.update(argv=['python', script], tests=[{'id': name, 'result': 'passed'} for name in selectors])
+
+        def build():
+            return owner.build_report(req, job_name=spec['job'], job_id=9,
+                selections={'schema': owner.SELECTIONS, 'groups': [group]},
+                observations={key: observed}, payloads={spec['payload']: payload})
+
+        row, = build()['results']
+        self.assertEqual((row['cell'], row['executed_population']), (cell, 11))
+        observed['tests'].pop()
+        with self.assertRaisesRegex(ValueError, 'selected named test missing'):
+            build()
+
     def test_native_manifest_cell_requires_the_four_original_python_outcomes(self):
         history = owner.ROOT / 'docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json'
         receipt = owner.load_json(history)
@@ -4919,6 +4956,145 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 self.assertEqual(result['cell'], cell)
                 self.assertEqual(result['selected_population'], len(recipe['selectors']))
                 self.assertEqual(result['payload_artifact_id'], metadata['id'])
+
+
+class StatuslineIsolationObservationTests(unittest.TestCase):
+    def setUp(self):
+        self.profile = owner.STATUSLINE_PROFILE
+        self.spec = owner.source_profile(self.profile)
+        self.cells = sorted(owner._STATUSLINE_CASES)
+        self.commit = "e" * 40
+        self.tree = "a" * 40
+        self.owner_job = 678
+        self.run = {"id": 731, "run_attempt": 1, "head_sha": self.commit,
+                    "event": "push", "head_branch": "main", "conclusion": "success",
+                    "path": ".github/workflows/ci.yml", "repository": {"full_name": owner.readiness.REPOSITORY}}
+        self.job = {"id": self.owner_job, "name": self.spec["job"], "run_id": self.run["id"],
+                    "run_attempt": 1, "status": "completed", "conclusion": "success"}
+        self.inputs = {path: path.encode() for path in self.spec["paths"]}
+        self.manifest = {"format": owner.SOURCE_FORMAT, "profile": self.profile,
+                         "source_commit": self.commit, "source_tree": self.tree,
+                         "workflow": self.run["path"], "ci_run_id": self.run["id"],
+                         "producer_job_name": self.spec["job"], "members": [
+            {"path": path, "sha256": owner.readiness.digest(raw), "bytes": len(raw), "git_mode": "100644"}
+            for path, raw in sorted(self.inputs.items())
+        ]}
+        self.manifest_raw = json.dumps(self.manifest).encode()
+        self.req = {"source_commit": self.commit, "source_tree": self.tree, "ci_run_id": self.run["id"],
+                    "cells": self.cells, "cell_jobs": dict.fromkeys(self.cells, self.spec["job"]),
+                    "source_finding_composite_cells": self.cells,
+                    "source_finding_inputs": {self.profile: owner.source_member_digest(self.manifest["members"])}}
+        named = sorted({test for cell in self.cells for test in owner.SOURCE_FINDING_COMPOSITIONS[cell][0]["selectors"]})
+        self.observation = {"format": owner.OBSERVATION, "source_commit": self.commit, "source_tree": self.tree,
+            "ci_run_id": self.run["id"], "run_attempt": 1, "clean": True, "source_stable": True,
+            "proof_kind": "source-test", "producer": "python-test-result-observer",
+            "test_result_scope": owner.STATUSLINE_RESULT_SCOPE, "exit_code": 0,
+            "argv": ["python", owner.STATUSLINE_SCRIPT, "--statusline-results", owner.STATUSLINE_RAW_MEMBER],
+            "tests": [{"id": test, "result": "passed"} for test in named],
+            "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": self.profile,
+                "payload_name": self.spec["payload"], "manifest_sha256": owner.readiness.digest(self.manifest_raw)}}
+
+    @staticmethod
+    def archive(values):
+        result = io.BytesIO()
+        with zipfile.ZipFile(result, "w") as archive:
+            for name, value in values.items():
+                archive.writestr(name, value)
+        return result.getvalue()
+
+    def artifacts(self, observation=None, *, source=None, wrong_upload=False):
+        source_bytes = self.archive({**(self.inputs if source is None else source),
+                                     owner.SOURCE_MANIFEST: self.manifest_raw})
+        captured = self.archive({owner.STATUSLINE_CAPTURE_MEMBER: json.dumps(
+            self.observation if observation is None else observation).encode()})
+        fingerprint = f"{self.commit}-{self.run['id']}-{self.run['run_attempt']}"
+        transport = [(110, self.spec["payload"], self.spec["upload"], source_bytes),
+                     (111, owner.STATUSLINE_CAPTURE_PREFIX + fingerprint, owner.STATUSLINE_CAPTURE_UPLOAD, captured)]
+        self.job["steps"] = []
+        logs = []
+        metadata = []
+        archives = {}
+        for index, (artifact_id, name, step, raw) in enumerate(transport, 1):
+            digest = owner.readiness.digest(raw)
+            timestamp = f"2026-11-18T12:00:0{index}"
+            self.job["steps"].append({"name": step, "status": "completed", "conclusion": "success",
+                                      "started_at": timestamp + "Z", "completed_at": timestamp + ".930Z"})
+            logs.extend(f"{timestamp}.{position}00Z {line}" for position, line in enumerate((
+                        "##[group]Run " + owner.readiness.UPLOAD_ACTION,
+                        "SHA256 digest of uploaded artifact is " + digest,
+                        f"Artifact {name} successfully finalized. Artifact ID {artifact_id}"), 1))
+            metadata.append({"id": artifact_id, "name": name, "size_in_bytes": len(raw), "expired": False,
+                             "digest": "sha256:" + digest, "created_at": timestamp + "Z",
+                             "workflow_run": {"id": self.run["id"], "head_sha": self.commit}})
+            archives[artifact_id] = raw
+        if wrong_upload:
+            logs = logs[:-1]
+        return metadata, archives, "\n".join(logs).encode()
+
+    def reconstruct(self, observation=None, *, source=None, wrong_upload=False):
+        metadata, contents, upload_log = self.artifacts(observation, source=source, wrong_upload=wrong_upload)
+        def read_log(url, *, binary=False):
+            self.assertEqual((url, binary), (f"actions/jobs/{self.owner_job}/logs", True))
+            return upload_log
+        def read_archive(artifact, req):
+            raw = contents[artifact["id"]]
+            owner.readiness.validate_artifact(artifact, req, owner.readiness.digest(raw))
+            return raw
+        with mock.patch.object(owner.readiness, "api", side_effect=read_log) as log, \
+             mock.patch.object(owner.readiness, "artifact_bytes", side_effect=read_archive) as read:
+            rows = owner.source_finding_evidence(self.req, metadata, [self.job], run=self.run)
+        self.assertEqual((log.call_count, read.call_count), (1, 2))
+        return rows
+
+    def test_closed_rows_and_composition_reuse_one_original_isolation_capture(self):
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        self.assertEqual({cell: policy["cell_job_bindings"][cell] for cell in self.cells}, self.req["cell_jobs"])
+        self.assertLessEqual(set(self.cells), set(policy["source_finding_composite_cells"]))
+        rows, artifacts = self.reconstruct()
+        self.assertEqual(set(rows), set(self.cells))
+        self.assertEqual(set(artifacts), {110})
+        self.assertEqual(sorted(len(row["source_components"][0]["selectors"]) for row in rows.values()),
+                         [3, 4, 8, 8, 12, 14, 16, 34, 67])
+        self.assertEqual({r["source_components"][0]["observation_artifact_id"] for r in rows.values()}, {111})
+
+    def test_refuse_stale_foreign_filtered_missing_duplicate_or_nonpassing_observation(self):
+        def altered(transform):
+            changed = copy.deepcopy(self.observation)
+            transform(changed)
+            return changed
+        for name, observation in (
+            ("attempt", altered(lambda o: o.update(run_attempt=2))),
+            ("tree", altered(lambda o: o.update(source_tree="b" * 40))),
+            ("ordinary-outer", altered(lambda o: o.update(test_result_scope=owner.OUTER_UNITTEST_RESULT))),
+            ("filtered", altered(lambda o: o["argv"].append("-k"))),
+            ("wrong-command", altered(lambda o: o["argv"].__setitem__(1, ".github/scripts/test_generated_output.py"))),
+            ("wrong-result-file", altered(lambda o: o["argv"].__setitem__(3, "foreign.json"))),
+            ("missing-case", altered(lambda o: o["tests"].pop())),
+            ("duplicate-case", altered(lambda o: o["tests"].append(o["tests"][0]))),
+            ("failed-case", altered(lambda o: o["tests"][0].update(result="skipped"))),
+            ("foreign-module", altered(lambda o: o["tests"][0].update(id="python:wrong.py:wrong.Test.test_ok"))),
+        ):
+            with self.subTest(name=name), self.assertRaises((ValueError, owner.readiness.ReadinessError)):
+                self.reconstruct(observation)
+
+    def test_refuse_foreign_owner_wrong_event_bad_source_bytes_and_unattributed_upload(self):
+        source = dict(self.inputs)
+        source[owner.STATUSLINE_SCRIPT] += b"changed"
+        with self.assertRaises((ValueError, owner.readiness.ReadinessError)):
+            self.reconstruct(source=source)
+        with self.assertRaises((ValueError, owner.readiness.ReadinessError)):
+            self.reconstruct(wrong_upload=True)
+        self.job["name"] = self.spec["job"].replace("isolation", "contracts")
+        with self.assertRaises((ValueError, owner.readiness.ReadinessError)):
+            self.reconstruct()
+        self.job["name"] = self.spec["job"]
+        self.req["cell_jobs"][self.cells[0]] = self.spec["job"].replace("isolation", "contracts")
+        with self.assertRaises((ValueError, owner.readiness.ReadinessError)):
+            self.reconstruct()
+        self.req["cell_jobs"][self.cells[0]] = self.spec["job"]
+        self.run["event"] = "pull_request"
+        with self.assertRaises((ValueError, owner.readiness.ReadinessError)):
+            self.reconstruct()
 
 
 class HookF02CompleteCompositionTests(unittest.TestCase):

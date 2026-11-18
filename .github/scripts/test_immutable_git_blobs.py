@@ -188,7 +188,7 @@ class ImmutableBlobReaderTest(unittest.TestCase):
         self.assertIsNotNone(children[0].poll())
         self.assertFalse(reader.worker.is_alive())
 
-    def test_query_total_and_transaction_deadline_bounds(self):
+    def test_query_total_and_transaction_io_bounds(self):
         with mock.patch.object(transport, "MAX_QUERIES", 1), transport.transaction(self.repo) as reader:
             self.assertEqual(reader.read(self.source, "data/file0.txt"), self.expected["data/file0.txt"])
             with self.assertRaisesRegex(transport.BlobReadError, "query bound"):
@@ -196,10 +196,36 @@ class ImmutableBlobReaderTest(unittest.TestCase):
         with mock.patch.object(transport, "MAX_TOTAL", 1), transport.transaction(self.repo) as reader:
             with self.assertRaisesRegex(transport.BlobReadError, "byte bound"):
                 reader.read(self.source, "data/file0.txt")
-        with transport.transaction(self.repo) as reader:
-            reader.deadline = time.monotonic() - 1
-            with self.assertRaisesRegex(transport.BlobReadError, "deadline"):
+        clock = SimpleNamespace(now=0.0)
+        with mock.patch.object(transport, "time", SimpleNamespace(monotonic=lambda: clock.now)):
+            with mock.patch.object(transport, "TRANSACTION_IO_SECONDS", 7), transport.transaction(self.repo) as reader:
+                get = reader.results.get
+                def get_after_io(*args, **kwargs):
+                    result = get(*args, **kwargs)
+                    clock.now += 4
+                    return result
+                with mock.patch.object(reader.results, "get", side_effect=get_after_io) as exchange:
+                    self.assertEqual(reader.read(self.source, "data/file0.txt"), self.expected["data/file0.txt"])
+                    self.assertEqual(exchange.call_args.kwargs["timeout"], 7)
+                    self.assertEqual(reader.io_seconds_left, 3)
+                with mock.patch.object(reader.results, "get", side_effect=transport.queue.Empty) as exchange:
+                    with self.assertRaisesRegex(transport.BlobReadError, "timed out"):
+                        reader.read(self.source, "data/file1.txt")
+                    self.assertEqual(exchange.call_args.kwargs["timeout"], 3)
+                    self.assertTrue(reader.closed)
+        with mock.patch.object(transport, "TRANSACTION_IO_SECONDS", 0), transport.transaction(self.repo) as reader:
+            with self.assertRaisesRegex(transport.BlobReadError, "I/O budget"):
                 reader.read(self.source, "data/file0.txt")
+
+    def test_authentication_between_reads_does_not_spend_git_io_budget(self):
+        clock = SimpleNamespace(now=0.0)
+        with mock.patch.object(transport, "time", SimpleNamespace(monotonic=lambda: clock.now)):
+            with transport.transaction(self.repo) as reader:
+                self.assertEqual(reader.read(self.source, "data/file0.txt"), self.expected["data/file0.txt"])
+                # The owner authenticates hosted evidence between Git reads.
+                clock.now += 121
+                self.assertEqual(reader.read(self.source, "data/file1.txt"), self.expected["data/file1.txt"])
+            self.assertEqual(reader.process.returncode, 0)
 
     def test_trailing_stdout_and_failed_final_exit_refuse(self):
         for tail in ("sys.stdout.buffer.write(b'EXTRA');sys.stdout.buffer.flush()", "sys.exit(3)"):

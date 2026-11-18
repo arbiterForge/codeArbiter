@@ -20,7 +20,7 @@ MAX_BLOB = 16 * 1024 * 1024
 MAX_TOTAL = 256 * 1024 * 1024
 MAX_QUERIES = 16384
 QUERY_SECONDS = 10
-TRANSACTION_SECONDS = 120
+TRANSACTION_IO_SECONDS = 120
 _active = ContextVar('readiness_immutable_blob_transaction', default=None)
 
 
@@ -63,7 +63,7 @@ class Reader:
         self.cache = {}
         self.objects = {}
         self.total = self.queries = 0
-        self.deadline = time.monotonic() + TRANSACTION_SECONDS
+        self.io_seconds_left = TRANSACTION_IO_SECONDS
         self.process = self.worker = None
         self.requests = queue.Queue(maxsize=1)
         self.results = queue.Queue(maxsize=1)
@@ -145,16 +145,21 @@ class Reader:
                     pass
 
     def _exchange(self, query):
-        remaining = min(QUERY_SECONDS, self.deadline - time.monotonic())
+        remaining = min(QUERY_SECONDS, self.io_seconds_left)
         if remaining <= 0:
             self._abort()
-            raise BlobReadError('immutable blob transaction deadline exceeded')
+            raise BlobReadError('immutable blob transaction I/O budget exceeded')
+        # Validation can authenticate external evidence between exchanges.
+        # Charge time waiting for Git, including close, to the reader budget.
+        started = time.monotonic()
         self.requests.put_nowait(query)
         try:
             success, value = self.results.get(timeout=remaining)
         except queue.Empty:
             containment = self._abort()
             raise BlobReadError('immutable blob read timed out; containment=' + containment) from None
+        finally:
+            self.io_seconds_left -= time.monotonic() - started
         if not success:
             if self.closed:
                 containment = self._abort()
