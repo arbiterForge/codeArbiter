@@ -588,7 +588,6 @@ def main(argv=None):
                 require(len(rows) <= 512 and len({row["id"] for row in rows}) == len(rows), "cold API inventory missing/duplicate/unbounded")
                 return {key: rows}
             jobs_page = inventory(f"actions/runs/{run_id}/jobs?filter=latest&per_page=100", "jobs")
-            artifacts_page = inventory(f"actions/runs/{run_id}/artifacts?per_page=100", "artifacts")
             name = "[CHECK] | [CORE] | Structured artifact cold package  <" + args.platform + ">"
             job = [j for j in jobs_page["jobs"] if j.get("name") == name and j.get("status") == "in_progress"
                    and str(j.get("run_attempt")) == os.environ.get("GITHUB_RUN_ATTEMPT")]
@@ -598,10 +597,10 @@ def main(argv=None):
             payloads = {}
             for prefix, path, step in (("artifact-host-payloads-", args.stage, "Preserve the exact multi-host package overlay"),
                     ("artifact-release-packages-", args.package_root, "Preserve the exact normal release package cohort")):
-                matching = [a for a in artifacts_page["artifacts"] if a.get("name") == prefix + source]
-                require(len(matching) == 1, "original consumed artifact missing or ambiguous")
-                readiness.validate_upload(assembly[0], matching[0], step)
-                payloads[prefix + source] = reports.authenticated_payload(matching[0], req, path)
+                artifact_name = prefix + source
+                artifact = readiness.exact_run_artifact(run_id, artifact_name)
+                readiness.validate_upload(assembly[0], artifact, step)
+                payloads[artifact_name] = reports.authenticated_payload(artifact, req, path)
             return observe(repo=args.repo, req=req, job_id=job[0]["id"], host=args.host, platform=args.platform,
                 stage=args.stage, package_root=args.package_root, authenticated_payloads=payloads, output=args.output)
 
@@ -647,6 +646,10 @@ def _diagnostic_code(error):
         seen.add(id(error))
         args = error.args
         text = args[0] if len(args) == 1 and type(args[0]) is str else None
+        if text == "exact retained cold artifact is missing, ambiguous or malformed":
+            return "COLD_ARTIFACT_LOOKUP_REJECTED"
+        if text in ("cold observation API pages exceed bound", "cold API inventory missing/duplicate/unbounded"):
+            return "COLD_JOB_INVENTORY_REJECTED"
         if text == "upload attribution unavailable or malformed":
             upload = True
         elif text in ("required exact upload step did not succeed",

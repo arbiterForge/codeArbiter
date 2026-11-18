@@ -4273,14 +4273,30 @@ def main(argv=None):
         profile = next((p for p, job in TS_PROFILE_JOBS.items() if job == args.job_name), None)
         identity = source_identity(args.repo, profile)
         require(identity["source_commit"] == source and identity["clean"], "report source differs from actual clean checkout")
-        req, _, artifacts, jobs = readiness.collect(args.repo, source, run_id, producing=True, allow_program_branch=True, producer_scope=True)
-        matching = [j for j in jobs if j["name"] == args.job_name and j.get("status") == "in_progress"]
-        require(len(matching) == 1, "one current original owning job required")
         observations = {}
         for item in args.observation:
             key, path = item.split("=", 1)
             require(key not in observations, "duplicate observation key")
             observations[key] = load_json(path)
+        payload_paths = {}
+        for item in args.payload_root:
+            name, path = item.split("=", 1)
+            require(name not in payload_paths, "duplicate payload identity")
+            payload_paths[name] = path
+
+        cold = observations.get("cold")
+        artifact_names = None
+        if (len(observations) == 1 and isinstance(cold, dict)
+                and cold.get("producer") == "retained-cold-package-observer-v1"
+                and cold.get("proof_kind") == "retained-archive-cli"):
+            artifact_names = ("artifact-host-payloads-" + source, "artifact-release-packages-" + source)
+            require(set(payload_paths) == set(artifact_names), "cold report requires the exact original consumed payloads")
+        req, _, artifacts, jobs = readiness.collect(
+            args.repo, source, run_id, producing=True, allow_program_branch=True, producer_scope=True,
+            artifact_names=artifact_names,
+        )
+        matching = [j for j in jobs if j["name"] == args.job_name and j.get("status") == "in_progress"]
+        require(len(matching) == 1, "one current original owning job required")
         native_components = {}
         mapped_keys = [key for key, value in observations.items()
                        if value.get("producer") == "python-mapped-native-consumer-observer-v1"]
@@ -4303,9 +4319,7 @@ def main(argv=None):
             "major-source-inputs-mapped-work-windows",
         }
         payloads = {}
-        for item in args.payload_root:
-            name, path = item.split("=", 1)
-            require(name not in payloads, "duplicate payload identity")
+        for name, path in payload_paths.items():
             found = [a for a in artifacts if a["name"] == name]
             require(len(found) == 1, "original consumed artifact missing or ambiguous")
             if mapped_keys and name == "ci20-native-tested-windows-2025":
