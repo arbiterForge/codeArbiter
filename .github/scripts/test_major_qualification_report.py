@@ -2523,11 +2523,13 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
         # Real emit CLI/immutable membership orchestration, inert API/archive
         # authority seams only. It must derive the pin, never accept observation data.
         job={'id':9,'name':p.JOB,'status':'in_progress'}
+        run={'id':7,'head_sha':before['source_commit']}
         artifacts=[{'id':8,'name':p.SOURCE_PAYLOAD},{'id':10,'name':p.NATIVE_PAYLOAD}]
         import types
         native_module=types.ModuleType('major_native_observation')
         def authenticated(req_arg,run_arg,artifacts_arg,jobs_arg,platform):
             self.assertEqual(platform,'windows/amd64')
+            self.assertIs(run_arg, run)
             self.assertNotEqual(req_arg['native_module_sha256']['windows'],'9'*64)
             self.assertEqual(set(req_arg['native_module_sha256']),{'posix','windows'})
             return {**component,'native_binding':{**component['native_binding'],
@@ -2537,7 +2539,7 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
         with mock.patch.dict(sys.modules,{'major_native_observation':native_module}), \
              mock.patch.dict(os.environ,GITHUB_SHA=before['source_commit'],GITHUB_RUN_ID='7'), \
              mock.patch.object(owner,'ROOT',self.root),mock.patch.object(owner,'validate_emitter_environment'), \
-             mock.patch.object(owner.readiness,'collect',return_value=(req,None,artifacts,[job])), \
+             mock.patch.object(owner.readiness,'collect',return_value=(req,run,artifacts,[job])), \
              mock.patch.object(owner.readiness,'api',return_value={'id':7}) as api, \
              mock.patch.object(owner,'authenticated_payload',return_value=source) as source_auth, \
              mock.patch.object(p,'authenticate_native_consumption',return_value=native_payload) as consumed:
@@ -2546,7 +2548,7 @@ class MappedNativeConsumerProfileTests(unittest.TestCase):
                '--payload-root',p.SOURCE_PAYLOAD+'='+str(self.root),
                '--payload-root',p.NATIVE_PAYLOAD+'='+str(installation)]),0)
         native_module.authenticate_component.assert_called_once()
-        source_auth.assert_called_once();consumed.assert_called_once();api.assert_called_once_with('actions/runs/7')
+        source_auth.assert_called_once();consumed.assert_called_once();api.assert_not_called()
         self.assertEqual(owner.load_json(emitted),report)
         self.assertEqual(counter.read_text(),'1')
 
