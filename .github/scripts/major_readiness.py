@@ -31,6 +31,10 @@ PROGRAM = "codearbiter-major-state-contracts"
 SCHEMA = "codearbiter-major-readiness/1"
 SOURCE_SCHEMA = "codearbiter-major-readiness/3"
 CORPUS = "docs/state-contracts-major/"
+COVERAGE_LEDGER = CORPUS + "execution/coverage-ledger.json"
+LEDGER_ROUTING_PROFILE = "qualification-ledger-routing-v1"
+LEDGER_ROUTING_GROUPS = ("findings", "machines", "transitions", "added_transitions")
+LEDGER_ROUTING_CELLS = frozenset(f"disposition:findings:{finding}" for finding in ("C-F02", "C-F04", "C-F05", "C-F07"))
 SHA = re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
 MAX_ARCHIVE = 256 * 1024 * 1024
@@ -433,7 +437,70 @@ def _lookup_present(repo, source, lookup, cache):
     return True
 
 
+def _qualification_ledger_routing(raw):
+    def unique_object(pairs):
+        result = {}
+        for key, value in pairs:
+            require(key not in result, "duplicate qualification ledger key")
+            result[key] = value
+        return result
+    try:
+        ledger = json.loads(raw, object_pairs_hook=unique_object)
+    except (ValueError, UnicodeError, RecursionError) as error:
+        raise ReadinessError("malformed qualification ledger routing input") from error
+    require(isinstance(ledger, dict), "qualification ledger must be an object")
+    routing = {}
+    for group in LEDGER_ROUTING_GROUPS:
+        rows = ledger.get(group, {})
+        require(isinstance(rows, dict), "qualification ledger routing group must be an object")
+        routing[group] = {}
+        for identity, row in rows.items():
+            require(identity and len(identity) <= 512 and all(32 <= ord(c) < 127 for c in identity)
+                    and isinstance(row, dict), "invalid qualification ledger routing row")
+            owner = row.get("owner")
+            require(owner is None or (isinstance(owner, str) and len(owner) <= 512
+                                     and not any(ord(c) < 32 for c in owner)), "invalid qualification ledger owner")
+            if "task_ids" in row:
+                tasks = row["task_ids"]
+                require(isinstance(tasks, list) and all(isinstance(t, str) and t for t in tasks),
+                        "invalid qualification ledger task routing")
+            routing[group][identity] = {key: row[key] for key in ("owner", "task_ids") if key in row}
+    return routing
+
+
+def _ledger_routing_digest(source, load, cache):
+    key = (LEDGER_ROUTING_PROFILE, source)
+    if key not in cache:
+        routing = _qualification_ledger_routing(load(source, COVERAGE_LEDGER))
+        encoded = json.dumps(routing, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        cache[key] = digest(LEDGER_ROUTING_PROFILE.encode("ascii") + b"\n" + encoded)
+    return cache[key]
+
+
+def _ledger_routing_declaration(record):
+    if "input_projections" not in record:
+        return None
+    projections = record["input_projections"]
+    cells = record.get("disposition_ids")
+    producer = record.get("producer")
+    require(isinstance(projections, list) and len(projections) == 1
+            and record.get("kind") == "hosted-run" and record.get("result") == "PASSED"
+            and isinstance(producer, dict) and producer.get("class") == "hosted"
+            and isinstance(cells, list) and cells
+            and all(isinstance(cell, str) and cell in LEDGER_ROUTING_CELLS for cell in cells)
+            and COVERAGE_LEDGER in record.get("inputs", {}), "unsupported qualification input projection")
+    projection = projections[0]
+    require(isinstance(projection, dict) and set(projection) == {"path", "profile", "sha256"}
+            and projection["path"] == COVERAGE_LEDGER and projection["profile"] == LEDGER_ROUTING_PROFILE
+            and isinstance(projection["sha256"], str) and DIGEST.fullmatch(projection["sha256"]),
+            "invalid qualification ledger routing projection")
+    return projection["sha256"]
+
+
 def _authenticate_scope_evidence(repo, source, record, load, cache):
+    routing = _ledger_routing_declaration(record)
+    if routing is not None:
+        require(_ledger_routing_digest(source, load, cache) == routing, "original qualification ledger routing differs")
     scopes, absent = _scope_declarations(record)
     for scope in scopes:
         require(_scope_membership(repo, source, scope, load, cache) == scope['sha256'],
@@ -445,10 +512,15 @@ def _authenticate_scope_evidence(repo, source, record, load, cache):
 def disposition_input_applicability(repo, source, record, load, cache):
     """Compare only declared inputs/scopes; history was authenticated separately."""
     scopes, absent = _scope_declarations(record)
+    routing = _ledger_routing_declaration(record)
     changed, unavailable = set(), set()
     for path, expected in record['inputs'].items():
         try:
-            if digest(load(source, path)) != expected:
+            if path == COVERAGE_LEDGER and routing is not None:
+                differs = _ledger_routing_digest(source, load, cache) != routing
+            else:
+                differs = digest(load(source, path)) != expected
+            if differs:
                 changed.add(path)
         except ReadinessError:
             unavailable.add(path)
@@ -573,6 +645,8 @@ def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, c
         require(record.get('source_commit') == tested and record.get('kind') == item.get('kind'),
                 'cached disposition proof source/kind differs')
         require(cell in record.get('disposition_ids', []), 'disposition proof does not cover ' + cell)
+        require("input_projections" not in record or row["status"] == "TESTED",
+                "qualification ledger routing requires a tested finding")
         require(paths <= set(record['inputs']),
                 'disposition proof omits owning source inputs: ' + cell)
         result = record.get('result')
@@ -790,7 +864,7 @@ def _producer_requirements(repo, source, run_id):
     require(sorted(program["delivery_predicates"]["PREPUBLICATION_READY"]["required_task_ids"]) == required,
             "producer task population differs from program contract")
     required += [t["id"] for t in progress.get("new_required_work", [])]
-    ledger = read(CORPUS + "execution/coverage-ledger.json")
+    routing = _qualification_ledger_routing(blob(repo, source, COVERAGE_LEDGER))
     groups = {
         "findings": {r["finding_id"]:r for r in read(CORPUS+"contracts/finding-dispositions.json")["records"]},
         "machines": {r["machine_id"]:r for r in read(CORPUS+"contracts/machine-coverage.json")["machines"]},
@@ -801,12 +875,12 @@ def _producer_requirements(repo, source, run_id):
     task_owners.update({t["id"]:t["owner"] for t in progress.get("new_required_work", [])})
     jobs = {}
     for group, contracts in groups.items():
-        require(set(ledger.get(group, {})) == set(contracts), "producer declaration population differs: " + group)
+        require(set(routing[group]) == set(contracts), "producer declaration population differs: " + group)
         for identity, contract in contracts.items():
             cell = 'disposition:' + group + ':' + identity
             # Only owner/task assignment is consumed from this mutable lifecycle
             # record. No status/evidence/currentness predicate is accepted here.
-            jobs[cell] = disposition_job(cell, ledger[group][identity], contract, task_owners)
+            jobs[cell] = disposition_job(cell, routing[group][identity], contract, task_owners)
     scenarios = read(CORPUS+"contracts/scenarios.json")["scenarios"]
     cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, jobs,
                                            read(".github/major-qualification-policy.json"))
