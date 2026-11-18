@@ -28496,10 +28496,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/manifest-hosted-tested.json",
+     "sha256": "02241c72eac838e1299839150de17c912e06115d3b00d0c2b4e832ba4cc5f8cb"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json",
-     "sha256": "0ebebeb80ad5d8c904a45b188de0a36419ac57f4622d225da7b82056fc4e183d"
+     "sha256": "0ebebeb80ad5d8c904a45b188de0a36419ac57f4622d225da7b82056fc4e183d",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39289,10 +39298,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39303,6 +39312,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-input-config-tested.json",
      "sha256": "3bd9048fc6b6f9ced33d9df72067fedcfe868df31a00bea1e95b4817ca8cacba",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39490,10 +39506,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39532,6 +39548,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39549,10 +39572,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39563,6 +39586,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
      "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39580,10 +39610,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39594,6 +39624,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
      "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39611,10 +39648,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39653,6 +39690,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39670,10 +39714,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39684,6 +39728,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-scheduler-tested.json",
      "sha256": "8489771e80e281e60f8464e01b33b4430de009db6a9579a14c1f7b65c0c4229a",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39761,10 +39812,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39775,6 +39826,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-tested.json",
      "sha256": "db8d0d9488a296d63781cfe4a6f20a80416a93b336ea0647d11ff9fb13c8d71b",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39792,10 +39850,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39806,6 +39864,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-finalization-tested.json",
      "sha256": "db8d0d9488a296d63781cfe4a6f20a80416a93b336ea0647d11ff9fb13c8d71b",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39823,10 +39888,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39865,6 +39930,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39882,10 +39954,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39896,6 +39968,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/tested.json",
      "sha256": "13bc223ae6b2c6809582c3212a2a71c7a6b9af5a210751e33928dc7012b10dee",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -39913,10 +39992,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -39955,6 +40034,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40090,10 +40176,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40104,6 +40190,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40121,10 +40214,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40135,6 +40228,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40152,10 +40252,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40166,6 +40266,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40183,10 +40290,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40197,6 +40304,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40214,10 +40328,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40228,6 +40342,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40245,10 +40366,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40287,6 +40408,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40304,10 +40432,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40318,6 +40446,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40335,10 +40470,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40349,6 +40484,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40366,10 +40508,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40408,6 +40550,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40425,10 +40574,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40439,6 +40588,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40456,10 +40612,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40470,6 +40626,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40487,10 +40650,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40501,6 +40664,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-candidate-and-retry-tested.json",
      "sha256": "d6b582e6e884fa45b5f74541a806ebfeb80f7013c301250f0e97ce09f6780f1c",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -40813,10 +40983,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -40848,6 +41018,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/remapped3-tested.json",
      "sha256": "c58e0a8a4cca1a472e8940819e5c22574ab12a5de09366ec7b97119acbae1961",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -41021,10 +41198,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -41035,6 +41212,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-commit-and-integration-tested.json",
      "sha256": "7935e7d157ff32e7c71431101141562a69c741f4fca8ff4443db81a4defc2c6e",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42514,10 +42698,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -42528,6 +42712,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-tested.json",
      "sha256": "bff768f5332f11564e2a28d2e9fc305160c0653156188e0bb458b496374d6486",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42541,10 +42732,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -42555,6 +42746,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-command-outcomes-tested.json",
      "sha256": "bff768f5332f11564e2a28d2e9fc305160c0653156188e0bb458b496374d6486",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42623,10 +42821,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -42665,6 +42863,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42775,10 +42980,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -42810,6 +43015,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/remapped3-tested.json",
      "sha256": "c58e0a8a4cca1a472e8940819e5c22574ab12a5de09366ec7b97119acbae1961",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42827,10 +43039,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -42841,6 +43053,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-stale-registration-tested.json",
      "sha256": "6fe6f9f9ee1fa0b176e6fbcd15827d2c2950807e249c90f07ddc049745e2f1c8",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42858,10 +43077,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -42893,6 +43112,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/remapped3-tested.json",
      "sha256": "c58e0a8a4cca1a472e8940819e5c22574ab12a5de09366ec7b97119acbae1961",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -42910,10 +43136,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "evidence_history": [
@@ -42937,6 +43163,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/cleanup14-tested.json",
      "sha256": "9e21e3ab80502e62b59bbae3f242f6cd465338397990fbb4aa9ffdb1465c93dc",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim."
@@ -43274,10 +43507,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -43316,6 +43549,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/farm8-tested.json",
      "sha256": "f54fa6ad576c6a21fb5509e72da7546fa70a387b6f0bb40ab16e20834bbe5f37",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -43333,10 +43573,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -43347,6 +43587,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
      "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -43364,10 +43611,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -43378,6 +43625,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
      "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -43395,10 +43649,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -43409,6 +43663,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
      "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -43426,10 +43687,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -43440,6 +43701,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
      "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -43533,10 +43801,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim.",
@@ -43547,6 +43815,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/farm-detached-canary-tested.json",
      "sha256": "9c753ff7a0066f716c1a86001e5749dbfe1a62cb8d21df436f703f6cdf46ad1f",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -69751,10 +70026,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "evidence_history": [
@@ -69778,6 +70053,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/cleanup14-tested.json",
      "sha256": "9e21e3ab80502e62b59bbae3f242f6cd465338397990fbb4aa9ffdb1465c93dc",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim."
@@ -69791,10 +70073,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "evidence_history": [
@@ -69811,6 +70093,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/cleanup14-tested.json",
      "sha256": "9e21e3ab80502e62b59bbae3f242f6cd465338397990fbb4aa9ffdb1465c93dc",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim."
@@ -69856,10 +70145,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
-     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
-     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e"
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
     }
    ],
    "evidence_history": [
@@ -69869,6 +70158,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/late-drift-tested.json",
      "sha256": "03e0b2534e43ad94ec596a562f7bce5664a4bd92ef6737001e5387c64bcdc5b1",
      "ref_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef"
+    },
+    {
+     "kind": "test",
+     "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+     "ref": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/tested.json",
+     "sha256": "4e7d5a7bd6c8e53f7e455406c40bc5fe64d935c9e229c5565a45e07d49cff07e",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ],
    "candidate_contract_note": "Finite current farm source/bundle successor: exact per-row original guard/effect/retry and assertion scope retained; unchanged controllers/callbacks/dependencies plus explicitly qualified common-lock admission/refusal. Original runtime identities/history unchanged; no new suite/platform/provider/whole-task claim."
@@ -69882,10 +70178,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
      "ref": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/farm-lock-tested.json",
-     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3"
+     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -69898,10 +70203,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
      "ref": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/farm-lock-tested.json",
-     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3"
+     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -69914,10 +70228,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
      "ref": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/farm-lock-tested.json",
-     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3"
+     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -69930,10 +70253,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
      "ref": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/farm-lock-tested.json",
-     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3"
+     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -69946,10 +70278,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
      "ref": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/farm-lock-tested.json",
-     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3"
+     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
@@ -69962,10 +70303,19 @@
    "status": "TESTED",
    "evidence": [
     {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-farm-manifest-hosted-00fd5fff/farm-hosted-tested.json",
+     "sha256": "56e760770929307a9b4d547abc877f20a0884ea22b2d2d12810f1d36ca4b188f"
+    }
+   ],
+   "evidence_history": [
+    {
      "kind": "test",
      "commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
      "ref": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/farm-lock-tested.json",
-     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3"
+     "sha256": "fe12e2fc7f89b19e4807a0e1d313d51dc9d3f1a146e601ec9daa4b47b49d55e3",
+     "ref_commit": "9fa45d018f8ed8113d4b8d06b92d82e5c518ddba"
     }
    ]
   },
