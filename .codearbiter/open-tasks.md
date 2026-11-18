@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Recognize live Docs producers while sibling jobs are queued  (from github:arbiterForge:codeArbiter:actions-job:135143111321:docs-live-run-state)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:actions-job:135143111321:docs-live-run-state
+  - Desc: The original component report failed at the aggregate Docs workflow status gate while its job was running. Accept documented nonterminal Actions states only for live authenticated producers and preserve the completed-success final gate.
+  - Work type: fix
+  - Work ID: WORK-5AB2A1161888D1D5504CA07713EC4447
+  - Work operation ID: work-97611abf57f355a735d93dfa1c74fe8d9a9fb8a9
 - [x] Wait for shell exit in audit append fixtures  (from github:arbiterForge/codeArbiter:actions-job:135047091639:audit-append-wait)  (done 2026-11-18)
   - Work origin: github:arbiterForge/codeArbiter:actions-job:135047091639:audit-append-wait
   - Desc: Separate append command exit from output pipe EOF in the original isolation fixture. A controlled Windows reproduction establishes that an inherited pipe can time out after the owned root exited. Keep 30 seconds, no prompts, and UTF-8 prefix assertions.
