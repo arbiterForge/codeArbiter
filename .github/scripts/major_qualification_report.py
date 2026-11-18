@@ -5124,7 +5124,13 @@ def main(argv=None):
         new_output(args.output, report)
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, readiness.ReadinessError) as error:
-        print("::error::Major qualification report pending: " + str(error), file=sys.stderr)
+        message = str(error)
+        observation = getattr(error, "github_read_observation", None)
+        if observation is not None:
+            operation, status = observation["operation"], observation["http_status"]
+            detail = operation if status is None else f"{operation}, HTTP {status}"
+            message += f" ({detail})"
+        print("::error::Major qualification report pending: " + message, file=sys.stderr)
         return 1
 
 

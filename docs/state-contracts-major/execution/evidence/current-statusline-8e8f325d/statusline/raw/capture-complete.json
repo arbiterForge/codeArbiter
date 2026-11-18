@@ -1,0 +1,13 @@
+{
+  "state": "ACTUAL_CAPTURE_SEALED",
+  "owner": "statusline",
+  "source_commit": "8e8f325ddff628974ad7cc7082b68078fbdc949c",
+  "source_tree": "0bf53d5654c96c030e56274290b0155d80c43530",
+  "exit_code": 0,
+  "seconds": 1.2926385999890044,
+  "PASS": 67,
+  "positive_inputs": 29,
+  "runtime_records": 10795,
+  "actual_imports": 25,
+  "HEAD_index_source_runtime_namespaces_stable": true
+}
