@@ -340,7 +340,7 @@
     },
     {
       "path": "core/pysrc/_workflowrecoverylib.py",
-      "blob": "a211da361e2fa03333b98fce0260687af330079d",
+      "blob": "c47fdcaa3087d3943a6380dca0c7ffd1df0fbe8c",
       "summary": "Qualifying follow-ups are registered at discovery with exact producer origin and source binding. Terminal harvest reconciles uncertain effects before selected promotion under existing authority. Unregistered text is not recovered work. Decision and decline publication carries the caller preimage through both atomic comparisons; a concurrent append remains a conflict with its effect unresolved. Only finite trusted reason codes supply bounded scan and startup recovery guidance. An uncertain decline stays claimed until exact audit readback settles it; changed facts use a new linked obligation without reopening settled history. Fallback notices use the same session fingerprint check after a host records delivery.",
       "nodes": [
         "c-harvest",
@@ -351,8 +351,8 @@
     },
     {
       "path": "core/pysrc/workflow-recovery.py",
-      "blob": "41f0ade6ae5ade17915dda699ef6432fe9079739",
-      "summary": "Startup and status expose a bounded read-only registered recovery inventory. Partial pages are lower bounds; unknown or corrupt state remains unavailable. Optional notice markers are presentation bookkeeping, never restored permission.",
+      "blob": "9c9c3bbd421c8be604c2c3891b1fa8c58c394e7b",
+      "summary": "Startup and status expose a bounded read-only registered recovery inventory. Partial pages are lower bounds; unknown or corrupt state remains unavailable. Optional notice markers are presentation bookkeeping, never restored permission. The automatic scan reuses the worktree its parent validated, then checks activation and storage in the child within the existing one-second scan deadline.",
       "nodes": [
         "c-live",
         "k-status",
