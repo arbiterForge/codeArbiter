@@ -1942,7 +1942,7 @@ try {
     def _native_progress_fixture(self, root, *, failure=None, expired_after=False):
         import _windows_rpc_timeout as native
         from types import SimpleNamespace
-        image = root / "node.exe"
+        image = root.resolve(strict=True) / "node.exe"
         image.write_bytes(b"owned process image")
         now = [0.0]
         class Kernel:
