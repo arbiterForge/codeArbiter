@@ -18,6 +18,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import subprocess
 import sys
+import time
 from urllib.parse import urlencode
 import zipfile
 from _boundedproc import start, terminate_tree
@@ -44,11 +45,19 @@ P02_FIXTURE_CELLS = frozenset(f"disposition:added_transitions:{identity}" for id
 SHA = re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
 RECORDED_API_OPERATIONS = (
+    ('run', r'actions/runs/[1-9][0-9]*'),
     ('run-attempt', r'actions/runs/[1-9][0-9]*/attempts/[1-9][0-9]*'),
     ('job', r'actions/jobs/[1-9][0-9]*'),
     ('artifact-metadata', r'actions/artifacts/[1-9][0-9]*'),
     ('artifact-download', r'actions/artifacts/[1-9][0-9]*/zip'),
 )
+PAGINATED_API_OPERATIONS = (
+    ('run-artifacts', r'actions/runs/[1-9][0-9]*/artifacts\?per_page=100'),
+    ('run-jobs', r'actions/runs/[1-9][0-9]*/jobs\?filter=latest&per_page=100'),
+)
+TRANSIENT_GITHUB_HTTP = frozenset((502, 503, 504))
+GITHUB_READ_RETRY_DELAY = 0.5
+COMMAND_TIMEOUT_SECONDS = 120
 MAX_ARCHIVE = 256 * 1024 * 1024
 UPLOAD_ACTION = 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
 SOURCE_INPUT_PAYLOAD = 'major-source-inputs-hooks-windows-contracts'
@@ -154,6 +163,44 @@ def digest(data):
     return hashlib.sha256(data).hexdigest()
 
 
+def _github_read_operation(argv):
+    prefix = "repos/" + REPOSITORY + "/"
+    if (len(argv) < 3 or argv[:2] != ["gh", "api"]
+            or not isinstance(argv[-1], str) or not argv[-1].startswith(prefix)):
+        return None
+    if len(argv) == 3:
+        operations = RECORDED_API_OPERATIONS
+    elif argv[2:-1] == ["--paginate", "--slurp"]:
+        operations = PAGINATED_API_OPERATIONS
+    else:
+        return None
+    path = argv[-1][len(prefix):]
+    return next((operation for operation, pattern in operations if re.fullmatch(pattern, path)), None)
+
+
+def _github_cli_http_status(stderr):
+    responses = re.finditer(rb"\(HTTP ([45][0-9]{2})\)|(?m:^gh: HTTP ([45][0-9]{2})\r?$)", stderr[:65536])
+    statuses = {int(match[1] or match[2]) for match in responses}
+    return statuses.pop() if len(statuses) == 1 else None
+
+
+def _read_github(argv, options, operation):
+    deadline = time.monotonic() + COMMAND_TIMEOUT_SECONDS
+    for attempt in (1, 2):
+        remaining = max(0, deadline - time.monotonic())
+        code, stdout, stderr = _command_once(argv, options, remaining)
+        if code == 0:
+            return stdout
+        status = _github_cli_http_status(stderr)
+        error = ReadinessError("readiness observation failed: gh")
+        # Never surface stderr. Artifact requests can include signed download URLs.
+        error.github_read_observation = {"operation": operation, "http_status": status}
+        if (attempt == 2 or status not in TRANSIENT_GITHUB_HTTP
+                or time.monotonic() + GITHUB_READ_RETRY_DELAY >= deadline):
+            raise error
+        time.sleep(GITHUB_READ_RETRY_DELAY)
+
+
 def command(argv, cwd=None, *, local_adr=False):
     options = {"cwd": cwd, "stdout": subprocess.PIPE, "stderr": subprocess.PIPE}
     if local_adr:
@@ -169,9 +216,34 @@ def command(argv, cwd=None, *, local_adr=False):
         require(arguments and arguments[0] in ("rev-parse", "cat-file", "merge-base", "ls-tree"),
                 "readiness local Git role refuses unsupported operation")
         options["env"] = local_read_git_env()
+    operation = _github_read_operation(argv)
+    if operation:
+        return _read_github(argv, options, operation)
+    code, stdout, stderr = _command_once(argv, options, COMMAND_TIMEOUT_SECONDS)
+    if code != 0:
+        error = ReadinessError("readiness observation failed: " + argv[0])
+        # Preserve the separate closed diagnostic contract for upload log reads.
+        if (len(argv) == 3 and argv[:2] == ["gh", "api"]
+                and isinstance(argv[2], str)
+                and re.fullmatch(r"repos/" + re.escape(REPOSITORY)
+                                 + r"/actions/jobs/[1-9][0-9]*/logs", argv[2])
+                and type(stderr) is bytes and type(code) is int
+                and -(1 << 31) <= code < (1 << 32)):
+            status = _github_cli_http_status(stderr)
+            error.command_diagnostic = {
+                "operation": "github-actions-job-log", "code": "UPLOAD_LOG_COMMAND_FAILED",
+                "exit_code": code,
+                "http_status": status,
+                "stderr_sha256": digest(stderr),
+            }
+        raise error
+    return stdout
+
+
+def _command_once(argv, options, timeout):
     process = start(argv, **options)
     try:
-        stdout, stderr = process.communicate(timeout=120)
+        stdout, stderr = process.communicate(timeout=timeout)
     except subprocess.TimeoutExpired:
         containment = terminate_tree(process)
         try:
@@ -179,37 +251,7 @@ def command(argv, cwd=None, *, local_adr=False):
         except subprocess.TimeoutExpired:
             pass
         raise ReadinessError("readiness observation timed out; containment=" + containment) from None
-    if process.returncode != 0:
-        error = ReadinessError("readiness observation failed: " + argv[0])
-        # Emit operation and status only. The CLI diagnostic can contain signed URLs.
-        if len(argv) == 3 and argv[:2] == ["gh", "api"] and isinstance(argv[2], str):
-            prefix = "repos/" + REPOSITORY + "/"
-            action = argv[2].removeprefix(prefix) if argv[2].startswith(prefix) else ""
-            for operation, pattern in RECORDED_API_OPERATIONS:
-                if re.fullmatch(pattern, action):
-                    statuses = set(re.findall(rb"\(HTTP ([45][0-9]{2})\)", stderr[:65536]))
-                    error.github_read_observation = {
-                        "operation": operation,
-                        "http_status": int(next(iter(statuses))) if len(statuses) == 1 else None,
-                    }
-                    break
-        # Preserve the separate closed diagnostic contract for upload log reads.
-        if (len(argv) == 3 and argv[:2] == ["gh", "api"]
-                and isinstance(argv[2], str)
-                and re.fullmatch(r"repos/" + re.escape(REPOSITORY)
-                                 + r"/actions/jobs/[1-9][0-9]*/logs", argv[2])
-                and type(stderr) is bytes and type(process.returncode) is int
-                and -(1 << 31) <= process.returncode < (1 << 32)):
-            statuses = set(re.findall(rb"\(HTTP ([0-9]{3})\)", stderr[:65536]))
-            status = int(next(iter(statuses))) if len(statuses) == 1 else None
-            error.command_diagnostic = {
-                "operation": "github-actions-job-log", "code": "UPLOAD_LOG_COMMAND_FAILED",
-                "exit_code": process.returncode,
-                "http_status": status if status is not None and 400 <= status <= 599 else None,
-                "stderr_sha256": digest(stderr),
-            }
-        raise error
-    return stdout
+    return process.returncode, stdout, stderr
 
 
 def blob(repo, source, path):

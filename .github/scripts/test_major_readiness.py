@@ -1906,6 +1906,63 @@ class HostedRawAuthenticationCacheTest(unittest.TestCase):
         self.assertNotIn("private URL", str(caught.exception))
 
 
+
+class GitHubReadRecoveryTest(unittest.TestCase):
+    INVENTORY = ["gh", "api", "--paginate", "--slurp",
+                 "repos/arbiterForge/codeArbiter/actions/runs/7/jobs?filter=latest&per_page=100"]
+    ARCHIVE = ["gh", "api", "repos/arbiterForge/codeArbiter/actions/artifacts/10/zip"]
+    SIGNED = b"https://unit.invalid/?signed=do-not-report"
+
+    def process(self, code, stdout, stderr):
+        child = mock.Mock(returncode=code)
+        child.communicate.return_value = (stdout, stderr)
+        return child
+
+    def test_exact_paginated_read_retries_plain_503_and_discards_partial_stdout(self):
+        original = self.process(1, b"[partial", b"gh: HTTP 503\n" + self.SIGNED)
+        successor = self.process(0, b'[{"jobs":[]}]', b"")
+        with mock.patch.object(owner, "start", side_effect=[original, successor]) as launch:
+            self.assertEqual(owner.command(self.INVENTORY), b'[{"jobs":[]}]')
+        self.assertEqual([call.args[0] for call in launch.call_args_list], [self.INVENTORY]*2)
+        self.assertLess(successor.communicate.call_args.kwargs["timeout"],
+                        original.communicate.call_args.kwargs["timeout"])
+        self.assertLessEqual(original.communicate.call_args.kwargs["timeout"], 120)
+
+    def test_second_503_stays_pending_with_safe_operation_and_status(self):
+        errors = [self.process(1, b"", b"gh: HTTP 503\n" + self.SIGNED) for _ in range(2)]
+        with mock.patch.object(owner, "start", side_effect=errors) as launch:
+            with self.assertRaises(owner.ReadinessError) as caught:
+                owner.api("actions/artifacts/10/zip", binary=True)
+        self.assertEqual(launch.call_count, 2)
+        self.assertEqual(caught.exception.github_read_observation,
+                         {"operation": "artifact-download", "http_status": 503})
+        self.assertEqual(str(caught.exception), "readiness observation failed: gh")
+        self.assertNotIn("do-not-report", str(caught.exception))
+
+    def test_permanent_403_reports_typed_failure_without_retry(self):
+        denied = self.process(1, b"", b"gh: " + self.SIGNED + b" (HTTP 403)")
+        with mock.patch.object(owner, "start", return_value=denied) as launch:
+            with self.assertRaises(owner.ReadinessError) as caught:
+                owner.command(self.INVENTORY)
+        launch.assert_called_once()
+        self.assertEqual(caught.exception.github_read_observation,
+                         {"operation": "run-jobs", "http_status": 403})
+        self.assertNotIn("do-not-report", str(caught.exception))
+
+    def test_non_read_command_and_conflicting_transport_status_stay_single_attempt(self):
+        later = self.process(1, b"", b"gh: HTTP 503")
+        mixed = self.process(1, b"", b"gh: HTTP 503\n"
+                             b"gh: denied (HTTP 403)")
+        for argv, process in (
+            (["gh", "api", "--method", "POST", self.ARCHIVE[-1]], later),
+            (self.ARCHIVE, mixed),
+        ):
+            with (self.subTest(argv=argv), mock.patch.object(owner, "start", return_value=process) as launch,
+                  self.assertRaises(owner.ReadinessError)):
+                owner.command(argv)
+            launch.assert_called_once()
+
+
 class UploadLogDiagnosticTest(unittest.TestCase):
     STDERR = (b"gh: controlled refusal (HTTP 403)\n"
               b"unit-private-diagnostic https://unit.invalid/?fixture=never-report\n")

@@ -1,0 +1,21 @@
+{
+  "schema": "codearbiter-source-only-delta-inspection/1",
+  "source": "e74d184126f1aba6d0bbb5eaa9e780227b051865",
+  "source_tree": "0237c8a65515f36045561c7713f323d77098c09a",
+  "base": "3a364c9aed985109f04b5bc2c6100b8356ca5b56",
+  "disposition_ids": [
+    "disposition:machines:C06",
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+  ],
+  "changed_input": {
+    "path": ".github/scripts/major_qualification_report.py",
+    "prior": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+    "current": "bd21c6f836dd2fa5dc1dd45f720b3ee3edeca79ac23b058ae9255a1424e8718b"
+  },
+  "scope": "The qualification reporter now appends a typed GitHub read operation and HTTP status to its terminal refusal. Restoring the former exception body recovers the complete previous reporter AST.",
+  "supported_claim": "The C06 shard inputs, ownership, child lifecycle, retention code, workflow routing and other prior declared inputs are byte-identical. The .github/scripts namespace has identical membership.",
+  "tests_executed_by_this_inspection": 0
+}
