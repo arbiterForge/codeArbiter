@@ -4598,6 +4598,13 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                     if step.startswith("      - name: Browser publication gate\n"))
         self.assertRegex(gate, r"(?m)^        id: browser-gate$")
 
+    def test_original_pages_artifact_retains_live_proof_for_fourteen_days(self):
+        build = workflow_jobs(DOCS_WORKFLOW.read_text(encoding="utf-8"))["build"]
+        steps = re.split(r"(?m)(?=^      - )", build)[1:]
+        pages, = [step for step in steps if step.startswith("      - name: Upload Pages artifact\n")]
+        self.assertEqual(re.findall(r"(?m)^          retention-days: ([^\n]+)$", pages), ["14"],
+                         "Original Pages bytes must remain available as long as their qualification report")
+
     def test_component_suite_is_discovered_and_success_gates_pages_upload(self):
         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
         self.assertEqual(scripts.get("test:components"),
