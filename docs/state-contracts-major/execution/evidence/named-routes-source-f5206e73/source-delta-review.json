@@ -1,0 +1,87 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
+  "prior_source_checkpoint": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+  "delta": {
+    ".github/major-qualification-policy.json": {
+      "before": "f3b85d13edf20ae1d4b187b0d6911ddffedbaf3e4b0d05396ba3035e014611e1",
+      "current": "29e13b9181131bfee83ba031c4466a3dab905b20d452f55fa1f69d7649c12817",
+      "assessment": "The closed policy adds exactly 55 routes in the first reviewed layer and 64 more in the second layer. No existing route or installed requirement entry changes."
+    },
+    ".github/major-test-selections.json": {
+      "before": "5d384f5513c7623b4558ca294444515864a70fc435033256af3270150e30b422",
+      "current": "df58952ba04c406879936c7d18f9a8f64e18ebca933046b271403891830870c1",
+      "assessment": "The selection file adds exact originally named owner routes. Every pre-existing group keeps its full producer, owner, selector and cell identity."
+    },
+    ".github/scripts/major_native_observation.py": {
+      "before": "a6196d5406540504efbaa37e2deb5939e6bfa8814b577622dd74fd23abcf779c",
+      "current": "514b33093d089f1d57e3d34c8379fc3bb1732f75b4f22f4dc477ffe0a4051b23",
+      "assessment": "The native observation source gains the distinct N-F03 named Windows progress recipe. Earlier recipes and consumer helper definitions retain their exact source. This is route selection only."
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "before": "b351e8622cf347d89d165ba849e6b9df48d1ff230e13f859c769b73d2127a997",
+      "current": "15ed246de5b6fc67204b504522d7a008e087d6ed06fc48a14c385e09f1882b1a",
+      "assessment": "Native Authority keeps its same source/default observation profile, source identity, observer dispatch, finite test selection, exact four-child execution and retention. Both native authority and aggregate job bodies are byte-identical. Separate Hook, Farm, Sandbox, recovery and native named routes are added outside this authority dispatch."
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "before": "7bd398afcb8835535fa7a59f2752b8c4d8d235f90f97ac2c5804853b5fbf1042",
+      "current": "2892f463359d4318b0b1cc4908af2aa23a1fcb15dfa893fbb95c921667a45d14",
+      "assessment": "Selected owner preservation uses the exact associated prior proof and current finite source. Existing source, guard, ordering and refusal predicates of the claimed families are preserved."
+    },
+    ".github/scripts/test_major_native_observation.py": {
+      "before": "c951c82e635b0cf18a65b47672640e623ba43eecf717114e04c937f84e8b59bf",
+      "current": "5d7c3b154b6ec7c5b3d80febeb8430233b325277d68a4a3d87a0ab159b40e651",
+      "assessment": "Selected owner preservation uses the exact associated prior proof and current finite source. Existing source, guard, ordering and refusal predicates of the claimed families are preserved."
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "before": "158e01781b45e772894da953e008fc0980a73d4fe767ec54f5998cbb208416ec",
+      "current": "b1f23e80d0a874fbc6f67fddc70269a797a3d2bdcc7f3c349998292533fb4ca2",
+      "assessment": "Selected owner preservation uses the exact associated prior proof and current finite source. Existing source, guard, ordering and refusal predicates of the claimed families are preserved."
+    },
+    ".github/scripts/test_major_readiness.py": {
+      "before": "aaf38a0fc8855c0322554aacdc5594771d02276348b3efd8f7b61eba04680271",
+      "current": "f68bc7859fe75a35f73a71b482544b16c1e86645f17976ff3073c9d999ba4d8d",
+      "assessment": "Selected owner preservation uses the exact associated prior proof and current finite source. Existing source, guard, ordering and refusal predicates of the claimed families are preserved."
+    },
+    ".github/workflows/ci.yml": {
+      "before": "61f83893c9a5276363598ff10a2d7dfba0aec19836caa4e8aaed2d1931b04188",
+      "current": "c6cb97e0e1f46b549929ed1e19e2434cc1aaecd9c8a9c65b51bb97031915fbd9",
+      "assessment": "Only the declared push/hook filters and two disjoint Hook observation wrappers change. The Windows observed path invokes each same test producer exactly once and preserves release planner before the Git channel call. Added success guards and observation inputs bind those paths to existing emit. The aggregate and all other existing jobs are byte-identical, including all artifact authority, native coverage, cold-install, release candidate, advisories and original Sandbox layer gates."
+    }
+  },
+  "first_commit": "3ff1a010f9be9a6cd362eb68af73cf4bdff48bbf",
+  "first_tree": "9fe1456ef3e45bbc8a18e5c5a6a19bddf82f5fce",
+  "second_commit": "f5206e7371e0d74ce6730f701e418ac3b3bfa7a5",
+  "second_tree": "8a40e67c91a44717858e886a5d3654541084e4d8",
+  "affected_scope": "Only currently applicable pure-source dispositions with changed positive bytes. The 119 new selectors are disjoint and this packet confers no execution or installation status.",
+  "workflow_changed_sections": [
+    "changes",
+    "event/concurrency",
+    "hooks"
+  ],
+  "workflow_original_observed_owner_map": [
+    {
+      "old_owner_step": "Run bounded verifier-subprocess contract tests",
+      "observed_owner_step": "Observe original bounded verifier-subprocess contract tests",
+      "script": ".github/scripts/test_boundedproc.py",
+      "new_output": "bounded-reader"
+    },
+    {
+      "old_owner_step": "Run per-target release planner and Git channel contracts",
+      "observed_owner_step": "Observe original Git channel contracts after the release planner",
+      "script": ".github/scripts/test_marketplace_git_channels.py",
+      "new_output": "git-channel"
+    }
+  ],
+  "canonical_stage_projection": {
+    "source_current": 1619,
+    "population": 1739,
+    "stale": 120,
+    "provided_sha256": "e9221adc23ac11f99b18c87da9a782d5327a22f4e7a7fcc8c7b71a256801277b"
+  },
+  "policy_routes_by_commit": [
+    55,
+    64
+  ],
+  "authority_unchanged_assessment": "Native Authority keeps its same source/default observation profile, source identity, observer dispatch, finite test selection, exact four-child execution and retention. Both native authority and aggregate job bodies are byte-identical. Separate Hook, Farm, Sandbox, recovery and native named routes are added outside this authority dispatch."
+}

@@ -14,7 +14,9 @@ from unittest import mock
 import major_readiness as owner
 
 CELLS = ['disposition:findings:SF16', 'disposition:machines:S62',
-         *['disposition:transitions:S62:%02d' % n for n in range(1, 6)]]
+         *['disposition:transitions:S62:%02d' % n for n in range(1, 6)],
+         *['disposition:transitions:S56:%02d' % n for n in (1, 2, 4, 5, 6)],
+         'disposition:transitions:S58:01', 'disposition:transitions:S58:02']
 JOB = 'Site | [Build] - Astro Pages'
 STAMP = '2026-11-15T12:00:00Z'
 END = '2026-11-15T12:00:10Z'
@@ -177,7 +179,7 @@ class DocsAuthorityTests(unittest.TestCase):
         return {'config': {'workers': 1, 'forbidOnly': True, 'projects': [
             {'name': 'chrome', 'id': 'chrome', 'retries': 0, 'repeatEach': 1}]},
             'suites': suites, 'errors': [],
-            'stats': {'expected': 5, 'unexpected': 0, 'flaky': 0, 'skipped': 0}}
+            'stats': {'expected': len(suites), 'unexpected': 0, 'flaky': 0, 'skipped': 0}}
 
     def observation(self):
         return {'format': self.docs.OBSERVATION, 'source_commit': 'a' * 40,
@@ -234,7 +236,7 @@ class DocsAuthorityTests(unittest.TestCase):
         self.assertEqual(result['ci_run_id'], 7)
         self.assertEqual(result['docs']['run_id'], 17)
         self.assertEqual(result['docs']['job_id'], 29)
-        self.assertEqual(len(result['docs']['results']), 7)
+        self.assertEqual(len(result['docs']['results']), len(CELLS))
 
     def test_playwright_actual_shape_and_finite_semantic_union(self):
         parsed = self.docs.parse_playwright(self.raw_report())
@@ -263,7 +265,7 @@ class DocsAuthorityTests(unittest.TestCase):
             lambda r: first(r)['results'][0].update(status='failed'),
             lambda r: first(r)['results'][0].update(errors=[{'message': 'failure'}]),
             lambda r: first(r)['results'][0].update(duration=float('nan')),
-            lambda r: r['stats'].update(expected=6),
+            lambda r: r['stats'].update(expected=len(r['suites']) + 1),
             lambda r: r['stats'].update(skipped=1),
         ]
         for index, mutation in enumerate(mutations):
@@ -392,7 +394,7 @@ class DocsAuthorityTests(unittest.TestCase):
             self.assertEqual(len(calls), 1)
             observed = json.loads((root / 'result.json').read_text())
             self.assertEqual(observed['exit_code'], 0)
-            self.assertEqual(len(observed['tests']), 5)
+            self.assertEqual(len(observed['tests']), len(self.docs.SELECTORS))
             self.assertEqual(observed['served_members'][0]['sha256'], owner.digest(b'served'))
 
     def test_envelope_keeps_actual_core_verifier_main_success_and_q03_guards(self):
@@ -635,6 +637,31 @@ class DocsAuthorityTests(unittest.TestCase):
                     self.docs._regular(path, 8)
             self.assertTrue(reads)
             self.assertTrue(all(0 < size <= 9 for size in reads))
+
+    def test_bookmark_and_directory_cells_use_exact_original_chrome_results(self):
+        repo = pathlib.Path(__file__).resolve().parents[2]
+        history = repo / 'docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs'
+        report = json.loads((history / 'raw/original-docs-qualification.json').read_bytes())
+        outcomes = {item['name'].split(':', 3)[3]: item['name'] for item in report['observation']['tests']
+                    if item['result'] == 'PASSED'}
+        expected = {}
+        for section in ('bookmark', 'directory'):
+            receipt = json.loads((history / f'{section}-hosted-tested.json').read_bytes())
+            for row in receipt['per_cell_assertion_mapping']:
+                expected[row['cell']] = [outcomes[name] for name in row['observed_named_cases']]
+        self.assertEqual(len(expected), 7)
+        policy = json.loads((repo / '.github/major-qualification-policy.json').read_bytes())
+        self.assertEqual({cell: policy['cell_job_bindings'].get(cell) for cell in expected}, dict.fromkeys(expected, JOB))
+        with mock.patch.object(owner, 'api', side_effect=self.api):
+            actual = self.docs.admit(self.req, run_id=17)['results']
+        self.assertEqual({row['cell']: row['selectors'] for row in actual if row['cell'] in expected}, expected)
+        missing = self.docs.SELECTORS[self.docs.CELL_SELECTORS['disposition:transitions:S56:04'][0]]
+        self.report['observation']['tests'] = [row for row in self.report['observation']['tests']
+                                               if row['name'] != missing]
+        self.refresh_artifacts()
+        with mock.patch.object(owner, 'api', side_effect=self.api):
+            with self.assertRaisesRegex(owner.ReadinessError, 'Docs required assertion missing'):
+                self.docs.admit(self.req, run_id=17)
 
     def test_selection_fragment_and_non_circular_workflow_retain_original_authority(self):
         root = pathlib.Path(__file__).resolve().parents[2]

@@ -483,7 +483,8 @@ class AdmissionTests(unittest.TestCase):
         record=original.produce()
         self.assertNotIn('launch_components',record['native'])
         self.assertEqual(original.verify(record)['state'],'PREPUBLICATION_READY')
-        self.assertEqual(len(native.RECIPES),40)
+        policy = json.loads((ROOT / ".github/major-qualification-policy.json").read_bytes())
+        self.assertEqual(sorted(native.RECIPES), policy["native_composite_cells"])
 
 
 class IdentityLimitTests(unittest.TestCase):
@@ -707,7 +708,7 @@ class HookF04FiniteFindingAdmissionTests(unittest.TestCase):
         self.assertEqual(f.verify(record)["state"], "PREPUBLICATION_READY")
         policy = json.loads((ROOT / ".github/major-qualification-policy.json").read_bytes())
         self.assertEqual(policy["native_launch_binding_findings"], [self.CELL])
-        self.assertEqual(len(native.RECIPES), 40)
+        self.assertNotIn(self.CELL, native.RECIPES)
         self.assertEqual(tuple(launch.TASKS), ("HW-04", "NT-04"))
 
     def test_hook_f04_refuses_missing_owner_or_unreviewed_finding_authority(self):

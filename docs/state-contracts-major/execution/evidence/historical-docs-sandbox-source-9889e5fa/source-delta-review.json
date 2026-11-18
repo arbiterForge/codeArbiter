@@ -1,0 +1,140 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "9889e5fa9d3adccd597c43e4f320ee773f251e62",
+  "prior_source_checkpoint": "2e8671924c98d5ba5e7a0365be89522876935169",
+  "delta": {
+    ".github/major-qualification-policy.json": {
+      "before": "29e13b9181131bfee83ba031c4466a3dab905b20d452f55fa1f69d7649c12817",
+      "current": "743227b05527639abacdb75e780f74521496b2407f2a623af2200450f15e3a98",
+      "assessment": "The existing owner routes preserve all previous entries and add only the seven browser, fourteen unit, four Sandbox and eight measurement declared cells. The measurement aliases share the existing finite-tf02 observer and issue no new workflow command."
+    },
+    ".github/major-test-selections.json": {
+      "before": "df58952ba04c406879936c7d18f9a8f64e18ebca933046b271403891830870c1",
+      "current": "3f3c1c8d07210d6f4f8a7219ed0334e49badb7eaea651d30710a22bf1235e169",
+      "assessment": "The existing owner routes preserve all previous entries and add only the seven browser, fourteen unit, four Sandbox and eight measurement declared cells. The measurement aliases share the existing finite-tf02 observer and issue no new workflow command."
+    },
+    ".github/scripts/check_state_contracts_integration.py": {
+      "before": "cef9fa7d2c158c6de27b072c2db5b98f124ae4fd6af1bbc49ae02a1d39fb6309",
+      "current": "465eba77da4a55c489b6711ddb44d883ee26302658086da81aecf91694fe7c34",
+      "assessment": "The integration checker excludes a typed historical trust refusal from current applicability rather than treating the stored record as current execution. The replacement browser evidence retains the seven TESTED statuses and prior pointers."
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "before": "15ed246de5b6fc67204b504522d7a008e087d6ed06fc48a14c385e09f1882b1a",
+      "current": "d6a8cb874317784c347108fa1c25afed11d568e8f4fc30d7233b1338062db51c",
+      "assessment": "The changed reporter adds four Sandbox named-result map entries and eight source aliases selecting the two existing finite-tf02 measurement vectors. Every reporter function, original C06 default source/observe-python path, runner, retained child identity/population and Authority workflow input is byte-identical or structurally identical as appropriate."
+    },
+    ".github/scripts/major_readiness.py": {
+      "before": "b904e914816373d51edae9d371d03719f7862bbacfe9c289e1e12698037f5599",
+      "current": "2589c22f0d3da296ec9483a659079c8904b2195645cc839fded9bcd5e6106729",
+      "assessment": "The historical reader retains exact source, run, job, artifact and attempt identity; it introduces a typed refusal for inaccessible exact attempt evidence. This is proof retrieval policy, outside the C06 and C29 original workflow behavior."
+    },
+    ".github/scripts/site_playwright_observation.py": {
+      "before": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+      "current": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+      "assessment": "C29 original event, source/build/coverage/Chrome job, retention, publication, Pages admission and failure conditions retain the same workflow and emitter semantics. The current Job selection for the bounded observer adds seven built-browser and fourteen Site coverage keys while keeping all old groups, case identities, scope roles and validation gates. The strict selector list remains complete and exact. The original coverage execution, checked result reader/failure envelope, Chrome observation and DOM/browser routines are unchanged."
+    },
+    ".github/scripts/site_vitest_observation.py": {
+      "before": "44134c8aea7ffef5f153ac770d26f4e3c920b0d6e2701aa45c80aa5a67c9a37d",
+      "current": "03d2840061d1dedb383b38f6fb45b1ac5a605d79350113770da24b46a8c5db09",
+      "assessment": "C29 original event, source/build/coverage/Chrome job, retention, publication, Pages admission and failure conditions retain the same workflow and emitter semantics. The current Job selection for the bounded observer adds seven built-browser and fourteen Site coverage keys while keeping all old groups, case identities, scope roles and validation gates. The strict selector list remains complete and exact. The original coverage execution, checked result reader/failure envelope, Chrome observation and DOM/browser routines are unchanged."
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "before": "b1f23e80d0a874fbc6f67fddc70269a797a3d2bdcc7f3c349998292533fb4ca2",
+      "current": "f5f64bff7dc88644e619c1000a545347c86fec1c1088d21dfbfce9924ac73380",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    ".github/scripts/test_major_readiness.py": {
+      "before": "f68bc7859fe75a35f73a71b482544b16c1e86645f17976ff3073c9d999ba4d8d",
+      "current": "575d91ac4f15948f54c7a518a6c4c3955ccd0a6c4e6846b91b587ab0c18ed1fb",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    ".github/scripts/test_npm_binding_observation.py": {
+      "before": "226aaa836cb4685df303db95b902478ac5d70a835973d22435d85fe79cbea973",
+      "current": "bd49c2e947317ff83e9a2bee3493d9318190169ed83e69c9f6b11a442fe13761",
+      "assessment": "The separately verified fixture delta replaces two fixed-size assertions with exact default recipe/policy equality and explicit exclusion of launch-only HOOK-F04 from that default recipe map. Production decode and validation are unchanged."
+    },
+    ".github/scripts/test_site_playwright_observation.py": {
+      "before": "d35809ea055901da37db10bf5c8c8271c18e043b14595bcf32aecd2b58396db1",
+      "current": "1bfa760f2ee57e2543eaddaa24fc43dc73e953933955c45e9bd22c52dc82084d",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    ".github/scripts/test_site_vitest_observation.py": {
+      "before": "3c5d8dddcd9f4c05990200d48f5827fc4ec834b8fa7810155150fafa629dbaf8",
+      "current": "69ca1cf2c0bb6f4223a5d9be336bc1322e5f5efa91fae4c0f843da6833be95c9",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    "docs/state-contracts-major/execution/coverage-ledger.json": {
+      "before": "2a08ce3bda53492511896bb9fcb952a0b5a35eb523cbd59508e6bb6ad5a4a6c8",
+      "current": "2ebf7ad39f2db7f6cfcc0b92786117917f0592690bd2d98547f00ed55841a058",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/bookmark-hosted-tested.json": {
+      "before": null,
+      "current": "eb32cd653c0f62fbf72550535593cbe55feee206f2de666c1af4a21b238c94d7",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/directory-hosted-tested.json": {
+      "before": null,
+      "current": "e37dbc0e12b638439a0496b78b584b681a953e312cb1c94f357d5cd9a79e6598",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    },
+    "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/original-browser-results-projection.json": {
+      "before": null,
+      "current": "014568a9a2613f8bab3f803384ac3a39a6ae48d135d6545c45a79cee0c8f5b98",
+      "assessment": "Exact merged-source identity and preserved finite clauses as reflected in the existing source proof. No execution claimed."
+    }
+  },
+  "source_scope": {
+    "C06": "The changed reporter adds four Sandbox named-result map entries and eight source aliases selecting the two existing finite-tf02 measurement vectors. Every reporter function, original C06 default source/observe-python path, runner, retained child identity/population and Authority workflow input is byte-identical or structurally identical as appropriate.",
+    "C29": "C29 original event, source/build/coverage/Chrome job, retention, publication, Pages admission and failure conditions retain the same workflow and emitter semantics. The current Job selection for the bounded observer adds seven built-browser and fourteen Site coverage keys while keeping all old groups, case identities, scope roles and validation gates. The strict selector list remains complete and exact. The original coverage execution, checked result reader/failure envelope, Chrome observation and DOM/browser routines are unchanged."
+  },
+  "new_owner_routes": {
+    "site-built-browser": 7,
+    "sandbox-tools": 4,
+    "finite-tf02": 8,
+    "docs-original-site-coverage": 14
+  },
+  "measurement_aliases": [
+    "disposition:added_transitions:T11:added-browser-failure-cleanup",
+    "disposition:added_transitions:T11:added-render-failure-cleanup",
+    "disposition:added_transitions:T11:added-renderer-refused",
+    "disposition:findings:T-F01",
+    "disposition:findings:T-F04",
+    "disposition:transitions:T08:05",
+    "disposition:transitions:T10:07",
+    "disposition:transitions:T10:08"
+  ],
+  "same_status_historical_replacements": [
+    "S56:01",
+    "S56:02",
+    "S56:04",
+    "S56:05",
+    "S56:06",
+    "S58:01",
+    "S58:02"
+  ],
+  "replaced_source_cells": [
+    "disposition:machines:C06",
+    "disposition:machines:C29",
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04",
+    "disposition:transitions:C29:01",
+    "disposition:transitions:C29:02",
+    "disposition:transitions:C29:03",
+    "disposition:transitions:C29:04",
+    "disposition:transitions:C29:05"
+  ],
+  "preview_identity": {
+    "commit": "ef1c8aaced2d25c5bc046e4e9f500c5c336e60c2",
+    "tree": "5d7aee25b751c6a522ca4ebe6424cafd9b3e5df7"
+  },
+  "canonical_staged_source_projection": {
+    "applicable": 1728,
+    "population": 1739,
+    "stale": 11,
+    "provided_sha256": "f29348001c5e4eb89bc6fad3b793eead3d0bdde5b29cd1d0f5feaf899d7c1a1a"
+  },
+  "provenance_boundary": "Prior execution receipts and same-status historical replacements retain their own authorization. This descriptor contains only the two current source families."
+}

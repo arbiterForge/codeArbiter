@@ -152,12 +152,14 @@ class OriginalDocsSourceTests(unittest.TestCase):
 
     def test_sf13_requires_each_original_docs_case(self):
         req = self.sf13_only_requirements()
-        self.assertEqual(len(docs.CELLS),4)
+        self.assertEqual(len(docs.CELLS),18)
         self.assertNotIn(docs.reports.SF13_CELL,docs.CELLS)
         self.assertTrue(docs.docs_required(req))
         self.assertEqual(len(docs.SF13_DOCS_SELECTORS),13)
+        observed_ids = {row['id'] for row in self.observed['tests']}
         for selector in docs.SF13_DOCS_SELECTORS:
-            self.observed['tests'].append({'id':selector,'result':'passed'})
+            if selector not in observed_ids:
+                self.observed['tests'].append({'id':selector,'result':'passed'})
             path = selector.split(':',2)[1]
             self.values.setdefault(path,b'original fixture source\\n')
         self.inputs = {p:{'bytes':len(raw),'sha256':owner.digest(raw)} for p,raw in self.values.items()}
@@ -252,6 +254,32 @@ class OriginalDocsSourceTests(unittest.TestCase):
         self.assertEqual(result['ci_run_id'],7)
         self.assertEqual(result['docs_source']['run_id'],17)
         self.assertEqual({r['cell'] for r in result['docs_source']['results']},docs.CELLS)
+
+    def test_original_site_unit_rows_preserve_each_historical_named_mapping(self):
+        repo = Path(__file__).resolve().parents[2]
+        history = repo / 'docs/state-contracts-major/execution/evidence/site-unit-current-38bf'
+        pagefind = json.loads((history / 'pagefind-remaining.json').read_bytes())
+        release = json.loads((history / 'release-derivation-tested.json').read_bytes())
+        publication = json.loads((history / 'observed-publication.json').read_bytes())
+        raw = json.loads((history / 'selected68-original-projection.json').read_bytes())
+        original_passes = {row['fullName'] for row in raw['outcomes'] if row['status'] == 'passed'}
+        expected = {'disposition:transitions:' + name: cases
+                    for name, cases in pagefind['per_disposition_assertions'].items()}
+        expected['disposition:machines:S65'] = list(dict.fromkeys(
+            title for titles in expected.values() for title in titles))
+        expected['disposition:machines:S65'].append(
+            'complete search bundle publication is wired to every Astro build instead of an optional postbuild command')
+        expected.update((row['cell'], row['observed_named_cases']) for row in release['per_cell_assertion_mapping'])
+        expected['disposition:transitions:SX03:02'] = [row['name'] for row in publication['original_named_assertions']]
+        self.assertEqual(len(expected), 14)
+        self.assertTrue(all(set(names) <= original_passes for names in expected.values()))
+        policy = json.loads((repo / '.github/major-qualification-policy.json').read_bytes())
+        self.assertEqual({cell: policy['cell_job_bindings'].get(cell) for cell in expected},
+                         dict.fromkeys(expected, docs.JOB))
+        with self.owned_transport():
+            result = docs.admit(self.req)['results']
+        self.assertEqual({row['cell']: [selector.split(':', 2)[2] for selector in row['selectors']]
+                          for row in result if row['cell'] in expected}, expected)
 
     def test_each_required_complement_missing_skipped_or_duplicate_refuses(self):
         original = copy.deepcopy(self.observed)
@@ -372,8 +400,8 @@ class OriginalDocsSourceTests(unittest.TestCase):
         root=Path(tempfile.gettempdir()).resolve(); raw=self.raw_named(root)
         rows,summary=docs.parse_named(raw,root,self.inputs)
         self.assertNotIn('PRIVATE_FAILURE_CANARY',json.dumps([rows,summary]))
-        self.assertEqual(len(rows),70)
-        for key,value in [('numTotalTests',69),('numFailedTestSuites',1),('success','true')]:
+        self.assertEqual(len(rows), len(self.observed['tests']))
+        for key,value in [('numTotalTests',len(rows)-1),('numFailedTestSuites',1),('success','true')]:
             with self.subTest(key=key), self.assertRaises(ValueError):
                 docs.parse_named({**raw,key:value},root,self.inputs)
         raw['testResults'][0]['name']=str(root.parent/'outside.test.ts')

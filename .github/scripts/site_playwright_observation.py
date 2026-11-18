@@ -34,15 +34,24 @@ ENVELOPE = 'codearbiter-major-readiness/2'
 WORKFLOW = '.github/workflows/docs.yml'
 PUB = 'site/test/browser/publication.spec.ts'
 RECONNECT = 'site/test/browser/concepts-execution.spec.ts'
+BOOKMARK = 'site/test/browser/academy-wayfinding.spec.ts'
+DIRECTORY = 'site/test/browser/guide-discovery.spec.ts'
 CASES = (
     (PUB, 'WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract'),
     (PUB, 'S62: backdrop restores heterogeneous saved background and scroll state'),
     (PUB, 'S62: Tab wraps at both ends of the built drawer'),
     (PUB, 'S62: disconnecting an open drawer releases its document listener'),
     (RECONNECT, 'the same documentation drawer reconnects without duplicate local or Escape listeners'),
+    (BOOKMARK, 'a bookmark is opt-in, survives navigation, and never becomes completion'),
+    (BOOKMARK, 'denied storage retains the full lesson and an actionable explanation'),
+    (BOOKMARK, 'saving and removing a place work by keyboard in forced colors'),
+    (BOOKMARK, 'stale source identity has no resume URL and clearing retains command preferences'),
+    (DIRECTORY, 'directory contains every guide and filters by both task and literal words'),
+    (DIRECTORY, 'filtering makes no request or storage write and does not submit a query URL'),
+    (DIRECTORY, 'filter controls and the review guide reconnect after client navigation and back'),
 )
 SELECTORS = tuple('playwright:' + path + ':chrome:' + title for path, title in CASES)
-CELL_SELECTORS = {
+DRAWER_CELL_SELECTORS = {
     'disposition:findings:SF16': (3, 4),
     'disposition:machines:S62': (0, 1, 2, 3, 4),
     'disposition:transitions:S62:01': (0, 1, 2),
@@ -51,6 +60,16 @@ CELL_SELECTORS = {
     'disposition:transitions:S62:04': (3,),
     'disposition:transitions:S62:05': (4, 3),
 }
+CELL_SELECTORS = {
+    **DRAWER_CELL_SELECTORS,
+    'disposition:transitions:S56:01': (5,),
+    'disposition:transitions:S56:02': (5,),
+    'disposition:transitions:S56:04': (6,),
+    'disposition:transitions:S56:05': (5, 7),
+    'disposition:transitions:S56:06': (5, 8, 7),
+    'disposition:transitions:S58:01': (9, 10),
+    'disposition:transitions:S58:02': (9, 11),
+}
 CELLS = frozenset(CELL_SELECTORS)
 need = owner.require
 
@@ -58,11 +77,13 @@ need = owner.require
 def validate_selection_map(document):
     groups = [group for group in reports.validate_selections(document) if group['job'] == JOB]
     need(len(groups) == len(CELLS) and {cell for group in groups for cell in group['cells']} == CELLS,
-         'Docs selection must declare exactly its seven finite cells')
+         'Docs selection must declare exactly its finite browser cells')
     for group in groups:
+        cell = group['cells'][0]
+        role = 'site-built-drawer' if cell in DRAWER_CELL_SELECTORS else 'site-built-browser'
         need(len(group['cells']) == 1 and group['payload_name'] == 'github-pages'
-             and group['observation'] == 'site-built-drawer' and group['proof_kind'] == 'source-test'
-             and group['selectors'] == [SELECTORS[index] for index in CELL_SELECTORS[group['cells'][0]]],
+             and group['observation'] == role and group['proof_kind'] == 'source-test'
+             and group['selectors'] == [SELECTORS[index] for index in CELL_SELECTORS[cell]],
              'Docs selection differs from the complete built assertion mapping')
 
 
@@ -70,7 +91,7 @@ def docs_required(req):
     selected = CELLS.intersection(req['cells'])
     if selected:
         need(selected == CELLS and all(req['cell_jobs'].get(c) == JOB for c in CELLS),
-             'Docs authority requires the exact seven declared site cells')
+             'Docs authority requires the exact declared browser cells')
     need(all(name != JOB or cell in CELLS for cell, name in req['cell_jobs'].items()),
          'Docs job cannot qualify another scope')
     return bool(selected)

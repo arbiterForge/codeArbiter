@@ -194,6 +194,30 @@ def integration_metadata(module_root, profile, expected_source):
             "platform": platform, "go_version": version, "profile_sha256": _digest(raw)}
 
 
+class NativeUnitCoverageFailure(ValueError):
+    def __init__(self, message, log, packages, *, exit_code=None):
+        super().__init__(message)
+        # Go may report fixture text, absolute paths or stack frames. Keep the
+        # raw bytes in unit.log and expose only the bounded test identities.
+        sample = log[:MAX_BYTES]
+        test_timeout = re.search(rb"(?m)^panic: test timed out after [0-9]", sample) is not None
+        failed = re.findall(rb"(?m)^[ \t]*--- FAIL: (Test[A-Za-z0-9_]{1,95})(?=[ /])", sample)
+        if test_timeout:
+            failed += re.findall(
+                rb"(?m)^[ \t]+(Test[A-Za-z0-9_]{1,95})(?:/[^ \t\r\n]{0,160})? \([0-9][.0-9hms]*\)\r?$",
+                sample,
+            )
+        failing_packages = set(re.findall(rb"(?m)^FAIL[ \t]+([^ \t\r\n]+)", sample))
+        self.details = {
+            "exit_code": exit_code,
+            "subprocess_timeout": exit_code is None,
+            "go_test_timeout": test_timeout,
+            "failed_packages": sorted(name for name in packages if name.encode() in failing_packages)[:16],
+            "test_names": sorted(set(name.decode("ascii") for name in failed))[:24],
+            "log_sha256": _digest(log),
+        }
+
+
 def collect(root, output, expected_platform=None, extra_profiles=()):
     root = root.resolve(strict=True)
     output = output.absolute()
@@ -207,10 +231,19 @@ def collect(root, output, expected_platform=None, extra_profiles=()):
     output.mkdir(parents=True, exist_ok=False)
     unit = output / "unit.coverage.out"
     command = [arg.replace("{profile}", str(unit)) for arg in UNIT_COMMAND]
-    result = subprocess.run(command, cwd=root, env=_environment(), capture_output=True, timeout=900)
-    (output / "unit.log").write_bytes(result.stdout + result.stderr)
+    log_path = output / "unit.log"
+    try:
+        result = subprocess.run(command, cwd=root, env=_environment(), capture_output=True, timeout=900)
+    except subprocess.TimeoutExpired as error:
+        log = (error.stdout or b"") + (error.stderr or b"")
+        log_path.write_bytes(log)
+        raise NativeUnitCoverageFailure(f"native go test exceeded its collection timeout; see {log_path}",
+                                        log, packages) from error
+    log = result.stdout + result.stderr
+    log_path.write_bytes(log)
     if result.returncode:
-        raise ValueError(f"native go test failed with exit {result.returncode}; see {output / 'unit.log'}")
+        raise NativeUnitCoverageFailure(f"native go test failed with exit {result.returncode}; see {log_path}",
+                                        log, packages, exit_code=result.returncode)
     profiles = []
     for index, path in enumerate([unit, *extra_profiles]):
         raw = _read(path)
@@ -350,6 +383,8 @@ def main(argv=None):
                                minimum, args.require_integration)
     except (OSError, ValueError, InvalidOperation, subprocess.TimeoutExpired) as exc:
         report = {"status": "INVALID", "error": str(exc)}
+        if isinstance(exc, NativeUnitCoverageFailure):
+            report["native_unit_failure"] = exc.details
     print(json.dumps(report, sort_keys=True, allow_nan=False))
     return 0 if report["status"] in {"COLLECTED", "COMPLETE"} else 1
 

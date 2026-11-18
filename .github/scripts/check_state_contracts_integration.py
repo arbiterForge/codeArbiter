@@ -165,8 +165,12 @@ def main(argv=None):
         print(json.dumps(report, indent=2))
         return 0
     except (readiness.ReadinessError, ValueError, TypeError, KeyError, AttributeError) as error:
-        print(json.dumps({"schema": "codearbiter-integration-integrity/1", "result": "FAILED", "error": str(error),
-                          "product_qualification": False, "publication_readiness": "NOT_ASSESSED"}))
+        report = {"schema": "codearbiter-integration-integrity/1", "result": "FAILED", "error": str(error),
+                  "product_qualification": False, "publication_readiness": "NOT_ASSESSED"}
+        observation = getattr(error, "github_read_observation", None)
+        if observation is not None:
+            report["github_read_observation"] = observation
+        print(json.dumps(report))
         return 1
 
 

@@ -686,6 +686,109 @@
       "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:05; source/browser software only, no installed, task, human, model, publication or live public readback claim."
     },
     {
+      "id": "docs-built-s56-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "cells": [
+        "disposition:transitions:S56:01"
+      ],
+      "scope": "Original built Pages browser assertions for S56:01."
+    },
+    {
+      "id": "docs-built-s56-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "cells": [
+        "disposition:transitions:S56:02"
+      ],
+      "scope": "Original built Pages browser assertions for S56:02."
+    },
+    {
+      "id": "docs-built-s56-04",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:denied storage retains the full lesson and an actionable explanation"
+      ],
+      "cells": [
+        "disposition:transitions:S56:04"
+      ],
+      "scope": "Original built Pages browser assertions for S56:04."
+    },
+    {
+      "id": "docs-built-s56-05",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ],
+      "cells": [
+        "disposition:transitions:S56:05"
+      ],
+      "scope": "Original built Pages browser assertions for S56:05."
+    },
+    {
+      "id": "docs-built-s56-06",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:stale source identity has no resume URL and clearing retains command preferences",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ],
+      "cells": [
+        "disposition:transitions:S56:06"
+      ],
+      "scope": "Original built Pages browser assertions for S56:06."
+    },
+    {
+      "id": "docs-built-s58-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filtering makes no request or storage write and does not submit a query URL"
+      ],
+      "cells": [
+        "disposition:transitions:S58:01"
+      ],
+      "scope": "Original built Pages browser assertions for S58:01."
+    },
+    {
+      "id": "docs-built-s58-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filter controls and the review guide reconnect after client navigation and back"
+      ],
+      "cells": [
+        "disposition:transitions:S58:02"
+      ],
+      "scope": "Original built Pages browser assertions for S58:02."
+    },
+    {
       "id": "software-pi-disposable-home-01",
       "job": "Coverage union (Pi)  <os: windows-latest>",
       "payload_name": "major-source-inputs-pi-windows-coverage",
@@ -731,6 +834,75 @@
         "disposition:transitions:pi-qualification:disposable-home:03"
       ],
       "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "sandbox-original-sbx-cache-cancellation-01",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/build.test.ts:buildOrReuseImage \u2014 cache hit (AC-04) reuses an existing tag and performs NO build",
+        "vitest:plugins/ca-sandbox/tools/build.test.ts:buildOrReuseImage \u2014 cache hit (AC-04) SBX-C01 cancellation during cache identity observation refuses stale reuse"
+      ],
+      "cells": [
+        "disposition:added_transitions:SBX-CACHE-CANCELLATION:01"
+      ],
+      "scope": "No Docker build/workload or real cache race; actual production function with injected observation, partial coverage."
+    },
+    {
+      "id": "sandbox-original-s47-02",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails"
+      ],
+      "cells": [
+        "disposition:transitions:S47:02"
+      ],
+      "scope": "Finite controlled Docker client spawn-boundary assertions. Fixture evidence covers deadline, cancellation and observed results."
+    },
+    {
+      "id": "sandbox-original-s47-06",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable does not stop the container on an ordinary non-zero exec (AC-2)",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)"
+      ],
+      "cells": [
+        "disposition:transitions:S47:06"
+      ],
+      "scope": "Finite controlled Docker client spawn-boundary assertions. Fixture evidence covers deadline, cancellation and observed results."
+    },
+    {
+      "id": "sandbox-original-s47-07",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)"
+      ],
+      "cells": [
+        "disposition:transitions:S47:07"
+      ],
+      "scope": "Finite controlled Docker client spawn-boundary assertions. Fixture evidence covers deadline, cancellation and observed results."
     },
     {
       "id": "software-sandbox-valid-dispatch-and-interrupt",
@@ -1366,6 +1538,454 @@
       "scope": "Owned Git base absent/valid/invalid/unresolved manifest distinction; no release qualification."
     },
     {
+      "id": "finite-c-f08",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-bounded-reader",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_boundedproc.py:__main__.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+        "python:.github/scripts/test_boundedproc.py:__main__.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+      ],
+      "cells": [
+        "disposition:findings:C-F08"
+      ],
+      "scope": "Controlled subprocess watchdog outcomes for Codex host commands and the Pi benchmark."
+    },
+    {
+      "id": "finite-added-prefetched-completion",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-bounded-reader",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+        "python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes"
+      ],
+      "cells": [
+        "disposition:added_transitions:C36:added-prefetched-completion"
+      ],
+      "scope": "Owned stdout keeps prefetched completion and observes actual early EOF."
+    },
+    {
+      "id": "finite-added-stdin-eof",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-bounded-reader",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness"
+      ],
+      "cells": [
+        "disposition:added_transitions:C36:added-stdin-eof"
+      ],
+      "scope": "Communicate without input closes the owned child stdin and receives completion."
+    },
+    {
+      "id": "finite-added-input-once",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-bounded-reader",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+        "python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once"
+      ],
+      "cells": [
+        "disposition:added_transitions:C36:added-input-once"
+      ],
+      "scope": "Owned child receives exact text and binary input once across a timed-out write."
+    },
+    {
+      "id": "finite-added-input-timeout",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-bounded-reader",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer"
+      ],
+      "cells": [
+        "disposition:added_transitions:C36:added-input-timeout"
+      ],
+      "scope": "Unread stdin stays bounded and owned cleanup settles the writer."
+    },
+    {
+      "id": "finite-added-cleanup-denied",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-bounded-reader",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+      ],
+      "cells": [
+        "disposition:added_transitions:C36:added-cleanup-denied"
+      ],
+      "scope": "An injected group-signal denial retains the actual child readiness failure."
+    },
+    {
+      "id": "finite-channel-s73-01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_package_without_native_payload_is_refused"
+      ],
+      "cells": [
+        "disposition:transitions:S73:01"
+      ],
+      "scope": "Fixture archive/version/payload admission produces actual deterministic local Git distribution/channel refs; qualified binary contents are synthetic fixture bytes, not real engine qualification."
+    },
+    {
+      "id": "finite-channel-s73-02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path"
+      ],
+      "cells": [
+        "disposition:transitions:S73:02"
+      ],
+      "scope": "Absent immutable ref is created and exact remote tag equals returned distribution commit."
+    },
+    {
+      "id": "finite-channel-s73-03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op"
+      ],
+      "cells": [
+        "disposition:transitions:S73:03"
+      ],
+      "scope": "Repeated same input observes existing distribution and reuses channel commit without duplicate promotion."
+    },
+    {
+      "id": "finite-channel-s73-04",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused"
+      ],
+      "cells": [
+        "disposition:transitions:S73:04"
+      ],
+      "scope": "Existing same-version identity refuses changed archive bytes."
+    },
+    {
+      "id": "finite-channel-s73-05",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_refuses_to_roll_back"
+      ],
+      "cells": [
+        "disposition:transitions:S73:05"
+      ],
+      "scope": "Older version refuses before moving local remote channel."
+    },
+    {
+      "id": "finite-channel-s73-06",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op"
+      ],
+      "cells": [
+        "disposition:transitions:S73:06"
+      ],
+      "scope": "Same tree reuses current marketplace commit and previous commit identity."
+    },
+    {
+      "id": "finite-channel-s73-07",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance"
+      ],
+      "cells": [
+        "disposition:transitions:S73:07"
+      ],
+      "scope": "Changed tree advances descendant; unreadable current version now refuses with channel unchanged."
+    },
+    {
+      "id": "finite-channel-s73-08",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush"
+      ],
+      "cells": [
+        "disposition:transitions:S73:08"
+      ],
+      "scope": "Tag publication/readback uses expected deterministic commit; response-loss path attempts immutable push once."
+    },
+    {
+      "id": "finite-channel-s73-09",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush"
+      ],
+      "cells": [
+        "disposition:transitions:S73:09"
+      ],
+      "scope": "Channel update goes through current lease/readback helper, advances descendant, and response-loss observation does not repush."
+    },
+    {
+      "id": "finite-channel-s73-10",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes"
+      ],
+      "cells": [
+        "disposition:transitions:S73:10"
+      ],
+      "scope": "Uncertain push may succeed only by exact observed remote identity; unknown/conflict refuses after one attempt; explicit recovery reads history without pushing."
+    },
+    {
+      "id": "finite-channel-s74-03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_git_mode_needs_no_npm_package"
+      ],
+      "cells": [
+        "disposition:transitions:S74:03"
+      ],
+      "scope": "Codex first call creates immutable tag, second channel promotion names that exact tag/commit without acquiring npm."
+    },
+    {
+      "id": "finite-channel-s74-04",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag"
+      ],
+      "cells": [
+        "disposition:transitions:S74:04"
+      ],
+      "scope": "Actual successful channel advance uses independently precreated immutable distribution tag; missing-tag/expected-head adversarial branches not independently claimed."
+    },
+    {
+      "id": "finite-channel-s74-08",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release"
+      ],
+      "cells": [
+        "disposition:transitions:S74:08"
+      ],
+      "scope": "Actual local leased channel updates name immutable source and preserve recoverable prior distribution ancestry."
+    },
+    {
+      "id": "finite-channel-s74-09",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted"
+      ],
+      "cells": [
+        "disposition:transitions:S74:09"
+      ],
+      "scope": "Shared exact push/readback helper refuses conflicting/unobservable remote without retry; Codex recovery reads old completed promotion and rejects an unpromoted tag."
+    },
+    {
+      "id": "finite-channel-sf15",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-git-channel",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes"
+      ],
+      "cells": [
+        "disposition:findings:SF15"
+      ],
+      "scope": "Preserve intentional Claude tag+channel vs Codex preexisting-tag channel protocol; uncertain responses cannot authorize blind mutation retries; unknown current Claude version refuses."
+    },
+    {
+      "id": "finite-measurement-t11-added-browser-failure-cleanup",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:added_transitions:T11:added-browser-failure-cleanup"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T11:added-browser-failure-cleanup."
+    },
+    {
+      "id": "finite-measurement-t11-added-render-failure-cleanup",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:added_transitions:T11:added-render-failure-cleanup"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T11:added-render-failure-cleanup."
+    },
+    {
+      "id": "finite-measurement-t11-added-renderer-refused",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:added_transitions:T11:added-renderer-refused"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T11:added-renderer-refused."
+    },
+    {
+      "id": "finite-measurement-t-f01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:findings:T-F01"
+      ],
+      "scope": "Original measurement verdict assertions for T-F01."
+    },
+    {
+      "id": "finite-measurement-t-f04",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:findings:T-F04"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T-F04."
+    },
+    {
+      "id": "finite-measurement-t08-05",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:transitions:T08:05"
+      ],
+      "scope": "Original measurement verdict assertions for T08:05."
+    },
+    {
+      "id": "finite-measurement-t10-07",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:transitions:T10:07"
+      ],
+      "scope": "Original measurement verdict assertions for T10:07."
+    },
+    {
+      "id": "finite-measurement-t10-08",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:transitions:T10:08"
+      ],
+      "scope": "Original measurement verdict assertions for T10:08."
+    },
+    {
       "id": "finite-tf02",
       "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
       "payload_name": "major-source-inputs-hooks-single-owner",
@@ -1442,6 +2062,278 @@
         "disposition:findings:HOOK-F02"
       ],
       "scope": "HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit."
+    },
+    {
+      "id": "docs-site-unit-s65",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication checks JavaScript syntax without executing emitted code",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path /absolute",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path C:/escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a\\b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a//b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/%2e%2e/b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ..",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on create failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on index failure",
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication is wired to every Astro build instead of an optional postbuild command"
+      ],
+      "cells": [
+        "disposition:machines:S65"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65."
+    },
+    {
+      "id": "docs-site-unit-s65-01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files"
+      ],
+      "cells": [
+        "disposition:transitions:S65:01"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:01."
+    },
+    {
+      "id": "docs-site-unit-s65-02",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure"
+      ],
+      "cells": [
+        "disposition:transitions:S65:02"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:02."
+    },
+    {
+      "id": "docs-site-unit-s65-03",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication checks JavaScript syntax without executing emitted code",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path /absolute",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path C:/escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a\\b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a//b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/%2e%2e/b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .."
+      ],
+      "cells": [
+        "disposition:transitions:S65:03"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:03."
+    },
+    {
+      "id": "docs-site-unit-s65-04",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+      ],
+      "cells": [
+        "disposition:transitions:S65:04"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:04."
+    },
+    {
+      "id": "docs-site-unit-s65-05",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+      ],
+      "cells": [
+        "disposition:transitions:S65:05"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:05."
+    },
+    {
+      "id": "docs-site-unit-s65-06",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+      ],
+      "cells": [
+        "disposition:transitions:S65:06"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:06."
+    },
+    {
+      "id": "docs-site-unit-s65-07",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on create failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on index failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure"
+      ],
+      "cells": [
+        "disposition:transitions:S65:07"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:07."
+    },
+    {
+      "id": "docs-site-unit-s65-08",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails"
+      ],
+      "cells": [
+        "disposition:transitions:S65:08"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:08."
+    },
+    {
+      "id": "docs-site-unit-sx03-01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/release-applicability.test.ts:selectCurrentGovernanceReleases selects the highest stable SemVer independently for every governance host (O-01)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects missing governed provenance-manifest declaration (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects duplicate governed provenance-manifest declaration (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects divergent governed provenance-manifest declaration (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects unexpected top-level key (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects wrong namespaces (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects invalid date (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects malformed unselected governed tag (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects extra receipt key (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects zero identity (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects uppercase identity (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects invalid object type (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects commit identity mismatch (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects duplicate JSON keys instead of accepting the last value (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:01"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:01."
+    },
+    {
+      "id": "docs-site-unit-sx03-02",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:02"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:02."
+    },
+    {
+      "id": "docs-site-unit-sx03-03",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/release-applicability.test.ts:historical release applicability reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:historical release applicability rejects a historical manifest whose version does not exactly match its selected tag (O-04)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:published Pi support (#1071) records the Pi versions the selected ca-pi tag supports, read at that tag's commit"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:03"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:03."
+    },
+    {
+      "id": "docs-site-unit-sx03-04",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a missing GitHub Actions build identity (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a not 40-hex GitHub Actions build identity (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a different from HEAD GitHub Actions build identity (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity records the exact local HEAD and dirty state without using a branch name (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a moving or malformed local HEAD identity (O-06)"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:04"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:04."
+    },
+    {
+      "id": "docs-site-unit-sx03-05",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record requires the replay digest to match both current and latest-published ca source bytes (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record records an explicit current-source mismatch without throwing or calling it compatibility (O-08)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record records an explicit published-source mismatch without throwing or calling it compatibility (O-08)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: empty evidence kind (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: non-canonical source (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: invalid replay digest (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects missing latest-published hook bytes (O-07)"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:05"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:05."
     },
     {
       "id": "docs-source-gen-b01",
@@ -1564,6 +2456,1105 @@
         "disposition:findings:SX-F01"
       ],
       "scope": "Source applicability versus observed publication with data/presentation/endpoint cases and successful original rendered followup; no live publication/browser authority."
+    },
+    {
+      "id": "sandbox-recorded-exec-loss-and-stop-observation",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — every docker invocation carries a finite deadline still returns a result when the escalation itself fails",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 — an in-flight docker call is cancellable does not stop the container on an ordinary non-zero exec (AC-2)",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 — an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) caps each stream INDEPENDENTLY (a huge stdout does not steal stderr budget)",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) captures stdout and stderr SEPARATELY",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) does NOT truncate when both streams are within the byte cap",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) is importable and callable from a vitest and returns the full shape",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) propagates a non-zero exit code (exit 7 -> exitCode 7)",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) trips truncated:true and caps stdout past the byte cap",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) trips truncated:true when only stderr exceeds the cap",
+        "vitest:plugins/ca-sandbox/tools/exec.test.ts:execInSandbox — JSON contract (AC-09) truncates on a UTF-8 boundary (no mojibake / no partial code unit)",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment"
+      ],
+      "cells": [
+        "disposition:transitions:S52:01",
+        "disposition:transitions:S52:02",
+        "disposition:transitions:S52:03",
+        "disposition:transitions:S52:04",
+        "disposition:transitions:S52:05"
+      ],
+      "scope": "Exec zero/nonzero preserves actual output; ordinary exit does not stop workload. Timeout/abort and overflow request exact target stop using independent signal and inspect running=false before verified-stopped. Lost observation is separate from display truncation. Original reason retained if stop fails. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-create-error-compensation-and-primary-cause",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics keeps the primary failure when helper absence is verified",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains build failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains cleanup-only failure without inventing a primary error",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains copy failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains helper failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references"
+      ],
+      "cells": [
+        "disposition:transitions:S48:06",
+        "disposition:transitions:S48:07"
+      ],
+      "scope": "Failure retains exact sandbox/volume/helper identities, original error and independent compensation facts. Aborted ordinary signal is not reused for cleanup. Unknown cleanup never claims destroyed; current followup controlled default staging tests preserve helper/copy/build primary cause alongside independent cleanup-only outcome. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-declared-manifest-observation",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs"
+      ],
+      "cells": [
+        "disposition:transitions:S49:01"
+      ],
+      "scope": "Actual filesystem tests distinguish absent input/valid exact bytes from present directory or dangling declared config; only genuinely absent entries can be omitted before dependency hash/cache/build. Current readManifests body unchanged by later structured-cause repair. Existing48-bit preliminary dependency discriminator remains an explicit limit. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cancelled-firewall-compensation",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction"
+      ],
+      "cells": [
+        "disposition:transitions:S51:05"
+      ],
+      "scope": "Controlled Docker failure130 after token container creation triggers exact independent rm+ps without cancelled signal; failed removal/observation retain containerId, original commandCode and cleanup unknown. Dummy token only; no real provider/token-host qualification. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-scoped-discovery-and-teardown",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-1: a REAL dead daemon dedups, even though the two errors differ",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-1: genuinely different failures are still counted separately",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-1: one unreachable daemon is ONE failure, not four",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-1: two listings failing DIFFERENTLY stay two failures",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-1: unquoted URLs and counts do not split one daemon fault",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-2: a sandbox created AFTER discovery does not fail prune",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-2: an object this invocation DID target and failed to remove is still reported",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-3: the teardown exit code is pinned, and differs from the usage error",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-4: the RENDERED diagnostic elides an over-long failure list",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-4: the RENDERED diagnostic elides an over-long remaining list",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:#433 — teardown diagnostics say what actually happened AC-5: a deliberately kept volume is never reported as remaining",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:destroySandbox — a failed removal is retained, not dropped (#393) --keep-volume: the deliberately kept volume is NOT reported as remaining",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:destroySandbox — a failed removal is retained, not dropped (#393) a dead daemon is a FAILURE, not an empty successful sweep",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:destroySandbox — a failed removal is retained, not dropped (#393) a mixed run keeps the successes AND records the failure with its docker code",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:destroySandbox — a failed removal is retained, not dropped (#393) complete success reports zero failures and nothing remaining",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:destroySandbox — a failed removal is retained, not dropped (#393) keeps attempting EVERY discovered target after the first failure",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:destroySandbox — a failed removal is retained, not dropped (#393) the failure list is BOUNDED while the count stays truthful",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:prune — a failed reclaim is retained, not dropped (#393) a dead daemon is a FAILURE, not an empty successful sweep",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:prune — a failed reclaim is retained, not dropped (#393) a mixed run records the failure and names the object left behind",
+        "vitest:plugins/ca-sandbox/tools/teardown.test.ts:prune — a failed reclaim is retained, not dropped (#393) complete success reports zero failures and nothing remaining"
+      ],
+      "cells": [
+        "disposition:machines:S53",
+        "disposition:transitions:S53:01",
+        "disposition:transitions:S53:02",
+        "disposition:transitions:S53:03",
+        "disposition:transitions:S53:04",
+        "disposition:transitions:S53:05",
+        "disposition:transitions:S53:06",
+        "disposition:transitions:S53:07"
+      ],
+      "scope": "Failed/unparseable/partial list results cannot authorize targets or absence. Successful discovery freezes exact labeled targets and keep-volume exclusions. All targets attempted despite failures; re-list verifies original target absence, new unrelated resource does not expand snapshot. Residual IDs and independent failed observations remain bounded with truthful counts. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-1",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag"
+      ],
+      "cells": [
+        "disposition:transitions:S49:02"
+      ],
+      "scope": "V2 profile-bound cache key excludes temporary basename and includes effective builder/version/platform/material options; old cache tags are untouched. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-2",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag"
+      ],
+      "cells": [
+        "disposition:transitions:S49:03"
+      ],
+      "scope": "tag existence is insufficient; matching provenance and immutable image ID are required for reuse. Verified cache hit bypasses build-time reprobe because no build effect occurs. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-3",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild"
+      ],
+      "cells": [
+        "disposition:transitions:S49:04"
+      ],
+      "scope": "REMAPPED SBX-C01/D01: failed/invalid cache observation cannot prove a hit; build admission validates capability identity and fresh miss-path reobservation before a build effect. This is cooperative identity checking, not atomic executable pinning. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-4",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: \"workspace\".members=[\"../../outside\"]",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: [\"work\\u0073pace\"]\nmembers=[\"../../outside\"]",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: [package]\ndescription=\"escaped\\nmanifest\"",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: [workspace]\nmembers=[\"../../outside\"]",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator restores bounded go with pinned runtime and all source files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator restores bounded rust with pinned runtime and all source files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated go runtime image",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated rust runtime image",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity"
+      ],
+      "cells": [
+        "disposition:transitions:S49:05"
+      ],
+      "scope": "REMAPPED SBX-D01: already-installed Nixpacks is observed/routed on host or existing WSL and explicit bounded Node/Python/Go/nonworkspaceRust profile generates pinned full image graph; no runtime acquisition. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-5",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-D01 builder capability permits Node/Python fallback and refuses unsupported stacks"
+      ],
+      "cells": [
+        "disposition:transitions:S49:06"
+      ],
+      "scope": "Node/Python packaged fallback remains available when Nixpacks is absent; unsupported stacks and malformed observations refuse explicitly. Go/Rust support is not attributed to fallback. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-6",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses comment hiding mutable FROM before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses continued mutable FROM before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses deferred image source before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable COPY source before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable RUN mount before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable frontend before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable primary before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable runImage before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses platform mutable runImage before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses quoted COPY flag before mutable source before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses quoted mutable RUN mount before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses second mutable RUN mount before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unknown stage alias before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses variable runImage before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated go runtime image",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated rust runtime image",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag"
+      ],
+      "cells": [
+        "disposition:transitions:S49:07"
+      ],
+      "scope": "Default-generator seam validates emitted image inputs/material context before Docker build; unsafe/project-defined outputs refuse before effect. Local seams are not a real Nixpacks/Docker build. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-7",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics keeps the primary failure when helper absence is verified",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains build failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains cleanup-only failure without inventing a primary error",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains copy failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains helper failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag"
+      ],
+      "cells": [
+        "disposition:transitions:S49:08"
+      ],
+      "scope": "Successful build reports tag/cacheKey/immutable image identity and owned host/helper cleanup outcomes; cleanup-only failure is not converted to primary build failure or success. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-8",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics keeps the primary failure when helper absence is verified",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains build failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains cleanup-only failure without inventing a primary error",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains copy failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains helper failure when independent staging cleanup is unknown"
+      ],
+      "cells": [
+        "disposition:transitions:S49:09"
+      ],
+      "scope": "REMAPPED: helper and staging compensation use their bounded independent observation budget, retain primary failure plus unknown cleanup and exact references. Local injected cleanup cases do not qualify all real phase interruptions. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-9",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 legacy version resolver is freshly observed before the build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity"
+      ],
+      "cells": [
+        "disposition:added_transitions:SBX-BUILD-OBSERVATION:01"
+      ],
+      "scope": "Owned Sandbox builder and cache admission with an injected Docker driver. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-10",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 legacy version resolver is freshly observed before the build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity"
+      ],
+      "cells": [
+        "disposition:added_transitions:SBX-BUILD-OBSERVATION:02"
+      ],
+      "scope": "Owned Sandbox builder and cache admission with an injected Docker driver. Uses an injected Docker driver."
+    },
+    {
+      "id": "sandbox-recorded-cache-admission-11",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 legacy version resolver is freshly observed before the build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity"
+      ],
+      "cells": [
+        "disposition:added_transitions:SBX-BUILD-OBSERVATION:03"
+      ],
+      "scope": "Owned Sandbox builder and cache admission with an injected Docker driver. Uses an injected Docker driver."
+    },
+    {
+      "id": "farm-recorded-registry-lock-1",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: linked checkouts cannot overlap the shared administration boundary",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: linked checkouts cannot overlap the shared administration boundary"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:01"
+      ],
+      "scope": "Two real Node processes in real linked Git checkouts observe contention, retain the first barrier, then enter in order after release; both settle. Source and generated bundle are executed."
+    },
+    {
+      "id": "farm-recorded-registry-lock-2",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: a foreign lock refuses without running the callback or changing bytes",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: a foreign lock refuses without running the callback or changing bytes",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:02"
+      ],
+      "scope": "Source and bundle foreign-byte fixtures expire the short deadline, never enter the callback and preserve exact foreign bytes; zero-deadline source control also refuses."
+    },
+    {
+      "id": "farm-recorded-registry-lock-3",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:03"
+      ],
+      "scope": "Non-repository source fixture proves callback and injected Git runner remain untouched, prepare refuses, cleanup returns attempts0; NaN deadline rejects."
+    },
+    {
+      "id": "farm-recorded-registry-lock-4",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: linked checkouts cannot overlap the shared administration boundary",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: replacement ownership is retained and primary errors release the owned lock",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: linked checkouts cannot overlap the shared administration boundary",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: replacement ownership is retained and primary errors release the owned lock",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:04"
+      ],
+      "scope": "Positive result is returned; source/bundle controlled-primary failures are preserved and a second acquisition enters afterward. Existing515 rejection/ordering controls in the prior15 selection corroborate local queue behavior."
+    },
+    {
+      "id": "farm-recorded-registry-lock-5",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: replacement ownership is retained and primary errors release the owned lock",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: replacement ownership is retained and primary errors release the owned lock",
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:05"
+      ],
+      "scope": "Fixtures rename the open owned file into a private retained name, prove old bytes, establish a distinct wx foreign owner before asserting refusal; foreign bytes survive. Separate missing-name case requires ENOENT. Guard-removal source and bundle mutants fail these refusal oracles."
+    },
+    {
+      "id": "farm-recorded-registry-lock-6",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:06"
+      ],
+      "scope": "Independent source fixture establishes foreign replacement and throws controlled-primary; exact primary error survives and both retained original bytes and foreign bytes remain. Source/bundle ordinary-primary release controls are separate corroboration."
+    },
+    {
+      "id": "farm-transition-s22-01",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests completes two tasks green when API returns valid file blocks",
+        "vitest:plugins/ca/tools/plan-contract.test.ts:#412 parsePlan — rejects malformed plans before any field access accepts a minimal valid plan and returns it"
+      ],
+      "cells": [
+        "disposition:transitions:S22:01"
+      ],
+      "scope": "Unbound JSON remains legacy input. Minimal schema controls and actual legacy CLI paths corroborate source classification; no typed/native admission is claimed."
+    },
+    {
+      "id": "farm-transition-s23-02",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race"
+      ],
+      "cells": [
+        "disposition:transitions:S23:02",
+        "disposition:transitions:S24:01"
+      ],
+      "scope": "Authorized replacement of destructive reuse: one exclusive run claim wins; evidence survives later same-ID claims; reused Git resources are refused without branch/evidence discard. No implicit resume or pre-clean."
+    },
+    {
+      "id": "farm-transition-s23-03",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests serializes scope-overlapping tasks so the second inherits the first's merged change (AC-06)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not let a failed prerequisite's dependent block independent work",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not reserve a dependent's file ahead of its higher-ID prerequisite",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching makes progress for every three-task DAG order and two-file scope assignment",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching neither mutates written dependencies nor its scheduler inputs",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching preserves existing ID ordering through overlapping ready chains",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching requires every predecessor to be green and permits empty scopes",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching reserves all running scopes while allowing unrelated ready work",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching selects compatible ready tasks in stable lexical order"
+      ],
+      "cells": [
+        "disposition:transitions:S23:03"
+      ],
+      "scope": "DAG-ready and scope-independent tasks reserve lexical scopes under available capacity; shared worker limiting remains in the inspected scheduler/sample path."
+    },
+    {
+      "id": "farm-transition-s23-04",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests HTTP transport lifecycle via bundle continues independently eligible work while leaving a deferred prerequisite unaccepted",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests HTTP transport lifecycle via source continues independently eligible work while leaving a deferred prerequisite unaccepted",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not let a failed prerequisite's dependent block independent work",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not reserve a dependent's file ahead of its higher-ID prerequisite",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching makes progress for every three-task DAG order and two-file scope assignment",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching neither mutates written dependencies nor its scheduler inputs",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching preserves existing ID ordering through overlapping ready chains",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching requires every predecessor to be green and permits empty scopes",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching reserves all running scopes while allowing unrelated ready work",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching selects compatible ready tasks in stable lexical order"
+      ],
+      "cells": [
+        "disposition:transitions:S23:04"
+      ],
+      "scope": "An escalated predecessor blocks its dependent without claiming a worker call; independently eligible work is still admitted."
+    },
+    {
+      "id": "farm-transition-s23-05",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes"
+      ],
+      "cells": [
+        "disposition:transitions:S23:05"
+      ],
+      "scope": "Journal publication failure escalates affected result yet drains independent in-flight work; real independent merge/result survives. Stream/effects receipt health remain separate."
+    },
+    {
+      "id": "farm-transition-s23-06",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests reliability-013: every dispatched task appears in farm-report.json with a status after a breaker abort, none vanish"
+      ],
+      "cells": [
+        "disposition:transitions:S23:06"
+      ],
+      "scope": "Breaker uses settled minimum and escalation fraction, stops admission, drains existing tasks and records unscheduled remainder. Drain is distinct from OS signal cancellation."
+    },
+    {
+      "id": "farm-transition-s23-09",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests completes two tasks green when API returns valid file blocks"
+      ],
+      "cells": [
+        "disposition:transitions:S23:09"
+      ],
+      "scope": "Actual two-task legacy CLI green execution publishes supported receipts and returns success; cleanup health is an independent success precondition."
+    },
+    {
+      "id": "farm-transition-s23-10",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests escalates with gate failure note after maxRetries exceeded",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#398 — verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt"
+      ],
+      "cells": [
+        "disposition:transitions:S23:10"
+      ],
+      "scope": "Escalation/blocked or cleanup-degraded outcomes preserve partial results; existing runExitCode separates workload2 from publication3."
+    },
+    {
+      "id": "farm-transition-s23-11",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact — never a truncated one",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author"
+      ],
+      "cells": [
+        "disposition:transitions:S23:11",
+        "disposition:transitions:S31:06"
+      ],
+      "scope": "A tier-one publication failure is nonzero and suppresses Report success; prior complete reports/actual merged refs remain. Read-only recovery observes real Git merge/ref identities, author=not-invoked; concurrent receipts are separate, unknown cleanup/changed refs/schema are refused or unknown."
+    },
+    {
+      "id": "farm-transition-s23-12",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (bundle)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (source)"
+      ],
+      "cells": [
+        "disposition:transitions:S23:12"
+      ],
+      "scope": "Real ordinary CLI outer branch-creation error exits1 before scheduling, preserves distinct operator integration commit/blob/refs/worktree registry, authors0, publishes final JSON+Markdown blocked task/results[]/abortedfalse, leaves no task effect journal, and receipt-only empty recovery preserves original bytes and never authors."
+    },
+    {
+      "id": "farm-transition-s24-04",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests best-of-N (FARM_SAMPLES>1) draws N samples in real isolated worktrees, accepts a green one, and cleans up scratch worktrees",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests escalates with 'drift:' note when worker writes outside filesInScope",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:F1 — best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) lets a compliant worker through the sweep (in-scope file, no escape)",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a multiply-linked existing destination",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths absorbs a lost mkdir race between concurrent writers",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths accepts an absolute destination spelled through a link into the same root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths judges an absolute destination by where it LANDS, not by its shape",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths leaves ancestor directories behind on a refusal — refusal is not a rollback",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses a NUL byte in an intermediate segment",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses a NUL byte in the destination segment",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses a worktree root that is itself a link",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — write contracts round-trips non-ASCII content without re-encoding it",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — write contracts truncates rather than appends when rewriting a shorter payload"
+      ],
+      "cells": [
+        "disposition:transitions:S24:04"
+      ],
+      "scope": "Admitted worker files proceed through safe materialization and patch/evidence capture; real loopback/Git best-of-N/green fixtures and compliant-worker controls support finite paths, without OS adversarial race qualification."
+    },
+    {
+      "id": "farm-transition-s24-05",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause lets a CLEAN sample win when a SIBLING sample tampered with the test",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause reports a sample that tampered with the test",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status does NOT call it tampering when the hash was UNREADABLE before the worker ran",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status names the tampered test path when the test hash moves under the worker",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-high process outcome (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-high process outcome (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-low process outcome (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-low process outcome (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-decoy process outcome (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-decoy process outcome (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-only process outcome (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-only process outcome (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects timeout-score process outcome (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects timeout-score process outcome (source)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:F1 — best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) lets a compliant worker through the sweep (in-scope file, no escape)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not try a sibling after the task's immutable test changes"
+      ],
+      "cells": [
+        "disposition:transitions:S24:05"
+      ],
+      "scope": "Protected-test/path sweep precedes drift/gates/heuristic/mutation acceptance. Current source retains the complete order; selected software controls do not imply every optional mutation process outcome ran in this selected group."
+    },
+    {
+      "id": "farm-transition-s24-06",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause lets a CLEAN sample win when a SIBLING sample tampered with the test",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause reports a sample that tampered with the test",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status does NOT call it tampering when the hash was UNREADABLE before the worker ran",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status names the tampered test path when the test hash moves under the worker",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a multiply-linked existing destination",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths absorbs a lost mkdir race between concurrent writers",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths accepts an absolute destination spelled through a link into the same root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths judges an absolute destination by where it LANDS, not by its shape",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths leaves ancestor directories behind on a refusal — refusal is not a rollback",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses a NUL byte in an intermediate segment",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses a NUL byte in the destination segment",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses a worktree root that is itself a link",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — write contracts round-trips non-ASCII content without re-encoding it",
+        "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer — write contracts truncates rather than appends when rewriting a shorter payload"
+      ],
+      "cells": [
+        "disposition:transitions:S24:06"
+      ],
+      "scope": "Reported out-of-root or protected-test writes refuse the candidate; fatal containment paths do not authorize unsafe retry/reset."
+    },
+    {
+      "id": "farm-transition-s24-07",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status retries ONCE on drift, naming the offending paths in the next prompt"
+      ],
+      "cells": [
+        "disposition:transitions:S24:07"
+      ],
+      "scope": "First dirty observation spends an available author retry and names forbidden paths in its next prompt."
+    },
+    {
+      "id": "farm-transition-s24-08",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates on the FIRST drift when there are no retries to spend",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates on the SECOND drift even with retries left — the latch, not the counter",
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates with the comma-joined drift list, in order, once the retry is spent"
+      ],
+      "cells": [
+        "disposition:transitions:S24:08"
+      ],
+      "scope": "First drift without budget and repeated drift with budget both escalate with retained offending paths; the latch is independent of the numeric retry limit."
+    },
+    {
+      "id": "farm-transition-s24-09",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.unit.test.ts:attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation"
+      ],
+      "cells": [
+        "disposition:transitions:S24:09"
+      ],
+      "scope": "Failed128 and malformed successful Git readback are unavailable, never []. A bounded retry accepts only an actually successful current observation; unavailable sample drift preserves candidate evidence, buys no reset/new author."
+    },
+    {
+      "id": "farm-transition-s24-10",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries retains ordinary custom-worker retries when no disposition was returned"
+      ],
+      "cells": [
+        "disposition:transitions:S24:10"
+      ],
+      "scope": "Ordinary retryable custom-worker failure retains configured retry/reset/setup-cache policy; a transport deferral does not enter that retry path. This is not crash-after-reset atomicity proof."
+    },
+    {
+      "id": "farm-transition-s24-11",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 1 deferred sample(s)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 2 deferred sample(s)"
+      ],
+      "cells": [
+        "disposition:transitions:S24:11"
+      ],
+      "scope": "Long transport deferral does not start another authoring round immediately, for both single and multiple samples."
+    },
+    {
+      "id": "farm-transition-s24-12",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+      ],
+      "cells": [
+        "disposition:transitions:S24:12",
+        "disposition:transitions:S29:05"
+      ],
+      "scope": "Exit125, timeout, process reference and unknown containment survive gate->task. Author1/reset0/Gitmutation0; sample setup author0/reset0/Gitmutation0 and two scratch refs retained. Actual root death is not descendant proof."
+    },
+    {
+      "id": "farm-transition-s24-13",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.unit.test.ts:F1 — best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep — task-level enforcement for ANY worker (D6) lets a compliant worker through the sweep (in-scope file, no escape)"
+      ],
+      "cells": [
+        "disposition:transitions:S24:13"
+      ],
+      "scope": "A compliant qualified candidate advances to commit/integration; unsafe candidates and no-green sampling controls refuse."
+    },
+    {
+      "id": "farm-transition-s24-14",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates after the last attempt carrying only the FIRST line of the prior failure",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:F1 — best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)"
+      ],
+      "cells": [
+        "disposition:transitions:S24:14"
+      ],
+      "scope": "Exhausted retries escalate with bounded prior-failure detail and retain diagnostic worktree/evidence."
+    },
+    {
+      "id": "farm-transition-s25-01",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests best-of-N (FARM_SAMPLES>1) draws N samples in real isolated worktrees, accepts a green one, and cleans up scratch worktrees",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:F1 — best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:F1 — best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)"
+      ],
+      "cells": [
+        "disposition:transitions:S25:01"
+      ],
+      "scope": "Real and seam best-of-N run independent sample worktrees on the frozen base with shared worker limiting; single-sample path remains the task worktree."
+    },
+    {
+      "id": "farm-transition-s25-07",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#398 — verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure — green is never unqualified",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#398 — verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+      ],
+      "cells": [
+        "disposition:transitions:S25:07",
+        "disposition:transitions:S30:02",
+        "disposition:transitions:S30:04"
+      ],
+      "scope": "every sample is accounted for. For known/verified containment, worktree and disposable branch cleanup are attempted despite prior failures; containment unknown records cleanup failure with attempts0 and deliberately retains worktree/branch without Git mutation. The frozen unconditional removal wording is not preserved. both-gone admission requires a successful Git registry read, physical-ancestor-backed path comparisons proving no matching registration, and genuine lstat ENOENT. Alias lexical mismatch, unavailable canonicalization, EACCES/EIO and dangling links do not prove absence. Empty canary namespace rmdir remains separate and never erases an unknown cleanup result. bounded retries require a proven remaining registration or known-present resource. Registry-read/canonicalization/no-physical-ancestor unknown and filesystem unknown now refuse immediately without authorizing prune or another removal. A known registered+absent observation may have already authorized one prune before an unknown readback; that unknown authorizes no further action. Default150/300ms constants remain source facts, not newly measured wall-clock delays."
+    },
+    {
+      "id": "farm-transition-s26-03",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests completes two tasks green when API returns valid file blocks",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests serializes scope-overlapping tasks so the second inherits the first's merged change (AC-06)"
+      ],
+      "cells": [
+        "disposition:transitions:S26:03"
+      ],
+      "scope": "Known qualified task branches merge --no-ff through the single integration merge lock. Actual overlapping-scope CLI fixtures serialize integration."
+    },
+    {
+      "id": "farm-transition-s29-02",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/exec.test.ts:run() — a child killed by a signal reports code 1 when the close event carries no exit code",
+        "vitest:plugins/ca/tools/exec.test.ts:run() — stream capture captures stderr separately from stdout and merges both into `out`",
+        "vitest:plugins/ca/tools/exec.test.ts:treeKill() — the tree cannot be confirmed gone reports ok:false with the pid and budget when taskkill cannot be run"
+      ],
+      "cells": [
+        "disposition:transitions:S29:02"
+      ],
+      "scope": "Ordinary exits/signal-null exit normalization and separated stdout/stderr/out are actually observed. The helper has no fixed accumulated-output cap; no bounded-memory claim is added."
+    },
+    {
+      "id": "farm-transition-s29-03",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#395 — timeout kills and VERIFIES the whole child process tree leaves NO grandchild behind — the tree is verified gone before run() resolves",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#395 — timeout kills and VERIFIES the whole child process tree reports an UNVERIFIED cleanup distinctly from an ordinary timeout",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#395 — timeout kills and VERIFIES the whole child process tree resolves taskkill absolutely from SystemRoot (an unqualified name is a PATH hazard)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#395 — timeout kills and VERIFIES the whole child process tree treeKill resolves a verification result instead of firing and forgetting",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) disables the timeout when timeoutMs is 0/omitted (git-style calls are unbounded)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) does NOT time out a fast command and reports its real exit code",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) kills a hung command after the timeout and tags the result timedOut",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) runGate (real) returns {ok:false} on a non-zero exit and {ok:true} on success",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) runGate surfaces a killed hung command as a gate failure (scheduler can finalize)"
+      ],
+      "cells": [
+        "disposition:transitions:S29:03"
+      ],
+      "scope": "Deadline waits for typed tree-kill verification; verified timeout124 and unverified125 remain distinct. Local real descendant probes and controlled kill failure corroborate this finite process contract."
+    },
+    {
+      "id": "farm-transition-s30-03",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt"
+      ],
+      "cells": [
+        "disposition:transitions:S30:03"
+      ],
+      "scope": "Known registered+missing owned worktree authorizes one prune and reobservation; injected unavailable readback then authorizes no additional destructive attempt. Neither readback failure nor lexical mismatch proves registry absence."
+    },
+    {
+      "id": "farm-transition-s30-05",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01",
+        "disposition:transitions:S30:05"
+      ],
+      "scope": "Genuine ENOENT with observed absent registration admits success; known presence retains bounded retry/failure; EACCES/EIO/dangling entry cannot become missingness. Registered/unregistered filesystem-unknown cases stop after one removal with no prune or destructive retry."
+    },
+    {
+      "id": "farm-transition-s32-01",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary freezes its base before entitlement probes can move the named ref (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary freezes its base before entitlement probes can move the named ref (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary rejects an unresolved base before model requests (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary rejects an unresolved base before model requests (source)"
+      ],
+      "cells": [
+        "disposition:transitions:S32:01"
+      ],
+      "scope": "Actual source/bundle canary freezes a resolvable base before entitlement callbacks can move its named ref; unresolved base refuses before model requests."
+    },
+    {
+      "id": "farm-transition-s32-02",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements drops a 401 candidate with a distinct entitlement note and keeps an entitled one",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements drops a candidate whose probe exceeds the per-candidate wall-clock cap (no hang)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements keeps every candidate when none returns 401",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements treats a non-401 error status as a survivor (let the canary judge capability)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe distinguishes a real 401 response from a network throw (both map to a status, not an exception)",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe rejects a direct external-http probe before fetch",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe sends the Bearer apiKey header and a minimal POST body naming the model",
+        "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe the AbortController-driven timeout actually fires and maps to status 0, bounded by timeoutMs"
+      ],
+      "cells": [
+        "disposition:transitions:S32:02"
+      ],
+      "scope": "401 exclusion, bounded probe timeout/error and non401/status0 survivor are distinguished. A survivor is only eligible for canary evaluation, never a paid-provider capability claim."
+    },
+    {
+      "id": "farm-transition-s32-03",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)"
+      ],
+      "cells": [
+        "disposition:transitions:S32:03",
+        "disposition:transitions:S32:07"
+      ],
+      "scope": "Real source/bundle loopback canaries use detached isolated task/sample worktrees and leave existing refs unchanged; this path does not commit/merge. Actual green, clean source/bundle canary writes its bounded recommendation/provenance while preserving existing refs."
+    },
+    {
+      "id": "farm-transition-s32-04",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests failed canary cleans its own scratch without creating integration (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests failed canary cleans its own scratch without creating integration (source)"
+      ],
+      "cells": [
+        "disposition:transitions:S32:04"
+      ],
+      "scope": "Known settled canary candidates clean their own worktree/branch/root namespace independently before recommendation; failure fixtures preserve existing integration refs."
+    },
+    {
+      "id": "farm-transition-farm-registration-observation-01",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+        "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01"
+      ],
+      "scope": "Actual admitted same-repository alias/locked-missing fixture remains registered and cannot return cleanup success; genuine removal via alias admits absence. Initial/post-prune Git read errors and canonical identity/no-ancestor failures remain unknown, not mismatch. No action follows the unknown observation."
+    },
+    {
+      "id": "farm-transition-farm-prestage-drift-01",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations"
+      ],
+      "cells": [
+        "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01"
+      ],
+      "scope": "First clean then new outside.ts: one author,zero resets,zero Git calls and escalation. Unknown repeats existing refusal; second clean proceeds through add/commit/merge. Tests contain real action-count assertions through controlled RunTaskDeps, not actual concurrent filesystem mutation."
     }
   ]
 }

@@ -77,6 +77,7 @@ on:
       - "tools/build-surface.py"
       - "tools/sync-core.py"
       - "tools/build-host-packages.py"
+      - "tools/owned_output.py"
       - "tools/ci-impact.py"
       # The structured-artifact protocol and its payload builders are a
       # required native-host contract even when a change touches no plugin.
@@ -336,6 +337,11 @@ jobs:
               # R-01: channel readback runs this promoter; its guard is
               # test_marketplace_git_channels.py in the hooks job.
               - 'tools/promote-codex-marketplace.py'
+              - '.claude-plugin/marketplace.json'
+              - 'tools/build-host-packages.py'
+              - 'tools/host_descriptors.py'
+              - 'tools/install-artifact-payload.py'
+              - 'tools/owned_output.py'
               - '.codearbiter/release-targets.md'
               - 'CHANGELOG.md'
               # This job validates the retained historical live-proof record.
@@ -3799,10 +3805,20 @@ jobs:
           --output "${{ runner.temp }}/python-finite-cf06-observation.json"
           -- .github/scripts/test_verdictlib.py
       - name: Run bounded verifier-subprocess contract tests
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # R-07: Codex host commands and the Pi benchmark readiness wait have
         # deadlines and an explicit process-tree containment outcome.
         run: python .github/scripts/test_boundedproc.py
+      - name: Observe original bounded verifier-subprocess contract tests
+        id: bounded_reader_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-finite-bounded-reader-observation.json"
+          -- .github/scripts/test_boundedproc.py
       - name: Run Codex release identity contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_release_identity.py
@@ -3810,12 +3826,18 @@ jobs:
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_codex_marketplace_distribution.py
       - name: Run per-target release planner and Git channel contracts
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # ADR-0040: the planner is the only publish-state logic, and the Git
         # channels are how Claude Code and Codex users receive the engine.
         run: |
           python .github/scripts/test_release_target.py
           python .github/scripts/test_marketplace_git_channels.py
+      - name: Observe original Git channel contracts after the release planner
+        id: git_channel_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        run: |
+          python .github/scripts/test_release_target.py
+          python -B .github/scripts/major_qualification_report.py observe-python --repo . --source-profile hooks-single-owner-findings-v1 --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs" --output "${{ runner.temp }}/python-finite-git-channel-observation.json" -- .github/scripts/test_marketplace_git_channels.py
       - name: Run the A-1.11 release resolution-trace suite
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # issue #563, .codearbiter/specs/release-portable-fixture.md: proves
@@ -3941,7 +3963,7 @@ jobs:
           overwrite: false
       - name: Emit original Python source qualification report
         id: python_qualification_emit
-        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
+        if: ${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}
         shell: bash
         env:
           GH_TOKEN: ${{ github.token }}
@@ -3958,6 +3980,8 @@ jobs:
             --observation "finite-hookf01=${{ runner.temp }}/python-finite-hookf01-observation.json" \
             --observation "finite-hookf03=${{ runner.temp }}/python-finite-hookf03-observation.json" \
             --observation "finite-cf06=${{ runner.temp }}/python-finite-cf06-observation.json" \
+            --observation "finite-bounded-reader=${{ runner.temp }}/python-finite-bounded-reader-observation.json" \
+            --observation "finite-git-channel=${{ runner.temp }}/python-finite-git-channel-observation.json" \
             --observation "finite-tf02=${{ runner.temp }}/python-finite-tf02-observation.json" \
             --payload-root "major-source-inputs-hooks-windows-contracts=${{ github.workspace }}" \
             --payload-root "major-source-inputs-q02-implementation=${{ github.workspace }}" \

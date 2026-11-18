@@ -240,6 +240,120 @@ RECIPES = {'disposition:findings:GEN-B01': ['vitest:site/test/generator/assign-s
                                  'vitest:site/test/release-applicability/publication.test.ts:observed publication is '
                                  'distinct from source applicability retains source matches while explicitly exposing '
                                  'unknown, draft or published state']}
+
+
+def _site_unit_cases(path, *names):
+    return [f'vitest:site/{path}:{name}' for name in names]
+
+
+PAGEFIND_TEST = "scripts/pagefind-build.test.ts"
+PAGEFIND_REPLACEMENT = ("complete search bundle publication writes and reads back every byte, "
+                        "replacing only the previous generated search output")
+
+
+# Exact per-cell mapping from the original Site unit assertion receipts.
+_PAGEFIND_RECIPES = {
+    'disposition:transitions:S65:01': _site_unit_cases(PAGEFIND_TEST,
+        'complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output',
+        'complete search bundle publication waits for the in-memory result and closes the service without asking it to write files',
+    ),
+    'disposition:transitions:S65:02': _site_unit_cases(PAGEFIND_TEST,
+        'complete search bundle publication waits for the in-memory result and closes the service without asking it to write files',
+        'complete search bundle publication fails closed and closes the service on serialize failure',
+    ),
+    'disposition:transitions:S65:03': _site_unit_cases(PAGEFIND_TEST,
+        'complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output',
+        'complete search bundle publication checks JavaScript syntax without executing emitted code',
+        'complete search bundle publication requires unique nonempty assets, the module and valid entry metadata',
+        'complete search bundle publication rejects non-local output path ../escape',
+        'complete search bundle publication rejects non-local output path /absolute',
+        'complete search bundle publication rejects non-local output path a/../escape',
+        'complete search bundle publication rejects non-local output path C:/escape',
+        'complete search bundle publication rejects non-local output path a\\b',
+        'complete search bundle publication rejects non-local output path a//b',
+        'complete search bundle publication rejects non-local output path a/%2e%2e/b',
+        'complete search bundle publication rejects non-local output path .',
+        'complete search bundle publication rejects non-local output path ..',
+    ),
+    'disposition:transitions:S65:04': _site_unit_cases(PAGEFIND_TEST, PAGEFIND_REPLACEMENT),
+    'disposition:transitions:S65:07': _site_unit_cases(PAGEFIND_TEST,
+        'complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output',
+        'complete search bundle publication fails closed and closes the service on create failure',
+        'complete search bundle publication fails closed and closes the service on index failure',
+        'complete search bundle publication fails closed and closes the service on serialize failure',
+    ),
+    'disposition:transitions:S65:05': _site_unit_cases(PAGEFIND_TEST, PAGEFIND_REPLACEMENT),
+    'disposition:transitions:S65:06': _site_unit_cases(PAGEFIND_TEST, PAGEFIND_REPLACEMENT),
+    'disposition:transitions:S65:08': _site_unit_cases('scripts/owned-output.test.ts',
+        'owned generated publication restores the complete old output after a late rename failure and reruns deterministically',
+        'owned generated publication retains an unusable marker if recovery also fails',
+    ),
+}
+
+_RELEASE_DERIVATION_RECIPES = {
+    'disposition:transitions:SX03:01': _site_unit_cases('test/release-applicability/release-applicability.test.ts',
+        'selectCurrentGovernanceReleases selects the highest stable SemVer independently for every governance host (O-01)',
+        'release declaration provenance contract rejects missing governed provenance-manifest declaration (O-03)',
+        'release declaration provenance contract rejects duplicate governed provenance-manifest declaration (O-03)',
+        'release declaration provenance contract rejects divergent governed provenance-manifest declaration (O-03)',
+        'original-publication ledger validation rejects unexpected top-level key (O-02)',
+        'original-publication ledger validation rejects wrong namespaces (O-02)',
+        'original-publication ledger validation rejects invalid date (O-02)',
+        'original-publication ledger validation rejects malformed unselected governed tag (O-02)',
+        'original-publication ledger validation rejects extra receipt key (O-02)',
+        'original-publication ledger validation rejects zero identity (O-02)',
+        'original-publication ledger validation rejects uppercase identity (O-02)',
+        'original-publication ledger validation rejects invalid object type (O-02)',
+        'original-publication ledger validation rejects commit identity mismatch (O-02)',
+        'original-publication ledger validation rejects duplicate JSON keys instead of accepting the last value (O-02)',
+        'original-publication ledger validation rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)',
+    ),
+    'disposition:transitions:SX03:03': _site_unit_cases('test/release-applicability/release-applicability.test.ts',
+        'historical release applicability reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)',
+        'historical release applicability rejects a historical manifest whose version does not exactly match its selected tag (O-04)',
+        "published Pi support (#1071) records the Pi versions the selected ca-pi tag supports, read at that tag's commit",
+    ),
+    'disposition:transitions:SX03:04': _site_unit_cases('test/release-applicability/release-applicability.test.ts',
+        'documentation build identity binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)',
+        'documentation build identity rejects a missing GitHub Actions build identity (O-06)',
+        'documentation build identity rejects a not 40-hex GitHub Actions build identity (O-06)',
+        'documentation build identity rejects a different from HEAD GitHub Actions build identity (O-06)',
+        'documentation build identity records the exact local HEAD and dirty state without using a branch name (O-06)',
+        'documentation build identity rejects a moving or malformed local HEAD identity (O-06)',
+    ),
+    'disposition:transitions:SX03:05': _site_unit_cases('test/release-applicability/presentation.test.ts',
+        'release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)',
+        'release applicability presentation presents the exact successful applicability claim (O-13)',
+        'release applicability presentation rejects an internally inconsistent applicability claim (O-13)',
+    ) +
+        _site_unit_cases('test/release-applicability/release-applicability.test.ts',
+        'deterministic release applicability record requires the replay digest to match both current and latest-published ca source bytes (O-07)',
+        'deterministic release applicability record records an explicit current-source mismatch without throwing or calling it compatibility (O-08)',
+        'deterministic release applicability record records an explicit published-source mismatch without throwing or calling it compatibility (O-08)',
+        'deterministic release applicability record rejects malformed direct-hook proof evidence: empty evidence kind (O-07)',
+        'deterministic release applicability record rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)',
+        'deterministic release applicability record rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)',
+        'deterministic release applicability record rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)',
+        'deterministic release applicability record rejects malformed direct-hook proof evidence: non-canonical source (O-07)',
+        'deterministic release applicability record rejects malformed direct-hook proof evidence: invalid replay digest (O-07)',
+        'deterministic release applicability record rejects missing latest-published hook bytes (O-07)',
+    ),
+    'disposition:transitions:SX03:02': _site_unit_cases('test/release-applicability/publication.test.ts',
+        'observed publication is distinct from source applicability never calls an offline local tag or historical receipt published',
+        'observed publication is distinct from source applicability retains exact observed published state',
+        'observed publication is distinct from source applicability retains exact observed draft state',
+        'observed publication is distinct from source applicability retains exact observed tag-only state',
+        'observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations',
+        'observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown',
+        'observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state',
+    ),
+}
+RECIPES.update(_PAGEFIND_RECIPES)
+RECIPES.update(_RELEASE_DERIVATION_RECIPES)
+RECIPES['disposition:machines:S65'] = list(dict.fromkeys(
+    [selector for selectors in _PAGEFIND_RECIPES.values() for selector in selectors]
+    + _site_unit_cases(PAGEFIND_TEST,
+        'complete search bundle publication is wired to every Astro build instead of an optional postbuild command')))
 CELLS = frozenset(RECIPES)
 SF13_DOCS_SELECTORS = (
     'vitest:site/scripts/generate-academy-publication.test.ts:Academy caller publication recovery restores every prior output after a late cross-root failure and converges on rerun',
@@ -627,7 +741,7 @@ def validate_observation(record, req, manifest):
 def validate_selection_map(document):
     groups = [g for g in reports.validate_selections(document) if g['job'] == JOB]
     need(len(groups) == len(CELLS) and {c for g in groups for c in g['cells']} == CELLS,
-         'Docs source selection must declare its exact four findings')
+         'Docs source selection must declare its exact covered site cells')
     for group in groups:
         need(len(group['cells']) == 1 and group['payload_name'] == PAYLOAD
              and group['observation'] == 'docs-original-site-coverage' and group['proof_kind'] == 'source-test'

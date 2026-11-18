@@ -1062,6 +1062,28 @@ CREATION_REVIEW_ACCEPT_EXPECTED = {cell: {platform: list(required) for platform 
                                     'go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review']}.items()}
 
 
+ORDINARY_PROGRESS_FINDING_EXPECTED = {
+    "disposition:findings:N-F03": {"windows/amd64": [
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveReconcileKeepsTransitiveDependencyAdviceCurrent",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09OrdinaryReviewAndDoneDoNotClaimIndependentProof",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckCASReplaySourceChangesAndPresentationEdits",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckLatestFailureOverridesPriorPassAndSkipsUnknown",
+        "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckSubjectPathChangeInvalidatesOnlyReportedCheckApplicability",
+    ]}
+}
+
+EXPECTED_NATIVE_RECIPES = {
+    **RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED,
+    **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED,
+    **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED, **ORDINARY_PROGRESS_FINDING_EXPECTED,
+}
+
+
 class NativeCompositeAuthorityTests(unittest.TestCase):
     def setUp(self):
         self.source='a'*40;self.tree='b'*40;self.module='c'*64
@@ -1384,7 +1406,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         import major_native_observation as native
         self.assertEqual(native.selected_recipes(sorted(PROGRESS_EXPECTED)),PROGRESS_EXPECTED)
         self.assertEqual({cell:native.RECIPES[cell] for cell in RECIPES},RECIPES)
-        self.assertEqual(set(native.RECIPES),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED)|set(CREATION_REVIEW_ACCEPT_EXPECTED))
+        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
         self._select_progress_contracts()
         record=self.produce()
         self.assertEqual({row['cell'] for row in record['native']['results']},set(PROGRESS_EXPECTED))
@@ -1429,7 +1451,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             self.fail('Current accepted N11 history contract has no complete canonical route: '+str(error))
         self.assertEqual(selected,{cell:PROGRESS_EXPECTED[cell]})
         policy=json.loads((Path(__file__).resolve().parents[2]/'.github/major-qualification-policy.json').read_text())
-        self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED)|set(CLI_EXPECTED)|set(JOURNAL_EXPECTED)|set(KERNEL_SCHEMA_EXPECTED)|set(KERNEL_REMAINDER_EXPECTED)|set(READINESS_RECEIPT_EXPECTED)|set(CREATION_REVIEW_ACCEPT_EXPECTED))
+        self.assertEqual(policy['native_composite_cells'], sorted(EXPECTED_NATIVE_RECIPES))
         parent='go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops'
         children=[parent+'/'+name for name in ('ancestor-block','receipted-pending','receipted-blocked')]
         for platform,required in selected[cell].items():
@@ -1587,8 +1609,7 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         except readiness.ReadinessError as error:
             self.fail('Complete CLI boundary has no canonical composition route: ' + str(error))
         self.assertEqual(selected, CLI_EXPECTED)
-        expected = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED}
-        self.assertEqual(len(expected), 40)
+        expected = EXPECTED_NATIVE_RECIPES
         self.assertEqual(native.RECIPES, expected)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         cells = policy['native_composite_cells']
@@ -1668,10 +1689,9 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
             {'N02:01': 40, 'N02:02': 27, 'N02:03': 31, 'N02:04': 17, 'N03:03': 3})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
+        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(JOURNAL_EXPECTED).intersection(policy['cell_job_bindings']))
@@ -1769,10 +1789,9 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         self.assertEqual(counts, {'N03:04': 5, 'N03:05': 83, 'N04:02': 11, 'N04:03': 13})
         old = {**RECIPES, **PROGRESS_EXPECTED, **FINDING_EXPECTED, **BOUNDARY_EXPECTED, **CLI_EXPECTED, **JOURNAL_EXPECTED}
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
+        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text())
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED},
                          NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(KERNEL_SCHEMA_EXPECTED).intersection(policy['cell_job_bindings']))
@@ -1896,10 +1915,9 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED}
         self.assertEqual(len(old), 29)
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **KERNEL_REMAINDER_EXPECTED, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
+        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(KERNEL_REMAINDER_EXPECTED).intersection(policy['cell_job_bindings']))
         for held in ('disposition:machines:N02', 'disposition:machines:N03', 'disposition:machines:N04'):
@@ -1995,10 +2013,9 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                **CLI_EXPECTED, **JOURNAL_EXPECTED, **KERNEL_SCHEMA_EXPECTED, **KERNEL_REMAINDER_EXPECTED}
         self.assertEqual(len(old), 32)
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **READINESS_RECEIPT_EXPECTED, **CREATION_REVIEW_ACCEPT_EXPECTED})
+        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(READINESS_RECEIPT_EXPECTED).intersection(policy['cell_job_bindings']))
         for held in ('disposition:machines:N07', 'disposition:machines:N10', 'disposition:machines:N12'):
@@ -2094,10 +2111,9 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         self.assertEqual(len(old), 37)
         self.assertFalse(set(old).intersection(CREATION_REVIEW_ACCEPT_EXPECTED))
         self.assertEqual({cell: native.RECIPES[cell] for cell in old}, old)
-        self.assertEqual(native.RECIPES, {**old, **CREATION_REVIEW_ACCEPT_EXPECTED})
+        self.assertEqual(native.RECIPES, EXPECTED_NATIVE_RECIPES)
         policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_text(encoding='utf-8'))
         self.assertEqual(policy['native_composite_cells'], sorted(native.RECIPES))
-        self.assertEqual(len(policy['native_composite_cells']), 40)
         self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in NATIVE_SINGLE_JOB_EXPECTED}, NATIVE_SINGLE_JOB_EXPECTED)
         self.assertFalse(set(CREATION_REVIEW_ACCEPT_EXPECTED).intersection(policy['cell_job_bindings']))
         for held in ('disposition:machines:N04', 'disposition:machines:N10', 'disposition:transitions:N04:04'):

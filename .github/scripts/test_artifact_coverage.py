@@ -138,6 +138,35 @@ class ArtifactCoverageTest(unittest.TestCase):
         ).encode("utf-8")).hexdigest()
         self.write_metadata(folder, metadata)
 
+    def test_failed_unit_keeps_raw_log_and_reports_only_owned_names(self):
+        source = self.module / "integration/logic_test.go"
+        with source.open("a", encoding="utf-8", newline="") as stream:
+            stream.write('func TestOwnedFailure(t *testing.T) { t.Fatal("raw-fixture-detail") }\n')
+        output, report = self.collect("--expect-platform", self.host, success=False)
+        self.assertEqual(report["status"], "INVALID")
+        self.assertFalse((output / "metadata.json").exists())
+        log = output / "unit.log"
+        self.assertIn(b"raw-fixture-detail", log.read_bytes())
+        self.assertNotIn("raw-fixture-detail", json.dumps(report))
+        self.assertEqual(report["native_unit_failure"], {
+            "exit_code": 1, "subprocess_timeout": False, "go_test_timeout": False,
+            "failed_packages": ["example.invalid/coveragefixture/integration"],
+            "test_names": ["TestOwnedFailure"], "log_sha256": digest(log),
+        })
+
+    def test_go_timeout_lists_base_test_names_without_fixture_text(self):
+        owner = self.load_helper()
+        known = "example.invalid/coveragefixture/integration"
+        log = (b"panic: test timed out after 10m0s\n"
+               b"\trunning tests:\n\t\tTestHung/private-fixture (10m0s)\n"
+               b"FAIL\texample.invalid/coveragefixture/integration\t600.001s\n"
+               b"FAIL\tignored.invalid/other\t99s\n")
+        details = owner.NativeUnitCoverageFailure("unit timeout", log, {known}, exit_code=1).details
+        self.assertTrue(details["go_test_timeout"])
+        self.assertEqual(details["test_names"], ["TestHung"])
+        self.assertEqual(details["failed_packages"], [known])
+        self.assertNotIn("private-fixture", json.dumps(details))
+
     def test_collect_measures_cross_package_calls_and_unexecuted_production(self):
         # NC-01: a package exercised only by another package's tests must count.
         output, result = self.collect("--expect-platform", self.host)

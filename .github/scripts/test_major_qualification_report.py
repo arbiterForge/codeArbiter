@@ -2749,8 +2749,11 @@ class SandboxOwnedEffectsRoutingTests(unittest.TestCase):
 
     def test_canonical_three_cells_require_complete_guard_and_real_effect_unions(self):
         groups = self._groups()
-        self.assertEqual(owner.TS_PROFILE_CELLS["sandbox-tools-v1"],
-                         frozenset(self.EXPECTED) | {"disposition:transitions:S54:01"})
+        configured = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        cells = {cell for group in configured if group["job"] == self.JOB
+                 for cell in group["cells"] if cell not in owner.TS_FINDING_RECIPES}
+        self.assertEqual(owner.TS_PROFILE_CELLS["sandbox-tools-v1"], cells)
+        self.assertLessEqual(frozenset(self.EXPECTED) | {"disposition:transitions:S54:01"}, cells)
         self.assertEqual(owner.TS_PROFILE_CELLS["pi-tools-v1"], frozenset(
             "disposition:transitions:pi-qualification:disposable-home:" + number
             for number in ("01", "02", "03")))
@@ -3552,6 +3555,34 @@ class PiSandboxFiniteFindingRoutingTests(unittest.TestCase):
     """Pure report admission over inert named outcomes; no TS/Docker/Pi execution."""
     EXPECTED = {'disposition:findings:SF01': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects'], 'scope': 'Finite SF01 source-test behavior: real loopback child proxy and parent gate precede exact owned file effects; bridge refusal, disabled/untrusted lifecycle, token/replay/expiry/sequence bounds refuse effects. Permission callback and native factories are fixture ports. No human TUI, installed author, shell containment or whole PI-D task qualification.'}, 'disposition:findings:SF02': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session'], 'scope': 'Finite SF02 source-test persona readiness, failure, healthy/retry and retired-session behavior through shipped parent installation with fixture host/bridge ports; no model or installed-host qualification.'}, 'disposition:findings:SF03': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once'], 'scope': 'Finite SF03 source-test late metrics cannot install into disposed/off sessions or degrade the current session; both completion orders preserve current-session installation and native rendering. Fixture TUI ports; no visible-host or terminal qualification.'}, 'disposition:findings:SF12': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads'], 'scope': 'Finite SF12 source-test compatibility declares private approval unavailable on Pi 1.5.0 and legacy runtime-gated only; isolated dialog controls are synthetic and never ordinary installed approval or human consent evidence. No production doctor or host-observed approval qualification.'}, 'disposition:findings:SF08': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box'], 'scope': 'Finite SF08 requires pure cache-key/provenance/refusal guards AND both original real Docker builder cases: distinct staging names reuse the labeled immutable image, changed dependency bytes rebuild, concurrent cold requests converge and deleting one box preserves another. No remote clone/auth, arbitrary image or installed CLI credit.'}, 'disposition:findings:SF10': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target'], 'scope': 'Finite SF10 source-test unavailable discovery, cancellation-independent compensation, retained unknown cleanup references and refusal to destroy unobserved targets through actual production functions with injected Docker observations. No universal cleanup, real daemon outage or host containment claim.'}, 'disposition:findings:SF09': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment', 'vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box'], 'scope': 'Finite SF09 requires the original real Docker overflow case plus unit stop/inspect guard: actual capped exec overflows without timeout, exact target independently inspects stopped and a separate running box remains alive. No arbitrary workload, global cleanup or installed CLI qualification.'}}
 
+    def test_original_sandbox_deadline_and_cache_rows_use_existing_observer(self):
+        history = owner.ROOT / 'docs/state-contracts-major/execution/evidence'
+        deadlines = history / 'farm-sandbox-remaining-ae237d'
+        assertions = {case['id']: case['exact_selector'] for case in
+                      owner.load_json(deadlines / 'raw/selected-named-observations.json')['assertions']}
+        expected = {row['cell']: [assertions[ref] for ref in row['assertion_refs']]
+                    for row in owner.load_json(deadlines / 'sandbox-client-and-required-gate-tested.json')['semantic_mapping']}
+        cache = owner.load_json(history / 'post-intake-deltas-9e3b2ea5/sandbox-cache-cancel-tested.json')
+        row, = cache['semantic_groups']
+        expected[row['cells'][0]] = ['vitest:plugins/ca-sandbox/tools/build.test.ts:' + title
+                                     for title in row['named_cases']]
+        selections = owner.validate_selections(owner.load_json(owner.ROOT / '.github/major-test-selections.json'))
+        policy = owner.load_json(owner.ROOT / '.github/major-qualification-policy.json')
+        groups = [group for group in selections if set(group['cells']) & expected.keys()]
+        self.assertEqual({group['cells'][0]: group['selectors'] for group in groups}, expected)
+        profile = 'sandbox-tools-v1'
+        self.assertEqual({cell: policy['cell_job_bindings'].get(cell) for cell in expected},
+                         dict.fromkeys(expected, owner.TS_PROFILE_JOBS[profile]))
+        with vitest_source_fixture(profile) as fixture:
+            observations, _, _, build = self.fixture_report(fixture, groups)
+            report = build()
+            self.assertEqual({row['cell'] for row in report['results']}, expected.keys())
+            for cell, selectors in expected.items():
+                changed = {**observations, 'tests': [case for case in observations['tests']
+                           if case['id'] != selectors[-1]]}
+                with self.subTest(cell=cell), self.assertRaisesRegex(ValueError, 'selected named test'):
+                    build(o=changed)
+
     def groups(self, profile):
         return [{"id": "finite-" + cell.rsplit(":", 1)[1], "job": owner.TS_PROFILE_JOBS[profile],
             "payload_name": owner.TS_PROFILE_PAYLOADS[profile], "observation": "pi-tools" if profile == "pi-tools-v1" else "sandbox-tools",
@@ -4196,6 +4227,248 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                                 'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; '
                                          'model reasoning quality and whole T01 remain unassessed.'}}
 
+    EXPECTED.update({
+        'disposition:findings:C-F08': {
+            'id': 'finite-c-f08',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment',
+                'python:.github/scripts/test_boundedproc.py:__main__.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied',
+            ],
+            'scope': 'Controlled subprocess watchdog outcomes for Codex host commands and the Pi benchmark.',
+        },
+        'disposition:added_transitions:C36:added-prefetched-completion': {
+            'id': 'finite-added-prefetched-completion',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write',
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes',
+            ],
+            'scope': 'Owned stdout keeps prefetched completion and observes actual early EOF.',
+        },
+        'disposition:added_transitions:C36:added-stdin-eof': {
+            'id': 'finite-added-stdin-eof',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness',
+            ],
+            'scope': 'Communicate without input closes the owned child stdin and receives completion.',
+        },
+        'disposition:added_transitions:C36:added-input-once': {
+            'id': 'finite-added-input-once',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness',
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once',
+            ],
+            'scope': 'Owned child receives exact text and binary input once across a timed-out write.',
+        },
+        'disposition:added_transitions:C36:added-input-timeout': {
+            'id': 'finite-added-input-timeout',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer',
+            ],
+            'scope': 'Unread stdin stays bounded and owned cleanup settles the writer.',
+        },
+        'disposition:added_transitions:C36:added-cleanup-denied': {
+            'id': 'finite-added-cleanup-denied',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied',
+            ],
+            'scope': 'An injected group-signal denial retains the actual child readiness failure.',
+        },
+    })
+
+    EXPECTED.update({
+        'disposition:transitions:S73:01': {
+            'id': 'finite-channel-s73-01',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_version_must_match_the_qualified_manifest',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_package_without_native_payload_is_refused',
+            ],
+            'scope': 'Fixture archive/version/payload admission produces actual deterministic local Git distribution/channel refs; qualified binary contents are synthetic fixture bytes, not real engine qualification.',
+        },
+        'disposition:transitions:S73:02': {
+            'id': 'finite-channel-s73-02',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path',
+            ],
+            'scope': 'Absent immutable ref is created and exact remote tag equals returned distribution commit.',
+        },
+        'disposition:transitions:S73:03': {
+            'id': 'finite-channel-s73-03',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op',
+            ],
+            'scope': 'Repeated same input observes existing distribution and reuses channel commit without duplicate promotion.',
+        },
+        'disposition:transitions:S73:04': {
+            'id': 'finite-channel-s73-04',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused',
+            ],
+            'scope': 'Existing same-version identity refuses changed archive bytes.',
+        },
+        'disposition:transitions:S73:05': {
+            'id': 'finite-channel-s73-05',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_refuses_to_roll_back',
+            ],
+            'scope': 'Older version refuses before moving local remote channel.',
+        },
+        'disposition:transitions:S73:06': {
+            'id': 'finite-channel-s73-06',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op',
+            ],
+            'scope': 'Same tree reuses current marketplace commit and previous commit identity.',
+        },
+        'disposition:transitions:S73:07': {
+            'id': 'finite-channel-s73-07',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance',
+            ],
+            'scope': 'Changed tree advances descendant; unreadable current version now refuses with channel unchanged.',
+        },
+        'disposition:transitions:S73:08': {
+            'id': 'finite-channel-s73-08',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+            ],
+            'scope': 'Tag publication/readback uses expected deterministic commit; response-loss path attempts immutable push once.',
+        },
+        'disposition:transitions:S73:09': {
+            'id': 'finite-channel-s73-09',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+            ],
+            'scope': 'Channel update goes through current lease/readback helper, advances descendant, and response-loss observation does not repush.',
+        },
+        'disposition:transitions:S73:10': {
+            'id': 'finite-channel-s73-10',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes',
+            ],
+            'scope': 'Uncertain push may succeed only by exact observed remote identity; unknown/conflict refuses after one attempt; explicit recovery reads history without pushing.',
+        },
+        'disposition:transitions:S74:03': {
+            'id': 'finite-channel-s74-03',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_git_mode_needs_no_npm_package',
+            ],
+            'scope': 'Codex first call creates immutable tag, second channel promotion names that exact tag/commit without acquiring npm.',
+        },
+        'disposition:transitions:S74:04': {
+            'id': 'finite-channel-s74-04',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+            ],
+            'scope': 'Actual successful channel advance uses independently precreated immutable distribution tag; missing-tag/expected-head adversarial branches not independently claimed.',
+        },
+        'disposition:transitions:S74:08': {
+            'id': 'finite-channel-s74-08',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release',
+            ],
+            'scope': 'Actual local leased channel updates name immutable source and preserve recoverable prior distribution ancestry.',
+        },
+        'disposition:transitions:S74:09': {
+            'id': 'finite-channel-s74-09',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted',
+            ],
+            'scope': 'Shared exact push/readback helper refuses conflicting/unobservable remote without retry; Codex recovery reads old completed promotion and rejects an unpromoted tag.',
+        },
+        'disposition:findings:SF15': {
+            'id': 'finite-channel-sf15',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes',
+            ],
+            'scope': 'Preserve intentional Claude tag+channel vs Codex preexisting-tag channel protocol; uncertain responses cannot authorize blind mutation retries; unknown current Claude version refuses.',
+        },
+    })
+
     def test_a_six_existing_single_owner_findings_have_closed_original_profiles(self):
         expected_jobs = {
             "hooks-single-owner-findings-v1": "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
@@ -4229,7 +4502,7 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                   'tests':[{'id':x,'result':'passed'} for x in recipe['selectors']],
                   'source_input_binding':{'format':owner.SOURCE_BINDING,'profile':recipe['profile'],
                      'payload_name':spec['payload'],'manifest_sha256':'e'*64}}
-        group={'id':recipe['observation'],'job':spec['job'],'payload_name':spec['payload'],
+        group={'id':recipe.get('id', recipe['observation']),'job':spec['job'],'payload_name':spec['payload'],
                'observation':recipe['observation'],'proof_kind':'source-test','cells':[cell],
                'selectors':list(recipe['selectors']),'scope':recipe['scope']}
         def build(o=observed,g=group,r=req,p=payload,job=spec['job']):
@@ -4252,6 +4525,82 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 actual,=[g for g in selections['groups'] if g['cells']==[cell]]
                 self.assertEqual(actual,group)
                 self.assertEqual(policy['cell_job_bindings'][cell],spec['job'])
+
+    def test_bounded_reader_cells_share_one_original_capture(self):
+        self.assert_shared_original_capture("finite-bounded-reader", 6, 14)
+
+    def test_git_channel_cells_share_one_original_capture(self):
+        spec = owner.source_profile("hooks-single-owner-findings-v1")
+        self.assertIn(".claude-plugin/marketplace.json", spec["paths"])
+        self.assert_shared_original_capture("finite-git-channel", 15, 16)
+
+    def test_measurement_and_illustration_cells_use_one_original_contract_observation(self):
+        history = owner.ROOT / 'docs/state-contracts-major/execution/evidence'
+        expected = {}
+        for path in ('packaging-remaining-40b9/benchmark-empty-finding.json',
+                     'tools-local-af5f/measurement-verdict-controls.json',
+                     'tools-local-af5f/illustration-failure-boundaries.json',
+                     'packaging-remaining-40b9/illustration-failure-finding.json'):
+            receipt = owner.load_json(history / path)
+            for cell in receipt['disposition_ids']:
+                expected[cell] = ['python:tools/test_measurement_contracts.py:' + name
+                                  for name in receipt['named_assertions']]
+        self.assertEqual(len(expected), 8)
+        original = 'disposition:findings:T-F02'
+        _, spec, req, payload, observed, group, _ = self.fixture(original)
+        expected[original] = group['selectors']
+        selection = owner.load_json(owner.ROOT / '.github/major-test-selections.json')
+        policy = owner.load_json(owner.ROOT / '.github/major-qualification-policy.json')
+        groups = [g for g in selection['groups'] if g['observation'] == 'finite-tf02']
+        self.assertEqual(len(groups), 9)
+        self.assertEqual({g['cells'][0]: g['selectors'] for g in groups}, expected)
+        self.assertEqual({c: policy['cell_job_bindings'][c] for c in expected}, dict.fromkeys(expected, spec['job']))
+        req.update(cells=sorted(expected), cell_jobs=dict.fromkeys(expected, spec['job']))
+        selectors = sorted({name for names in expected.values() for name in names})
+        self.assertEqual(len(selectors), 7)
+        observed['tests'] = [{'id': name, 'result': 'passed'} for name in selectors]
+
+        def build(selected=groups, outcomes=observed):
+            return owner.build_report(req, job_name=spec['job'], job_id=9,
+                selections={'schema': owner.SELECTIONS, 'groups': selected},
+                observations={'finite-tf02': outcomes}, payloads={spec['payload']: payload})
+
+        report = build()
+        self.assertEqual(len(report['payloads']), 1)
+        self.assertEqual({row['cell']: row['executed_population'] for row in report['results']},
+                         {cell: len(names) for cell, names in expected.items()})
+        for name in selectors:
+            outcomes = {**observed, 'tests': [row for row in observed['tests'] if row['id'] != name]}
+            with self.subTest(selector=name), self.assertRaisesRegex(ValueError, 'selected named test missing'):
+                build(outcomes=outcomes)
+        reduced = copy.deepcopy(groups)
+        next(g for g in reduced if g['cells'] == ['disposition:findings:T-F01'])['selectors'].pop()
+        with self.assertRaisesRegex(ValueError, 'complete exact finite finding'):
+            build(selected=reduced)
+
+    def assert_shared_original_capture(self, key, cell_count, selector_count):
+        cells = [cell for cell, recipe in self.EXPECTED.items() if recipe["observation"] == key]
+        fixtures = [self.fixture(cell) for cell in cells]
+        _, spec, req, payload, observed, _, _ = fixtures[0]
+        groups = [fixture[5] for fixture in fixtures]
+        req.update(cells=cells, cell_jobs=dict.fromkeys(cells, spec["job"]))
+        selectors = {selector for group in groups for selector in group["selectors"]}
+        self.assertEqual(len(cells), cell_count)
+        self.assertEqual(len(selectors), selector_count)
+        observed["tests"] = [{"id": selector, "result": "passed"} for selector in sorted(selectors)]
+
+        def build():
+            return owner.build_report(req, job_name=spec["job"], job_id=9,
+                selections={"schema": owner.SELECTIONS, "groups": groups},
+                observations={key: observed}, payloads={spec["payload"]: payload})
+
+        report = build()
+        self.assertEqual(len(report["payloads"]), 1)
+        self.assertEqual({row["cell"]: row["executed_population"] for row in report["results"]},
+                         {group["cells"][0]: len(group["selectors"]) for group in groups})
+        observed["tests"].pop()
+        with self.assertRaisesRegex(ValueError, "selected named test missing"):
+            build()
 
     def test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory(self):
         for cell in self.EXPECTED:
@@ -4617,7 +4966,7 @@ class HookF02CompleteCompositionTests(unittest.TestCase):
         selected=[g for g in actual['groups'] if self.CELL in g['cells']]
         self.assertEqual(selected,groups)
         self.assertEqual(owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')['cell_job_bindings'][self.CELL],spec['job'])
-        self.assertEqual(len(owner.PYTHON_FINDING_RECIPES),6)
+        self.assertNotIn(self.CELL, owner.PYTHON_FINDING_RECIPES)
         self.assertTrue({'.github/scripts/test_modelib.py','.github/scripts/test_prompt_submit.py','core/pysrc/_modelib.py','core/pysrc/prompt-submit.py'}<=spec['paths'])
 
 if __name__ == "__main__":

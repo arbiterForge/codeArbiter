@@ -636,6 +636,42 @@ TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualifi
 
 # Additional finite findings use the same original typed source profiles.
 # Every required assertion must survive selection; this is not installed/task credit.
+# Original Sandbox driver cases for retained component scopes.
+TS_PROFILE_CELLS["sandbox-tools-v1"] |= frozenset((
+    "disposition:added_transitions:SBX-CACHE-CANCELLATION:01",
+    "disposition:transitions:S47:02",
+    "disposition:transitions:S47:06",
+    "disposition:transitions:S47:07",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
+    "disposition:machines:S53",
+    "disposition:transitions:S48:06",
+    "disposition:transitions:S48:07",
+    "disposition:transitions:S49:01",
+    "disposition:transitions:S49:02",
+    "disposition:transitions:S49:03",
+    "disposition:transitions:S49:04",
+    "disposition:transitions:S49:05",
+    "disposition:transitions:S49:06",
+    "disposition:transitions:S49:07",
+    "disposition:transitions:S49:08",
+    "disposition:transitions:S49:09",
+    "disposition:transitions:S51:05",
+    "disposition:transitions:S52:01",
+    "disposition:transitions:S52:02",
+    "disposition:transitions:S52:03",
+    "disposition:transitions:S52:04",
+    "disposition:transitions:S52:05",
+    "disposition:transitions:S53:01",
+    "disposition:transitions:S53:02",
+    "disposition:transitions:S53:03",
+    "disposition:transitions:S53:04",
+    "disposition:transitions:S53:05",
+    "disposition:transitions:S53:06",
+    "disposition:transitions:S53:07",
+))
+
 TS_FINDING_RECIPES = {
     'disposition:findings:SF01': {"profile": 'pi-tools-v1', "selectors": frozenset((
         'vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect',
@@ -729,7 +765,55 @@ TS_PROFILE_ROOTS["farm-tools-v1"] = "plugins/ca/tools"
 TS_PROFILE_JOBS["farm-tools-v1"] = "[CHECK] | [CA  ] | Farm dispatcher contract"
 TS_PROFILE_PAYLOADS["farm-tools-v1"] = "major-source-inputs-farm-dispatcher"
 TS_PROFILE_UPLOADS["farm-tools-v1"] = "Upload Farm source-test inputs"
-TS_PROFILE_CELLS["farm-tools-v1"] = frozenset()
+TS_PROFILE_CELLS["farm-tools-v1"] = frozenset((
+    "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01",
+    "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01",
+    "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01",
+    "disposition:transitions:S22:01",
+    "disposition:transitions:S23:02",
+    "disposition:transitions:S23:03",
+    "disposition:transitions:S23:04",
+    "disposition:transitions:S23:05",
+    "disposition:transitions:S23:06",
+    "disposition:transitions:S23:09",
+    "disposition:transitions:S23:10",
+    "disposition:transitions:S23:11",
+    "disposition:transitions:S23:12",
+    "disposition:transitions:S24:01",
+    "disposition:transitions:S24:04",
+    "disposition:transitions:S24:05",
+    "disposition:transitions:S24:06",
+    "disposition:transitions:S24:07",
+    "disposition:transitions:S24:08",
+    "disposition:transitions:S24:09",
+    "disposition:transitions:S24:10",
+    "disposition:transitions:S24:11",
+    "disposition:transitions:S24:12",
+    "disposition:transitions:S24:13",
+    "disposition:transitions:S24:14",
+    "disposition:transitions:S25:01",
+    "disposition:transitions:S25:07",
+    "disposition:transitions:S26:03",
+    "disposition:transitions:S29:02",
+    "disposition:transitions:S29:03",
+    "disposition:transitions:S29:05",
+    "disposition:transitions:S30:02",
+    "disposition:transitions:S30:03",
+    "disposition:transitions:S30:04",
+    "disposition:transitions:S30:05",
+    "disposition:transitions:S31:06",
+    "disposition:transitions:S32:01",
+    "disposition:transitions:S32:02",
+    "disposition:transitions:S32:03",
+    "disposition:transitions:S32:04",
+    "disposition:transitions:S32:07",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:01",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:02",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:03",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:04",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:05",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:06",
+))
 TS_FINDING_RECIPES.update({
     'disposition:findings:SF04': {"profile": "farm-tools-v1", "selectors": frozenset((
         'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields',
@@ -1785,6 +1869,7 @@ Q02_FINDING_RECIPES = {
 # Single-owner finding routes use existing unfiltered commands. Shared source
 # transport grants no multi-owner, whole-task, model or installed-host claim.
 _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
+ '.claude-plugin/marketplace.json',
  'plugins/ca/skills/debug/SKILL.md', 'plugins/ca/skills/debug/references/preparation.md',
  'plugins/ca-codex/routines/debug/SKILL.md', 'plugins/ca-codex/routines/debug/references/preparation.md',
  'plugins/ca-pi/routines/debug/SKILL.md', 'plugins/ca-pi/routines/debug/references/preparation.md',
@@ -2563,6 +2648,142 @@ PYTHON_FINDING_RECIPES = {'disposition:findings:HOOK-F01': {'profile': 'hooks-si
                                 'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; model '
                                          'reasoning quality and whole T01 remain unassessed.'}}
 
+def _hook_contract_recipes(script, observation, cases_by_cell):
+    return {
+        cell: {
+            "profile": "hooks-single-owner-findings-v1",
+            "script": script,
+            "observation": observation,
+            "selectors": frozenset(f"python:{script}:__main__.{case}" for case in cases),
+        }
+        for cell, cases in cases_by_cell.items()
+    }
+
+
+_MEASUREMENT_VERDICT_CASES = (
+    "MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+    "MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+    "MeasurementContracts.test_empty_statusline_reports_cannot_pass",
+)
+_ILLUSTRATION_FAILURE_CASES = (
+    "MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+    "MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+    "MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image",
+)
+
+# These rows share the complete verdict or illustration vector from the original
+# measurement-contract suite, captured by the existing finite-tf02 observation.
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    "tools/test_measurement_contracts.py", "finite-tf02", {
+        "disposition:added_transitions:T11:added-browser-failure-cleanup": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:added_transitions:T11:added-render-failure-cleanup": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:added_transitions:T11:added-renderer-refused": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:findings:T-F01": _MEASUREMENT_VERDICT_CASES,
+        "disposition:findings:T-F04": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:transitions:T08:05": _MEASUREMENT_VERDICT_CASES,
+        "disposition:transitions:T10:07": _MEASUREMENT_VERDICT_CASES,
+        "disposition:transitions:T10:08": _MEASUREMENT_VERDICT_CASES,
+    },
+))
+
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_boundedproc.py", "finite-bounded-reader", {
+        "disposition:findings:C-F08": (
+            "CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+            "CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+            "PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+            "PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+            "PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+            "PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+            "PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+            "PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+        ),
+        "disposition:added_transitions:C36:added-prefetched-completion": (
+            "ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+            "ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+            "PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+        ),
+        "disposition:added_transitions:C36:added-stdin-eof": (
+            "ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+        ),
+        "disposition:added_transitions:C36:added-input-once": (
+            "ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+            "ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+        ),
+        "disposition:added_transitions:C36:added-input-timeout": (
+            "ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+        ),
+        "disposition:added_transitions:C36:added-cleanup-denied": (
+            "PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+        ),
+    },
+))
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_marketplace_git_channels.py", "finite-git-channel", {
+        "disposition:transitions:S73:01": (
+            "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+            "ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+            "ClaudeChannelTests.test_package_without_native_payload_is_refused",
+        ),
+        "disposition:transitions:S73:02": (
+            "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        ),
+        "disposition:transitions:S73:03": (
+            "ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+        ),
+        "disposition:transitions:S73:04": (
+            "ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+        ),
+        "disposition:transitions:S73:05": (
+            "ClaudeChannelTests.test_channel_refuses_to_roll_back",
+        ),
+        "disposition:transitions:S73:06": (
+            "ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+        ),
+        "disposition:transitions:S73:07": (
+            "ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+            "ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+        ),
+        "disposition:transitions:S73:08": (
+            "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        ),
+        "disposition:transitions:S73:09": (
+            "ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        ),
+        "disposition:transitions:S73:10": (
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+            "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+            "ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+            "ClaudeChannelTests.test_readback_never_pushes",
+        ),
+        "disposition:transitions:S74:03": (
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+            "CodexGitChannelTests.test_git_mode_needs_no_npm_package",
+        ),
+        "disposition:transitions:S74:04": (
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        ),
+        "disposition:transitions:S74:08": (
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+            "CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+        ),
+        "disposition:transitions:S74:09": (
+            "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+            "CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+            "CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+        ),
+        "disposition:findings:SF15": (
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+            "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+            "ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+            "ClaudeChannelTests.test_readback_never_pushes",
+        ),
+    },
+))
+
 HOOK_F02_CELL = "disposition:findings:HOOK-F02"
 HOOK_F02_COMPONENTS = {'finite-hookf02-modelib': {'script': '.github/scripts/test_modelib.py',
                             'selectors': frozenset({'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure',
@@ -3023,7 +3244,114 @@ ROUTE_GENERATOR_REVIEW_COMPONENT = route_generator_component((
 ))
 
 
+def recovery_runtime_component(cases):
+    return source_component(
+        RECOVERY_RUNTIME_PROFILE, RECOVERY_RUNTIME_SCRIPT, "workflow-recovery-runtime-observation-",
+        "Retain original workflow recovery runtime observation", "workflow-recovery-runtime-observation.json",
+        (f"RecoveryRuntimeTest.{case}" for case in cases),
+    )
+
+
+# Per-cell meanings come from the software48 Recovery tested.json semantic mapping.
+RECOVERY_TRANSITION_CASES = {
+    "disposition:added_transitions:WR-01": (
+        "test_process_crash_at_each_registration_commit_boundary",
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    ),
+    "disposition:added_transitions:WR-02": (
+        "test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+        "test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+        "test_partial_registration_retains_exact_completed_and_remaining_ids",
+    ),
+    "disposition:added_transitions:WR-03": (
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    ),
+    "disposition:added_transitions:WR-04": (
+        "test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    ),
+    "disposition:added_transitions:WR-05": (
+        "test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+        "test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    ),
+    "disposition:added_transitions:WR-06": (
+        "test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    ),
+    "disposition:added_transitions:WR-07": (
+        "test_blocking_decision_is_not_demoted_or_confirmed",
+        "test_changed_source_is_held_without_touching_target",
+        "test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+    ),
+    "disposition:added_transitions:WR-08": (
+        "test_deferred_decision_and_decline_commit_once_after_response_loss",
+        "test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    ),
+    "disposition:added_transitions:WR-09": (
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    ),
+    "disposition:added_transitions:WR-10": (
+        "test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ),
+    "disposition:added_transitions:WR-11": (
+        "test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ),
+    "disposition:added_transitions:WR-12": (
+        "test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+    ),
+    "disposition:added_transitions:WR-13": (
+        "test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+    ),
+    "disposition:added_transitions:WR-14": (
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+        "test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    ),
+    "disposition:added_transitions:WR-15": (
+        "test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+        "test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+        "test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+    ),
+    "disposition:added_transitions:WR-16": (
+        "test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+        "test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+    ),
+    "disposition:added_transitions:WR-17": (
+        "test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+    ),
+    "disposition:added_transitions:WR-18": (
+        "test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+    ),
+    "disposition:added_transitions:WR-19": (
+        "test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+    ),
+    "disposition:added_transitions:WR-20": (
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ),
+    "disposition:added_transitions:WR-21": (
+        "test_linked_followup_uses_existing_fields_without_reopening_settled_history",
+    ),
+    "disposition:added_transitions:WR-22": (
+        "test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_post_commit_failure_reports_observed_record_without_false_no_effect",
+        "test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    ),
+}
+
+
 SOURCE_FINDING_COMPOSITIONS = {
+    **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
     DEBUG_RESUBMISSION_FINDING: (
         source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
             "Retain original locked debug reference observation", "debug-reference-observation.json", (
@@ -3263,7 +3591,8 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     readiness.validate_run(run, req, producing=producing)
     readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
     rows, payloads = {}, {}
-    recovery = None
+    recovery = transition_runtime = None
+    transition_cells = RECOVERY_TRANSITION_CASES.keys() & set(cells)
     for cell in cells:
         if cell in RECOVERY_FINDING_CELLS:
             if recovery is None:
@@ -3273,7 +3602,17 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
             continue
         components, owners, captures, capture_members = [], {}, {}, set()
         for component in SOURCE_FINDING_COMPOSITIONS[cell]:
-            evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
+            if cell in transition_cells:
+                if transition_runtime is None:
+                    # These cells share one original command. Authenticate the selected union once,
+                    # then retain each cell's own selectors in its result.
+                    transition_cases = {case for selected in transition_cells for case in RECOVERY_TRANSITION_CASES[selected]}
+                    transition_runtime = source_component_evidence(
+                        recovery_runtime_component(transition_cases), req, run, artifacts, jobs)
+                original, payload = transition_runtime
+                evidence = {**original, "selectors": component["selectors"]}
+            else:
+                evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
             components.append(evidence)
             identity = (evidence["job_id"], payload["artifact_id"])
             readiness.require(owners.setdefault(component["profile"], identity) == identity,
@@ -3298,19 +3637,17 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     return rows, payloads
 
 
-RECOVERY_RUNTIME_COMPONENT = source_component(
-    RECOVERY_RUNTIME_PROFILE, RECOVERY_RUNTIME_SCRIPT, "workflow-recovery-runtime-observation-",
-    "Retain original workflow recovery runtime observation", "workflow-recovery-runtime-observation.json", (
-        "RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
-        "RecoveryRuntimeTest.test_every_declared_producer_captures_before_terminal_effect",
-        "RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
-        "RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
-        "RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
-        "RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
-        "RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
-        "RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
-        "RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
-    ))
+RECOVERY_RUNTIME_COMPONENT = recovery_runtime_component((
+    "test_denial_and_explicit_stop_are_not_cleared_by_correction",
+    "test_every_declared_producer_captures_before_terminal_effect",
+    "test_legacy_origin_in_archive_is_reused_without_recreating_work",
+    "test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    "test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+    "test_partial_registration_retains_exact_completed_and_remaining_ids",
+    "test_process_crash_after_target_and_during_settlement_never_duplicates",
+    "test_process_crash_at_each_registration_commit_boundary",
+    "test_real_legacy_target_response_loss_reconciles_without_duplicate",
+))
 RECOVERY_COMPONENTS = (RECOVERY_RUNTIME_COMPONENT,
     source_component(RECOVERY_RUNTIME_PROFILE, ".github/scripts/test_workflow_recovery_cli.py",
         "workflow-recovery-cli-observation-", "Retain original workflow recovery CLI observation",
