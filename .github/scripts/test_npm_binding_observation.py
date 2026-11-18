@@ -262,6 +262,48 @@ class AdmissionTests(unittest.TestCase):
             imports=[{'name':Path(p).stem,'kind':'source','path':p} for p in self.inputs if p.startswith('core/')],
             bindings_sha256='e'*64,launch_files=[{'role':r,'bytes':1,'sha256':'f'*64} for r in roles])
 
+    def linux_sysconfig_import(self, raw, name, kind='runtime', path=None, bind=True):
+        path = f'stdlib/{name}.py' if path is None and kind == 'runtime' else path
+        if bind and kind == 'runtime':
+            for key in ('runtime_before', 'runtime_after'):
+                raw[key]['files'][path] = {'bytes': 1, 'sha256': 'a' * 64}
+        raw['imports'].append({'name': name, 'kind': kind, 'path': path})
+
+    def test_exact_linux_cpython_config_imports_are_admitted_at_every_count(self):
+        req = {**self.f.req, "run_attempt": 1}
+        for platform, arch in (('linux/amd64', 'x86_64'), ('linux/arm64', 'aarch64')):
+            for count in launch.COUNTS:
+                with self.subTest(platform=platform, count=count):
+                    raw = self.raw(platform, count)
+                    self.linux_sysconfig_import(raw, f'_sysconfigdata__linux_{arch}-linux-gnu')
+                    self.assertIs(launch.validate(raw, req, platform, count), raw)
+
+    def test_hyphenated_import_exception_keeps_platform_kind_path_and_identity_bound(self):
+        req = {**self.f.req, "run_attempt": 1}
+        name = '_sysconfigdata__linux_x86_64-linux-gnu'
+        cases = (
+            ('linux/arm64', name, 'runtime', None, True, 'invalid or repeated consumed import'),
+            ('darwin/amd64', name, 'runtime', None, True, 'invalid or repeated consumed import'),
+            ('windows/amd64', name, 'runtime', None, True, 'invalid or repeated consumed import'),
+            ('linux/amd64', name + 'extra', 'runtime', None, True, 'invalid or repeated consumed import'),
+            ('linux/amd64', name, 'runtime', f'extensions/{name}.py', True, 'invalid or repeated consumed import'),
+            ('linux/amd64', name, 'runtime', 'stdlib/os.py', True, 'invalid or repeated consumed import'),
+            ('linux/amd64', name, 'source', 'core/pysrc/_artifactlib.py', False, 'invalid or repeated consumed import'),
+            ('linux/amd64', name, 'frozen', None, False, 'invalid or repeated consumed import'),
+            ('linux/amd64', name, 'runtime', None, False, 'unbound runtime import'),
+        )
+        for platform, value, kind, path, bind, error in cases:
+            with self.subTest(platform=platform, name=value, kind=kind, path=path, bind=bind):
+                raw = self.raw(platform, 0)
+                self.linux_sysconfig_import(raw, value, kind, path, bind)
+                with self.assertRaisesRegex(ValueError, error):
+                    launch.validate(raw, req, platform, 0)
+        raw = self.raw('linux/amd64', 0)
+        self.linux_sysconfig_import(raw, name)
+        raw['imports'].append(raw['imports'][-1])
+        with self.assertRaisesRegex(ValueError, 'invalid or repeated consumed import'):
+            launch.validate(raw, req, 'linux/amd64', 0)
+
     def api(self,path,binary=False):
         if path.startswith('actions/jobs/') and path.endswith('/logs'):
             identity=int(path.split('/')[2]); job=next(j for j in self.f.jobs if j['id']==identity)

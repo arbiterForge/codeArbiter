@@ -1209,18 +1209,25 @@ class NpmRuntimeOwnerTests(unittest.TestCase):
             with self.subTest(hooks=replacement),self.assertRaises(ValueError):
                 validate_native_npm_owner(text.replace(NPM_PURE_COMMAND,replacement,1))
 
-    def test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods(self):
-        path=Path(__file__).with_name('test_npm_binding_observation.py')
-        tree=ast.parse(path.read_text(encoding='utf8'))
-        classes={node.name:{m.name for m in node.body if isinstance(m,(ast.FunctionDef,ast.AsyncFunctionDef)) and m.name.startswith('test_')}
-                 for node in tree.body if isinstance(node,ast.ClassDef)}
-        original_selected={'AdmissionTests','IdentityLimitTests','RuntimePortabilityTests'}
-        finding_class='HookF04FiniteFindingAdmissionTests'
-        self.assertEqual(set(classes),original_selected|{'ProducerBoundaryTests',finding_class})
-        self.assertEqual(sum(len(classes[name]) for name in original_selected),20)
-        self.assertEqual(len(classes['ProducerBoundaryTests']),1)
-        self.assertEqual(sum(len(classes[name]) for name in original_selected|{'ProducerBoundaryTests'}),21)
-        self.assertEqual(classes[finding_class],{
+    def test_class_selection_covers_every_declared_npm_test_once(self):
+        path = Path(__file__).with_name('test_npm_binding_observation.py')
+        tree = ast.parse(path.read_text(encoding='utf8'))
+        declarations = [node for node in tree.body if isinstance(node, ast.ClassDef)]
+        classes = {
+            node.name: [m.name for m in node.body
+                        if isinstance(m, (ast.FunctionDef, ast.AsyncFunctionDef)) and m.name.startswith('test_')]
+            for node in declarations
+        }
+        self.assertEqual(len(classes), len(declarations), 'duplicate npm test class')
+        for name, methods in classes.items():
+            with self.subTest(test_class=name):
+                self.assertTrue(methods, 'npm test class must contribute an executed test')
+                self.assertEqual(len(methods), len(set(methods)), 'duplicate npm test method')
+        original_selected = {'AdmissionTests', 'IdentityLimitTests', 'RuntimePortabilityTests'}
+        finding_class = 'HookF04FiniteFindingAdmissionTests'
+        self.assertEqual(set(classes), original_selected | {'ProducerBoundaryTests', finding_class})
+        self.assertEqual(classes['ProducerBoundaryTests'], ['test_original_python_producer_exports_opt_in_consumed_identities'])
+        self.assertEqual(set(classes[finding_class]), {
             'test_hook_f04_requires_complete_original_six_platform_launch_transport',
             'test_hook_f04_refuses_missing_owner_or_unreviewed_finding_authority',
             'test_hook_f04_refuses_sidecar_identity_incomplete_named_case_and_projection_tampering',
@@ -1230,7 +1237,6 @@ class NpmRuntimeOwnerTests(unittest.TestCase):
         self.assertEqual(NPM_PRODUCER_COMMAND.split()[2:],['ProducerBoundaryTests'])
         self.assertFalse(set(NPM_PURE_COMMAND.split()[2:]) & set(NPM_PRODUCER_COMMAND.split()[2:]))
         self.assertEqual(set(NPM_PURE_COMMAND.split()[2:]) | set(NPM_PRODUCER_COMMAND.split()[2:]),set(classes))
-        self.assertEqual(sum(map(len,classes.values())),24)
 
 
 class SingleOwnerFindingWorkflowTests(unittest.TestCase):

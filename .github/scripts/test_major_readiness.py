@@ -2333,5 +2333,73 @@ class TypedSourceDispositionTests(unittest.TestCase):
 from test_major_native_observation import NativeCompositeAuthorityTests
 
 
+class LedgerRoutingApplicabilityTests(unittest.TestCase):
+    path = "docs/state-contracts-major/execution/coverage-ledger.json"
+    cell = "disposition:findings:C-F05"
+
+    def setUp(self):
+        self.ledger = {
+            "findings": {"C-F05": {"owner": "ci", "task_ids": ["P-00"], "status": "PLANNED", "evidence": []}},
+            "machines": {}, "transitions": {}, "added_transitions": {},
+        }
+        routing = {
+            "findings": {"C-F05": {"owner": "ci", "task_ids": ["P-00"]}},
+            "machines": {}, "transitions": {}, "added_transitions": {},
+        }
+        encoded = json.dumps(routing, sort_keys=True, separators=(",", ":")).encode()
+        original = json.dumps(self.ledger).encode()
+        self.proof = {
+            "kind": "hosted-run", "result": "PASSED", "producer": {"class": "hosted"},
+            "disposition_ids": [self.cell], "inputs": {self.path: owner.digest(original)},
+            "input_projections": [{
+                "path": self.path, "profile": "qualification-ledger-routing-v1",
+                "sha256": owner.digest(b"qualification-ledger-routing-v1\n" + encoded),
+            }],
+        }
+        self.original = original
+
+    def applicability(self, updated, proof=None):
+        return owner.disposition_input_applicability(
+            Path("."), "b" * 40, self.proof if proof is None else proof,
+            lambda commit, path: updated, {},
+        )
+
+    def test_finding_evidence_adoption_preserves_current_routing_and_original_full_blob(self):
+        owner._authenticate_scope_evidence(
+            Path("."), "a" * 40, self.proof, lambda commit, path: self.original, {},
+        )
+        self.ledger["findings"]["C-F05"].update(
+            status="TESTED", evidence=[{"kind": "hosted-run"}], evidence_history=[{"kind": "review"}],
+        )
+        adopted = json.dumps(self.ledger).encode()
+        self.assertEqual(self.applicability(adopted), (set(), set()))
+        self.assertEqual(self.proof["inputs"][self.path], owner.digest(self.original))
+        self.assertNotEqual(self.proof["inputs"][self.path], owner.digest(adopted))
+        raw_proof = {k: v for k, v in self.proof.items() if k != "input_projections"}
+        self.assertEqual(self.applicability(adopted, raw_proof), ({self.path}, set()))
+
+    def test_routing_change_still_invalidates_the_original_evidence(self):
+        for field, value in (("owner", "other"), ("task_ids", ["Q-01"])):
+            with self.subTest(field=field):
+                successor = copy.deepcopy(self.ledger)
+                successor["findings"]["C-F05"][field] = value
+                self.assertEqual(self.applicability(json.dumps(successor).encode()), ({self.path}, set()))
+        self.ledger["findings"]["C-F07"] = {"owner": "ci", "task_ids": ["P-00"]}
+        self.assertEqual(self.applicability(json.dumps(self.ledger).encode()), ({self.path}, set()))
+
+    def test_projection_refuses_other_cells_original_digest_drift_and_malformed_ledger(self):
+        for changes in ({"disposition_ids": ["task:Q-02"]}, {"kind": "conformance-check"},
+                        {"producer": {"class": "local-host"}}, {"producer": None}, {"inputs": {}}):
+            with self.subTest(changes=changes), self.assertRaises(owner.ReadinessError):
+                self.applicability(self.original, {**self.proof, **changes})
+        self.ledger["findings"]["C-F05"]["owner"] = "other"
+        with self.assertRaises(owner.ReadinessError):
+            owner._authenticate_scope_evidence(
+                Path("."), "a" * 40, self.proof, lambda commit, path: json.dumps(self.ledger).encode(), {},
+            )
+        duplicate = self.original.replace(b'"findings": {', b'"findings": {}, "findings": {', 1)
+        self.assertEqual(self.applicability(duplicate), (set(), {self.path}))
+
+
 if __name__ == "__main__":
     unittest.main()

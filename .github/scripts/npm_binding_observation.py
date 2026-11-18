@@ -31,6 +31,10 @@ RUNTIME_ENTRY_LIMIT = 65536
 RUNTIME_BYTE_LIMIT = 512 << 20
 SIDECAR_JSON_LIMIT = 16 << 20
 LINK_TARGET_LIMIT = 4096
+LINUX_CONFIG_IMPORTS = {
+    'linux/amd64': '_sysconfigdata__linux_x86_64-linux-gnu',
+    'linux/arm64': '_sysconfigdata__linux_aarch64-linux-gnu',
+}
 EVIDENCE_PARENTS = ('TestCompletionAdmitsActualProducerLaunchBindingCounts',
                     'TestCompletionLaunchFileBoundMatchesContract',
                     'TestCompletionWorkspaceRejectsIdentityAndCommandSubstitution')
@@ -384,11 +388,17 @@ def validate(record, req, platform, count):
                 and stat.S_ISLNK(identity['mode']), 'invalid inert runtime link identity')
     require(isinstance(record['imports'], list) and 0 < len(record['imports']) <= 512, 'missing consumed imports')
     names = set(); source_imports = set()
+    linux_config = LINUX_CONFIG_IMPORTS.get(platform)
     for row in record['imports']:
         require(isinstance(row,dict) and set(row) == {'name','kind','path'}
-                and isinstance(row['name'],str) and re.fullmatch(r'[A-Za-z_][A-Za-z_0-9.]*',row['name'])
-                and row['name'] not in names, 'invalid or repeated consumed import')
-        names.add(row['name'])
+                and isinstance(row['name'],str), 'invalid or repeated consumed import')
+        name = row['name']
+        # CPython imports its architecture-specific Linux configuration from the stdlib.
+        is_linux_config = (name == linux_config and row['kind'] == 'runtime'
+                           and row['path'] == f'stdlib/{linux_config}.py')
+        require((re.fullmatch(r'[A-Za-z_][A-Za-z_0-9.]*', name) or is_linux_config)
+                and name not in names, 'invalid or repeated consumed import')
+        names.add(name)
         if row['kind'] == 'source':
             require(row['path'] in req['launch_binding_inputs'], 'unbound consumed Python import')
             source_imports.add(row['path'])
