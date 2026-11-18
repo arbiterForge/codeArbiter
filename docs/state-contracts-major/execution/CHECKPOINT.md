@@ -1,5 +1,11 @@
 # State-contract program checkpoint
 
+## November 17 scoped audit approval
+
+Brennon approved GHSA-fc5q-39xc-vjpf at high severity through November 24, 2026 for four exact lockfiles. The shared checker verified current npm reports for the Docs graph and all three plugin build and test toolchains. The three plain npm tool production audits passed independently. The approval expires automatically and a changed lockfile fails the gate. [GitHub advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+
+The ledger refresh updates 393 affected source records. The original source reader verified all 1,739 records. Historical runtime results retain their original source and CI bindings. Fresh hosted checks are required before #1119 can merge.
+
 ## November 17 verification
 
 The local code binds the remaining original route, command catalog, debug-resubmission and output-rollback evidence. Local checks passed 132 readiness tests and 21 Docs authority tests. A clean Windows checkout built the native helper after 525 passing Go tests and three skips. Recovery source preparation and its 40 runtime tests passed. The separate npm binding test passed all 20 cases across five local runs. The original hosted npm timeout remains open.

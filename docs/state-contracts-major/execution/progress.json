@@ -4,14 +4,14 @@
   "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
   "repository": "arbiterForge/codeArbiter",
   "branch": "codex/state-contracts-prune-boundary",
-  "head": "b67894d63edce5bbb0783fd97bed5a139695c061",
+  "head": "b972a83e48826112467c43b4255f3ad853e49416",
   "base": {
     "audit_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
     "inspected_main_at_branch_creation": "33abc347720879bade0494ef0a68ef0d0319236a",
     "commits_between": 15,
     "drift_worklist": "execution/source-drift-33abc347.json"
   },
-  "recorded_at": "2026-11-17T20:25:01.755414+00:00",
+  "recorded_at": "2026-11-18T01:23:44.870007+00:00",
   "active_writer": {
     "agent": "Codex integrator",
     "since": "2026-11-13",
@@ -3926,7 +3926,7 @@
     }
   ],
   "next_actions": [
-    "Resolve the exact dependency audit and run fresh required CI and Docs against the child candidate.",
+    "Run fresh required CI and Docs against the child candidate and resolve any remaining failures.",
     "Reconcile the remaining findings from authentic original trusted integration observations.",
     "Verify installed, upgrade and rollback journeys and participant acceptance on the integration candidate."
   ],
@@ -5090,8 +5090,8 @@
     }
   ],
   "live_checkpoint": {
-    "recorded_at": "2026-11-17T20:25:01.755414+00:00",
-    "controller_anchor": "b67894d63edce5bbb0783fd97bed5a139695c061",
+    "recorded_at": "2026-11-18T01:23:44.870007+00:00",
+    "controller_anchor": "b972a83e48826112467c43b4255f3ad853e49416",
     "integration_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
     "delivery_pr": 1119,
     "previous_child": {
@@ -5125,13 +5125,14 @@
     "native_component_recipes": 40,
     "source_disposition_change": {
       "new_finite_source_findings": 16,
-      "same_status_renewals": 769,
+      "same_status_renewals": 1162,
       "applicable_pure_source": 1739,
       "stale_pure_source": 0,
       "total": 1739,
-      "last_increment_same_status_rows": 140,
+      "last_increment_same_status_rows": 393,
       "last_increment_proof_groups": 23,
-      "qualification": "SOURCE_ONLY"
+      "qualification": "SOURCE_ONLY",
+      "explicit_policy_changed_rows": 5
     },
     "task_status_promotion": false,
     "runtime_epoch_renewal": false,
@@ -5215,14 +5216,14 @@
       "local_writer_branch": "codex/state-contracts-prune-boundary",
       "delivery_pr": 1119,
       "target": "major/state-contracts",
-      "code_commit": "b67894d63edce5bbb0783fd97bed5a139695c061",
+      "code_commit": "b972a83e48826112467c43b4255f3ad853e49416",
       "latest_original_f262": "Native membership registry omitted8passing reader tests; exact8name fix locally verified, successor requires fresh checks.",
       "main_merge": "HELD_FOR_USER_TESTING",
       "latest_original_304": "CI failure: WindowsPi doctorEOF; DocsSUCCESS/all6nativeadaptersPASS. New localcollector/docs successor is notyetpushed.",
       "hosted_head": "48bf82eb83ec674ccd4a2cde4a0440a978d26a50",
       "hosted_ci_run": 44160520956,
       "hosted_docs_run": 44160520838,
-      "merge_state": "BLOCKED_PENDING_AUDIT_RESOLUTION_AND_FRESH_QUALIFICATION",
+      "merge_state": "BLOCKED_PENDING_FRESH_REQUIRED_HOSTED_CHECKS",
       "hosted_attempt": 1,
       "hosted_checks": {
         "skipped": 12,
@@ -5234,8 +5235,8 @@
     "next_private_followup": {
       "branch": "codex/state-contracts-prune-boundary",
       "delivery_pr": 1119,
-      "code_commit": "b67894d63edce5bbb0783fd97bed5a139695c061",
-      "audit": "GHSA-fc5q-39xc-vjpf; affected build and test graphs; no upstream patch; scoped policy decision pending",
+      "code_commit": "b972a83e48826112467c43b4255f3ad853e49416",
+      "audit": "Maintainer approved GHSA-fc5q-39xc-vjpf for the four exact lockfiles through 2026-11-24. Gate and live reports pass locally. Required hosted checks remain pending.",
       "windows_pi": "Original Windows Pi 1.5.0 RPC, observed RPC and shutdown passed at 48bf82eb; previous intermittent exit cause remains open.",
       "runtime_recovery": "The local candidate binds 21 named original tests. Native Windows build and source input preparation passed locally. Fresh hosted Windows Recovery is pending.",
       "windows_npm_probe": "Original Windows Hook isolation npm config subprocess timed out; all 20 cases across five local repetitions passed."
@@ -5329,6 +5330,21 @@
       "native_windows_tests_passed": 525,
       "native_windows_tests_skipped": 3,
       "source_attestation_is_not_installed_qualification": true
+    },
+    "audit_exception": {
+      "ghsa": "GHSA-fc5q-39xc-vjpf",
+      "package": "picomatch",
+      "severity": "high",
+      "approved_by": "Brennon (@SUaDtL)",
+      "approved_on": "2026-11-17",
+      "backstop": "2026-11-24",
+      "registry": "site/audit-exceptions.json",
+      "exact_lockfile_count": 4,
+      "plain_tool_production_gates": 3,
+      "source_commit": "b972a83e48826112467c43b4255f3ad853e49416",
+      "independent_security_review": "PASS",
+      "local_audit_verification": "PASS",
+      "hosted_qualification": "PENDING"
     }
   },
   "checkpoint_history": [

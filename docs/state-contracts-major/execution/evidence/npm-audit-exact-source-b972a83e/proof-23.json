@@ -1,0 +1,71 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "b972a83e48826112467c43b4255f3ad853e49416",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact current npm audit source and retained unchanged owning clauses"
+  },
+  "inputs": {
+    ".codearbiter/context/security-controls.html": "acc40c8be54720df2c281417c414184a098ace7cd3d2e36ff9092eec00891d22",
+    ".codearbiter/context/tech-stack.html": "ab7965d6591bfb60e311edebd4ceec1b558cd88526f2d92f4e241a3aba4f5a46",
+    ".github/scripts/npm_audit_gate.py": "98847cb2bf9dca7ab653a7e057eaa8e0a9f0e145a41b27c77e5567236d75f7e3",
+    ".github/scripts/test_ci_impact.py": "bceace04fb243eafb547293d2e54ba72848ba8609fa6c7b9fec0036927b5b32c",
+    ".github/scripts/test_npm_audit_gate.py": "28af4233a9d8467910fea52c390cab9f326c0a020699c9559a701834d1c926c9",
+    ".github/workflows/ci.yml": "e612f43aba135a700ab29b7aac3aca67850244f070b44667c123790bb81392fc",
+    ".github/workflows/docs.yml": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "site/audit-exceptions.json": "c0a5584a4f5cc2069f712d4c6ac186a6d8d7658d0ab2a64f53de3669ec1c8e0e",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C35:01",
+    "disposition:transitions:C35:02",
+    "disposition:transitions:C35:03",
+    "disposition:transitions:C35:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/source-delta-review.json",
+      "sha256": "b7e3084fca34c5ebdac7389de6510d4000b04a4594a66279a02a2493f1643848"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+      "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+    "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575",
+    "original_code": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "stored_at": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+  },
+  "scope": "Original finite conditional source clauses only, narrowed to actual audit-exceptions control cone; no execution or broader task/machine claim.",
+  "changed_paths": [
+    ".github/scripts/npm_audit_gate.py"
+  ],
+  "limits": [
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "authorized_policy_effects": {
+    "C35:01": "Closed v2 policy retains named maintainer/rationale, no future approvals, duplicate refusal and inclusive 30-day upper bound. It adds exact known lockfile declarations with SHA-256 and a real failing identity read within the selected graph. The approved backstop is November 24, 2026.",
+    "C35:02": "Versioned report and exact vulnerability-count inventory must agree. Every pointer resolves, and reported severity has a reachable direct advisory at least as severe. Pointer-only entries do not create an independent advisory. Unrecognized URLs cannot match an approval. Error, empty, unreadable and inconsistent reports still fail.",
+    "C35:03": "Authorized stricter change from severity at most approved to exact severity for at-threshold findings. An approval must match canonical GHSA, exact package, severity, allowed working-directory graph and scope, and exact audited lockfile SHA-256. Unapproved high or critical findings fail; the three independent plain production commands have no exception input.",
+    "C35:04": "The removal note applies to an unused current approval for the specific audited graph. Expiry still fails load even with no finding. Backstop or renewal requires a reviewed registry edit; the extra lockfile predicate also fails on graph drift."
+  }
+}
