@@ -34,6 +34,8 @@ func completionHarness(t *testing.T) (*farmHarness, string) {
 	// TestMain sets the Git environment once for the whole package.
 	h := newFarmHarness(t)
 	completionGit(t, h.root, "init")
+	// Keep automatic maintenance foreground before registering the next worktree.
+	completionGit(t, h.root, "config", "--local", "maintenance.autoDetach", "false")
 	writeFixture(t, h.root, ".gitignore", []byte(".codearbiter/.artifacts/\n"))
 	writeFixture(t, h.root, "src/stage1.go", []byte("package stage\n"))
 	completionGit(t, h.root, "add", ".")
