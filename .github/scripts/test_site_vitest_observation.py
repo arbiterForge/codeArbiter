@@ -407,6 +407,31 @@ class OriginalDocsSourceTests(unittest.TestCase):
             self.assertNotIn('PRIVATE_TOKEN_CANARY',json.dumps(kwargs['env']))
             self.assertEqual(json.loads(out.read_bytes())['argv'],['npm','run','coverage'])
 
+    def test_observer_retains_only_a_refusal_when_successful_test_names_collide(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-ambiguous-') as folder:
+            root=Path(folder).resolve()
+            payload=root/'payload';payload.mkdir();(payload/docs.MANIFEST).write_bytes(self.manifest_raw)
+            snapshot={'source_commit':'a'*40,'source_tree':'b'*40,'clean':True,
+                'inputs':self.inputs,'python_namespaces':self.namespaces}
+            raw=root/'primary-vitest.json';out=root/'observation.json'
+            process=mock.Mock()
+            def completed():
+                data=self.raw_named(root)
+                cases=data['testResults'][0]['assertionResults']
+                cases.append(cases[0])
+                data['numTotalTests']+=1
+                data['numPassedTests']+=1
+                raw.write_text(json.dumps(data));return 0
+            process.wait.side_effect=completed
+            with mock.patch.object(docs,'source_snapshot',return_value=snapshot), \
+                 mock.patch.object(docs.reports,'_vitest_launch',return_value=(['/selected/npm','run','coverage'],[])), \
+                 mock.patch.object(docs,'start',return_value=process) as launched:
+                self.assertEqual(docs.observe(root,payload,raw,out),1)
+            launched.assert_called_once()
+            self.assertEqual(json.loads(out.read_bytes()), {
+                'format':'codearbiter-docs-site-refusal/1','code':'PRIMARY_RESULTS_UNAVAILABLE','exit_code':0})
+            self.assertNotIn(b'PRIVATE_FAILURE_CANARY',out.read_bytes())
+
     def test_envelope_keeps_actual_core_main_success_and_q03_guards(self):
         core_req=docs.core_requirements(self.req)
         core_req.update(cells=['scenario:SEQ-01'],cell_jobs={'scenario:SEQ-01':'original core job'},

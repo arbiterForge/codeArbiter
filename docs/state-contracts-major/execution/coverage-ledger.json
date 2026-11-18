@@ -8121,9 +8121,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
-     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
-     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400"
+     "commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+     "ref": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+     "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
     }
    ],
    "candidate_contract_note": "Exact46 literal guard/effect/retry mappings and accepted/intake differences: docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json. Source-only; no actual hosted/runtime/task/promotion/publication qualification.",
@@ -8148,6 +8148,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/C29-preserved.json",
      "sha256": "04c3dcd8a452d64f45c9eb1f54ac576ded8eed6b924dd03be212be8ed8140511",
      "ref_commit": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
+     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
+     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400",
+     "ref_commit": "be7c3f55a0579caea8c878a89abfc85d3cb0770b"
     }
    ]
   },
@@ -54520,9 +54527,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
-     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
-     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400"
+     "commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+     "ref": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+     "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
     }
    ],
    "candidate_contract_note": "Exact46 literal guard/effect/retry mappings and accepted/intake differences: docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json. Source-only; no actual hosted/runtime/task/promotion/publication qualification.",
@@ -54547,6 +54554,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/C29-preserved.json",
      "sha256": "04c3dcd8a452d64f45c9eb1f54ac576ded8eed6b924dd03be212be8ed8140511",
      "ref_commit": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
+     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
+     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400",
+     "ref_commit": "be7c3f55a0579caea8c878a89abfc85d3cb0770b"
     }
    ]
   },
@@ -54561,9 +54575,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
-     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
-     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400"
+     "commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+     "ref": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+     "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
     }
    ],
    "candidate_contract_note": "Exact46 literal guard/effect/retry mappings and accepted/intake differences: docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json. Source-only; no actual hosted/runtime/task/promotion/publication qualification.",
@@ -54588,6 +54602,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/C29-preserved.json",
      "sha256": "04c3dcd8a452d64f45c9eb1f54ac576ded8eed6b924dd03be212be8ed8140511",
      "ref_commit": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
+     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
+     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400",
+     "ref_commit": "be7c3f55a0579caea8c878a89abfc85d3cb0770b"
     }
    ]
   },
@@ -54602,9 +54623,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
-     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
-     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400"
+     "commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+     "ref": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+     "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
     }
    ],
    "candidate_contract_note": "Exact46 literal guard/effect/retry mappings and accepted/intake differences: docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json. Source-only; no actual hosted/runtime/task/promotion/publication qualification.",
@@ -54629,6 +54650,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/C29-preserved.json",
      "sha256": "04c3dcd8a452d64f45c9eb1f54ac576ded8eed6b924dd03be212be8ed8140511",
      "ref_commit": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
+     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
+     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400",
+     "ref_commit": "be7c3f55a0579caea8c878a89abfc85d3cb0770b"
     }
    ]
   },
@@ -54643,9 +54671,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
-     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
-     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400"
+     "commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+     "ref": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+     "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
     }
    ],
    "candidate_contract_note": "Exact46 literal guard/effect/retry mappings and accepted/intake differences: docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json. Source-only; no actual hosted/runtime/task/promotion/publication qualification.",
@@ -54670,6 +54698,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/C29-preserved.json",
      "sha256": "04c3dcd8a452d64f45c9eb1f54ac576ded8eed6b924dd03be212be8ed8140511",
      "ref_commit": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
+     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
+     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400",
+     "ref_commit": "be7c3f55a0579caea8c878a89abfc85d3cb0770b"
     }
    ]
   },
@@ -54684,9 +54719,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
-     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
-     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400"
+     "commit": "2c38e41ca425974028119bbc6604e9735d450d0b",
+     "ref": "docs/state-contracts-major/execution/evidence/docs-named-observation-source-2c38e41c/proof-01.json",
+     "sha256": "1a635de384d8ce5702dfccc2a791e0b5fbef71976c5a04349407d9c42c8f7a91"
     }
    ],
    "candidate_contract_note": "Exact46 literal guard/effect/retry mappings and accepted/intake differences: docs/state-contracts-major/execution/evidence/release-nine-source-ea9/clause-inspection.json. Source-only; no actual hosted/runtime/task/promotion/publication qualification.",
@@ -54711,6 +54746,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/docs-compose-source-f3cb12f5/C29-preserved.json",
      "sha256": "04c3dcd8a452d64f45c9eb1f54ac576ded8eed6b924dd03be212be8ed8140511",
      "ref_commit": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "b972a83e48826112467c43b4255f3ad853e49416",
+     "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-01.json",
+     "sha256": "ed3bf90dfe725d3e6893cb60611a10d8cf24fe17ba7c379db0e303d372cbb400",
+     "ref_commit": "be7c3f55a0579caea8c878a89abfc85d3cb0770b"
     }
    ]
   },

@@ -552,11 +552,9 @@ def observe(repo, source_payload, raw_results, output):
                 primary, raw_sha = reports._vitest_owned_json(raw_results, fd, original)
                 tests, summary = parse_named(primary, repo, before['inputs'])
             except (OSError, ValueError, KeyError, TypeError):
-                if code != 0:
-                    _write(output, {'format': 'codearbiter-docs-site-refusal/1', 'code': 'PRIMARY_RESULTS_UNAVAILABLE',
-                                    'exit_code': code})
-                    return code
-                raise
+                _write(output, {'format': 'codearbiter-docs-site-refusal/1', 'code': 'PRIMARY_RESULTS_UNAVAILABLE',
+                                'exit_code': code})
+                return code or 1
             run_id, attempt = os.environ.get('GITHUB_RUN_ID', ''), os.environ.get('GITHUB_RUN_ATTEMPT', '')
             need(run_id.isdigit() and int(run_id) > 0 and attempt.isdigit() and int(attempt) > 0,
                  'Docs original run identity is unavailable')
