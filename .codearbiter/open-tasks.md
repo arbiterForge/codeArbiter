@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Run audit append shell fixtures without an interactive console  (from github:arbiterForge/codeArbiter:actions:44331430097:134896781356)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:44331430097:134896781356
+  - Desc: The Windows Hook isolation suite timed out in its PowerShell append fixture. Close standard input and disable PowerShell prompts in the fixture while exercising the original append commands and their existing UTF-8, prefix and timeout checks.
+  - Work type: fix
+  - Work ID: WORK-E747782EBCBF2B339B232DEBCCE4FFC8
+  - Work operation ID: work-8e66e99fa8140cac9de678efe4f03a42187703f6
 - [x] Retain the original Pages evidence for 14 days  (from github:arbiterForge/codeArbiter:actions:artifact:14403407804)  (done 2026-11-18)
   - Work origin: github:arbiterForge/codeArbiter:actions:artifact:14403407804
   - Desc: The Pages upload uses the upstream one-day default even though live Docs evidence requires its original ZIP. Request the approved 14-day repository limit on that upload and preserve the existing publisher, files, production gates, and workflow events.
