@@ -1,0 +1,60 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "04253aedfbd65761cdb816d814b38c49a122266f",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact Pages retention and additive regression delta"
+  },
+  "inputs": {
+    ".github/workflows/docs.yml": "65ed7547ac447257221bcac5a3afe8d77d07ba3142f730ed06c1e0cdc75af0f4",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/pages/release-applicability.json.ts": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732"
+  },
+  "disposition_ids": [
+    "disposition:machines:SX03",
+    "disposition:transitions:SX03:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pages-retention-source-04253aed/source-inspection.json",
+      "sha256": "7e2cd30b427a990d3ecab1c0899a3021767eee13df3a2cf6e2f5e1e307f8cd4e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-02.json",
+      "sha256": "9b036821509b9cca4a50d89deb02990158a36c6aaf32d06eb8792f054299c62e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/source-delta-review.json",
+      "sha256": "05938adb97a326d4f877382e44599484331bbd3de369b90acd2dabda5fb77d5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-02.json",
+      "sha256": "9708ceb2bee3b3c3f03ec33aa98b3cba5a1c0bc04151b648228768676489fc40"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-02.json",
+    "sha256": "9b036821509b9cca4a50d89deb02990158a36c6aaf32d06eb8792f054299c62e",
+    "original_code": "8bf4cfbe62806a78fd750f01108037c69b611e98",
+    "stored_at": "bad24886ceb514cae7d8e3b0e11b9bca3ce178dc"
+  },
+  "scope": "Finite, previously assessed owning source clauses.",
+  "changed_paths": [
+    ".github/workflows/docs.yml"
+  ],
+  "limits": [
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Preserve frozen exact owners and scoped guard/effect/retry. Changed CI/test paths add observer-only routes or inspected read-only Doc evidence alongside unchanged bound control blocks.",
+    "No execution, installation, release, task or hosted result is changed or established.",
+    "Scope is source conformance. Hosted upload retention is measured separately."
+  ]
+}

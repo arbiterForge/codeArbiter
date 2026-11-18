@@ -196,9 +196,11 @@ class TestRecoveryDescriptors(unittest.TestCase):
             prefix = "existing café Ω\n".encode("utf-8")
             with open(path, "wb") as stream:
                 stream.write(prefix)
-            result = subprocess.run(
-                [part.replace("{PATH}", path) for part in argv],
-                capture_output=True, timeout=30, env=environment)
+            command = [part.replace("{PATH}", path) for part in argv]
+            if command[0] in ("powershell.exe", "pwsh"):
+                command.insert(1, "-NonInteractive")
+            result = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True,
+                                    timeout=30, env=environment)
             self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
             with open(path, "rb") as stream:
                 data = stream.read()
@@ -207,6 +209,21 @@ class TestRecoveryDescriptors(unittest.TestCase):
             self.assertNotIn(b"\x00", data)
             self.assertIn("appended Δ".encode("utf-8"), data)
             data.decode("utf-8", "strict")
+
+    def test_append_fixture_closes_stdin_and_disables_powershell_prompts(self):
+        for executable, noninteractive in (("powershell.exe", True), ("pwsh", True), ("bash", False)):
+            with self.subTest(executable=executable):
+                def append(argv, **kwargs):
+                    self.assertEqual(kwargs.get("stdin"), subprocess.DEVNULL)
+                    self.assertEqual(kwargs["timeout"], 30)
+                    self.assertIs(kwargs["capture_output"], True)
+                    self.assertEqual("-NonInteractive" in argv[1:-1], noninteractive)
+                    with Path(argv[-1]).open("ab") as stream:
+                        stream.write("appended Δ".encode("utf-8"))
+                    return subprocess.CompletedProcess(argv, 0, b"", b"")
+
+                with mock.patch.object(subprocess, "run", side_effect=append):
+                    self._assert_append_bytes([executable, "{PATH}"])
 
     @unittest.skipUnless(shutil.which("powershell.exe"), "Windows PowerShell 5.1 unavailable")
     def test_powershell_51_append_is_utf8_no_bom_and_preserves_prefix(self):

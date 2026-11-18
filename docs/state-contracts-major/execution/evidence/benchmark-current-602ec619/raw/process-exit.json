@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    ".github/scripts/pi_benchmark.py",
+    "--samples",
+    "100"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\cbm-t97d6xf9\\src",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 4.1944246999919415,
+  "stdout_sha256": "c30b1d3d2765fb1318e889efea7d317e1603f4fdc629798da64f3cbcbbe50c26",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

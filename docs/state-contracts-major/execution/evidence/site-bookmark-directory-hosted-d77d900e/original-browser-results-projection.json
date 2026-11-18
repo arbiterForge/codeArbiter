@@ -1,0 +1,101 @@
+{
+  "schema": "codearbiter-original-browser-renewal-projection/1",
+  "source_commit": "d77d900ee827e204241c2de94e4cc2939647c5a5",
+  "source_tree": "26798b6f7ade5d3fe1597bc9b84e4fea952f2525",
+  "run_id": 44347755000,
+  "run_attempt": 1,
+  "job_id": 134954706461,
+  "event": "push",
+  "branch": "major/state-contracts",
+  "whole_run_results": {
+    "ci": null,
+    "docs": "success"
+  },
+  "readback_sha256": "cc6e2dd1c9024977704eb2bbcaf50c8330fc2823bf1eb9d0cacc3d2582feb997",
+  "original_artifacts": [
+    {
+      "artifact_id": 14446304282,
+      "name": "github-pages",
+      "owner_job": 134954706461,
+      "upload_step": "Upload Pages artifact",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d77d900e-normal-watch-dhobw95y\\owner\\original-artifacts-14446304282.zip",
+      "bytes": 6595422,
+      "sha256": "3ab5a092ce810a9aef0c29ec5b163bf899e67554dd3dabc08e8b744156ecf6e9",
+      "github_expires_at": "2026-12-02T16:29:06Z",
+      "tar_sha256": "c519106a745ea585225e6dc9689da6a22aad2db239fa25836c163951cf1e95fb",
+      "static_members": 466,
+      "run_id": 44347755000,
+      "run_attempt": 1,
+      "job_id": 134954706461
+    },
+    {
+      "artifact_id": 14448370665,
+      "name": "major-docs-qualification-134954706461",
+      "owner_job": 134954706461,
+      "upload_step": "Upload Docs qualification report",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d77d900e-normal-watch-dhobw95y\\owner\\original-artifacts-14448370665.zip",
+      "bytes": 55068,
+      "sha256": "976c226a86cc3d3ac7c395ddc1fd620a48186301c8c84a85bfda1abb69000ee4",
+      "github_expires_at": "2026-12-02T16:29:06Z",
+      "run_id": 44347755000,
+      "run_attempt": 1,
+      "job_id": 134954706461
+    }
+  ],
+  "selected_results": [
+    {
+      "cell": "disposition:transitions:S56:01",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S56:02",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S56:04",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:denied storage retains the full lesson and an actionable explanation"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S56:05",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S56:06",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:stale source identity has no resume URL and clearing retains command preferences",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S58:01",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filtering makes no request or storage write and does not submit a query URL"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S58:02",
+      "result": "PASSED",
+      "selectors": [
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filter controls and the review guide reconnect after client navigation and back"
+      ]
+    }
+  ]
+}
