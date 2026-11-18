@@ -77,11 +77,22 @@ describe("documentation release-applicability workflow contract", () => {
     const siteCheck = jobBody(workflow, "site-check");
     const generate = runStepIndex(siteCheck, "npm run gen");
     const typecheck = runStepIndex(siteCheck, "npm run typecheck");
-    const tests = runStepIndex(siteCheck, "npm run coverage");
+    const lines = siteCheck.split("\n");
+    const tests = lines.indexOf("      - name: Test with coverage");
 
     expect(generate, "site-check has no executable generation step").toBeGreaterThan(-1);
     expect(typecheck, "site-check has no typecheck step").toBeGreaterThan(generate);
-    expect(tests, "site-check has no test step").toBeGreaterThan(generate);
+    expect(tests, "site-check coverage must follow generation").toBeGreaterThan(generate);
+
+    const nextStep = lines.findIndex((line, index) => index > tests && /^      - /.test(line));
+    const coverage = lines.slice(tests, nextStep < 0 ? undefined : nextStep).join("\n");
+    const branches = coverage.match(
+      /^          if \[ "\$DOCS_SOURCE_OBSERVE" = true \]; then\n(?<observed>[\s\S]+?)^          else\n(?<direct>[\s\S]+?)^          fi$/m,
+    );
+    expect(branches?.groups?.observed).toMatch(
+      /^            python -B \.\.\/\.github\/scripts\/site_vitest_observation\.py observe --repo \.\. \\\n/,
+    );
+    expect(branches?.groups?.direct).toBe("            npm run coverage\n");
   });
 
   test("rebuilds main after every completed release run (R-05)", () => {
