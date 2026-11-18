@@ -75,7 +75,11 @@ need = owner.require
 
 
 def validate_selection_map(document):
-    groups = [group for group in reports.validate_selections(document) if group['job'] == JOB]
+    from site_component_observation import ROLE as component_role, validate_selection_map as validate_components
+    if any(group['observation'] == component_role for group in reports.validate_selections(document)):
+        validate_components(document)
+    groups = [group for group in reports.validate_selections(document)
+              if group['job'] == JOB and group['observation'] != component_role]
     need(len(groups) == len(CELLS) and {cell for group in groups for cell in group['cells']} == CELLS,
          'Docs selection must declare exactly its finite browser cells')
     for group in groups:
@@ -111,19 +115,26 @@ def _regular(path, limit):
          and 0 <= info.st_size <= limit, 'Docs input is not an owned bounded regular file')
     fields = ('st_dev', 'st_ino', 'st_mode', 'st_nlink', 'st_size', 'st_mtime_ns')
     identity = tuple(getattr(info, field) for field in fields)
+    def descriptor_identity(value):
+        # Windows path stat adds filename-derived execute bits; descriptor
+        # stat cannot. Retain every other mode bit and all other identities.
+        return tuple(getattr(value, field) & ~0o111
+                     if os.name == 'nt' and field == 'st_mode' else getattr(value, field)
+                     for field in fields)
+    descriptor_expected = descriptor_identity(info)
     descriptor = os.open(path, os.O_RDONLY | getattr(os, 'O_BINARY', 0)
                          | getattr(os, 'O_NOFOLLOW', 0))
     try:
         with os.fdopen(descriptor, 'rb') as stream:
             descriptor = None
             opened = os.fstat(stream.fileno())
-            need(tuple(getattr(opened, field) for field in fields) == identity,
+            need(descriptor_identity(opened) == descriptor_expected,
                  'Docs input changed before read')
             raw = stream.read(limit + 1)
             after = os.fstat(stream.fileno())
         final = path.lstat()
         need(len(raw) <= limit and len(raw) == info.st_size
-             and tuple(getattr(after, field) for field in fields) == identity
+             and descriptor_identity(after) == descriptor_expected
              and tuple(getattr(final, field) for field in fields) == identity
              and not path.is_symlink()
              and not getattr(final, 'st_file_attributes', 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,

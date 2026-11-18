@@ -55,9 +55,14 @@ def assert_wiring(text,policy,selections):
     for system in ('linux','windows','darwin'):
         name='[CHECK] | [PI  ] | Installed retained package <pi: '+system+' 1.5.0>'
         cell='installed:pi:'+system+':1.5.0'
-        if policy['cell_job_bindings'].get(cell)!=name:raise AssertionError('wrong finite Pi owner')
+        expected = [cell]
+        if system == 'windows':
+            expected += ['disposition:transitions:S20:01', 'disposition:transitions:S20:03',
+                         'disposition:transitions:S20:06']
+        if any(policy['cell_job_bindings'].get(item) != name for item in expected):
+            raise AssertionError('wrong finite Pi owner')
         groups=[g for g in selections['groups'] if g['id']=='pi-live-'+system]
-        if len(groups)!=1 or groups[0]['job']!=name or groups[0]['cells']!=[cell] or groups[0]['selectors']!=[TEST_ID]:
+        if len(groups)!=1 or groups[0]['job']!=name or groups[0]['cells']!=expected or groups[0]['selectors']!=[TEST_ID]:
             raise AssertionError('wrong finite installed Pi population')
 
 class WiringTests(unittest.TestCase):
@@ -136,6 +141,22 @@ class ReportTests(unittest.TestCase):
         self.assertEqual(result['results'][0]['cell'],'installed:pi:windows:1.5.0')
         self.assertEqual(result['results'][0]['payload_artifact_ids'],[11,12])
         self.assertEqual(result['results'][0]['selected_population'],1)
+
+    def test_windows_rpc_routes_only_the_three_observed_command_outcomes(self):
+        expected = {f'disposition:transitions:S20:{suffix}' for suffix in ('01', '03', '06')}
+
+        def bind(cells):
+            def update(req, observation, payloads, acquisition, selections):
+                req['cells'].extend(cells)
+                req['cell_jobs'].update(dict.fromkeys(cells, JOB))
+                self.assertEqual(selections['groups'][0]['cells'], req['cells'])
+            return update
+
+        results = self.build(bind(sorted(expected)))['results']
+        self.assertEqual({row['cell'] for row in results}, expected | {'installed:pi:windows:1.5.0'})
+        self.assertTrue(all(row['result'] == 'PASSED' and row['selected_population'] == 1 for row in results))
+        with self.assertRaisesRegex(ValueError, 'cannot qualify this cell'):
+            self.build(bind(['disposition:transitions:S20:02']))
 
     def test_label_spoof_wrong_platform_acquisition_lock_and_second_payload_refuse(self):
         changes=[lambda q,o,p,a,s:o.update(producer='python-test-result-observer'),

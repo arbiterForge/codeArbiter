@@ -199,6 +199,17 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                             '          --output "${{ runner.temp '
                                             '}}/python-hook-review-observation.json"\n'
                                             '          -- .github/scripts/test_review_funnel.py\n',
+ 'Observe original routing and scoped conflict contracts': (
+                          '      - name: Observe original routing and scoped conflict contracts\n'
+                          '        id: scoped_conflict_observed\n'
+                          "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+                          '        shell: bash\n'
+                          '        run: >-\n'
+                          '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+                          '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+                          '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+                          '          --output "${{ runner.temp }}/python-finite-scoped-conflict-observation.json"\n'
+                          '          -- .github/scripts/test_routing_and_cleanup_surface.py\n'),
  'Prepare single-owner hook source-test inputs': '      - name: Prepare single-owner hook source-test inputs\n'
                                                  '        id: single_hook_prepare\n'
                                                  "        if: matrix.os == 'windows-latest' && matrix.partition == "
@@ -306,6 +317,18 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                         '          --output "${{ runner.temp '
                                                         '}}/python-q02-readiness-observation.json"\n'
                                                         '          -- .github/scripts/test_major_readiness.py\n',
+ 'Observe original release library classifier tests': (
+     '      - name: Observe original release library classifier tests\n'
+     '        id: release_library_observed\n'
+     "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+     '        shell: bash\n'
+     '        run: >-\n'
+     '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+     '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+     '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+     '          --output "${{ runner.temp }}/python-finite-release-library-observation.json"\n'
+     '          -- .github/scripts/test_release_lib.py\n'
+ ),
  'Observe original Q02 publication guard tests': '      - name: Observe original Q02 publication guard tests\n'
                                                  '        id: q02_release_observed\n'
                                                  "        if: matrix.os == 'windows-latest' && matrix.partition == "
@@ -479,10 +502,12 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      "steps.python_publisher_observed.outcome == 'success' && "
                                                      "steps.python_proof_observed.outcome == 'success' && "
                                                      "steps.python_source_upload.outcome == 'success' && "
+                                                     "steps.release_library_observed.outcome == 'success' && "
                                                      "steps.q02_readiness_observed.outcome == 'success' && "
                                                      "steps.q02_release_observed.outcome == 'success' && "
                                                      "steps.q02_source_upload.outcome == 'success' && "
                                                      "steps.hook_review_observed.outcome == 'success' && "
+                                                     "steps.scoped_conflict_observed.outcome == 'success' && "
                                                      "steps.hook_finding_source_upload.outcome == 'success' && "
                                                      "steps.single_hook_prepare.outcome == 'success' && "
                                                      "steps.single_hookf02_modelib_observed.outcome == 'success' && "
@@ -508,10 +533,12 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      '}}/python-publisher-observation.json" \\\n'
                                                      '            --observation "hook-review=${{ runner.temp '
                                                      '}}/python-hook-review-observation.json" \\\n'
+                                                     '            --observation "finite-scoped-conflict=${{ runner.temp }}/python-finite-scoped-conflict-observation.json" \\\n'
                                                      '            --observation "skill-proof=${{ runner.temp '
                                                      '}}/python-proof-observation.json" \\\n'
                                                      '            --observation "q02-readiness=${{ runner.temp '
                                                      '}}/python-q02-readiness-observation.json" \\\n'
+                                                     '            --observation "finite-release-library=${{ runner.temp }}/python-finite-release-library-observation.json" \\\n'
                                                      '            --observation "q02-release=${{ runner.temp '
                                                      '}}/python-q02-release-observation.json" \\\n'
                                                      '            --observation "finite-hookf02-modelib=${{ '
@@ -620,11 +647,13 @@ def python_source_roles(block: str) -> dict[str,str]:
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
     for name,entry in (('Run sync-core tool unit tests','test_sync_core.py'),
                        ('Run surface-generator unit tests','test_build_surface.py'),
+                       ('Run §6 routing + post-merge-cleanup surface contract', 'test_routing_and_cleanup_surface.py'),
                        ('Test shared native manifest contract', 'test_artifact_manifest_contract.py'),
                        ('Test interrupted output publication','test_generated_output.py'),
                        ('Run read-only review funnel contract','test_review_funnel.py'),
                        ("Run the T-79 skill-proof-freshness guard's own unit tests",'test_check_skill_proof_fresh.py'),
                        ('Test authenticated major readiness admission and refusal','test_major_readiness.py'),
+                       ('Run release-skill hardening helper unit tests', 'test_release_lib.py'),
                        ('Run hosted release-workflow contract tests','test_release_workflow.py'),
                        ('Run mode-plane core contract (ADR-0030)', 'test_modelib.py'),
                        ('Run prompt-seam interceptor contract (ADR-0030)', 'test_prompt_submit.py'),
@@ -636,12 +665,24 @@ def python_source_roles(block: str) -> dict[str,str]:
                 and re.findall(r'^        if: (.*)$',selected[0],re.M)==[
                     "(matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')"],
                 'Python source observer must replace one original invocation on its exact cell')
+    conflict_fallback = next(step for step in steps if step.startswith('      - name: Run §6 routing + post-merge-cleanup surface contract\n'))
+    require(steps.index(conflict_fallback) + 1 == steps.index(PYTHON_SOURCE_ROLES['Observe original routing and scoped conflict contracts']),
+            'Scoped-conflict observer must replace the original Windows command in place')
+    require(sum('.github/scripts/test_routing_and_cleanup_surface.py' in (command(step) or '') for step in steps) == 2,
+            'Scoped-conflict suite must run once in each original partition')
     manifest_fallback = next(step for step in steps if step.startswith('      - name: Test shared native manifest contract\n'))
     require(steps.index(manifest_fallback) + 1
             == steps.index(PYTHON_SOURCE_ROLES['Observe original shared native manifest contract']),
             'Manifest observer must replace its original Windows command in place')
     require(sum('.github/scripts/test_boundedproc.py' in (command(step) or '') for step in steps) == 2,
             'bounded reader suite must run once in each original partition')
+    release_library_fallback = next(step for step in steps if step.startswith(
+        '      - name: Run release-skill hardening helper unit tests\n'))
+    require(steps.index(release_library_fallback) + 1
+            == steps.index(PYTHON_SOURCE_ROLES['Observe original release library classifier tests']),
+            'release library observer must replace its original Windows command in place')
+    require(sum('.github/scripts/test_release_lib.py' in (command(step) or '') for step in steps) == 2,
+            'release library suite must run once in each original partition')
     direct_channel = [step for step in steps if step.startswith("      - name: Run per-target release planner and Git channel contracts\n")]
     require(len(direct_channel) == 1
             and command(direct_channel[0]) == 'python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py'
@@ -870,6 +911,7 @@ def validate(
         counters[kind]+=1
         want=f"matrix.partition == 'all' || matrix.partition == '{kind}'"
         observed_original = roles and cmd in ('python .github/scripts/test_review_funnel.py',
+                                               'python .github/scripts/test_routing_and_cleanup_surface.py',
                                                'python .github/scripts/test_sync_core.py',
                                                'python .github/scripts/test_build_surface.py',
                                                'python .github/scripts/test_generated_output.py',
@@ -880,6 +922,7 @@ def validate(
                                                'python .github/scripts/test_prompt_submit.py',
                                                'python .github/scripts/test_verdictlib.py',
                                                'python .github/scripts/test_boundedproc.py',
+                                               'python .github/scripts/test_release_lib.py',
                                                'python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py',
                                                'python .github/scripts/test_modelib.py')
         if not observed_original:
@@ -1370,13 +1413,21 @@ class SingleOwnerFindingWorkflowTests(unittest.TestCase):
         hooks=job_block(text,'hooks')
         names=('Prepare single-owner hook source-test inputs','Observe original persona transition tests',
                'Observe original scoped Pi payload identity tests','Observe original typed verdict tests',
+               'Observe original release library classifier tests',
                'Observe original bounded verifier-subprocess contract tests',
                'Observe original Git channel contracts after the release planner',
+               'Observe original routing and scoped conflict contracts',
                'Observe original measurement contract tests','Upload single-owner hook source-test inputs')
         for name in names:
             role=PYTHON_SOURCE_ROLES[name]
             for replacement in ('',role+role,role.replace("matrix.os == 'windows-latest'","matrix.os != 'windows-latest'",1)):
                 with self.subTest(role=name),self.assertRaises(ValueError):python_source_roles(hooks.replace(role,replacement,1))
+        with self.assertRaisesRegex(ValueError, 'Scoped-conflict suite must run once'):
+            python_source_roles(hooks + '      - name: Extra scoped-conflict run\n'
+                                '        run: python .github/scripts/test_routing_and_cleanup_surface.py\n')
+        with self.assertRaisesRegex(ValueError, 'release library suite must run once'):
+            python_source_roles(hooks + '      - name: Extra release library run\n'
+                                '        run: python .github/scripts/test_release_lib.py\n')
         with self.assertRaisesRegex(ValueError, 'bounded reader suite must run once'):
             python_source_roles(hooks + '      - name: Extra bounded verifier run\n'
                                 '        run: python .github/scripts/test_boundedproc.py\n')

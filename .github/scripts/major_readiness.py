@@ -877,12 +877,19 @@ def source_runtime_requirements(req):
 
 
 def runtime_record(record):
-    """Unwrap only the finite source3 -> native4 -> Docs2/Core1 grammar."""
+    """Unwrap only source3 -> components -> native4 -> Docs-source/Docs2/Core1."""
     if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
         inner = record.get('runtime')
         require(isinstance(inner, dict) and inner.get('schema') in
-                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4', 'codearbiter-major-site-source-readiness/1'),
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4', 'codearbiter-major-site-source-readiness/1',
+                 'codearbiter-major-component-source-readiness/1'),
                 'invalid source envelope runtime schema')
+        record = inner
+    if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-component-source-readiness/1':
+        inner = record.get('core')
+        require(isinstance(inner, dict) and inner.get('schema') in
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4',
+                 'codearbiter-major-site-source-readiness/1'), 'invalid component source Core schema')
         record = inner
     if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-readiness/4':
         inner = record.get('runtime')
@@ -1231,6 +1238,10 @@ def validate_upload(job, artifact, step_name, *, job_log=None):
 def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_artifacts,
            payload_members=None):
     req = requirements
+    if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-component-source-readiness/1':
+        from site_component_observation import verify as verify_components
+        return verify_components(record=record, requirements=req, run=run, artifact=artifact,
+            archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts, payload_members=payload_members)
     if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-site-source-readiness/1':
         from site_vitest_observation import verify as verify_source_docs
         return verify_source_docs(record=record, requirements=req, run=run, artifact=artifact,
@@ -1248,7 +1259,8 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
                 'typed source readiness differs from authenticated requirements')
         inner = record.get('runtime')
         require(isinstance(inner, dict) and inner.get('schema') in
-                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4', 'codearbiter-major-site-source-readiness/1'),
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4', 'codearbiter-major-site-source-readiness/1',
+                 'codearbiter-major-component-source-readiness/1'),
                 'invalid source envelope runtime schema')
         return verify(record=inner, requirements=runtime_req, run=run,
             artifact=artifact, archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts,
@@ -1513,6 +1525,9 @@ def produce(req, artifacts, jobs):
         runtime_req = source_runtime_requirements(req)
         return {'schema': SOURCE_SCHEMA, 'program_id': PROGRAM, 'state': 'PREPUBLICATION_READY',
                 **req, 'runtime': produce(runtime_req, artifacts, jobs)}
+    from site_component_observation import required as components_required, produce as produce_components
+    if components_required(req):
+        return produce_components(req, artifacts, jobs)
     if 'native_compositions' in req:
         from major_native_observation import produce as produce_native
         return produce_native(req, artifacts, jobs)

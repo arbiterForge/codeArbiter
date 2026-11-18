@@ -110,7 +110,10 @@
         "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
       ],
       "cells": [
-        "installed:pi:windows:1.5.0"
+        "installed:pi:windows:1.5.0",
+        "disposition:transitions:S20:01",
+        "disposition:transitions:S20:03",
+        "disposition:transitions:S20:06"
       ],
       "scope": "Original production Pi package directory with reviewed Pi 1.5.0 graph, real RPC command/status/DEGRADED doctor. No parent TUI, author effects, provider, physical consent or PI-D07 claim."
     },
@@ -1986,6 +1989,204 @@
       "scope": "Original measurement verdict assertions for T10:08."
     },
     {
+      "id": "finite-scoped-conflict-wf01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-scoped-conflict",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+        "python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+        "python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope"
+      ],
+      "cells": [
+        "disposition:findings:W-F01"
+      ],
+      "scope": "Original source instruction contract for the dependent-conflict finding across canonical and rendered host surfaces."
+    },
+    {
+      "id": "finite-scoped-conflict-wf02-01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-scoped-conflict",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+        "python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+        "python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope"
+      ],
+      "cells": [
+        "disposition:transitions:WF-02:01"
+      ],
+      "scope": "Original dependent-conflict transition instructions for explicit global stops and independent authorized continuation."
+    },
+    {
+      "id": "finite-release-library-s44-01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreClassifyPublishStateTest.test_no_tag_is_publish_fresh"
+      ],
+      "cells": [
+        "disposition:transitions:S44:01"
+      ],
+      "scope": "Original release library classifier assertions for S44:01."
+    },
+    {
+      "id": "finite-release-library-s44-02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreClassifyPublishStateTest.test_tag_points_elsewhere_is_abort",
+        "python:.github/scripts/test_release_lib.py:__main__.CoreClassifyPublishStateTest.test_version_mismatch_is_abort",
+        "python:.github/scripts/test_release_lib.py:__main__.CoreClassifyPublishStateTest.test_nondraft_release_on_a_tag_at_another_commit_is_abort"
+      ],
+      "cells": [
+        "disposition:transitions:S44:02"
+      ],
+      "scope": "Original release library classifier assertions for S44:02."
+    },
+    {
+      "id": "finite-release-library-s44-03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreClassifyPublishStateTest.test_nondraft_release_is_already_published"
+      ],
+      "cells": [
+        "disposition:transitions:S44:03"
+      ],
+      "scope": "Original release library classifier assertions for S44:03."
+    },
+    {
+      "id": "finite-release-library-s44-04",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreClassifyPublishStateTest.test_tag_at_head_version_match_no_release_is_resume"
+      ],
+      "cells": [
+        "disposition:transitions:S44:04"
+      ],
+      "scope": "Original release library classifier assertions for S44:04."
+    },
+    {
+      "id": "finite-release-library-s44-05",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_missing_when_no_run_matches_the_name",
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_missing_on_empty_check_runs",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_unrelated_checks_do_not_stand_in_for_the_gate",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_never_raises_on_garbage"
+      ],
+      "cells": [
+        "disposition:transitions:S44:05"
+      ],
+      "scope": "Original release library classifier assertions for S44:05."
+    },
+    {
+      "id": "finite-release-library-s44-06",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_sha_mismatch_on_a_different_commit",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_success_on_another_commit_is_rejected"
+      ],
+      "cells": [
+        "disposition:transitions:S44:06"
+      ],
+      "scope": "Original release library classifier assertions for S44:06."
+    },
+    {
+      "id": "finite-release-library-s44-07",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_pending_when_not_completed",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_queued_and_in_progress_are_pending"
+      ],
+      "cells": [
+        "disposition:transitions:S44:07"
+      ],
+      "scope": "Original release library classifier assertions for S44:07."
+    },
+    {
+      "id": "finite-release-library-s44-08",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_not_successful_on_a_failed_conclusion",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_every_non_success_conclusion_is_rejected",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_a_green_rerun_alongside_a_red_one_is_rejected"
+      ],
+      "cells": [
+        "disposition:transitions:S44:08"
+      ],
+      "scope": "Original release library classifier assertions for S44:08."
+    },
+    {
+      "id": "finite-release-library-s44-09",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_green_is_still_reachable",
+        "python:.github/scripts/test_release_lib.py:__main__.MergeReadinessTest.test_completed_success_is_green",
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_complete_64_character_commit_identity_is_supported"
+      ],
+      "cells": [
+        "disposition:transitions:S44:09"
+      ],
+      "scope": "Original release library classifier assertions for S44:09."
+    },
+    {
+      "id": "finite-release-library-release-readiness-binding-01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity"
+      ],
+      "cells": [
+        "disposition:added_transitions:RELEASE-READINESS-BINDING:01"
+      ],
+      "scope": "Original release library classifier assertions for RELEASE-READINESS-BINDING:01."
+    },
+    {
+      "id": "finite-release-library-release-readiness-binding-02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-release-library",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run",
+        "python:.github/scripts/test_release_lib.py:__main__.CoreMergeReadinessArmsTest.test_missing_required_binding_fields_never_form_green_evidence"
+      ],
+      "cells": [
+        "disposition:added_transitions:RELEASE-READINESS-BINDING:02"
+      ],
+      "scope": "Original release library classifier assertions for RELEASE-READINESS-BINDING:02."
+    },
+    {
       "id": "finite-native-manifest",
       "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
       "payload_name": "major-source-inputs-hooks-single-owner",
@@ -3572,6 +3773,222 @@
         "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01"
       ],
       "scope": "First clean then new outside.ts: one author,zero resets,zero Git calls and escalation. Unknown repeats existing refusal; second clean proceeds through add/commit/merge. Tests contain real action-count assertions through controlled RunTaskDeps, not actual concurrent filesystem mutation."
+    },
+    {
+      "id": "site-components-findings-sf11",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers query",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers data",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers expansion",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers stale",
+        "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+        "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles",
+        "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state",
+        "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "cells": [
+        "disposition:findings:SF11"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-machines-s55",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers query",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers data",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers expansion",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers stale",
+        "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+        "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after clear",
+        "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after Escape",
+        "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after outside",
+        "playwright:site/test/components/search-boundaries.spec.ts::disconnect cancels pending render and releases shortcut until reconnect",
+        "playwright:site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization",
+        "playwright:site/test/components/search-interactions.spec.ts::normalized queries debounce for140ms and fetch only the first8 results",
+        "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles",
+        "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state",
+        "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "cells": [
+        "disposition:machines:S55"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization"
+      ],
+      "cells": [
+        "disposition:transitions:S55:01"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization",
+        "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "cells": [
+        "disposition:transitions:S55:02"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-03",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+        "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "cells": [
+        "disposition:transitions:S55:03"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-04",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+        "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+      ],
+      "cells": [
+        "disposition:transitions:S55:04"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-05",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-interactions.spec.ts::normalized queries debounce for140ms and fetch only the first8 results",
+        "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state"
+      ],
+      "cells": [
+        "disposition:transitions:S55:05"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-06",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state"
+      ],
+      "cells": [
+        "disposition:transitions:S55:06"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-07",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers query",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers data",
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers stale"
+      ],
+      "cells": [
+        "disposition:transitions:S55:07"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-08",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles"
+      ],
+      "cells": [
+        "disposition:transitions:S55:08"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-09",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/lifecycle.spec.ts::search recovers expansion",
+        "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles"
+      ],
+      "cells": [
+        "disposition:transitions:S55:09"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-10",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+        "playwright:site/test/components/search-boundaries.spec.ts::disconnect cancels pending render and releases shortcut until reconnect"
+      ],
+      "cells": [
+        "disposition:transitions:S55:10"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
+    },
+    {
+      "id": "site-components-transitions-s55-11",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "major-source-inputs-site-components",
+      "observation": "docs-original-component-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after clear",
+        "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after Escape",
+        "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after outside",
+        "playwright:site/test/components/search-boundaries.spec.ts::disconnect cancels pending render and releases shortcut until reconnect"
+      ],
+      "cells": [
+        "disposition:transitions:S55:11"
+      ],
+      "scope": "Original Chrome isolated Search component assertions with controlled Pagefind; current-source error/retry/generation/navigation/lifecycle behavior only. No production Pagefind index, served Pages tar, deployed site, installed host, model or whole-task qualification."
     }
   ]
 }

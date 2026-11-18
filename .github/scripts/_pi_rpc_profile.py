@@ -8,6 +8,11 @@ PROFILE="pi-installed-rpc-v1"
 PRODUCER="pi-installed-rpc-observer-v1"
 FORMAT="codearbiter.installed-observation-binding/1"
 TEST_ID="python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status"
+WINDOWS_COMMAND_OUTCOMES = (
+    'disposition:transitions:S20:01',  # Exact package-origin command discovery.
+    'disposition:transitions:S20:03',  # Exact skill body and queued arguments.
+    'disposition:transitions:S20:06',  # Read-only DEGRADED doctor observation.
+)
 DIGEST=re.compile(r"[0-9a-f]{64}")
 SHA=re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 WORKFLOW=".github/workflows/ci.yml"
@@ -125,7 +130,9 @@ def _admit(o,*,req,job_id,authenticated_payloads,runtime_acquisition):
     tests=[{'id':TEST_ID,'result':'passed'}]
     require(o['tests']==tests,"Pi test names were invented/repeated")
     return {'tests':tests,'payload_artifact_ids':sorted(p['artifact_id'] for p in payloads),'payloads':payloads,
-            'primary_payload_name':b['consumed_payloads']['release-packages']['artifact_name'],'installed_cells':['installed:pi:'+b['platform'].split('/')[0]+':1.5.0']}
+            'primary_payload_name':b['consumed_payloads']['release-packages']['artifact_name'],
+            'installed_cells':['installed:pi:'+b['platform'].split('/')[0]+':1.5.0'],
+            'disposition_cells':WINDOWS_COMMAND_OUTCOMES if b['platform'] == 'windows/amd64' else ()}
 
 def admit(observation,**kwargs):
     try:return _admit(observation,**kwargs)
