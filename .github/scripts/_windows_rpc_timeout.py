@@ -175,6 +175,12 @@ def _bound_tool_profile(profile, directory, hashes, deadline) -> Path:
     return actual
 
 
+class _IoCounters(ctypes.Structure):
+    _fields_ = [(name, ctypes.c_ulonglong) for name in (
+        "readOperations", "writeOperations", "otherOperations",
+        "readBytes", "writeBytes", "otherBytes")]
+
+
 class WindowsKernel:
     """All pointer-sized arguments/results are declared; never close Popen's handle."""
 
@@ -233,7 +239,32 @@ class WindowsKernel:
             raise OSError("process image unavailable")
         return {"pid": pid, "created": (created.dwHighDateTime << 32) | created.dwLowDateTime,
                 "image": image.value, "state": "signaled" if wait == 0 else "running",
-                "exitCode": code.value if wait == 0 else None}
+                "exitCode": code.value if wait == 0 else None,
+                "cpuTimes": {"kernelTime100ns": (kernel.dwHighDateTime << 32) | kernel.dwLowDateTime,
+                             "userTime100ns": (user.dwHighDateTime << 32) | user.dwLowDateTime}}
+
+    def process_counters(self, handle: int, deadline: float) -> dict:
+        """Optional numeric queries on an existing handle, within its budget."""
+        result = {}
+        if time.monotonic() < deadline:
+            try:
+                query = self.api.GetProcessIoCounters
+                query.restype, query.argtypes = wintypes.BOOL, [wintypes.HANDLE, ctypes.POINTER(_IoCounters)]
+                counters = _IoCounters()
+                if query(handle, ctypes.byref(counters)):
+                    result.update({name: getattr(counters, name) for name, _ in counters._fields_})
+            except Exception:
+                pass
+        if time.monotonic() < deadline:
+            try:
+                query = self.api.GetProcessHandleCount
+                query.restype, query.argtypes = wintypes.BOOL, [wintypes.HANDLE, ctypes.POINTER(wintypes.DWORD)]
+                count = wintypes.DWORD()
+                if query(handle, ctypes.byref(count)):
+                    result["handleCount"] = count.value
+            except Exception:
+                pass
+        return result
 
     def available(self, stream) -> int:
         import msvcrt
@@ -443,6 +474,31 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
     return result
 
 
+def _process_progress(kernel, handle: int, snapshot: dict, deadline: float) -> dict:
+    """Closed, optional counters; no inference of exit, work, or a hang cause.
+
+    CPU values reuse the required identity snapshot's GetProcessTimes call.
+    I/O/handle values are separate, non-atomic reads and may be absent after
+    the debugger spends the existing budget. No read can alter the verdict.
+    """
+    cpu = snapshot.get("cpuTimes")
+    cpu = cpu if type(cpu) is dict else {}
+    extra = {}
+    if time.monotonic() < deadline:
+        try:
+            observed = kernel.process_counters(handle, deadline)
+            if type(observed) is dict:
+                extra = observed
+        except Exception:
+            pass
+    fields = {**{name: cpu.get(name) for name in ("kernelTime100ns", "userTime100ns")},
+              **{name: extra.get(name) for name in (
+                  "readOperations", "writeOperations", "otherOperations",
+                  "readBytes", "writeBytes", "otherBytes", "handleCount")}}
+    return {name: value if type(value) is int and 0 <= value < 2**(32 if name == "handleCount" else 64)
+            else None for name, value in fields.items()}
+
+
 def _state(snapshot: dict) -> dict:
     return {"state": snapshot["state"], "exitCode": snapshot["exitCode"]}
 
@@ -452,7 +508,9 @@ def capture(process, expected_node: Path, *, _kernel=None, _debugger=None) -> di
     deadline = started + SECONDS
     result = {"schemaVersion": 2, "outcome": "original-failure", "identity": "unknown",
               "before": {"state": "unknown", "exitCode": None}, "after": {"state": "unknown", "exitCode": None},
-              "processId": None, "creationTime": None, "nodeSha256": None, "debugger": {"status": "not-attempted", "threads": [], "truncated": False}}
+              "processId": None, "creationTime": None, "nodeSha256": None,
+              "processProgress": {"before": None, "after": None},
+              "debugger": {"status": "not-attempted", "threads": [], "truncated": False}}
     handle = None
     try:
         if os.name != "nt" and _kernel is None:
@@ -489,6 +547,7 @@ def capture(process, expected_node: Path, *, _kernel=None, _debugger=None) -> di
             return result
         result["nodeSha256"] = _digest(expected_node, deadline)
         result["identity"] = "matched"
+        result["processProgress"]["before"] = _process_progress(kernel, int(process._handle), independent, deadline)
         if original["state"] == "running" and independent["state"] == "running":
             if _debugger is not None:
                 result["debugger"] = _debugger(process.pid, kernel, deadline)
@@ -501,6 +560,7 @@ def capture(process, expected_node: Path, *, _kernel=None, _debugger=None) -> di
             result["identity"] = "mismatch"
         else:
             result["after"] = _state(after)
+            result["processProgress"]["after"] = _process_progress(kernel, int(process._handle), after, deadline)
     except Exception:
         result["identity"] = "query-failed"
     finally:
