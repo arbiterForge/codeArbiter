@@ -1,0 +1,71 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact original C06 authority runner and unchanged observer dispatch source"
+  },
+  "inputs": {
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/major_qualification_report.py": "b351e8622cf347d89d165ba849e6b9df48d1ff230e13f859c769b73d2127a997",
+    ".github/scripts/run_artifact_authority_shard.py": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+    ".github/scripts/test_artifact_authority_retention.py": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+    ".github/scripts/test_ci20_native_pipeline.py": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+    ".github/workflows/ci.yml": "61f83893c9a5276363598ff10a2d7dfba0aec19836caa4e8aaed2d1931b04188",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:C06",
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/c06-cold-artifact-source-47332174/source-delta-review.json",
+      "sha256": "7bcb89da1413db2c17579f3daa6ecd8757a7dd7365c007024ceec1e3222765c9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+      "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+    "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b",
+    "original_code": "6e9cf6bd4631184174100923e6e012960669ddf6",
+    "stored_at": "b1979aef0b178bac270c05971a1c8e1227ff2a84"
+  },
+  "scope": "Current source-only originalC06disposition; no task/runtime/host promotion",
+  "changed_paths": [
+    ".github/scripts/major_qualification_report.py"
+  ],
+  "limits": [
+    "Four canonical regressions and original real-four-child positive are retained in the code commit, not replayed or restated as installed/OS proof.",
+    "Only source-only PRESERVED dispositions; task/runtime/host/publication status unchanged.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves the existing C06 authority and exact-child conformance predicates across a disjoint cold package emitter change.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+  "prior_source_checkpoint": "b1979aef0b178bac270c05971a1c8e1227ff2a84",
+  "delta": {
+    ".github/scripts/major_qualification_report.py": {
+      "before": "0bce288ca86ffa66a5ee6586e7873b955f713e579b1f3f86668c5c68cbed934f",
+      "current": "b351e8622cf347d89d165ba849e6b9df48d1ff230e13f859c769b73d2127a997",
+      "assessment": "The only edited top-level symbol is main. Its parser, source preparation, observe-python, observe-vitest and admit-go dispatches are structurally identical. All C06-used helpers and observer runtime source are identical. The change is within emit and binds the two previously consumed archives by exact original artifact name for the single cold-package report."
+    },
+    ".github/scripts/major_readiness.py": {
+      "before": "a84a8e9f40e45b796a7c682e067e2a7dbe11d3371520cbfdaa5a09b1043f3ee9",
+      "current": "0aec11edb7b03176559c6363a30b386400ec86eb0b80a9b00f18c8c9bd647833",
+      "assessment": "The proof reader is used for source authentication. Its changed hosted collection is separate from all five source assertions and from the observer execution branch."
+    },
+    ".github/scripts/retained_archive_cli_observation.py": {
+      "before": "0df63c5fe6acfc64bc89a8a5fd48884b6c6d9b068e02336d408ab26be5465d0a",
+      "current": "cf55cd0febd3d59288e3ea0a507abee620330b28cdf66bde9ae3d09c439bbfb6",
+      "assessment": "The changed module is the separate retained cold package observer and has no C06 positive binding."
+    },
+    ".github/scripts/test_retained_archive_cli_observation.py": {
+      "before": "0ded50bd9ec7d2016cd0727cfb4591a55d67bb84c647abc8d4e00ca4e5681848",
+      "current": "7aa0f344a2b20f58a74a3a9c58955ef446074b194e36edd17ea804be050e9623",
+      "assessment": "The changed fixture covers the cold artifact-name route and has no C06 positive binding."
+    }
+  },
+  "c06_per_cell_source_assessment": {
+    "C06": "The original authority job drives a four-shard exact discovery, independent execution and retention join for each original native-tested candidate. All owning C06 source behavior stays equal; the independently routed cold package emitter scopes artifact metadata lookup.",
+    "C06:01": "Original test discovery, fixture-class grouping, original nonempty finite shard count/population and deterministic plan digest remain the byte-identical runner predicates.",
+    "C06:02": "The same runner launches owned direct children with the same argv, exact native candidate and shared deadline. The observer dispatch reaches observe-python before its separate emit path. Existing failure and direct-child cleanup limits remain the previously reviewed scope.",
+    "C06:03": "Actual per-test evidence capture, required result identity, exact use of original source checkout, and exclusive child timing/observation output keep the same reporter functions and runner code.",
+    "C06:04": "Complete exact source/native context and shard population join, rejection of failed/foreign/duplicate/missing outcomes, and the original candidate recheck/upload stay in the standalone authority workflow. The cold report\u2019s named artifact lookup is a different dispatch."
+  },
+  "authority_job_sha256": "f9d58b330a89d17b38885113bd0ea72cba29aa8fc3cb0a9ff797a2f5aa30d785",
+  "affected_scope": "Five original C06 source-only cells. Current reporter bytes supersede just one of their eleven original bound inputs."
+}

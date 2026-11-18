@@ -7589,9 +7589,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
-     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
-     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b"
+     "commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+     "ref": "docs/state-contracts-major/execution/evidence/c06-cold-artifact-source-47332174/proof-01.json",
+     "sha256": "8e04aa92b6882dbd9907ab57de06724581784ae49fdcb3a65fc1c9815ab4b735"
     }
    ],
    "evidence_history": [
@@ -7615,6 +7615,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-17.json",
      "sha256": "a5a6fc5f5f2b992d631ad5698fd3e82bed2d01e36b29b3139345dadd94f64b95",
      "ref_commit": "b97623833f073a1047164ab611986496a4cf9f14"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b",
+     "ref_commit": "b1979aef0b178bac270c05971a1c8e1227ff2a84"
     }
    ]
   },
@@ -51435,9 +51442,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
-     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
-     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b"
+     "commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+     "ref": "docs/state-contracts-major/execution/evidence/c06-cold-artifact-source-47332174/proof-01.json",
+     "sha256": "8e04aa92b6882dbd9907ab57de06724581784ae49fdcb3a65fc1c9815ab4b735"
     }
    ],
    "evidence_history": [
@@ -51461,6 +51468,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-17.json",
      "sha256": "a5a6fc5f5f2b992d631ad5698fd3e82bed2d01e36b29b3139345dadd94f64b95",
      "ref_commit": "b97623833f073a1047164ab611986496a4cf9f14"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b",
+     "ref_commit": "b1979aef0b178bac270c05971a1c8e1227ff2a84"
     }
    ]
   },
@@ -51474,9 +51488,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
-     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
-     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b"
+     "commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+     "ref": "docs/state-contracts-major/execution/evidence/c06-cold-artifact-source-47332174/proof-01.json",
+     "sha256": "8e04aa92b6882dbd9907ab57de06724581784ae49fdcb3a65fc1c9815ab4b735"
     }
    ],
    "evidence_history": [
@@ -51500,6 +51514,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-17.json",
      "sha256": "a5a6fc5f5f2b992d631ad5698fd3e82bed2d01e36b29b3139345dadd94f64b95",
      "ref_commit": "b97623833f073a1047164ab611986496a4cf9f14"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b",
+     "ref_commit": "b1979aef0b178bac270c05971a1c8e1227ff2a84"
     }
    ]
   },
@@ -51513,9 +51534,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
-     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
-     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b"
+     "commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+     "ref": "docs/state-contracts-major/execution/evidence/c06-cold-artifact-source-47332174/proof-01.json",
+     "sha256": "8e04aa92b6882dbd9907ab57de06724581784ae49fdcb3a65fc1c9815ab4b735"
     }
    ],
    "evidence_history": [
@@ -51539,6 +51560,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-17.json",
      "sha256": "a5a6fc5f5f2b992d631ad5698fd3e82bed2d01e36b29b3139345dadd94f64b95",
      "ref_commit": "b97623833f073a1047164ab611986496a4cf9f14"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b",
+     "ref_commit": "b1979aef0b178bac270c05971a1c8e1227ff2a84"
     }
    ]
   },
@@ -51552,9 +51580,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
-     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
-     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b"
+     "commit": "47332174d6ed9fc2f3ea0fef4234b3aba006c8e3",
+     "ref": "docs/state-contracts-major/execution/evidence/c06-cold-artifact-source-47332174/proof-01.json",
+     "sha256": "8e04aa92b6882dbd9907ab57de06724581784ae49fdcb3a65fc1c9815ab4b735"
     }
    ],
    "evidence_history": [
@@ -51578,6 +51606,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-17.json",
      "sha256": "a5a6fc5f5f2b992d631ad5698fd3e82bed2d01e36b29b3139345dadd94f64b95",
      "ref_commit": "b97623833f073a1047164ab611986496a4cf9f14"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/proof-11.json",
+     "sha256": "1154e17e49c65524aa10367ebba42dfb367b9fc676cd507c0f8e7aaebb9a2c6b",
+     "ref_commit": "b1979aef0b178bac270c05971a1c8e1227ff2a84"
     }
    ]
   },
