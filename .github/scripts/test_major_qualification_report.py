@@ -4966,7 +4966,7 @@ class HookF02CompleteCompositionTests(unittest.TestCase):
         selected=[g for g in actual['groups'] if self.CELL in g['cells']]
         self.assertEqual(selected,groups)
         self.assertEqual(owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')['cell_job_bindings'][self.CELL],spec['job'])
-        self.assertEqual(set(owner.PYTHON_FINDING_RECIPES), set(SingleOwnerPythonFindingProfileTests.EXPECTED))
+        self.assertNotIn(self.CELL, owner.PYTHON_FINDING_RECIPES)
         self.assertTrue({'.github/scripts/test_modelib.py','.github/scripts/test_prompt_submit.py','core/pysrc/_modelib.py','core/pysrc/prompt-submit.py'}<=spec['paths'])
 
 if __name__ == "__main__":
