@@ -1752,6 +1752,7 @@ jobs:
       # own isolated home, caches, temp and npm configuration and runs the binary
       # with an empty environment, so sharing the runner does not warm the next.
       - name: Create one isolated receipt directory per host
+        if: ${{ !cancelled() }}
         run: python -c "import os,sys; [os.makedirs(os.path.join(sys.argv[1], 'cold-' + h)) for h in ('claude', 'codex', 'pi')]" "${{ runner.temp }}"
       - name: Cold-execute the complete exact-package claude workflow
         id: cold_claude

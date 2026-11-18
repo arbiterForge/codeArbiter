@@ -5021,6 +5021,8 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
         # One job per platform; each host runs as its own isolated step with its
         # own receipt artifact, and a failing host never hides the others.
         self.assertNotIn("matrix.host", cold)
+        self.assertIn("Create one isolated receipt directory per host\n"
+                      "        if: ${{ !cancelled() }}\n", cold)
         cold_hosts = cold.split("Create one isolated receipt directory per host", 1)[1]
         for binding in ('--release-package-stage "${{ runner.temp }}/artifact-host-payloads"',
                         '--cold-package-root "${{ runner.temp }}/artifact-release-packages"',
