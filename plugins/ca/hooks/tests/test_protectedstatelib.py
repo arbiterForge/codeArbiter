@@ -199,9 +199,16 @@ class TestRecoveryDescriptors(unittest.TestCase):
             command = [part.replace("{PATH}", path) for part in argv]
             if command[0] in ("powershell.exe", "pwsh"):
                 command.insert(1, "-NonInteractive")
-            result = subprocess.run(command, stdin=subprocess.DEVNULL, capture_output=True,
-                                    timeout=30, env=environment)
-            self.assertEqual(result.returncode, 0, result.stderr.decode("utf-8", "replace"))
+            # A descendant may retain an output handle after the shell exits.
+            # Use a file for diagnostics so the timeout measures shell exit.
+            with tempfile.TemporaryFile() as stderr:
+                result = subprocess.run(command, stdin=subprocess.DEVNULL,
+                                        stdout=subprocess.DEVNULL, stderr=stderr,
+                                        timeout=30, env=environment)
+                if result.returncode != 0:
+                    stderr.seek(0)
+                    diagnostic = stderr.read(8192).decode("utf-8", "replace")
+                    self.fail(f"Append command exited with status {result.returncode}.\n{diagnostic}")
             with open(path, "rb") as stream:
                 data = stream.read()
             self.assertEqual(data[:len(prefix)], prefix)
@@ -216,7 +223,8 @@ class TestRecoveryDescriptors(unittest.TestCase):
                 def append(argv, **kwargs):
                     self.assertEqual(kwargs.get("stdin"), subprocess.DEVNULL)
                     self.assertEqual(kwargs["timeout"], 30)
-                    self.assertIs(kwargs["capture_output"], True)
+                    self.assertEqual(kwargs.get("stdout"), subprocess.DEVNULL)
+                    self.assertGreaterEqual(kwargs["stderr"].fileno(), 0)
                     self.assertEqual("-NonInteractive" in argv[1:-1], noninteractive)
                     with Path(argv[-1]).open("ab") as stream:
                         stream.write("appended Δ".encode("utf-8"))
