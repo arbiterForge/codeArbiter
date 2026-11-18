@@ -2149,7 +2149,12 @@ try {
                     self.assertEqual(actual["before"]["state"], "running")
                     self.assertEqual(actual["after"]["state"], "running")
                     report = actual["debugger"]
-                    self.assertEqual(report["status"], "captured")
+                    # Keep the existing closed projections from this same capture.
+                    # The job log must distinguish worker transport from SDK cleanup.
+                    self.assertEqual(report["status"], "captured", json.dumps({
+                        "diagnostic": report.get("diagnostic"),
+                        "worker": report.get("worker"),
+                    }, sort_keys=True))
                     self.assertEqual(report["profile"], available_profile)
                     self.assertEqual(set(report["toolHashes"]), set(native.TOOL_FILES[available_profile]))
                     for digest in report["toolHashes"].values():
