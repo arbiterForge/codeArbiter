@@ -4246,7 +4246,7 @@ jobs:
       - name: Observe original statusline isolation children
         id: statusline_isolation_observed
         if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''
-        shell: bash
+        shell: pwsh
         run: >-
           python -B .github/scripts/major_qualification_report.py observe-statusline --repo .
           --source-profile hooks-isolation-statusline-v1
