@@ -44,7 +44,7 @@ def fixture_commands(fixtures_only):
         # Preserve every package case while keeping costly real shutdown proofs
         # in bounded commands. Each partition retains the same 180-second cap.
         *[[python, ".github/scripts/test_pi_package.py", "--platform-partition", partition]
-          for partition in ("package", "rpc-observed", "rpc", "shutdown", "publish")],
+          for partition in ("package", "rpc", "rpc-observed", "shutdown", "publish")],
         # The real-host package fixture owns a Git daemon, temp repository, and
         # external Pi loader. Give it a fresh Vitest process so the platform
         # rerun cannot inherit state from the process-tree fixture files.
@@ -137,7 +137,7 @@ class PlatformContractFixtures(unittest.TestCase):
                 for method in methods:
                     self.assertTrue(any(case.endswith("." + method) for case in partition_ids[partition]), method)
 
-    def test_observed_workload_companions_run_before_raw_rpc_failure_and_aggregate_stops(self):
+    def test_raw_rpc_precedes_observed_companions_and_either_failure_blocks(self):
         name = "platform_observed_order_package_tests"
         spec = importlib.util.spec_from_file_location(name, ROOT / ".github/scripts/test_pi_package.py")
         module = importlib.util.module_from_spec(spec)
@@ -150,51 +150,44 @@ class PlatformContractFixtures(unittest.TestCase):
         with mock.patch.dict(sys.modules, {name: module}):
             spec.loader.exec_module(module)
             for fixtures_only in (True, False):
-                with self.subTest(fixtures_only=fixtures_only):
-                    dispatched, observed = [], []
+                for failed_partition in ("rpc", "rpc-observed"):
+                    with self.subTest(fixtures_only=fixtures_only, failed_partition=failed_partition):
+                        dispatched, observed = [], []
 
-                    def execute(command, **kwargs):
-                        dispatched.append(command)
-                        self.assertEqual(kwargs["timeout"], 180)
-                        if len(command) == 4 and command[2] == "--platform-partition":
-                            partition = command[-1]
-                            if partition == "rpc":
-                                return subprocess.CompletedProcess(command, 7, "", "raw RPC failure")
-                            for case in module.platform_package_suites()[partition]:
-                                if case._testMethodName in companions:
-                                    result = unittest.TestResult()
-                                    case.run(result)
-                                    self.assertTrue(result.wasSuccessful(), result.errors + result.failures)
-                        return subprocess.CompletedProcess(command, 0, "", "")
+                        def execute(command, **kwargs):
+                            dispatched.append(command)
+                            self.assertEqual(kwargs["timeout"], 180)
+                            if len(command) == 4 and command[2] == "--platform-partition":
+                                partition = command[-1]
+                                for case in module.platform_package_suites()[partition]:
+                                    if case._testMethodName in companions:
+                                        result = unittest.TestResult()
+                                        case.run(result)
+                                        self.assertTrue(result.wasSuccessful(), result.errors + result.failures)
+                                if partition == failed_partition:
+                                    return subprocess.CompletedProcess(command, 7, "", "owned partition failure")
+                            return subprocess.CompletedProcess(command, 0, "", "")
 
-                    def observe_original(case, fixture):
-                        self.assertEqual(fixture.__name__, companions[case._testMethodName])
-                        observed.append(case._testMethodName)
+                        def observe_original(case, fixture):
+                            self.assertEqual(fixture.__name__, companions[case._testMethodName])
+                            observed.append(case._testMethodName)
 
-                    with (mock.patch.object(sys.modules[__name__], "resolve_executable",
-                                            return_value=pathlib.Path(sys.executable)),
-                          mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER",
-                                            mock.Mock(is_file=mock.Mock(return_value=True))),
-                          mock.patch.object(module.PiPackageTests, "_observe_original_rpc_fixture_shutdown",
-                                            autospec=True, side_effect=observe_original),
-                          mock.patch.object(subprocess, "run", side_effect=execute),
-                          mock.patch("sys.stdout", new_callable=io.StringIO) as output,
-                          mock.patch("sys.stderr", new_callable=io.StringIO) as errors):
-                        self.assertEqual(run_contract(None, fixtures_only), 7)
-                    self.assertCountEqual(observed, companions,
-                                          "both observed workload wrappers must run before raw RPC failure")
-                    self.assertCountEqual(
-                        [case._testMethodName for case in module.platform_package_suites()["rpc-observed"]],
-                        companions,
-                    )
-                    partitions = [command[-1] for command in dispatched
-                                  if len(command) == 4 and command[2] == "--platform-partition"]
-                    self.assertEqual(partitions, ["package", "rpc-observed", "rpc"])
-                    self.assertEqual(dispatched[-1][-1], "rpc")
-                    report = [json.loads(line) for line in output.getvalue().splitlines()][-1]
-                    self.assertEqual(report["command"], "test_pi_package.py[rpc]")
-                    self.assertEqual(report["result"], "failed")
-                    self.assertIn("raw RPC failure", errors.getvalue())
+                        with (mock.patch.object(sys.modules[__name__], "resolve_executable", return_value=pathlib.Path(sys.executable)),
+                              mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER", mock.Mock(is_file=mock.Mock(return_value=True))),
+                              mock.patch.object(module.PiPackageTests, "_observe_original_rpc_fixture_shutdown", autospec=True, side_effect=observe_original),
+                              mock.patch.object(subprocess, "run", side_effect=execute),
+                              mock.patch("sys.stdout", new_callable=io.StringIO) as output,
+                              mock.patch("sys.stderr", new_callable=io.StringIO) as errors):
+                            self.assertEqual(run_contract(None, fixtures_only), 7)
+                        self.assertCountEqual(observed, [] if failed_partition == "rpc" else companions)
+                        self.assertCountEqual([case._testMethodName for case in module.platform_package_suites()["rpc-observed"]], companions)
+                        partitions = [command[-1] for command in dispatched if len(command) == 4 and command[2] == "--platform-partition"]
+                        self.assertEqual(partitions, ["package", "rpc"] if failed_partition == "rpc" else ["package", "rpc", "rpc-observed"])
+                        self.assertEqual(dispatched[-1][-1], failed_partition)
+                        report = [json.loads(line) for line in output.getvalue().splitlines()][-1]
+                        self.assertEqual(report["command"], "test_pi_package.py[" + failed_partition + "]")
+                        self.assertEqual(report["result"], "failed")
+                        self.assertIn("owned partition failure", errors.getvalue())
 
     def test_partition_failure_and_timeout_stop_the_aggregate_with_bounded_diagnostics(self):
         commands = [[sys.executable, ".github/scripts/test_pi_package.py", "--platform-partition", "shutdown"],

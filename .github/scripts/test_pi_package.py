@@ -958,6 +958,9 @@ export default function registerCaptureProvider(pi: any) {
             except Exception:
                 pass
             raise AssertionError("Pi provider hash helper containment unconfirmed; RPC target not spawned")
+    if _observe_shutdown:
+        # Only the supplemental target opts out; installation and raw cases retain cache behavior.
+        environment["NODE_DISABLE_COMPILE_CACHE"] = "1"
     process = subprocess.Popen(
         command,
         cwd=cwd,
@@ -4035,6 +4038,44 @@ process.stdout.write('ready\n');
             with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(trace)}):
                 self.assertIsNone(retain_rpc_shutdown_failure(trace))
 
+    def test_rpc_compile_cache_opt_out_is_observed_target_only_after_install(self):
+        import _windows_rpc_timeout as native
+        for observed in (False, True):
+            with self.subTest(observed=observed), tempfile.TemporaryDirectory(prefix="ca-rpc-cache-scope-") as directory:
+                root = Path(directory).resolve()
+                agent, home = root / "agent", root / "home"
+                node, cli = "owned-node-stub", root / "owned-cli.js"
+                installation_environments, target_environments = [], []
+                original_environment = dict(os.environ)
+
+                def configure_package(argv, **kwargs):
+                    self.assertEqual(argv, [node, str(cli), "install", str(root), "--no-approve"])
+                    installation_environments.append(dict(kwargs["env"]))
+                    (agent / "settings.json").write_text(json.dumps({"packages": ["owned-fixture"]}), encoding="utf-8")
+                    return subprocess.CompletedProcess(argv, 0, "", "")
+
+                class LaunchBoundaryReached(Exception):
+                    pass
+
+                def launch(_argv, **kwargs):
+                    target_environments.append(dict(kwargs["env"]))
+                    raise LaunchBoundaryReached()
+
+                with (mock.patch.object(sys.modules[__name__], "live_pi_cli", return_value=(node, cli)),
+                      mock.patch.object(subprocess, "run", side_effect=configure_package),
+                      mock.patch.object(subprocess, "Popen", side_effect=launch),
+                      mock.patch.object(native, "preflight_provider", return_value=None),
+                      self.assertRaises(LaunchBoundaryReached)):
+                    run_rpc_commands(root, agent, home, package_source=root, _observe_shutdown=observed)
+                self.assertEqual(len(installation_environments), 1)
+                self.assertEqual(len(target_environments), 1)
+                self.assertNotIn("NODE_DISABLE_COMPILE_CACHE", installation_environments[0])
+                if observed:
+                    self.assertEqual(target_environments[0].get("NODE_DISABLE_COMPILE_CACHE"), "1")
+                else:
+                    self.assertNotIn("NODE_DISABLE_COMPILE_CACHE", target_environments[0])
+                self.assertTrue(dict(os.environ) == original_environment, "RPC target must not mutate parent environment")
+
     def test_rpc_read_context_observer_preserves_raw_provider_route(self):
         with tempfile.TemporaryDirectory(prefix="ca-pi-read-context-observer-") as directory:
             root = Path(directory).resolve()
@@ -5535,7 +5576,7 @@ class NpmPublishContractTest(unittest.TestCase):
                     observed, tag, source, expected_object=expected
                 )
 
-PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc-observed", "rpc", "shutdown", "publish")
+PLATFORM_PACKAGE_PARTITIONS = ("package", "rpc", "rpc-observed", "shutdown", "publish")
 
 
 def platform_package_suites():
