@@ -636,6 +636,38 @@ TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualifi
 
 # Additional finite findings use the same original typed source profiles.
 # Every required assertion must survive selection; this is not installed/task credit.
+# Original Sandbox driver cases for retained component scopes.
+TS_PROFILE_CELLS["sandbox-tools-v1"] |= frozenset((
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
+    "disposition:machines:S53",
+    "disposition:transitions:S48:06",
+    "disposition:transitions:S48:07",
+    "disposition:transitions:S49:01",
+    "disposition:transitions:S49:02",
+    "disposition:transitions:S49:03",
+    "disposition:transitions:S49:04",
+    "disposition:transitions:S49:05",
+    "disposition:transitions:S49:06",
+    "disposition:transitions:S49:07",
+    "disposition:transitions:S49:08",
+    "disposition:transitions:S49:09",
+    "disposition:transitions:S51:05",
+    "disposition:transitions:S52:01",
+    "disposition:transitions:S52:02",
+    "disposition:transitions:S52:03",
+    "disposition:transitions:S52:04",
+    "disposition:transitions:S52:05",
+    "disposition:transitions:S53:01",
+    "disposition:transitions:S53:02",
+    "disposition:transitions:S53:03",
+    "disposition:transitions:S53:04",
+    "disposition:transitions:S53:05",
+    "disposition:transitions:S53:06",
+    "disposition:transitions:S53:07",
+))
+
 TS_FINDING_RECIPES = {
     'disposition:findings:SF01': {"profile": 'pi-tools-v1', "selectors": frozenset((
         'vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect',
@@ -729,7 +761,14 @@ TS_PROFILE_ROOTS["farm-tools-v1"] = "plugins/ca/tools"
 TS_PROFILE_JOBS["farm-tools-v1"] = "[CHECK] | [CA  ] | Farm dispatcher contract"
 TS_PROFILE_PAYLOADS["farm-tools-v1"] = "major-source-inputs-farm-dispatcher"
 TS_PROFILE_UPLOADS["farm-tools-v1"] = "Upload Farm source-test inputs"
-TS_PROFILE_CELLS["farm-tools-v1"] = frozenset()
+TS_PROFILE_CELLS["farm-tools-v1"] = frozenset((
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:01",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:02",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:03",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:04",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:05",
+    "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:06",
+))
 TS_FINDING_RECIPES.update({
     'disposition:findings:SF04': {"profile": "farm-tools-v1", "selectors": frozenset((
         'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields',
@@ -1785,6 +1824,7 @@ Q02_FINDING_RECIPES = {
 # Single-owner finding routes use existing unfiltered commands. Shared source
 # transport grants no multi-owner, whole-task, model or installed-host claim.
 _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
+ '.claude-plugin/marketplace.json',
  'plugins/ca/skills/debug/SKILL.md', 'plugins/ca/skills/debug/references/preparation.md',
  'plugins/ca-codex/routines/debug/SKILL.md', 'plugins/ca-codex/routines/debug/references/preparation.md',
  'plugins/ca-pi/routines/debug/SKILL.md', 'plugins/ca-pi/routines/debug/references/preparation.md',
@@ -2562,6 +2602,116 @@ PYTHON_FINDING_RECIPES = {'disposition:findings:HOOK-F01': {'profile': 'hooks-si
                                                         'python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives'}),
                                 'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; model '
                                          'reasoning quality and whole T01 remain unassessed.'}}
+
+def _hook_contract_recipes(script, observation, cases_by_cell):
+    return {
+        cell: {
+            "profile": "hooks-single-owner-findings-v1",
+            "script": script,
+            "observation": observation,
+            "selectors": frozenset(f"python:{script}:__main__.{case}" for case in cases),
+        }
+        for cell, cases in cases_by_cell.items()
+    }
+
+
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_boundedproc.py", "finite-bounded-reader", {
+        "disposition:findings:C-F08": (
+            "CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+            "CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+            "PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+            "PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+            "PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+            "PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+            "PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+            "PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+        ),
+        "disposition:added_transitions:C36:added-prefetched-completion": (
+            "ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+            "ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+            "PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+        ),
+        "disposition:added_transitions:C36:added-stdin-eof": (
+            "ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+        ),
+        "disposition:added_transitions:C36:added-input-once": (
+            "ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+            "ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+        ),
+        "disposition:added_transitions:C36:added-input-timeout": (
+            "ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+        ),
+        "disposition:added_transitions:C36:added-cleanup-denied": (
+            "PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+        ),
+    },
+))
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_marketplace_git_channels.py", "finite-git-channel", {
+        "disposition:transitions:S73:01": (
+            "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+            "ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+            "ClaudeChannelTests.test_package_without_native_payload_is_refused",
+        ),
+        "disposition:transitions:S73:02": (
+            "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        ),
+        "disposition:transitions:S73:03": (
+            "ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+        ),
+        "disposition:transitions:S73:04": (
+            "ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+        ),
+        "disposition:transitions:S73:05": (
+            "ClaudeChannelTests.test_channel_refuses_to_roll_back",
+        ),
+        "disposition:transitions:S73:06": (
+            "ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+        ),
+        "disposition:transitions:S73:07": (
+            "ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+            "ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+        ),
+        "disposition:transitions:S73:08": (
+            "ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        ),
+        "disposition:transitions:S73:09": (
+            "ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        ),
+        "disposition:transitions:S73:10": (
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+            "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+            "ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+            "ClaudeChannelTests.test_readback_never_pushes",
+        ),
+        "disposition:transitions:S74:03": (
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+            "CodexGitChannelTests.test_git_mode_needs_no_npm_package",
+        ),
+        "disposition:transitions:S74:04": (
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        ),
+        "disposition:transitions:S74:08": (
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+            "CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+        ),
+        "disposition:transitions:S74:09": (
+            "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+            "CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+            "CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+        ),
+        "disposition:findings:SF15": (
+            "ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+            "UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+            "ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+            "CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+            "ClaudeChannelTests.test_readback_never_pushes",
+        ),
+    },
+))
 
 HOOK_F02_CELL = "disposition:findings:HOOK-F02"
 HOOK_F02_COMPONENTS = {'finite-hookf02-modelib': {'script': '.github/scripts/test_modelib.py',

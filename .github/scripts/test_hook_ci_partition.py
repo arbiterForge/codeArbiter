@@ -322,6 +322,26 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                          '}}/single-owner-hook-source-inputs"\n'
                                          '          --output "${{ runner.temp }}/python-finite-cf06-observation.json"\n'
                                          '          -- .github/scripts/test_verdictlib.py\n',
+ 'Observe original bounded verifier-subprocess contract tests': (
+     '      - name: Observe original bounded verifier-subprocess contract tests\n'
+     '        id: bounded_reader_observed\n'
+     "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+     '        shell: bash\n'
+     '        run: >-\n'
+     '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+     '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+     '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+     '          --output "${{ runner.temp }}/python-finite-bounded-reader-observation.json"\n'
+     '          -- .github/scripts/test_boundedproc.py\n'
+ ),
+ 'Observe original Git channel contracts after the release planner': (
+     '      - name: Observe original Git channel contracts after the release planner\n'
+     '        id: git_channel_observed\n'
+     "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+     '        run: |\n'
+     '          python .github/scripts/test_release_target.py\n'
+     '          python -B .github/scripts/major_qualification_report.py observe-python --repo . --source-profile hooks-single-owner-findings-v1 --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs" --output "${{ runner.temp }}/python-finite-git-channel-observation.json" -- .github/scripts/test_marketplace_git_channels.py\n'
+ ),
  'Observe original skill-proof freshness tests': '      - name: Observe original skill-proof freshness tests\n'
                                                  '        id: python_proof_observed\n'
                                                  "        if: matrix.os == 'windows-latest' && matrix.partition == "
@@ -458,6 +478,8 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      "steps.single_hookf01_observed.outcome == 'success' && "
                                                      "steps.single_hookf03_observed.outcome == 'success' && "
                                                      "steps.single_cf06_observed.outcome == 'success' && "
+                                                     "steps.bounded_reader_observed.outcome == 'success' && "
+                                                     "steps.git_channel_observed.outcome == 'success' && "
                                                      "steps.single_tf02_observed.outcome == 'success' && "
                                                      "steps.single_hook_upload.outcome == 'success' }}\n"
                                                      '        shell: bash\n'
@@ -489,6 +511,8 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      '}}/python-finite-hookf03-observation.json" \\\n'
                                                      '            --observation "finite-cf06=${{ runner.temp '
                                                      '}}/python-finite-cf06-observation.json" \\\n'
+                                                     '            --observation "finite-bounded-reader=${{ runner.temp }}/python-finite-bounded-reader-observation.json" \\\n'
+                                                     '            --observation "finite-git-channel=${{ runner.temp }}/python-finite-git-channel-observation.json" \\\n'
                                                      '            --observation "finite-tf02=${{ runner.temp '
                                                      '}}/python-finite-tf02-observation.json" \\\n'
                                                      '            --payload-root '
@@ -589,13 +613,27 @@ def python_source_roles(block: str) -> dict[str,str]:
                        ('Run hosted release-workflow contract tests','test_release_workflow.py'),
                        ('Run mode-plane core contract (ADR-0030)', 'test_modelib.py'),
                        ('Run prompt-seam interceptor contract (ADR-0030)', 'test_prompt_submit.py'),
-                       ('Run typed qualification-outcome contract tests', 'test_verdictlib.py')
+                       ('Run typed qualification-outcome contract tests', 'test_verdictlib.py'),
+                       ('Run bounded verifier-subprocess contract tests', 'test_boundedproc.py')
                        ):
         selected=[step for step in steps if step.startswith('      - name: '+name+'\n')]
         require(len(selected)==1 and command(selected[0])=='python .github/scripts/'+entry
                 and re.findall(r'^        if: (.*)$',selected[0],re.M)==[
                     "(matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')"],
                 'Python source observer must replace one original invocation on its exact cell')
+    require(sum('.github/scripts/test_boundedproc.py' in (command(step) or '') for step in steps) == 2,
+            'bounded reader suite must run once in each original partition')
+    direct_channel = [step for step in steps if step.startswith("      - name: Run per-target release planner and Git channel contracts\n")]
+    require(len(direct_channel) == 1
+            and command(direct_channel[0]) == 'python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py'
+            and re.findall(r'^        if: (.*)$', direct_channel[0], re.M) == ["(matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')"],
+            'Git channel and release planner original commands or partition changed')
+    channel_observer = PYTHON_SOURCE_ROLES['Observe original Git channel contracts after the release planner']
+    require(steps.index(direct_channel[0]) + 1 == steps.index(channel_observer),
+            'Git channel observer must replace its original Windows command in place')
+    for entry in ('test_release_target.py', 'test_marketplace_git_channels.py'):
+        require(sum('.github/scripts/' + entry in (command(step) or '') for step in steps) == 2,
+                'Git channel and release planner must run once in each original partition')
     return {name:found[name][0] for name in PYTHON_SOURCE_ROLES}
 
 
@@ -821,6 +859,8 @@ def validate(
                                                'python .github/scripts/test_release_workflow.py',
                                                'python .github/scripts/test_prompt_submit.py',
                                                'python .github/scripts/test_verdictlib.py',
+                                               'python .github/scripts/test_boundedproc.py',
+                                               'python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py',
                                                'python .github/scripts/test_modelib.py')
         if not observed_original:
             require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
@@ -1247,7 +1287,7 @@ class SingleOwnerFindingWorkflowTests(unittest.TestCase):
         text=self.current();hooks=job_block(text,'hooks');impact=job_block(text,'ci-impact')
         validate(text);hroles=python_source_roles(hooks);iroles=impact_source_roles(impact)
         self.assertTrue(iroles)
-        for script in ('test_prompt_submit.py','test_verdictlib.py'):
+        for script in ('test_prompt_submit.py','test_verdictlib.py','test_boundedproc.py'):
             original='python .github/scripts/'+script
             self.assertEqual(sum(command(s)==original for s in step_blocks(hooks)),1)
             self.assertEqual(sum(bool(command(s) and command(s).endswith('-- .github/scripts/'+script)) for s in step_blocks(hooks)),1)
@@ -1279,6 +1319,17 @@ class SingleOwnerFindingWorkflowTests(unittest.TestCase):
             self.assertIn(literal,text)
             with self.subTest(path=path),self.assertRaises(AssertionError):selected(text.replace(literal,'',1))
 
+    def test_git_channel_source_inputs_select_the_existing_hook_job(self):
+        workflow = self.current()
+        hooks = workflow.split('            hooks:\n', 1)[1].split('            impact:\n', 1)[0]
+        sources = {
+            '.claude-plugin/marketplace.json', 'tools/build-host-packages.py', 'tools/host_descriptors.py',
+            'tools/install-artifact-payload.py', 'tools/owned_output.py',
+        }
+        self.assertTrue(sources <= set(re.findall(r"^              - '([^']+)'$", hooks, re.M)))
+        push = workflow.split('  push:\n', 1)[1].split('\njobs:', 1)[0]
+        self.assertIn('      - "tools/owned_output.py"\n', push)
+
     def test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape(self):
         text=self.current();impact=job_block(text,'ci-impact')
         predicate=next(iter(reviewed_impact_source_event_guards(impact)))
@@ -1299,11 +1350,16 @@ class SingleOwnerFindingWorkflowTests(unittest.TestCase):
         hooks=job_block(text,'hooks')
         names=('Prepare single-owner hook source-test inputs','Observe original persona transition tests',
                'Observe original scoped Pi payload identity tests','Observe original typed verdict tests',
+               'Observe original bounded verifier-subprocess contract tests',
+               'Observe original Git channel contracts after the release planner',
                'Observe original measurement contract tests','Upload single-owner hook source-test inputs')
         for name in names:
             role=PYTHON_SOURCE_ROLES[name]
             for replacement in ('',role+role,role.replace("matrix.os == 'windows-latest'","matrix.os != 'windows-latest'",1)):
                 with self.subTest(role=name),self.assertRaises(ValueError):python_source_roles(hooks.replace(role,replacement,1))
+        with self.assertRaisesRegex(ValueError, 'bounded reader suite must run once'):
+            python_source_roles(hooks + '      - name: Extra bounded verifier run\n'
+                                '        run: python .github/scripts/test_boundedproc.py\n')
 
 
 class HookF02CompositionWorkflowTests(unittest.TestCase):

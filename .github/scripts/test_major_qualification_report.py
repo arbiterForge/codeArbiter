@@ -2749,8 +2749,11 @@ class SandboxOwnedEffectsRoutingTests(unittest.TestCase):
 
     def test_canonical_three_cells_require_complete_guard_and_real_effect_unions(self):
         groups = self._groups()
-        self.assertEqual(owner.TS_PROFILE_CELLS["sandbox-tools-v1"],
-                         frozenset(self.EXPECTED) | {"disposition:transitions:S54:01"})
+        configured = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        cells = {cell for group in configured if group["job"] == self.JOB
+                 for cell in group["cells"] if cell not in owner.TS_FINDING_RECIPES}
+        self.assertEqual(owner.TS_PROFILE_CELLS["sandbox-tools-v1"], cells)
+        self.assertLessEqual(frozenset(self.EXPECTED) | {"disposition:transitions:S54:01"}, cells)
         self.assertEqual(owner.TS_PROFILE_CELLS["pi-tools-v1"], frozenset(
             "disposition:transitions:pi-qualification:disposable-home:" + number
             for number in ("01", "02", "03")))
@@ -4196,6 +4199,248 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                                 'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; '
                                          'model reasoning quality and whole T01 remain unassessed.'}}
 
+    EXPECTED.update({
+        'disposition:findings:C-F08': {
+            'id': 'finite-c-f08',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment',
+                'python:.github/scripts/test_boundedproc.py:__main__.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied',
+            ],
+            'scope': 'Controlled subprocess watchdog outcomes for Codex host commands and the Pi benchmark.',
+        },
+        'disposition:added_transitions:C36:added-prefetched-completion': {
+            'id': 'finite-added-prefetched-completion',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write',
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty',
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes',
+            ],
+            'scope': 'Owned stdout keeps prefetched completion and observes actual early EOF.',
+        },
+        'disposition:added_transitions:C36:added-stdin-eof': {
+            'id': 'finite-added-stdin-eof',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness',
+            ],
+            'scope': 'Communicate without input closes the owned child stdin and receives completion.',
+        },
+        'disposition:added_transitions:C36:added-input-once': {
+            'id': 'finite-added-input-once',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness',
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once',
+            ],
+            'scope': 'Owned child receives exact text and binary input once across a timed-out write.',
+        },
+        'disposition:added_transitions:C36:added-input-timeout': {
+            'id': 'finite-added-input-timeout',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer',
+            ],
+            'scope': 'Unread stdin stays bounded and owned cleanup settles the writer.',
+        },
+        'disposition:added_transitions:C36:added-cleanup-denied': {
+            'id': 'finite-added-cleanup-denied',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_boundedproc.py',
+            'observation': 'finite-bounded-reader',
+            'selectors': [
+                'python:.github/scripts/test_boundedproc.py:__main__.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied',
+            ],
+            'scope': 'An injected group-signal denial retains the actual child readiness failure.',
+        },
+    })
+
+    EXPECTED.update({
+        'disposition:transitions:S73:01': {
+            'id': 'finite-channel-s73-01',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_version_must_match_the_qualified_manifest',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_package_without_native_payload_is_refused',
+            ],
+            'scope': 'Fixture archive/version/payload admission produces actual deterministic local Git distribution/channel refs; qualified binary contents are synthetic fixture bytes, not real engine qualification.',
+        },
+        'disposition:transitions:S73:02': {
+            'id': 'finite-channel-s73-02',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path',
+            ],
+            'scope': 'Absent immutable ref is created and exact remote tag equals returned distribution commit.',
+        },
+        'disposition:transitions:S73:03': {
+            'id': 'finite-channel-s73-03',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op',
+            ],
+            'scope': 'Repeated same input observes existing distribution and reuses channel commit without duplicate promotion.',
+        },
+        'disposition:transitions:S73:04': {
+            'id': 'finite-channel-s73-04',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused',
+            ],
+            'scope': 'Existing same-version identity refuses changed archive bytes.',
+        },
+        'disposition:transitions:S73:05': {
+            'id': 'finite-channel-s73-05',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_refuses_to_roll_back',
+            ],
+            'scope': 'Older version refuses before moving local remote channel.',
+        },
+        'disposition:transitions:S73:06': {
+            'id': 'finite-channel-s73-06',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op',
+            ],
+            'scope': 'Same tree reuses current marketplace commit and previous commit identity.',
+        },
+        'disposition:transitions:S73:07': {
+            'id': 'finite-channel-s73-07',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance',
+            ],
+            'scope': 'Changed tree advances descendant; unreadable current version now refuses with channel unchanged.',
+        },
+        'disposition:transitions:S73:08': {
+            'id': 'finite-channel-s73-08',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+            ],
+            'scope': 'Tag publication/readback uses expected deterministic commit; response-loss path attempts immutable push once.',
+        },
+        'disposition:transitions:S73:09': {
+            'id': 'finite-channel-s73-09',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_newer_version_advances_as_a_descendant',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+            ],
+            'scope': 'Channel update goes through current lease/readback helper, advances descendant, and response-loss observation does not repush.',
+        },
+        'disposition:transitions:S73:10': {
+            'id': 'finite-channel-s73-10',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes',
+            ],
+            'scope': 'Uncertain push may succeed only by exact observed remote identity; unknown/conflict refuses after one attempt; explicit recovery reads history without pushing.',
+        },
+        'disposition:transitions:S74:03': {
+            'id': 'finite-channel-s74-03',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_git_mode_needs_no_npm_package',
+            ],
+            'scope': 'Codex first call creates immutable tag, second channel promotion names that exact tag/commit without acquiring npm.',
+        },
+        'disposition:transitions:S74:04': {
+            'id': 'finite-channel-s74-04',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+            ],
+            'scope': 'Actual successful channel advance uses independently precreated immutable distribution tag; missing-tag/expected-head adversarial branches not independently claimed.',
+        },
+        'disposition:transitions:S74:08': {
+            'id': 'finite-channel-s74-08',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release',
+            ],
+            'scope': 'Actual local leased channel updates name immutable source and preserve recoverable prior distribution ancestry.',
+        },
+        'disposition:transitions:S74:09': {
+            'id': 'finite-channel-s74-09',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted',
+            ],
+            'scope': 'Shared exact push/readback helper refuses conflicting/unobservable remote without retry; Codex recovery reads old completed promotion and rejects an unpromoted tag.',
+        },
+        'disposition:findings:SF15': {
+            'id': 'finite-channel-sf15',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_marketplace_git_channels.py',
+            'observation': 'finite-git-channel',
+            'selectors': [
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag',
+                'python:.github/scripts/test_marketplace_git_channels.py:__main__.ClaudeChannelTests.test_readback_never_pushes',
+            ],
+            'scope': 'Preserve intentional Claude tag+channel vs Codex preexisting-tag channel protocol; uncertain responses cannot authorize blind mutation retries; unknown current Claude version refuses.',
+        },
+    })
+
     def test_a_six_existing_single_owner_findings_have_closed_original_profiles(self):
         expected_jobs = {
             "hooks-single-owner-findings-v1": "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
@@ -4229,7 +4474,7 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                   'tests':[{'id':x,'result':'passed'} for x in recipe['selectors']],
                   'source_input_binding':{'format':owner.SOURCE_BINDING,'profile':recipe['profile'],
                      'payload_name':spec['payload'],'manifest_sha256':'e'*64}}
-        group={'id':recipe['observation'],'job':spec['job'],'payload_name':spec['payload'],
+        group={'id':recipe.get('id', recipe['observation']),'job':spec['job'],'payload_name':spec['payload'],
                'observation':recipe['observation'],'proof_kind':'source-test','cells':[cell],
                'selectors':list(recipe['selectors']),'scope':recipe['scope']}
         def build(o=observed,g=group,r=req,p=payload,job=spec['job']):
@@ -4252,6 +4497,38 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 actual,=[g for g in selections['groups'] if g['cells']==[cell]]
                 self.assertEqual(actual,group)
                 self.assertEqual(policy['cell_job_bindings'][cell],spec['job'])
+
+    def test_bounded_reader_cells_share_one_original_capture(self):
+        self.assert_shared_original_capture("finite-bounded-reader", 6, 14)
+
+    def test_git_channel_cells_share_one_original_capture(self):
+        spec = owner.source_profile("hooks-single-owner-findings-v1")
+        self.assertIn(".claude-plugin/marketplace.json", spec["paths"])
+        self.assert_shared_original_capture("finite-git-channel", 15, 16)
+
+    def assert_shared_original_capture(self, key, cell_count, selector_count):
+        cells = [cell for cell, recipe in self.EXPECTED.items() if recipe["observation"] == key]
+        fixtures = [self.fixture(cell) for cell in cells]
+        _, spec, req, payload, observed, _, _ = fixtures[0]
+        groups = [fixture[5] for fixture in fixtures]
+        req.update(cells=cells, cell_jobs=dict.fromkeys(cells, spec["job"]))
+        selectors = {selector for group in groups for selector in group["selectors"]}
+        self.assertEqual(len(cells), cell_count)
+        self.assertEqual(len(selectors), selector_count)
+        observed["tests"] = [{"id": selector, "result": "passed"} for selector in sorted(selectors)]
+
+        def build():
+            return owner.build_report(req, job_name=spec["job"], job_id=9,
+                selections={"schema": owner.SELECTIONS, "groups": groups},
+                observations={key: observed}, payloads={spec["payload"]: payload})
+
+        report = build()
+        self.assertEqual(len(report["payloads"]), 1)
+        self.assertEqual({row["cell"]: row["executed_population"] for row in report["results"]},
+                         {group["cells"][0]: len(group["selectors"]) for group in groups})
+        observed["tests"].pop()
+        with self.assertRaisesRegex(ValueError, "selected named test missing"):
+            build()
 
     def test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory(self):
         for cell in self.EXPECTED:
@@ -4617,7 +4894,7 @@ class HookF02CompleteCompositionTests(unittest.TestCase):
         selected=[g for g in actual['groups'] if self.CELL in g['cells']]
         self.assertEqual(selected,groups)
         self.assertEqual(owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')['cell_job_bindings'][self.CELL],spec['job'])
-        self.assertEqual(len(owner.PYTHON_FINDING_RECIPES),6)
+        self.assertEqual(set(owner.PYTHON_FINDING_RECIPES), set(SingleOwnerPythonFindingProfileTests.EXPECTED))
         self.assertTrue({'.github/scripts/test_modelib.py','.github/scripts/test_prompt_submit.py','core/pysrc/_modelib.py','core/pysrc/prompt-submit.py'}<=spec['paths'])
 
 if __name__ == "__main__":
