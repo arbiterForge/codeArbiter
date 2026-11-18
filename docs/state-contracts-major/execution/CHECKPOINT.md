@@ -1,5 +1,13 @@
 # State-contract program checkpoint
 
+## November 17 hosted follow-up
+
+The original Docs, Farm, Sandbox and Pi tool audits accepted only the approved picomatch advisory. The three plain tool production audits reported zero vulnerabilities. Windows Pi RPC and shutdown passed, as did Windows Hook isolation and Linux and macOS Hook checks. [Child CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44215833586) · [Docs CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44215833774)
+
+Three separate failures have local repairs. The Docs coverage test now checks both execution paths followed by the rendered verification. Windows Recovery passed its original suites and observations, then the uploader refused parent-directory segments. The upload now resolves the original directory and requires the two exact files. Linux locked debug capture now runs before the three nested compatibility checkouts. All ten compatibility steps retain their commands and order. The clean-source guard still rejects nested checkout dirt.
+
+The 120 affected source bindings were refreshed. All 1,739 source records verify locally. The successor requires fresh hosted CI and Docs before the child can merge. #1098 remains draft for user testing.
+
 ## November 17 scoped audit approval
 
 Brennon approved GHSA-fc5q-39xc-vjpf at high severity through November 24, 2026 for four exact lockfiles. The shared checker verified current npm reports for the Docs graph and all three plugin build and test toolchains. The three plain npm tool production audits passed independently. The approval expires automatically and a changed lockfile fails the gate. [GitHub advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
