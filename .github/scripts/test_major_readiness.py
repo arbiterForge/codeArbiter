@@ -1720,9 +1720,18 @@ class HostedRawAuthenticationCacheTest(unittest.TestCase):
                 "inputs":{"owner.py":owner.digest(b"original owner")},"commands":[{"argv":["actual-original-check"],"exit_code":0}],
                 "disposition_ids":["disposition:transitions:fixture"]}
         def api(path):
-            if path=="actions/runs/7":return {"head_sha":source,"event":"push","repository":{"full_name":owner.REPOSITORY},"path":".github/workflows/docs.yml","head_branch":"major/state-contracts","conclusion":"success"}
-            if path.startswith("actions/jobs/"):return {"run_id":7,"conclusion":"success" if path.endswith("/9") else "failure"}
-            if path=="actions/artifacts/10":return {"id":10}
+            if path == "actions/runs/7/attempts/1":
+                return {"id": 7, "run_attempt": 1, "head_sha": source, "event": "push",
+                        "repository": {"full_name": owner.REPOSITORY}, "path": ".github/workflows/docs.yml",
+                        "head_branch": "major/state-contracts", "status": "completed", "conclusion": "success",
+                        "run_started_at": "2026-11-17T08:22:06Z"}
+            if path.startswith("actions/jobs/"):
+                job_id = int(path.rsplit("/", 1)[1])
+                return {"id": job_id, "run_id": 7, "head_sha": source, "run_attempt": 1,
+                        "status": "completed", "started_at": "2026-11-17T08:22:08Z",
+                        "conclusion": "success" if job_id == 9 else "failure"}
+            if path == "actions/artifacts/10":
+                return {"id": 10, "created_at": "2026-11-17T08:31:53Z"}
             raise AssertionError("unexpected API route")
         def call(name,rec,cache):
             blob=json.dumps(rec).encode()
@@ -1745,6 +1754,92 @@ class HostedRawAuthenticationCacheTest(unittest.TestCase):
             for name,rec in [("wrong-source.json",record(commit="b"*40)),("wrong-job.json",record(job=8)),("wrong-digest1.json",record(digest="0"*64)),("wrong-digest2.json",record(digest="0"*64))]:
                 with self.subTest(name=name),self.assertRaises(owner.ReadinessError):call(name,rec,cache)
             self.assertEqual(fetch.call_count,3,"failed digest authentication must not be cached")
+
+    def test_newer_retry_cannot_relabel_the_original_jobs_failed_run_attempt(self):
+        raw, record, api, call = self.fixture()
+        def observe(path):
+            if path == "actions/runs/7":
+                return dict(api("actions/runs/7/attempts/1"), run_attempt=2)
+            if path == "actions/runs/7/attempts/1":
+                return dict(api(path), conclusion="failure")
+            return api(path)
+        with (mock.patch.object(owner, "command", return_value=b""),
+              mock.patch.object(owner, "api", side_effect=observe) as routes,
+              mock.patch.object(owner, "artifact_bytes", return_value=raw) as fetch):
+            with self.assertRaisesRegex(owner.ReadinessError, "original hosted run attempt"):
+                call("failed-attempt.json", record(), {})
+        self.assertEqual([entry.args[0] for entry in routes.call_args_list],
+                         ["actions/jobs/9", "actions/runs/7/attempts/1"])
+        fetch.assert_not_called()
+
+    def test_exact_attempt_job_and_artifact_shapes_must_be_bound(self):
+        raw, record, api, call = self.fixture()
+        for endpoint, alteration in (
+            ("actions/jobs/9", {"run_attempt": True}),
+            ("actions/jobs/9", {"id": 8}),
+            ("actions/runs/7/attempts/1", {"run_attempt": 2}),
+            ("actions/runs/7/attempts/1", {"run_attempt": True}),
+            ("actions/artifacts/10", {"id": 11}),
+        ):
+            with self.subTest(endpoint=endpoint, alteration=alteration):
+                def observe(path):
+                    observed = api(path)
+                    return dict(observed, **alteration) if path == endpoint else observed
+                with (mock.patch.object(owner, "command", return_value=b""),
+                      mock.patch.object(owner, "api", side_effect=observe),
+                      mock.patch.object(owner, "artifact_bytes", return_value=raw) as fetch):
+                    with self.assertRaises(owner.ReadinessError):
+                        call("proof.json", record(), {})
+                fetch.assert_not_called()
+
+    def test_mirrored_retry_job_cannot_borrow_original_jobs_timestamps_or_archive(self):
+        raw, record, api, call = self.fixture()
+        for start, message in (
+            ("2026-11-17T08:22:08Z", "job predates"),
+            ("2026-11-17T10:36:05Z", "artifact predates"),
+        ):
+            with self.subTest(start=start):
+                def observe(path):
+                    if path == "actions/jobs/9":
+                        return dict(api(path), run_attempt=2, started_at=start)
+                    if path == "actions/runs/7/attempts/2":
+                        return dict(api("actions/runs/7/attempts/1"), run_attempt=2,
+                                    run_started_at="2026-11-17T10:36:04Z")
+                    return api(path)
+                with (mock.patch.object(owner, "command", return_value=b""),
+                      mock.patch.object(owner, "api", side_effect=observe),
+                      mock.patch.object(owner, "artifact_bytes", return_value=raw) as fetch):
+                    with self.assertRaisesRegex(owner.ReadinessError, message):
+                        call("mirrored-job.json", record(), {})
+                fetch.assert_not_called()
+
+    def test_declared_attempt_cannot_override_the_original_job_or_reuse_cached_proof(self):
+        raw, record, api, call = self.fixture()
+        valid = record()
+        valid["raw_evidence"][0]["run_attempt"] = 1
+        changed = record()
+        changed["raw_evidence"][0]["run_attempt"] = 2
+        cache = {}
+        with (mock.patch.object(owner, "command", return_value=b""),
+              mock.patch.object(owner, "api", side_effect=api),
+              mock.patch.object(owner, "artifact_bytes", return_value=raw) as fetch):
+            call("valid.json", valid, cache)
+            with self.assertRaisesRegex(owner.ReadinessError, "recorded hosted run attempt differs"):
+                call("wrong-attempt.json", changed, cache)
+            changed["raw_evidence"][0]["run_attempt"] = True
+            with self.assertRaisesRegex(owner.ReadinessError, "invalid recorded hosted run attempt"):
+                call("wrong-attempt-type.json", changed, cache)
+        fetch.assert_called_once()
+
+    def test_hosted_transport_refusal_reports_only_operation_and_unique_http_status(self):
+        process = mock.Mock(returncode=1)
+        process.communicate.return_value = (b"", b"gh: private URL fixture (HTTP 503)")
+        with mock.patch.object(owner, "start", return_value=process):
+            with self.assertRaises(owner.ReadinessError) as caught:
+                owner.api("actions/artifacts/10/zip", binary=True)
+        self.assertEqual(caught.exception.github_read_observation,
+                         {"operation": "artifact-download", "http_status": 503})
+        self.assertNotIn("private URL", str(caught.exception))
 
 
 class UploadLogDiagnosticTest(unittest.TestCase):

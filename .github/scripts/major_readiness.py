@@ -37,6 +37,12 @@ LEDGER_ROUTING_GROUPS = ("findings", "machines", "transitions", "added_transitio
 LEDGER_ROUTING_CELLS = frozenset(f"disposition:findings:{finding}" for finding in ("C-F02", "C-F04", "C-F05", "C-F07"))
 SHA = re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
+RECORDED_API_OPERATIONS = (
+    ('run-attempt', r'actions/runs/[1-9][0-9]*/attempts/[1-9][0-9]*'),
+    ('job', r'actions/jobs/[1-9][0-9]*'),
+    ('artifact-metadata', r'actions/artifacts/[1-9][0-9]*'),
+    ('artifact-download', r'actions/artifacts/[1-9][0-9]*/zip'),
+)
 MAX_ARCHIVE = 256 * 1024 * 1024
 UPLOAD_ACTION = 'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9'
 SOURCE_INPUT_PAYLOAD = 'major-source-inputs-hooks-windows-contracts'
@@ -169,8 +175,19 @@ def command(argv, cwd=None, *, local_adr=False):
         raise ReadinessError("readiness observation timed out; containment=" + containment) from None
     if process.returncode != 0:
         error = ReadinessError("readiness observation failed: " + argv[0])
-        # Retain only fixed, bounded facts for this authenticated API operation.
-        # CLI stderr can contain a signed URL or other private response text.
+        # Emit operation and status only. The CLI diagnostic can contain signed URLs.
+        if len(argv) == 3 and argv[:2] == ["gh", "api"] and isinstance(argv[2], str):
+            prefix = "repos/" + REPOSITORY + "/"
+            action = argv[2].removeprefix(prefix) if argv[2].startswith(prefix) else ""
+            for operation, pattern in RECORDED_API_OPERATIONS:
+                if re.fullmatch(pattern, action):
+                    statuses = set(re.findall(rb"\(HTTP ([45][0-9]{2})\)", stderr[:65536]))
+                    error.github_read_observation = {
+                        "operation": operation,
+                        "http_status": int(next(iter(statuses))) if len(statuses) == 1 else None,
+                    }
+                    break
+        # Preserve the separate closed diagnostic contract for upload log reads.
         if (len(argv) == 3 and argv[:2] == ["gh", "api"]
                 and isinstance(argv[2], str)
                 and re.fullmatch(r"repos/" + re.escape(REPOSITORY)
@@ -554,6 +571,17 @@ def disposition_input_applicability(repo, source, record, load, cache):
     return changed, unavailable
 
 
+def _hosted_observation_time(record, field):
+    value = record.get(field)
+    require(isinstance(value, str), 'original hosted evidence has no timestamp')
+    try:
+        moment = datetime.fromisoformat(value)
+    except ValueError as error:
+        raise ReadinessError('original hosted evidence has a malformed timestamp') from error
+    require(moment.tzinfo is not None, 'original hosted evidence timestamp has no time zone')
+    return moment
+
+
 def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, cache):
     """Authenticate recorded proof at its original identities.
 
@@ -600,7 +628,7 @@ def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, c
                     'disposition proof lacks original raw evidence')
             for proof in raw:
                 require('path' not in proof or not any(
-                    key in proof for key in ('run_id', 'job_id', 'artifact_id')),
+                    key in proof for key in ('run_id', 'job_id', 'artifact_id', 'run_attempt')),
                     'mixed original raw evidence origin')
             require(isinstance(record.get('disposition_ids'), list) and record['disposition_ids']
                     and len(set(record['disposition_ids'])) == len(record['disposition_ids']),
@@ -619,17 +647,43 @@ def authenticate_recorded_disposition(repo, candidate, cell, row, paths, load, c
                     expected_digest = proof.get("sha256")
                     require(isinstance(expected_digest, str) and DIGEST.fullmatch(expected_digest),
                             "invalid original hosted evidence digest")
-                    raw_key = ("authenticated-hosted-raw", tested, run_id, job_id, artifact_id, expected_digest)
+                    declared_attempt = proof.get('run_attempt')
+                    require('run_attempt' not in proof or type(declared_attempt) is int and 0 < declared_attempt <= 9999,
+                            'invalid recorded hosted run attempt')
+                    raw_key = ('authenticated-hosted-raw', tested, run_id, job_id, artifact_id,
+                               expected_digest, declared_attempt)
                     if raw_key not in cache:
-                        run, job = api(f'actions/runs/{run_id}'), api(f'actions/jobs/{job_id}')
-                        require(run.get('head_sha') == tested and run.get('event') == 'push'
-                                and run.get('repository', {}).get('full_name') == REPOSITORY
-                                and run.get('path') in ('.github/workflows/ci.yml', '.github/workflows/docs.yml')
-                                and run.get('head_branch') in ('main', 'major/state-contracts')
-                                and run.get('conclusion') == 'success'
-                                and job.get('run_id') == run_id and job.get('conclusion') == 'success',
-                                'original hosted evidence is unavailable or not applicable')
+                        job = api(f'actions/jobs/{job_id}')
+                        attempt = job.get('run_attempt')
+                        require(job.get('id') == job_id and job.get('run_id') == run_id
+                                and job.get('head_sha') == tested and job.get('status') == 'completed'
+                                and job.get('conclusion') == 'success'
+                                and type(attempt) is int and 0 < attempt <= 9999,
+                                'original hosted job is unavailable or does not bind its run attempt')
+                        require(declared_attempt is None or declared_attempt == attempt,
+                                'recorded hosted run attempt differs from its job')
+                        attempt_key = ('authenticated-hosted-attempt', tested, run_id, attempt)
+                        if attempt_key not in cache:
+                            run = api(f'actions/runs/{run_id}/attempts/{attempt}')
+                            require(run.get('id') == run_id and type(run.get('run_attempt')) is int
+                                    and run['run_attempt'] == attempt
+                                    and run.get('head_sha') == tested and run.get('event') == 'push'
+                                    and run.get('repository', {}).get('full_name') == REPOSITORY
+                                    and run.get('path') in ('.github/workflows/ci.yml', '.github/workflows/docs.yml')
+                                    and run.get('head_branch') in ('main', 'major/state-contracts')
+                                    and run.get('status') == 'completed' and run.get('conclusion') == 'success',
+                                    'original hosted run attempt is unavailable or did not succeed')
+                            cache[attempt_key] = _hosted_observation_time(run, 'run_started_at')
+                        # GitHub can expose a copied job from an earlier attempt
+                        # under a new job ID. Its original timestamps still
+                        # predate the later attempt and cannot prove a new run.
+                        attempt_started = cache[attempt_key]
+                        require(_hosted_observation_time(job, 'started_at') >= attempt_started,
+                                'original hosted job predates its claimed run attempt')
                         metadata = api(f'actions/artifacts/{artifact_id}')
+                        require(metadata.get('id') == artifact_id, 'original hosted artifact identity differs')
+                        require(_hosted_observation_time(metadata, 'created_at') >= attempt_started,
+                                'original hosted artifact predates its claimed run attempt')
                         expected = {'source_commit': tested, 'ci_run_id': run_id}
                         content = artifact_bytes(metadata, expected)
                         require(digest(content) == proof.get('sha256'), 'original hosted evidence digest differs')

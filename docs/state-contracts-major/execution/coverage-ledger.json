@@ -46642,10 +46642,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
-     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/bookmark-hosted-tested.json",
+     "sha256": "eb32cd653c0f62fbf72550535593cbe55feee206f2de666c1af4a21b238c94d7"
     }
    ],
    "evidence_history": [
@@ -46654,6 +46654,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
     }
    ]
   },
@@ -46666,10 +46672,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
-     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/bookmark-hosted-tested.json",
+     "sha256": "eb32cd653c0f62fbf72550535593cbe55feee206f2de666c1af4a21b238c94d7"
     }
    ],
    "evidence_history": [
@@ -46678,6 +46684,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
     }
    ]
   },
@@ -46706,10 +46718,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
-     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/bookmark-hosted-tested.json",
+     "sha256": "eb32cd653c0f62fbf72550535593cbe55feee206f2de666c1af4a21b238c94d7"
     }
    ],
    "evidence_history": [
@@ -46718,6 +46730,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
     }
    ]
   },
@@ -46730,10 +46748,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
-     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/bookmark-hosted-tested.json",
+     "sha256": "eb32cd653c0f62fbf72550535593cbe55feee206f2de666c1af4a21b238c94d7"
     }
    ],
    "evidence_history": [
@@ -46742,6 +46760,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
     }
    ]
   },
@@ -46754,10 +46778,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
-     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/bookmark-hosted-tested.json",
+     "sha256": "eb32cd653c0f62fbf72550535593cbe55feee206f2de666c1af4a21b238c94d7"
     }
    ],
    "evidence_history": [
@@ -46766,6 +46790,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/bookmark-hosted-tested.json",
      "sha256": "fe8c4f5a0b71fd5daa4579fe943c372a27e6c4736c0580da732f77129cf6e148"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/bookmark-hosted-tested.json",
+     "sha256": "b42d71987a52df2020c5b333998f77d0d6a175ab4fa34eea6b1fbabf1cad83dd"
     }
    ]
   },
@@ -46929,10 +46959,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
-     "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/directory-hosted-tested.json",
+     "sha256": "e37dbc0e12b638439a0496b78b584b681a953e312cb1c94f357d5cd9a79e6598"
     }
    ],
    "evidence_history": [
@@ -46941,6 +46971,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/directory-hosted-tested.json",
      "sha256": "883539ae821b49d48ebb4b069db165d61c696d2981ee1b8f3272b73466393762"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
+     "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6"
     }
    ]
   },
@@ -46953,10 +46989,10 @@
    "status": "TESTED",
    "evidence": [
     {
-     "kind": "test",
-     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
-     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
-     "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6"
+     "kind": "hosted-run",
+     "commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-hosted-5d9f62dc/directory-hosted-tested.json",
+     "sha256": "e37dbc0e12b638439a0496b78b584b681a953e312cb1c94f357d5cd9a79e6598"
     }
    ],
    "evidence_history": [
@@ -46965,6 +47001,12 @@
      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/directory-hosted-tested.json",
      "sha256": "883539ae821b49d48ebb4b069db165d61c696d2981ee1b8f3272b73466393762"
+    },
+    {
+     "kind": "test",
+     "commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-d482-docs/directory-hosted-tested.json",
+     "sha256": "60c33139a48230fdc75fd211758e7793d3db0d8f10a4187e430cd4beb7b6d2a6"
     }
    ]
   },

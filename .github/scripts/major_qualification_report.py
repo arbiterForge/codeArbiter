@@ -638,6 +638,10 @@ TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualifi
 # Every required assertion must survive selection; this is not installed/task credit.
 # Original Sandbox driver cases for retained component scopes.
 TS_PROFILE_CELLS["sandbox-tools-v1"] |= frozenset((
+    "disposition:added_transitions:SBX-CACHE-CANCELLATION:01",
+    "disposition:transitions:S47:02",
+    "disposition:transitions:S47:06",
+    "disposition:transitions:S47:07",
     "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
     "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
     "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
@@ -2655,6 +2659,32 @@ def _hook_contract_recipes(script, observation, cases_by_cell):
         for cell, cases in cases_by_cell.items()
     }
 
+
+_MEASUREMENT_VERDICT_CASES = (
+    "MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+    "MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+    "MeasurementContracts.test_empty_statusline_reports_cannot_pass",
+)
+_ILLUSTRATION_FAILURE_CASES = (
+    "MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+    "MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+    "MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image",
+)
+
+# These rows share the complete verdict or illustration vector from the original
+# measurement-contract suite, captured by the existing finite-tf02 observation.
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    "tools/test_measurement_contracts.py", "finite-tf02", {
+        "disposition:added_transitions:T11:added-browser-failure-cleanup": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:added_transitions:T11:added-render-failure-cleanup": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:added_transitions:T11:added-renderer-refused": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:findings:T-F01": _MEASUREMENT_VERDICT_CASES,
+        "disposition:findings:T-F04": _ILLUSTRATION_FAILURE_CASES,
+        "disposition:transitions:T08:05": _MEASUREMENT_VERDICT_CASES,
+        "disposition:transitions:T10:07": _MEASUREMENT_VERDICT_CASES,
+        "disposition:transitions:T10:08": _MEASUREMENT_VERDICT_CASES,
+    },
+))
 
 PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
     ".github/scripts/test_boundedproc.py", "finite-bounded-reader", {

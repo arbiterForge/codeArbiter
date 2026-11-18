@@ -686,6 +686,109 @@
       "scope": "Complete finite built drawer guard/effect/retry assertions for disposition:transitions:S62:05; source/browser software only, no installed, task, human, model, publication or live public readback claim."
     },
     {
+      "id": "docs-built-s56-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "cells": [
+        "disposition:transitions:S56:01"
+      ],
+      "scope": "Original built Pages browser assertions for S56:01."
+    },
+    {
+      "id": "docs-built-s56-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+      ],
+      "cells": [
+        "disposition:transitions:S56:02"
+      ],
+      "scope": "Original built Pages browser assertions for S56:02."
+    },
+    {
+      "id": "docs-built-s56-04",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:denied storage retains the full lesson and an actionable explanation"
+      ],
+      "cells": [
+        "disposition:transitions:S56:04"
+      ],
+      "scope": "Original built Pages browser assertions for S56:04."
+    },
+    {
+      "id": "docs-built-s56-05",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ],
+      "cells": [
+        "disposition:transitions:S56:05"
+      ],
+      "scope": "Original built Pages browser assertions for S56:05."
+    },
+    {
+      "id": "docs-built-s56-06",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:stale source identity has no resume URL and clearing retains command preferences",
+        "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+      ],
+      "cells": [
+        "disposition:transitions:S56:06"
+      ],
+      "scope": "Original built Pages browser assertions for S56:06."
+    },
+    {
+      "id": "docs-built-s58-01",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filtering makes no request or storage write and does not submit a query URL"
+      ],
+      "cells": [
+        "disposition:transitions:S58:01"
+      ],
+      "scope": "Original built Pages browser assertions for S58:01."
+    },
+    {
+      "id": "docs-built-s58-02",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+        "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filter controls and the review guide reconnect after client navigation and back"
+      ],
+      "cells": [
+        "disposition:transitions:S58:02"
+      ],
+      "scope": "Original built Pages browser assertions for S58:02."
+    },
+    {
       "id": "software-pi-disposable-home-01",
       "job": "Coverage union (Pi)  <os: windows-latest>",
       "payload_name": "major-source-inputs-pi-windows-coverage",
@@ -731,6 +834,75 @@
         "disposition:transitions:pi-qualification:disposable-home:03"
       ],
       "scope": "Full finite disposable-home software guard/effect/retry assertions from the original complete Windows Pi coverage invocation, with real setup effects plus controlled create/write/exit ports. No real operator credentials, physical host consent, installed Pi/task/model or whole-machine qualification."
+    },
+    {
+      "id": "sandbox-original-sbx-cache-cancellation-01",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/build.test.ts:buildOrReuseImage \u2014 cache hit (AC-04) reuses an existing tag and performs NO build",
+        "vitest:plugins/ca-sandbox/tools/build.test.ts:buildOrReuseImage \u2014 cache hit (AC-04) SBX-C01 cancellation during cache identity observation refuses stale reuse"
+      ],
+      "cells": [
+        "disposition:added_transitions:SBX-CACHE-CANCELLATION:01"
+      ],
+      "scope": "No Docker build/workload or real cache race; actual production function with injected observation, partial coverage."
+    },
+    {
+      "id": "sandbox-original-s47-02",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails"
+      ],
+      "cells": [
+        "disposition:transitions:S47:02"
+      ],
+      "scope": "Finite controlled Docker client spawn-boundary assertions. Fixture evidence covers deadline, cancellation and observed results."
+    },
+    {
+      "id": "sandbox-original-s47-06",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable does not stop the container on an ordinary non-zero exec (AC-2)",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)"
+      ],
+      "cells": [
+        "disposition:transitions:S47:06"
+      ],
+      "scope": "Finite controlled Docker client spawn-boundary assertions. Fixture evidence covers deadline, cancellation and observed results."
+    },
+    {
+      "id": "sandbox-original-s47-07",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)"
+      ],
+      "cells": [
+        "disposition:transitions:S47:07"
+      ],
+      "scope": "Finite controlled Docker client spawn-boundary assertions. Fixture evidence covers deadline, cancellation and observed results."
     },
     {
       "id": "software-sandbox-valid-dispatch-and-interrupt",
@@ -1686,6 +1858,134 @@
       "scope": "Preserve intentional Claude tag+channel vs Codex preexisting-tag channel protocol; uncertain responses cannot authorize blind mutation retries; unknown current Claude version refuses."
     },
     {
+      "id": "finite-measurement-t11-added-browser-failure-cleanup",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:added_transitions:T11:added-browser-failure-cleanup"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T11:added-browser-failure-cleanup."
+    },
+    {
+      "id": "finite-measurement-t11-added-render-failure-cleanup",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:added_transitions:T11:added-render-failure-cleanup"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T11:added-render-failure-cleanup."
+    },
+    {
+      "id": "finite-measurement-t11-added-renderer-refused",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:added_transitions:T11:added-renderer-refused"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T11:added-renderer-refused."
+    },
+    {
+      "id": "finite-measurement-t-f01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:findings:T-F01"
+      ],
+      "scope": "Original measurement verdict assertions for T-F01."
+    },
+    {
+      "id": "finite-measurement-t-f04",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image"
+      ],
+      "cells": [
+        "disposition:findings:T-F04"
+      ],
+      "scope": "Original illustration failure and cleanup assertions for T-F04."
+    },
+    {
+      "id": "finite-measurement-t08-05",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:transitions:T08:05"
+      ],
+      "scope": "Original measurement verdict assertions for T08:05."
+    },
+    {
+      "id": "finite-measurement-t10-07",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:transitions:T10:07"
+      ],
+      "scope": "Original measurement verdict assertions for T10:07."
+    },
+    {
+      "id": "finite-measurement-t10-08",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass"
+      ],
+      "cells": [
+        "disposition:transitions:T10:08"
+      ],
+      "scope": "Original measurement verdict assertions for T10:08."
+    },
+    {
       "id": "finite-tf02",
       "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
       "payload_name": "major-source-inputs-hooks-single-owner",
@@ -1762,6 +2062,278 @@
         "disposition:findings:HOOK-F02"
       ],
       "scope": "HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit."
+    },
+    {
+      "id": "docs-site-unit-s65",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication checks JavaScript syntax without executing emitted code",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path /absolute",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path C:/escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a\\b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a//b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/%2e%2e/b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ..",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on create failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on index failure",
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication is wired to every Astro build instead of an optional postbuild command"
+      ],
+      "cells": [
+        "disposition:machines:S65"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65."
+    },
+    {
+      "id": "docs-site-unit-s65-01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files"
+      ],
+      "cells": [
+        "disposition:transitions:S65:01"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:01."
+    },
+    {
+      "id": "docs-site-unit-s65-02",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure"
+      ],
+      "cells": [
+        "disposition:transitions:S65:02"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:02."
+    },
+    {
+      "id": "docs-site-unit-s65-03",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication checks JavaScript syntax without executing emitted code",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path /absolute",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/../escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path C:/escape",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a\\b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a//b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/%2e%2e/b",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .."
+      ],
+      "cells": [
+        "disposition:transitions:S65:03"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:03."
+    },
+    {
+      "id": "docs-site-unit-s65-04",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+      ],
+      "cells": [
+        "disposition:transitions:S65:04"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:04."
+    },
+    {
+      "id": "docs-site-unit-s65-05",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+      ],
+      "cells": [
+        "disposition:transitions:S65:05"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:05."
+    },
+    {
+      "id": "docs-site-unit-s65-06",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+      ],
+      "cells": [
+        "disposition:transitions:S65:06"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:06."
+    },
+    {
+      "id": "docs-site-unit-s65-07",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on create failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on index failure",
+        "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure"
+      ],
+      "cells": [
+        "disposition:transitions:S65:07"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:07."
+    },
+    {
+      "id": "docs-site-unit-s65-08",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+        "vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails"
+      ],
+      "cells": [
+        "disposition:transitions:S65:08"
+      ],
+      "scope": "Original source-bound Site unit assertions for S65:08."
+    },
+    {
+      "id": "docs-site-unit-sx03-01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/release-applicability.test.ts:selectCurrentGovernanceReleases selects the highest stable SemVer independently for every governance host (O-01)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects missing governed provenance-manifest declaration (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects duplicate governed provenance-manifest declaration (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects divergent governed provenance-manifest declaration (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects unexpected top-level key (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects wrong namespaces (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects invalid date (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects malformed unselected governed tag (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects extra receipt key (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects zero identity (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects uppercase identity (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects invalid object type (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects commit identity mismatch (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects duplicate JSON keys instead of accepting the last value (O-02)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:01"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:01."
+    },
+    {
+      "id": "docs-site-unit-sx03-02",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:02"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:02."
+    },
+    {
+      "id": "docs-site-unit-sx03-03",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/release-applicability.test.ts:historical release applicability reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:historical release applicability rejects a historical manifest whose version does not exactly match its selected tag (O-04)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:published Pi support (#1071) records the Pi versions the selected ca-pi tag supports, read at that tag's commit"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:03"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:03."
+    },
+    {
+      "id": "docs-site-unit-sx03-04",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a missing GitHub Actions build identity (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a not 40-hex GitHub Actions build identity (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a different from HEAD GitHub Actions build identity (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity records the exact local HEAD and dirty state without using a branch name (O-06)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a moving or malformed local HEAD identity (O-06)"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:04"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:04."
+    },
+    {
+      "id": "docs-site-unit-sx03-05",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record requires the replay digest to match both current and latest-published ca source bytes (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record records an explicit current-source mismatch without throwing or calling it compatibility (O-08)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record records an explicit published-source mismatch without throwing or calling it compatibility (O-08)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: empty evidence kind (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: non-canonical source (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: invalid replay digest (O-07)",
+        "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects missing latest-published hook bytes (O-07)"
+      ],
+      "cells": [
+        "disposition:transitions:SX03:05"
+      ],
+      "scope": "Original source-bound Site unit assertions for SX03:05."
     },
     {
       "id": "docs-source-gen-b01",

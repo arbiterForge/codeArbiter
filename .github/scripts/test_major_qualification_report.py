@@ -3555,6 +3555,34 @@ class PiSandboxFiniteFindingRoutingTests(unittest.TestCase):
     """Pure report admission over inert named outcomes; no TS/Docker/Pi execution."""
     EXPECTED = {'disposition:findings:SF01': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects'], 'scope': 'Finite SF01 source-test behavior: real loopback child proxy and parent gate precede exact owned file effects; bridge refusal, disabled/untrusted lifecycle, token/replay/expiry/sequence bounds refuse effects. Permission callback and native factories are fixture ports. No human TUI, installed author, shell containment or whole PI-D task qualification.'}, 'disposition:findings:SF02': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session'], 'scope': 'Finite SF02 source-test persona readiness, failure, healthy/retry and retired-session behavior through shipped parent installation with fixture host/bridge ports; no model or installed-host qualification.'}, 'disposition:findings:SF03': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once'], 'scope': 'Finite SF03 source-test late metrics cannot install into disposed/off sessions or degrade the current session; both completion orders preserve current-session installation and native rendering. Fixture TUI ports; no visible-host or terminal qualification.'}, 'disposition:findings:SF12': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads'], 'scope': 'Finite SF12 source-test compatibility declares private approval unavailable on Pi 1.5.0 and legacy runtime-gated only; isolated dialog controls are synthetic and never ordinary installed approval or human consent evidence. No production doctor or host-observed approval qualification.'}, 'disposition:findings:SF08': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box'], 'scope': 'Finite SF08 requires pure cache-key/provenance/refusal guards AND both original real Docker builder cases: distinct staging names reuse the labeled immutable image, changed dependency bytes rebuild, concurrent cold requests converge and deleting one box preserves another. No remote clone/auth, arbitrary image or installed CLI credit.'}, 'disposition:findings:SF10': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target'], 'scope': 'Finite SF10 source-test unavailable discovery, cancellation-independent compensation, retained unknown cleanup references and refusal to destroy unobserved targets through actual production functions with injected Docker observations. No universal cleanup, real daemon outage or host containment claim.'}, 'disposition:findings:SF09': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment', 'vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box'], 'scope': 'Finite SF09 requires the original real Docker overflow case plus unit stop/inspect guard: actual capped exec overflows without timeout, exact target independently inspects stopped and a separate running box remains alive. No arbitrary workload, global cleanup or installed CLI qualification.'}}
 
+    def test_original_sandbox_deadline_and_cache_rows_use_existing_observer(self):
+        history = owner.ROOT / 'docs/state-contracts-major/execution/evidence'
+        deadlines = history / 'farm-sandbox-remaining-ae237d'
+        assertions = {case['id']: case['exact_selector'] for case in
+                      owner.load_json(deadlines / 'raw/selected-named-observations.json')['assertions']}
+        expected = {row['cell']: [assertions[ref] for ref in row['assertion_refs']]
+                    for row in owner.load_json(deadlines / 'sandbox-client-and-required-gate-tested.json')['semantic_mapping']}
+        cache = owner.load_json(history / 'post-intake-deltas-9e3b2ea5/sandbox-cache-cancel-tested.json')
+        row, = cache['semantic_groups']
+        expected[row['cells'][0]] = ['vitest:plugins/ca-sandbox/tools/build.test.ts:' + title
+                                     for title in row['named_cases']]
+        selections = owner.validate_selections(owner.load_json(owner.ROOT / '.github/major-test-selections.json'))
+        policy = owner.load_json(owner.ROOT / '.github/major-qualification-policy.json')
+        groups = [group for group in selections if set(group['cells']) & expected.keys()]
+        self.assertEqual({group['cells'][0]: group['selectors'] for group in groups}, expected)
+        profile = 'sandbox-tools-v1'
+        self.assertEqual({cell: policy['cell_job_bindings'].get(cell) for cell in expected},
+                         dict.fromkeys(expected, owner.TS_PROFILE_JOBS[profile]))
+        with vitest_source_fixture(profile) as fixture:
+            observations, _, _, build = self.fixture_report(fixture, groups)
+            report = build()
+            self.assertEqual({row['cell'] for row in report['results']}, expected.keys())
+            for cell, selectors in expected.items():
+                changed = {**observations, 'tests': [case for case in observations['tests']
+                           if case['id'] != selectors[-1]]}
+                with self.subTest(cell=cell), self.assertRaisesRegex(ValueError, 'selected named test'):
+                    build(o=changed)
+
     def groups(self, profile):
         return [{"id": "finite-" + cell.rsplit(":", 1)[1], "job": owner.TS_PROFILE_JOBS[profile],
             "payload_name": owner.TS_PROFILE_PAYLOADS[profile], "observation": "pi-tools" if profile == "pi-tools-v1" else "sandbox-tools",
@@ -4505,6 +4533,50 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
         spec = owner.source_profile("hooks-single-owner-findings-v1")
         self.assertIn(".claude-plugin/marketplace.json", spec["paths"])
         self.assert_shared_original_capture("finite-git-channel", 15, 16)
+
+    def test_measurement_and_illustration_cells_use_one_original_contract_observation(self):
+        history = owner.ROOT / 'docs/state-contracts-major/execution/evidence'
+        expected = {}
+        for path in ('packaging-remaining-40b9/benchmark-empty-finding.json',
+                     'tools-local-af5f/measurement-verdict-controls.json',
+                     'tools-local-af5f/illustration-failure-boundaries.json',
+                     'packaging-remaining-40b9/illustration-failure-finding.json'):
+            receipt = owner.load_json(history / path)
+            for cell in receipt['disposition_ids']:
+                expected[cell] = ['python:tools/test_measurement_contracts.py:' + name
+                                  for name in receipt['named_assertions']]
+        self.assertEqual(len(expected), 8)
+        original = 'disposition:findings:T-F02'
+        _, spec, req, payload, observed, group, _ = self.fixture(original)
+        expected[original] = group['selectors']
+        selection = owner.load_json(owner.ROOT / '.github/major-test-selections.json')
+        policy = owner.load_json(owner.ROOT / '.github/major-qualification-policy.json')
+        groups = [g for g in selection['groups'] if g['observation'] == 'finite-tf02']
+        self.assertEqual(len(groups), 9)
+        self.assertEqual({g['cells'][0]: g['selectors'] for g in groups}, expected)
+        self.assertEqual({c: policy['cell_job_bindings'][c] for c in expected}, dict.fromkeys(expected, spec['job']))
+        req.update(cells=sorted(expected), cell_jobs=dict.fromkeys(expected, spec['job']))
+        selectors = sorted({name for names in expected.values() for name in names})
+        self.assertEqual(len(selectors), 7)
+        observed['tests'] = [{'id': name, 'result': 'passed'} for name in selectors]
+
+        def build(selected=groups, outcomes=observed):
+            return owner.build_report(req, job_name=spec['job'], job_id=9,
+                selections={'schema': owner.SELECTIONS, 'groups': selected},
+                observations={'finite-tf02': outcomes}, payloads={spec['payload']: payload})
+
+        report = build()
+        self.assertEqual(len(report['payloads']), 1)
+        self.assertEqual({row['cell']: row['executed_population'] for row in report['results']},
+                         {cell: len(names) for cell, names in expected.items()})
+        for name in selectors:
+            outcomes = {**observed, 'tests': [row for row in observed['tests'] if row['id'] != name]}
+            with self.subTest(selector=name), self.assertRaisesRegex(ValueError, 'selected named test missing'):
+                build(outcomes=outcomes)
+        reduced = copy.deepcopy(groups)
+        next(g for g in reduced if g['cells'] == ['disposition:findings:T-F01'])['selectors'].pop()
+        with self.assertRaisesRegex(ValueError, 'complete exact finite finding'):
+            build(selected=reduced)
 
     def assert_shared_original_capture(self, key, cell_count, selector_count):
         cells = [cell for cell, recipe in self.EXPECTED.items() if recipe["observation"] == key]
