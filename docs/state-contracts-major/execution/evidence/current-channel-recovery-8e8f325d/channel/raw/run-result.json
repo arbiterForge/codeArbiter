@@ -1,0 +1,234 @@
+{
+  "format": "finite-current-software54-result/1",
+  "owner": "channel",
+  "source_commit": "8e8f325ddff628974ad7cc7082b68078fbdc949c",
+  "source_tree": "0bf53d5654c96c030e56274290b0155d80c43530",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 25.880488499999046,
+  "before_after_all_closure_equal": true,
+  "namespace_projection": {
+    ".github/scripts": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/_boundedproc.cpython-314.pyc",
+        "__pycache__/_codex_cli_profile.cpython-314.pyc",
+        "__pycache__/_contextverificationlib.cpython-314.pyc",
+        "__pycache__/_immutable_git_blobs.cpython-314.pyc",
+        "__pycache__/_releaselib.cpython-314.pyc",
+        "__pycache__/adr_lifecycle.cpython-314.pyc",
+        "__pycache__/check-plugin-refs.cpython-314.pyc",
+        "__pycache__/check_adr_lifecycle.cpython-314.pyc",
+        "__pycache__/check_codex_host.cpython-314.pyc",
+        "__pycache__/check_codex_skill_resources.cpython-314.pyc",
+        "__pycache__/check_codex_static_package.cpython-314.pyc",
+        "__pycache__/check_control_bytes.cpython-314.pyc",
+        "__pycache__/check_sandbox_docker_layers.cpython-314.pyc",
+        "__pycache__/check_skill_portability.cpython-314.pyc",
+        "__pycache__/check_state_contracts_integration.cpython-314.pyc",
+        "__pycache__/ci20_native_binding.cpython-314.pyc",
+        "__pycache__/codex_agent_routes.cpython-314.pyc",
+        "__pycache__/major_qualification_report.cpython-314.pyc",
+        "__pycache__/major_readiness.cpython-314.pyc",
+        "__pycache__/observe_codex_installed_cli.cpython-314.pyc",
+        "__pycache__/observe_pi_installed_rpc.cpython-314.pyc",
+        "__pycache__/payload_scope.cpython-314.pyc",
+        "__pycache__/pi_benchmark.cpython-314.pyc",
+        "__pycache__/pi_cli_resolver.cpython-314.pyc",
+        "__pycache__/pi_host_locks.cpython-314.pyc",
+        "__pycache__/prepare_adr_acceptance.cpython-314.pyc",
+        "__pycache__/project_knowledge.cpython-314.pyc",
+        "__pycache__/retained_archive_cli_observation.cpython-314.pyc",
+        "__pycache__/run_artifact_authority_shard.cpython-314.pyc",
+        "__pycache__/run_concurrent_suites.cpython-314.pyc",
+        "__pycache__/test_artifact_authoring.cpython-314.pyc",
+        "__pycache__/test_artifact_authority_adapter.cpython-314.pyc",
+        "__pycache__/test_artifact_authority_retention.cpython-314.pyc",
+        "__pycache__/test_artifact_consumers.cpython-314.pyc",
+        "__pycache__/test_artifact_git_excludes.cpython-314.pyc",
+        "__pycache__/test_artifact_installed_host.cpython-314.pyc",
+        "__pycache__/test_artifact_npm_nested_launch.cpython-314.pyc",
+        "__pycache__/test_build_surface.cpython-314.pyc",
+        "__pycache__/test_ci20_native_pipeline.cpython-314.pyc",
+        "__pycache__/test_ci_impact.cpython-314.pyc",
+        "__pycache__/test_context_native.cpython-314.pyc",
+        "__pycache__/test_generated_output.cpython-314.pyc",
+        "__pycache__/test_hook_ci_partition.cpython-314.pyc",
+        "__pycache__/test_major_qualification_report.cpython-314.pyc",
+        "__pycache__/test_pi_child_live.cpython-314.pyc",
+        "__pycache__/test_pi_package.cpython-314.pyc",
+        "__pycache__/test_review_resubmission.cpython-314.pyc",
+        "__pycache__/test_sync_core.cpython-314.pyc",
+        "__pycache__/test_workflow_recovery_cli.cpython-314.pyc",
+        "__pycache__/test_workflow_recovery_hosts.cpython-314.pyc",
+        "__pycache__/verify_pi_support.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+    },
+    "core/pysrc": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/_activationlib.cpython-314.pyc",
+        "__pycache__/_adrlifecycle.cpython-314.pyc",
+        "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+        "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+        "__pycache__/_artifactlib.cpython-314.pyc",
+        "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+        "__pycache__/_artifactpromptlib.cpython-314.pyc",
+        "__pycache__/_entrylib.cpython-314.pyc",
+        "__pycache__/_gitexec.cpython-314.pyc",
+        "__pycache__/_hooklib.cpython-314.pyc",
+        "__pycache__/_intentlib.cpython-314.pyc",
+        "__pycache__/_knowledgelib.cpython-314.pyc",
+        "__pycache__/_pathnorm.cpython-314.pyc",
+        "__pycache__/_protectedlib.cpython-314.pyc",
+        "__pycache__/_provenancelib.cpython-314.pyc",
+        "__pycache__/_readinjectlib.cpython-314.pyc",
+        "__pycache__/_releaselib.cpython-314.pyc",
+        "__pycache__/_replylib.cpython-314.pyc",
+        "__pycache__/_scopelib.cpython-314.pyc",
+        "__pycache__/_sensitivelib.cpython-314.pyc",
+        "__pycache__/hostapi.cpython-314.pyc",
+        "__pycache__/knowledge.cpython-314.pyc",
+        "__pycache__/security-pass.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+    },
+    "tools": {
+      "Git_names_equal_physical_names": false,
+      "legacy_cache_entries_preserved": [
+        "__pycache__",
+        "__pycache__/build-artifact-manifest-contract.cpython-314.pyc",
+        "__pycache__/build-artifacts.cpython-314.pyc",
+        "__pycache__/build-host-packages.cpython-314.pyc",
+        "__pycache__/build-surface.cpython-314.pyc",
+        "__pycache__/ci-impact.cpython-314.pyc",
+        "__pycache__/ci20_baseline.cpython-314.opt-1.pyc",
+        "__pycache__/command_compatibility.cpython-314.pyc",
+        "__pycache__/host_descriptors.cpython-314.pyc",
+        "__pycache__/install-artifact-payload.cpython-314.pyc",
+        "__pycache__/live-smarts-exercise.cpython-314.pyc",
+        "__pycache__/owned_output.cpython-314.pyc",
+        "__pycache__/sync-core.cpython-314.pyc",
+        "__pycache__/test_measurement_contracts.cpython-314.pyc"
+      ],
+      "other_entries_preserved": [],
+      "causal_untracked_shadows": [],
+      "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+    }
+  },
+  "module_resolution": null,
+  "actual_repository_imports": {
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985"
+  },
+  "checked_inputs": {
+    ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985"
+  },
+  "named_results": [
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+      "result": "PASSED"
+    }
+  ],
+  "actual_import_observations": [
+    "actual-imports-21184.json"
+  ],
+  "runtime_records": 10795,
+  "observer_errors": [],
+  "closure_errors": [],
+  "private_prefix_no_user_site_observed": true,
+  "benchmark_observation": null,
+  "scope_limits": [
+    "Synthetic archive/native payload bytes and real local Git remotes only; no original native engine/cohort qualification or npm/provider/publication/installed host effects.",
+    "No whole-suite/native/site/browser rerun or aggregate task/machine promotion. Twelve declared owner inputs were literally captured in working files and immutable Git before/after.",
+    "Original0830 nineteen-case observations remain immutable historical evidence; this16-case current-source observation is a distinct successor."
+  ]
+}

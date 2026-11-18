@@ -1,0 +1,518 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "8e8f325ddff628974ad7cc7082b68078fbdc949c",
+  "source_tree": "0bf53d5654c96c030e56274290b0155d80c43530",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Windows CodeArbiter candidate 8e8f325d channel original owning software capture; no hosted/native/installed qualification"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "aceb12697eca7d0fd2b4637bf8416ea30fdecfeb12a29b9f85684c16ad0d6bdd"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-8e8f-channel-recovery-lc0n92_1\\channel\\observe-channel.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 25.880488499999046,
+      "stdout_sha256": "93297042e37ae18cb2345480e0a7d92c9484e8c14108f9e97e98d3cf12dc59fb",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/protocol/capture-owner.py",
+      "sha256": "df6d0a0e3a9d3f44e4c39991ca5196adc8ce7bbcfcf738cf710f39480299892d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/config.json",
+      "sha256": "6e0cc53d385acced7565aa4f2343871fea5ca72d8bada5963ce59ae6c6a9af49"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/run-start.json",
+      "sha256": "32111e981d3fdfd2ff286ed7a0eb1aa627c942af07dd9e9c892e6c0f44987249"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/after-snapshot.json",
+      "sha256": "3cd256c8ac42c601e43d83d1e4b69302c72fe6d8d84dd4c9fc2ec25805ee8319"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/process-exit.json",
+      "sha256": "1d35b0718c2cd4d563b82bf9ef14a437cc169b32bc0237fc68de9b4fe1435b75"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/run-result.json",
+      "sha256": "3d1cfcfed61bd9bdd701dca72ce3fa511720fb6418b36bbe50708622ec583392"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/capture-complete.json",
+      "sha256": "43216d1b9e19d06d017d5787bcfad13a9b9fbec223a4674deb7e6f4e0583312d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/observer/sitecustomize.py",
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/actual-imports-21184.json",
+      "sha256": "a8ffe7c6afde0f147ae62fea85556461052191db8d822c5e736e8d8c3ee0c08c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/original.stdout.log.base64.json",
+      "sha256": "8b63fce12db7e5acf2b5f9b06c5d96167e37d3d31345c995d498dbdbc33ecf9d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/original.stderr.log.base64.json",
+      "sha256": "a7fc4605a679a0c6fcb5f88beabf5b12ba4ac5d862ff34e0bbc0f03bd6bd4e17"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/selectors.json",
+      "sha256": "a83957219eeb31a358bce88ccd1430b6a36791a1c7dd662c53e8f7054c7b0b8b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/observe-channel.py",
+      "sha256": "590ec09cc6da51a90ae9c9cb7b4fa37f036a1a783f7cb73d1a771cf063a9989e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/plan.json",
+      "sha256": "8b6732ace49891b89afa656d01b80766b1a34542223d83d78c722170b142363b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/start.json",
+      "sha256": "1dec7e9c9e36886f7578ad60ff03f2a530df5d84ed82a810348183493056a1dd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/result.json",
+      "sha256": "c2e7a98a7bbb9084abdd40832fbed7b1780b51274ff7bca86b609dcb50420595"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S73:01",
+    "disposition:transitions:S73:02",
+    "disposition:transitions:S73:03",
+    "disposition:transitions:S73:04",
+    "disposition:transitions:S73:05",
+    "disposition:transitions:S73:06",
+    "disposition:transitions:S73:07",
+    "disposition:transitions:S73:08",
+    "disposition:transitions:S73:09",
+    "disposition:transitions:S73:10",
+    "disposition:transitions:S74:03",
+    "disposition:transitions:S74:04",
+    "disposition:transitions:S74:08",
+    "disposition:transitions:S74:09",
+    "disposition:findings:SF15"
+  ],
+  "original_named_results": [
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+      "result": "PASSED"
+    }
+  ],
+  "execution_context": {
+    "actual_execution_source": "8e8f325ddff628974ad7cc7082b68078fbdc949c",
+    "actual_working_source_state": "Each original before/after identity retained; no clean/current epoch inferred from subsequent Root edits.",
+    "source_before_after": {
+      "ref": {
+        "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/run-start.json",
+        "sha256": "32111e981d3fdfd2ff286ed7a0eb1aa627c942af07dd9e9c892e6c0f44987249"
+      },
+      "after_ref": {
+        "path": "docs/state-contracts-major/execution/evidence/current-channel-recovery-8e8f325d/channel/raw/after-snapshot.json",
+        "sha256": "3cd256c8ac42c601e43d83d1e4b69302c72fe6d8d84dd4c9fc2ec25805ee8319"
+      },
+      "equal": true
+    },
+    "actual_positive_input_count": 13,
+    "structured_Python_runtime_count": 10795,
+    "actual_imports": {
+      ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+      "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+      "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985"
+    },
+    "typed_complete_Git_namespaces": [
+      {
+        "profile": "python-import-directory-v1",
+        "root": ".github/scripts",
+        "path_order": "windows",
+        "sha256": "aceb12697eca7d0fd2b4637bf8416ea30fdecfeb12a29b9f85684c16ad0d6bdd"
+      },
+      {
+        "profile": "python-import-directory-v1",
+        "root": "core/pysrc",
+        "path_order": "windows",
+        "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+      },
+      {
+        "profile": "python-import-directory-v1",
+        "root": "tools",
+        "path_order": "windows",
+        "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+      }
+    ],
+    "physical_namespace_projection": {
+      ".github/scripts": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_boundedproc.cpython-314.pyc",
+          "__pycache__/_codex_cli_profile.cpython-314.pyc",
+          "__pycache__/_contextverificationlib.cpython-314.pyc",
+          "__pycache__/_immutable_git_blobs.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/adr_lifecycle.cpython-314.pyc",
+          "__pycache__/check-plugin-refs.cpython-314.pyc",
+          "__pycache__/check_adr_lifecycle.cpython-314.pyc",
+          "__pycache__/check_codex_host.cpython-314.pyc",
+          "__pycache__/check_codex_skill_resources.cpython-314.pyc",
+          "__pycache__/check_codex_static_package.cpython-314.pyc",
+          "__pycache__/check_control_bytes.cpython-314.pyc",
+          "__pycache__/check_sandbox_docker_layers.cpython-314.pyc",
+          "__pycache__/check_skill_portability.cpython-314.pyc",
+          "__pycache__/check_state_contracts_integration.cpython-314.pyc",
+          "__pycache__/ci20_native_binding.cpython-314.pyc",
+          "__pycache__/codex_agent_routes.cpython-314.pyc",
+          "__pycache__/major_qualification_report.cpython-314.pyc",
+          "__pycache__/major_readiness.cpython-314.pyc",
+          "__pycache__/observe_codex_installed_cli.cpython-314.pyc",
+          "__pycache__/observe_pi_installed_rpc.cpython-314.pyc",
+          "__pycache__/payload_scope.cpython-314.pyc",
+          "__pycache__/pi_benchmark.cpython-314.pyc",
+          "__pycache__/pi_cli_resolver.cpython-314.pyc",
+          "__pycache__/pi_host_locks.cpython-314.pyc",
+          "__pycache__/prepare_adr_acceptance.cpython-314.pyc",
+          "__pycache__/project_knowledge.cpython-314.pyc",
+          "__pycache__/retained_archive_cli_observation.cpython-314.pyc",
+          "__pycache__/run_artifact_authority_shard.cpython-314.pyc",
+          "__pycache__/run_concurrent_suites.cpython-314.pyc",
+          "__pycache__/test_artifact_authoring.cpython-314.pyc",
+          "__pycache__/test_artifact_authority_adapter.cpython-314.pyc",
+          "__pycache__/test_artifact_authority_retention.cpython-314.pyc",
+          "__pycache__/test_artifact_consumers.cpython-314.pyc",
+          "__pycache__/test_artifact_git_excludes.cpython-314.pyc",
+          "__pycache__/test_artifact_installed_host.cpython-314.pyc",
+          "__pycache__/test_artifact_npm_nested_launch.cpython-314.pyc",
+          "__pycache__/test_build_surface.cpython-314.pyc",
+          "__pycache__/test_ci20_native_pipeline.cpython-314.pyc",
+          "__pycache__/test_ci_impact.cpython-314.pyc",
+          "__pycache__/test_context_native.cpython-314.pyc",
+          "__pycache__/test_generated_output.cpython-314.pyc",
+          "__pycache__/test_hook_ci_partition.cpython-314.pyc",
+          "__pycache__/test_major_qualification_report.cpython-314.pyc",
+          "__pycache__/test_pi_child_live.cpython-314.pyc",
+          "__pycache__/test_pi_package.cpython-314.pyc",
+          "__pycache__/test_review_resubmission.cpython-314.pyc",
+          "__pycache__/test_sync_core.cpython-314.pyc",
+          "__pycache__/test_workflow_recovery_cli.cpython-314.pyc",
+          "__pycache__/test_workflow_recovery_hosts.cpython-314.pyc",
+          "__pycache__/verify_pi_support.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      },
+      "core/pysrc": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/_activationlib.cpython-314.pyc",
+          "__pycache__/_adrlifecycle.cpython-314.pyc",
+          "__pycache__/_adrlifecyclegit.cpython-314.pyc",
+          "__pycache__/_artifactauthoritylib.cpython-314.pyc",
+          "__pycache__/_artifactlib.cpython-314.pyc",
+          "__pycache__/_artifactmanifestlib.cpython-314.pyc",
+          "__pycache__/_artifactpromptlib.cpython-314.pyc",
+          "__pycache__/_entrylib.cpython-314.pyc",
+          "__pycache__/_gitexec.cpython-314.pyc",
+          "__pycache__/_hooklib.cpython-314.pyc",
+          "__pycache__/_intentlib.cpython-314.pyc",
+          "__pycache__/_knowledgelib.cpython-314.pyc",
+          "__pycache__/_pathnorm.cpython-314.pyc",
+          "__pycache__/_protectedlib.cpython-314.pyc",
+          "__pycache__/_provenancelib.cpython-314.pyc",
+          "__pycache__/_readinjectlib.cpython-314.pyc",
+          "__pycache__/_releaselib.cpython-314.pyc",
+          "__pycache__/_replylib.cpython-314.pyc",
+          "__pycache__/_scopelib.cpython-314.pyc",
+          "__pycache__/_sensitivelib.cpython-314.pyc",
+          "__pycache__/hostapi.cpython-314.pyc",
+          "__pycache__/knowledge.cpython-314.pyc",
+          "__pycache__/security-pass.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      },
+      "tools": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": [
+          "__pycache__",
+          "__pycache__/build-artifact-manifest-contract.cpython-314.pyc",
+          "__pycache__/build-artifacts.cpython-314.pyc",
+          "__pycache__/build-host-packages.cpython-314.pyc",
+          "__pycache__/build-surface.cpython-314.pyc",
+          "__pycache__/ci-impact.cpython-314.pyc",
+          "__pycache__/ci20_baseline.cpython-314.opt-1.pyc",
+          "__pycache__/command_compatibility.cpython-314.pyc",
+          "__pycache__/host_descriptors.cpython-314.pyc",
+          "__pycache__/install-artifact-payload.cpython-314.pyc",
+          "__pycache__/live-smarts-exercise.cpython-314.pyc",
+          "__pycache__/owned_output.cpython-314.pyc",
+          "__pycache__/sync-core.cpython-314.pyc",
+          "__pycache__/test_measurement_contracts.cpython-314.pyc"
+        ],
+        "other_entries_preserved": [],
+        "causal_untracked_shadows": [],
+        "private_prefix_before_import": "Private cache prefix redirects import cache lookup; no legacy entry removed or assumed absent."
+      }
+    },
+    "private_prefix_and_no_user_site_observed": true,
+    "old_proof_retained_unchanged": {
+      "path": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/channel/tested.json",
+      "sha256": "9e2a8c7618305bc6ab181334358fdd6d41226b4d09048daf90204ff624f5d128",
+      "actual_old_source": "7ac016078da0beedc92537334d6c8d849794f2dc"
+    }
+  },
+  "scope": "Same existing 15 TESTED software rows only; exact original owning assertions/current actual inputs and output observed at 8e8f325d. No new statuses, task/scenario/native/host/provider/model/publication qualification.",
+  "limits": [
+    "Original test/source/command assertions unchanged. Actual first result and full after-snapshot persisted before validation.",
+    "Full actual Python installation10795 files observed in structured records; no historical1905 count relabeled as current.",
+    "Complete physical namespace records preserve legacy caches/untracked noncausal entries; private bytecode prefix precedes project imports. No cache deletion or blanket physical==Git claim.",
+    "Transcripts retained losslessly with original decoded SHA256/bytes; private originals unchanged.",
+    "All current cells preserve old active/history references at real source/ref epochs; no overall staged/program readiness claimed.",
+    "Actual16 local bare-Git fixtures with synthetic archive/native bytes; no GitHub/npm/provider/native engine or distribution publication.",
+    "All old12 inputs retained; actual dynamic installer import adds tools/install-artifact-payload.py (13 positives), joined to complete before/after tools namespace byte witness."
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S73:01",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused"
+      ],
+      "assertion_scope": "Fixture archive/version/payload admission produces actual deterministic local Git distribution/channel refs; qualified binary contents are synthetic fixture bytes, not real engine qualification."
+    },
+    {
+      "cell": "disposition:transitions:S73:02",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path"
+      ],
+      "assertion_scope": "Absent immutable ref is created and exact remote tag equals returned distribution commit."
+    },
+    {
+      "cell": "disposition:transitions:S73:03",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op"
+      ],
+      "assertion_scope": "Repeated same input observes existing distribution and reuses channel commit without duplicate promotion."
+    },
+    {
+      "cell": "disposition:transitions:S73:04",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused"
+      ],
+      "assertion_scope": "Existing same-version identity refuses changed archive bytes."
+    },
+    {
+      "cell": "disposition:transitions:S73:05",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back"
+      ],
+      "assertion_scope": "Older version refuses before moving local remote channel."
+    },
+    {
+      "cell": "disposition:transitions:S73:06",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op"
+      ],
+      "assertion_scope": "Same tree reuses current marketplace commit and previous commit identity."
+    },
+    {
+      "cell": "disposition:transitions:S73:07",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance"
+      ],
+      "assertion_scope": "Changed tree advances descendant; unreadable current version now refuses with channel unchanged."
+    },
+    {
+      "cell": "disposition:transitions:S73:08",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush"
+      ],
+      "assertion_scope": "Tag publication/readback uses expected deterministic commit; response-loss path attempts immutable push once."
+    },
+    {
+      "cell": "disposition:transitions:S73:09",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush"
+      ],
+      "assertion_scope": "Channel update goes through current lease/readback helper, advances descendant, and response-loss observation does not repush."
+    },
+    {
+      "cell": "disposition:transitions:S73:10",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes"
+      ],
+      "assertion_scope": "Uncertain push may succeed only by exact observed remote identity; unknown/conflict refuses after one attempt; explicit recovery reads history without pushing."
+    },
+    {
+      "cell": "disposition:transitions:S74:03",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package"
+      ],
+      "assertion_scope": "Codex first call creates immutable tag, second channel promotion names that exact tag/commit without acquiring npm."
+    },
+    {
+      "cell": "disposition:transitions:S74:04",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag"
+      ],
+      "assertion_scope": "Actual successful channel advance uses independently precreated immutable distribution tag; missing-tag/expected-head adversarial branches not independently claimed."
+    },
+    {
+      "cell": "disposition:transitions:S74:08",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release"
+      ],
+      "assertion_scope": "Actual local leased channel updates name immutable source and preserve recoverable prior distribution ancestry."
+    },
+    {
+      "cell": "disposition:transitions:S74:09",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted"
+      ],
+      "assertion_scope": "Shared exact push/readback helper refuses conflicting/unobservable remote without retry; Codex recovery reads old completed promotion and rejects an unpromoted tag."
+    },
+    {
+      "cell": "disposition:findings:SF15",
+      "observed_named_cases": [
+        "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+        "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+        "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+        "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes"
+      ],
+      "assertion_scope": "Preserve intentional Claude tag+channel vs Codex preexisting-tag channel protocol; uncertain responses cannot authorize blind mutation retries; unknown current Claude version refuses."
+    }
+  ]
+}
