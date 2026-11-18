@@ -8807,9 +8807,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -8820,6 +8820,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
@@ -58453,9 +58460,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -58466,6 +58473,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
@@ -58479,9 +58493,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -58492,6 +58506,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
@@ -58505,9 +58526,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -58518,6 +58539,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
@@ -58531,9 +58559,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -58544,6 +58572,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
@@ -58557,9 +58592,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -58570,6 +58605,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
@@ -58583,9 +58625,9 @@
    "evidence": [
     {
      "kind": "conformance-check",
-     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
-     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
-     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21"
+     "commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+     "ref": "docs/state-contracts-major/execution/evidence/recovery-atlas-sx05-0c81b61a/proof.json",
+     "sha256": "2d806e5d2d12bc7fe57c85a020bf9f1370815423fa820c24fa39db9d04776e99"
     }
    ],
    "candidate_contract_note": "Source-only literal/pinned/current assessment in docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json. Conditional procedures only; SX06 pending; no task/runtime/publication promotion.",
@@ -58596,6 +58638,13 @@
      "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX05-preserved.json",
      "sha256": "a4480b3a43609472b7915257a09796d245985dbf174fbc2821ca4bf7d6ffeb7f",
      "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+    },
+    {
+     "kind": "conformance-check",
+     "commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+     "ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-045-proof.json",
+     "sha256": "d8d86f3c7d26217f9e75b0f6ed4ef23735f1b571d7288c343ca9210998c27b21",
+     "ref_commit": "155fe44bc67b0b6acbfee14415956777f0165a08"
     }
    ]
   },
