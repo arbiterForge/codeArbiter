@@ -64,14 +64,19 @@ def operations(nonce):
         {"tool": "bash", "params": {"command": "printf 'command-" + nonce + "\\n' >> command-" + nonce + ".txt", "timeout": 15}},
     ]
 
+def declined_write(nonce):
+    require(type(nonce) is str and re.fullmatch(r"[0-9a-f]{16}", nonce), "fixture-nonce")
+    return {"tool": "write", "params": {"path": "declined-" + nonce + ".txt", "content": "declined-" + nonce}}
+
 class PromptGate:
     def __init__(self, nonce):
         self.nonce = nonce
-        self.ops = operations(nonce)
+        self.ops = [*operations(nonce), declined_write(nonce)]
         self.index = 0
         self.raw = bytearray()
         self.consumed = 0
         self.events = []
+        self.pending_decline = None
 
     def feed(self, chunk):
         require(type(chunk) is bytes and len(self.raw) + len(chunk) <= CAP, "terminal-cap")
@@ -80,6 +85,17 @@ class PromptGate:
     def consent(self, cwd):
         if self.index == len(self.ops):
             return None
+        if self.pending_decline is not None:
+            event = self.pending_decline
+            redraw = readable(bytes(self.raw[event["new_output_end"]:]))
+            if not re.search(r"(?m)^ *→ No *$", redraw):
+                return None
+            self.events.append({**event, "input_hex": "6a0d", "decision": "declined",
+                                "no_selected_output_end": len(self.raw), "no_selected_sha256": sha(redraw.encode())})
+            self.pending_decline = None
+            self.consumed = len(self.raw)
+            self.index += 1
+            return b"\r"
         operation = self.ops[self.index]
         exact = compact(operation["params"])
         digest = sha(exact.encode())
@@ -94,10 +110,15 @@ class PromptGate:
                     "SHA-256: " + digest, "The parent executes this exact request", "Yes", "No")
         if not all(value in text for value in required):
             return None
-        self.events.append({"operation": self.index, "tool": operation["tool"], "params_sha256": digest,
-                            "new_output_start": self.consumed, "new_output_end": len(self.raw),
-                            "rendered_sha256": sha(text.encode()), "input_hex": "0d",
-                            "consent": "scripted-fixture-key-on-public-parent-dialog"})
+        event = {"operation": self.index, "tool": operation["tool"], "params_sha256": digest,
+                 "new_output_start": self.consumed, "new_output_end": len(self.raw),
+                 "rendered_sha256": sha(text.encode()), "consent": "scripted-fixture-key-on-public-parent-dialog"}
+        if self.index == len(self.ops) - 1:
+            if not re.search(r"(?m)^ *→ Yes *$", text):
+                return None
+            self.pending_decline = event
+            return b"j"  # Pi 1.5.0's public selector moves one row down.
+        self.events.append({**event, "input_hex": "0d"})
         self.consumed = len(self.raw)
         self.index += 1
         return b"\r"
@@ -113,13 +134,14 @@ def transport_length(method, path, headers, nonce):
 class ProviderProtocol:
     """Two real conversations share one deterministic, declared fixture endpoint."""
     def __init__(self, nonce):
-        self.ops = operations(nonce)
+        self.ops = [*operations(nonce), declined_write(nonce)]
         self.nonce = nonce
         self.parent_call_id = "fixture-parent-" + nonce
         self.parent_turns = 0
         self.child_turns = 0
         self.records = []
         self.complete = False
+        self.declined_result = None
         self.bytes = 0
         self.failed = False
 
@@ -141,7 +163,7 @@ class ProviderProtocol:
             require(type(tool) is dict and type(tool.get("function")) is dict
                     and type(tool["function"].get("name")) is str, "provider-tools")
             names.append(tool["function"]["name"])
-        results = [m.get("tool_call_id") for m in body["messages"] if type(m) is dict and m.get("role") == "tool"]
+        results = [m for m in body["messages"] if type(m) is dict and m.get("role") == "tool"]
         parent = "codearbiter_dispatch" in names
         if parent:
             require(not self.complete and self.parent_turns < 2, "parent-turn-cap")
@@ -151,7 +173,8 @@ class ProviderProtocol:
                 params = {"mode": "single", "roles": ["backend-author"], "task": "Run only the deterministic owned PI-D07 fixture " + self.nonce + "."}
                 call_id = self.parent_call_id
             else:
-                require(self.child_turns == 4 and results and results[-1] == self.parent_call_id, "parent-result")
+                require(self.child_turns == len(self.ops) + 1 and self.declined_result is not None
+                        and results and results[-1].get("tool_call_id") == self.parent_call_id, "parent-result")
                 self.parent_turns += 1
                 self.complete = True
                 self.bytes += size
@@ -159,15 +182,17 @@ class ProviderProtocol:
             self.parent_turns += 1
         else:
             require(self.parent_turns == 1, "parent-before-child")
-            require(self.child_turns < 4, "child-turn-cap")
+            require(self.child_turns <= len(self.ops), "child-turn-cap")
             if self.child_turns:
-                require(results and results[-1] == "fixture-child-" + str(self.child_turns - 1) + "-" + self.nonce, "child-result")
+                require(results and results[-1].get("tool_call_id") == "fixture-child-" + str(self.child_turns - 1) + "-" + self.nonce, "child-result")
             else:
                 require(not results, "child-start")
-            if self.child_turns == 3:
+            if self.child_turns == len(self.ops):
+                self.declined_result = read_declined_result(results[-1].get("content"))
                 self.child_turns += 1
                 self.bytes += size
-                return {"content": compact({"state": "accepted", "summary": "Owned fixture " + self.nonce + " effects observed"})}, "stop"
+                return {"content": compact({"state": "accepted", "summary": "Owned fixture " + self.nonce
+                                            + ": three approved effects and one declined write observed"})}, "stop"
             operation = self.ops[self.child_turns]
             name, params = operation["tool"], operation["params"]
             require(name in names, "child-tool-missing")
@@ -176,6 +201,21 @@ class ProviderProtocol:
         self.bytes += size
         return {"role": "assistant", "tool_calls": [{"index": 0, "id": call_id, "type": "function",
                  "function": {"name": name, "arguments": compact(params)}}]}, "tool_calls"
+
+def read_declined_result(content):
+    expected = {"v": 1, "admission": "denied", "execution": "not-started", "containment": "not-applicable",
+                "observation": "unavailable", "recovery": "new-operation-required", "reason": "permission-denied"}
+    require(type(content) is str and len(content) <= 1024, "declined-write-result")
+    try:
+        value = decode(content.encode())
+    except (ValueError, UnicodeError) as error:
+        raise ValueError("declined-write-result") from error
+    require(type(value) is dict and set(value) == {*expected, "requestId"}
+            and type(value["v"]) is int and all(value[key] == wanted for key, wanted in expected.items())
+            and type(value["requestId"]) is str
+            and re.fullmatch(r"[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}", value["requestId"]),
+            "declined-write-result")
+    return value
 
 def runtime_entry(manifest):
     require(type(manifest) is dict and manifest.get("name") == "@earendil-works/pi-coding-agent"
@@ -242,6 +282,25 @@ def check_effects(nonce, stored, effects):
                 and observed.get("containment") == ("verified-stopped" if tool == "bash" else "not-applicable"), "journal-completion")
         tools.append(tool)
     require(sorted(tools) == sorted(v["tool"] for v in expected), "journal-tools")
+
+def check_decline(protocol, cwd, stored, audit):
+    import os
+    request = protocol.declined_result
+    require(request is not None, "declined-write-result")
+    operation = declined_write(protocol.nonce)
+    target = operation["params"]["path"]
+    require(not os.path.lexists(cwd / target), "declined-write-target")
+    digest = sha(compact({"profile": PROFILE, **operation}).encode())
+    require(all(row["record"].get("requestId") != request["requestId"] and row["record"].get("digest") != digest
+                for row in stored), "declined-write-journal")
+    correlation = sha((protocol.parent_call_id + ":" + request["requestId"]).encode())
+    identity = f" | HOST: pi | RULE: PI-PERMISSION | CORRELATION: {correlation} | "
+    rows = [row for row in audit.decode().splitlines(keepends=True) if identity in row]
+    expected = identity + "TOOL_CLASS: WRITE | ACTION_CLASSES: source-write | DECISION: cancelled\n"
+    require(len(rows) == 1 and re.fullmatch(r"\[\d{4}-\d\d-\d\dT\d\d:\d\d:\d\d\.\d{3}Z\]" + re.escape(expected), rows[0]),
+            "declined-write-audit")
+    return {"target": target, "target_present": False, "journal_claim_present": False, "operation_sha256": digest,
+            "result": request, "permission_audit": rows[0].removesuffix("\n")}
 
 def bounded_process(argv, cwd, env, deadline, *, terminal=False, gate=None, protocol=None, budget=None):
     """Only the fixed setup commands/public parent use this POSIX process owner."""
@@ -320,13 +379,21 @@ def bounded_process(argv, cwd, env, deadline, *, terminal=False, gate=None, prot
                     if key_bytes is not None:
                         # The fixture must still be at the pre-effect state when
                         # each genuine public parent confirmation is answered.
-                        operation = gate.ops[gate.index - 1]
+                        index = gate.index if gate.pending_decline is not None else gate.index - 1
                         target = Path(cwd) / gate.ops[0]["params"]["path"]
-                        expected = None if gate.index == 1 else ("before-" if gate.index == 2 else "after-") + gate.nonce
+                        expected = None if index == 0 else ("before-" if index == 1 else "after-") + gate.nonce
                         require((not target.exists()) if expected is None else target.read_text(encoding="utf-8") == expected, "effect-before-consent")
-                        require(not (Path(cwd) / ("command-" + gate.nonce + ".txt")).exists(), "command-before-consent")
+                        command = Path(cwd) / ("command-" + gate.nonce + ".txt")
+                        if index < len(gate.ops) - 1:
+                            require(not command.exists(), "command-before-consent")
+                        else:
+                            canary = Path(cwd) / declined_write(gate.nonce)["params"]["path"]
+                            require(not os.path.lexists(canary), "declined-write-target-before-consent")
+                            expected_command = ("command-" + gate.nonce + "\n").encode()
+                            require(not command.is_symlink() and command.stat().st_size == len(expected_command)
+                                    and command.read_bytes() == expected_command, "command-before-decline")
                         os.write(master, key_bytes)
-                    if protocol.complete and gate.index == 3 and not exit_input:
+                    if protocol.complete and gate.index == len(gate.ops) and not exit_input:
                         marker = "PI-D07 fixture completed " + gate.nonce
                         if marker in readable(bytes(output[gate.consumed:])):
                             os.write(master, b"\x04")  # public empty-editor exit
@@ -536,17 +603,21 @@ def run(config, *, authenticated_payloads):
             after_payload = {role:cold.physical_members(Path(config[name]))["members"] for role,name in (("promoted-stage","stage"),("release-packages","packages"))}
             owner.save(output/"input-after.json",{"source":after_source,"runtime":after_runtime,"graph":after_graph,"installed":after_installed,"payloads":after_payload})
             outcome.update(actual_case="executed",process=actual,prompts=gate.events,provider=protocol.records,
+                           declined_result=protocol.declined_result,
                            consumed_payloads=consumed,source_before=before_source,source_after=after_source,runtime_before=before_runtime,runtime_after=after_runtime,
                            admitted_graph_before=before_graph,admitted_graph_after=after_graph,installed_before=before_installed,installed_after=after_installed,
                            payload_before=physical,payload_after=after_payload,
                            loaded_closure_limit="Complete admitted package/runtime graph captured; no unsupported claim of complete actual dynamic child import telemetry.")
             # Persist original observations before applying acceptance assertions.
             owner.save(output/"original-outcome.json",outcome)
-            require(actual["returncode"] == 0 and actual["exit_key_sent"] and not actual["forced_cleanup"] and len(gate.events)==3
-                    and protocol.complete and len(protocol.records)==6 and not any(v.get("refused") for v in protocol.records), "parent-or-protocol-incomplete")
+            require(actual["returncode"] == 0 and actual["exit_key_sent"] and not actual["forced_cleanup"]
+                    and len(gate.events) == len(gate.ops) and gate.events[-1].get("decision") == "declined"
+                    and protocol.complete and len(protocol.records) == 7 and not protocol.failed, "parent-or-protocol-incomplete")
             require(before_source==after_source and before_runtime==after_runtime and before_graph==after_graph
                     and before_installed==after_installed and physical==after_payload,"input-drift")
             check_effects(nonce,stored,effects)
+            audit = owner.raw(work/".codearbiter/gate-events.log", 64*1024)
+            owner.save(output/"declined-write.json", check_decline(protocol, work, stored, audit))
             outcome["status"]="passed"
             owner.save(output/"verification.json",{"status":"passed","scope":"first POSIX scripted public-parent-TUI fixture only; not human/full PI-D07/major qualification"})
         return outcome

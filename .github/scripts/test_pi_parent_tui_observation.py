@@ -14,17 +14,40 @@ def dialog(operation, cwd="/private/project"):
     text = owner.compact(operation["params"])
     return ("\x1b[32mAllow governed operation?\x1b[0m\r\nDelegated " + operation["tool"] + " in " + cwd
             + "\r\n" + text + "\r\nSHA-256: " + owner.sha(text.encode())
-            + "\r\nThe parent executes this exact request on the trusted host.\r\nYes\r\nNo\r\n").encode()
+            + "\r\nThe parent executes this exact request on the trusted host.\r\n→ Yes\r\nNo\r\n").encode()
 
 class PromptProtocolTests(unittest.TestCase):
     def test_new_exact_rendered_prompt_is_required_before_each_consent(self):
         gate = owner.PromptGate(NONCE)
-        for operation in gate.ops:
+        for operation in owner.operations(NONCE):
             self.assertIsNone(gate.consent("/private/project"))
             gate.feed(dialog(operation))
             self.assertEqual(gate.consent("/private/project"), b"\r")
             self.assertIsNone(gate.consent("/private/project"), "old prompt output cannot approve the next operation")
         self.assertEqual(len(gate.events), 3)
+
+    def test_decline_requires_fresh_dialog_and_visible_no_before_enter(self):
+        cwd = "/private/project"
+        gate = owner.PromptGate(NONCE)
+        for operation in owner.operations(NONCE):
+            gate.feed(dialog(operation))
+            self.assertEqual(gate.consent(cwd), b"\r")
+        gate.feed(dialog(gate.ops[-2]))
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed(dialog(owner.declined_write(NONCE)))
+        self.assertEqual(gate.consent(cwd), b"j")
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed("→ Yes\r\n".encode())
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed(b" No\r\n")
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed("  \x1b[32m→ No\x1b[0m\r\n".encode())
+        self.assertEqual(gate.consent(cwd), b"\r")
+        self.assertEqual(len(gate.events), 4)
+        self.assertEqual(gate.events[-1]["input_hex"], "6a0d")
+        self.assertEqual(gate.events[-1]["decision"], "declined")
+        self.assertGreater(gate.events[-1]["no_selected_output_end"], gate.events[-1]["new_output_end"])
+        self.assertIsNone(gate.consent(cwd))
 
     def test_wrong_digest_nonce_tool_cwd_and_partial_prompt_never_consent(self):
         operation = owner.operations(NONCE)[0]
@@ -58,28 +81,40 @@ class PromptProtocolTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "json-cap"): owner.decode(b" " * (owner.REQUEST_CAP + 1))
 
 class ProviderProtocolTests(unittest.TestCase):
-    def body(self, parent, previous=None):
+    def body(self, parent, previous=None, content="owned result"):
         return {"model":"gpt-fixture", "stream":True, "tools":[{"type":"function","function":{"name":name}} for name in (["codearbiter_dispatch"] if parent else ["write","edit","bash"])],
-                "messages":[{"role":"user","content":"owned fixture"}] + ([] if previous is None else [{"role":"tool","tool_call_id":previous,"content":"owned result"}])}
+                "messages":[{"role":"user","content":"owned fixture"}] + ([] if previous is None else [{"role":"tool","tool_call_id":previous,"content":content}])}
 
-    def test_original_sse_shape_routes_parent_dispatch_and_three_child_effects(self):
+    def test_original_sse_routes_three_child_effects_and_requires_exact_decline_result(self):
         state = owner.ProviderProtocol(NONCE)
         first, finish = state.response(self.body(True))
         self.assertEqual(first["tool_calls"][0]["function"]["name"], "codearbiter_dispatch")
         self.assertEqual(finish, "tool_calls")
         previous = None
-        for operation in owner.operations(NONCE):
+        for operation in [*owner.operations(NONCE), owner.declined_write(NONCE)]:
             result, finish = state.response(self.body(False, previous))
             call = result["tool_calls"][0]
             self.assertEqual(call["function"]["name"], operation["tool"])
             self.assertEqual(json.loads(call["function"]["arguments"]), operation["params"])
             previous = call["id"]
-        result, finish = state.response(self.body(False, previous))
+        refused = self.refused()
+        for bad in ("owned result", "Parent delegation unavailable", json.dumps({**refused, "execution":"completed"}),
+                    json.dumps({**refused, "reason":"no-parent-ui"}), json.dumps({**refused, "requestId":"invalid"})):
+            with self.assertRaisesRegex(ValueError, "declined-write-result"):
+                state.response(self.body(False, previous, bad))
+        result, finish = state.response(self.body(False, previous, json.dumps(refused)))
         self.assertEqual(json.loads(result["content"])["state"], "accepted")
+        self.assertEqual(state.declined_result, refused)
         result, finish = state.response(self.body(True, state.parent_call_id))
         self.assertEqual(finish, "stop"); self.assertIn(NONCE, result["content"])
         self.assertTrue(state.complete)
         with self.assertRaises(ValueError): state.response(self.body(True, state.parent_call_id))
+
+    @staticmethod
+    def refused():
+        return {"v":1, "requestId":"01234567-89ab-4def-8abc-01234567890a", "admission":"denied",
+                "execution":"not-started", "containment":"not-applicable", "observation":"unavailable",
+                "recovery":"new-operation-required", "reason":"permission-denied"}
 
     def test_no_child_before_dispatch_no_retry_no_extra_turn_or_unknown_model(self):
         state = owner.ProviderProtocol(NONCE)
@@ -104,6 +139,32 @@ class ProviderProtocolTests(unittest.TestCase):
         self.assertTrue(state.failed)
 
 class AdmissionAndReceiptTests(unittest.TestCase):
+    def test_decline_requires_absent_canary_no_claim_and_exact_durable_audit(self):
+        import tempfile
+        protocol = owner.ProviderProtocol(NONCE)
+        protocol.declined_result = refused = ProviderProtocolTests.refused()
+        correlation = owner.sha((protocol.parent_call_id + ":" + refused["requestId"]).encode())
+        row = f"[2026-11-18T12:34:56.000Z] | HOST: pi | RULE: PI-PERMISSION | CORRELATION: {correlation} | TOOL_CLASS: WRITE | ACTION_CLASSES: source-write | DECISION: cancelled"
+        raw = (row + "\n").encode()
+        with tempfile.TemporaryDirectory() as folder:
+            cwd = Path(folder)
+            receipt = owner.check_decline(protocol, cwd, [], raw)
+            self.assertEqual(receipt["permission_audit"], row)
+            self.assertEqual(receipt["result"], refused)
+            self.assertFalse(receipt["target_present"])
+            self.assertFalse(receipt["journal_claim_present"])
+            for bad in (b"", raw + raw, raw[:-1], raw.replace(b"cancelled", b"approved"),
+                        raw.replace(correlation.encode(), b"0" * 64), raw.replace(b"WRITE", b"EDIT")):
+                with self.assertRaisesRegex(ValueError, "declined-write-audit"):
+                    owner.check_decline(protocol, cwd, [], bad)
+            for identity in ({"requestId": refused["requestId"]},
+                             {"digest":owner.sha(owner.compact({"profile":owner.PROFILE, **owner.declined_write(NONCE)}).encode())}):
+                with self.assertRaisesRegex(ValueError, "declined-write-journal"):
+                    owner.check_decline(protocol, cwd, [{"record":identity}], raw)
+            (cwd / owner.declined_write(NONCE)["params"]["path"]).touch()
+            with self.assertRaisesRegex(ValueError, "declined-write-target"):
+                owner.check_decline(protocol, cwd, [], raw)
+
     def test_owned_outputs_cannot_mutate_any_authenticated_input(self):
         import tempfile
         root=Path(tempfile.gettempdir()).resolve()/"pi-tui-layout-test"

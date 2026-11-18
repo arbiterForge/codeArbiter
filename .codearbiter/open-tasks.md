@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Qualify denial in the retained Pi parent TUI fixture  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline
+  - Desc: Exercise a genuinely rendered declined tool confirmation in the existing installed Linux Pi 1.5.0 fixture. Require an exact child refusal, durable cancel audit and no canary effect while preserving the approved write, edit and command.
+  - Work type: feature
+  - Work ID: WORK-DA95F739E7251449E791CDEEAF8EBEA5
+  - Work operation ID: work-9133f2f3e86d10f9425b12648522715efb131be1
 - [x] Align original Windows isolation launcher and retain append timeout state  (from github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher)  (done 2026-11-18)
   - Work origin: github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher
   - Desc: The original Windows isolation launcher uses Git Bash while the pull request isolation uses native PowerShell. Use native PowerShell for the recorder and retain the owned audit fixture state at each process timeout.
