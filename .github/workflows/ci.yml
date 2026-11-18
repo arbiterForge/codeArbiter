@@ -1115,6 +1115,55 @@ jobs:
         env:
           ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
         run: python .github/scripts/test_knowledge_cli.py
+      - name: Generate review examples with the native candidate
+        run: >-
+          python tools/create-artifact-examples.py
+          --binary "${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}"
+          --output "${{ runner.temp }}/artifact-review"
+      - name: Prepare mapped-work source-test inputs
+        id: mapped_work_source_prepare
+        if: matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''
+        run: >-
+          python -B .github/scripts/mapped_work_observation.py prepare
+          --repo . --output "${{ runner.temp }}/mapped-work-source"
+      - name: Upload mapped-work source-test inputs
+        id: mapped_work_source_upload
+        if: matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.mapped_work_source_prepare.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-mapped-work-windows
+          path: ${{ runner.temp }}/mapped-work-source/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Test host-owned bridges, reply capture and cross-kind conformance
+        id: mapped_work_original
+        env:
+          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
+          MAJOR_MAPPED_WORK_SOURCE: ${{ steps.mapped_work_source_upload.outcome == 'success' && format('{0}/mapped-work-source', runner.temp) || '' }}
+          MAJOR_MAPPED_WORK_OBSERVATION: ${{ steps.mapped_work_source_upload.outcome == 'success' && format('{0}/mapped-work-observation.json', runner.temp) || '' }}
+        run: >-
+          python .github/scripts/run_concurrent_suites.py
+          .github/scripts/test_artifact_approval_adapter.py
+          .github/scripts/test_artifact_prerequisite_adapter.py
+          .github/scripts/test_artifact_reconciliation_adapter.py
+          .github/scripts/test_replylib.py
+          .github/scripts/test_literal_python_reads.py
+          --interpreter-env ARTIFACT_CONFORMANCE_PYTHON
+          .github/scripts/test_artifact_conformance.py
+      - name: Prepare locked debug reference source inputs
+        if: matrix.expected_platform == 'linux/amd64'
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source
+          --repo . --source-profile debug-reference-component-v1
+          --job-name "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>"
+          --output "${{ runner.temp }}/debug-reference-source-inputs"
+      - name: Test debug handoff model against the locked reference interpreter
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.expected_platform == 'linux/amd64' && 'debug-reference-component-v1' || '' }}
+        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
       - name: Check out the fixed pre-assistive compatibility source
         if: matrix.os == 'ubuntu-24.04'
         uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
@@ -1189,55 +1238,6 @@ jobs:
           python tools/test-artifact-work-old-client.py
           --old "${{ runner.temp }}/artifact-work-legacy"
           --candidate "${{ runner.temp }}/artifact-candidate/ca-artifact-linux-amd64"
-      - name: Generate review examples with the native candidate
-        run: >-
-          python tools/create-artifact-examples.py
-          --binary "${{ runner.temp }}/artifact-candidate/${{ matrix.artifact_binary }}"
-          --output "${{ runner.temp }}/artifact-review"
-      - name: Prepare mapped-work source-test inputs
-        id: mapped_work_source_prepare
-        if: matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''
-        run: >-
-          python -B .github/scripts/mapped_work_observation.py prepare
-          --repo . --output "${{ runner.temp }}/mapped-work-source"
-      - name: Upload mapped-work source-test inputs
-        id: mapped_work_source_upload
-        if: matrix.expected_platform == 'windows/amd64' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.mapped_work_source_prepare.outcome == 'success'
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
-        with:
-          name: major-source-inputs-mapped-work-windows
-          path: ${{ runner.temp }}/mapped-work-source/
-          if-no-files-found: error
-          retention-days: 14
-          include-hidden-files: true
-          overwrite: false
-      - name: Test host-owned bridges, reply capture and cross-kind conformance
-        id: mapped_work_original
-        env:
-          ARTIFACT_TEST_INSTALLATION: ${{ runner.temp }}/artifact-candidate
-          MAJOR_MAPPED_WORK_SOURCE: ${{ steps.mapped_work_source_upload.outcome == 'success' && format('{0}/mapped-work-source', runner.temp) || '' }}
-          MAJOR_MAPPED_WORK_OBSERVATION: ${{ steps.mapped_work_source_upload.outcome == 'success' && format('{0}/mapped-work-observation.json', runner.temp) || '' }}
-        run: >-
-          python .github/scripts/run_concurrent_suites.py
-          .github/scripts/test_artifact_approval_adapter.py
-          .github/scripts/test_artifact_prerequisite_adapter.py
-          .github/scripts/test_artifact_reconciliation_adapter.py
-          .github/scripts/test_replylib.py
-          .github/scripts/test_literal_python_reads.py
-          --interpreter-env ARTIFACT_CONFORMANCE_PYTHON
-          .github/scripts/test_artifact_conformance.py
-      - name: Prepare locked debug reference source inputs
-        if: matrix.expected_platform == 'linux/amd64'
-        run: >-
-          python -B .github/scripts/major_qualification_report.py prepare-source
-          --repo . --source-profile debug-reference-component-v1
-          --job-name "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>"
-          --output "${{ runner.temp }}/debug-reference-source-inputs"
-      - name: Test debug handoff model against the locked reference interpreter
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
-          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.expected_platform == 'linux/amd64' && 'debug-reference-component-v1' || '' }}
-        run: python -c "import os,subprocess; subprocess.run([os.environ['ARTIFACT_CONFORMANCE_PYTHON'], '.github/scripts/test_ci_impact.py', '--run-debug-suite', '.github/scripts/test_debug_handoff.py'], check=True)"
       - name: Recheck native candidate after bridge and conformance tests
         run: >-
           python .github/scripts/ci20_native_binding.py verify

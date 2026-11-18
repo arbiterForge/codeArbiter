@@ -3564,6 +3564,26 @@ class DebugSuiteRegistrationTest(unittest.TestCase):
         self.assertIn("matrix.partition == 'all' || matrix.partition == 'contracts'", jobs["hooks"])
         self.assertIn('python-version: "3.x"', jobs["hooks"])
 
+    def test_locked_debug_observation_precedes_nested_compatibility_checkouts(self):
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        bridges = workflow_jobs(workflow)["artifact-native-bridges"]
+        names = re.findall(r"^      - name: (.+)$", bridges, re.M)
+        required = (
+            "Verify tested candidate bytes, source and native toolchain",
+            "Prepare locked debug reference source inputs",
+            "Test debug handoff model against the locked reference interpreter",
+            "Check out the fixed pre-assistive compatibility source",
+            "Check out the schema 0.3.2 integration-base compatibility source",
+            "Check out the fixed pre-cycle work compatibility source",
+            "Verify old work client refuses upgraded work and keeps later edits",
+            "Recheck native candidate after bridge and conformance tests",
+        )
+        for name in required:
+            self.assertEqual(names.count(name), 1, name)
+        positions = [names.index(name) for name in required]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(positions[1] + 1, positions[2])
+
     def test_debug_inputs_reach_the_jobs_that_execute_them(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
         hooks = paths_filter(ci, "hooks")
