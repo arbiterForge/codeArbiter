@@ -209,6 +209,8 @@ jobs:
             all:
               - '**'
             ca:
+              - '.github/scripts/npm_audit_gate.py'
+              - 'site/audit-exceptions.json'
               - '.github/scripts/coverage_union.py'
               - '.github/scripts/test_coverage_union.py'
               - 'plugins/ca/**'
@@ -220,6 +222,8 @@ jobs:
               - '.github/scripts/check_command_catalog.py'
               - '.github/scripts/test_command_catalog.py'
             ca-sandbox:
+              - '.github/scripts/npm_audit_gate.py'
+              - 'site/audit-exceptions.json'
               - '.github/scripts/_sandbox_docker_profile.py'
               - '.github/scripts/observe_sandbox_installed_docker.py'
               - '.github/scripts/test_observe_sandbox_installed_docker.py'
@@ -242,6 +246,8 @@ jobs:
               - '.github/scripts/test_codex_candidate_provenance.py'
               - '.github/workflows/ci.yml'
             ca-pi:
+              - '.github/scripts/npm_audit_gate.py'
+              - 'site/audit-exceptions.json'
               - '.github/scripts/_pi_rpc_profile.py'
               - '.github/scripts/_windows_rpc_timeout.py'
               - '.github/scripts/_windows_dbgeng.py'
@@ -409,7 +415,7 @@ jobs:
               - '.github/scripts/test_work_adopt.py'
               - '.github/scripts/test_work_github.py'
               - '.github/scripts/project_knowledge.py'
-              # The site CVE gate's accepted-advisory judge and its only guard.
+              # The shared CVE gate, its approvals and its guard.
               - '.github/scripts/npm_audit_gate.py'
               - '.github/scripts/test_npm_audit_gate.py'
               - 'site/audit-exceptions.json'
@@ -1407,7 +1413,7 @@ jobs:
         run: npm ci
       - name: Audit the browser-test dependency graph
         # Same accepted-advisory gate as docs.yml's site-check (site graph).
-        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
+        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --scope production --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Record runner Chrome version
@@ -1918,7 +1924,7 @@ jobs:
           -- .github/scripts/test_ci_impact.py
       - name: Validate strict parallel native qualification and shard coverage
         run: python .github/scripts/test_ci20_native_pipeline.py
-      - name: Validate the site CVE gate's accepted-advisory judge
+      - name: Validate the shared CVE gate and scoped approvals
         run: python .github/scripts/test_npm_audit_gate.py
       - name: Validate the version gates' shipped-payload scope
         # Issue #435. The version gates decide "did anything an installed user
@@ -2497,7 +2503,7 @@ jobs:
         # Same HIGH threshold as every other audited graph, so one policy covers
         # the repo; test_ci_impact.py asserts that no audit step in this
         # workflow uses a different one.
-        run: npm audit --audit-level=high
+        run: npm audit --include=dev --json | python3 ../../../.github/scripts/npm_audit_gate.py --exceptions ../../../site/audit-exceptions.json --scope full --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Typecheck
@@ -2685,7 +2691,7 @@ jobs:
         # Same HIGH threshold as every other audited graph, so one policy covers
         # the repo; test_ci_impact.py asserts that no audit step in this
         # workflow uses a different one.
-        run: npm audit --audit-level=high
+        run: npm audit --include=dev --json | python3 ../../../.github/scripts/npm_audit_gate.py --exceptions ../../../site/audit-exceptions.json --scope full --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Typecheck
@@ -2926,7 +2932,7 @@ jobs:
         # Same HIGH threshold as every other audited graph, so one policy covers
         # the repo; test_ci_impact.py asserts that no audit step in this
         # workflow uses a different one.
-        run: npm audit --audit-level=high
+        run: npm audit --include=dev --json | python3 ../../../.github/scripts/npm_audit_gate.py --exceptions ../../../site/audit-exceptions.json --scope full --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Check generated root package metadata

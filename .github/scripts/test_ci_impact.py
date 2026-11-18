@@ -52,13 +52,16 @@ NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 # `--omit=dev` gate above audits an empty graph there. This one covers the build
 # toolchain that actually exists - the dev dependencies that produce farm.js,
 # sandbox.js, and the ca-pi extension bundles. Same threshold, by contract.
-NPM_AUDIT_DEV_GATE = "npm audit --audit-level=high"
+NPM_AUDIT_DEV_GATE = (
+    "npm audit --include=dev --json | python3 ../../../.github/scripts/npm_audit_gate.py "
+    "--exceptions ../../../site/audit-exceptions.json --scope full --audit-level=high"
+)
 # The site graph's form of NPM_AUDIT_GATE: same scope and threshold, but the JSON
 # report is judged by npm_audit_gate.py, which admits only a GHSA recorded in
 # site/audit-exceptions.json with a dated backstop. Every other HIGH+ still fails.
 SITE_AUDIT_GATE = (
     "npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py "
-    "--exceptions audit-exceptions.json --audit-level=high"
+    "--exceptions audit-exceptions.json --scope production --audit-level=high"
 )
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
@@ -2171,6 +2174,20 @@ class WorkflowContractTest(unittest.TestCase):
                     command,
                     r"--audit-level=high$",
                     "every audit gate in the repo must use the SAME threshold",
+                )
+
+    def test_every_approved_tool_graph_retains_a_plain_production_audit(self):
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        owners = {"plugins/ca/tools": "tools", "plugins/ca-sandbox/tools": "ca-sandbox-tools",
+                  "plugins/ca-pi/tools": "ca-pi-checks"}
+        audits = [(job, directory, command)
+                  for job, directory, step in npm_step_directories(workflow)
+                  for command in npm_audit_invocations(step)]
+        for directory, job in owners.items():
+            with self.subTest(directory=directory):
+                self.assertCountEqual(
+                    [(owner, command) for owner, cwd, command in audits if cwd == directory],
+                    [(job, f"run: {NPM_AUDIT_GATE}"), (job, f"run: {NPM_AUDIT_DEV_GATE}")],
                 )
 
     def test_every_npm_audit_step_exposes_http_diagnostics(self):

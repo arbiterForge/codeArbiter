@@ -192,10 +192,10 @@ jobs:
         # gates in ci.yml; --omit=dev scopes it to what the built site actually
         # ships, keeping routine Astro/vitest dev advisories non-blocking.
         # The JSON report is judged by npm_audit_gate.py, which fails on every
-        # HIGH+ finding except a GHSA recorded in site/audit-exceptions.json
-        # with a dated backstop (see security-controls.md). No pipefail: npm
+        # HIGH+ finding except a current approval for the exact advisory and
+        # lockfile. Keep the default shell pipeline: npm
         # exits 1 whenever it reports anything, and the gate decides.
-        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
+        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --scope production --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
       - name: Generate release applicability
