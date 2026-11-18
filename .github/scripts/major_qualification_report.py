@@ -5078,7 +5078,7 @@ def main(argv=None):
                 and cold.get("proof_kind") == "retained-archive-cli"):
             artifact_names = ("artifact-host-payloads-" + source, "artifact-release-packages-" + source)
             require(set(payload_paths) == set(artifact_names), "cold report requires the exact original consumed payloads")
-        req, _, artifacts, jobs = readiness.collect(
+        req, run, artifacts, jobs = readiness.collect(
             args.repo, source, run_id, producing=True, allow_program_branch=True, producer_scope=True,
             artifact_names=artifact_names,
         )
@@ -5097,7 +5097,6 @@ def main(argv=None):
                         {"root": "core/artifacts", "path_order": order},
                         lambda commit, path: readiness.blob(args.repo, commit, path), {})
                     req.setdefault("native_module_sha256", {})[order] = pin
-            run = readiness.api(f"actions/runs/{run_id}")
             native_components[mapped_keys[0]] = authenticate_component(req, run, artifacts, jobs, "windows/amd64")
         source_payload_names = {
             SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, HOOK_REVIEW_SOURCE_PAYLOAD,
