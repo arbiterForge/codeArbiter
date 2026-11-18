@@ -129,8 +129,9 @@ def recovery_consumer_steps() -> list[str]:
 # The guard matrix, ca-codex adapter and dual-host store suites have no direct
 # step: the hermetic isolation run is their only execution (HERMETIC_ONLY).
 HERMETIC_ONLY = ('test_hook_guards.py', 'test_codex_adapter.py', 'test_dual_host_store.py')
-PREVIOUS_COMMANDS_SHA256 = '091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2'
-COMMANDS_SHA256 = '02be87b265a36430f8b32554cb726b6bdc557806f830f8d7ea1894e50e97ab6e'
+PREVIOUS_COMMANDS_SHA256 = '8e28633a2ac20f7beae60de3b0dd53763f4fb0f778a0c94bfa0f8cf0f408f5d3'
+COMMANDS_SHA256 = 'a1028b9ecbfe20cccb1cd79b37b03d3876da321503752ffbc4b0dc4bbb314c86'
+DEBUG_WORKFLOW_COMMAND = 'python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py'
 HOOK_TIMEOUT = "    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n"
 MATRIX = '''        os: [ubuntu-latest, windows-latest, macos-latest]
         partition: [all]
@@ -373,7 +374,8 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
      '        id: git_channel_observed\n'
      "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
      '        run: |\n'
-     '          python .github/scripts/test_release_target.py\n'
+     '          python -B .github/scripts/major_qualification_report.py observe-python --repo . --source-profile hooks-single-owner-findings-v1 --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs" --output "${{ runner.temp }}/python-finite-release-receipt-observation.json" -- .github/scripts/test_release_target.py\n'
+     '          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }\n'
      '          python -B .github/scripts/major_qualification_report.py observe-python --repo . --source-profile hooks-single-owner-findings-v1 --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs" --output "${{ runner.temp }}/python-finite-git-channel-observation.json" -- .github/scripts/test_marketplace_git_channels.py\n'
  ),
  'Observe original skill-proof freshness tests': '      - name: Observe original skill-proof freshness tests\n'
@@ -551,6 +553,7 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                      '            --observation "finite-cf06=${{ runner.temp '
                                                      '}}/python-finite-cf06-observation.json" \\\n'
                                                      '            --observation "finite-bounded-reader=${{ runner.temp }}/python-finite-bounded-reader-observation.json" \\\n'
+                                                     '            --observation "finite-release-receipt=${{ runner.temp }}/python-finite-release-receipt-observation.json" \\\n'
                                                      '            --observation "finite-git-channel=${{ runner.temp }}/python-finite-git-channel-observation.json" \\\n'
                                                      '            --observation "finite-native-manifest=${{ runner.temp '
                                                      '}}/python-finite-native-manifest-observation.json" \\\n'
@@ -645,6 +648,13 @@ def python_source_roles(block: str) -> dict[str,str]:
                       *(name for name in PYTHON_SOURCE_ROLES if name not in EARLY_HOOK_SOURCE_STEPS)]
     expected_order=[steps.index(PYTHON_SOURCE_ROLES[name]) for name in roles_in_order]
     require(expected_order==sorted(expected_order), 'Python source role ordering changed')
+
+    debug_steps = [step for step in steps if command(step) == DEBUG_WORKFLOW_COMMAND]
+    require(len(debug_steps) == 1 and
+            steps.index(PYTHON_SOURCE_ROLES['Prepare single-owner hook source-test inputs'])
+            < steps.index(debug_steps[0])
+            < steps.index(PYTHON_SOURCE_ROLES['Retain original Python source-test observations']),
+            'Original debug workflow must run once after source preparation and before shared observation capture')
     for name,entry in (('Run sync-core tool unit tests','test_sync_core.py'),
                        ('Run surface-generator unit tests','test_build_surface.py'),
                        ('Run §6 routing + post-merge-cleanup surface contract', 'test_routing_and_cleanup_surface.py'),
@@ -695,6 +705,92 @@ def python_source_roles(block: str) -> dict[str,str]:
         require(sum('.github/scripts/' + entry in (command(step) or '') for step in steps) == 2,
                 'Git channel and release planner must run once in each original partition')
     return {name:found[name][0] for name in PYTHON_SOURCE_ROLES}
+
+
+STATUSLINE_SOURCE_ROLES = {
+    'Prepare original statusline isolation source inputs': (
+        '      - name: Prepare original statusline isolation source inputs\n'
+        "        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''\n"
+        '        shell: bash\n'
+        '        run: >-\n'
+        '          python -B .github/scripts/major_qualification_report.py prepare-source --repo .\n'
+        '          --source-profile hooks-isolation-statusline-v1\n'
+        '          --output "${{ runner.temp }}/statusline-isolation-source-inputs"\n'
+        '          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: isolation>"\n'
+    ),
+    'Observe original statusline isolation children': (
+        '      - name: Observe original statusline isolation children\n'
+        '        id: statusline_isolation_observed\n'
+        "        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''\n"
+        '        shell: bash\n'
+        '        run: >-\n'
+        '          python -B .github/scripts/major_qualification_report.py observe-statusline --repo .\n'
+        '          --source-profile hooks-isolation-statusline-v1\n'
+        '          --source-payload "${{ runner.temp }}/statusline-isolation-source-inputs"\n'
+        '          --output "${{ runner.temp }}/statusline-isolation-observation.json"\n'
+    ),
+    'Upload original statusline isolation source inputs': (
+        '      - name: Upload original statusline isolation source inputs\n'
+        "        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.statusline_isolation_observed.outcome == 'success'\n"
+        '        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n'
+        '        with:\n'
+        '          name: major-source-inputs-hooks-statusline-isolation\n'
+        '          path: ${{ runner.temp }}/statusline-isolation-source-inputs/\n'
+        '          if-no-files-found: error\n'
+        '          retention-days: 14\n'
+        '          include-hidden-files: true\n'
+        '          overwrite: false\n'
+    ),
+    'Retain original statusline isolation observation': (
+        '      - name: Retain original statusline isolation observation\n'
+        "        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.statusline_isolation_observed.outcome == 'success'\n"
+        '        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2\n'
+        '        with:\n'
+        '          name: statusline-isolation-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}\n'
+        '          path: ${{ runner.temp }}/statusline-isolation-observation.json\n'
+        '          if-no-files-found: error\n'
+        '          retention-days: 14\n'
+        '          include-hidden-files: false\n'
+        '          overwrite: false\n'
+    ),
+}
+STATUSLINE_HERMETIC_STEP = 'Enforce suite hermeticity (issues #442, #462)'
+STATUSLINE_FALLBACK = "(matrix.partition == 'all' || matrix.partition == 'isolation') && !(matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '')"
+
+
+def statusline_source_roles(block: str, *, required: bool = False) -> dict[str, str]:
+    steps = step_blocks(block)
+    names = tuple(STATUSLINE_SOURCE_ROLES)
+    found = {name: [step for step in steps if step.startswith("      - name: " + name + "\n")]
+             for name in names}
+    if not required and not any(found.values()):
+        return {}
+    for name, expected in STATUSLINE_SOURCE_ROLES.items():
+        require(found[name] == [expected], "statusline isolation role changed or repeated: " + name)
+    original = [step for step in steps if step.startswith("      - name: " + STATUSLINE_HERMETIC_STEP + "\n")]
+    require(len(original) == 1 and command(original[0]) == ISOLATION
+            and re.findall(r"^        if: (.*)$", original[0], re.M) == [STATUSLINE_FALLBACK],
+            "statusline capture must retain the exact complementary hermetic invocation")
+    ordered = [found[names[0]][0], original[0], *(found[name][0] for name in names[1:])]
+    starts = [steps.index(step) for step in ordered]
+    require(starts == list(range(starts[0], starts[0] + len(starts))),
+            "statusline capture must replace the original isolation invocation in place")
+    require(sum(command(step) == ISOLATION for step in steps) == 1
+            and sum("observe-statusline" in (command(step) or "") for step in steps) == 1,
+            "statusline isolation cannot run the original suite twice")
+    return {name: found[name][0] for name in names}
+
+
+def reviewed_statusline_source_event_guards(block: str) -> set[str]:
+    roles = statusline_source_roles(block, required=bool(python_source_roles(block)))
+    if not roles:
+        return set()
+    predicates = [re.findall(r"^        if: (.*)$", step, re.M)[0] for step in roles.values()]
+    predicates.append(STATUSLINE_FALLBACK)
+    actual = re.findall(r"(?m)^\s+if: (.*)$", block)
+    require(all(actual.count(p) == predicates.count(p) for p in set(predicates)),
+            "statusline event predicate reused outside its original isolation roles")
+    return set(predicates)
 
 
 def reviewed_python_source_event_guards(block: str) -> set[str]:
@@ -876,10 +972,12 @@ def validate(
     require(pre.count(NATIVE_READER_ENV)==1,'Use the fixed same-job qualified native reader')
     roles=python_source_roles(block)
     reviewed_python_source_event_guards(block)
+    statusline_roles = statusline_source_roles(block, required=bool(roles))
+    reviewed_statusline_source_event_guards(block)
     counters={'contracts':0,'isolation':0,'guard':0,'setup':0,'native_setup':0}
     commands=[]
     for step in step_blocks(block):
-        if step in roles.values():continue
+        if step in roles.values() or step in statusline_roles.values():continue
         cmd=command(step)
         predicates=re.findall(r'^        if: (.*)$',step,re.M)
         if cmd is None:
@@ -901,7 +999,7 @@ def validate(
             require(not predicates,'Partition validator must run in every cell')
             continue
         require(cmd!=DIRECT,'The hermetic run already executes the complete hook suite')
-        if cmd == 'python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py':
+        if cmd == DEBUG_WORKFLOW_COMMAND:
             require("        env:\n          PYTHONDONTWRITEBYTECODE: '1'\n"
                     "          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 'hooks-single-owner-findings-v1' || '' }}\n"
                     "        run: " + cmd + "\n" in step,
@@ -925,7 +1023,7 @@ def validate(
                                                'python .github/scripts/test_release_lib.py',
                                                'python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py',
                                                'python .github/scripts/test_modelib.py')
-        if not observed_original:
+        if not observed_original and not (statusline_roles and cmd == ISOLATION):
             require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')
     require(counters['native_setup']==1,'Expected exactly one ordinary native qualification')
     require(counters['guard']==1,'Expected one mandatory partition validation')
@@ -1159,6 +1257,37 @@ class SourceQualificationRoleTests(unittest.TestCase):
             self.fail(str(error))
         self.assertEqual(counters,{'contracts':75,'isolation':1,'guard':1,'setup':3,'native_setup':1})
 
+    def test_debug_workflow_observation_precedes_shared_python_capture(self):
+        block = job_block(self.current(), 'hooks')
+        roles = python_source_roles(block)
+        steps = step_blocks(block)
+        debug, = [step for step in steps if step.startswith('      - name: Test debug workflow contracts\n')]
+        prepare = roles['Prepare single-owner hook source-test inputs']
+        capture = roles['Retain original Python source-test observations']
+        self.assertLess(steps.index(prepare), steps.index(debug))
+        self.assertLess(steps.index(debug), steps.index(capture),
+                        'Debug workflow observation must exist before the shared capture')
+
+    def test_debug_workflow_guard_refuses_late_early_and_repeated_invocations(self):
+        text = self.current()
+        block = job_block(text, 'hooks')
+        roles = python_source_roles(block)
+        steps = step_blocks(block)
+        debug, = [step for step in steps if command(step) == DEBUG_WORKFLOW_COMMAND]
+        prepare = roles['Prepare single-owner hook source-test inputs']
+        capture = roles['Retain original Python source-test observations']
+        without_debug = block.replace(debug, '', 1)
+        for bad_order in (
+            without_debug.replace(capture, capture + debug, 1),
+            without_debug.replace(prepare, debug + prepare, 1),
+            block.replace(debug, debug + debug, 1),
+            without_debug,
+        ):
+            with self.subTest(steps=len(step_blocks(bad_order))), self.assertRaisesRegex(
+                ValueError, 'Original debug workflow must run once'
+            ):
+                validate(text.replace(block, bad_order, 1))
+
     def test_folded_scalar_keeps_every_interpolation_and_argument(self):
         block=('      - name: fixed\n        run: >-\n'
                '          python owner.py --output "${{ runner.temp }}/owned.json"\n'
@@ -1233,9 +1362,27 @@ class SourceQualificationRoleTests(unittest.TestCase):
             with self.subTest(changed=changed.splitlines()[0]), self.assertRaises(ValueError):
                 validate(text.replace(old, changed, 1))
 
+    def test_statusline_observation_cannot_move_repeat_or_omit_original_isolation(self):
+        text = self.current()
+        block = job_block(text, 'hooks')
+        roles = statusline_source_roles(block, required=True)
+        self.assertEqual(len(reviewed_statusline_source_event_guards(block)), 3)
+        self.assertEqual(validate(text)['isolation'], 1)
+        observe = roles['Observe original statusline isolation children']
+        for change in (text.replace(observe, '', 1),
+                       text.replace(observe, observe + observe, 1),
+                       text.replace(observe, observe.replace("'isolation'", "'contracts'"), 1),
+                       text.replace(observe, observe.replace("        shell: bash",
+                           "        env:\n          UNREVIEWED_TEST_ENV: value\n        shell: bash"), 1),
+                       text.replace(STATUSLINE_FALLBACK, "matrix.partition == 'all' || matrix.partition == 'isolation'", 1)):
+            with self.subTest(change=len(change)), self.assertRaises(ValueError):
+                validate(change)
+
     def test_exact_hw04_addition_preserves_all_prior_ordered_commands(self):
         text=self.current();block=job_block(text,'hooks');roles=python_source_roles(block)
+        statusline = statusline_source_roles(block, required=True)
         commands=[command(step) for step in step_blocks(block) if step not in roles.values()
+                  and step not in statusline.values()
                   and command(step) not in (None,NATIVE_PREPARE_COMMAND,GUARD)]
         added=NPM_PURE_COMMAND
         self.assertEqual(commands.count(added),1)
@@ -1425,6 +1572,19 @@ class SingleOwnerFindingWorkflowTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, 'Scoped-conflict suite must run once'):
             python_source_roles(hooks + '      - name: Extra scoped-conflict run\n'
                                 '        run: python .github/scripts/test_routing_and_cleanup_surface.py\n')
+        step = PYTHON_SOURCE_ROLES['Observe original Git channel contracts after the release planner']
+        planner, stop_on_failure, channel = command(step).splitlines()
+        self.assertTrue(planner.endswith('-- .github/scripts/test_release_target.py'))
+        self.assertEqual(stop_on_failure, 'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }')
+        self.assertTrue(channel.endswith('-- .github/scripts/test_marketplace_git_channels.py'))
+        for original, replacement in (
+            (planner + '\n', ''),
+            (stop_on_failure + '\n', ''),
+            (planner, channel),
+        ):
+            with self.subTest(original=original), self.assertRaises(ValueError):
+                changed_step = step.replace(original, replacement, 1)
+                python_source_roles(hooks.replace(step, changed_step, 1))
         with self.assertRaisesRegex(ValueError, 'release library suite must run once'):
             python_source_roles(hooks + '      - name: Extra release library run\n'
                                 '        run: python .github/scripts/test_release_lib.py\n')

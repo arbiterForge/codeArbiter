@@ -1,8 +1,10 @@
 import contextlib
+import copy
 import importlib.util
 import io
 import json
 import os
+import pathlib
 import sys
 import tempfile
 import unittest
@@ -202,6 +204,67 @@ class TestInstallWithPriorThirdParty(_WireStatuslineTest):
         ws.main(["install", "--settings", spath,
                  "--plugin-root", self.root, "--interp", "python"])
         self.assertEqual(_read(spath)[ws.BACKUP_KEY], prior)
+
+    def test_install_reinstall_user_takeover_and_restore_preserves_whole_settings(self):
+        def command():
+            return '"python" "' + os.path.realpath(os.path.join(self.root, "hooks", "statusline.py")) + '"'
+
+        def invoke(action):
+            with contextlib.redirect_stdout(io.StringIO()):
+                ws.main([action, "--settings", self.settings,
+                         "--plugin-root", self.root, "--interp", "python"])
+
+        prior_line = {"type": "command", "command": "original-line --theme", "padding": 7,
+                      "extra": {"keep": [1, 2]}}
+        prior_spinner = {"mode": "append", "verbs": ["original-spinner"]}
+        original = {"statusLine": prior_line, "spinnerVerbs": prior_spinner, "theme": "fixture-theme",
+                    "nested": {"unchanged": [1, True, None]}}
+        spinner = copy.deepcopy(ws.ARBITER_SPINNER_VERBS)
+        self.settings = _make_settings(self.tmp.name, copy.deepcopy(original))
+        invoke("install")
+        expected = copy.deepcopy(original)
+        expected.update(statusLine={"type": "command", "command": command(), "padding": 0},
+                        spinnerVerbs=spinner)
+        expected[ws.BACKUP_KEY] = copy.deepcopy(prior_line)
+        expected[ws.OWNER_KEY] = command()
+        expected[ws.SPINNER_BACKUP_KEY] = copy.deepcopy(prior_spinner)
+        expected[ws.SPINNER_OWNER_KEY] = copy.deepcopy(spinner)
+        self.assertEqual(_read(self.settings), expected)
+
+        old_command = command()
+        self.root = _make_plugin_root(os.path.join(self.tmp.name, "second-durable-version"))
+        self.assertNotEqual(command(), old_command)
+        invoke("install")
+        expected["statusLine"] = {"type": "command", "command": command(), "padding": 0}
+        expected[ws.OWNER_KEY] = command()
+        self.assertEqual(_read(self.settings), expected)
+
+        user_line = {"type": "command", "command": "new-user-line", "padding": 11,
+                     "extra": {"new": True}}
+        user_spinner = {"mode": "append", "verbs": ["new-user-spinner"]}
+        user = copy.deepcopy(expected)
+        user["statusLine"] = copy.deepcopy(user_line)
+        user["spinnerVerbs"] = copy.deepcopy(user_spinner)
+        self.settings = _make_settings(self.tmp.name, user)
+        raw = _read_bytes(self.settings)
+        invoke("refresh")
+        self.assertEqual(_read_bytes(self.settings), raw)
+        self.assertEqual(_read(self.settings), user)
+
+        invoke("install")
+        takeover = copy.deepcopy(user)
+        takeover.update(statusLine={"type": "command", "command": command(), "padding": 0},
+                        spinnerVerbs=spinner)
+        takeover[ws.BACKUP_KEY] = copy.deepcopy(user_line)
+        takeover[ws.OWNER_KEY] = command()
+        takeover[ws.SPINNER_BACKUP_KEY] = copy.deepcopy(user_spinner)
+        takeover[ws.SPINNER_OWNER_KEY] = copy.deepcopy(spinner)
+        self.assertEqual(_read(self.settings), takeover)
+        invoke("uninstall")
+        restored = copy.deepcopy(original)
+        restored["statusLine"] = user_line
+        restored["spinnerVerbs"] = user_spinner
+        self.assertEqual(_read(self.settings), restored)
 
 
 class TestUninstall(_WireStatuslineTest):
@@ -404,6 +467,48 @@ class TestLegacySourceMigration(_WireStatuslineTest):
         ws.main(["uninstall", "--settings", spath,
                  "--plugin-root", self.root])
         self.assertNotIn("statusLine", _read(spath))
+
+    def test_legacy_source_and_cache_reinstall_preserves_original_backup(self):
+        variants = {
+            "source": '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"',
+            "cache": '"python" "C:\\Users\\fixture\\.claude\\plugins\\cache\\codearbiter\\ca\\1.0.0\\hooks\\statusline.py"',
+        }
+        spinner = copy.deepcopy(ws.ARBITER_SPINNER_VERBS)
+        command = '"python" "' + os.path.realpath(os.path.join(self.root, "hooks", "statusline.py")) + '"'
+        for kind, legacy in variants.items():
+            with self.subTest(kind=kind):
+                prior = {"type": "command", "command": "original-" + kind, "padding": 8,
+                         "extra": {"keep": [1, 2]}}
+                original = {"statusLine": {"type": "command", "command": legacy},
+                            ws.BACKUP_KEY: copy.deepcopy(prior), "spinnerVerbs": copy.deepcopy(spinner),
+                            ws.SPINNER_OWNER_KEY: copy.deepcopy(spinner),
+                            ws.SPINNER_BACKUP_KEY: {"mode": "append", "verbs": ["original-spinner"]},
+                            "nested": {"preserve": kind}}
+                self.settings = _make_settings(os.path.join(self.tmp.name, kind), copy.deepcopy(original))
+                ws.main(["install", "--settings", self.settings,
+                         "--plugin-root", self.root, "--interp", "python"])
+                expected = copy.deepcopy(original)
+                expected["statusLine"] = {"type": "command", "command": command, "padding": 0}
+                expected[ws.OWNER_KEY] = command
+                self.assertEqual(_read(self.settings), expected)
+
+        foreign = {"type": "command", "command": '"python" "C:\\tools\\statusline.py"', "padding": 9,
+                   "extra": {"foreign": True}}
+        before = {"statusLine": foreign,
+                  ws.BACKUP_KEY: {"type": "command", "command": "obsolete-backup"},
+                  "spinnerVerbs": {"mode": "append", "verbs": ["current-spinner"]},
+                  "nested": {"preserve": True}}
+        self.settings = _make_settings(os.path.join(self.tmp.name, "near-match"), before)
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        expected = copy.deepcopy(before)
+        expected[ws.BACKUP_KEY] = copy.deepcopy(foreign)
+        expected[ws.OWNER_KEY] = command
+        expected[ws.SPINNER_BACKUP_KEY] = copy.deepcopy(before["spinnerVerbs"])
+        expected[ws.SPINNER_OWNER_KEY] = copy.deepcopy(spinner)
+        expected["statusLine"] = {"type": "command", "command": command, "padding": 0}
+        expected["spinnerVerbs"] = copy.deepcopy(spinner)
+        self.assertEqual(_read(self.settings), expected)
 
 
 class TestOwnershipDetection(unittest.TestCase):
@@ -959,6 +1064,26 @@ class TestRefreshStalePathOnSessionStart(_WireStatuslineTest):
         self.assertIn(self.script_abs, cmd)
         self.assertNotIn("2.0.1", cmd)
 
+    def test_refresh_preserves_spinner_backups_and_unrelated_settings(self):
+        before = {"statusLine": {"type": "command", "command": self.stale_cmd},
+                  ws.OWNER_KEY: self.stale_cmd,
+                  ws.BACKUP_KEY: {"type": "command", "command": "prior-safe-line", "padding": 17},
+                  "spinnerVerbs": {"mode": "replace", "verbs": ["custom-spinner"]},
+                  ws.SPINNER_BACKUP_KEY: {"mode": "append", "verbs": ["prior-spinner"]},
+                  ws.SPINNER_OWNER_KEY: {"mode": "replace", "verbs": ["old-owned-spinner"]},
+                  "theme": "fixture-theme", "permissions": {"allow": ["inert-entry"]},
+                  "nested": {"unchanged": [1, True, None]}}
+        self.settings = _make_settings(self.tmp.name, copy.deepcopy(before))
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        after = _read(self.settings)
+        expected_command = ws.build_command("python", self.script_abs)
+        expected = copy.deepcopy(before)
+        expected["statusLine"] = ws.owned_statusline(expected_command)
+        expected[ws.OWNER_KEY] = expected_command
+        self.assertNotEqual(before["statusLine"], after["statusLine"])
+        self.assertEqual(after, expected)
+
 
 class TestNonDurableRootIsNeverPinned(_WireStatuslineTest):
     """Found in-session on 2026-07-25, after it broke the maintainer's
@@ -1119,6 +1244,54 @@ class TestPluginRootBoundary(_WireStatuslineTest):
             with self.assertRaises(ws.hostapi.PluginRootError):
                 ws.main(["status", "--settings", self.settings,
                          "--plugin-root", self.root])
+
+    def test_install_refusals_preserve_existing_settings(self):
+        def snapshot(folder):
+            return {p.relative_to(folder).as_posix(): None if p.is_dir() else p.read_bytes()
+                    for p in sorted(folder.rglob("*"))}
+
+        for kind in ("mismatched-root", "missing-adapter", "ephemeral-root", "missing-renderer",
+                     "invalid-json", "unreadable-settings"):
+            with self.subTest(kind=kind):
+                folder = pathlib.Path(self.tmp.name, kind)
+                folder.mkdir()
+                self.root = _make_plugin_root(str(folder))
+                self.settings = _make_settings(str(folder), {
+                    "statusLine": {"type": "command", "command": "keep-line"},
+                    "spinnerVerbs": {"mode": "append", "verbs": ["keep-spinner"]},
+                    "nested": {"unchanged": [1, None]},
+                })
+                requested = self.root
+                if kind == "mismatched-root":
+                    requested = _make_plugin_root(str(folder / "foreign"))
+                if kind == "ephemeral-root":
+                    self.root = _make_worktree_plugin_root(str(folder))
+                    requested = self.root
+                if kind == "missing-renderer":
+                    pathlib.Path(self.root, "hooks", "statusline.py").unlink()
+                if kind == "invalid-json":
+                    pathlib.Path(self.settings).write_bytes(b"{owned-invalid-json")
+                before_bytes = _read_bytes(self.settings)
+                before_tree = snapshot(folder)
+                with contextlib.ExitStack() as stack:
+                    expected_error = SystemExit
+                    injected = None
+                    if kind == "missing-adapter":
+                        expected_error = ws.hostapi.PluginRootError
+                        stack.enter_context(mock.patch.object(
+                            ws._hooklib, "get_host", side_effect=expected_error("missing fixture boundary")))
+                    if kind == "unreadable-settings":
+                        expected_error = PermissionError
+                        injected = stack.enter_context(mock.patch.object(
+                            ws, "open", side_effect=PermissionError("owned read refusal"), create=True))
+                    with self.assertRaises(expected_error):
+                        ws.main(["install", "--settings", self.settings,
+                                 "--plugin-root", requested, "--interp", "python"])
+                    if injected is not None:
+                        self.assertEqual(injected.call_count, 1)
+                        self.assertEqual(pathlib.Path(injected.call_args.args[0]), pathlib.Path(self.settings))
+                self.assertEqual(_read_bytes(self.settings), before_bytes)
+                self.assertEqual(snapshot(folder), before_tree)
 
 
 class TestSpinnerReleasedReaderRollback(_WireStatuslineTest):

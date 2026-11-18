@@ -1046,7 +1046,66 @@ CATALOG_COMMAND_PATHS = frozenset("plugins/ca/commands/" + PurePosixPath(path).n
     for path in SOURCE_PATHS if path.startswith("core/surface/commands/") and path.endswith(".md"))
 PROGRAM_INTEGRITY_PROFILE = "program-integrity-source-v1"
 PROGRAM_INTEGRITY_SCRIPT = ".github/scripts/test_state_contracts_integration.py"
+STATUSLINE_PROFILE = "hooks-isolation-statusline-v1"
+STATUSLINE_SCRIPT = ".github/scripts/test_suite_hermeticity.py"
+STATUSLINE_CAPTURE_UPLOAD = "Retain original statusline isolation observation"
+STATUSLINE_CAPTURE_MEMBER = "statusline-isolation-observation.json"
+STATUSLINE_CAPTURE_PREFIX = "statusline-isolation-observation-"
+STATUSLINE_RAW_MEMBER = "statusline-raw-results.json"
+STATUSLINE_RESULT_SCOPE = "hermetic-statusline-child-discovery"
+STATUSLINE_TEST_MODULES = frozenset(("test_atomic_writes", "test_durabilitylib", "test_wire_statusline"))
+STATUSLINE_RAW_FORMAT = "codearbiter.hermetic-statusline-results/1"
+
 PYTHON_COMPONENT_PROFILES = {
+    STATUSLINE_PROFILE: {
+        "job": '[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: isolation>',
+        "payload": "major-source-inputs-hooks-statusline-isolation",
+        "upload": "Upload original statusline isolation source inputs",
+        "scripts": (STATUSLINE_SCRIPT,),
+        "paths": frozenset((STATUSLINE_SCRIPT,
+            '.github/major-qualification-policy.json',
+            '.github/scripts/_boundedproc.py',
+            '.github/scripts/_contextverificationlib.py',
+            '.github/scripts/_immutable_git_blobs.py',
+            '.github/scripts/ci20_native_binding.py',
+            '.github/scripts/major_qualification_report.py',
+            '.github/scripts/major_readiness.py',
+            '.github/scripts/test_hook_ci_partition.py',
+            '.github/workflows/ci.yml',
+            'core/pysrc/_artifactmanifestlib.py',
+            'core/pysrc/_durabilitylib.py',
+            'core/pysrc/_gitexec.py',
+            'core/pysrc/_hooklib.py',
+            'core/pysrc/wire-statusline.py',
+            'docs/state-contracts-major/execution/evidence/software48-current-7ac01607/statusline/tested.json',
+            'plugins/ca/hooks/_activationlib.py',
+            'plugins/ca/hooks/_arbiterstatelib.py',
+            'plugins/ca/hooks/_durabilitylib.py',
+            'plugins/ca/hooks/_gitexec.py',
+            'plugins/ca/hooks/_githooks.py',
+            'plugins/ca/hooks/_hooklib.py',
+            'plugins/ca/hooks/_host.py',
+            'plugins/ca/hooks/_knowledgelib.py',
+            'plugins/ca/hooks/_modelib.py',
+            'plugins/ca/hooks/_pathnorm.py',
+            'plugins/ca/hooks/_protectedlib.py',
+            'plugins/ca/hooks/_provenancelib.py',
+            'plugins/ca/hooks/_prunelib.py',
+            'plugins/ca/hooks/_prunepolicy.py',
+            'plugins/ca/hooks/_scopelib.py',
+            'plugins/ca/hooks/_sensitivelib.py',
+            'plugins/ca/hooks/_standuplib.py',
+            'plugins/ca/hooks/_taskboardlib.py',
+            'plugins/ca/hooks/_updatelib.py',
+            'plugins/ca/hooks/hostapi.py',
+            'plugins/ca/hooks/session-start.py',
+            'plugins/ca/hooks/tests/_helpers.py',
+            'plugins/ca/hooks/tests/test_atomic_writes.py',
+            'plugins/ca/hooks/tests/test_durabilitylib.py',
+            'plugins/ca/hooks/tests/test_wire_statusline.py',
+            'plugins/ca/hooks/wire-statusline.py',
+        )),
+    },
     PROGRAM_INTEGRITY_PROFILE: {
         "job": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
         "payload": "major-source-inputs-program-integrity",
@@ -2337,7 +2396,10 @@ _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
  'tools/tribunal-eval.py'])
 
 PYTHON_FINDING_PROFILES = {
-    'hooks-single-owner-findings-v1': {"paths": _HOOK_SINGLE_OWNER_PATHS,
+    'hooks-single-owner-findings-v1': {"paths": _HOOK_SINGLE_OWNER_PATHS | frozenset({
+        '.github/actions/publish-target/action.yml',
+        'docs/state-contracts-major/contracts/transition-coverage.json',
+    }),
         'job': '[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>',
         'payload': 'major-source-inputs-hooks-single-owner',
         'upload': 'Upload single-owner hook source-test inputs',
@@ -2739,6 +2801,24 @@ PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
 ))
 
 PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_release_target.py", "finite-release-receipt", {
+        "disposition:findings:C-F01": (
+            "EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery",
+            "CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state",
+            "CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over",
+            "CompletionModelTests.test_another_sources_unfinished_version_is_refused_with_its_owner",
+            "FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+            "FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+            "FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+            "FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+            "ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused",
+            "CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it",
+            "CompositionContractTests.test_existing_receipt_is_read_back_and_verified",
+        ),
+    },
+))
+
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
     ".github/scripts/test_release_lib.py", "finite-release-library", {
         "disposition:transitions:S44:01": (
             "CoreClassifyPublishStateTest.test_no_tag_is_publish_fresh",
@@ -2982,6 +3062,31 @@ def original_python_entrypoint(argv, script):
         return False
     path = argv[1].replace("\\", "/")
     return path == script or path.endswith("/" + script)
+
+
+def original_statusline_entrypoint(argv):
+    return (isinstance(argv, list) and len(argv) == 4 and original_python_entrypoint(argv[:2], STATUSLINE_SCRIPT)
+            and argv[2] == "--statusline-results" and isinstance(argv[3], str)
+            and PurePosixPath(argv[3].replace("\\", "/")).name == STATUSLINE_RAW_MEMBER)
+
+
+def validate_statusline_tests(tests):
+    modules = set()
+    names = set()
+    require(isinstance(tests, list) and 0 < len(tests) <= MAX_TESTS, "unbounded statusline outcomes")
+    for row in tests:
+        require(isinstance(row, dict) and set(row) == {"id", "result"} and isinstance(row["id"], str),
+                "invalid statusline outcome")
+        identifier = row["id"]
+        name = identifier.rsplit(":", 1)[-1]
+        require(len(name) <= 512 and len(name.split(".")) >= 3
+                and all(part.isidentifier() and part.isascii() for part in name.split("."))
+                and identifier == _statusline_test_id(name) and identifier not in names
+                and row["result"] in ("passed", "skipped", "expected-failure"),
+                "foreign, nonterminal or repeated statusline outcome")
+        modules.add(name.partition(".")[0])
+        names.add(identifier)
+    require(modules == STATUSLINE_TEST_MODULES, "missing original statusline discovery module")
 
 
 def original_debug_entrypoint(argv, profile):
@@ -3292,6 +3397,11 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     elif binding["profile"] == Q02_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "Q02 source profile requires original Python observer")
         _q02_python_command(observed.get("argv"))
+    elif binding["profile"] == STATUSLINE_PROFILE:
+        require(observed.get("producer") == "python-test-result-observer"
+                and observed.get("test_result_scope") == STATUSLINE_RESULT_SCOPE
+                and original_statusline_entrypoint(observed.get("argv")),
+                "statusline profile requires original hermetic child discovery")
     elif binding["profile"] in PYTHON_COMPONENT_PROFILES:
         require(observed.get("producer") == "python-test-result-observer"
                 and any(original_python_entrypoint(observed.get("argv"), script) for script in spec["scripts"]),
@@ -3500,7 +3610,123 @@ def program_integrity_component(cases):
     )
 
 
+# Exact maintained discovery cases for the retained statusline clause proof.
+# Historical private cases were ported to the original owning modules.
+_STATUSLINE_MIGRATION_CASES = (
+    'test_wire_statusline.TestSpinnerReleasedReaderRollback.test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert',
+    'test_wire_statusline.TestSpinnerReleasedReaderRollback.test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values',
+    'test_wire_statusline.TestSpinnerReleasedReaderRollback.test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner',
+    'test_wire_statusline.TestSpinnerReleasedReaderRollback.test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert',
+    'test_wire_statusline.TestSpinnerReleasedReaderRollback.test_owned_refresh_protects_legacy_backup_from_released_reader',
+    'test_wire_statusline.TestSpinnerReleasedReaderRollback.test_released_reader_cannot_restore_over_new_user_spinner',
+)
+_STATUSLINE_CASES = {
+    'disposition:findings:HOOK-F05': (
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated',
+    ) + _STATUSLINE_MIGRATION_CASES,
+    'disposition:transitions:hooks:statusline-wiring:01': (
+        'test_wire_statusline.TestInstallWithPriorThirdParty.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings',
+        'test_wire_statusline.TestPluginRootBoundary.test_install_refusals_preserve_existing_settings',
+    ) + _STATUSLINE_MIGRATION_CASES,
+    'disposition:transitions:hooks:statusline-wiring:02': (
+        'test_wire_statusline.TestInstallWithPriorThirdParty.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings',
+        'test_wire_statusline.TestLegacySourceMigration.test_legacy_source_and_cache_reinstall_preserves_original_backup',
+    ) + _STATUSLINE_MIGRATION_CASES,
+    'disposition:transitions:hooks:statusline-wiring:03': (
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_rewrite_when_already_current',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_does_not_wire_when_no_statusline',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_heals_bare_string_statusline',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_ignores_stale_owner_marker_after_user_replaces_line',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_line_untouched',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_leaves_third_party_statusline_py_untouched',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_migrates_legacy_cache_command_to_owner_marker',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_noop_when_renderer_missing',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_refresh_preserves_spinner_backups_and_unrelated_settings',
+        'test_wire_statusline.TestRefreshStalePathOnSessionStart.test_stale_ours_path_is_refreshed',
+    ) + _STATUSLINE_MIGRATION_CASES,
+    'disposition:transitions:hooks:statusline-wiring:04': (
+        'test_wire_statusline.TestFreshInstall.test_uninstall_removes_statusline_when_no_prior_existed',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement',
+        'test_wire_statusline.TestUninstall.test_restores_exact_third_party_statusline_setting',
+    ),
+    'disposition:transitions:hooks:statusline-wiring:05': (
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_install_stamps_the_exact_owned_value',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_legacy_backup_without_stamp_is_conservative',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall',
+        'test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated',
+    ) + _STATUSLINE_MIGRATION_CASES,
+    'disposition:transitions:hooks:statusline-wiring:06': (
+        'test_durabilitylib.TestHasWorktreeSegment.test_case_insensitive',
+        'test_durabilitylib.TestHasWorktreeSegment.test_claude_subagent_worktree_matches',
+        'test_durabilitylib.TestHasWorktreeSegment.test_codearbiter_worktrees_layout_matches',
+        'test_durabilitylib.TestHasWorktreeSegment.test_junk_input_is_false_never_raises',
+        'test_durabilitylib.TestHasWorktreeSegment.test_mixed_separators',
+        'test_durabilitylib.TestHasWorktreeSegment.test_plugin_cache_install_does_not_match',
+        'test_durabilitylib.TestHasWorktreeSegment.test_source_checkout_does_not_match',
+        'test_durabilitylib.TestHasWorktreeSegment.test_substring_is_not_a_segment',
+        'test_durabilitylib.TestHotPathCost.test_module_does_not_import_subprocess',
+        'test_durabilitylib.TestInLinkedWorktree.test_ancestor_limit_excludes_only_marker_just_outside_64',
+        'test_durabilitylib.TestInLinkedWorktree.test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound',
+        'test_durabilitylib.TestInLinkedWorktree.test_junk_input_is_false_never_raises',
+        'test_durabilitylib.TestInLinkedWorktree.test_linked_worktree_gitfile_is_ephemeral',
+        'test_durabilitylib.TestInLinkedWorktree.test_main_checkout_gitdir_is_durable',
+        'test_durabilitylib.TestInLinkedWorktree.test_nearest_boundary_wins',
+        'test_durabilitylib.TestInLinkedWorktree.test_no_git_anywhere_is_durable',
+        'test_durabilitylib.TestInLinkedWorktree.test_permission_error_falls_back_durable_without_acl_mutation',
+        'test_durabilitylib.TestInLinkedWorktree.test_signal_survives_a_file_argument',
+        'test_durabilitylib.TestInLinkedWorktree.test_submodule_gitfile_is_durable',
+        'test_durabilitylib.TestInLinkedWorktree.test_unreadable_or_garbage_gitfile_is_durable',
+        'test_durabilitylib.TestIsEphemeralPath.test_git_signal_alone_is_enough',
+        'test_durabilitylib.TestIsEphemeralPath.test_junk_input_is_false_never_raises',
+        'test_durabilitylib.TestIsEphemeralPath.test_lexical_signal_alone_is_enough',
+        'test_durabilitylib.TestIsEphemeralPath.test_plugin_cache_install_is_durable',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_durable_root_still_wires',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_leaves_settings_byte_identical',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_install_from_worktree_root_refuses_loudly',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_declines_a_linked_worktree_with_no_worktrees_segment',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_durable_root_still_heals',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_leaves_settings_byte_identical',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_from_worktree_root_never_writes_a_worktree_path',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_refresh_if_stale_declines_an_ephemeral_script_without_mutating',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_status_from_worktree_root_still_reports_and_writes_nothing',
+        'test_wire_statusline.TestNonDurableRootIsNeverPinned.test_uninstall_from_worktree_root_is_never_blocked',
+    ),
+    'disposition:transitions:hooks:statusline-wiring:07': (
+        'test_atomic_writes.SaveSettingsAtomicTest.test_crash_mid_write_leaves_prior_settings_intact',
+        'test_atomic_writes.SaveSettingsAtomicTest.test_does_not_stage_to_the_fixed_sibling_tmp_name',
+        'test_wire_statusline.TestCorruptedJson.test_file_not_overwritten_on_corrupt_json',
+        'test_wire_statusline.TestCorruptedJson.test_install_raises_system_exit_on_corrupt_json',
+    ),
+}
+_STATUSLINE_CASES["disposition:machines:hooks:statusline-wiring"] = tuple(sorted(
+    {name for cases in _STATUSLINE_CASES.values() for name in cases}
+))
+
+
+def _statusline_test_id(name):
+    module = name.partition(".")[0]
+    require(module in STATUSLINE_TEST_MODULES, "foreign statusline discovery module")
+    return f"python:plugins/ca/hooks/tests/{module}.py:{name}"
+
+
+def statusline_component(cases):
+    return {"profile": STATUSLINE_PROFILE, "script": STATUSLINE_SCRIPT,
+            "artifact_prefix": STATUSLINE_CAPTURE_PREFIX, "upload": STATUSLINE_CAPTURE_UPLOAD,
+            "member": STATUSLINE_CAPTURE_MEMBER,
+            "selectors": sorted(_statusline_test_id(name) for name in cases)}
+
+
 SOURCE_FINDING_COMPOSITIONS = {
+    **{cell: (statusline_component(cases),) for cell, cases in _STATUSLINE_CASES.items()},
     **{cell: (program_integrity_component(cases),) for cell, cases in PROGRAM_INTEGRITY_CASES.items()},
     **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
     DEBUG_RESUBMISSION_FINDING: (
@@ -3685,7 +3911,12 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
                                            shared=component["artifact_prefix"] == "python-source-observations-")
     argv = observed.get("argv") if isinstance(observed, dict) else None
     script = component["script"]
-    if script in (DEBUG_HANDOFF_SUITE, DEBUG_WORKFLOW_SUITE):
+    if profile == STATUSLINE_PROFILE:
+        command_matches = (original_statusline_entrypoint(argv)
+                           and type(observed.get("run_attempt")) is int
+                           and observed["run_attempt"] == run["run_attempt"]
+                           and observed.get("test_result_scope") == STATUSLINE_RESULT_SCOPE)
+    elif script in (DEBUG_HANDOFF_SUITE, DEBUG_WORKFLOW_SUITE):
         command_matches = original_debug_entrypoint(argv, profile) and argv[3] == script
     else:
         command_matches = original_python_entrypoint(argv, script)
@@ -3708,6 +3939,8 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
                       and all(isinstance(test, dict) and set(test) == {"id", "result"}
                               and type(test["id"]) is str and 0 < len(test["id"].encode("utf-8")) <= MAX_TEST_ID_BYTES
                               for test in tests), "invalid or unbounded original component named outcomes")
+    if profile == STATUSLINE_PROFILE:
+        validate_statusline_tests(tests)
     outcomes = {test["id"]: test["result"] for test in tests}
     readiness.require(len(outcomes) == len(tests) and all(outcomes.get(selector) == "passed" for selector in component["selectors"]),
                       "selected named test missing, repeated, skipped or failed in original component")
@@ -3743,7 +3976,10 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
     rows, payloads = {}, {}
     recovery = None
-    shared_cells = (RECOVERY_TRANSITION_CASES.keys() | PROGRAM_INTEGRITY_CASES.keys()) & set(cells)
+    statusline_cells = _STATUSLINE_CASES.keys() & set(cells)
+    readiness.require(all(req["cell_jobs"].get(cell) == source_profile(STATUSLINE_PROFILE)["job"]
+                          for cell in statusline_cells), "statusline isolation route owner differs")
+    shared_cells = ((RECOVERY_TRANSITION_CASES.keys() | PROGRAM_INTEGRITY_CASES.keys()) & set(cells)) | statusline_cells
     selectors_by_profile, shared_evidence = {}, {}
     for cell in shared_cells:
         component, = SOURCE_FINDING_COMPOSITIONS[cell]
@@ -4722,6 +4958,61 @@ def authenticated_payload(metadata, req, consumed_root, source_job=None):
     return result
 
 
+def observe_statusline(repo, output, source_payload):
+    validate_emitter_environment()
+    require(os.name == "nt" and os.environ.get("RUNNER_OS") == "Windows",
+            "statusline capture requires its original Windows runner")
+    require(not any(os.environ.get(name) for name in ("GH_TOKEN", "GITHUB_TOKEN")),
+            "statusline original tests require a credential-blind process")
+    repo = Path(repo).resolve(strict=True)
+    output = Path(output).absolute()
+    output = output.parent.resolve(strict=True) / output.name
+    require(output.name == STATUSLINE_CAPTURE_MEMBER and not output.is_relative_to(repo)
+            and not output.exists() and not output.is_symlink(),
+            "new external statusline observation required")
+    before = source_identity(repo, STATUSLINE_PROFILE)
+    require(before["clean"] and before["source_commit"] == os.environ["GITHUB_SHA"],
+            "statusline original source differs")
+    binding = source_observation_binding(repo, source_payload, before, STATUSLINE_PROFILE)
+    run_id = int(os.environ["GITHUB_RUN_ID"])
+    attempt = int(os.environ["GITHUB_RUN_ATTEMPT"])
+    require(run_id > 0 and attempt > 0, "statusline original run identity missing")
+    with tempfile.TemporaryDirectory(prefix="ca-statusline-owner-") as directory:
+        private = Path(directory).resolve(strict=True)
+        require(not private.is_relative_to(repo), "statusline capture must be outside the checkout")
+        raw = private / STATUSLINE_RAW_MEMBER
+        argv = [sys.executable, str(repo / STATUSLINE_SCRIPT), "--statusline-results", str(raw)]
+        result = subprocess.run(argv, cwd=repo)
+        if result.returncode:
+            return result.returncode
+        info = raw.lstat()
+        require(stat.S_ISREG(info.st_mode) and not raw.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT
+                and 0 < info.st_size <= 128 * 1024, "invalid original statusline discovery result")
+        document = load_json(raw)
+    require(isinstance(document, dict) and set(document) == {"format", "modules"}
+            and document["format"] == STATUSLINE_RAW_FORMAT and isinstance(document["modules"], dict)
+            and set(document["modules"]) == STATUSLINE_TEST_MODULES,
+            "original statusline discovery result differs")
+    tests = []
+    for module, rows in sorted(document["modules"].items()):
+        require(isinstance(rows, list), "invalid original statusline module population")
+        for row in rows:
+            require(isinstance(row, dict) and set(row) == {"id", "result"}
+                    and isinstance(row["id"], str) and row["id"].startswith(module + "."),
+                    "invalid original statusline module result")
+            tests.append({"id": _statusline_test_id(row["id"]), "result": row["result"]})
+    validate_statusline_tests(tests)
+    after = source_identity(repo, STATUSLINE_PROFILE)
+    require(after == before and source_observation_binding(repo, source_payload, after, STATUSLINE_PROFILE) == binding,
+            "original statusline source changed during the hermetic guard")
+    new_output(output, {"format": OBSERVATION, **before, "ci_run_id": run_id, "run_attempt": attempt,
+        "source_stable": True, "source_input_binding": binding, "proof_kind": "source-test",
+        "producer": "python-test-result-observer", "test_result_scope": STATUSLINE_RESULT_SCOPE,
+        "argv": argv, "exit_code": 0, "tests": tests})
+    return 0
+
+
 def validate_emitter_environment():
     require(os.environ.get("GITHUB_ACTIONS") == "true"
             and os.environ.get("GITHUB_REPOSITORY") == readiness.REPOSITORY
@@ -4731,7 +5022,7 @@ def validate_emitter_environment():
 
 def main(argv=None):
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("operation", choices=("prepare-source", "observe-python", "observe-vitest", "admit-go", "emit"))
+    parser.add_argument("operation", choices=("prepare-source", "observe-python", "observe-vitest", "observe-statusline", "admit-go", "emit"))
     parser.add_argument("--repo", type=Path, default=ROOT)
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
@@ -4751,6 +5042,10 @@ def main(argv=None):
         if args.operation == "observe-python":
             require(args.arguments, "Python entry point required")
             return observe_python(args.repo, args.arguments[0], args.arguments[1:], args.output, args.source_payload, args.source_profile)
+        if args.operation == "observe-statusline":
+            require(not args.arguments and args.source_payload and args.source_profile == STATUSLINE_PROFILE,
+                    "statusline observation requires its fixed unfiltered original source profile")
+            return observe_statusline(args.repo, args.output, args.source_payload)
         if args.operation == "observe-vitest":
             return observe_vitest(args.repo, args.arguments, args.raw_results, args.output, args.execution_cwd, args.source_payload)
         if args.operation == "admit-go":

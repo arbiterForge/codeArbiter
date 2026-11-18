@@ -20,10 +20,13 @@ un-refreshed pin the user fixes with a single /ca:statusline run, while a false
 negative corrupts their global config.
 """
 
+import builtins
 import os
+import pathlib
 import sys
 import tempfile
 import unittest
+from unittest import mock
 
 HOOKS = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 if HOOKS not in sys.path:
@@ -156,6 +159,63 @@ class TestInLinkedWorktree(unittest.TestCase):
     def test_junk_input_is_false_never_raises(self):
         for junk in (None, "", 17, [], {}):
             self.assertFalse(dl.in_linked_worktree(junk))
+
+    def test_permission_error_falls_back_durable_without_acl_mutation(self):
+        marker = pathlib.Path(self.root, ".git")
+        marker.write_text("gitdir: /fixed/.git/worktrees/owned-fixture\n", encoding="utf-8")
+        hooks = pathlib.Path(_mkdirs(self.root, "hooks"))
+        self.assertTrue(dl.in_linked_worktree(str(hooks)))
+        with mock.patch.object(dl, "open", side_effect=PermissionError("owned read refusal"),
+                               create=True) as injected:
+            self.assertFalse(dl.in_linked_worktree(str(hooks)))
+            self.assertFalse(dl.is_ephemeral_path(str(hooks)))
+            self.assertEqual(injected.call_count, 2)
+            self.assertTrue(all(pathlib.Path(call.args[0]) == marker
+                                for call in injected.call_args_list))
+
+    def test_ancestor_limit_excludes_only_marker_just_outside_64(self):
+        folder = pathlib.Path(self.root)
+        (folder / ".git").write_text(
+            "gitdir: /fixed/.git/worktrees/owned-fixture\n", encoding="utf-8")
+        deep = folder
+        for _ in range(64):
+            deep = deep / "d"
+            deep.mkdir()
+        walked = list(dl._ancestors(str(deep)))
+        self.assertEqual(dl.MAX_ANCESTOR_WALK, 64)
+        self.assertEqual(len(walked), 64)
+        self.assertNotIn(str(folder), walked)
+        self.assertFalse(dl.in_linked_worktree(str(deep)))
+        self.assertFalse(dl.is_ephemeral_path(str(deep)))
+        self.assertTrue(dl.in_linked_worktree(str(deep.parent)))
+
+    def test_gitfile_read_caps_at_4096_with_worktree_suffix_beyond_bound(self):
+        marker = pathlib.Path(self.root, ".git")
+        data = b"gitdir: /" + b"x" * 4096 + b"/worktrees/owned-fixture\n"
+        marker.write_bytes(data)
+        self.assertGreaterEqual(data.index(b"/worktrees/"), 4096)
+        reads = []
+
+        class ActualFile:
+            def __init__(self, *args, **kwargs):
+                self.file = builtins.open(*args, **kwargs)
+
+            def __enter__(self):
+                return self
+
+            def read(self, size=-1):
+                reads.append(size)
+                return self.file.read(size)
+
+            def __exit__(self, *args):
+                self.file.close()
+
+        with mock.patch.object(dl, "open", side_effect=ActualFile, create=True):
+            self.assertFalse(dl.in_linked_worktree(self.root))
+        self.assertEqual(dl.GITFILE_READ_BYTES, 4096)
+        self.assertEqual(reads, [4096])
+        marker.write_bytes(b"gitdir: /fixed/.git/worktrees/owned-fixture\n")
+        self.assertTrue(dl.in_linked_worktree(self.root))
 
 
 class TestIsEphemeralPath(unittest.TestCase):

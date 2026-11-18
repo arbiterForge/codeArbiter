@@ -3904,7 +3904,8 @@ jobs:
         id: git_channel_observed
         if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
         run: |
-          python .github/scripts/test_release_target.py
+          python -B .github/scripts/major_qualification_report.py observe-python --repo . --source-profile hooks-single-owner-findings-v1 --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs" --output "${{ runner.temp }}/python-finite-release-receipt-observation.json" -- .github/scripts/test_release_target.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python -B .github/scripts/major_qualification_report.py observe-python --repo . --source-profile hooks-single-owner-findings-v1 --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs" --output "${{ runner.temp }}/python-finite-git-channel-observation.json" -- .github/scripts/test_marketplace_git_channels.py
       - name: Run the A-1.11 release resolution-trace suite
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
@@ -4019,6 +4020,12 @@ jobs:
           retention-days: 14
           include-hidden-files: true
           overwrite: false
+      - name: Test debug workflow contracts
+        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        env:
+          PYTHONDONTWRITEBYTECODE: '1'
+          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 'hooks-single-owner-findings-v1' || '' }}
+        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py
       - name: Retain original Python source-test observations
         if: ${{ !cancelled() && (success() || failure()) && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && steps.python_source_prepare.outcome == 'success' }}
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
@@ -4051,6 +4058,7 @@ jobs:
             --observation "finite-hookf03=${{ runner.temp }}/python-finite-hookf03-observation.json" \
             --observation "finite-cf06=${{ runner.temp }}/python-finite-cf06-observation.json" \
             --observation "finite-bounded-reader=${{ runner.temp }}/python-finite-bounded-reader-observation.json" \
+            --observation "finite-release-receipt=${{ runner.temp }}/python-finite-release-receipt-observation.json" \
             --observation "finite-git-channel=${{ runner.temp }}/python-finite-git-channel-observation.json" \
             --observation "finite-native-manifest=${{ runner.temp }}/python-finite-native-manifest-observation.json" \
             --observation "finite-tf02=${{ runner.temp }}/python-finite-tf02-observation.json" \
@@ -4119,12 +4127,6 @@ jobs:
       - name: Validate scoped context consumers
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_context_consumers.py
-      - name: Test debug workflow contracts
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
-        env:
-          PYTHONDONTWRITEBYTECODE: '1'
-          MAJOR_DEBUG_SOURCE_PROFILE: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 'hooks-single-owner-findings-v1' || '' }}
-        run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_workflow.py
       - name: Test debug helper invocation contracts
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         run: python .github/scripts/test_ci_impact.py --run-debug-suite .github/scripts/test_debug_helper_invocation.py
@@ -4212,8 +4214,16 @@ jobs:
         # session+file -> first injects, second silent), .codearbiter/ self-read
         # silent allow, fail-open on malformed stdin, miss, and dormant-repo paths.
         run: python .github/scripts/test_pre_read.py
+      - name: Prepare original statusline isolation source inputs
+        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py prepare-source --repo .
+          --source-profile hooks-isolation-statusline-v1
+          --output "${{ runner.temp }}/statusline-isolation-source-inputs"
+          --job-name "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: isolation>"
       - name: Enforce suite hermeticity (issues #442, #462)
-        if: matrix.partition == 'all' || matrix.partition == 'isolation'
+        if: (matrix.partition == 'all' || matrix.partition == 'isolation') && !(matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '')
         # The suite used to mutate the DEVELOPER'S REAL HOME - rewriting
         # ~/.claude/settings.json and littering ~/.codearbiter/ - and to leak
         # file handles and child processes, which on Windows turns a later
@@ -4233,6 +4243,35 @@ jobs:
         # the dual-host shared-store contract (ADR-0012) likewise execute only
         # here, side by side, each in its own pristine home.
         run: python .github/scripts/test_suite_hermeticity.py
+      - name: Observe original statusline isolation children
+        id: statusline_isolation_observed
+        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-statusline --repo .
+          --source-profile hooks-isolation-statusline-v1
+          --source-payload "${{ runner.temp }}/statusline-isolation-source-inputs"
+          --output "${{ runner.temp }}/statusline-isolation-observation.json"
+      - name: Upload original statusline isolation source inputs
+        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.statusline_isolation_observed.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-hooks-statusline-isolation
+          path: ${{ runner.temp }}/statusline-isolation-source-inputs/
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: true
+          overwrite: false
+      - name: Retain original statusline isolation observation
+        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.statusline_isolation_observed.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: statusline-isolation-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
+          path: ${{ runner.temp }}/statusline-isolation-observation.json
+          if-no-files-found: error
+          retention-days: 14
+          include-hidden-files: false
+          overwrite: false
       - name: Run ADR identity + supersession contract tests
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #416: two ADRs share the number 0014, so a bare `supersedes: 0014`
