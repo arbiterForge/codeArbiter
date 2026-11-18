@@ -4350,10 +4350,103 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                                                '          if-no-files-found: error\n'
                                                '          retention-days: 5\n'
                                                '          overwrite: false'}
+    _COMPONENT_ROLES = {'Validate component capture contract': '      - name: Validate component capture contract\n'
+                                            '        run: python -B '
+                                            '../.github/scripts/test_site_component_observation.py',
+     'Prepare original component source-test inputs': '      - name: Prepare original component source-test '
+                                                      'inputs\n'
+                                                      '        id: component-source\n'
+                                                      '        if: steps.program-mode.outputs.active == '
+                                                      "'true' && github.event_name == 'push' && "
+                                                      'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                      'github.ref)\n'
+                                                      '        run: >-\n'
+                                                      '          python -B '
+                                                      '../.github/scripts/site_component_observation.py '
+                                                      'prepare-source --repo ..\n'
+                                                      '          --output '
+                                                      '"$RUNNER_TEMP/component-source-inputs"',
+     'Browser component acceptance': '      - name: Browser component acceptance\n'
+                                     '        id: component-gate\n'
+                                     '        env:\n'
+                                     '          COMPONENT_PROGRAM_OBSERVE: ${{ '
+                                     "steps.program-mode.outputs.active == 'true' && github.event_name == "
+                                     "'push' && "
+                                     'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                     'github.ref) }}\n'
+                                     '        run: |\n'
+                                     '          if [ "$COMPONENT_PROGRAM_OBSERVE" = true ]; then\n'
+                                     '            python -B '
+                                     '../.github/scripts/site_component_observation.py observe --repo .. '
+                                     '\\\n'
+                                     '              --source-payload "$RUNNER_TEMP/component-source-inputs" '
+                                     '\\\n'
+                                     '              --browser-binary /opt/google/chrome/chrome \\\n'
+                                     '              --output "$RUNNER_TEMP/component-observation.json"\n'
+                                     '          else\n'
+                                     '            npm run test:components\n'
+                                     '          fi',
+     'Upload original component source-test inputs': '      - name: Upload original component source-test '
+                                                     'inputs\n'
+                                                     '        if: steps.component-source.outcome == '
+                                                     "'success' && steps.component-gate.outcome == "
+                                                     "'success' && steps.program-mode.outputs.active == "
+                                                     "'true' && github.event_name == 'push' && "
+                                                     'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                     'github.ref)\n'
+                                                     '        uses: '
+                                                     'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                                     '        with:\n'
+                                                     '          name: major-source-inputs-site-components\n'
+                                                     '          path: ${{ runner.temp '
+                                                     '}}/component-source-inputs/\n'
+                                                     '          include-hidden-files: true\n'
+                                                     '          if-no-files-found: error\n'
+                                                     '          retention-days: 14\n'
+                                                     '          overwrite: false',
+     'Emit component source-test qualification report': '      - name: Emit component source-test '
+                                                        'qualification report\n'
+                                                        '        id: component-report\n'
+                                                        '        if: steps.component-source.outcome == '
+                                                        "'success' && steps.component-gate.outcome == "
+                                                        "'success' && steps.program-mode.outputs.active == "
+                                                        "'true' && github.event_name == 'push' && "
+                                                        'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                        'github.ref)\n'
+                                                        '        env:\n'
+                                                        '          GH_TOKEN: ${{ github.token }}\n'
+                                                        '        run: >-\n'
+                                                        '          python -B '
+                                                        '../.github/scripts/site_component_observation.py '
+                                                        'emit --repo ..\n'
+                                                        '          --observation '
+                                                        '"$RUNNER_TEMP/component-observation.json"\n'
+                                                        '          --output '
+                                                        '"$RUNNER_TEMP/component-qualification.json"',
+     'Upload component source-test qualification report': '      - name: Upload component source-test '
+                                                          'qualification report\n'
+                                                          '        if: steps.component-report.outcome == '
+                                                          "'success' && steps.program-mode.outputs.active "
+                                                          "== 'true' && github.event_name == 'push' && "
+                                                          'contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), '
+                                                          'github.ref)\n'
+                                                          '        uses: '
+                                                          'actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9\n'
+                                                          '        with:\n'
+                                                          '          name: '
+                                                          'major-docs-component-qualification-${{ '
+                                                          'steps.component-report.outputs.job_id }}\n'
+                                                          '          path: ${{ runner.temp '
+                                                          '}}/component-qualification.json\n'
+                                                          '          if-no-files-found: error\n'
+                                                          '          retention-days: 14\n'
+                                                          '          overwrite: false'}
+    _PROGRAM_ROLES = {**_PROGRAM_ROLES, **_COMPONENT_ROLES}
     _SETUP_ROLES = ['      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1\n'
      '        with:\n'
      '          submodules: recursive\n'
-     '          fetch-depth: 0',
+     '          fetch-depth: 0\n'
+     '          persist-credentials: false',
      '      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1\n'
      '        with:\n'
      '          node-version: 22.23.4\n'
@@ -4377,6 +4470,8 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
                                  "closed Docs role changed")
                 if name == "Browser publication gate":
                     commands.append("npm run test:browser")
+                elif name == "Browser component acceptance":
+                    commands.append("npm run test:components")
                 continue
             try:
                 run = command(step)
@@ -4483,9 +4578,9 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertCountEqual(setup_seen, self._SETUP_ROLES,
                               "all reviewed setup actions must occur exactly once")
         self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", build),
-                         ["          GH_TOKEN: ${{ github.token }}"],
-                         "only the exact metadata emitter may receive a token")
-        self.assertEqual(build.count("${{ github.token }}"), 1)
+                         ["          GH_TOKEN: ${{ github.token }}"] * 2,
+                         "only the two exact metadata emitters may receive a token")
+        self.assertEqual(build.count("${{ github.token }}"), 2)
         self.assertNotIn("secrets.", build)
         self.assertEqual(self._build_commands(build), self._ORIGINAL_COMMANDS,
                          "new roles cannot add, remove, repeat or suppress an original command")
@@ -4516,20 +4611,36 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             self._assert_build_control_flow(candidate)
             steps = re.split(r"(?m)(?=^      - )", candidate)[1:]
             selected = [step for step in steps
-                        if re.search(r"(?m)^        run: npm run test:components$", step)]
+                        if step.startswith("      - name: Browser component acceptance\n")]
             self.assertEqual(len(selected), 1, "component suite must execute exactly once")
+            self.assertEqual(selected[0].rstrip(), self._PROGRAM_ROLES["Browser component acceptance"])
+
             self.assertLess(candidate.index("run: google-chrome --version"),
-                            candidate.index("run: npm run test:components"))
-            self.assertLess(candidate.index("run: npm run test:components"),
+                            candidate.index("      - name: Browser component acceptance\n"))
+            self.assertLess(candidate.index("      - name: Browser component acceptance\n"),
                             candidate.index("uses: actions/upload-pages-artifact@"))
 
+        actual_steps = re.split(r"(?m)(?=^      - )", build)[1:]
+        source_upload, = [step for step in actual_steps
+                          if step.startswith("      - name: Upload original component source-test inputs\n")]
+        checkout, = [step for step in actual_steps if "uses: actions/checkout@" in step]
+        for boundary, step, required in (
+            ("complete-hidden-source-members", source_upload, "          include-hidden-files: true\n"),
+            ("tokenless-source-checkout", checkout, "          persist-credentials: false\n"),
+        ):
+            with self.subTest(boundary=boundary):
+                self.assertIn(required, step)
         assert_lane(build)
         for mutation in (
-            build.replace("run: npm run test:components", "run: npm run test:browser", 1),
-            build.replace("        run: npm run test:components",
-                          "        if: false\n        run: npm run test:components", 1),
-            build.replace("        run: npm run test:components",
-                          "        continue-on-error: true\n        run: npm run test:components", 1),
+            build.replace("            npm run test:components", "            npm run test:browser", 1),
+            build.replace("        id: component-gate\n", "        id: component-gate\n        if: false\n", 1),
+            build.replace("        id: component-gate\n", "        id: component-gate\n        continue-on-error: true\n", 1),
+            build.replace("COMPONENT_PROGRAM_OBSERVE\" = true", "COMPONENT_PROGRAM_OBSERVE\" = false", 1),
+            build.replace("--source-payload \"$RUNNER_TEMP/component-source-inputs\"", "--source-payload \"$RUNNER_TEMP/other-inputs\"", 1),
+            build.replace("          include-hidden-files: true\n", "", 1),
+            build.replace("          include-hidden-files: true\n", "          include-hidden-files: false\n", 1),
+            build.replace("          persist-credentials: false\n", "", 1),
+            build.replace("          persist-credentials: false\n", "          persist-credentials: true\n", 1),
         ):
             with self.subTest(mutation=mutation):
                 self.assertNotEqual(mutation, build)

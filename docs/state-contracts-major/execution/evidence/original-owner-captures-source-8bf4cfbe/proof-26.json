@@ -1,0 +1,64 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "8bf4cfbe62806a78fd750f01108037c69b611e98",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Original-owner route delta and literal finite source/applicability preservation"
+  },
+  "inputs": {
+    ".github/scripts/test_artifact_authoring.py": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/measure-knowledge-retrieval.py": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T09:01",
+    "disposition:transitions:T09:02",
+    "disposition:transitions:T09:03",
+    "disposition:transitions:T09:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/source-delta-review.json",
+      "sha256": "05938adb97a326d4f877382e44599484331bbd3de369b90acd2dabda5fb77d5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-056-proof.json",
+      "sha256": "be7244514142eb2ce13668b34124238254e26b787f66e537fed58c4a0a707f94"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/stable-source-closed-python-namespace-2d594847/source-group-056-proof.json",
+    "sha256": "be7244514142eb2ce13668b34124238254e26b787f66e537fed58c4a0a707f94",
+    "original_code": "2d594847888619a98aa964ad1757a31a788aa5c4",
+    "stored_at": "00fd5fff97189598083e762e9c54fba8b01c1f62"
+  },
+  "scope": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed.",
+  "changed_paths": [
+    "membership:.github/scripts"
+  ],
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Preserve frozen exact owners and scoped guard/effect/retry. Changed CI/test paths add observer-only routes or inspected read-only Doc evidence alongside unchanged bound control blocks.",
+    "No execution, installation, release, task or hosted result is changed or established."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "aceb12697eca7d0fd2b4637bf8416ea30fdecfeb12a29b9f85684c16ad0d6bdd"
+    }
+  ]
+}

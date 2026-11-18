@@ -737,7 +737,21 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
             if step not in (consumers[0], controls[0]):
                 self.assertNotIn("GH_TOKEN:", step)
         # Hooks has one reviewed report producer; its token remains step-local.
-        expected_hook_guard = "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.native_manifest_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}"
+        # The Hook partition suite owns the exact report command and dependency
+        # list. Here, pin the token's trust boundary while allowing new outcomes.
+        hook_guard_prefix = (
+            "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts'"
+            " && github.event_name == 'push'"
+            " && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts')"
+            " && hashFiles('.github/integration-candidate.json') != ''"
+        )
+        required_hook_outcomes = {
+            "single_hookf02_modelib_observed",
+            "hook_review_observed",
+            "hook_finding_source_upload",
+            "bounded_reader_observed",
+            "git_channel_observed",
+        }
         def assert_hook_token_scope(document):
             hooks = self.job(document, "hooks")
             prefix = hooks.split("    steps:\n", 1)[0]
@@ -749,7 +763,13 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
             self.assertEqual(len(emitters), 1)
             emitter = emitters[0]
             self.assertIn("        id: python_qualification_emit\n", emitter)
-            self.assertIn("        if: " + expected_hook_guard + "\n", emitter)
+            guards = re.findall(r"(?m)^        if: (.+)$", emitter)
+            self.assertEqual(len(guards), 1)
+            self.assertTrue(guards[0].startswith(hook_guard_prefix))
+            dependencies = guards[0][len(hook_guard_prefix):]
+            self.assertRegex(dependencies, r"^(?: && steps\.[a-z0-9_]+\.outcome == 'success')+ \}\}$")
+            outcomes = re.findall(r" && steps\.([a-z0-9_]+)\.outcome == 'success'", dependencies)
+            self.assertLessEqual(required_hook_outcomes, set(outcomes))
             self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", emitter)
             self.assertEqual(emitter.count("GH_TOKEN:"), 1)
             self.assertIn("python -B .github/scripts/major_qualification_report.py emit", emitter)

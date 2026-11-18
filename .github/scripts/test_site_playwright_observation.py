@@ -595,6 +595,69 @@ class DocsAuthorityTests(unittest.TestCase):
                     self.docs.verify_transfer(root, original, root / 'wrong.json')
                 self.assertFalse((root / 'wrong.json').exists())
 
+    def test_windows_descriptor_ignores_only_synthetic_execute_bits(self):
+        # Real owned bytes, controlled portable metadata: Windows path stat
+        # supplies filename-derived execute bits absent from descriptor stat.
+        from types import SimpleNamespace
+        with tempfile.TemporaryDirectory(prefix='ca-docs-descriptor-') as folder:
+            path = pathlib.Path(folder).resolve() / 'owned.exe'
+            payload = b'owned bytes; never executed'
+            path.write_bytes(payload)
+            actual = path.lstat()
+            fields = ('st_dev', 'st_ino', 'st_nlink', 'st_size', 'st_mtime_ns')
+            base = {key: getattr(actual, key) for key in fields}
+            base['st_file_attributes'] = getattr(actual, 'st_file_attributes', 0)
+
+            def info(mode, **changes):
+                return SimpleNamespace(**dict(base, st_mode=mode, **changes))
+
+            class MetadataPath:
+                def __init__(self, initial, final=None):
+                    self.states = [initial, final or initial]
+                    self.index = 0
+                def __fspath__(self):
+                    return str(path)
+                def is_symlink(self):
+                    return False
+                def lstat(self):
+                    value = self.states[min(self.index, 1)]
+                    self.index += 1
+                    return value
+
+            pathname = info(0o100777)
+            descriptor = info(0o100666)
+            with mock.patch.object(self.docs.os, 'name', 'nt'), \
+                 mock.patch.object(self.docs.os, 'fstat', return_value=descriptor):
+                raw, observed = self.docs._regular(MetadataPath(pathname), len(payload))
+            self.assertEqual(raw, payload)
+            self.assertEqual(observed.st_mode, 0o100777)
+
+            vectors = (
+                ('posix-permissions', 'posix', descriptor, pathname),
+                ('write-permissions', 'nt', info(0o100644), pathname),
+                ('descriptor-type', 'nt', info(0o040666), pathname),
+                ('descriptor-links', 'nt', info(0o100666, st_nlink=2), pathname),
+                ('descriptor-inode', 'nt', info(0o100666, st_ino=actual.st_ino + 1), pathname),
+                ('descriptor-size', 'nt', info(0o100666, st_size=len(payload) + 1), pathname),
+                ('descriptor-mtime', 'nt', info(0o100666, st_mtime_ns=actual.st_mtime_ns + 1), pathname),
+                ('path-execute-change', 'nt', descriptor, info(0o100666)),
+                ('path-reparse', 'nt', descriptor, info(0o100777, st_file_attributes=0x400)),
+            )
+            for name, platform, opened, final in vectors:
+                with self.subTest(vector=name), mock.patch.object(self.docs.os, 'name', platform), \
+                     mock.patch.object(self.docs.os, 'fstat', return_value=opened):
+                    with self.assertRaises(owner.ReadinessError):
+                        self.docs._regular(MetadataPath(pathname, final), len(payload))
+
+    def test_owned_executable_named_file_is_read_without_execution(self):
+        with tempfile.TemporaryDirectory(prefix='ca-docs-owned-tool-') as folder:
+            for suffix in ('.exe', '.cmd', '.json'):
+                path = pathlib.Path(folder).resolve() / ('owned' + suffix)
+                path.write_bytes(b'owned tiny file')
+                raw, before = self.docs._regular(path, 64)
+                self.assertEqual(raw, b'owned tiny file')
+                self.assertEqual(before, path.lstat())
+
     def test_input_growth_during_read_never_consumes_unbounded_bytes(self):
         # Growth after the metadata check must refuse within the read budget.
         with tempfile.TemporaryDirectory(prefix='ca-docs-read-growth-') as folder:
@@ -677,9 +740,17 @@ class DocsAuthorityTests(unittest.TestCase):
         deploy = workflow.split('  deploy-qualified:\n', 1)[1]
         self.assertIn('id: browser-gate', build)
         self.assertIn('site_playwright_observation.py observe --repo ..', build)
-        self.assertEqual(build.count('run: npm run test:components'), 1)
+        from test_ci_impact import SiteBrowserPublicationWorkflowTest
+        import re
+        closed_build = re.sub(r'(?m)\s+#.*$', '', '  build:\n' + build)
+        workflow_guard = SiteBrowserPublicationWorkflowTest()
+        workflow_guard._assert_build_control_flow(closed_build)
+        self.assertEqual(workflow_guard._build_commands(closed_build).count('npm run test:components'), 1)
         self.assertIn('npm run test:browser\n', build)
-        self.assertNotIn('GH_TOKEN:', build.split('      - name: Upload Pages artifact')[0])
+        component = closed_build.split('      - name: Browser component acceptance\n', 1)[1].split('      - name:', 1)[0]
+        publication = closed_build.split('      - name: Browser publication gate\n', 1)[1].split('      - name:', 1)[0]
+        keys = [line.strip().partition(':')[0] for line in (component + publication).splitlines()]
+        self.assertNotIn('GH_TOKEN', keys)
         self.assertNotIn('pages: write', prepare)
         self.assertNotIn('id-token: write', prepare)
         self.assertIn('prepare-promotion', prepare)

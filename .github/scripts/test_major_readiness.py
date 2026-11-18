@@ -254,6 +254,7 @@ class ReadinessTest(unittest.TestCase):
 
     def test_complete_frozen_population_receipt_fits_existing_json_bound(self):
         # Exercise serialization at the full population size with inert evidence.
+        import site_component_observation as components
         import site_vitest_observation as docs
 
         repo = Path(__file__).resolve().parents[2]
@@ -275,9 +276,14 @@ class ReadinessTest(unittest.TestCase):
         self.assertEqual(docs_cells, docs.CELLS)
         sf13_cell = docs.reports.SF13_CELL
         self.assertIn(sf13_cell, cells)
-        core_cells = sorted(set(cells) - docs_cells - {sf13_cell})
+        component_cells = components.CELLS.intersection(cells)
+        self.assertEqual(component_cells, components.CELLS)
+        self.assertTrue(component_cells.isdisjoint(docs_cells | {sf13_cell}))
+        core_cells = sorted(set(cells) - docs_cells - component_cells - {sf13_cell})
         req = dict(self.requirements, cells=sorted(cells),
-                   cell_jobs={cell: docs.JOB if cell in docs_cells else job for cell in cells},
+                   cell_jobs={**dict.fromkeys(cells, job),
+                              **dict.fromkeys(docs_cells, docs.JOB),
+                              **dict.fromkeys(component_cells, components.JOB)},
                    source_finding_composite_cells=[sf13_cell],
                    source_finding_inputs={profile: "5" * 64
                        for profile in docs.reports.source_finding_profiles([sf13_cell])})
@@ -309,6 +315,13 @@ class ReadinessTest(unittest.TestCase):
                 for cell in sorted(docs_cells)],
         }
         docs_source['sf13_selectors'] = list(docs.SF13_DOCS_SELECTORS)
+        component_source = {
+            'run_id': 8, 'run_attempt': 1, 'job_id': 21,
+            'source_artifact_id': 33, 'source_archive_sha256': '7' * 64,
+            'report_artifact_id': 34, 'report_archive_sha256': '8' * 64,
+            'results': [{'cell': cell, 'result': 'PASSED', 'selectors': components.RECIPES[cell]}
+                        for cell in sorted(component_cells)],
+        }
         sf13_source = {
             'cell': sf13_cell, 'result': 'PASSED',
             'core_components': [
@@ -327,13 +340,19 @@ class ReadinessTest(unittest.TestCase):
         with (mock.patch.object(owner, 'validate_upload'),
               mock.patch.object(owner, 'artifact_bytes',
                                 side_effect=lambda a, req: archive.getvalue() if a['id'] == 30 else content),
+              mock.patch.object(components, 'admit', return_value=component_source) as admit_components,
               mock.patch.object(docs, 'admit', return_value=docs_source) as admit_docs,
               mock.patch.object(docs, 'sf13_composition', return_value=sf13_source) as compose_sf13):
             receipt = owner.produce(req, artifacts, jobs)
-        admit_docs.assert_called_once_with(req)
-        compose_sf13.assert_called_once_with(req, docs_source, artifacts, jobs, producing=True)
-        self.assertEqual(receipt['schema'], docs.ENVELOPE)
-        results = receipt['core']['results'] + receipt['docs_source']['results'] + [receipt['sf13_source']]
+        admit_components.assert_called_once_with(req)
+        docs_req = components.core_requirements(req)
+        admit_docs.assert_called_once_with(docs_req)
+        compose_sf13.assert_called_once_with(docs_req, docs_source, artifacts, jobs, producing=True)
+        self.assertEqual(receipt['schema'], components.ENVELOPE)
+        docs_receipt = receipt['core']
+        self.assertEqual(docs_receipt['schema'], docs.ENVELOPE)
+        results = (docs_receipt['core']['results'] + docs_receipt['docs_source']['results']
+                   + [docs_receipt['sf13_source']] + receipt['components']['results'])
         self.assertEqual(sorted(row['cell'] for row in results), sorted(cells))
         self.assertLess(len(raw), 4 * 1024 * 1024)
         self.assertLess(len(json.dumps(receipt, indent=2).encode()), 4 * 1024 * 1024)

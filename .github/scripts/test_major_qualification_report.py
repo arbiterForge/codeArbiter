@@ -3647,9 +3647,15 @@ class PiSandboxFiniteFindingRoutingTests(unittest.TestCase):
                     self.assertIn('["old-first", "new-first"]', body)
                 else:
                     self.assertTrue(any(title.endswith(t) for t in __import__('re').findall(r'(?:test|it)\("([^"\n]+)"', body)), selector)
-        held = "disposition:findings:SF11"
-        self.assertNotIn(held, policy["cell_job_bindings"])
-        self.assertFalse(any(held in g["cells"] for g in groups))
+        from site_component_observation import JOB, PAYLOAD, RECIPES, ROLE
+
+        component_cell = "disposition:findings:SF11"
+        component, = (group for group in groups if component_cell in group["cells"])
+        self.assertEqual(component["cells"], [component_cell])
+        self.assertEqual(policy["cell_job_bindings"][component_cell], JOB)
+        self.assertEqual((component["job"], component["payload_name"], component["observation"],
+                          component["proof_kind"], component["selectors"]),
+                         (JOB, PAYLOAD, ROLE, "source-test", RECIPES[component_cell]))
 
     def test_c_no_missing_skipped_failed_or_duplicate_outcome_can_qualify_a_finding(self):
         for profile in TS_PROFILE_FIXTURES:
@@ -4469,6 +4475,33 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
         },
     })
 
+    EXPECTED.update({
+        'disposition:findings:W-F01': {
+            'id': 'finite-scoped-conflict-wf01',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_routing_and_cleanup_surface.py',
+            'observation': 'finite-scoped-conflict',
+            'selectors': [
+                'python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies',
+                'python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain',
+                'python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope',
+            ],
+            'scope': 'Original source instruction contract for the dependent-conflict finding across canonical and rendered host surfaces.',
+        },
+        'disposition:transitions:WF-02:01': {
+            'id': 'finite-scoped-conflict-wf02-01',
+            'profile': 'hooks-single-owner-findings-v1',
+            'script': '.github/scripts/test_routing_and_cleanup_surface.py',
+            'observation': 'finite-scoped-conflict',
+            'selectors': [
+                'python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies',
+                'python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain',
+                'python:.github/scripts/test_routing_and_cleanup_surface.py:__main__.TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope',
+            ],
+            'scope': 'Original dependent-conflict transition instructions for explicit global stops and independent authorized continuation.',
+        },
+    })
+
     def test_a_six_existing_single_owner_findings_have_closed_original_profiles(self):
         expected_jobs = {
             "hooks-single-owner-findings-v1": "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
@@ -4526,6 +4559,44 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 self.assertEqual(actual,group)
                 self.assertEqual(policy['cell_job_bindings'][cell],spec['job'])
 
+    def test_release_library_rows_require_the_exact_original_classifier_assertions(self):
+        history = owner.ROOT / ('docs/state-contracts-major/execution/evidence/'
+                                'release-bindings-b7a75fca/classifier-tested.json')
+        proof = owner.load_json(history)
+        binding = 'finite-release-library'
+        script = '.github/scripts/test_release_lib.py'
+        expected = {
+            cell: [f"python:{script}:__main__." + name.removeprefix('test_release_lib.')
+                   for name in proof['per_disposition_assertions'][cell.split(':', 2)[2]]]
+            for cell in proof['disposition_ids']
+        }
+        self.assertEqual(len(expected), 11)
+        selections = owner.load_json(owner.ROOT / '.github/major-test-selections.json')
+        policy = owner.load_json(owner.ROOT / '.github/major-qualification-policy.json')
+        groups = [group for group in selections['groups'] if group['observation'] == binding]
+        self.assertEqual({group['cells'][0]: group['selectors'] for group in groups}, expected)
+        _, spec, req, payload, observed, _, _ = self.fixture('disposition:findings:T-F02')
+        self.assertLessEqual(set(proof['inputs']), spec['paths'])
+        self.assertEqual({cell: policy['cell_job_bindings'][cell] for cell in expected},
+                         dict.fromkeys(expected, spec['job']))
+        req.update(cells=sorted(expected), cell_jobs=dict.fromkeys(expected, spec['job']))
+        selectors = sorted({selector for names in expected.values() for selector in names})
+        self.assertEqual(len(selectors), 23)
+        observed.update(argv=['python', script], tests=[{'id': name, 'result': 'passed'} for name in selectors])
+
+        def build():
+            return owner.build_report(req, job_name=spec['job'], job_id=9,
+                selections={'schema': owner.SELECTIONS, 'groups': groups},
+                observations={binding: observed}, payloads={spec['payload']: payload})
+
+        report = build()
+        self.assertEqual(len(report['payloads']), 1)
+        self.assertEqual({row['cell']: row['executed_population'] for row in report['results']},
+                         {cell: len(names) for cell, names in expected.items()})
+        observed['tests'].pop()
+        with self.assertRaisesRegex(ValueError, 'selected named test missing'):
+            build()
+
     def test_native_manifest_cell_requires_the_four_original_python_outcomes(self):
         history = owner.ROOT / 'docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json'
         receipt = owner.load_json(history)
@@ -4551,6 +4622,18 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
         observed['tests'].pop()
         with self.assertRaisesRegex(ValueError, 'selected named test missing'):
             build()
+
+    def test_scoped_conflict_cells_share_one_original_capture(self):
+        self.assert_shared_original_capture("finite-scoped-conflict", 2, 3)
+        retained = owner.load_json(owner.ROOT / "docs/state-contracts-major/execution/evidence/wf01-scoped-conflict-bf2f4b41/tested.json")
+        profile = owner.source_profile("hooks-single-owner-findings-v1")
+        self.assertLessEqual(set(retained["inputs"]), profile["paths"])
+        for row in retained["per_cell_assertion_mapping"]:
+            expected = self.EXPECTED[row["cell"]]
+            script = expected["script"]
+            original = [f"python:{script}:__main__.{case.split('.', 1)[1]}"
+                        for case in row["observed_named_cases"]]
+            self.assertEqual(expected["selectors"], original)
 
     def test_bounded_reader_cells_share_one_original_capture(self):
         self.assert_shared_original_capture("finite-bounded-reader", 6, 14)

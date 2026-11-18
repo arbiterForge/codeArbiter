@@ -1896,6 +1896,16 @@ Q02_FINDING_RECIPES = {
 # Single-owner finding routes use existing unfiltered commands. Shared source
 # transport grants no multi-owner, whole-task, model or installed-host claim.
 _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
+ '.codearbiter/decisions/0043-assistive-state-engine.md',
+ 'plugins/ca-codex/SPRINT.md',
+ 'plugins/ca-codex/routines/context-check/SKILL.md',
+ 'plugins/ca-codex/skills/ca-conflict/SKILL.md',
+ 'plugins/ca-pi/SPRINT.md',
+ 'plugins/ca-pi/routines/context-check/SKILL.md',
+ 'plugins/ca-pi/skills/ca-conflict/SKILL.md',
+ 'plugins/ca/SPRINT.md',
+ 'plugins/ca/commands/conflict.md',
+ 'plugins/ca/skills/context-check/SKILL.md',
  '.github/fixtures/artifact-release-manifest.json',
  '.claude-plugin/marketplace.json',
  'plugins/ca/skills/debug/SKILL.md', 'plugins/ca/skills/debug/references/preparation.md',
@@ -2001,6 +2011,8 @@ _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
  '.github/scripts/site_playwright_observation.py',
  '.github/scripts/site_vitest_observation.py',
  '.github/scripts/test_site_vitest_observation.py',
+ '.github/scripts/site_component_observation.py',
+ '.github/scripts/test_site_component_observation.py',
  '.github/scripts/tag_publication_receipt.py',
  '.github/scripts/test_academy_promotion.py',
  '.github/scripts/test_acquire_nixpacks.py',
@@ -2711,6 +2723,68 @@ PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
         "disposition:transitions:T08:05": _MEASUREMENT_VERDICT_CASES,
         "disposition:transitions:T10:07": _MEASUREMENT_VERDICT_CASES,
         "disposition:transitions:T10:08": _MEASUREMENT_VERDICT_CASES,
+    },
+))
+
+_SCOPED_CONFLICT_CASES = (
+    "TestDependentConflictScope.test_conflict_keeps_sources_and_records_affected_dependencies",
+    "TestDependentConflictScope.test_independent_work_continues_but_global_stops_remain",
+    "TestDependentConflictScope.test_sprint_and_context_refresh_propagate_the_same_scope",
+)
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_routing_and_cleanup_surface.py", "finite-scoped-conflict", {
+        "disposition:findings:W-F01": _SCOPED_CONFLICT_CASES,
+        "disposition:transitions:WF-02:01": _SCOPED_CONFLICT_CASES,
+    },
+))
+
+PYTHON_FINDING_RECIPES.update(_hook_contract_recipes(
+    ".github/scripts/test_release_lib.py", "finite-release-library", {
+        "disposition:transitions:S44:01": (
+            "CoreClassifyPublishStateTest.test_no_tag_is_publish_fresh",
+        ),
+        "disposition:transitions:S44:02": (
+            "CoreClassifyPublishStateTest.test_tag_points_elsewhere_is_abort",
+            "CoreClassifyPublishStateTest.test_version_mismatch_is_abort",
+            "CoreClassifyPublishStateTest.test_nondraft_release_on_a_tag_at_another_commit_is_abort",
+        ),
+        "disposition:transitions:S44:03": (
+            "CoreClassifyPublishStateTest.test_nondraft_release_is_already_published",
+        ),
+        "disposition:transitions:S44:04": (
+            "CoreClassifyPublishStateTest.test_tag_at_head_version_match_no_release_is_resume",
+        ),
+        "disposition:transitions:S44:05": (
+            "CoreMergeReadinessArmsTest.test_missing_when_no_run_matches_the_name",
+            "CoreMergeReadinessArmsTest.test_missing_on_empty_check_runs",
+            "MergeReadinessTest.test_unrelated_checks_do_not_stand_in_for_the_gate",
+            "MergeReadinessTest.test_never_raises_on_garbage",
+        ),
+        "disposition:transitions:S44:06": (
+            "CoreMergeReadinessArmsTest.test_sha_mismatch_on_a_different_commit",
+            "MergeReadinessTest.test_success_on_another_commit_is_rejected",
+        ),
+        "disposition:transitions:S44:07": (
+            "CoreMergeReadinessArmsTest.test_pending_when_not_completed",
+            "MergeReadinessTest.test_queued_and_in_progress_are_pending",
+        ),
+        "disposition:transitions:S44:08": (
+            "CoreMergeReadinessArmsTest.test_not_successful_on_a_failed_conclusion",
+            "MergeReadinessTest.test_every_non_success_conclusion_is_rejected",
+            "MergeReadinessTest.test_a_green_rerun_alongside_a_red_one_is_rejected",
+        ),
+        "disposition:transitions:S44:09": (
+            "CoreMergeReadinessArmsTest.test_green_is_still_reachable",
+            "MergeReadinessTest.test_completed_success_is_green",
+            "CoreMergeReadinessArmsTest.test_complete_64_character_commit_identity_is_supported",
+        ),
+        "disposition:added_transitions:RELEASE-READINESS-BINDING:01": (
+            "CoreMergeReadinessArmsTest.test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity",
+        ),
+        "disposition:added_transitions:RELEASE-READINESS-BINDING:02": (
+            "CoreMergeReadinessArmsTest.test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run",
+            "CoreMergeReadinessArmsTest.test_missing_required_binding_fields_never_form_green_evidence",
+        ),
     },
 ))
 
@@ -4429,7 +4503,8 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                         "installed outcomes differ from closed observer admission")
                 admitted = installed_admissions[group["observation"]]
                 require(group["payload_name"] == admitted["primary_payload_name"], "cold primary payload differs")
-                require(group["proof_kind"] != "live-host" or cell in admitted["installed_cells"],
+                require(group["proof_kind"] != "live-host" or cell in admitted["installed_cells"]
+                        or cell in admitted.get("disposition_cells", ()),
                         "closed live profile cannot qualify this cell")
                 require(not cell.startswith("installed:") or cell in admitted["installed_cells"],
                         "cold profile cannot qualify this upstream installed cell")
