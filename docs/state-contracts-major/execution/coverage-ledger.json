@@ -48,8 +48,15 @@
     "HW-20",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-findings-windows-contracts-hosted-tested.json",
+     "sha256": "dcceb5cb8db3dcdf00dcb26699faf2991d2de31cefeea97703bbe136d0f3af59"
+    }
+   ]
   },
   "W-F04": {
    "owner": null,
@@ -645,8 +652,15 @@
     "HW-01",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-single-owner-hosted-tested.json",
+     "sha256": "c037349afc304c0e90a6e6389ff1855295e57f764837f9cc91258c7d98c6e248"
+    }
+   ]
   },
   "HOOK-F02": {
    "owner": null,
@@ -655,8 +669,15 @@
     "HW-02",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-single-owner-hosted-tested.json",
+     "sha256": "c037349afc304c0e90a6e6389ff1855295e57f764837f9cc91258c7d98c6e248"
+    }
+   ]
   },
   "HOOK-F03": {
    "owner": null,
@@ -665,8 +686,15 @@
     "HW-03",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-single-owner-hosted-tested.json",
+     "sha256": "c037349afc304c0e90a6e6389ff1855295e57f764837f9cc91258c7d98c6e248"
+    }
+   ]
   },
   "HOOK-F04": {
    "owner": null,
@@ -675,8 +703,15 @@
     "HW-04",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-hook-launch-hosted-00fd5fff/hook-f04-hosted-tested.json",
+     "sha256": "9e1849942f13d3fdc9954a2c8bb868a7e94bba95d72dd15cc77e6befe2bac644"
+    }
+   ]
   },
   "HOOK-F05": {
    "owner": null,
@@ -812,8 +847,15 @@
     "PI-D06",
     "PI-D07"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/pi-windows-coverage-hosted-tested.json",
+     "sha256": "6aa037aa60e013b96a0bc88ab71e4fa82ef838d349ddb65e092cabc09f51d589"
+    }
+   ]
   },
   "SF02": {
    "owner": null,
@@ -821,8 +863,15 @@
    "task_ids": [
     "PI-L01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/pi-windows-coverage-hosted-tested.json",
+     "sha256": "6aa037aa60e013b96a0bc88ab71e4fa82ef838d349ddb65e092cabc09f51d589"
+    }
+   ]
   },
   "SF03": {
    "owner": null,
@@ -830,8 +879,15 @@
    "task_ids": [
     "PI-L02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/pi-windows-coverage-hosted-tested.json",
+     "sha256": "6aa037aa60e013b96a0bc88ab71e4fa82ef838d349ddb65e092cabc09f51d589"
+    }
+   ]
   },
   "SF04": {
    "owner": null,
@@ -839,8 +895,15 @@
    "task_ids": [
     "DIST-M01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/farm-dispatcher-hosted-tested.json",
+     "sha256": "d5c09f9e4ef1a66fb8d9419ac512df5d9717ad1234affeb2b50a214c60a1a173"
+    }
+   ]
   },
   "SF05": {
    "owner": null,
@@ -848,8 +911,15 @@
    "task_ids": [
     "FARM-R01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/farm-dispatcher-hosted-tested.json",
+     "sha256": "d5c09f9e4ef1a66fb8d9419ac512df5d9717ad1234affeb2b50a214c60a1a173"
+    }
+   ]
   },
   "SF06": {
    "owner": null,
@@ -857,8 +927,15 @@
    "task_ids": [
     "FARM-R02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/farm-dispatcher-hosted-tested.json",
+     "sha256": "d5c09f9e4ef1a66fb8d9419ac512df5d9717ad1234affeb2b50a214c60a1a173"
+    }
+   ]
   },
   "SF07": {
    "owner": null,
@@ -866,8 +943,15 @@
    "task_ids": [
     "FARM-R03"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/farm-dispatcher-hosted-tested.json",
+     "sha256": "d5c09f9e4ef1a66fb8d9419ac512df5d9717ad1234affeb2b50a214c60a1a173"
+    }
+   ]
   },
   "SF08": {
    "owner": null,
@@ -875,8 +959,15 @@
    "task_ids": [
     "SBX-C01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/sandbox-driver-hosted-tested.json",
+     "sha256": "8c1f7ef31702cecdb9209ef2834ced6fffc8ac80134624c68ba52cbd64f800dd"
+    }
+   ]
   },
   "SF09": {
    "owner": null,
@@ -884,8 +975,15 @@
    "task_ids": [
     "SBX-C02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/sandbox-driver-hosted-tested.json",
+     "sha256": "8c1f7ef31702cecdb9209ef2834ced6fffc8ac80134624c68ba52cbd64f800dd"
+    }
+   ]
   },
   "SF10": {
    "owner": null,
@@ -893,8 +991,15 @@
    "task_ids": [
     "SBX-C03"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/sandbox-driver-hosted-tested.json",
+     "sha256": "8c1f7ef31702cecdb9209ef2834ced6fffc8ac80134624c68ba52cbd64f800dd"
+    }
+   ]
   },
   "SF11": {
    "owner": null,
@@ -935,8 +1040,15 @@
     "PI-D06",
     "PI-C01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/pi-windows-coverage-hosted-tested.json",
+     "sha256": "6aa037aa60e013b96a0bc88ab71e4fa82ef838d349ddb65e092cabc09f51d589"
+    }
+   ]
   },
   "SF13": {
    "owner": null,
@@ -1042,8 +1154,15 @@
    "task_ids": [
     "R-02"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/q02-implementation-hosted-tested.json",
+     "sha256": "77f7a0e38a4bf668b3d66f19eb649f32438fd38492f873dc4bb736d3a9f43a80"
+    }
+   ]
   },
   "C-F03": {
    "owner": null,
@@ -1158,8 +1277,15 @@
    "task_ids": [
     "R-06"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-single-owner-hosted-tested.json",
+     "sha256": "c037349afc304c0e90a6e6389ff1855295e57f764837f9cc91258c7d98c6e248"
+    }
+   ]
   },
   "C-F07": {
    "owner": null,
@@ -1167,8 +1293,15 @@
    "task_ids": [
     "R-06"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/impact-single-owner-hosted-tested.json",
+     "sha256": "5cd515685f7f027624ed0b009f8b257e33dd222c97f1ecd7e35051805528827d"
+    }
+   ]
   },
   "C-F08": {
    "owner": null,
@@ -1208,8 +1341,15 @@
    "task_ids": [
     "R-08"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/site-vitest-findings-hosted-tested.json",
+     "sha256": "2256b1be0fe61e98366bed4e22b12302ef26da2d3bd4eaffc6c88ba5cb77339e"
+    }
+   ]
   },
   "T-F01": {
    "owner": null,
@@ -1233,8 +1373,15 @@
    "task_ids": [
     "T-01"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-single-owner-hosted-tested.json",
+     "sha256": "c037349afc304c0e90a6e6389ff1855295e57f764837f9cc91258c7d98c6e248"
+    }
+   ]
   },
   "T-F03": {
    "owner": null,
@@ -1275,8 +1422,15 @@
     "HW-22",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/site-vitest-findings-hosted-tested.json",
+     "sha256": "2256b1be0fe61e98366bed4e22b12302ef26da2d3bd4eaffc6c88ba5cb77339e"
+    }
+   ]
   },
   "GEN-F02": {
    "owner": null,
@@ -1285,8 +1439,15 @@
     "HW-23",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/site-vitest-findings-hosted-tested.json",
+     "sha256": "2256b1be0fe61e98366bed4e22b12302ef26da2d3bd4eaffc6c88ba5cb77339e"
+    }
+   ]
   },
   "GEN-B01": {
    "owner": null,
@@ -1295,8 +1456,15 @@
     "HW-24",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+     "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/site-vitest-findings-hosted-tested.json",
+     "sha256": "2256b1be0fe61e98366bed4e22b12302ef26da2d3bd4eaffc6c88ba5cb77339e"
+    }
+   ]
   },
   "SW-F01": {
    "owner": "sandbox",
