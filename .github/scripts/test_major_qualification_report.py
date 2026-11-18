@@ -2244,6 +2244,22 @@ class SourceBytePolicyTests(unittest.TestCase):
             self.assertFalse((f['base']/'cli-refused').exists())
 
 
+
+class GitHubReportDiagnosticTest(unittest.TestCase):
+    def test_scope_refusal_logs_safe_github_operation_and_status(self):
+        from contextlib import redirect_stderr
+        error = owner.readiness.ReadinessError("readiness observation failed: gh")
+        error.github_read_observation = {"operation": "run-jobs", "http_status": 503}
+        emitted = io.StringIO()
+        with (mock.patch.object(owner, "validate_emitter_environment", side_effect=error),
+              redirect_stderr(emitted)):
+            code = owner.main(["emit", "--repo", ".", "--output", "qualification.json",
+                               "--job-name", "test owner", "--observation", "mock=absent.json"])
+        self.assertEqual(code, 1)
+        self.assertEqual(emitted.getvalue().strip(),
+            "::error::Major qualification report pending: readiness observation failed: gh (run-jobs, HTTP 503)")
+
+
 class MappedNativeConsumerDispatchTests(unittest.TestCase):
     def test_closed_mapped_consumer_transports_source_and_original_native_without_reexecution(self):
         import types
