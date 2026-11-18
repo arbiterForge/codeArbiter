@@ -3398,7 +3398,7 @@
       "selectors": [
         "vitest:plugins/ca/tools/exec.test.ts:run() — a child killed by a signal reports code 1 when the close event carries no exit code",
         "vitest:plugins/ca/tools/exec.test.ts:run() — stream capture captures stderr separately from stdout and merges both into `out`",
-        "vitest:plugins/ca/tools/exec.test.ts:treeKill() — the tree cannot be confirmed gone reports ok:false with the pid and budget when taskkill cannot be run"
+        "vitest:plugins/ca/tools/exec.test.ts:treeKill() — the tree cannot be confirmed gone reports ok:false naming the process group when SIGKILL leaves a live member"
       ],
       "cells": [
         "disposition:transitions:S29:02"
