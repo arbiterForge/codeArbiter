@@ -4310,14 +4310,26 @@ jobs:
           retention-days: 14
           include-hidden-files: false
           overwrite: false
+      - name: Resolve Windows workflow recovery upload directory
+        if: matrix.os == 'windows-latest'
+        id: recovery-native-upload
+        shell: pwsh
+        run: |
+          $directory = (Resolve-Path -LiteralPath $env:ARTIFACT_TEST_INSTALLATION -ErrorAction Stop).ProviderPath
+          foreach ($name in @('release.json', 'ca-artifact-windows-amd64.exe')) {
+            if (!(Test-Path -LiteralPath (Join-Path $directory $name) -PathType Leaf)) {
+              throw "Missing workflow recovery upload member: $name"
+            }
+          }
+          "directory=$($directory.Replace('\', '/'))" >> $env:GITHUB_OUTPUT
       - name: Upload original workflow recovery native installation
         if: matrix.os == 'windows-latest'
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: workflow-recovery-native-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
           path: |
-            ${{ github.workspace }}/../workflow-recovery-native/release.json
-            ${{ github.workspace }}/../workflow-recovery-native/ca-artifact-windows-amd64.exe
+            ${{ steps.recovery-native-upload.outputs.directory }}/release.json
+            ${{ steps.recovery-native-upload.outputs.directory }}/ca-artifact-windows-amd64.exe
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false

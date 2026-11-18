@@ -3002,13 +3002,17 @@ class WorkflowContractTest(unittest.TestCase):
         )
 
     def test_recovery_checks_have_required_native_cells_and_independent_exit_statuses(self):
-        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        from test_hook_ci_partition import validate_recovery
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(workflow)
         recovery = jobs["workflow-recovery"]
         self.assertIn("os: [ubuntu-latest, windows-latest, macos-latest]", recovery)
         self.assertIn("fail-fast: false", recovery)
         self.assertIn("timeout-minutes: 15", recovery)
         self.assertNotIn("continue-on-error", recovery)
-        self.assertNotIn("run: |", recovery)
+        # Only the upload resolver may use a block. The original suites must
+        # still execute as the separately accounted commands in the guard.
+        self.assertEqual(validate_recovery(workflow), {"commands": 5, "native_setup": 1, "cells": 3})
         for script in ("test_workflow_recovery.py", "test_workflow_recovery_cli.py",
                        "test_workflow_recovery_hosts.py", "test_workflow_recovery_generator.py",
                        "test_review_resubmission.py"):

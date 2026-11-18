@@ -105,7 +105,18 @@ def recovery_consumer_steps() -> list[str]:
     uploads.append(upload('Retain original review resubmission observation',
                           'review-resubmission-observation-' + RECOVERY_RUN_SUFFIX,
                           '${{ runner.temp }}/review-resubmission-observation.json'))
-    native = '${{ github.workspace }}/../workflow-recovery-native/'
+    uploads.append(named('Resolve Windows workflow recovery upload directory') + RECOVERY_WINDOWS + r"""        id: recovery-native-upload
+        shell: pwsh
+        run: |
+          $directory = (Resolve-Path -LiteralPath $env:ARTIFACT_TEST_INSTALLATION -ErrorAction Stop).ProviderPath
+          foreach ($name in @('release.json', 'ca-artifact-windows-amd64.exe')) {
+            if (!(Test-Path -LiteralPath (Join-Path $directory $name) -PathType Leaf)) {
+              throw "Missing workflow recovery upload member: $name"
+            }
+          }
+          "directory=$($directory.Replace('\', '/'))" >> $env:GITHUB_OUTPUT
+""")
+    native = '${{ steps.recovery-native-upload.outputs.directory }}/'
     uploads.append(upload('Upload original workflow recovery native installation',
                           'workflow-recovery-native-' + RECOVERY_RUN_SUFFIX,
                           '|\n            ' + native + 'release.json\n            ' + native + 'ca-artifact-windows-amd64.exe'))
@@ -933,6 +944,14 @@ class RecoveryContractTests(unittest.TestCase):
         self.bad(GO_SETUP + RECOVERY_PREPARE, RECOVERY_PREPARE + GO_SETUP)
         self.bad(RECOVERY_PREPARE, RECOVERY_PREPARE + RECOVERY_PREPARE)
         self.bad(RECOVERY_PREPARE, RECOVERY_PREPARE.replace('        env:', '        if: false\n        env:'))
+
+    def test_recovery_upload_uses_only_existing_files_from_the_resolved_directory(self):
+        self.bad('Resolve-Path -LiteralPath $env:ARTIFACT_TEST_INSTALLATION', 'Resolve-Path -LiteralPath .')
+        self.bad(' -PathType Leaf', '')
+        self.bad('${{ steps.recovery-native-upload.outputs.directory }}/release.json',
+                 '${{ github.workspace }}/../workflow-recovery-native/release.json')
+        self.bad('ca-artifact-windows-amd64.exe\n          if-no-files-found',
+                 '*\n          if-no-files-found')
 
     def test_recovery_requires_legal_fixed_sibling_environment(self):
         self.bad(RECOVERY_NATIVE_ENV, '')
