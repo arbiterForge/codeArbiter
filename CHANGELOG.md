@@ -16,7 +16,7 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
-- Run audit-log append tests with closed stdin and disable PowerShell prompts so the fixture can run in headless CI.
+- Run audit-log append tests with closed stdin and PowerShell prompts disabled. Capture errors in a temporary file so the timeout measures the shell's exit.
 - Run the maintained statusline ownership, recovery and worktree boundary cases in the original isolated Hook suite.
 - Reuse the validated worktree for automatic recovery scans, avoiding a second Git process within the existing one-second deadline.
 - Retain exact original Python observations for six finite findings, including Pi payload identity and measurement refusal checks, with closed source and CI authority bindings.
