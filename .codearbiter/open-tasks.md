@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Isolate optional Node caching in aggregate Windows Pi RPC fixtures  (from github:arbiterForge/codeArbiter:actions:44314217993:134836490507)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:44314217993:134836490507
+  - Desc: The duplicate aggregate fixture can time out after JavaScript reports exit. Exclude optional compile-cache persistence from the aggregate Windows RPC test environment, while retaining standalone and installed default-cache checks, strict natural exit, and all assertions.
+  - Work type: fix
+  - Work ID: WORK-F259450A17FBF92C7D56BC0D7E0DB1AA
+  - Work operation ID: work-a014e7b24aed784828dc1849c9a5e60429435344
 - [x] Keep evidence authentication outside the immutable Git I/O budget  (from github:arbiterForge/codeArbiter:actions:44314217993:134836490325)  (done 2026-11-18)
   - Work origin: github:arbiterForge/codeArbiter:actions:44314217993:134836490325
   - Desc: The macOS Program integrity check exhausted the immutable Git reader deadline while the validation owner holds a cross-evidence transaction. Keep total Git transport time and per-query bounds while allowing authentication between reads, and preserve evidence checks.

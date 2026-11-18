@@ -32,6 +32,7 @@ from pi_cli_resolver import resolve_pi_cli_path as _resolve_pi_cli_path
 REPO = Path(__file__).resolve().parents[2]
 PLUGIN = REPO / "plugins" / "ca-pi"
 TOOLS = PLUGIN / "tools"
+PLATFORM_PACKAGE_PARTITION = None
 
 
 def read_json(path: Path) -> dict:
@@ -958,8 +959,9 @@ export default function registerCaptureProvider(pi: any) {
             except Exception:
                 pass
             raise AssertionError("Pi provider hash helper containment unconfirmed; RPC target not spawned")
-    if _observe_shutdown:
-        # Only the supplemental target opts out; installation and raw cases retain cache behavior.
+    if _observe_shutdown or (os.name == "nt" and PLATFORM_PACKAGE_PARTITION == "rpc"):
+        # Keep optional cache writes out of the aggregate Windows RPC timing.
+        # Standalone discovery, installed qualification and package install use defaults.
         environment["NODE_DISABLE_COMPILE_CACHE"] = "1"
     process = subprocess.Popen(
         command,
@@ -4038,10 +4040,16 @@ process.stdout.write('ready\n');
             with mock.patch.dict(os.environ, {"CA_PI_RPC_DIAGNOSTICS_DIR": str(trace)}):
                 self.assertIsNone(retain_rpc_shutdown_failure(trace))
 
-    def test_rpc_compile_cache_opt_out_is_observed_target_only_after_install(self):
+    def test_rpc_compile_cache_opt_out_is_target_local(self):
         import _windows_rpc_timeout as native
-        for observed in (False, True):
-            with self.subTest(observed=observed), tempfile.TemporaryDirectory(prefix="ca-rpc-cache-scope-") as directory:
+        cases = (
+            (None, False, False),      # Standalone and installed observer owner
+            (None, True, True),        # Explicit diagnostic companion
+            ("rpc", False, os.name == "nt"),
+            ("package", False, False),
+        )
+        for partition, observed, expected_cache_opt_out in cases:
+            with self.subTest(partition=partition, observed=observed), tempfile.TemporaryDirectory(prefix="ca-rpc-cache-scope-") as directory:
                 root = Path(directory).resolve()
                 agent, home = root / "agent", root / "home"
                 node, cli = "owned-node-stub", root / "owned-cli.js"
@@ -4061,7 +4069,8 @@ process.stdout.write('ready\n');
                     target_environments.append(dict(kwargs["env"]))
                     raise LaunchBoundaryReached()
 
-                with (mock.patch.object(sys.modules[__name__], "live_pi_cli", return_value=(node, cli)),
+                with (mock.patch.object(sys.modules[__name__], "PLATFORM_PACKAGE_PARTITION", partition),
+                      mock.patch.object(sys.modules[__name__], "live_pi_cli", return_value=(node, cli)),
                       mock.patch.object(subprocess, "run", side_effect=configure_package),
                       mock.patch.object(subprocess, "Popen", side_effect=launch),
                       mock.patch.object(native, "preflight_provider", return_value=None),
@@ -4070,10 +4079,8 @@ process.stdout.write('ready\n');
                 self.assertEqual(len(installation_environments), 1)
                 self.assertEqual(len(target_environments), 1)
                 self.assertNotIn("NODE_DISABLE_COMPILE_CACHE", installation_environments[0])
-                if observed:
-                    self.assertEqual(target_environments[0].get("NODE_DISABLE_COMPILE_CACHE"), "1")
-                else:
-                    self.assertNotIn("NODE_DISABLE_COMPILE_CACHE", target_environments[0])
+                self.assertEqual(target_environments[0].get("NODE_DISABLE_COMPILE_CACHE"),
+                                 "1" if expected_cache_opt_out else None)
                 self.assertTrue(dict(os.environ) == original_environment, "RPC target must not mutate parent environment")
 
     def test_rpc_read_context_observer_preserves_raw_provider_route(self):
@@ -6594,7 +6601,8 @@ if __name__ == "__main__":
         parser = argparse.ArgumentParser()
         parser.add_argument("--platform-partition", choices=PLATFORM_PACKAGE_PARTITIONS, required=True)
         args = parser.parse_args()
-        result = unittest.TextTestRunner(verbosity=2).run(platform_package_suites()[args.platform_partition])
+        PLATFORM_PACKAGE_PARTITION = args.platform_partition
+        result = unittest.TextTestRunner(verbosity=2).run(platform_package_suites()[PLATFORM_PACKAGE_PARTITION])
         raise SystemExit(0 if result.wasSuccessful() else 1)
     elif "--rpc-commands" in sys.argv:
         sys.argv = [
