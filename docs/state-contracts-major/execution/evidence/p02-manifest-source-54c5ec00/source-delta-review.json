@@ -1,0 +1,83 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "54c5ec002ddc7af216a04d8bc1bc83184c368bbc",
+  "prior_source_checkpoint": "e2bad8bcf4f8203c016842742c865a50ac9c77fa",
+  "delta": {
+    ".github/major-qualification-policy.json": {
+      "before": "743227b05527639abacdb75e780f74521496b2407f2a623af2200450f15e3a98",
+      "current": "7b8973d8d668135f3074b2907c4624844b0e7ce877449dc843d3581a23945df5",
+      "assessment": "One manifest route and exactly six P02 source composition routes are appended. All previous job bindings, profile routes and installed requirements are unchanged."
+    },
+    ".github/major-test-selections.json": {
+      "before": "3f3c1c8d07210d6f4f8a7219ed0334e49badb7eaea651d30710a22bf1235e169",
+      "current": "be4d8a115bc70ac4c7eb40fbb96d3c98aaba2977cddcc6ef59fb21d12383d384",
+      "assessment": "The four existing manifest assertions are named in one Hook route. Other exact selection groups are unchanged."
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "before": "d6a8cb874317784c347108fa1c25afed11d568e8f4fc30d7233b1338062db51c",
+      "current": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+      "assessment": "The same artifact-authority job, default source observer profile, exact shard runner retention/identity, and observe-python entry point remain in place. The new Program Integrity component and specialized shared result choice are disjoint from the original authority run."
+    },
+    ".github/scripts/major_readiness.py": {
+      "before": "2589c22f0d3da296ec9483a659079c8904b2195645cc839fded9bcd5e6106729",
+      "current": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+      "assessment": "The closed P02 projection applies only to the exact six original hosted PASSED fixture rows. Original full-input hashes still authenticate historical bytes. The normalized stage affects disposable fixture status/evidence and allows history pruning only for those six added transitions. The prior hosted routing projection remains a separately typed scope. Current source proofs do not enter the hosted projection."
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "before": "c35944fea6bc31fe839c1e6bb76b14e9eff5f1979617f09600cee9f2e4e1837d",
+      "current": "b8f94688ecaaf10662f3e213cf66296e1bb58f7b8cb10942a44dc60307de27ea",
+      "assessment": "The merge-group guard recognizes only the two exact non-mandatory Program integrity artifact-output predicates and rejects reuse on a mandatory step. The original invariant checks on the test and direct fallback are retained. No planner, workflow runtime or release path is changed by this fixture."
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "before": "2892f463359d4318b0b1cc4908af2aa23a1fcb15dfa893fbb95c921667a45d14",
+      "current": "dcd9a880b669f54027e4a929e41139f854e7ff65b6d47e8fd7d0bf0dc188b72e",
+      "assessment": "The reviewed patch preserves the finite source predicates of the existing affected groups. Exact source and immutable predecessor remain bound."
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "before": "df200ab96a69b62aaa908933f66fcaeee1bc52249c14480dac649208b78d442f",
+      "current": "ae23ee7290e49a85453c1d55365fc47153d4ad95542dd61ee0d78e8c1d480a35",
+      "assessment": "The reviewed patch preserves the finite source predicates of the existing affected groups. Exact source and immutable predecessor remain bound."
+    },
+    ".github/scripts/test_major_readiness.py": {
+      "before": "575d91ac4f15948f54c7a518a6c4c3955ccd0a6c4e6846b91b587ab0c18ed1fb",
+      "current": "6c87a2703d0691acd2242ef67d366a6b00f959170527eebcbb72030aaed9623a",
+      "assessment": "The reviewed patch preserves the finite source predicates of the existing affected groups. Exact source and immutable predecessor remain bound."
+    },
+    ".github/scripts/test_state_contracts_integration.py": {
+      "before": "b34b8fade4e94aad21d2b43fd7e60e938ef234e8c02fe3be96a52fba5815ed04",
+      "current": "a8db13adb028acb4a3939cae7044792cb9f025837363c60b04c39d6f22df1608",
+      "assessment": "The reviewed patch preserves the finite source predicates of the existing affected groups. Exact source and immutable predecessor remain bound."
+    },
+    ".github/workflows/ci.yml": {
+      "before": "c6cb97e0e1f46b549929ed1e19e2434cc1aaecd9c8a9c65b51bb97031915fbd9",
+      "current": "d6ce20ed5f84dd1c841aca08e0c294f08cb993c7e9c054615dcfaabdf45cab82",
+      "assessment": "Only the program-integrity and Hooks job bodies change. Program integrity preserves the previous checker, matrix, owner job and its original test suite, routing the authorized Windows push through one original observation and retaining its exact branch/attempt/inputs. One shared manifest contract execution moves to an exact disjoint Hook observer; the ordinary route remains for other partitions. All existing requirements, public/release/jobs, aggregate, names, triggers, audit, native, package and coverage job bodies stay byte-identical."
+    }
+  },
+  "reviewed_patch_sha256": "af437990c18f142d885811f18c7c66deedf2317623766986fc0cc2a1003ea953",
+  "canonical_staged_source_projection": {
+    "applicable": 1619,
+    "population": 1739,
+    "stale": 120,
+    "provided_sha256": "cdb24c502769f9507b3cfa807b1063c29fbb06e8bf55734612457648b32827a6"
+  },
+  "workflow_changed_jobs": [
+    "hooks",
+    "program-integrity"
+  ],
+  "same_C06_default_observer_scope": "The same artifact-authority job, default source observer profile, exact shard runner retention/identity, and observe-python entry point remain in place. The new Program Integrity component and specialized shared result choice are disjoint from the original authority run.",
+  "new_routes": {
+    "manifest": [
+      "disposition:transitions:hooks:native-client:02"
+    ],
+    "P02": [
+      "disposition:added_transitions:P02:added-frozen-anchor",
+      "disposition:added_transitions:P02:added-origin-mix",
+      "disposition:added_transitions:P02:added-original-tamper",
+      "disposition:added_transitions:P02:added-selected-gate",
+      "disposition:added_transitions:P02:added-stale-history",
+      "disposition:added_transitions:P02:added-unknown-input"
+    ]
+  },
+  "affected_scope": "Exactly 120 prior applicable source-only rows. The seven newly captured claims and existing trusted history are not rewritten by this packet."
+}
