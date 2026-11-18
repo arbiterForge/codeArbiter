@@ -353,8 +353,11 @@ def _run(run, source, run_id, *, producing=False):
          and repository.get('full_name') == head.get('full_name') == owner.REPOSITORY
          and pages._positive(repository.get('id')) and repository['id'] == head.get('id'),
          'Docs run is not the exact same-source trusted normal workflow')
-    need((run.get('status') == 'completed' and run.get('conclusion') == 'success')
-         or producing and run.get('status') == 'in_progress' and run.get('conclusion') is None,
+    status, conclusion = run.get('status'), run.get('conclusion')
+    # Sibling jobs can keep the run queued while the authenticated producer runs.
+    active = (status in ('queued', 'in_progress', 'requested', 'waiting', 'pending')
+              and 'conclusion' in run and conclusion is None)
+    need((status == 'completed' and conclusion == 'success') or (producing and active),
          'Docs whole run did not succeed')
 
 

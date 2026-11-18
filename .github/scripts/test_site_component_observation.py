@@ -188,14 +188,35 @@ class ComponentCaptureTests(unittest.TestCase):
             self.assertFalse((repo/'observed.json').exists())
 
     def test_producer_authenticates_completed_source_upload_before_whole_run_completion(self):
-        run=copy.deepcopy(self.run);run.update(status='in_progress',conclusion=None)
-        job=copy.deepcopy(self.job);job.update(status='in_progress',conclusion=None)
-        req={**self.req,'ci_run_id':17}
+        run = {**self.run, 'status': 'in_progress', 'conclusion': None}
+        job = copy.deepcopy(self.job)
+        job.update(status='in_progress', conclusion=None)
+        req = {**self.req, 'ci_run_id': 17}
+        arguments = self.observed, req, run, job, self.artifacts[0], self.source_zip
         with self.transport():
-            self.assertEqual(c.report_from_observation(self.observed,req,run,job,self.artifacts[0],self.source_zip),self.report)
-            job['steps'][0]['conclusion']='failure'
-            with self.assertRaises(c.owner.ReadinessError):
-                c.report_from_observation(self.observed,req,run,job,self.artifacts[0],self.source_zip)
+            for status in ('in_progress', 'queued', 'requested', 'waiting', 'pending'):
+                with self.subTest(run_status=status):
+                    run['status'] = status
+                    self.assertEqual(c.report_from_observation(*arguments), self.report)
+                    with self.assertRaisesRegex(c.owner.ReadinessError, 'Docs whole run did not succeed'):
+                        c.browser._run(run, req['source_commit'], req['ci_run_id'])
+            invalid_states = (('completed', None), ('completed', 'failure'), ('queued', 'cancelled'), ('unknown', None))
+            for status, conclusion in invalid_states:
+                with self.subTest(run_status=status, conclusion=conclusion), self.assertRaises(c.owner.ReadinessError):
+                    run.update(status=status, conclusion=conclusion)
+                    c.report_from_observation(*arguments)
+            run['status'] = 'queued'
+            del run['conclusion']
+            with self.assertRaisesRegex(c.owner.ReadinessError, 'Docs whole run did not succeed'):
+                c.report_from_observation(*arguments)
+            run.update(status='queued', conclusion=None)
+            job['status'] = 'queued'
+            with self.assertRaisesRegex(c.owner.ReadinessError, 'component producer job differs'):
+                c.report_from_observation(*arguments)
+            job['status'] = 'in_progress'
+            job['steps'][0]['conclusion'] = 'failure'
+            with self.assertRaisesRegex(c.owner.ReadinessError, 'component original source upload incomplete'):
+                c.report_from_observation(*arguments)
 
     def test_final_admission_uses_both_original_uploads_and_reconstructs_all_thirteen(self):
         with self.transport(): result=c.admit(self.req)
