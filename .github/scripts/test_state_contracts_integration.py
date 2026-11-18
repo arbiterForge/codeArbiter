@@ -716,7 +716,7 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
             if step not in (consumers[0], controls[0]):
                 self.assertNotIn("GH_TOKEN:", step)
         # Hooks has one reviewed report producer; its token remains step-local.
-        expected_hook_guard = "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}"
+        expected_hook_guard = "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}"
         def assert_hook_token_scope(document):
             hooks = self.job(document, "hooks")
             prefix = hooks.split("    steps:\n", 1)[0]
@@ -747,6 +747,8 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
             "missing-modelib-observation": hooks.replace(" && steps.single_hookf02_modelib_observed.outcome == 'success'", "", 1),
             "missing-review-observation": hooks.replace(" && steps.hook_review_observed.outcome == 'success'", "", 1),
             "missing-finding-source-upload": hooks.replace(" && steps.hook_finding_source_upload.outcome == 'success'", "", 1),
+            "missing-bounded-reader-observation": hooks.replace(" && steps.bounded_reader_observed.outcome == 'success'", "", 1),
+            "missing-git-channel-observation": hooks.replace(" && steps.git_channel_observed.outcome == 'success'", "", 1),
         }
         for mutation, altered_hooks in mutants.items():
             self.assertNotEqual(altered_hooks, hooks, mutation)
