@@ -1,0 +1,2633 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-016",
+  "positive_input_join": {
+    "core/pysrc/_approvallib.py": {
+      "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "bytes": 25093,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+        "bytes": 25093
+      }
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "bytes": 251805,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+        "bytes": 251805
+      }
+    },
+    "core/pysrc/_artifactlib.py": {
+      "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+      "bytes": 64924,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+        "bytes": 64924
+      }
+    },
+    "core/pysrc/_artifactpromptlib.py": {
+      "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "bytes": 12221,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+        "bytes": 12221
+      }
+    },
+    "core/pysrc/_contextselectlib.py": {
+      "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "bytes": 22879,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+        "bytes": 22879
+      }
+    },
+    "core/pysrc/_prerequisitelib.py": {
+      "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+      "bytes": 40617,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+        "bytes": 40617
+      }
+    },
+    "core/pysrc/_replylib.py": {
+      "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "bytes": 25320,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+        "bytes": 25320
+      }
+    },
+    "core/pysrc/_sprintapprovallib.py": {
+      "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "bytes": 21346,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+        "bytes": 21346
+      }
+    },
+    "plugins/ca-pi/hooks/pi-approval.py": {
+      "sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "bytes": 4415,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+        "bytes": 4415
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "plugins/ca-pi/hooks",
+      "path_order": "windows",
+      "sha256": "575b1cb6f3ae267643b3bdd9f297e4d605dbaa6dc911dcf7df81b4ab036c4e37"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:hooks:approval-pair",
+      "frozen_record": {
+        "machine_id": "hooks:approval-pair",
+        "name": "Paired spec/plan approval with durable submission recovery",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "83c655fb728bb6471eea6e94befcb90d82b7e0ac722095eefed96ec368351467",
+      "group": "source-group-016",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Paired spec/plan approval with durable submission recovery. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:hooks:approval-single",
+      "frozen_record": {
+        "machine_id": "hooks:approval-single",
+        "name": "Single-artifact approval arm, observed reply and cancellation",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "36d52bc5830c11f64153cc6d5124bda8f04bfed9d256959028e8f96a48b1b719",
+      "group": "source-group-016",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Single-artifact approval arm, observed reply and cancellation. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:hooks:pi-approval",
+      "frozen_record": {
+        "machine_id": "hooks:pi-approval",
+        "name": "Pi native-input approval handshake and exact pending-byte identity",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 3,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "9aa6e6a35e20c9b208fd1531557a72cfc1e86a3928d01ce897a643f1f4552b9a",
+      "group": "source-group-016",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Pi native-input approval handshake and exact pending-byte identity. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:hooks:reply-routing",
+      "frozen_record": {
+        "machine_id": "hooks:reply-routing",
+        "name": "Human reply normalization, code routing and AskUserQuestion observation",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "08283cfd1f8ffbcd0fda2376339c0036091f4b802c73f81c51135e03e8a6d455",
+      "group": "source-group-016",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Human reply normalization, code routing and AskUserQuestion observation. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:01",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:01",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "absent",
+          "event": "arm pair",
+          "guard": "exact spec and plan identities/gates accepted by validator; exclusive pending",
+          "to": "armed",
+          "effects": "Freeze both artifacts and issue shared approval prompt.",
+          "failure_retry": "Busy or existing pending refuses.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "4299a850d525603ed61d5fcded9df13a49e4fbe21597ceaab8717405526ebce4",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:02",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:02",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed",
+          "event": "consume observed reply",
+          "guard": "matching actual host reply and frozen pair",
+          "to": "observations-recorded",
+          "effects": "Publish immutable spec and plan reply source observations under lock.",
+          "failure_retry": "Publication failure retains pending; never invent replacement user input.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "40cd74edb6d8abeb685e7430ab33b54c1a0f87280166d9547d6dbb84328087f5",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:03",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:03",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "observations-recorded",
+          "event": "submit",
+          "guard": "base request exactly derivable from pending and source identities",
+          "to": "submitted",
+          "effects": "Durably write submission request before native sprint-approve call.",
+          "failure_retry": "Retries use exact recorded request.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f9b187789b459d487a2bd25e9bbe0fcc58f00e358320300cad64b7cfaf79d9c8",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:04",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:04",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "submitted",
+          "event": "native success",
+          "guard": "receipt binds both expected artifacts/operation",
+          "to": "approved",
+          "effects": "Validate receipt; compare pending bytes and remove matching pending; retire route.",
+          "failure_retry": "Response mismatch or changed pending refuses cleanup.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:04"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "40380ce0ff8549823ad9cdf54ad7c5feb11f3383308957acce020f79d44dad0b",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:05",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:05",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "submitted",
+          "event": "native RECOVERY_REQUIRED",
+          "guard": "native journal can complete recorded operation",
+          "to": "recovery-required then approved",
+          "effects": "Run complete recovery and replay exact submission.",
+          "failure_retry": "Uncertain result retains durable submission; resume does not recapture user reply.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:05"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f0368bf97ddc9a9eac4b3499204a09000af7e533b4927f9923958259616d0783",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:06",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:06",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "submitted",
+          "event": "native REVISION_CONFLICT or proven OPERATION_ROLLED_BACK",
+          "guard": "terminal noncommit demonstrated",
+          "to": "reapproval-required",
+          "effects": "Retire old pending/submission with explicit reapproval result.",
+          "failure_retry": "No automatic approval of replacement pair.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:06"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "96309c8ed8781b2adb300afc205438701fe6e17af627ce2e5a31eaf55446d1db",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:07",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:07",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed / submitted",
+          "event": "resume",
+          "guard": "durable submission exists and matches current pending",
+          "to": "submitted / approved",
+          "effects": "Replay recorded request with original observations.",
+          "failure_retry": "No submission means no invented resume.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:07"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "40b3cc44b9da8a1f61316501b3679d7d360be8e9750210474d3819d05537dc61",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-pair:08",
+      "frozen_record": {
+        "transition_id": "hooks:approval-pair:08",
+        "machine_id": "hooks:approval-pair",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed unanswered",
+          "event": "cancel",
+          "guard": "no recorded submission or published reply observation",
+          "to": "cancelled",
+          "effects": "Remove pending and route.",
+          "failure_retry": "Captured/submitted state refuses cancellation; recover or resolve terminal receipt first.",
+          "source": [
+            {
+              "path": "core/pysrc/_sprintapprovallib.py",
+              "symbol": "module",
+              "lines": "1-358",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sprintapprovallib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-pair:08"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "05f300249ce6517a6010d81f19af9cf62a239c7b70f674f7df6881ec94c68102",
+      "group": "source-group-016",
+      "assessment": "Exclusive frozen pair, immutable actual reply observations and durable exact submission precede native mutation. Replay uses original request; RECOVERY_REQUIRED preserves evidence; only proven terminal noncommit permits retirement/reapproval. Captured/submitted state is not unanswered cancellation.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-single:01",
+      "frozen_record": {
+        "transition_id": "hooks:approval-single:01",
+        "machine_id": "hooks:approval-single",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "absent",
+          "event": "arm user approval",
+          "guard": "supported spec/plan; current ready gate and exact revision/model/normative identities",
+          "to": "armed",
+          "effects": "Create exclusive frozen pending marker and register exact host prompt binding/reply code.",
+          "failure_retry": "Existing pending or malformed identity refuses; no overwrite.",
+          "source": [
+            {
+              "path": "core/pysrc/_approvallib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            },
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-single:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b864eda377c923e77dcb57c75e1f338320aab2a88f4622d2dbdbcbe2d29b8faf",
+      "group": "source-group-016",
+      "assessment": "Only exact current artifact/gates and observed registered host reply admit approval. Similar language/mutated content refuses. Native success gates pending cleanup; single flow has no invented pair-style submission snapshot; captured pair state cannot be silently retired.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-single:02",
+      "frozen_record": {
+        "transition_id": "hooks:approval-single:02",
+        "machine_id": "hooks:approval-single",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed",
+          "event": "user prompt",
+          "guard": "recognized host observation does not match exact pending prompt or code",
+          "to": "armed",
+          "effects": "Do not fabricate approval from similar language; optional near-miss guidance.",
+          "failure_retry": "User can answer exact current prompt.",
+          "source": [
+            {
+              "path": "core/pysrc/_approvallib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            },
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-single:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d21cd42c7b5dc4a81f17e612d142259db57d8f0ecd32f22e421dd0329226e36c",
+      "group": "source-group-016",
+      "assessment": "Only exact current artifact/gates and observed registered host reply admit approval. Similar language/mutated content refuses. Native success gates pending cleanup; single flow has no invented pair-style submission snapshot; captured pair state cannot be silently retired.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-single:03",
+      "frozen_record": {
+        "transition_id": "hooks:approval-single:03",
+        "machine_id": "hooks:approval-single",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed",
+          "event": "matching observed host reply",
+          "guard": "artifact still exact frozen identity; required plan verification preflight valid",
+          "to": "approved",
+          "effects": "Capture host observation; call native approval with deterministic operation ID; delete pending and unregister route after success.",
+          "failure_retry": "Mutation/error preserves evidence for retry; single approval has no separate pair-style durable submission snapshot.",
+          "source": [
+            {
+              "path": "core/pysrc/_approvallib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            },
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-single:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "aaf5d7f9e2c092ff4666745efccfb2942f169e54348e2a9376e91156b986a647",
+      "group": "source-group-016",
+      "assessment": "Only exact current artifact/gates and observed registered host reply admit approval. Similar language/mutated content refuses. Native success gates pending cleanup; single flow has no invented pair-style submission snapshot; captured pair state cannot be silently retired.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-single:04",
+      "frozen_record": {
+        "transition_id": "hooks:approval-single:04",
+        "machine_id": "hooks:approval-single",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed",
+          "event": "matching reply after artifact changed",
+          "guard": "identity/gate no longer matches",
+          "to": "stale / error",
+          "effects": "Refuse approval of changed content.",
+          "failure_retry": "Re-arm current review material through supported cancellation/retirement.",
+          "source": [
+            {
+              "path": "core/pysrc/_approvallib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            },
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-single:04"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9c0788f7e645e8725dffa6c7e69d53dd2d3605f3f9ca7ac8a71ca85dbc7660d2",
+      "group": "source-group-016",
+      "assessment": "Only exact current artifact/gates and observed registered host reply admit approval. Similar language/mutated content refuses. Native success gates pending cleanup; single flow has no invented pair-style submission snapshot; captured pair state cannot be silently retired.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-single:05",
+      "frozen_record": {
+        "transition_id": "hooks:approval-single:05",
+        "machine_id": "hooks:approval-single",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "armed unanswered",
+          "event": "cancel",
+          "guard": "standalone v0.1 marker valid",
+          "to": "cancelled",
+          "effects": "Remove pending marker and route.",
+          "failure_retry": "v0.2 pair cancellation delegates to stricter submitted-observation checks.",
+          "source": [
+            {
+              "path": "core/pysrc/_approvallib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            },
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-single:05"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c32e43e9361310886bdad3cd39d87a0efcd029fea4253a30a74ebcb4c4440e1e",
+      "group": "source-group-016",
+      "assessment": "Only exact current artifact/gates and observed registered host reply admit approval. Similar language/mutated content refuses. Native success gates pending cleanup; single flow has no invented pair-style submission snapshot; captured pair state cannot be silently retired.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:approval-single:06",
+      "frozen_record": {
+        "transition_id": "hooks:approval-single:06",
+        "machine_id": "hooks:approval-single",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "v0.2 unanswered",
+          "event": "retire old pending",
+          "guard": "safely unanswered v0.2 record",
+          "to": "absent",
+          "effects": "Retire stale prompt binding.",
+          "failure_retry": "Captured/submitted approval is not silently discarded.",
+          "source": [
+            {
+              "path": "core/pysrc/_approvallib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_approvallib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            },
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            }
+          ],
+          "transition_id": "hooks:approval-single:06"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bdb9fac19f0628e402ad6fc70dddc86cefdc9c4e9272fc574d43ebb3b3dfef2f",
+      "group": "source-group-016",
+      "assessment": "Only exact current artifact/gates and observed registered host reply admit approval. Similar language/mutated content refuses. Native success gates pending cleanup; single flow has no invented pair-style submission snapshot; captured pair state cannot be silently retired.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:pi-approval:01",
+      "frozen_record": {
+        "transition_id": "hooks:pi-approval:01",
+        "machine_id": "hooks:pi-approval",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "no-pending / pending",
+          "event": "inspect",
+          "guard": "v0.1 spec/plan marker valid and current exact artifact ready",
+          "to": "inspect-ready",
+          "effects": "Return pending SHA and exact approval data.",
+          "failure_retry": "Unsupported/changed/invalid pending blocks PI_NATIVE_APPROVAL_UNAVAILABLE.",
+          "source": [
+            {
+              "path": "plugins/ca-pi/hooks/pi-approval.py",
+              "symbol": "module",
+              "lines": "1-94",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py"
+            }
+          ],
+          "transition_id": "hooks:pi-approval:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bfc8beb916579c072588e1f69739b269694cce62fa0a636f5dfdc8ced98f5f20",
+      "group": "source-group-016",
+      "assessment": "Private Pi inspect/consume uses closed pending/session/generation/reply bounds and shared approval result. Blocked JSON may exit0, so inspect typed outcome. This is private protocol source behavior, not admitted1.5 ordinary approval or installed/human qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:pi-approval:02",
+      "frozen_record": {
+        "transition_id": "hooks:pi-approval:02",
+        "machine_id": "hooks:pi-approval",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "inspect-ready",
+          "event": "consume",
+          "guard": "reply<=512 bytes; sessionUUID,generationUUID and expected pendingSHA exact",
+          "to": "consuming",
+          "effects": "Create PiNativeInput observation bound to session+generation and invoke shared approval consumer.",
+          "failure_retry": "Duplicate keys/malformed input/stale SHA refuses; no custom approval decision invented.",
+          "source": [
+            {
+              "path": "plugins/ca-pi/hooks/pi-approval.py",
+              "symbol": "module",
+              "lines": "1-94",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py"
+            }
+          ],
+          "transition_id": "hooks:pi-approval:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b813f8613107c19632d880ad01887f568c47567a89dfb9d560c2460704cd78e9",
+      "group": "source-group-016",
+      "assessment": "Private Pi inspect/consume uses closed pending/session/generation/reply bounds and shared approval result. Blocked JSON may exit0, so inspect typed outcome. This is private protocol source behavior, not admitted1.5 ordinary approval or installed/human qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:pi-approval:03",
+      "frozen_record": {
+        "transition_id": "hooks:pi-approval:03",
+        "machine_id": "hooks:pi-approval",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "consuming",
+          "event": "consumer result",
+          "guard": "matched/approved/artifact fields valid",
+          "to": "approved / blocked",
+          "effects": "Return explicit shared result.",
+          "failure_retry": "Errors return blocked JSON with exit0; host must inspect envelope rather than exit code alone.",
+          "source": [
+            {
+              "path": "plugins/ca-pi/hooks/pi-approval.py",
+              "symbol": "module",
+              "lines": "1-94",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/pi-approval.py"
+            }
+          ],
+          "transition_id": "hooks:pi-approval:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9747a39ec56ec876f4243abae88a9264fa06b5e3bbc030ef9709e5da3edf4da0",
+      "group": "source-group-016",
+      "assessment": "Private Pi inspect/consume uses closed pending/session/generation/reply bounds and shared approval result. Blocked JSON may exit0, so inspect typed outcome. This is private protocol source behavior, not admitted1.5 ordinary approval or installed/human qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:01",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:01",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "unregistered",
+          "event": "issue/offer code",
+          "guard": "exact known prompt and repo identity",
+          "to": "issued",
+          "effects": "Create short4-character reply code bound to exact prompt, TTL24h.",
+          "failure_retry": "Unsafe private registry or collision/ambiguity refuses.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:01"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "4b94e8112fd5edfd2d74ed481484ffbb66da0250e27d96f09206c34019886d12",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:02",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:02",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "issued",
+          "event": "typed reply",
+          "guard": "NFKC/control/quote/dash normalization yields exact admitted short/long form",
+          "to": "recognized",
+          "effects": "Resolve only registry-backed prompt and record actual host input provenance.",
+          "failure_retry": "Natural language similarity is not authorization.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:02"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "468fb54087177c6b0bab08156188f1ef3e13af03787886c577fb91fbcad5fa03",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:03",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:03",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "issued",
+          "event": "typed reply",
+          "guard": "multiple repositories match or expired identity",
+          "to": "ambiguous / expired",
+          "effects": "Refuse selection; emit bounded correction/near-miss guidance where applicable.",
+          "failure_retry": "No cross-repo guessing; ask exact current code.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:03"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "978f14c565e64da115c4972962b5b438183c87bc66818c71ea555be5ad3168e3",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:04",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:04",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "issued",
+          "event": "AskUserQuestion PreToolUse",
+          "guard": "exact registered question envelope SHA and labels; clean tool call/session",
+          "to": "ask-prepared",
+          "effects": "Record call binding with one-hour validity.",
+          "failure_retry": "Unregistered/mutated envelope remains untrusted.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:04"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "89fdf2b83d15fa4e887a306ffb98fe0f5c1d4cb6e922bb2e6de7f9189bcd7f9e",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:05",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:05",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "ask-prepared",
+          "event": "AskUserQuestion PostToolUse",
+          "guard": "same tool-call/session/envelope and exact admitted answer",
+          "to": "ask-observed",
+          "effects": "Consume marker once and map observed answer to registered reply.",
+          "failure_retry": "Other answer falls back to typed reply; duplicate post has no reusable authority.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:05"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "0775c50c6c534d48a90f74fd0288b3fefac1638962214554fd8a4df1d36c5271",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:06",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:06",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "issued",
+          "event": "retire/unregister",
+          "guard": "matching binding",
+          "to": "retired",
+          "effects": "Remove registry route/code.",
+          "failure_retry": "Missing route is a safe no-op; private path validation still applies.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:06"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "4c3b3d180a5ba651f740cb28d84966f0246a6940e5aa5d4897614fd64bb55451",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:reply-routing:07",
+      "frozen_record": {
+        "transition_id": "hooks:reply-routing:07",
+        "machine_id": "hooks:reply-routing",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "registered feature actor prompt",
+          "event": "compose actor input",
+          "guard": "exact actor/packet binding available",
+          "to": "composed input",
+          "effects": "Attach selected artifact/context packet and route identity.",
+          "failure_retry": "Composition does not itself attest child delivery or human approval.",
+          "source": [
+            {
+              "path": "core/pysrc/_replylib.py",
+              "symbol": "module",
+              "lines": "1-573",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_replylib.py"
+            },
+            {
+              "path": "core/pysrc/_artifactpromptlib.py",
+              "symbol": "module",
+              "lines": "1-287",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactpromptlib.py"
+            }
+          ],
+          "transition_id": "hooks:reply-routing:07"
+        },
+        "task_ids": [
+          "HW-27"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5254083ff164d20b11c2f6b2897158cbae553389bdbb1849804cc3d3417856eb",
+      "group": "source-group-016",
+      "assessment": "Registry-backed exact prompt/repository/session/call/envelope and TTL controls own short/long replies and one-use AskUserQuestion observation. Normalize only admitted forms, refuse ambiguity/expiry. Actor packet composition is context, never child delivery or human approval proof.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+          "sha256": "fb65693b150040b29ddec53919d6a08153c15fe99dcc628cccc1b8ca2f013334",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        44,
+        79
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "fc76fb8fa75683a42a97b5001c7e9bb62a3903c209d23a8b5490ecd71c433fac",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          44,
+          79
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          44,
+          79
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        190,
+        276
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "971339d9dc0c1a70f2154a89b936ba8796caa74b5ca9ac8f75c627e89ee65eb2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          190,
+          276
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          190,
+          276
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        380,
+        427
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "571a827e9454c21cf3433af4573d791c796fef0a1da417f15cf6e91d7c124f87",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          380,
+          427
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          380,
+          427
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        477,
+        510
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "870f607822b16089238391b8162e8a0f53fc63fb4004220120962742c94ecf96",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          477,
+          510
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          477,
+          510
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        424,
+        474
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "649c8486e1782d8231c6c900664aeddf9d0e63ae1b596b87c141251a0888aebd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          424,
+          474
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          424,
+          474
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        82,
+        168
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "4a8c77a77842f592b57407e5c25c001b86cf1d22603a52cc1610b74f434bbf1d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          82,
+          168
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          82,
+          168
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        424,
+        428
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "1f2bc52c40a00a1236566abcaab704b71246fc7afd86d7da4df6c0bd7e282f90",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          424,
+          428
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          424,
+          428
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        330,
+        345
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "52cfecfd753cc6f9722abf9a5d558af907189ae3ba91c400cfb01ec7a852aff7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          330,
+          345
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          330,
+          345
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_approvallib.py",
+      "old_span": [
+        348,
+        376
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "855fe0e7c03bc839867214baf5fa4470f10745bac1f6d272eaf23c4bfc993e92",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          348,
+          376
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          348,
+          376
+        ]
+      ],
+      "actual0ef_file_sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        41,
+        140
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "d6eca3959d9265b6eb8821c88e86e7f445afe07da0a6be3d02c03da5e9d3e8fd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          41,
+          140
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          41,
+          140
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        172,
+        189
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "43d23d5d0dc91d91a52b181143ca2f8c3b2d4765cfa06eab267ea32a5fbf3417",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          172,
+          189
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          172,
+          189
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        218,
+        253
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "8d988b1ce78918e7947188aa005a0db650472e42d97bf22fe4ecceb386aac53d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          218,
+          253
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          218,
+          253
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        147,
+        169
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "6fb42204322793150e0bb80fb693b7030736039976209385cc0daaca5668855c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          147,
+          169
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          147,
+          169
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        235,
+        253
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "8c8cb8790591fbeade850260ba4a3e800e7ff0447132224b82b503b41ea40ceb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          235,
+          253
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          235,
+          253
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        192,
+        214
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "a98b1caf5cbfeb993e5e34aa58698f7877dbac4f5fc4708b5d875d1fefdc7670",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          192,
+          214
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          192,
+          214
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        192,
+        201
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "6e5e4116fd8f021686d01dafc63c622a4a4b215e563c91fb3d3b1d882d3453c4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          192,
+          201
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          192,
+          201
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        257,
+        279
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "1bdab2d1b8f0d332b238bda10228722b8013d89c6190185ef6a023da665d7115",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          257,
+          279
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          257,
+          279
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        152,
+        169
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "4991db5213c1410e481296324ae4ea6de8973477126760668a92ff265f9458d1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          152,
+          169
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          152,
+          169
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        257,
+        266
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "d8255e43f873c72c947e67d7d6eab760d7ec6baaa74cf66feeefd62dbb1e5fbb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          257,
+          266
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          257,
+          266
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_sprintapprovallib.py",
+      "old_span": [
+        283,
+        339
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "2a89a26e541d485fe7b45c1388de5f613a82d612610d9dffa1bcf2b741275d7a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          283,
+          339
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          283,
+          339
+        ]
+      ],
+      "actual0ef_file_sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        26,
+        54
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "e46c2b89dcd9c29684c3092d5b1ccd464987f7b2e2bfe9ba709391949576932c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          26,
+          54
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          26,
+          54
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        137,
+        235
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "3cad7014c13ce6226b38bd16a297a2c163855bb700c01f93c6e651c5cdd5b178",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          137,
+          235
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          137,
+          235
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        61,
+        107
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "6e4501dc08387e5898b47fa3520027aac0ce4c6d0c4d3b95a9cebbc68360b2d4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          61,
+          107
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          61,
+          107
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        444,
+        515
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "672ce1bdea8966a6210fd222e4b661bc86e8ef455d8a9c07d1c00737f1f42d98",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          444,
+          515
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          444,
+          515
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        541,
+        573
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "b1c57937e1b14b797bdaf43f98cb8f1b9ebc8edf036d2f0a7c94d6722887189e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          541,
+          573
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          541,
+          573
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_artifactpromptlib.py",
+      "old_span": [
+        217,
+        248
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "87f66799a16ae38a019ec323ad23457655ddc4c2f64b01bfcbe37b81baf522e6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          217,
+          248
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          217,
+          248
+        ]
+      ],
+      "actual0ef_file_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        305,
+        394
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "7c709a95920e5c5769930eb1ce5f223e9a022f33b5e77f14472e8196cbf1b96c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          305,
+          394
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          305,
+          394
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        397,
+        422
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "67974509fc38fd9ffbd0c20df1c2f5338d7e4bf363df2b126065c349a27aa656",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          397,
+          422
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          397,
+          422
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_artifactpromptlib.py",
+      "old_span": [
+        251,
+        259
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "605b1d16f4d929f2bf72f3475b33593017aac87a9400f63df3fcfb0b3111ac00",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          251,
+          259
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          251,
+          259
+        ]
+      ],
+      "actual0ef_file_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_replylib.py",
+      "old_span": [
+        253,
+        293
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "fdd1a90ffe57e01a86f39cae91037a1cc3740b182a10d3cc8487ee72e32cb1b0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          253,
+          293
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          253,
+          293
+        ]
+      ],
+      "actual0ef_file_sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_artifactpromptlib.py",
+      "old_span": [
+        36,
+        109
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "c31c03cff30284a87c4d64dec67cfaa29305492413a9267ff9171216858968e1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          36,
+          109
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          36,
+          109
+        ]
+      ],
+      "actual0ef_file_sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/pi-approval.py",
+      "old_span": [
+        24,
+        50
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "3566129b8229d4ec173cf16e441347d9d3edd4bfda070cd4c0cd88d2ae803e7d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          24,
+          50
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          24,
+          50
+        ]
+      ],
+      "actual0ef_file_sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/pi-approval.py",
+      "old_span": [
+        51,
+        64
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "0db8d05354a0fb480c8cb478a6effa2ee9e7bb12164278dbda2d40635772cb3b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          51,
+          64
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          51,
+          64
+        ]
+      ],
+      "actual0ef_file_sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/pi-approval.py",
+      "old_span": [
+        69,
+        88
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "6b7960b6afcc0724eafba905132e5274b9561d5ee90d53a3fa47aca285570a10",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          69,
+          88
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          69,
+          88
+        ]
+      ],
+      "actual0ef_file_sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/pi-approval.py",
+      "old_span": [
+        60,
+        94
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/source-inspection.json",
+      "block_sha256_LF": "45eae308ed41fb7e5bb70278f154285e030fe5938582f5efc116ac09abbeab94",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          60,
+          94
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/approval-routing/preserved.json",
+      "actual0ef_spans": [
+        [
+          60,
+          94
+        ]
+      ],
+      "actual0ef_file_sha256": "cd85ec3f6e6d3efed853f6baadcfc977bb3c189846cea5ef80aad00a7e97da5f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "artifact-platform-dispatch",
+      "paths": [
+        "core/pysrc/_artifactlib.py"
+      ],
+      "assessment": "Actual full deltas from7ac/d594/7eba are the same: sys.platform replaces platform.system for supported OS/commandWindows/verified-descriptor launch dispatch. No protocol, gate, request/environment, JSON, root/index or recovery API shape changes. Callers retain finite unsupported-platform and transport limits; fewer platform-discovery effects are not new native qualification."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

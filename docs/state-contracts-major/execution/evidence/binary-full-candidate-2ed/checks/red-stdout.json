@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\red.stdout",
+ "original_sha256": "8bea6f428e5f1a0988929647345a037bd500c56e0cedf2c9ed23073de0f1c3f3",
+ "original_bytes": 91,
+ "utf8_text": "{\"tests\": 3, \"failures\": 4, \"errors\": 0, \"skips\": 0, \"elapsed_seconds\": 5.46090569999069}\r\n"
+}

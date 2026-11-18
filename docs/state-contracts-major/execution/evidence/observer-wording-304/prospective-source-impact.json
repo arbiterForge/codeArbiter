@@ -1,0 +1,737 @@
+{
+  "schema": "codearbiter.prospective-source-impact/1",
+  "source": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+  "changed_paths": [
+    ".github/major-qualification-policy.json",
+    ".github/major-test-selections.json",
+    ".github/scripts/major_qualification_report.py",
+    ".github/scripts/major_readiness.py",
+    ".github/scripts/test_ci_impact.py",
+    ".github/scripts/test_hook_ci_partition.py",
+    ".github/scripts/test_major_qualification_report.py",
+    ".github/workflows/ci.yml",
+    "core/surface/commands/init.md",
+    "plugins/ca-codex/skills/ca-init/SKILL.md",
+    "plugins/ca-pi/skills/ca-init/SKILL.md",
+    "plugins/ca-sandbox/COMMANDS.md",
+    "plugins/ca-sandbox/README.md",
+    "plugins/ca-sandbox/commands/sandbox-destroy.md",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+    "plugins/ca/README.md",
+    "plugins/ca/commands/init.md"
+  ],
+  "affected_cells": {
+    "disposition:machines:C05": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C05-preserved.json",
+        "sha256": "95864e155b40032e44d463c1ca73b92233bd6d65d6b3b28f45bdf85bf17ea3f0"
+      }
+    },
+    "disposition:machines:C09": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+        "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6"
+      }
+    },
+    "disposition:transitions:C09:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+        "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6"
+      }
+    },
+    "disposition:transitions:C09:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+        "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6"
+      }
+    },
+    "disposition:machines:C10": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+      }
+    },
+    "disposition:transitions:C10:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+      }
+    },
+    "disposition:transitions:C10:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+      }
+    },
+    "disposition:transitions:C10:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+        "sha256": "715620bd45e9d5c3e510dbfe150c32c8cba4fed9279ef2802cfe80f06e46ed34"
+      }
+    },
+    "disposition:machines:C06": {
+      "changed_inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+      }
+    },
+    "disposition:transitions:C06:01": {
+      "changed_inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+      }
+    },
+    "disposition:transitions:C06:02": {
+      "changed_inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+      }
+    },
+    "disposition:transitions:C06:03": {
+      "changed_inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+      }
+    },
+    "disposition:transitions:C06:04": {
+      "changed_inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+        "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+      }
+    },
+    "disposition:machines:C01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7"
+      }
+    },
+    "disposition:transitions:C01:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7"
+      }
+    },
+    "disposition:transitions:C01:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7"
+      }
+    },
+    "disposition:transitions:C01:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7"
+      }
+    },
+    "disposition:transitions:C01:04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7"
+      }
+    },
+    "disposition:transitions:C01:05": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C01-preserved.json",
+        "sha256": "1cab101cc75b75065b0a2c818e411dd556bd3b9efe5028ef352a9d32e31276c7"
+      }
+    },
+    "disposition:machines:C02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1"
+      }
+    },
+    "disposition:transitions:C02:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1"
+      }
+    },
+    "disposition:transitions:C02:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1"
+      }
+    },
+    "disposition:transitions:C02:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1"
+      }
+    },
+    "disposition:transitions:C02:04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C02-preserved.json",
+        "sha256": "94a01bba6b4b4592362cbfe251d46ece75c80d62f4b2dc4c8aa4519ae995bea1"
+      }
+    },
+    "disposition:machines:C04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:transitions:C04:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:transitions:C04:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:transitions:C04:04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:transitions:C04:05": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:transitions:C04:06": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:transitions:C04:07": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a"
+      }
+    },
+    "disposition:machines:C13": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C13-preserved.json",
+        "sha256": "7d5b6180a28dbbb9a3b1d34d7911846f30f76f460f0d2cc8e0d76374fd9cb816"
+      }
+    },
+    "disposition:transitions:C13:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C13-preserved.json",
+        "sha256": "7d5b6180a28dbbb9a3b1d34d7911846f30f76f460f0d2cc8e0d76374fd9cb816"
+      }
+    },
+    "disposition:transitions:C13:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C13-preserved.json",
+        "sha256": "7d5b6180a28dbbb9a3b1d34d7911846f30f76f460f0d2cc8e0d76374fd9cb816"
+      }
+    },
+    "disposition:transitions:C13:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C13-preserved.json",
+        "sha256": "7d5b6180a28dbbb9a3b1d34d7911846f30f76f460f0d2cc8e0d76374fd9cb816"
+      }
+    },
+    "disposition:transitions:C13:04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C13-preserved.json",
+        "sha256": "7d5b6180a28dbbb9a3b1d34d7911846f30f76f460f0d2cc8e0d76374fd9cb816"
+      }
+    },
+    "disposition:machines:C15": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2"
+      }
+    },
+    "disposition:transitions:C15:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2"
+      }
+    },
+    "disposition:transitions:C15:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2"
+      }
+    },
+    "disposition:transitions:C15:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2"
+      }
+    },
+    "disposition:machines:WF-17": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:01": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:02": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:03": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:04": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:05": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:06": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:07": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:transitions:WF-17:08": {
+      "changed_inputs": [
+        "core/surface/commands/init.md"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+        "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+      }
+    },
+    "disposition:machines:C32": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:05": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:06": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:transitions:C32:07": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/C32-preserved.json",
+        "sha256": "60b5de0814af5b47f5828c66f26dcc1bdf877a22ff10fc94a7cf90a7e4966f16"
+      }
+    },
+    "disposition:machines:T02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+        "sha256": "57979037453eb0d12da4cf4f48bf1cb03fde04d05850a1c24ced8d4ab852ab03"
+      }
+    },
+    "disposition:transitions:T02:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+        "sha256": "57979037453eb0d12da4cf4f48bf1cb03fde04d05850a1c24ced8d4ab852ab03"
+      }
+    },
+    "disposition:machines:SX04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef"
+      }
+    },
+    "disposition:transitions:SX04:01": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef"
+      }
+    },
+    "disposition:transitions:SX04:02": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef"
+      }
+    },
+    "disposition:transitions:SX04:03": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef"
+      }
+    },
+    "disposition:transitions:SX04:04": {
+      "changed_inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "current_evidence": {
+        "kind": "conformance-check",
+        "commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "ref": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/proofs/SX04-preserved.json",
+        "sha256": "39729ba3a5f09b5da86bca2b78bd879f2fb94245567106a09fb81d3891b4c4ef"
+      }
+    }
+  },
+  "affected_source_count": 64,
+  "current_untouched_source_count": 713,
+  "runtime_epoch_renewal": false
+}

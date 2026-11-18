@@ -1,0 +1,270 @@
+{
+ "schema": "codearbiter.retained-scope-inventory/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "rows": [
+  {
+   "section": "transitions",
+   "id": "pi-qualification:runtime-discovery:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
+   },
+   "row_sha256": "55d4dcc3fe67ee7dbc745f493f8f71be036301e7ef545071247548813f648ea4",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:runtime-discovery:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
+   },
+   "row_sha256": "55d4dcc3fe67ee7dbc745f493f8f71be036301e7ef545071247548813f648ea4",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:runtime-discovery:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
+   },
+   "row_sha256": "55d4dcc3fe67ee7dbc745f493f8f71be036301e7ef545071247548813f648ea4",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:runtime-discovery:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "PATH native spellings and X_OK advance to resolved ancestry; at most8 ancestor matching-name manifests, then adjacent node_modules/.bin shapes. Parse/read failures propagate; exhaustion refuses. Declared bin resolves without launching. Helper alone does not prove runtime version/digest/publisher/containment; qualification callers own those facts."
+   },
+   "row_sha256": "55d4dcc3fe67ee7dbc745f493f8f71be036301e7ef545071247548813f648ea4",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:disposable-home:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+      "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf"
+     }
+    ],
+    "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it.",
+    "evidence_history": [
+     {
+      "kind": "test",
+      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+      "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+      "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+     }
+    ]
+   },
+   "row_sha256": "2174adefdeedd5c65f6c8a6395e9541160568bbb6b1f5dc527e8e4033a50d98f",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:disposable-home:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+      "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf"
+     }
+    ],
+    "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it.",
+    "evidence_history": [
+     {
+      "kind": "test",
+      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+      "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+      "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+     }
+    ]
+   },
+   "row_sha256": "2174adefdeedd5c65f6c8a6395e9541160568bbb6b1f5dc527e8e4033a50d98f",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:disposable-home:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+      "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf"
+     }
+    ],
+    "candidate_contract_note": "Vitest setup executed before selected test modules: actual HOME/USERPROFILE and os.homedir resolve newly created fixture; drive/path deleted; actual seeded auth is dummy within exact root; child process.env spread inherits it.",
+    "evidence_history": [
+     {
+      "kind": "test",
+      "commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+      "ref": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+      "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+      "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207"
+     }
+    ]
+   },
+   "row_sha256": "2174adefdeedd5c65f6c8a6395e9541160568bbb6b1f5dc527e8e4033a50d98f",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  },
+  {
+   "section": "transitions",
+   "id": "pi-qualification:disposable-home:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-26",
+     "HW-15",
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95"
+     }
+    ],
+    "candidate_contract_note": "Only successful setup registers process exit handler; handler attempts rmSync of exact freshly created root with exceptions swallowed. Abrupt exit or cleanup error can leave that exact disposable residue; no production resource cleanup promise."
+   },
+   "row_sha256": "7836af6c4ad9833ffde841dd5c7937878dd88724de7712355a753500e036c46d",
+   "preservation": "Whole object, active evidence, evidence_history and original scope/epochs retained exactly."
+  }
+ ],
+ "proofs": [
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+   "copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\01-predecessor.json",
+    "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+    "bytes": 4644
+   },
+   "destination": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited/01-predecessor.json",
+   "kind": "conformance-check",
+   "original_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+   "ref_commit": null,
+   "scope": "Lossless historical proof transport; no fresh source/runtime claim."
+  },
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+   "copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\02-predecessor.json",
+    "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf",
+    "bytes": 26208
+   },
+   "destination": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited/02-predecessor.json",
+   "kind": "test",
+   "original_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+   "ref_commit": null,
+   "scope": "Lossless historical proof transport; no fresh source/runtime claim."
+  },
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+   "copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\03-predecessor.json",
+    "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+    "bytes": 26267
+   },
+   "destination": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited/03-predecessor.json",
+   "kind": "test",
+   "original_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+   "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+   "scope": "Lossless historical proof transport; no fresh source/runtime claim."
+  }
+ ]
+}

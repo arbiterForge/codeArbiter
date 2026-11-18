@@ -1,0 +1,72 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact current Recovery upload source and retained finite owning clauses"
+  },
+  "inputs": {
+    ".codearbiter/context/security-controls.html": "acc40c8be54720df2c281417c414184a098ace7cd3d2e36ff9092eec00891d22",
+    ".codearbiter/context/tech-stack.html": "ab7965d6591bfb60e311edebd4ceec1b558cd88526f2d92f4e241a3aba4f5a46",
+    ".github/scripts/npm_audit_gate.py": "98847cb2bf9dca7ab653a7e057eaa8e0a9f0e145a41b27c77e5567236d75f7e3",
+    ".github/scripts/test_ci_impact.py": "c35944fea6bc31fe839c1e6bb76b14e9eff5f1979617f09600cee9f2e4e1837d",
+    ".github/scripts/test_npm_audit_gate.py": "28af4233a9d8467910fea52c390cab9f326c0a020699c9559a701834d1c926c9",
+    ".github/workflows/ci.yml": "61f83893c9a5276363598ff10a2d7dfba0aec19836caa4e8aaed2d1931b04188",
+    ".github/workflows/docs.yml": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "site/audit-exceptions.json": "c0a5584a4f5cc2069f712d4c6ac186a6d8d7658d0ab2a64f53de3669ec1c8e0e",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a"
+  },
+  "disposition_ids": [
+    "disposition:machines:C35"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-upload-source-6e9cf6bd/source-delta-review.json",
+      "sha256": "9a397dfa9f22e12f3f4112f93bd9922db6d578ec308aa0db4c705a29c1e30f85"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-06.json",
+      "sha256": "192656e7ac13bcd1e51a24f36477c291dd235cefa3f978bf2724ebfcb9c4ac84"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/proof-06.json",
+    "sha256": "192656e7ac13bcd1e51a24f36477c291dd235cefa3f978bf2724ebfcb9c4ac84",
+    "original_code": "b972a83e48826112467c43b4255f3ad853e49416",
+    "stored_at": "b97623833f073a1047164ab611986496a4cf9f14"
+  },
+  "scope": "C35 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+  "changed_paths": [
+    ".github/scripts/test_ci_impact.py",
+    ".github/workflows/ci.yml"
+  ],
+  "limits": [
+    "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+    "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+    "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+    "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+    "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ]
+}

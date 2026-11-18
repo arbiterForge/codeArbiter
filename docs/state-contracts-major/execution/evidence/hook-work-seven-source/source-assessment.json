@@ -1,0 +1,426 @@
+{
+  "schema": "codearbiter.major.hook-work-seven-source/1",
+  "candidate_commit": "54f1c6c615bab88132cda5804ba49f51dada28eb",
+  "scope": "Recorded finite source conformance only. No runtime, installed host, task, publication or user acceptance.",
+  "prior_source_assessment_sha256": "6a4d2ed6e52c31157e27652977b88c4e453bdad9055c384396a3289e4efcac83",
+  "findings": {
+    "HOOK-B01": {
+      "cell": "disposition:findings:HOOK-B01",
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "finding_sha256": "6590262d4e8981b0b4c25f812d07bde42b481b5e947470b29c7859223c2dffeb",
+      "tasks": {
+        "HW-07": "69ef8f945efc44ec7e8f4d348d81b1dd7a769ff431596b1aa9cc9c944c1f509b",
+        "HW-08": "f41e33578b9838db2cdebf685f0c16f4ada1fa8e8e8a6bdde17fef099e6eff0b",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Finite healthy stateless semantic-validator boundary supports later source-only PRESERVED consideration.",
+      "clauses": [
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 6,
+          "end": 13,
+          "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+          "excerpt_sha256": "fd2e2dcc11cefcfe917b34c96747b666cb9e43c5c3c52a1431838eb987fb03e4",
+          "claim": "Bytecode suppression precedes local validator import; entry imports only sys/json/re and the validator."
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 26,
+          "end": 59,
+          "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+          "excerpt_sha256": "c03f0c8967a75c4e794052ba7e4268433776457332c4e94aef36162795d9db6d",
+          "claim": "Output is a bounded closed validation envelope, not a persistent authorization ledger."
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "start": 62,
+          "end": 81,
+          "file_sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+          "excerpt_sha256": "53382ff5d0876f5d6cbe76259ae75a21fd261b466f7c012a330f27d43362b0b4",
+          "claim": "Each invocation reads at most 65,537 stdin bytes and invokes pure packet decoding/semantic validation; no path locator, reviewer or repair execution."
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 14,
+          "end": 17,
+          "file_sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+          "excerpt_sha256": "7d5e6edcaa2c95e66b07425b2e879dd978a20bc711ee0865fc02cb8e66b7f80e",
+          "claim": "Pure validator dependencies are stdlib datetime/Decimal/json/re."
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "start": 545,
+          "end": 575,
+          "file_sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+          "excerpt_sha256": "128de592950c81243c76b7f03111c9ad84f406cc35ace3c4ac606cbd8c71df66",
+          "claim": "Validation constructs fresh local error/record structures; it does not persist a denial or grant."
+        },
+        {
+          "path": "core/surface/skills/debug/references/preparation.md",
+          "start": 43,
+          "end": 66,
+          "file_sha256": "710ee4df28167fb7f17bbe463ac6a77492144a00e700585b5e09d9428e71c1fa",
+          "excerpt_sha256": "2b666fb5873d10b856ac43c661b5f36116a96e447e0db785a695fc8cf9ef3a4d",
+          "claim": "Corrected packet may be validated anew; semantic evidence must actually support claims; stale binding needs actual observation; host/user denial is never lifted."
+        }
+      ],
+      "accepted_prior_repair_reviews": {}
+    },
+    "HOOK-B02": {
+      "cell": "disposition:findings:HOOK-B02",
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "finding_sha256": "5a3f5b90fa0de064d01bdabd002fb79d3975e68b76854b7f14c8a3db498cdfa6",
+      "tasks": {
+        "HW-16": "86ab85f1e01deb438a61cc0493f8a44748dc9d6768b1ebc433c12a35482cffdc",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Finite healthy ownership split supports later source-only PRESERVED consideration; SessionStart is active.",
+      "clauses": [
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "start": 121,
+          "end": 142,
+          "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+          "excerpt_sha256": "b8e4f9f3761009225d2d810e7ff41fe62d01573b0178cd16917743aa2e8bc4c8",
+          "claim": "Per-turn owner chooses required safety/body sources for effective mode and refuses incomplete composition."
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "start": 451,
+          "end": 493,
+          "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+          "excerpt_sha256": "2e92a329be9b6f6026dd3b234a0ecb148f3d0fbd966b481b918b6c2155a227ec",
+          "claim": "Claude/Codex prompt handlers deliver composed persona and record per-session/mode/compaction generation; steady-state dedup means not every prompt emits duplicate persona."
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "start": 499,
+          "end": 524,
+          "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+          "excerpt_sha256": "256ba50360e2fdd5b31d728216afb0fa34a7fa1f1f22bf32c765092a02e12e14",
+          "claim": "Mode control tokens use deterministic mode routing; ordinary prompts invoke the respective persona injection owner."
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1172,
+          "end": 1177,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "excerpt_sha256": "28f679da037059895f8e62accbc862b87ac64bb76e65163e5bc3d650c54a899e",
+          "claim": "Active startup explicitly owns setup/state and may settle modes, heal a global host-owned pin, install enforcement, spawn fetch/update children."
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1218,
+          "end": 1245,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "excerpt_sha256": "7db28b737b878db7e418d44b543399075fc28941970014f62b49a20c5c1559f6",
+          "claim": "Mode settlement and host-capability statusline maintenance occur before activation gate; dormant does not mean zero maintenance effects."
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1247,
+          "end": 1285,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "excerpt_sha256": "06d5f42df634b96192a678d5fa3e798008282ea8872a8f8ef1a50916b8344a67",
+          "claim": "Enabled startup calls _githooks.install with ephemeral-root guard; SessionStart owns no persona composition or delivery."
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1287,
+          "end": 1318,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "excerpt_sha256": "e38674c96d825506b9775c1f02dd66eb5e9281667d0dd3330294eb193fd5af31",
+          "claim": "Startup emits state/banner/stage/task information under its own main boundary."
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1342,
+          "end": 1376,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "excerpt_sha256": "dc39e721004aa6bf4e2785c974be741d34883d6afcff033453afb2838fb356ca",
+          "claim": "Arbiter-mode briefing path invokes background fetch/update and may record standup marker."
+        }
+      ],
+      "accepted_prior_repair_reviews": {}
+    },
+    "HOOK-B05": {
+      "cell": "disposition:findings:HOOK-B05",
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "finding_sha256": "69f0072a5e01919a7054715b79059b983c36a37b63735a63649eb27ad3a23c17",
+      "tasks": {
+        "HW-25": "bed0df33928ad3e86b4d5ffa52e309c11312f8c7cf778249bd837e64fe41c1b7",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Finite healthy Native Python optional-manifest decoder boundary supports later source-only PRESERVED consideration.",
+      "clauses": [
+        {
+          "path": "core/pysrc/_artifactlib.py",
+          "start": 1059,
+          "end": 1092,
+          "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+          "excerpt_sha256": "7e67b69d50340c35f2806fad41865135987a8697af4473bc54253ffdd90f1d4c",
+          "claim": "Python installation client accepts exactly five required keys or those plus context_qualification; bounded strict decoding and platform/native_tested guards remain, shared validator is called."
+        },
+        {
+          "path": "core/pysrc/_artifactmanifestlib.py",
+          "start": 1,
+          "end": 5,
+          "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "excerpt_sha256": "d983b8c2e745245d08abe6446aba48e7a80d693d75ce9e06cbdb4fc256eecd83",
+          "claim": "Optional context record is explicitly a declaration, not an authenticated qualification receipt."
+        },
+        {
+          "path": "core/pysrc/_artifactmanifestlib.py",
+          "start": 30,
+          "end": 48,
+          "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "excerpt_sha256": "7da33665ec5f5f8ced4a6c8b1de7f069e703b8f758f6f2752147a32c6a035e97",
+          "claim": "Shared decoder requires closed release fields, exact supported identities/platforms/binary fields; optional absence is valid."
+        },
+        {
+          "path": "core/pysrc/_artifactmanifestlib.py",
+          "start": 49,
+          "end": 63,
+          "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "excerpt_sha256": "ee0c9e34e5977049816216127e1e5b4953472596141a3fb4bdca2bcf2aae2e80",
+          "claim": "Optional presence requires a platform subset and exact context fields/digests/workflow/run/source/binary/native-case bindings; malformed data raises ValueError."
+        },
+        {
+          "path": "core/pysrc/_artifactlib.py",
+          "start": 1093,
+          "end": 1117,
+          "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+          "excerpt_sha256": "336baef0df06ce0cec7b16829680278b0a20c80c035af1ca4385f007214565c0",
+          "claim": "Client retains expected binary name, regular bounded executable, SHA256 and executable-format guards independently of optional declaration."
+        }
+      ],
+      "accepted_prior_repair_reviews": {}
+    },
+    "HOOK-B03": {
+      "cell": "disposition:findings:HOOK-B03",
+      "source_commit": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+      "finding_sha256": "fa1d3ab8050c86aaebc4c133f317c20ba63a8cd250f84d66e27c2788dc11549a",
+      "tasks": {
+        "HW-17": "f28ee2e4a677510b1d1ef9347674ea34121b38689458f42bf7f3bee645643b4c",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Producer and both enforcement owners bind exact root and complete staged candidate; genuine binary override additionally retains bounded binary-byte/mode binding. This is supported after actual reviewed repair, not by pretending the old binary-only branch was correct.",
+      "clauses": [
+        {
+          "path": "core/pysrc/security-pass.py",
+          "start": 50,
+          "end": 65,
+          "file_sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+          "excerpt_sha256": "87a8afc6457ba311b440094214d1a961c252ca0c29107eeb72ef508fae4243a0",
+          "claim": "Producer obtains the exact pinned staged Git diff through strict readable input, then the shared scanner."
+        },
+        {
+          "path": "core/pysrc/_sensitivelib.py",
+          "start": 369,
+          "end": 373,
+          "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+          "excerpt_sha256": "578b4b045806cfd35f5edab8de3dc9a0f093031bc78574c5c9f483b50659904a",
+          "claim": "SHA256 covers the entire exact diff text, not only sensitive lines."
+        },
+        {
+          "path": "core/pysrc/_sensitivelib.py",
+          "start": 396,
+          "end": 420,
+          "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+          "excerpt_sha256": "8f1703fe7a0521ba4dd84905c14dfed366aca2dcf463cf3e18487b5549e42134",
+          "claim": "Resolved exact worktree path is separately bound."
+        },
+        {
+          "path": "core/pysrc/_sensitivelib.py",
+          "start": 620,
+          "end": 693,
+          "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+          "excerpt_sha256": "0605a5a263ba82a6cc2391d68bbb20e2db34aea49dddb91bde3dc0e3faa5319b",
+          "claim": "Full candidate identity is assigned before row classification/exemptions and carried through binary context; malformed or unattributed context fails closed."
+        },
+        {
+          "path": "core/pysrc/security-pass.py",
+          "start": 128,
+          "end": 182,
+          "file_sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+          "excerpt_sha256": "7384d69a87b81db02651c7737212d61a081f76c4b0747c4604395c6b18c73849",
+          "claim": "Actual binary path refuses mixed sensitive text/unreadable or excessive binary bytes, appends audit first, writes root/fullcandidate/binary binding. Ordinary pass writes root/fullcandidate/diagnostic row hashes."
+        },
+        {
+          "path": "core/pysrc/git-enforce.py",
+          "start": 242,
+          "end": 353,
+          "file_sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+          "excerpt_sha256": "e0a42c1526e85e4142a221f99578a4f36de24131736865f222c9832ad09cd965",
+          "claim": "Git backstop requires root and full candidate for text and binary; binary additionally requires exact bounded binary identity."
+        },
+        {
+          "path": "core/pysrc/_bashguardlib.py",
+          "start": 2619,
+          "end": 2718,
+          "file_sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+          "excerpt_sha256": "8d7f5e5c039c25c0246e012ef0c79c12414f756e5e3b11bfc205cd9833e4f1c2",
+          "claim": "Command guard requires same root/fullcandidate/binary tuple, rejects unsafe unstaged-absorbing binary commit forms, and compares full candidate for guarded text."
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "start": 388,
+          "end": 448,
+          "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+          "excerpt_sha256": "453d35216621e5c0ce0f2b247d1cf5d5fab0fc9a0a6a039ba66487ed4f6ee29e",
+          "claim": "Binary path/mode/HEAD and staged bytes are separately pinned with32file/100MBperfile/200MBtotal bounds; cannot replace complete diff identity."
+        }
+      ],
+      "accepted_prior_repair_reviews": {
+        "binary_candidate": "4cfd9f0b8e767fd6ea61cb24a5a47564fa3f1f2100787a9c94492a12dd5aacd6",
+        "visible_stdin": "e40db38bb8ab2aca53eb1df4f5a984ed4113a15fed20c97d4889c8830c6d44f9"
+      }
+    },
+    "W-F05": {
+      "cell": "disposition:findings:W-F05",
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "finding_sha256": "da37f369e60eaa8659208d6b47dcd8fff3026e6ec51571c407ead318604ba2c8",
+      "tasks": {
+        "HW-16": "86ab85f1e01deb438a61cc0493f8a44748dc9d6768b1ebc433c12a35482cffdc",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Current initialization and repository documentation no longer assign persona injection to SessionStart, and accurately disclose active startup maintenance. This resolves the finite documentation contradiction, without claiming all startup effects or installed host acceptance.",
+      "clauses": [
+        {
+          "path": "core/surface/commands/init.md",
+          "start": 12,
+          "end": 25,
+          "file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+          "excerpt_sha256": "6f398dc6594a9513a4be5c3687d11282129ef825c1ccc65126d1fceb7d696120",
+          "claim": "Activation/per-turn delivery, Pi trust/pre-agent seam, Claude/Codex startup state, preactivation statusline maintenance and passive boundary are distinct."
+        },
+        {
+          "path": "README.md",
+          "start": 254,
+          "end": 267,
+          "file_sha256": "ce10c0113bb3cd4277d69260383d058d1a3cedc82299312ca35c4514e210dbb0",
+          "excerpt_sha256": "eeceeb5d33393fe551b38d42272d99eb0c9271ff7c62769fe605f6e1db224915",
+          "claim": "README explicitly gives persona composition/delivery to per-turn seam and startup state/owned maintenance to SessionStart."
+        },
+        {
+          "path": ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md",
+          "start": 52,
+          "end": 58,
+          "file_sha256": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+          "excerpt_sha256": "b238d9f999b533e375c26e5c41064487059b2a9da1314f5ba1e96d541252ef50",
+          "claim": "Accepted ADR0030 moves persona off SessionStart, with session/mode dedup; per-turn owner means the turn seam, not mandatory duplicate emission every turn."
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1278,
+          "end": 1296,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "excerpt_sha256": "2c26b7b58b619e61e1c1f61d94c350581dba4829bd282037af3b746049001983",
+          "claim": "Executable startup explicitly emits state and no persona; source owner matches docs."
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "start": 451,
+          "end": 492,
+          "file_sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+          "excerpt_sha256": "c106c328f4116469f9e2ac9ba3ac66b43b2f01e398416be0e1cacf01c502f9a2",
+          "claim": "Actual Claude/Codex per-turn owners compose/deliver persona with session/mode/compaction dedup."
+        }
+      ],
+      "accepted_prior_repair_reviews": {}
+    },
+    "W-F06": {
+      "cell": "disposition:findings:W-F06",
+      "source_commit": "4d1145add0d1e81a068c3cb918c8f0702549f110",
+      "finding_sha256": "143b4dd0ed081319e42f1791c650a78ad0360f6876844ce41844f2886a3ee21f",
+      "tasks": {
+        "HW-17": "f28ee2e4a677510b1d1ef9347674ea34121b38689458f42bf7f3bee645643b4c",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Current override instructions and shared PASS recording explicitly describe worktree plus complete staged diff and unrelated non-sensitive staged change invalidation; the source binding matches current repaired producers/consumers.",
+      "clauses": [
+        {
+          "path": "core/surface/commands/override.md",
+          "start": 96,
+          "end": 114,
+          "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+          "excerpt_sha256": "d88bc6b150d54314f4006ca5341b25b946d418435a4a1a140c161d9c2f1cd318",
+          "claim": "Ordinary reviewable-text route binds complete staged candidate, not only sensitive rows, and genuine binary override is audit-first/distinct, never independent PASS."
+        },
+        {
+          "path": "core/surface/includes/security-gate-record.md",
+          "start": 15,
+          "end": 35,
+          "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+          "excerpt_sha256": "c816a987baf6a0f3a045d8be5ed247da15fb1ee9a25f66fa099d815e0a439af2",
+          "claim": "Exact checkout, whole staged diff, diagnostic rows, changed/moved/removed/unrelated row invalidation and unchanged review/override authority are explicit."
+        },
+        {
+          "path": "core/pysrc/_sensitivelib.py",
+          "start": 369,
+          "end": 373,
+          "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+          "excerpt_sha256": "578b4b045806cfd35f5edab8de3dc9a0f093031bc78574c5c9f483b50659904a",
+          "claim": "Actual entire diff hash semantics agree with documentation."
+        },
+        {
+          "path": "core/pysrc/security-pass.py",
+          "start": 154,
+          "end": 182,
+          "file_sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+          "excerpt_sha256": "a9fc565af95e9799c55e70840a94996082069865b66fbdab211b9eb1c635539e",
+          "claim": "Both actual producer branches carry complete candidate; ordinary and binary records remain distinct."
+        }
+      ],
+      "accepted_prior_repair_reviews": {
+        "binary_candidate": "4cfd9f0b8e767fd6ea61cb24a5a47564fa3f1f2100787a9c94492a12dd5aacd6",
+        "visible_stdin": "e40db38bb8ab2aca53eb1df4f5a984ed4113a15fed20c97d4889c8830c6d44f9"
+      }
+    },
+    "W-F07": {
+      "cell": "disposition:findings:W-F07",
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "finding_sha256": "7b4d1f3abb4a33da5ef4d86cd6341899d8ab0a59d5509b855095ba201e61fdcf",
+      "tasks": {
+        "HW-18": "6b2177f4a45b62ef11b6bd5541239f34cf6679d490a2786768f08705f876aebf",
+        "HW-27": "8e82bb4b8564ff8ab8003ea6c54f94baf40aa1ad2c14be3bd5700ae47bca9233"
+      },
+      "contract": "Maintained watcher instructions expressly distinguish one model-independent detached gh process from its recurring CLI API refreshes; no claim of zero network polling remains.",
+      "clauses": [
+        {
+          "path": "core/surface/commands/watch.md",
+          "start": 14,
+          "end": 19,
+          "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+          "excerpt_sha256": "0121ed73cd2eda81f8705e7cb5c9a59c7c699c34df0f9b10353f0e1533370554",
+          "claim": "CLI re-reads status on its refresh interval while model does not run on a timer."
+        },
+        {
+          "path": "core/surface/commands/watch.md",
+          "start": 27,
+          "end": 48,
+          "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+          "excerpt_sha256": "6ae9ed09c95ee459f914a45cd114b469d6f6743c5d25a2228f5a724e3702a73b",
+          "claim": "One detached gh checks --watch; CLI interval documented; final exact-head readback and cancelled checks remain incomplete; interrupted watcher is unverified."
+        },
+        {
+          "path": "core/surface/commands/watch.md",
+          "start": 69,
+          "end": 72,
+          "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+          "excerpt_sha256": "bb1b060955414d02f8378056cd3250911d9238163f5f0a8f5af62ed1c1e0c510",
+          "claim": "Green produces only merge offer; watcher cannot merge or bypass default-branch hard gate."
+        },
+        {
+          "path": "core/surface/commands/watch.md",
+          "start": 90,
+          "end": 99,
+          "file_sha256": "e367930dafcd30edd54a7115bbf40b303759d502281b31d144a565a3bc494ce3",
+          "excerpt_sha256": "4e795e68bb4549886820b15a40362f1b4d0d57f085979770eff52284aed813fa",
+          "claim": "Hard gate forbids model timer loop while explicitly preserving CLI refresh behavior and read-only/default propose boundary."
+        }
+      ],
+      "accepted_prior_repair_reviews": {}
+    }
+  }
+}

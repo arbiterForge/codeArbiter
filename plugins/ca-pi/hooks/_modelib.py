@@ -23,6 +23,7 @@ import hashlib
 import json
 import os
 import re
+import secrets
 
 from _activationlib import marker_root
 from _hooklib import acquire_lock, audit_lock_key, release_lock, write_text_atomic
@@ -329,7 +330,8 @@ FLIP_NOOP = "noop"
 FLIP_FAILED = "failed"
 
 
-def _mode_audit_line(verb, mode, host_name=None, now=None, session_id=None):
+def _mode_audit_line(verb, mode, host_name=None, now=None, session_id=None,
+                     transition_id=None):
     """One `MODE: <name> enter|exit` audit row (Decided parameters: Audit
     verb). `now` (epoch seconds) is injectable for deterministic tests;
     defaults to the real current time.
@@ -344,9 +346,12 @@ def _mode_audit_line(verb, mode, host_name=None, now=None, session_id=None):
           if now is not None
           else datetime.datetime.now(datetime.timezone.utc))
     ts_str = ts.strftime("%Y-%m-%dT%H:%M:%SZ")
+    # Fresh flips need distinct replay identity even within one timestamp second.
+    # Both rows share this opaque identity; it is not an authority credential.
+    note = "transition:" + transition_id if transition_id else "—"
     return (f"[{ts_str}] | BY: session-mode | HOST: {host_name or 'unknown'} "
             f"| SESSION: {session_id or 'unknown'} "
-            f"| MODE: {mode} {verb} | NOTE: —\n")
+            f"| MODE: {mode} {verb} | NOTE: {note}\n")
 
 
 def effective_mode(session_id, root=None, payload=None):
@@ -419,8 +424,11 @@ def flip_outcome(session_id, mode, root=None, payload=None, host_name=None, now=
     next_action = None
     if result == FLIP_FAILED:
         if audit == AUDIT_OWED:
-            next_action = ("the owed row replays at the next session start or "
-                           "compaction; re-send `mode --{}` to retry now".format(mode))
+            next_action = ("audit completion is unconfirmed; only rows durably retained "
+                           "for this transition may replay. If its debt was not durably "
+                           "recorded, the prior exit cannot be reconstructed automatically; "
+                           "inspect the trail and pending queue, repair storage, then retry "
+                           "`mode --{}`").format(mode)
         else:
             next_action = "re-send `mode --{}` once the marker directory is writable".format(mode)
     return {
@@ -466,44 +474,36 @@ def _flip(session_id, mode, root, payload, host_name, now, current):
     """(result, audit) — the flip state machine behind `flip_outcome`.
     `current` is the raw mode read immediately before."""
     if current == mode:
+        if _owes_enter_row(root, mode, session_id):
+            _settle_dev_close(root, host_name=host_name)
+            if (not _owes_enter_row(root, mode, session_id) and
+                    (mode == MODES[0] or ledger_backs(root, mode, session_id=session_id))):
+                return FLIP_FLIPPED, AUDIT_SETTLED
+            return FLIP_FAILED, AUDIT_OWED
         if mode == MODES[0] or ledger_backs(root, mode, session_id=session_id):
             return FLIP_NOOP, AUDIT_NOT_REQUIRED
-        # Raw marker already says `mode` but nothing backs it. Settle whatever
-        # is owed; if this session's enter row is owed NOWHERE (the marker was
-        # written outside a flip, or the bounded record discarded the row),
-        # stage a fresh one for this explicit request — otherwise the token
-        # could never recover the marker. A row still owed is not re-minted,
-        # so retries never duplicate history.
-        new_line = None
-        if not _owes_enter_row(root, mode, session_id):
-            new_line = _mode_audit_line("enter", mode, host_name=host_name, now=now,
-                                        session_id=session_id)
-        _settle_dev_close(root, new_line=new_line, host_name=host_name)
-        if ledger_backs(root, mode, session_id=session_id):
-            return FLIP_FLIPPED, AUDIT_SETTLED
-        return FLIP_FAILED, AUDIT_OWED
+        line = _mode_audit_line("enter", mode, host_name=host_name, now=now,
+                                session_id=session_id, transition_id=secrets.token_hex(16))
+        _settle_dev_close(root, new_line=line, host_name=host_name)
+        return ((FLIP_FLIPPED, AUDIT_SETTLED) if _overrides_has_line(root, line)
+                else (FLIP_FAILED, AUDIT_OWED))
+    # Only an attributable effective prior entry has an exit. The initially
+    # implicit arbiter and an unbacked raw marker are not operator enter events.
+    prior_mode, prior_diag = current_mode(session_id, root=root, payload=payload)
+    has_entry, _entry_diag = session_has_entry(session_id, root=root, payload=payload)
+    prior_entered = (has_entry and prior_diag is None and prior_mode == current
+                     and ledger_backs(root, current, session_id=session_id))
     if not write_mode(session_id, mode, root=root, payload=payload):
         return FLIP_FAILED, AUDIT_NOT_ATTEMPTED
-    # ADR-0030 position 4: EVERY transition row is staged through the #396
-    # write-ahead ledger, never a bare append. The exit half already complied;
-    # this one did not, so an unwritable overrides.log dropped the `MODE: …
-    # enter` row with no replay while `flip` still reported success — an
-    # unaudited entry into a gates-off posture, which is the one transition
-    # that must never be silent.
-    #
-    # Reporting FLIP_FAILED when the row is not confirmed is consistent rather
-    # than pessimistic: `ledger_backs` (AC-11) already refuses to compose a
-    # body whose mode has no matching `enter` row, so an unaudited marker is
-    # not in effect anyway. Saying so out loud beats leaving the user believing
-    # a flip took that the injector will ignore.
-    #
-    # Confirmed by looking for the row itself, not by the settle count: a
-    # settle can append an OLDER owed line and stall on this one, which would
-    # read as success from the count alone.
-    line = _mode_audit_line("enter", mode, host_name=host_name, now=now,
-                            session_id=session_id)
-    _settle_dev_close(root, new_line=line, host_name=host_name)
-    if not _overrides_has_line(root, line):
+    transition_id = secrets.token_hex(16)
+    rows = []
+    if prior_entered:
+        rows.append(_mode_audit_line("exit", current, host_name=host_name, now=now,
+                                    session_id=session_id, transition_id=transition_id))
+    rows.append(_mode_audit_line("enter", mode, host_name=host_name, now=now,
+                                session_id=session_id, transition_id=transition_id))
+    _settle_dev_close(root, new_lines=rows, host_name=host_name)
+    if not all(_overrides_has_line(root, line) for line in rows):
         return FLIP_FAILED, AUDIT_OWED
     return FLIP_FLIPPED, AUDIT_SETTLED
 
@@ -782,7 +782,7 @@ def _dev_dropped_close_note(count, host_name=None):
             f"no matching close row\n")
 
 
-def _settle_dev_close(root, marker=None, new_line=None, host_name=None):
+def _settle_dev_close(root, marker=None, new_line=None, host_name=None, new_lines=()):
     """Drive the pending-close record to settlement; the single place the owed
     DEV: exit is appended and the retry state is cleared.
 
@@ -791,8 +791,10 @@ def _settle_dev_close(root, marker=None, new_line=None, host_name=None):
     freshly minted close line to take on, or None when this is a pure replay of
     whatever is already owed. `host_name` only attributes the cap-overflow note
     below; the close lines themselves already carry their own HOST field.
+    `new_lines` stages a fresh transition pair together before append attempts;
+    it shares the existing cap and best-effort persistence limits.
     Returns the number of close lines appended by THIS call. Never raises."""
-    if (marker is None and new_line is None
+    if (marker is None and new_line is None and not new_lines
             and not os.path.isfile(_dev_pending_close_path(root))):
         return 0    # nothing owed, nothing to settle — the overwhelming case
     rec = _read_dev_pending_close(root)
@@ -812,14 +814,17 @@ def _settle_dev_close(root, marker=None, new_line=None, host_name=None):
     # below is minted in this process and cannot possibly be there yet.
     replays = len(owed)
 
+    fresh = list(new_lines)
     if new_line is not None:
+        fresh.append(new_line)
+    if fresh:
         # Already closed THIS marker (the append landed, only the removal
         # failed) -> do not mint a second row for it; just retry the cleanup.
         already_closed = (rec is not None and prev_mtime is not None
                           and marker_mtime is not None
                           and prev_mtime == marker_mtime)
         if not already_closed:
-            owed.append(new_line)
+            owed.extend(fresh)
     if len(owed) > _DEV_PENDING_CLOSE_MAX:
         # Bounded, but never SILENT. A permanently-unwritable overrides.log
         # would otherwise accumulate owed lines forever, so the oldest are

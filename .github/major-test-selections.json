@@ -1008,6 +1008,562 @@
         "task:Q-02"
       ],
       "scope": "Q02 verifier/regression implementation on integration: original release source assertions and finite protocol fixtures; excludes actual final-main receipt instance, built/installed/model/user acceptance and Q03 publication/distribution settlement."
+    },
+    {
+      "id": "hook-review-severity-policy",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-findings-windows-contracts",
+      "observation": "hook-review",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception",
+        "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking"
+      ],
+      "cells": [
+        "disposition:findings:W-F03"
+      ],
+      "scope": "Original unfiltered review suite: W-F03 declarative maintenance MEDIUM/security HIGH and owner/index/triage/shared disposition conformance across four generated surfaces. Not model behavior, whole HW09/HW20/HW27 tasks or installed-host acceptance."
+    },
+    {
+      "id": "finite-sf01",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population",
+        "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects"
+      ],
+      "cells": [
+        "disposition:findings:SF01"
+      ],
+      "scope": "Finite SF01 source-test behavior: real loopback child proxy and parent gate precede exact owned file effects; bridge refusal, disabled/untrusted lifecycle, token/replay/expiry/sequence bounds refuse effects. Permission callback and native factories are fixture ports. No human TUI, installed author, shell containment or whole PI-D task qualification."
+    },
+    {
+      "id": "finite-sf02",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed",
+        "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session"
+      ],
+      "cells": [
+        "disposition:findings:SF02"
+      ],
+      "scope": "Finite SF02 source-test persona readiness, failure, healthy/retry and retired-session behavior through shipped parent installation with fixture host/bridge ports; no model or installed-host qualification."
+    },
+    {
+      "id": "finite-sf03",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once",
+        "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once"
+      ],
+      "cells": [
+        "disposition:findings:SF03"
+      ],
+      "scope": "Finite SF03 source-test late metrics cannot install into disposed/off sessions or degrade the current session; both completion orders preserve current-session installation and native rendering. Fixture TUI ports; no visible-host or terminal qualification."
+    },
+    {
+      "id": "finite-sf12",
+      "job": "Coverage union (Pi)  <os: windows-latest>",
+      "payload_name": "major-source-inputs-pi-windows-coverage",
+      "observation": "pi-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure",
+        "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads"
+      ],
+      "cells": [
+        "disposition:findings:SF12"
+      ],
+      "scope": "Finite SF12 source-test compatibility declares private approval unavailable on Pi 1.5.0 and legacy runtime-gated only; isolated dialog controls are synthetic and never ordinary installed approval or human consent evidence. No production doctor or host-observed approval qualification."
+    },
+    {
+      "id": "finite-sf08",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input",
+        "vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box",
+        "vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box"
+      ],
+      "cells": [
+        "disposition:findings:SF08"
+      ],
+      "scope": "Finite SF08 requires pure cache-key/provenance/refusal guards AND both original real Docker builder cases: distinct staging names reuse the labeled immutable image, changed dependency bytes rebuild, concurrent cold requests converge and deleting one box preserves another. No remote clone/auth, arbitrary image or installed CLI credit."
+    },
+    {
+      "id": "finite-sf10",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target"
+      ],
+      "cells": [
+        "disposition:findings:SF10"
+      ],
+      "scope": "Finite SF10 source-test unavailable discovery, cancellation-independent compensation, retained unknown cleanup references and refusal to destroy unobserved targets through actual production functions with injected Docker observations. No universal cleanup, real daemon outage or host containment claim."
+    },
+    {
+      "id": "finite-sf09",
+      "job": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "payload_name": "major-source-inputs-sandbox-driver",
+      "observation": "sandbox-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box"
+      ],
+      "cells": [
+        "disposition:findings:SF09"
+      ],
+      "scope": "Finite SF09 requires the original real Docker overflow case plus unit stop/inspect guard: actual capped exec overflows without timeout, exact target independently inspects stopped and a separate running box remains alive. No arbitrary workload, global cleanup or installed CLI qualification."
+    },
+    {
+      "id": "finite-sf04",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations qualified-declaration-six-fields",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-field",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-format",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations malformed-context",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-platform",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-context-binary",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-field",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-platform-path",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unqualified-context",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations bounds UTF-8 bytes before parsing",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations rejects duplicate and escaped-duplicate keys"
+      ],
+      "cells": [
+        "disposition:findings:SF04"
+      ],
+      "scope": "Finite shared Farm parser acceptance of the optional sixth context_qualification declaration and all original malformed/unknown/duplicate/bounded input refusals. Fixtures are synthetic schema declarations, never native runtime or context qualification."
+    },
+    {
+      "id": "finite-sf05",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (source)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (bundle)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)",
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run"
+      ],
+      "cells": [
+        "disposition:findings:SF05"
+      ],
+      "scope": "Finite JSON/Markdown/effect-journal receipt failure remains explicit, previous complete report survives and independently running tasks drain; receipt-only recovery through actual source/bundle interruptions never calls an author or changes recorded refs/registry/original evidence. Deterministic local HTTP replies substitute model/provider; no real provider, installed approval or global process-containment qualification."
+    },
+    {
+      "id": "finite-sf06",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+      ],
+      "cells": [
+        "disposition:findings:SF06"
+      ],
+      "scope": "Finite preservation of failed containment through actual gate/runTask/setup consumers: no reset, mutation or second author; retained outcome and scratch resources remain unknown. Executor observations are injected, not OS containment proof."
+    },
+    {
+      "id": "finite-sf07",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations",
+        "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations"
+      ],
+      "cells": [
+        "disposition:findings:SF07"
+      ],
+      "scope": "Finite failed/malformed Git observation refusal, bounded read-only retry and fresh pre-stage dirty/unavailable/clean mutation decisions; fixture observations do not qualify arbitrary repository/concurrency or installed host state."
+    },
+    {
+      "id": "finite-cf02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-q02-implementation",
+      "observation": "q02-release",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_no_successful_ci_is_refused",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_source_no_longer_on_main_is_refused",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_expired_or_missing_artifacts_are_reported_not_hidden",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_selection_that_differs_from_the_approved_candidate_is_refused",
+        "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_workflow_run_event_binds_its_own_run"
+      ],
+      "cells": [
+        "disposition:findings:C-F02"
+      ],
+      "scope": "Finite manual/automatic release source selection, explicit older-successful-source report, no-success/non-main/expired/missing/approved-candidate refusals and read-only route-observer boundaries. Original unfiltered release-workflow outcome only; not actual publication or whole R02/R03/Q02 qualification."
+    },
+    {
+      "id": "finite-hookf01",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf01",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F01"
+      ],
+      "scope": "Actual prompt/mode persona revisit, no-op, generation/session and storage-failure fixture behavior; no live host or universal double-denial redelivery."
+    },
+    {
+      "id": "finite-hookf03",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf03",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe",
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse",
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills",
+        "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F03"
+      ],
+      "scope": "Actual check_payload predicate and actual PiHost/package identity on owned files only; no doctor.main, native/npm, host probe or installed health."
+    },
+    {
+      "id": "finite-cf05",
+      "job": "[CHECK] | [REPO] | Impact planner contract",
+      "payload_name": "major-source-inputs-impact-single-owner",
+      "observation": "finite-cf05",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input",
+        "python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy"
+      ],
+      "cells": [
+        "disposition:findings:C-F05"
+      ],
+      "scope": "Actual workflow input/event and deploy-authority declaration controls; no Pages deployment."
+    },
+    {
+      "id": "finite-cf06",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-cf06",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event",
+        "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes",
+        "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable",
+        "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly"
+      ],
+      "cells": [
+        "disposition:findings:C-F06"
+      ],
+      "scope": "Typed injected outcomes and required-affirmative/source/refusal contract; no actual branch/tag/Codex protection observation."
+    },
+    {
+      "id": "finite-cf07",
+      "job": "[CHECK] | [REPO] | Impact planner contract",
+      "payload_name": "major-source-inputs-impact-single-owner",
+      "observation": "finite-cf07",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes",
+        "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump"
+      ],
+      "cells": [
+        "disposition:findings:C-F07"
+      ],
+      "scope": "Owned Git base absent/valid/invalid/unresolved manifest distinction; no release qualification."
+    },
+    {
+      "id": "finite-tf02",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-tf02",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+        "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output"
+      ],
+      "cells": [
+        "disposition:findings:T-F02"
+      ],
+      "scope": "Actual SMARTS predicate/producer-refusal on inert output fixtures; model reasoning quality and whole T01 remain unassessed."
+    },
+    {
+      "id": "finite-hookf02-modelib",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf02-modelib",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle",
+        "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter",
+        "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled",
+        "python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F02"
+      ],
+      "scope": "HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit."
+    },
+    {
+      "id": "finite-hookf02-prompt",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-hookf01",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates",
+        "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode"
+      ],
+      "cells": [
+        "disposition:findings:HOOK-F02"
+      ],
+      "scope": "HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit."
+    },
+    {
+      "id": "docs-source-gen-b01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs slugifies names with no collisions",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes colliding slugs in order of appearance",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes triple collisions deterministically",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs preserves input length and order",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs reserves every emitted slug, including suffixed forms (HW-24)",
+        "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs never emits a duplicate for names already ending in numeric suffixes"
+      ],
+      "cells": [
+        "disposition:findings:GEN-B01"
+      ],
+      "scope": "Complete slug reservation/collision complement only; does not assert former production reachability."
+    },
+    {
+      "id": "docs-source-gen-f01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/generator/configuration-reference.test.ts:configuration reference describes the prune nudge threshold with the runtime predicate and default (HW-22)",
+        "vitest:site/test/generator/configuration-reference.test.ts:configuration reference is deterministic"
+      ],
+      "cells": [
+        "disposition:findings:GEN-F01"
+      ],
+      "scope": "Runtime-predicate wording, default and deterministic configuration reference; no model comprehension claim."
+    },
+    {
+      "id": "docs-source-gen-f02",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture extracts a multi-line adjacent f-string call, concatenating placeholder text verbatim",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles nested parens inside a plain string literal without truncating the call",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles `+` concatenation, ignoring the non-literal trailing call but tracking its parens",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture finds two distinct tags in the same file",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a bare-assignment variable tag to its single literal tag",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a conditional-assignment variable tag to BOTH tags with the same message and line pin",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture counts an unresolvable variable-tag call (loop unpack) into `skipped`, not silently dropped",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture excludes the block()/remind() definition sites themselves",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture records 1-based line numbers and the source file basename",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) finds at least 60 attributed call sites in the real hooks",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) attributes at least one H-10b entry (the conditional-assignment split) with its real message",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the genuinely unresolvable loop-unpack call site in `skipped`",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts H-01's protected-branch commit message from _bashguardlib.py verbatim",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the same real-hook structural assertions after unrelated _bashguardlib.py line insertions",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts an H-09b message from _bashguardlib.py verbatim",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) excludes quoted, commented and docstring fake block calls",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) marks a dynamic recovery suffix instead of presenting a partial message as complete",
+        "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) leaves an assignment beyond the 30-line window as an explicit skipped gap",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script to its EventName (matcher) label",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script with no matcher to a bare EventName label",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor hand-maps git-enforce.py to the git backstop label, bypassing hooks.json",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor attributes extracted shared-library gates to their registered entry hook",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor returns an empty list for a script registered nowhere",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders frontmatter with title Hook Gates",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference orders sections in natural gate-ID order: H-09 before H-09b before H-10",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows the Blocking badge for a block-only tag",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows both badges when a tag has both a block and a remind call site",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders a line-pinned permalink in the expected format",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference wraps f-string placeholders in backticks",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) never claims runtime equivalence",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) names a dynamic recovery fragment instead of presenting a partial message as complete",
+        "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) lists skipped call sites with source links"
+      ],
+      "cells": [
+        "disposition:findings:GEN-F02"
+      ],
+      "scope": "All bounded extraction, dynamic/skipped/lexical attribution and rendered honesty complements; no runtime Python equivalence."
+    },
+    {
+      "id": "docs-source-sx-f01",
+      "job": "Site | [Test] - Generator",
+      "payload_name": "major-source-inputs-site-vitest-findings",
+      "observation": "docs-original-site-coverage",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:site/test/release-applicability/endpoint.test.ts:release applicability endpoint statically serves the canonical generated record as JSON",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation loads the exact supported direct-hook replay claim while allowing fixture detail (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing schema before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects unsupported schema before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects relabeled evidence kind before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects host discovery promoted to true before proof metadata enters the generated record (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing proof evidence before generation (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects invalid JSON proof evidence before generation (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ../outside.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins/ca/hooks/../pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins\\ca\\hooks\\pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path /plugins/ca/hooks/pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path C:/plugins/ca/hooks/pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ./plugins/ca/hooks/pre-bash.py (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path whose parent symlink escapes the repository (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path that resolves to a directory (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation writes the strict deterministic record from the repository's real evidence (O-10)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation reports each host's highest stable release tag, not the lagging receipt ledger (R-01)",
+        "vitest:site/test/release-applicability/generation.test.ts:release applicability generation fails closed without writing output when build identity evidence is inconsistent (O-10)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation generates and builds fresh fixtures before top-level test and coverage runners",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+        "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+        "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+      ],
+      "cells": [
+        "disposition:findings:SX-F01"
+      ],
+      "scope": "Source applicability versus observed publication with data/presentation/endpoint cases and successful original rendered followup; no live publication/browser authority."
     }
   ]
 }

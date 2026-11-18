@@ -1,0 +1,10 @@
+{
+  "schema": "codearbiter.release-fixture-timeout-diagnostics/1",
+  "controller_anchor": "1b991ceb37f2fa0b4614a9970387c6609a1bffaa",
+  "changes": "One owning test harness uses a private regular phasefile outside Consumer, fixed best-effort Bash announcements and strict capped readback to append only closed phase notes to the same TimeoutExpired. Phase announcements do not prove syscall or process exit completion.",
+  "actual_checks": "Proper missing-note RED then same GREEN; final20methodsPASS28.006s including all15 original guard/no-write methods, unchanged ASTs and5new diagnostic controls. Prefix/size/nonregular/link/replacement/open-denied and actual inert Bash create/write-denial statuses0/17/streams verified. Draft Windowsctime mismatch retained and corrected only in new diagnostics shared-stat comparison.",
+  "preserved": "Actual installed extracted function, call/trailer/argv/env, stdout/stderr, error identity and20second deadline unchanged. Storage denial best-effort and original statuses preserved, no raw dynamic phase data/commands/env/credential note. No production release skill/helper change.",
+  "original_failure": "Original0ef Windows isolation fixture timed out20s; actual innerphase/causeUNKNOWN. This is future evidence capability, not an asserted Bash/Git/guard cause fix.",
+  "review": "Independent acceptance security/criticalcoveragePASS at actual1b unchanged target/sourcejoins. No reviewer replay or selfapproval.",
+  "limits": "No ledger/task/runtime/installed/human/model or sourceepoch promotion. Fresh exact-head hostedCI/Docs still required, main1098/publicationheld."
+}

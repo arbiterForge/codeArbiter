@@ -1,0 +1,158 @@
+{
+ "schema": "codearbiter.source-intake/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "current_unresolved_accepted_scope_defects": [],
+ "historical_findings": [
+  {
+   "id": "HOOK-MODE-AUDIT-EXIT-01",
+   "state": "CLOSED_IN_COMMITTED_SOURCE_WITH_EXPLICIT_LIMITS",
+   "source_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+   "prior_packet": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-runtime-bounded-source-6d8-45_8g7e4\\delivery.json",
+    "sha256": "75694401aa5bf22a69427af6ac5122829b4a5e612af304219dd9920b47af4196",
+    "bytes": 3788
+   },
+   "repair_delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\delivery.json",
+    "sha256": "8b44dab2115d3a48d8ad014bfbc54c59131e8705175b110a970b396d66fe9da2",
+    "bytes": 11301
+   },
+   "independent_closure": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-independent-closure-5492y33s\\review.json",
+    "sha256": "1be5e14be90ffa1688c4350dbc5203af268908ca54f2c65a8eb9cafdb906096d",
+    "bytes": 6248
+   }
+  },
+  {
+   "id": "WORK-ADOPTION-NONREGULAR-READ-01",
+   "state": "CLOSED_IN_COMMITTED_SOURCE_WITH_EXPLICIT_PLATFORM_LIMITS",
+   "source_sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+   "prior_packet": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-lifecycle18-scope-successor-_momhpb1\\delivery.json",
+    "sha256": "dc9850e57c6f92f2c26c121c3035f6cc5724326cb600ea79dceea436280b2fc6",
+    "bytes": 8536
+   },
+   "repair_delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\delivery.json",
+    "sha256": "61a39e5ae045e52588b9bfe30df396a30f75d10baefae91bf4f5cd6b0598fdf7",
+    "bytes": 7952
+   },
+   "independent_closure": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-independent-review-fiv1waho\\review.json",
+    "sha256": "459b8d4d458c0c8eb3bafd701b743f6d4c10d88e8c1e86789173004c691201e5",
+    "bytes": 8072
+   }
+  },
+  {
+   "id": "L18-OWNER-CLAIM-01",
+   "state": "AUTHORED_SCOPE_CORRECTION_REUSED_EXACT",
+   "closure": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-lifecycle18-closure-jj0dqle2\\review.json",
+    "sha256": "b7939fae53bb4c33e26c2fb6f2bc5b28a89195e3840224ba90fbbd593e08de7e",
+    "bytes": 16154
+   },
+   "scope": "Board lstat regular/reparse differs from native peer finite isdir/not-islink/empty scandir; no universal junction refusal."
+  }
+ ],
+ "analytical_scope_variances": [
+  {
+   "transition_id": "hooks:mode:03",
+   "statement": "ADR0030 Decision4 repair is now committed0d73. Marker-before-journal interruption, failed queue writes plus append denial, cap eviction and concurrent read/modify/write remain real limits. Old unrelated or same-session historical debt does not prove this pair persisted: next_action explicitly conditions replay on retained transition rows and directs trail/queue/storage inspection. Effective state is computed independently; historical requested-mode backing can exist even when a new pair is incomplete."
+  },
+  {
+   "transition_id": "hooks:mode:06",
+   "statement": "HW02 intentionally replaces frozen raw-only report with truthful effective/raw/debt projection."
+  },
+  {
+   "transition_id": "hooks:mode-audit:04",
+   "statement": "Root accepted the frozen universal unproven-session reset and terminal diagnostic wording as an analytical overstatement, not a new clear-on-auxiliary-denial duty. ADR0030/HW01/HW02/HW03 preserve backed same-session choice across compaction. Deterministic gates remain independent of persona mode; no unauthorized mode or universal storage durability claim follows."
+  },
+  {
+   "transition_id": "hooks:mode-audit:05",
+   "statement": "Frozen reset shorthand is conditional on successful marker write; current-mode startup display is raw, while ordinary prompt effective mode separately checks backing."
+  },
+  {
+   "transition_id": "hooks:persona:01",
+   "statement": "Frozen seven-key description applies to block/control envelope; ordinary allow output has continue and hookSpecificOutput only. Accepted HW01 preserves composition and changes current delivery identity."
+  },
+  {
+   "transition_id": "hooks:persona:03",
+   "statement": "Named accepted HW01 intentional correction, not preservation of original zero-length A return. Double-denial and concurrent event ordering are explicit limits; no in-process cache or unconditional durable delivery guarantee."
+  },
+  {
+   "transition_id": "hooks:persona:04",
+   "statement": "Atomic map replacement is not a serialized multi-session generation transaction. No guarantee of monotonic advancement under all concurrent writes or double storage denial."
+  },
+  {
+   "transition_id": "hooks:persona:06",
+   "statement": "Accepted HW02 intentionally corrects frozen conflated failure text; no ordinary task turn reaches model on this control route."
+  },
+  {
+   "transition_id": "hooks:startup:04",
+   "statement": "6d8 committed no-bytecode launch repairs confirmed source defect; focused owned-child proof is historical evidence, not current installed-host or sole-writer attribution."
+  },
+  {
+   "transition_id": "hooks:security-producers:02",
+   "statement": "Current CLI flag is --binary-override with --security-finding/--reason, not frozen --override shorthand; no review-policy authorization is minted by helper success."
+  },
+  {
+   "transition_id": "hooks:push:04",
+   "statement": "Frozen malformed-ref refusal overstates unchanged pinned/current implementation. Source claim is limited to normal Git pre-push protocol, not hostile/direct hook input. This does not authorize publication or assert a universal fail-closed parser."
+  },
+  {
+   "transition_id": "hooks:authority-request:06",
+   "statement": "Terminal matching replay is operation-specific; not every terminal event returns success. ADR43 removes ordinary-work receipt barriers, not these expressly selected evidence-producer integrity checks."
+  },
+  {
+   "transition_id": "hooks:work-owner:03",
+   "statement": "Frozen origin-produces-deterministic-WORK-ID shorthand describes derived legacy records/adoption identities, not every new create. Stable retry is origin/operation lookup, not deterministic IDs for all owners."
+  },
+  {
+   "transition_id": "hooks:work-adoption:01",
+   "statement": "The actual regular-reader repair is committed0d73. Available flags and leaf/descriptor checks do not establish universal Windows pre-open race freedom, ancestor confinement or immutable same-inode contents. Frozen duplicate-origin and physical-row shorthand remains narrowed to the previously reviewed normalization/coalescing behavior;507 bounds logical rows."
+  },
+  {
+   "transition_id": "hooks:work-adoption:03",
+   "statement": "The prior Python pre-native nonregular-read gap is closed in actual committed source; native admission and existing replay identity remain separate. Available flags, leaf identity checks and controlled local regressions are not universal OS race/confinement or transaction durability proof."
+  },
+  {
+   "transition_id": "hooks:legacy-advisories:07",
+   "statement": "Frozen CONTROLS.md name is inaccurate: the literal owner reads security-controls.md. This finite legacy configuration reader does not infer HTML knowledge ownership or claim all native records feed these guards."
+  },
+  {
+   "transition_id": "hooks:plan-file:01",
+   "statement": "Base64 is the actual Pi bridge wire projection, not the pure helper's internal content value. Lock serializes cooperating Pi writers, not arbitrary external filesystem writers."
+  },
+  {
+   "transition_id": "hooks:adr-lifecycle:01",
+   "statement": "Current accepted-binding/correction hardening is an intended source correction sincefd7; reviewed_by is a named field, not independent authentication or an authority grant."
+  },
+  {
+   "transition_id": "hooks:cleanup-eligibility:06",
+   "statement": "Frozen current/protected clause combines multiple owners: validate_resource_path alone only validates exact supplied allowed path/nonroot; no standalone current-worktree refusal or OS confinement is invented."
+  },
+  {
+   "transition_id": "hooks:cleanup-journal:05",
+   "statement": "Frozen pending/unknown shorthand overstates this implementation: already-unknown records remain retained for explicit review; this helper rechecks pending only."
+  },
+  {
+   "transition_id": "hooks:work-owner:01",
+   "statement": "Frozen nonempty/unsafe native-peer shorthand is broader than the unchanged current/pinned Python predicate: regular/reparse lstat checks belong to the legacy board; the native work peer is tested only by isdir, islink and empty-directory scan. An empty Windows junction/reparse peer is not proved refused. No universal no-follow, junction refusal, ancestor confinement or OS race proof is claimed. This corrects authored scope only and is not evidence of a newly introduced production defect or new repair authority."
+  }
+ ],
+ "mode_seen_anchor_classification": "Root accepted the frozen universal unproven-session reset and terminal diagnostic wording as an analytical overstatement, not a new clear-on-auxiliary-denial duty. ADR0030/HW01/HW02/HW03 preserve backed same-session choice across compaction. Deterministic gates remain independent of persona mode; no unauthorized mode or universal storage durability claim follows.",
+ "native_peer_finite_predicate": "With a present legacy board, the facade lstat-checks that board for regular type and reparse metadata. It selects LegacyClient when the native work peer is absent, or when that peer passes isdir, fails islink and has an empty scandir result. A nondirectory, islink peer or nonempty peer raises dual-owner conflict; facade scan errors propagate. The projection helper uses the same finite peer predicate and treats lstat/scan errors as a nonlegacy indication. The native peer has no explicit Windows junction/reparse lstat check. Legacy updates use per-block board SHA rather than native revision.",
+ "storage_and_concurrency_limits": [
+  "Persona record write failure attempts durable stale-record invalidation; simultaneous update and invalidation denial can leave stale last-delivery record and suppress future return persona. Fixed bounded diagnostic does not prove future process forgets it.",
+  "Persona generation map is read/modify/atomic replace, without global multi-session serialization; no arbitrary concurrent delivery ordering or monotonic-generation guarantee.",
+  "Mode per-session write/readback is not an atomic multi-file marker+audit+delivery transaction. Pending queue staging is best effort and max8 can discard old rows with aggregate note.",
+  "Owned global statusline refresh compares a reread before save; no lock across external editors and no OS-wide settings transaction.",
+  "Pre-push supports Git-generated ref protocol; arbitrary malformed direct stdin/read failure is not a fail-closed parser guarantee.",
+  "Unkeyed SHA256 identity/CAS binds content, not a security boundary against an authorized malicious filesystem writer.",
+  "Detached -B prohibits normal import bytecode for that launch; it neither proves all actors preserve package bytes nor attributes original archive drift to that sole writer.",
+  "Mode transition pair is staged only after marker readback; a crash in that gap, dual queue+append denial, cap eviction or concurrent queue overwrite can lose reconstructable prior exit. Guidance expressly conditions replay on transition-owned retained rows.",
+  "Shared-reader regularity/identity guards operate on leaves and available flags; no ancestor confinement, immutable content snapshot or universal Windows nofollow/nonblocking guarantee."
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes.",
+ "historical_variance_rule": "Original historical gap/hold text remains only in retained prior packets. Current variances above use the current semantically inspected matrix; no past gap is asserted open after committed repair."
+}

@@ -39,6 +39,6 @@ Create returns exact sandbox/container/volume identities, builder notes, and req
 
 `sandbox destroy <id> [--keep-volume]` targets that sandbox only. It removes labeled containers, then their volume; keep-volume preserves the requested source volume. Detaching a shell never performs destroy.
 
-`sandbox prune` is a separate broad operation over the initially discovered plugin-labeled targets. Run it only when broad prune was requested. A named destroy must never automatically become prune. Other sandboxes and targets created after the prune snapshot remain intact. Missing target IDs are errors; no-ID destroy does not mean prune.
+`sandbox prune` requires an explicit broad request. It discovers and removes plugin-labeled containers first, then discovers and removes plugin-labeled volumes. Each resource type has its own discovery set; there is no single global snapshot at the start. Only references in those sets are targeted. A named destroy must never automatically become prune. Missing target IDs are errors; no-ID destroy does not mean prune.
 
 Report removed, deliberately kept, remaining and unknown resources separately. A removal/listing/verification failure is incomplete teardown with a nonzero CLI exit, not an empty successful scope. Cached images are retained, including old cache versions. Inspection and receipt repair do not authorize starting another sandbox or deleting unrelated resources.

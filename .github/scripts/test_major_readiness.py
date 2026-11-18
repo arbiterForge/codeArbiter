@@ -253,8 +253,9 @@ class ReadinessTest(unittest.TestCase):
                     owner.produce(self.requirements, artifacts, self.jobs)
 
     def test_complete_frozen_population_receipt_fits_existing_json_bound(self):
-        # Serialization/admission capacity fixture, not executed qualification:
-        # prerequisite validation and actual named execution remain separate.
+        # Exercise serialization at the full population size with inert evidence.
+        import site_vitest_observation as docs
+
         repo = Path(__file__).resolve().parents[2]
         corpus = repo / owner.CORPUS / 'contracts'
         tasks = json.loads((corpus / 'tasks.json').read_text())['tasks']
@@ -270,7 +271,16 @@ class ReadinessTest(unittest.TestCase):
         cells.extend(json.loads((repo / '.github/major-qualification-policy.json').read_text())['required_installed_cells'])
         self.assertEqual(len(cells), 2230)
         job = 'capacity fixture original job'
-        req = dict(self.requirements, cells=sorted(cells), cell_jobs={c: job for c in cells})
+        docs_cells = docs.CELLS.intersection(cells)
+        self.assertEqual(docs_cells, docs.CELLS)
+        sf13_cell = docs.reports.SF13_CELL
+        self.assertIn(sf13_cell, cells)
+        core_cells = sorted(set(cells) - docs_cells - {sf13_cell})
+        req = dict(self.requirements, cells=sorted(cells),
+                   cell_jobs={cell: docs.JOB if cell in docs_cells else job for cell in cells},
+                   source_finding_composite_cells=[sf13_cell],
+                   source_finding_inputs={profile: "5" * 64
+                       for profile in docs.reports.source_finding_profiles([sf13_cell])})
         output = io.BytesIO()
         with zipfile.ZipFile(output, 'w') as z:
             z.writestr('ca.tar.gz', b'exact package fixture')
@@ -279,7 +289,8 @@ class ReadinessTest(unittest.TestCase):
             'source_tree': req['source_tree'], 'ci_run_id': 7, 'job_id': 20,
             'payloads': [{'artifact_id': 12, 'archive_sha256': owner.digest(content), 'members': owner.members(content)}],
             'results': [{'cell': cell, 'result': 'PASSED', 'commands': [{'argv': ['fixture-only'], 'exit_code': 0}],
-                'selected_population': 1, 'executed_population': 1, 'payload_artifact_id': 12} for cell in cells]}
+                'selected_population': 1, 'executed_population': 1, 'payload_artifact_id': 12}
+                for cell in core_cells]}
         raw = json.dumps(report, indent=2).encode()
         archive = io.BytesIO()
         with zipfile.ZipFile(archive, 'w', compression=zipfile.ZIP_DEFLATED) as z:
@@ -287,10 +298,43 @@ class ReadinessTest(unittest.TestCase):
         artifacts = [dict(self.build_artifacts[0], digest='sha256:' + owner.digest(content)),
                      {'id': 30, 'name': 'major-qualification-20'}]
         jobs = [{'id': 20, 'name': job, 'conclusion': 'success'}, self.jobs[-1]]
-        with mock.patch.object(owner, 'validate_upload'), \
-             mock.patch.object(owner, 'artifact_bytes', side_effect=lambda a, req: archive.getvalue() if a['id'] == 30 else content):
+        docs_source = {
+            'run_id': 8, 'run_attempt': 1, 'job_id': 21,
+            'source_artifact_id': 31, 'source_archive_sha256': '3' * 64,
+            'report_artifact_id': 32, 'report_archive_sha256': '4' * 64,
+            'results': [{'cell': cell, 'result': 'PASSED', 'commands': [
+                {'argv': ['fixture-only'], 'exit_code': 0}],
+                'selected_population': len(docs.RECIPES[cell]),
+                'executed_population': len(docs.RECIPES[cell]), 'payload_artifact_id': 31}
+                for cell in sorted(docs_cells)],
+        }
+        docs_source['sf13_selectors'] = list(docs.SF13_DOCS_SELECTORS)
+        sf13_source = {
+            'cell': sf13_cell, 'result': 'PASSED',
+            'core_components': [
+                {'job_id': 20, 'run_attempt': 1, 'source_artifact_id': 40 + index,
+                 'observation_artifact_id': 42, 'observation_archive_sha256': '6' * 64,
+                 'selectors': component['selectors']}
+                for index, component in enumerate(docs.reports.SOURCE_FINDING_COMPOSITIONS[sf13_cell])
+            ],
+            'core_source_payloads': [
+                {'artifact_id': identity, 'archive_sha256': owner.digest(content),
+                 'members': owner.members(content)} for identity in (40, 41)
+            ],
+            'docs_run_id': 8, 'docs_run_attempt': 1, 'docs_job_id': 21,
+            'docs_selectors': docs_source['sf13_selectors'],
+        }
+        with (mock.patch.object(owner, 'validate_upload'),
+              mock.patch.object(owner, 'artifact_bytes',
+                                side_effect=lambda a, req: archive.getvalue() if a['id'] == 30 else content),
+              mock.patch.object(docs, 'admit', return_value=docs_source) as admit_docs,
+              mock.patch.object(docs, 'sf13_composition', return_value=sf13_source) as compose_sf13):
             receipt = owner.produce(req, artifacts, jobs)
-        self.assertEqual(len(receipt['results']), 2230)
+        admit_docs.assert_called_once_with(req)
+        compose_sf13.assert_called_once_with(req, docs_source, artifacts, jobs, producing=True)
+        self.assertEqual(receipt['schema'], docs.ENVELOPE)
+        results = receipt['core']['results'] + receipt['docs_source']['results'] + [receipt['sf13_source']]
+        self.assertEqual(sorted(row['cell'] for row in results), sorted(cells))
         self.assertLess(len(raw), 4 * 1024 * 1024)
         self.assertLess(len(json.dumps(receipt, indent=2).encode()), 4 * 1024 * 1024)
 
@@ -336,6 +380,728 @@ class ReadinessTest(unittest.TestCase):
         self.assertIn('if [ "$GITHUB_SHA" != "$SOURCE_COMMIT" ]', action)
 
 
+class CrossJobSourceFindingTest(unittest.TestCase):
+    cell = 'disposition:findings:C-F04'
+    surface_profile = 'route-release-state-component-v1'
+
+    def setUp(self):
+        from major_qualification_report import Q02_SOURCE_JOB
+
+        self.req = {'source_commit': 'a' * 40, 'source_tree': 'b' * 40, 'ci_run_id': 7,
+                    'task_ids': [], 'cells': [self.cell], 'required_artifact_names': [],
+                    'cell_jobs': {self.cell: 'major qualification / release-and-integration'},
+                    'source_finding_composite_cells': [self.cell]}
+        self.run = {'id': 7, 'run_attempt': 3, 'event': 'push', 'head_branch': 'main',
+                    'head_sha': self.req['source_commit'], 'conclusion': 'success',
+                    'path': '.github/workflows/ci.yml', 'repository': {'full_name': owner.REPOSITORY}}
+        self.jobs = [dict(id=i, name=name, run_id=7, run_attempt=3, status='completed', conclusion='success', steps=[])
+                     for i, name in enumerate([Q02_SOURCE_JOB, '[CHECK] | [CORE] | Generated surface',
+                                               'major readiness producer'], 20)]
+        self.artifacts, self.blobs, self.logs = [], {}, {}
+        context = mock.patch.object(owner, 'api', side_effect=self.api)
+        context.start()
+        self.addCleanup(context.stop)
+
+    def api(self, path, binary=False):
+        if path == 'actions/runs/7' and not binary:
+            return self.run
+        return self.blobs.get(path, self.logs.get(path, b''))
+
+    def archive(self, name, job, step, files):
+        archive = io.BytesIO()
+        with zipfile.ZipFile(archive, 'w') as output:
+            for path, raw in files.items():
+                output.writestr(zipfile.ZipInfo(path), raw)
+        raw = archive.getvalue()
+        digest = owner.digest(raw)
+        identity = 100 + len(self.artifacts)
+        artifact = dict(id=identity, name=name, expired=False, size_in_bytes=len(raw), digest='sha256:' + digest,
+                        workflow_run={'id': 7, 'head_sha': self.req['source_commit']}, created_at='2026-01-01T00:00:00Z')
+        self.artifacts.append(artifact)
+        self.blobs[f'actions/artifacts/{identity}/zip'] = raw
+        start = f'2026-01-01T00:00:{len(job["steps"]) * 5:02d}Z'
+        job['steps'].append(dict(name=step, status='completed', conclusion='success', started_at=start, completed_at=start))
+        key = f'actions/jobs/{job["id"]}/logs'
+        messages = ('##[group]Run ' + owner.UPLOAD_ACTION, 'SHA256 digest of uploaded artifact is ' + digest,
+                    f'Artifact {name} successfully finalized. Artifact ID {identity}')
+        self.logs[key] = self.logs.get(key, b'') + ''.join(f'{start} {message}\n' for message in messages).encode()
+        return artifact
+
+    def complete_components(self, modify_surface=None):
+        import major_qualification_report as reports
+
+        surface_spec = reports.source_profile(self.surface_profile)
+        self.req['source_finding_inputs'] = reports.source_finding_input_pins(
+            [self.cell], self.req['source_commit'], lambda _source, _path: b'owned source fixture')
+        components = (
+            (self.jobs[0], reports.Q02_SOURCE_PROFILE, reports.source_profile(reports.Q02_SOURCE_PROFILE),
+             '.github/scripts/test_release_workflow.py', 'python-source-observations-' + self.req['source_commit'] + '-7-3',
+             'Retain original Python source-test observations', 'python-q02-release-observation.json',
+             {'SourceSelectionTest': ('route_publication_is_observed_after_every_target_settles',)}),
+            (self.jobs[1], self.surface_profile, surface_spec, '.github/scripts/test_command_route_release_state.py',
+             'route-release-state-observation-' + self.req['source_commit'] + '-7-3',
+             'Retain original release-state classifier observation', 'route-release-state-observation.json',
+             {'ReleaseStateClassifierTest': ('absent_tag_and_absent_release_is_a_planned_candidate',
+                 'exact_non_draft_release_is_published', 'tag_without_a_release_is_not_publication',
+                 'draft_release_is_not_publication', 'api_unavailability_is_distinct_and_fail_closed',
+                 'release_tag_mismatch_is_not_publication', 'release_target_mismatch_is_not_publication',
+                 'tag_payload_mismatch_is_not_publication'), 'ObserveIntegrationTest': (
+                 'exact_tags_payloads_and_release_responses_pass_end_to_end',
+                 'observer_refuses_missing_retirement_prerequisites_or_unknown_policy',
+                 'tag_only_response_fails_the_aggregate_end_to_end')}),
+        )
+        for job, profile, spec, script, name, upload, member, cases in components:
+            files = {path: b'owned source fixture' for path in sorted(spec['paths'])}
+            manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=self.req['source_commit'],
+                            source_tree=self.req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                            workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+            raw_manifest = json.dumps(manifest).encode()
+            files[reports.SOURCE_MANIFEST] = raw_manifest
+            self.archive(spec['payload'], job, spec['upload'], files)
+            observation = dict(format=reports.OBSERVATION, source_commit=self.req['source_commit'],
+                source_tree=self.req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
+                proof_kind='source-test', producer='python-test-result-observer', argv=['python', script], exit_code=0,
+                source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                          manifest_sha256=owner.digest(raw_manifest)),
+                tests=[dict(id=f'python:{script}:__main__.{group}.test_{case}', result='passed')
+                       for group, test_names in cases.items() for case in test_names])
+            if job is self.jobs[1] and modify_surface:
+                modify_surface(observation)
+            observations = {member: json.dumps(observation).encode()}
+            if job is self.jobs[0]:
+                observations['python-publisher-observation.json'] = b'{}'
+            self.archive(name, job, upload, observations)
+
+    def test_complete_cross_job_originals_form_the_only_pass(self):
+        self.complete_components()
+        record = owner.produce(self.req, self.artifacts, self.jobs)
+        cell, = record['results']
+        self.assertEqual((cell['cell'], cell['result']), (self.cell, 'PASSED'))
+        self.assertEqual([c['job_id'] for c in cell['source_components']], [20, 21])
+        self.assertEqual([len(c['selectors']) for c in cell['source_components']], [1, 11])
+        readiness = self.archive('major-readiness-' + self.req['source_commit'], self.jobs[-1],
+                                 'Upload major readiness record', {'major-readiness.json': b'{}'})
+        args = dict(record=record, requirements=self.req, run=self.run, artifact=readiness,
+                    archive_digest=readiness['digest'][7:], jobs=self.jobs, build_artifacts=self.artifacts)
+        self.assertEqual(owner.verify(**args)['state'], 'PREPUBLICATION_READY')
+        for run in (dict(self.run, conclusion=None), dict(self.run, head_branch='major/state-contracts')):
+            with self.subTest(run=run), self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+                owner.verify(**dict(args, run=run))
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component'):
+            owner.verify(**dict(args, record=dict(record, results=[dict(cell, source_components=cell['source_components'][:1])])))
+
+    def test_partial_or_wrong_attempt_component_refuses(self):
+        self.complete_components()
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            owner.produce(self.req, self.artifacts[:-1], self.jobs)
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            owner.produce(self.req, self.artifacts, [self.jobs[0], dict(self.jobs[1], run_attempt=2), self.jobs[-1]])
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            owner.produce(self.req, self.artifacts, [self.jobs[0], dict(self.jobs[1], conclusion='skipped'), self.jobs[-1]])
+        self.logs['actions/jobs/21/logs'] = b''
+        with self.assertRaisesRegex(owner.ReadinessError, 'upload attribution unavailable'):
+            owner.produce(self.req, self.artifacts, self.jobs)
+
+    def test_selected_surface_skip_refuses_otherwise_authenticated_components(self):
+        self.complete_components(lambda observation: observation['tests'][0].update(result='skipped'))
+        with self.assertRaisesRegex(owner.ReadinessError, 'selected named test'):
+            owner.produce(self.req, self.artifacts, self.jobs)
+
+    def test_job_local_report_cannot_claim_composed_cell(self):
+        import major_qualification_report as reports
+
+        for job in self.jobs[:2]:
+            req = dict(self.req, cell_jobs={self.cell: job['name']})
+            with self.subTest(job=job['name']), self.assertRaisesRegex(ValueError, 'require all original owners'):
+                reports.build_report(req, job_name=job['name'], job_id=job['id'], observations={}, payloads={},
+                                     selections={'schema': reports.SELECTIONS, 'groups': []})
+
+    def test_original_upload_still_requires_immutable_sources_and_trusted_main(self):
+        self.complete_components()
+        pins = dict(self.req['source_finding_inputs'], **{self.surface_profile: '0' * 64})
+        with self.assertRaisesRegex(owner.ReadinessError, 'immutable source'):
+            owner.produce(dict(self.req, source_finding_inputs=pins), self.artifacts, self.jobs)
+        self.run.update(head_branch='major/state-contracts', conclusion=None)
+        with self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+            owner.produce(self.req, self.artifacts, self.jobs)
+        self.run['head_branch'] = 'main'
+        self.assertEqual(owner.produce(self.req, self.artifacts, self.jobs)['results'][0]['result'], 'PASSED')
+
+    def test_actual_ci_observes_each_original_entrypoint_once_in_order(self):
+        workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
+        hooks = workflow.split('      - name: Observe original Q02 publication guard tests\n', 1)[1]
+        hooks = hooks.split('      - name:', 1)[0]
+        surface = workflow.split('\n  surface:\n', 1)[1].split('\n  codex-host:\n', 1)[0]
+        self.assertEqual(hooks.count('-- .github/scripts/test_release_workflow.py'), 1)
+        self.assertEqual(surface.count('test_command_route_release_state.py'), 1)
+        fragments = ('check_command_route_release_state.py declarations', 'observe-python',
+                     '-- .github/scripts/test_command_route_release_state.py', 'test_command_route_compatibility.py',
+                     'Upload release-state classifier source-test inputs', 'Retain original release-state classifier observation')
+        positions = [surface.index(fragment) for fragment in fragments]
+        self.assertEqual(positions, sorted(positions))
+
+    def test_compatibility_observer_uses_the_outer_unittest_result(self):
+        import tempfile
+        import major_qualification_report as reports
+
+        script = '.github/scripts/test_command_route_compatibility.py'
+        profile = reports.ROUTE_RELEASE_SOURCE_PROFILE
+        spec = reports.source_profile(profile)
+        with tempfile.TemporaryDirectory(prefix='outer-unittest-fixture-') as temporary:
+            parent = Path(temporary)
+            repo = parent / 'repo'
+            fixture = repo / script
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text('''import unittest
+
+class CompatibilityFixture(unittest.TestCase):
+    def test_case(self):
+        self.assertFalse(getattr(self, "nested", False))
+
+    def test_negative_control(self):
+        nested = self.__class__("test_case")
+        nested.nested = True
+        result = unittest.TestResult()
+        nested.run(result)
+        self.assertFalse(result.wasSuccessful())
+
+if __name__ == "__main__":
+    unittest.main()
+''', encoding='utf-8')
+            identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
+            output = parent / 'compatibility.json'
+            legacy_output = parent / 'legacy.json'
+            with (mock.patch.object(reports, 'source_identity', return_value=identity),
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
+                  mock.patch.dict(reports.PYTHON_COMPONENT_PROFILES,
+                                  {profile: dict(spec, scripts=tuple({*spec['scripts'], script}))})):
+                self.assertEqual(reports.observe_python(repo, script, [], output, parent / 'source', profile), 0)
+                self.assertEqual(reports.observe_python(repo, script, [], legacy_output), 0)
+            record = json.loads(output.read_bytes())
+            self.assertEqual([(test['id'].rsplit('.', 1)[-1], test['result']) for test in record['tests']],
+                             [('test_case', 'passed'), ('test_negative_control', 'passed')])
+            self.assertEqual(record['test_result_scope'], 'entrypoint-text-runner')
+            legacy = json.loads(legacy_output.read_bytes())
+            self.assertNotIn('test_result_scope', legacy)
+            self.assertEqual([test['result'] for test in legacy['tests']], ['passed', 'passed', 'failed'])
+
+    def test_compatibility_findings_require_their_distinct_original_populations(self):
+        import major_qualification_report as reports
+
+        sf14, wf09 = 'disposition:findings:SF14', 'disposition:findings:W-F09'
+        source = b'owned immutable source fixture'
+        grouped = {}
+        for cell in (sf14, wf09):
+            for component in reports.SOURCE_FINDING_COMPOSITIONS[cell]:
+                _, selectors = grouped.setdefault(component['script'], (component, set()))
+                selectors.update(component['selectors'])
+        req = dict(self.req, cells=[sf14, wf09], source_finding_composite_cells=[sf14, wf09],
+                   cell_jobs=dict.fromkeys((sf14, wf09), 'major qualification / compatibility'))
+        req['source_finding_inputs'] = reports.source_finding_input_pins(req['cells'], req['source_commit'],
+                                                                       lambda _source, _path: source)
+
+        def fixtures(omit=None, scope=True):
+            self.artifacts.clear()
+            self.blobs.clear()
+            self.logs.clear()
+            jobs = [dict(job, steps=[]) for job in self.jobs]
+            by_job = {job['name']: job for job in jobs}
+            manifests = {}
+            for profile in req['source_finding_inputs']:
+                spec = reports.source_profile(profile)
+                job = by_job[spec['job']]
+                files = dict.fromkeys(sorted(spec['paths']), source)
+                manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=req['source_commit'],
+                                source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                                workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                    bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+                files[reports.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                manifests[profile] = owner.digest(files[reports.SOURCE_MANIFEST])
+                self.archive(spec['payload'], job, spec['upload'], files)
+            for script, (component, selectors) in grouped.items():
+                profile = component['profile']
+                spec = reports.source_profile(profile)
+                observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', script], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+                        profile=profile, payload_name=spec['payload'], manifest_sha256=manifests[profile]),
+                    tests=[dict(id=selector, result='passed') for selector in sorted(selectors) if selector != omit])
+                if scope and script == reports.ROUTE_COMPATIBILITY_SCRIPT:
+                    observed['test_result_scope'] = reports.OUTER_UNITTEST_RESULT
+                members = {component['member']: json.dumps(observed).encode()}
+                if script == reports.ROUTE_GENERATOR_SCRIPT:
+                    members['python-q02-release-observation.json'] = b'{}'
+                self.archive(component['artifact_prefix'] + req['source_commit'] + '-7-3', by_job[spec['job']],
+                             component['upload'], members)
+            return jobs
+
+        jobs = fixtures()
+        record = owner.produce(req, self.artifacts, jobs)
+        self.assertEqual([list(map(lambda c: len(c['selectors']), row['source_components'])) for row in record['results']],
+                         [[1, 11, 13], [3, 4, 2]])
+        self.assertEqual([c['job_id'] for c in record['results'][0]['source_components']], [20, 21, 21])
+        self.assertEqual(len(record['artifacts']), 2)
+        for own_cell, other_cell, missing in (
+            (sf14, wf09, 'ReleaseStateClassifierTest.test_absent_tag_and_absent_release_is_a_planned_candidate'),
+            (wf09, sf14, 'ReviewFeedbackRegressionTest.test_tribunal_lens_directory_matches_each_host_surface'),
+        ):
+            selector = next(s for component in reports.SOURCE_FINDING_COMPOSITIONS[own_cell]
+                            for s in component['selectors'] if s.endswith(missing))
+            jobs = fixtures(omit=selector)
+            with self.subTest(cell=own_cell), self.assertRaisesRegex(owner.ReadinessError, 'selected named test'):
+                owner.produce(req, self.artifacts, jobs)
+            other_req = dict(req, cells=[other_cell], source_finding_composite_cells=[other_cell],
+                             cell_jobs={other_cell: req['cell_jobs'][other_cell]})
+            self.assertEqual(owner.produce(other_req, self.artifacts, jobs)['results'][0]['cell'], other_cell)
+        jobs = fixtures(scope=False)
+        with self.assertRaisesRegex(owner.ReadinessError, 'original entrypoint runner'):
+            owner.produce(req, self.artifacts, jobs)
+
+    def test_catalog_finding_joins_three_source_payloads_and_two_members_of_one_hook_upload(self):
+        import major_qualification_report as reports
+
+        cell = 'disposition:findings:W-F08'
+        profile = 'command-catalog-component-v1'
+        script = '.github/scripts/test_command_catalog.py'
+        badge_job = '[CHECK] | [CA  ] | Documentation consistency'
+        fallback = dict(job=badge_job, payload='major-source-inputs-command-catalog',
+                        upload='Upload command catalog source-test inputs', scripts=(script,), paths={script})
+        deployed_spec = reports.PYTHON_COMPONENT_PROFILES.get(profile)
+        spec = deployed_spec or fallback
+        badge = reports.source_component(profile, script, 'command-catalog-observation-',
+            'Retain original command catalog observation', 'command-catalog-observation.json', (
+                'CommandCatalogGuardTest.test_exact_catalog_passes',
+                'CommandCatalogGuardTest.test_extra_catalog_route_fails',
+                'CommandCatalogGuardTest.test_live_generated_catalog_is_exact',
+                'CommandCatalogGuardTest.test_missing_catalog_route_fails',
+            ))
+        generator = reports.SOURCE_FINDING_COMPOSITIONS['disposition:findings:W-F09'][0]
+        funnel = reports.source_component(reports.HOOK_REVIEW_SOURCE_PROFILE, reports.HOOK_REVIEW_SOURCE_SCRIPT,
+            'python-source-observations-', 'Retain original Python source-test observations',
+            'python-hook-review-observation.json',
+            [selector.split(':__main__.', 1)[1] for selector in reports.HOOK_REVIEW_FINDING_SELECTORS])
+        deployed_recipe = reports.SOURCE_FINDING_COMPOSITIONS.get(cell)
+        recipe = deployed_recipe or (badge, generator, funnel)
+        req = dict(self.req, cells=[cell], source_finding_composite_cells=[cell],
+                   cell_jobs={cell: 'major qualification / compatibility'})
+        jobs = [dict(self.jobs[0], steps=[]), dict(self.jobs[1], name=badge_job, steps=[]), dict(self.jobs[-1], steps=[])]
+        by_job = {job['name']: job for job in jobs}
+        source = b'owned original-source fixture'
+        with (mock.patch.dict(reports.SOURCE_FINDING_COMPOSITIONS, {cell: recipe}),
+              mock.patch.dict(reports.PYTHON_COMPONENT_PROFILES, {profile: spec})):
+            req['source_finding_inputs'] = reports.source_finding_input_pins([cell], req['source_commit'],
+                                                                           lambda _source, _path: source)
+            uploads = {}
+            for component in recipe:
+                role = component['profile']
+                descriptor = reports.source_profile(role)
+                job = by_job[descriptor['job']]
+                files = dict.fromkeys(sorted(descriptor['paths']), source)
+                manifest = dict(format=reports.SOURCE_FORMAT, profile=role, source_commit=req['source_commit'],
+                    source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                    workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                        bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+                files[reports.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                manifest_sha = owner.digest(files[reports.SOURCE_MANIFEST])
+                self.archive(descriptor['payload'], job, descriptor['upload'], files)
+                observation = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', component['script']], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+                        profile=role, payload_name=descriptor['payload'], manifest_sha256=manifest_sha),
+                    tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+                key = (job['name'], component['artifact_prefix'], component['upload'])
+                uploads.setdefault(key, {})[component['member']] = json.dumps(observation).encode()
+            for (job, prefix, step_name), files in uploads.items():
+                self.archive(prefix + req['source_commit'] + '-7-3', by_job[job], step_name, files)
+            record = owner.produce(req, self.artifacts, jobs)
+            row, = record['results']
+            self.assertEqual([len(item['selectors']) for item in row['source_components']], [4, 3, 6])
+            self.assertEqual(len(row['evidence_artifact_ids']), 3)
+            self.assertEqual([item['job_id'] for item in row['source_components']], [21, 20, 20])
+            self.assertEqual(row['source_components'][1]['observation_artifact_id'], row['source_components'][2]['observation_artifact_id'])
+            self.assertEqual(deployed_recipe, (badge, generator, funnel))
+            self.assertIsNotNone(deployed_spec)
+            with mock.patch.dict(reports.SOURCE_FINDING_COMPOSITIONS, {
+                cell: (badge, generator, dict(funnel, member=generator['member'])),
+            }), self.assertRaisesRegex(owner.ReadinessError, 'stale, filtered or unsuccessful'):
+                owner.produce(req, self.artifacts, jobs)
+            with self.assertRaisesRegex(owner.ReadinessError, 'bounded plural'):
+                owner.evidence_payload_ids(row)  # Normal job-local rows retain their original bound.
+            ready = self.archive('major-readiness-' + req['source_commit'], jobs[-1], 'Upload major readiness record',
+                                 {'major-readiness.json': b'{}'})
+            self.assertEqual(owner.verify(record=record, requirements=req, run=self.run, artifact=ready,
+                                          archive_digest=ready['digest'][7:], jobs=jobs,
+                                          build_artifacts=self.artifacts)['state'], 'PREPUBLICATION_READY')
+
+    def test_badge_owner_retains_the_single_original_catalog_command(self):
+        workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
+        badge = workflow.split('\n  badge-consistency:\n', 1)[1].split('\n  prose-sandbox:\n', 1)[0]
+        parts = ('python3 .github/scripts/check_badge_consistency.py', 'prepare-source', 'observe-python',
+                 '-- .github/scripts/test_command_catalog.py', 'Upload command catalog source-test inputs',
+                 'Retain original command catalog observation')
+        self.assertEqual([badge.count(part) for part in parts], [1] * len(parts))
+        self.assertEqual([badge.index(part) for part in parts], sorted(badge.index(part) for part in parts))
+        self.assertNotIn('secrets.', badge)
+        self.assertNotIn('GH_TOKEN', badge)
+
+    def test_original_debug_launcher_retains_actual_discovered_suite_ids(self):
+        import os
+        import runpy
+        import tempfile
+        import major_qualification_report as reports
+
+        launcher = '.github/scripts/test_ci_impact.py'
+        suite = '.github/scripts/test_debug_workflow.py'
+        profile = 'hooks-single-owner-findings-v1'
+        with tempfile.TemporaryDirectory(prefix='original-debug-runner-fixture-') as folder:
+            root = Path(folder).resolve() / 'repo'
+            (root / launcher).parent.mkdir(parents=True)
+            (root / launcher).write_bytes(path.with_name('test_ci_impact.py').read_bytes())
+            (root / 'tools').mkdir()
+            (root / 'tools/ci-impact.py').write_bytes((path.parents[2] / 'tools/ci-impact.py').read_bytes())
+            (root / suite).write_text('import unittest\nclass DiscoveredFixture(unittest.TestCase):\n'
+                '    def test_original_name(self):\n        self.assertEqual(3, 3)\n', encoding='utf-8')
+            output = root.parent / 'python-debug-workflow-observation.json'
+            identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
+            env = {'GITHUB_JOB': 'hooks', 'GITHUB_RUN_ID': '7', 'RUNNER_TEMP': str(root.parent),
+                   'MAJOR_DEBUG_SOURCE_PROFILE': profile}
+            with (mock.patch.object(reports, 'source_identity', return_value=identity),
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
+                  mock.patch.dict(os.environ, env), mock.patch.object(sys, 'argv', [str(root / launcher), '--run-debug-suite', str(root / suite)]),
+                  self.assertRaises(SystemExit) as exited):
+                runpy.run_path(str(root / launcher), run_name='__main__')
+            self.assertEqual(exited.exception.code, 0)
+            capture = json.loads(output.read_bytes())
+            self.assertEqual(capture['tests'], [{'id': f'python:{suite}:test_debug_workflow.DiscoveredFixture.test_original_name',
+                                                 'result': 'passed'}])
+            self.assertEqual(capture['argv'][2:], ['--run-debug-suite', suite])
+            self.assertEqual(capture['test_result_scope'], reports.OUTER_UNITTEST_RESULT)
+
+    def test_locked_debug_observer_refuses_a_replacement_interpreter(self):
+        import os
+        import tempfile
+        import types
+        import major_qualification_report as reports
+
+        with tempfile.TemporaryDirectory(prefix='inert-debug-runtime-') as folder:
+            temp = Path(folder).resolve()
+            venv = temp / 'artifact-conformance-venv'
+            executable = venv / 'bin/python'
+            executable.parent.mkdir(parents=True)
+            executable.write_bytes(b'inert launcher path')
+            runtime = types.SimpleNamespace(executable=str(executable), prefix=str(venv), base_prefix=str(temp),
+                                            version_info=(3, 14, 1))
+            raw = b'owned locked-source fixture'
+            with (mock.patch.object(reports, 'sys', runtime), mock.patch.object(reports, '_source_file', return_value=raw),
+                  mock.patch.dict(os.environ, {'RUNNER_TEMP': str(temp), 'ARTIFACT_CONFORMANCE_PYTHON': str(executable)})):
+                self.assertEqual(reports.locked_debug_runtime(temp), {'python': '3.14', 'lock_sha256': owner.digest(raw)})
+                runtime.executable = str(temp / 'replacement-python')
+                with self.assertRaisesRegex(ValueError, 'original Python 3.14 reference interpreter'):
+                    reports.locked_debug_runtime(temp)
+
+    def test_debug_resubmission_requires_all_three_original_scope_receipts(self):
+        import major_qualification_report as reports
+
+        cell = reports.DEBUG_RESUBMISSION_FINDING
+        recipe = reports.SOURCE_FINDING_COMPOSITIONS[cell]
+        req = dict(self.req, cells=[cell], source_finding_composite_cells=[cell],
+                   cell_jobs={cell: 'major qualification / workflow'})
+        raw = b'owned immutable source fixture'
+        req['source_finding_inputs'] = reports.source_finding_input_pins([cell], req['source_commit'], lambda _s, _p: raw)
+
+        def fixtures(change=None):
+            self.artifacts.clear()
+            self.blobs.clear()
+            self.logs.clear()
+            jobs = []
+            for job_id, component in enumerate(recipe, 30):
+                profile, script = component['profile'], component['script']
+                spec = reports.source_profile(profile)
+                job = dict(self.jobs[0], id=job_id, name=spec['job'], steps=[])
+                jobs.append(job)
+                files = dict.fromkeys(sorted(spec['paths']), raw)
+                manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=req['source_commit'],
+                                source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                                workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                    bytes=len(content), sha256=owner.digest(content)) for path, content in files.items()])
+                files[reports.SOURCE_MANIFEST] = json.dumps(manifest).encode()
+                self.archive(spec['payload'], job, spec['upload'], files)
+                observation = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', script], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+                        profile=profile, payload_name=spec['payload'], manifest_sha256=owner.digest(files[reports.SOURCE_MANIFEST])),
+                    tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+                if profile in reports.DEBUG_RUNNERS:
+                    observation['argv'] = ['python', reports.DEBUG_LAUNCHER, '--run-debug-suite', script]
+                    observation['test_result_scope'] = reports.OUTER_UNITTEST_RESULT
+                if profile == reports.DEBUG_LOCKED_PROFILE:
+                    observation['debug_runtime'] = {'python': '3.14', 'lock_sha256': owner.digest(raw)}
+                    if change:
+                        change(observation)
+                self.archive(component['artifact_prefix'] + req['source_commit'] + '-7-3', job, component['upload'],
+                             {component['member']: json.dumps(observation).encode()})
+            return [*jobs, dict(self.jobs[-1], steps=[])]
+
+        jobs = fixtures()
+        record = owner.produce(req, self.artifacts, jobs)
+        result, = record['results']
+        self.assertEqual(result['cell'], cell)
+        self.assertEqual([len(c['selectors']) for c in result['source_components']], [2, 1, 5])
+        self.assertEqual(len(result['evidence_artifact_ids']), 3)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            owner.produce(req, self.artifacts[:-1], jobs)
+        for change, expected in (
+            (lambda doc: doc['argv'].extend(['-k', 'subset']), 'stale, filtered or unsuccessful'),
+            (lambda doc: doc['debug_runtime'].update(lock_sha256='0' * 64), 'locked interpreter differs'),
+            (lambda doc: doc['tests'][0].update(result='skipped'), 'selected named test'),
+        ):
+            jobs = fixtures(change)
+            with self.subTest(expected=expected), self.assertRaisesRegex(ValueError, expected):
+                owner.produce(req, self.artifacts, jobs)
+        jobs = fixtures()
+        ready = self.archive('major-readiness-' + req['source_commit'], jobs[-1], 'Upload major readiness record',
+                             {'major-readiness.json': b'{}'})
+        self.assertEqual(owner.verify(record=record, requirements=req, run=self.run, artifact=ready,
+                                      archive_digest=ready['digest'][7:], jobs=jobs,
+                                      build_artifacts=self.artifacts)['state'], 'PREPUBLICATION_READY')
+
+    def test_recovery_runtime_observer_runs_the_unfiltered_source_entry_once(self):
+        import tempfile
+        import major_qualification_report as reports
+
+        profile = 'workflow-recovery-runtime-v1'
+        relative = '.github/scripts/test_workflow_recovery.py'
+        with tempfile.TemporaryDirectory(prefix='recovery-observer-fixture-') as owner_dir:
+            directory = Path(owner_dir)
+            repo = directory / 'repo'
+            fixture = repo / relative
+            fixture.parent.mkdir(parents=True)
+            fixture.write_text('import unittest\nclass RecoveryRuntimeTest(unittest.TestCase):\n'
+                               '    def test_owned_fixture(self):\n        self.assertTrue(True)\n'
+                               'if __name__ == "__main__":\n    unittest.main()\n', encoding='utf-8')
+            output = directory / 'observed.json'
+            identity = dict(source_commit=self.req['source_commit'], source_tree=self.req['source_tree'], clean=True)
+            with (mock.patch.object(reports, 'source_identity', return_value=identity),
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
+                  mock.patch.dict(reports.os.environ, {'GITHUB_RUN_ID': '7'})):
+                result = reports.observe_python(repo, relative, [], output, directory / 'source-inputs', profile)
+                with self.assertRaisesRegex(ValueError, 'original unfiltered'):
+                    reports.observe_python(repo, relative, ['-k', 'fixture'], directory / 'selected.json',
+                                           directory / 'source-inputs', profile)
+            self.assertEqual(result, 0)
+            observed = json.loads(output.read_bytes())
+            self.assertEqual(observed['tests'], [{'id': f'python:{relative}:__main__.RecoveryRuntimeTest.test_owned_fixture',
+                                                  'result': 'passed'}])
+            self.assertEqual(observed['proof_kind'], 'source-test')
+
+    def test_recovery_runtime_reader_authenticates_only_the_original_nine_cases(self):
+        import major_qualification_report as reports
+
+        profile = reports.RECOVERY_RUNTIME_PROFILE
+        spec = reports.source_profile(profile)
+        job = dict(self.jobs[0], name=spec['job'])
+        source_bytes = b'owned recovery fixture'
+        members = [{'path': name, 'sha256': owner.digest(source_bytes), 'bytes': len(source_bytes), 'git_mode': '100644'}
+                   for name in sorted(spec['paths'])]
+        manifest = {'format': reports.SOURCE_FORMAT, 'profile': profile, 'source_commit': self.req['source_commit'],
+                    'source_tree': self.req['source_tree'], 'ci_run_id': 7, 'producer_job_name': job['name'],
+                    'workflow': '.github/workflows/ci.yml', 'members': members}
+        source_manifest = json.dumps(manifest).encode()
+        files = {row['path']: source_bytes for row in members}
+        files[reports.SOURCE_MANIFEST] = source_manifest
+        source = self.archive(spec['payload'], job, spec['upload'], files)
+        load = mock.Mock(return_value=source_bytes)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
+        component = reports.RECOVERY_RUNTIME_COMPONENT
+        member = component['member']
+        capture_name = component['artifact_prefix'] + self.req['source_commit'] + '-7-3'
+        observed = dict(format=reports.OBSERVATION, source_commit=self.req['source_commit'],
+                        source_tree=self.req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
+                        proof_kind='source-test', producer='python-test-result-observer',
+                        argv=['python', component['script']], exit_code=0,
+                        source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                                  manifest_sha256=owner.digest(source_manifest)),
+                        tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+        observed['tests'].append(dict(id='python:.github/scripts/test_workflow_recovery.py:__main__.RecoveryRuntimeTest.test_other',
+                                      result='passed'))
+        self.archive(capture_name, job, component['upload'], {member: json.dumps(observed).encode()})
+        receipt = reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
+        self.assertEqual(receipt['schema'], 'codearbiter.workflow-recovery-runtime-component/1')
+        self.assertEqual(len(receipt['component']['selectors']), 9)
+        self.assertEqual(receipt['component']['job_id'], job['id'])
+        self.assertEqual(receipt['source_payload']['artifact_id'], source['id'])
+        self.assertEqual(set(receipt), {'schema', 'source_commit', 'source_tree', 'ci_run_id', 'component', 'source_payload'})
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [dict(job, run_attempt=2)], load)
+        with self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+            reports.workflow_recovery_runtime_evidence(self.req, dict(self.run, conclusion=None), self.artifacts, [job], load)
+        load.return_value = b'wrong immutable input'
+        with self.assertRaisesRegex(owner.ReadinessError, 'immutable source'):
+            reports.workflow_recovery_runtime_evidence(self.req, self.run, self.artifacts, [job], load)
+
+    def test_recovery_fixture_reports_consumed_copies_for_both_original_classes(self):
+        import os
+        import shutil
+        import tempfile
+        import types
+        import test_workflow_recovery_cli as recovery_cli
+        import test_workflow_recovery_hosts as recovery_hosts
+
+        binary = b'inert recovery installation fixture'
+        name = 'ca-artifact-windows-amd64.exe'
+        manifest = {'format': 'codearbiter.artifact-release/0.1.0', 'version': '0.1.0',
+                    'protocol': 'codearbiter.artifact-api/0.1.0', 'schema_version': '0.3.2',
+                    'binaries': {'windows/amd64': {'file': name, 'sha256': owner.digest(binary), 'native_tested': True}}}
+        with tempfile.TemporaryDirectory(prefix='inert-recovery-copy-') as folder:
+            scratch = Path(folder).resolve(strict=True)
+            root = scratch / 'repo'
+            source = scratch / 'workflow-recovery-native'
+            source.mkdir()
+            raw = json.dumps(manifest).encode()
+            (source / 'release.json').write_bytes(raw)
+            (source / name).write_bytes(binary)
+            for directory in (root / 'core/pysrc', *(root / 'plugins' / name / 'hooks' for name in ('ca', 'ca-codex', 'ca-pi'))):
+                directory.mkdir(parents=True)
+                for filename in ('_workflowrecoverylib.py', 'workflow-recovery.py'):
+                    (directory / filename).write_bytes(b'# inert')
+            owner_module = types.ModuleType('test_artifact_authoring')
+
+            def fixture_copy():
+                temporary = tempfile.TemporaryDirectory(dir=scratch)
+                target = Path(temporary.name) / 'helpers' / 'artifacts'
+                shutil.copytree(source, target)
+                return temporary, target
+
+            owner_module.build_installation = fixture_copy
+            for original_class, role in ((recovery_cli.InstalledRecoveryTest, 'cli'), (recovery_hosts.RecoveryHostTest, 'hosts')):
+                cls = type(original_class.__name__, (original_class,), {})
+                output = scratch / f'workflow-recovery-{role}-installation.json'
+                with (self.subTest(role=role), mock.patch.object(recovery_cli, 'ROOT', root),
+                      mock.patch.dict(sys.modules, {'test_artifact_authoring': owner_module}),
+                      mock.patch.dict(os.environ, {'ARTIFACT_TEST_INSTALLATION': str(root / '..' / source.name),
+                                                  'RUNNER_TEMP': str(scratch),
+                                                  'WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION': str(output)})):
+                    try:
+                        cls.setUpClass()
+                        cls.tearDownClass()
+                    finally:
+                        cls.doClassCleanups()
+                    projection = json.loads(output.read_bytes())
+                    expected = {'manifest_sha256': owner.digest(raw), 'binary_sha256': owner.digest(binary)}
+                    self.assertEqual(projection['fixture'], original_class.__name__)
+                    self.assertEqual(projection['platform'], 'windows/amd64')
+                    self.assertEqual(projection['installation'], expected)
+                    self.assertEqual(projection['fixture_copy'], expected)
+                    self.assertEqual(projection['hosts'], dict.fromkeys(('claude', 'codex', 'pi'), expected))
+
+    def test_recovery_finding_receipt_requires_native_archive_and_both_consumed_copies(self):
+        import major_qualification_report as reports
+
+        cells = list(reports.RECOVERY_FINDING_CELLS)
+        req = dict(self.req, cells=cells, cell_jobs=dict.fromkeys(cells, 'major qualification / workflow-recovery'),
+                   source_finding_composite_cells=cells)
+        profile = reports.RECOVERY_RUNTIME_PROFILE
+        spec = reports.source_profile(profile)
+        source_bytes = b'owned immutable fixture'
+        req['source_finding_inputs'] = reports.source_finding_input_pins(cells, req['source_commit'],
+                                                                      lambda _source, _path: source_bytes)
+        binary = b'inert archive fixture'
+        filename = reports.RECOVERY_NATIVE_BINARY
+        raw = json.dumps({'format': 'codearbiter.artifact-release/0.1.0', 'version': '0.1.0',
+            'protocol': 'codearbiter.artifact-api/0.1.0', 'schema_version': '0.3.2',
+            'binaries': {'windows/amd64': {'file': filename, 'sha256': owner.digest(binary), 'native_tested': True}}}).encode()
+        identity = dict(manifest_sha256=owner.digest(raw), binary_sha256=owner.digest(binary))
+        suffix = f"{req['source_commit']}-7-3"
+
+        def fixtures(change_host=None):
+            self.artifacts.clear()
+            self.blobs.clear()
+            self.logs.clear()
+            job = dict(self.jobs[0], name=spec['job'], steps=[dict(name='Qualify one native installation for workflow recovery',
+                                                                 status='completed', conclusion='success')])
+            files = dict.fromkeys(sorted(spec['paths']), source_bytes)
+            manifest = dict(format=reports.SOURCE_FORMAT, profile=profile, source_commit=req['source_commit'],
+                            source_tree=req['source_tree'], ci_run_id=7, producer_job_name=job['name'],
+                            workflow='.github/workflows/ci.yml', members=[dict(path=path, git_mode='100644',
+                                bytes=len(data), sha256=owner.digest(data)) for path, data in files.items()])
+            manifest_raw = json.dumps(manifest).encode()
+            files[reports.SOURCE_MANIFEST] = manifest_raw
+            self.archive(spec['payload'], job, spec['upload'], files)
+            for component in reports.RECOVERY_COMPONENTS:
+                script = component['script']
+                observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+                    ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+                    argv=['python', script], exit_code=0,
+                    source_input_binding=dict(format=reports.SOURCE_BINDING, profile=profile, payload_name=spec['payload'],
+                                              manifest_sha256=owner.digest(manifest_raw)),
+                    tests=[dict(id=selector, result='passed') for selector in component['selectors']])
+                if script in reports.RECOVERY_INSTALLED_SCRIPTS:
+                    role, actual_class = reports.RECOVERY_INSTALLED_SCRIPTS[script]
+                    binding = dict(format='codearbiter.workflow-recovery-installation/1', fixture=actual_class,
+                                   platform='windows/amd64', installation=identity, fixture_copy=identity,
+                                   hosts=dict.fromkeys(('claude', 'codex', 'pi'), identity))
+                    if role == 'hosts' and change_host:
+                        change_host(observed, binding)
+                    observed['workflow_recovery_installation'] = binding
+                self.archive(component['artifact_prefix'] + suffix, job, component['upload'],
+                             {component['member']: json.dumps(observed).encode()})
+            self.archive('workflow-recovery-native-' + suffix, job, 'Upload original workflow recovery native installation',
+                         {'release.json': raw, filename: binary})
+            return [job, self.jobs[-1]]
+
+        jobs = fixtures()
+        record = owner.produce(req, self.artifacts, jobs)
+        self.assertEqual([r['cell'] for r in record['results']], cells)
+        for result in record['results']:
+            self.assertEqual(result['result'], 'PASSED')
+            self.assertEqual([len(c['selectors']) for c in result['source_components']], [9, 7, 5])
+            self.assertEqual(result['workflow_recovery_installation']['binary_sha256'], owner.digest(binary))
+            self.assertEqual([c['consumed_native_installation'] for c in result['source_components'][1:]], [identity] * 2)
+        with self.assertRaisesRegex(owner.ReadinessError, 'native installation archive required'):
+            owner.produce(req, self.artifacts[:-1], jobs)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            owner.produce(req, [self.artifacts[0], self.artifacts[1], self.artifacts[-1]], jobs)
+        bad_copy = fixtures(lambda _observed, binding: binding['hosts'].update(pi=dict(identity, binary_sha256='0' * 64)))
+        with self.assertRaisesRegex(owner.ReadinessError, 'consumed installation differs'):
+            owner.produce(req, self.artifacts, bad_copy)
+        skipped = fixtures(lambda observed, _binding: observed['tests'][0].update(result='skipped'))
+        with self.assertRaisesRegex(owner.ReadinessError, 'selected named test'):
+            owner.produce(req, self.artifacts, skipped)
+        jobs = fixtures()
+        readiness = self.archive('major-readiness-' + req['source_commit'], jobs[-1], 'Upload major readiness record',
+                                 {'major-readiness.json': b'{}'})
+        self.assertEqual(owner.verify(record=record, requirements=req, run=self.run, artifact=readiness,
+                                      archive_digest=readiness['digest'][7:], jobs=jobs,
+                                      build_artifacts=self.artifacts)['state'], 'PREPUBLICATION_READY')
+
+    def test_recovery_ci_observes_runtime_once_and_keeps_the_native_owners(self):
+        workflow = (path.parents[1] / 'workflows' / 'ci.yml').read_text(encoding='utf-8')
+        job = workflow.split('\n  workflow-recovery:\n', 1)[1].split('\n  version-bump:\n', 1)[0]
+        self.assertIn('permissions:\n      contents: read\n', job)
+        direct, observed = job.split('      - name: Test durable runtime and concurrency\n', 1)[1].split(
+            '      - name: Observe original durable runtime and concurrency tests\n', 1)
+        self.assertIn("if: matrix.os != 'windows-latest'", direct)
+        self.assertIn('run: python .github/scripts/test_workflow_recovery.py\n', direct)
+        self.assertIn("if: matrix.os == 'windows-latest'", observed.split('      - name:', 1)[0])
+        self.assertEqual(job.count('.github/scripts/test_workflow_recovery.py'), 2)
+        self.assertEqual(job.count('.github/scripts/test_workflow_recovery_cli.py'), 2)
+        self.assertEqual(job.count('.github/scripts/test_workflow_recovery_hosts.py'), 2)
+        self.assertEqual(job.count('observe-python'), 4)
+        fragments = ('python tools/build-artifacts.py', '-- .github/scripts/test_workflow_recovery.py',
+                     'run: python .github/scripts/test_workflow_recovery_cli.py',
+                     '-- .github/scripts/test_workflow_recovery_cli.py',
+                     'run: python .github/scripts/test_workflow_recovery_hosts.py',
+                     '-- .github/scripts/test_workflow_recovery_hosts.py',
+                     'run: python .github/scripts/test_review_resubmission.py',
+                     '-- .github/scripts/test_review_resubmission.py',
+                     'Retain original workflow recovery runtime observation',
+                     'Upload original workflow recovery native installation')
+        self.assertEqual([job.count(fragment) for fragment in fragments], [1] * len(fragments))
+        self.assertEqual([job.index(fragment) for fragment in fragments], sorted(job.index(fragment) for fragment in fragments))
+
+
 class CompletedPopulationTest(unittest.TestCase):
     """Exercise the full frozen corpus after every metadata task says done."""
     @classmethod
@@ -353,10 +1119,11 @@ class CompletedPopulationTest(unittest.TestCase):
                                                          'sha256': 'e' * 64, 'commit': 'f' * 40}])
 
     def setUp(self):
-        # This fixture exercises reviewed source dispositions. The opt-in
-        # launch-binding task's original native archives have their own fixture.
+        # Launch-binding task and finding archives have their own fixtures.
+        # This fixture exercises the complete reviewed source population.
         policy = json.loads((self.repo / '.github/major-qualification-policy.json').read_bytes())
         policy['native_launch_binding_tasks'] = []
+        policy['native_launch_binding_findings'] = []
         self.overrides = {
             owner.CORPUS + 'execution/progress.json': json.dumps(self.progress).encode(),
             owner.CORPUS + 'execution/coverage-ledger.json': json.dumps(self.ledger).encode(),

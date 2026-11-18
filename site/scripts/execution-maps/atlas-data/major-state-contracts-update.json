@@ -77,13 +77,14 @@
     },
     {
       "path": "core/surface/commands/init.md",
-      "blob": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
-      "summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. Opted-in Git-common enforcement and writer sidecars are disclosed separately from project records.",
+      "blob": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+      "summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. The task-board writer retains its lock sidecar; initialization adds its exact Git-common info/exclude rule under an exclusive lock. Existing permissions, foreign hooks and user configuration remain preserved.",
       "nodes": [
         "o-init",
         "o-runtime",
         "c-live"
-      ]
+      ],
+      "revision": "2ed6575320cc49b57186b997ed119789f7a754aa"
     },
     {
       "path": "core/surface/skills/debug/SKILL.md",
@@ -425,13 +426,14 @@
     },
     {
       "path": "core/pysrc/_bashguardlib.py",
-      "blob": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3",
-      "summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Ambiguous syntax retains conservative whole-command checks. Protected-write refusals, command owners and authority gates remain in place.",
+      "blob": "383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f",
+      "summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Binary overrides bind the actual staged candidate. Visible literal PowerShell here-string interpreter bodies reach protected-write guards; dynamic or nested stdin remains outside that finite projection. Conservative checks and existing authority gates remain in place.",
       "nodes": [
         "f-recovery",
         "c-read",
         "c-proof"
-      ]
+      ],
+      "revision": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c"
     }
   ]
 }

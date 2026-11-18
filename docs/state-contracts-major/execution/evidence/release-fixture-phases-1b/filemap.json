@@ -1,0 +1,17 @@
+[
+ {
+  "path": "plugins/ca/hooks/tests/test_release_workflow_followup.py",
+  "preimage": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\original\\plugins\\ca\\hooks\\tests\\test_release_workflow_followup.py",
+   "sha256": "0de60f68d30b1a927bd6c5f270b9888692840bb1fdc057ba547f08ae5b4562a7",
+   "bytes": 20967
+  },
+  "candidate": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-fixture-phase-jyegxga2\\candidate\\plugins\\ca\\hooks\\tests\\test_release_workflow_followup.py",
+   "sha256": "77afe5ed8c7d22f0509d45571ca9c4f12be67c673a327c2ff09eafcbb8b28b66",
+   "bytes": 32247
+  },
+  "preimage_git_blob_oid": "006ee215653c954857d21198d6687f25e4d30789",
+  "git_index_oid": null
+ }
+]

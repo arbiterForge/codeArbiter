@@ -1,0 +1,36 @@
+{
+ "result": "PASS",
+ "syntax_without_execution": [
+  "core/pysrc/security-pass.py",
+  "core/pysrc/git-enforce.py",
+  "core/pysrc/_bashguardlib.py",
+  "plugins/ca/hooks/tests/test_security_pass.py",
+  "plugins/ca/hooks/security-pass.py",
+  "plugins/ca-codex/hooks/security-pass.py",
+  "plugins/ca-pi/hooks/security-pass.py",
+  "plugins/ca/hooks/git-enforce.py",
+  "plugins/ca-codex/hooks/git-enforce.py",
+  "plugins/ca-pi/hooks/git-enforce.py",
+  "plugins/ca/hooks/_bashguardlib.py",
+  "plugins/ca-codex/hooks/_bashguardlib.py",
+  "plugins/ca-pi/hooks/_bashguardlib.py"
+ ],
+ "original_method_count": 38,
+ "old_method_asts_unchanged_except_exact_marker_format_assertion": 37,
+ "one_old_method_only_expected_marker_format_updated": [
+  "TestSecurityPassBranches.test_genuine_binary_override_is_audited_exact_and_executable"
+ ],
+ "old_method_asts_exact_after_inverse_expected_format_change": true,
+ "new_methods_exact_red_green_ast_equal": [
+  "TestSecurityPassBranches.test_binary_override_rejects_changed_full_staged_candidate_with_unchanged_binary",
+  "TestSecurityPassBranches.test_binary_override_rejects_legacy_binary_only_marker",
+  "TestSecurityPassBranches.test_binary_override_rejects_same_candidate_in_another_linked_worktree"
+ ],
+ "unchanged_gitexec": {
+  "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "bytes": 24644
+ },
+ "three_plugin_mirrors_byte_equal_canonical": true,
+ "canonical_preimages_still_equal_during_seal": true,
+ "tool_hashes_unchanged": true
+}

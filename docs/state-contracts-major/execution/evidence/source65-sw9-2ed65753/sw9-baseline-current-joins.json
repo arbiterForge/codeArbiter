@@ -1,0 +1,286 @@
+{
+ "schema": "codearbiter.source-reference-joins/1",
+ "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "joins": [
+  {
+   "finding_id": "SW-F01",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts",
+   "baseline_sha256": "eb00b7b00a80c2c9c761c0debddf97941e005d38a4d34d235304ca6e8f41703d",
+   "baseline_bytes": 28858,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+   "current_bytes": 45428,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F01",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+   "baseline_sha256": "ee3c407ada08f5454f86e6d4ede5c0f8d63b20c6d3bb73d484d9aeb0d249ae50",
+   "baseline_bytes": 5456,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "current_bytes": 6301,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F01",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+   "baseline_sha256": "52827f10c1555419697e5a2ea517a9572fe5f9d20c5be3eec155aa1494a1e754",
+   "baseline_bytes": 3605,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+   "current_bytes": 1533,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F01",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "baseline_sha256": "e8c179e57fd141885abdda2045b46e25c9423d29e3ff05e54e613b5d57e1cb2b",
+   "baseline_bytes": 10484,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "current_bytes": 6047,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F02",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "baseline_sha256": "e8c179e57fd141885abdda2045b46e25c9423d29e3ff05e54e613b5d57e1cb2b",
+   "baseline_bytes": 10484,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "current_bytes": 6047,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F02",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md",
+   "baseline_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+   "baseline_bytes": 2159,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+   "current_bytes": 2159,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F03",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts",
+   "baseline_sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+   "baseline_bytes": 17156,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+   "current_bytes": 17156,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F03",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "baseline_sha256": "e8c179e57fd141885abdda2045b46e25c9423d29e3ff05e54e613b5d57e1cb2b",
+   "baseline_bytes": 10484,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "current_bytes": 6047,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F03",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md",
+   "baseline_sha256": "94a171f4b5d683cede0561c20360133a0abc3d1be09996c1c666417ec8fd4cce",
+   "baseline_bytes": 2896,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b",
+   "current_bytes": 1260,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F04",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts",
+   "baseline_sha256": "de2d797a2934e3cb9c22070297cbff3197c22627ffbbf7636ce3cba1abcdb36c",
+   "baseline_bytes": 21176,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+   "current_bytes": 24777,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F04",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+   "baseline_sha256": "ee3c407ada08f5454f86e6d4ede5c0f8d63b20c6d3bb73d484d9aeb0d249ae50",
+   "baseline_bytes": 5456,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "current_bytes": 6301,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F04",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+   "baseline_sha256": "52827f10c1555419697e5a2ea517a9572fe5f9d20c5be3eec155aa1494a1e754",
+   "baseline_bytes": 3605,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+   "current_bytes": 1533,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F04",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "baseline_sha256": "e8c179e57fd141885abdda2045b46e25c9423d29e3ff05e54e613b5d57e1cb2b",
+   "baseline_bytes": 10484,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "current_bytes": 6047,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F05",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+   "baseline_sha256": "ee3c407ada08f5454f86e6d4ede5c0f8d63b20c6d3bb73d484d9aeb0d249ae50",
+   "baseline_bytes": 5456,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "current_bytes": 6301,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F05",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "baseline_sha256": "e8c179e57fd141885abdda2045b46e25c9423d29e3ff05e54e613b5d57e1cb2b",
+   "baseline_bytes": 10484,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "current_bytes": 6047,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F05",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+   "baseline_sha256": "250b33dc85a2a43da3b01a531cfaf0d3173fceb227f1648bf89c9e263427af24",
+   "baseline_bytes": 8985,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+   "current_bytes": 9135,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F06",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md",
+   "baseline_sha256": "52827f10c1555419697e5a2ea517a9572fe5f9d20c5be3eec155aa1494a1e754",
+   "baseline_bytes": 3605,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+   "current_bytes": 1533,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F06",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/COMMANDS.md",
+   "baseline_sha256": "b4b231a5255e5be97e206fd0f940c1e74fdd941fccbb41f65e1baa7cc89334df",
+   "baseline_bytes": 3428,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+   "current_bytes": 5949,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F06",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+   "baseline_sha256": "ee3c407ada08f5454f86e6d4ede5c0f8d63b20c6d3bb73d484d9aeb0d249ae50",
+   "baseline_bytes": 5456,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "current_bytes": 6301,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F06",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "baseline_sha256": "e8c179e57fd141885abdda2045b46e25c9423d29e3ff05e54e613b5d57e1cb2b",
+   "baseline_bytes": 10484,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "current_bytes": 6047,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F07",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+   "baseline_sha256": "40f5b0c24192f59cb09b6da6ab119096d9ae6abb27a94f29a6dbb592defc3748",
+   "baseline_bytes": 9720,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+   "current_bytes": 9931,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F07",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md",
+   "baseline_sha256": "ee3c407ada08f5454f86e6d4ede5c0f8d63b20c6d3bb73d484d9aeb0d249ae50",
+   "baseline_bytes": 5456,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "current_bytes": 6301,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F08",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+   "baseline_sha256": "40f5b0c24192f59cb09b6da6ab119096d9ae6abb27a94f29a6dbb592defc3748",
+   "baseline_bytes": 9720,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+   "current_bytes": 9931,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F08",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+   "baseline_sha256": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+   "baseline_bytes": 8031,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+   "current_bytes": 8027,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F09",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_taskexcludelib.py",
+   "baseline_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "baseline_bytes": 10102,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "current_bytes": 10102,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F09",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/README.md",
+   "baseline_sha256": "c3c39890c4a90da226fccafc5492f47bca67c1215296fb08627c44814841adb1",
+   "baseline_bytes": 3512,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+   "current_bytes": 4128,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F09",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py",
+   "baseline_sha256": "89a78459a87ef9ec45594fc8ba8783535c628889e38ed21d4c49f86a21c467e5",
+   "baseline_bytes": 70730,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+   "current_bytes": 71649,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  },
+  {
+   "finding_id": "SW-F09",
+   "source_ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_githooks.py",
+   "baseline_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "baseline_bytes": 64758,
+   "current_source": "2ed6575320cc49b57186b997ed119789f7a754aa",
+   "current_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "current_bytes": 64758,
+   "comparison": "Frozen diagnosis and current accepted normative boundary are assessed explicitly; byte equality is not a semantic verdict."
+  }
+ ]
+}

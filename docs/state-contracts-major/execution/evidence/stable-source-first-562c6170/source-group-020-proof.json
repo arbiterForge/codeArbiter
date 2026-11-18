@@ -1,0 +1,60 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_reconciliationlib.py": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/artifact-reconcile.py": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b"
+  },
+  "disposition_ids": [
+    "disposition:machines:hooks:reconciliation",
+    "disposition:transitions:hooks:reconciliation:01",
+    "disposition:transitions:hooks:reconciliation:02",
+    "disposition:transitions:hooks:reconciliation:03",
+    "disposition:transitions:hooks:reconciliation:04",
+    "disposition:transitions:hooks:reconciliation:05",
+    "disposition:transitions:hooks:reconciliation:06",
+    "disposition:transitions:hooks:reconciliation:07",
+    "disposition:transitions:hooks:reconciliation:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-020-inspection.json",
+      "sha256": "55a3495c255da270fd1fa05177b3c2fa38654e1c0c1330ff4bb3cdc0ded6ff92"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+      "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/reconciliation/preserved.json",
+    "sha256": "0db39f227b57bb8f3dc948ee7da250af22eb44adf808bb76e855f06208e5da52",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-020-inspection.json",
+  "scope": "reconciliation: 8 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ]
+}

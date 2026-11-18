@@ -1,0 +1,18 @@
+{
+ "command": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "-m",
+  "unittest",
+  "test_work_adopt.AdoptionInventoryTest.test_nonregular_archive_and_replay_refuse_before_read",
+  "-v"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fixture\\.github\\scripts",
+ "returncode": 1,
+ "seconds": 0.27907370001776144,
+ "source_sha256": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+ "test_sha256": "d203eddde7ed9ec667aaa773ace10c347c388457033bfc7fc3fa40cafa4c99d2",
+ "oracle": "ValueError regular at original public preview or adopt(replay=True), before reading a genuine pipe descriptor; pipe writer closed so original read is bounded EOF."
+}

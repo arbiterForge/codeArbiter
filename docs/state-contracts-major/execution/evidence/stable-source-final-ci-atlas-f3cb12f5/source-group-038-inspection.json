@@ -1,0 +1,1104 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-038",
+  "positive_input_join": {
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+      "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "previous_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "bytes": 5797,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+        "bytes": 5797
+      }
+    },
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "previous_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+      "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "previous_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "bytes": 3015,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+        "bytes": 3015
+      }
+    },
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+      "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "previous_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "bytes": 2450,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+        "bytes": 2450
+      }
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "previous_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "bytes": 23733,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "bytes": 23733
+      }
+    },
+    ".github/scripts/_npm_publishlib.py": {
+      "sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "previous_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "bytes": 54361,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+        "bytes": 54361
+      }
+    },
+    ".github/scripts/ci20_native_binding.py": {
+      "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "previous_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "bytes": 15795,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+        "bytes": 15795
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "previous_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "bytes": 4249,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+        "bytes": 4249
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/build-artifacts.py": {
+      "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "previous_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "bytes": 15051,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+        "bytes": 15051
+      }
+    },
+    "tools/build-host-packages.py": {
+      "sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "previous_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "bytes": 116956,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+        "bytes": 116956
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "closed_namespace_review": {
+    "profile": {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows"
+    },
+    "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+    "current_source": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+    "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+    "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+    "entries_before": 281,
+    "entries_now": 284,
+    "added": [
+      {
+        "path": ".github/scripts/site_vitest_observation.py",
+        "sha256_at_review": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+        "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+      },
+      {
+        "path": ".github/scripts/test_pi_payload_identity.py",
+        "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+        "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+      },
+      {
+        "path": ".github/scripts/test_site_vitest_observation.py",
+        "sha256_at_review": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+        "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+      }
+    ],
+    "negative_scope": "No old namespace member, mode or object class changed. The three new named entry points are explicitly routed, while fixture/module lookup for the assessed predicates remains owned by its reviewed path. The digest binds names, object classes and modes."
+  },
+  "current_owner_delta_review": {
+    "scope": "The six native platform graph, collector/authority and package/cold/cohort identities are unchanged. Native bridges retain original build/conformance and tested-bytes recheck; only the locked linux/amd64 Debug observation is additionally retained.",
+    "workflow_callsite_join": {
+      "artifact-authority": {
+        "previous_sha256": "721b4b14a5197446649c550a5e700a5da91ddcf4479b9db7fde2cc21f605f46c",
+        "current_sha256": "721b4b14a5197446649c550a5e700a5da91ddcf4479b9db7fde2cc21f605f46c",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-coverage": {
+        "previous_sha256": "7523f648e2e70d4e03edb8273e619b209b2689831734d0d7109bfe20676eb996",
+        "current_sha256": "7523f648e2e70d4e03edb8273e619b209b2689831734d0d7109bfe20676eb996",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-native-bridges": {
+        "previous_sha256": "43af6745ce0ca3c46a00d916b4e9d50f39b32be58156cda1476d70fa789cd4bf",
+        "current_sha256": "0a15630938d5536e374d7f85a9f6d247f9820c34c1b387fee4eb56da14992744",
+        "current_scope": "Original concurrent conformance command, locked Debug invocation, native candidate recheck and retained tested evidence remain in place. The linux/amd64 branch additionally authenticates the exact locked Debug launcher, interpreter, suite, inputs and observation; other matrix cells take the original path."
+      },
+      "artifact-native-build": {
+        "previous_sha256": "df4c384ac098ca863785975b1f9c8d36fd0997fda139ba21127e6d33c91a5cd9",
+        "current_sha256": "df4c384ac098ca863785975b1f9c8d36fd0997fda139ba21127e6d33c91a5cd9",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-native-coverage": {
+        "previous_sha256": "8e773538fbb8ea481cc84f2283d64b423d29705d1b3a8ba27669a787a47fab57",
+        "current_sha256": "8e773538fbb8ea481cc84f2283d64b423d29705d1b3a8ba27669a787a47fab57",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-native-default": {
+        "previous_sha256": "6c357cba27f0d4c472df16e3abcb243dd488a92f67886d0667f86a5544f4ed30",
+        "current_sha256": "6c357cba27f0d4c472df16e3abcb243dd488a92f67886d0667f86a5544f4ed30",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-package-assembly": {
+        "previous_sha256": "e5257f1bd55ff73896624e61c0e3a8f311340f3d79217d97fee1188d8e50da37",
+        "current_sha256": "e5257f1bd55ff73896624e61c0e3a8f311340f3d79217d97fee1188d8e50da37",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "artifact-package-cold": {
+        "previous_sha256": "ca5b5924907eda4a5ea9e946f89856141bfb1f668a441c02dbcd143606f98919",
+        "current_sha256": "ca5b5924907eda4a5ea9e946f89856141bfb1f668a441c02dbcd143606f98919",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C04",
+      "frozen_record": {
+        "machine_id": "C04",
+        "name": "Native qualification DAG, package assembly and cold-install matrix",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "b95409eb58eabb6cdb075aecf157dd6840e000a6b850f0af5829cb3601eee5ee",
+      "group": "source-group-038",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Native qualification DAG, package assembly and cold-install matrix. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C04:01",
+      "frozen_record": {
+        "transition_id": "C04:01",
+        "machine_id": "C04",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "selected",
+          "from": "selected",
+          "event": "six platform native build jobs",
+          "guard": "matching native runners and pinned toolchain; test/build succeeds",
+          "to": "candidate built",
+          "effects": "Publish platform candidates and associated test evidence; later bridges/authority consume these exact candidates.",
+          "failure_retry": "Matrix failure does not authorize a subset as the complete cohort.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "629",
+              "lines": [
+                629,
+                629
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C04:01"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3da9b80e6bee16bfe75f09cd33825934cf4d0422563de9741811e17df84be96e",
+      "group": "source-group-038",
+      "assessment": "Six native candidates still require pinned toolchain and complete matrix.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C04:01",
+        "frozen_row_sha256": "3da9b80e6bee16bfe75f09cd33825934cf4d0422563de9741811e17df84be96e",
+        "literal": {
+          "event": "six platform native build jobs",
+          "guard": "matching native runners and pinned toolchain; test/build succeeds",
+          "effects": "Publish platform candidates and associated test evidence; later bridges/authority consume these exact candidates.",
+          "failure_retry": "Matrix failure does not authorize a subset as the complete cohort."
+        },
+        "actual_current_interpretation": "Six native candidates still require pinned toolchain and complete matrix.",
+        "witness_ids": [
+          "w36"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C04:02",
+      "frozen_record": {
+        "transition_id": "C04:02",
+        "machine_id": "C04",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "candidate built",
+          "from": "candidate built",
+          "event": "default, coverage, bridges and authority suites finish",
+          "guard": "each selected required stage succeeds; coverage join meets 70% statement threshold and six-platform integration population",
+          "to": "native stages passed",
+          "effects": "Collect checked stage results and coverage observations.",
+          "failure_retry": "Any failure or skipped required selected stage blocks engine qualification.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "1135",
+              "lines": [
+                1135,
+                1135
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C04:02"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "391188a5c39fa3f16d61d1aef453ab7e6c032afa99a75871e16583f67608d11a",
+      "group": "source-group-038",
+      "assessment": "Default/coverage/bridges/authority success plus 70-percent statement and six-platform integration populations remain.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C04:02",
+        "frozen_row_sha256": "391188a5c39fa3f16d61d1aef453ab7e6c032afa99a75871e16583f67608d11a",
+        "literal": {
+          "event": "default, coverage, bridges and authority suites finish",
+          "guard": "each selected required stage succeeds; coverage join meets 70% statement threshold and six-platform integration population",
+          "effects": "Collect checked stage results and coverage observations.",
+          "failure_retry": "Any failure or skipped required selected stage blocks engine qualification."
+        },
+        "actual_current_interpretation": "Default/coverage/bridges/authority success plus 70-percent statement and six-platform integration populations remain.",
+        "witness_ids": [
+          "w37",
+          "w38"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C04:04",
+      "frozen_record": {
+        "transition_id": "C04:04",
+        "machine_id": "C04",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "engine qualified",
+          "from": "engine qualified",
+          "event": "qualify-recorded",
+          "guard": "exact 12 tested/context directories cover six platform candidates with bound identities",
+          "to": "engine qualified with receipts",
+          "effects": "Run builder qualification sequentially and write platform qualification receipts.",
+          "failure_retry": "A later failure may leave earlier scratch receipts; workflow uploads qualification only after the successful step.",
+          "source": [
+            {
+              "path": ".github/scripts/ci20_native_binding.py",
+              "symbol": "qualify_recorded",
+              "lines": [
+                238,
+                261
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/ci20_native_binding.py"
+            }
+          ],
+          "transition_id": "C04:04"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f9d49f81feb49601738f64dd79198a6e0472bdeb10c4fd6f6955fda4dfc2c627",
+      "group": "source-group-038",
+      "assessment": "Exact twelve tested/context-directory qualification remains sequential, with no global scratch atomicity claim.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C04:04",
+        "frozen_row_sha256": "f9d49f81feb49601738f64dd79198a6e0472bdeb10c4fd6f6955fda4dfc2c627",
+        "literal": {
+          "event": "qualify-recorded",
+          "guard": "exact 12 tested/context directories cover six platform candidates with bound identities",
+          "effects": "Run builder qualification sequentially and write platform qualification receipts.",
+          "failure_retry": "A later failure may leave earlier scratch receipts; workflow uploads qualification only after the successful step."
+        },
+        "actual_current_interpretation": "Exact twelve tested/context-directory qualification remains sequential, with no global scratch atomicity claim.",
+        "witness_ids": [
+          "w40",
+          "w41",
+          "w42",
+          "w43"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C04:05",
+      "frozen_record": {
+        "transition_id": "C04:05",
+        "machine_id": "C04",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "engine qualified with receipts",
+          "from": "engine qualified with receipts",
+          "event": "package assembly",
+          "guard": "all engine prerequisites succeeded",
+          "to": "package assembled",
+          "effects": "Build qualified Claude/Codex/Pi archives and release cohort from exact native payloads.",
+          "failure_retry": "Packaging or digest failure prevents downstream cold-install jobs.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "1210",
+              "lines": [
+                1210,
+                1210
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C04:05"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "852995b746de96ee3481e66fe31e743e2bb2df9e9fd22e847abb2386d35a7e2b",
+      "group": "source-group-038",
+      "assessment": "Package assembly remains downstream of all engine prerequisites and exact native payloads.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C04:05",
+        "frozen_row_sha256": "852995b746de96ee3481e66fe31e743e2bb2df9e9fd22e847abb2386d35a7e2b",
+        "literal": {
+          "event": "package assembly",
+          "guard": "all engine prerequisites succeeded",
+          "effects": "Build qualified Claude/Codex/Pi archives and release cohort from exact native payloads.",
+          "failure_retry": "Packaging or digest failure prevents downstream cold-install jobs."
+        },
+        "actual_current_interpretation": "Package assembly remains downstream of all engine prerequisites and exact native payloads.",
+        "witness_ids": [
+          "w44",
+          "w45"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C04:06",
+      "frozen_record": {
+        "transition_id": "C04:06",
+        "machine_id": "C04",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "package assembled",
+          "from": "package assembled",
+          "event": "cold-install three hosts on six platforms",
+          "guard": "artifact identity checks pass; each host install, offline capability and workflow proof succeeds",
+          "to": "host cold-verified",
+          "effects": "Emit one bound receipt per host/platform; receipts distinguish host-observed from synthetic policy evidence.",
+          "failure_retry": "Host failures remain failures; !cancelled continuation retains later independent host diagnostics without inventing missing receipts.",
+          "source": [
+            {
+              "path": ".github/workflows/ci.yml",
+              "symbol": "1366",
+              "lines": [
+                1366,
+                1366
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/ci.yml"
+            }
+          ],
+          "transition_id": "C04:06"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bc2daeb7f278d3268389e569cc883d45ba786ca5fa6903e5fe8dd8f07ee8ac8a",
+      "group": "source-group-038",
+      "assessment": "Three hosts times six platforms retain bound cold-install receipts and host-versus-synthetic distinctions.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C04:06",
+        "frozen_row_sha256": "bc2daeb7f278d3268389e569cc883d45ba786ca5fa6903e5fe8dd8f07ee8ac8a",
+        "literal": {
+          "event": "cold-install three hosts on six platforms",
+          "guard": "artifact identity checks pass; each host install, offline capability and workflow proof succeeds",
+          "effects": "Emit one bound receipt per host/platform; receipts distinguish host-observed from synthetic policy evidence.",
+          "failure_retry": "Host failures remain failures; !cancelled continuation retains later independent host diagnostics without inventing missing receipts."
+        },
+        "actual_current_interpretation": "Three hosts times six platforms retain bound cold-install receipts and host-versus-synthetic distinctions.",
+        "witness_ids": [
+          "w46",
+          "w47",
+          "w48"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C04:07",
+      "frozen_record": {
+        "transition_id": "C04:07",
+        "machine_id": "C04",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "host cold-verified",
+          "from": "host cold-verified",
+          "event": "release cohort verification",
+          "guard": "exact unique population of 18 receipts, hashes/source/run and required proof fields match",
+          "to": "releasable cohort",
+          "effects": "Authorize publication consumer to use packages. Context qualifier, when present, additionally requires its declared proof.",
+          "failure_retry": "Missing/duplicate receipts, shadow/native runtime download, or weak proof rejects.",
+          "source": [
+            {
+              "path": ".github/scripts/_npm_publishlib.py",
+              "symbol": "verify_release_cohort",
+              "lines": [
+                219,
+                332
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/_npm_publishlib.py"
+            }
+          ],
+          "transition_id": "C04:07"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "NT-12",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b442f1f3f42b863a9378a1048df0e6b6ee0c956ff5044b234a41eaf6542a31bf",
+      "group": "source-group-038",
+      "assessment": "Unique eighteen-receipt cohort validation remains required and no hosted execution is inferred.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "native-observation-only"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+          "sha256": "0901d0ce51409920b7203173c6a0db404ff43584a3633481d878f2e504bef62a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C04:07",
+        "frozen_row_sha256": "b442f1f3f42b863a9378a1048df0e6b6ee0c956ff5044b234a41eaf6542a31bf",
+        "literal": {
+          "event": "release cohort verification",
+          "guard": "exact unique population of 18 receipts, hashes/source/run and required proof fields match",
+          "effects": "Authorize publication consumer to use packages. Context qualifier, when present, additionally requires its declared proof.",
+          "failure_retry": "Missing/duplicate receipts, shadow/native runtime download, or weak proof rejects."
+        },
+        "actual_current_interpretation": "Unique eighteen-receipt cohort validation remains required and no hosted execution is inferred.",
+        "witness_ids": [
+          "w49",
+          "w50"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C04-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w39",
+      "path": ".github/scripts/ci20_native_binding.py",
+      "actual0ef_spans": [
+        [
+          264,
+          276
+        ]
+      ],
+      "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "prior": {
+        "id": "w39",
+        "path": ".github/scripts/ci20_native_binding.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          264,
+          276
+        ],
+        "current_spans": [
+          [
+            264,
+            276
+          ]
+        ],
+        "sha256_of_LF_span": "ab93f6afce12a96752ff789217771c70690e94a20169e4032c735a70ae3e1d46",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          264,
+          276
+        ]
+      ],
+      "current_f3_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    {
+      "witness_id": "w40",
+      "path": ".github/scripts/ci20_native_binding.py",
+      "actual0ef_spans": [
+        [
+          238,
+          261
+        ]
+      ],
+      "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "prior": {
+        "id": "w40",
+        "path": ".github/scripts/ci20_native_binding.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          238,
+          261
+        ],
+        "current_spans": [
+          [
+            238,
+            261
+          ]
+        ],
+        "sha256_of_LF_span": "516ade8dfbe4b8207dc731b9cd692f7594e6f762ff9b23cd8d300e7209d8fa30",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          238,
+          261
+        ]
+      ],
+      "current_f3_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+    },
+    {
+      "witness_id": "w41",
+      "path": "tools/build-artifacts.py",
+      "actual0ef_spans": [
+        [
+          40,
+          99
+        ]
+      ],
+      "current_file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "prior": {
+        "id": "w41",
+        "path": "tools/build-artifacts.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          40,
+          99
+        ],
+        "current_spans": [
+          [
+            40,
+            99
+          ]
+        ],
+        "sha256_of_LF_span": "8fb633a1b587d943f2ccd9c17f2fe1c1d0b4b38c1543c35a19fd71d8d49d2cf4",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          40,
+          99
+        ]
+      ],
+      "current_f3_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4"
+    },
+    {
+      "witness_id": "w42",
+      "path": "tools/build-artifacts.py",
+      "actual0ef_spans": [
+        [
+          116,
+          189
+        ]
+      ],
+      "current_file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+      "prior": {
+        "id": "w42",
+        "path": "tools/build-artifacts.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          116,
+          189
+        ],
+        "current_spans": [
+          [
+            116,
+            189
+          ]
+        ],
+        "sha256_of_LF_span": "689450ff7436347b3fedb17c9493537d4266a28372fe802bad6ca14dda31fe7f",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          116,
+          189
+        ]
+      ],
+      "current_f3_sha256": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4"
+    },
+    {
+      "witness_id": "w48",
+      "path": ".github/scripts/_npm_publishlib.py",
+      "actual0ef_spans": [
+        [
+          266,
+          298
+        ]
+      ],
+      "current_file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "prior": {
+        "id": "w48",
+        "path": ".github/scripts/_npm_publishlib.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          266,
+          298
+        ],
+        "current_spans": [
+          [
+            266,
+            298
+          ]
+        ],
+        "sha256_of_LF_span": "49dfc0223e76536e2ac56373e3f2398fb1eeb6adef5887e251a63223e38b1c1d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          266,
+          298
+        ]
+      ],
+      "current_f3_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+    },
+    {
+      "witness_id": "w49",
+      "path": ".github/scripts/_npm_publishlib.py",
+      "actual0ef_spans": [
+        [
+          221,
+          334
+        ]
+      ],
+      "current_file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+      "prior": {
+        "id": "w49",
+        "path": ".github/scripts/_npm_publishlib.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          221,
+          334
+        ],
+        "current_spans": [
+          [
+            221,
+            334
+          ]
+        ],
+        "sha256_of_LF_span": "8d1d4d3cee2c10fc6a67eed19ad3ef0113cd5351ef630fadb970f3909fbeb2a6",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          221,
+          334
+        ]
+      ],
+      "current_f3_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+    },
+    {
+      "witness_id": "w50",
+      "path": "core/pysrc/_artifactmanifestlib.py",
+      "actual0ef_spans": [
+        [
+          24,
+          63
+        ]
+      ],
+      "current_file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "prior": {
+        "id": "w50",
+        "path": "core/pysrc/_artifactmanifestlib.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          24,
+          63
+        ],
+        "current_spans": [
+          [
+            24,
+            63
+          ]
+        ],
+        "sha256_of_LF_span": "83195b16ca6388737e6fab773e2c42105470088deb16dfdf6e1723d580972829",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          24,
+          63
+        ]
+      ],
+      "current_f3_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "native-observation-only",
+      "paths": [
+        "tools/build-artifacts.py",
+        "tools/go_test_parallel.py"
+      ],
+      "assessment": "Opt-in npm binding observations require actual tests and a fresh external directory; inherited observation env is cleared. Optional subtest retention keeps original command, timeout, chunk API and top-level membership. Named terminal identities and child population are bounded; duplicate/foreign/nonpassing children refuse observation. No second test execution, skip/deadline relaxation or native-run renewal."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

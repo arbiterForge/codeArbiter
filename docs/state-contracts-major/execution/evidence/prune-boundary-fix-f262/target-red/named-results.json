@@ -1,0 +1,26 @@
+{
+ "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+ "executable": "C:\\Python314\\python.exe",
+ "tests_run": 1,
+ "failures": 3,
+ "errors": 0,
+ "skips": 0,
+ "duration_seconds": 0.011330900015309453,
+ "outcomes": [
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal (sibling='.claude-other')",
+   "outcome": "FAIL",
+   "duration_seconds": 0.006821500021032989
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal (sibling='.claude.old')",
+   "outcome": "FAIL",
+   "duration_seconds": 0.008911000011721626
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal (sibling='.claude2')",
+   "outcome": "FAIL",
+   "duration_seconds": 0.010196100018220022
+  }
+ ]
+}

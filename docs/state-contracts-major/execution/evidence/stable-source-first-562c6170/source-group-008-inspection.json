@@ -1,0 +1,122 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-008",
+  "positive_input_join": {
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": {
+      "sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "bytes": 6047,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+        "bytes": 6047
+      }
+    }
+  },
+  "current_input_membership": [],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:SW01:16",
+      "frozen_record": {
+        "transition_id": "SW01:16",
+        "machine_id": "SW01",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "interactive session",
+          "from_state": "interactive session",
+          "event": "session close under lifecycle owner",
+          "guard": "close of interactive session treated as exit",
+          "to": "teardown requested",
+          "effects": "Lifecycle prescribes destroying container and default source volume on close.",
+          "failure_retry": "Contradicts command body\u2019s persistent box; SW-F02 requires one owner-defined lifetime.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+              "symbol": "Phase 5 trigger",
+              "lines": [
+                65,
+                74
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+            }
+          ],
+          "transition_id": "SW01:16"
+        },
+        "task_ids": [
+          "SBX-C01",
+          "SBX-D01",
+          "SBX-D02",
+          "SBX-D03",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-19",
+          "SEQ-30",
+          "SEQ-20"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e97ca8095f048df3fc19726217f0ac3858a41dd04a700e13b54f43a5b328511a",
+      "group": "source-group-008",
+      "assessment": "Frozen automatic-close teardown instruction remains retired. Current shell bullet says detach and explicit teardown says detaching never destroys. Per-resource prune discovery wording changes neither lifetime nor named destroy authority. Retain exact frozen-task:SBX-D02 contract/rationale, without preserving the obsolete automatic-destroy effect.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+          "sha256": "d97d4117c33b24059aed8708049b0107c4efce42a29daab5461416fe5a812a9f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:SW01:16",
+        "frozen_row_sha256": "e97ca8095f048df3fc19726217f0ac3858a41dd04a700e13b54f43a5b328511a",
+        "literal": {
+          "event": "session close under lifecycle owner",
+          "guard": "close of interactive session treated as exit",
+          "effects": "Lifecycle prescribes destroying container and default source volume on close.",
+          "failure_retry": "Contradicts command body\u2019s persistent box; SW-F02 requires one owner-defined lifetime."
+        },
+        "actual_current_interpretation": "Frozen automatic-close teardown instruction remains retired. Current shell bullet says detach and explicit teardown says detaching never destroys. Per-resource prune discovery wording changes neither lifetime nor named destroy authority. Retain exact frozen-task:SBX-D02 contract/rationale, without preserving the obsolete automatic-destroy effect.",
+        "current_witnesses": [
+          {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "start": 30,
+            "end": 39
+          }
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW01-16.json",
+        "selected_for_successor": true,
+        "action": "Retain N/A row contract/rationale/history and append only actual-commit source N/A successor, never TESTED."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "sandbox-normative-boundaries",
+      "paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside.js"
+      ],
+      "assessment": "Actual command/skill/catalog/README use separate container and volume discovery snapshots, not globalt0 or arbitrary new-resource preservation. Claude-inside header/usage identify phases as guidance and preserve real token/argv/policy/co-mount guards. Prior complete finite SW/source65 analyses apply; no model execution, default global destruction, consumer maintainer prerequisites or new approval ceremony."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

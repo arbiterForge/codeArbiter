@@ -1,0 +1,78 @@
+{
+ "schema": "codearbiter.source-review-reuse/1",
+ "prior_packets_reviews_and_repairs": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook-runtime-bounded-source-6d8-45_8g7e4\\delivery.json",
+   "sha256": "75694401aa5bf22a69427af6ac5122829b4a5e612af304219dd9920b47af4196",
+   "bytes": 3788
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hook68-independent-source-review-i6l4svwb\\review.json",
+   "sha256": "eedeef5cff4777530b638816bf5289c07398a88b738baeb3925a19d04fa5f1cc",
+   "bytes": 12848
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-lifecycle18-scope-successor-_momhpb1\\delivery.json",
+   "sha256": "dc9850e57c6f92f2c26c121c3035f6cc5724326cb600ea79dceea436280b2fc6",
+   "bytes": 8536
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-lifecycle18-closure-jj0dqle2\\review.json",
+   "sha256": "b7939fae53bb4c33e26c2fb6f2bc5b28a89195e3840224ba90fbbd593e08de7e",
+   "bytes": 16154
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\delivery.json",
+   "sha256": "8b44dab2115d3a48d8ad014bfbc54c59131e8705175b110a970b396d66fe9da2",
+   "bytes": 11301
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-independent-closure-5492y33s\\review.json",
+   "sha256": "1be5e14be90ffa1688c4350dbc5203af268908ca54f2c65a8eb9cafdb906096d",
+   "bytes": 6248
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\delivery.json",
+   "sha256": "61a39e5ae045e52588b9bfe30df396a30f75d10baefae91bf4f5cd6b0598fdf7",
+   "bytes": 7952
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-independent-review-fiv1waho\\review.json",
+   "sha256": "459b8d4d458c0c8eb3bafd701b743f6d4c10d88e8c1e86789173004c691201e5",
+   "bytes": 8072
+  }
+ ],
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "retained_source_epochs": {
+  "hook": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+  "lifecycle": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+  "pinned": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf"
+ },
+ "method": "Exact unchanged owner bytes and previously reviewed literal assessment reused; all changed-owner witness positions rebound to current named functions. Actual changed _flip/flip_outcome/_mode_audit_line/_settle_dev_close and _workadopt._read effects read semantically, not hash-only renewed. Seen-anchor accepted classification and lifecycle finite peer correction retained.",
+ "current_source_changed_paths": [
+  "core/pysrc/_modelib.py",
+  "core/pysrc/_workadopt.py"
+ ],
+ "semantic_assessment_changes": [
+  "hooks:mode:03",
+  "hooks:mode:04",
+  "hooks:mode:05",
+  "hooks:mode-audit:01",
+  "hooks:mode-audit:04",
+  "hooks:work-adoption:01",
+  "hooks:work-adoption:02",
+  "hooks:work-adoption:03"
+ ],
+ "newly_supported_prior_held_cells": [
+  "disposition:machines:hooks:mode",
+  "disposition:transitions:hooks:mode:03",
+  "disposition:machines:hooks:mode-audit",
+  "disposition:transitions:hooks:mode-audit:04",
+  "disposition:machines:hooks:work-adoption",
+  "disposition:transitions:hooks:work-adoption:01",
+  "disposition:transitions:hooks:work-adoption:02",
+  "disposition:transitions:hooks:work-adoption:03"
+ ],
+ "no_self_independent_review": true,
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

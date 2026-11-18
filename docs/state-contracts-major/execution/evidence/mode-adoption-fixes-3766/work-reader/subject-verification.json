@@ -1,0 +1,40 @@
+{
+ "subjects": {
+  "core/pysrc/_workadopt.py": {
+   "preimage_sha256": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+   "preimage_bytes": 9946,
+   "preimage_git_oid": "8c1d380094a66b4de42d5d96ffc6f75eb90a0334",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fixture\\core\\pysrc\\_workadopt.py",
+    "sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+    "bytes": 11275
+   }
+  },
+  ".github/scripts/test_work_adopt.py": {
+   "preimage_sha256": "4a7f86863b02b26f82f00e7ebed7d655abc0a82379f640c1d79b6727dfb8183f",
+   "preimage_bytes": 6178,
+   "preimage_git_oid": "3e5d2e347208de9a69a76f7d939970eb74f3dbf3",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fixture\\.github\\scripts\\test_work_adopt.py",
+    "sha256": "3cd415d63047b566b617c47c4716097061b836b75d0a4e4635d10181f1b5398b",
+    "bytes": 15474
+   }
+  }
+ },
+ "checks": {
+  "production_AST_only_read_and_two_stdlib_imports": true,
+  "all_original_test_method_AST_unchanged": 8,
+  "new_named_methods": [
+   "test_nonregular_archive_and_replay_refuse_before_read",
+   "test_reader_closes_descriptor_on_acquisition_validation_or_read_error",
+   "test_reader_preserves_optional_size_utf8_and_regular_controls",
+   "test_reader_rejects_acquisition_identity_drift_without_read",
+   "test_reader_rejects_link_before_open",
+   "test_reader_rejects_reparse_metadata_before_open",
+   "test_reader_requests_safe_available_flags_and_bounded_read",
+   "test_replay_regular_snapshots_keep_exact_request_and_optional_absence"
+  ],
+  "original_RED_method_AST_unchanged": true
+ },
+ "compile": "PASS (built-in compile, no bytecode files or execution)"
+}

@@ -1,0 +1,62 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+    "core/pysrc/_overrideappendlib.py": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+    "core/pysrc/security-pass.py": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+    "core/surface/commands/override.md": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+    "core/surface/includes/security-gate-record.md": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+    "core/surface/skills/crypto-compliance/SKILL.md": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+    "core/surface/skills/secret-handling/SKILL.md": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:WF-24",
+    "disposition:transitions:WF-24:01",
+    "disposition:transitions:WF-24:02",
+    "disposition:transitions:WF-24:03",
+    "disposition:transitions:WF-24:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-059-inspection.json",
+      "sha256": "954140d21f995b2f57ce03a53b4ff8e23f48558340aced04c23ca92f01c8fd79"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+      "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+    "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+    "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-059-inspection.json",
+  "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ]
+}

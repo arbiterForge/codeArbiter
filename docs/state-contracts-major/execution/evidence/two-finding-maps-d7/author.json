@@ -1,0 +1,306 @@
+{
+ "schema": "codearbiter.private-feature-delivery/1",
+ "state": "READY_FOR_INDEPENDENT_REVIEW_NOT_SELF_APPROVED",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "author": "acceptance_security_review",
+ "source_epoch": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+ "observed_HEAD_at_seal": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+ "subjects": [
+  {
+   "path": ".github/major-test-selections.json",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\major-test-selections.json",
+    "sha256": "e5218117ca2d1304443accb6aa4b14b2d46c32d1cde7e5ea3db42854c034a856",
+    "bytes": 94203
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\major-test-selections.json",
+    "sha256": "cf66dfe524b6728e18620d4789562587f77de3fb88c345ed406b51de3b4e0fbd",
+    "bytes": 96047
+   },
+   "source_epoch_git_oid": "24b0b752a0316cf1adfee5d3495477ed4f6faacc",
+   "observed_HEAD_git_oid": "24b0b752a0316cf1adfee5d3495477ed4f6faacc",
+   "physical_preimage_sha256": "e5218117ca2d1304443accb6aa4b14b2d46c32d1cde7e5ea3db42854c034a856",
+   "candidate_git_index_oid": null
+  },
+  {
+   "path": ".github/major-qualification-policy.json",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\major-qualification-policy.json",
+    "sha256": "39cb01e27cf4d104ea09ff221f826b63c338265842dbe469dce68c65e9efeb97",
+    "bytes": 8976
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\major-qualification-policy.json",
+    "sha256": "68b59d18f7343411806577879bd36771238526bfeab05468dadb81a2f62cf1c2",
+    "bytes": 9244
+   },
+   "source_epoch_git_oid": "e458429da6e1d273953388cdc648523b9d7f3c52",
+   "observed_HEAD_git_oid": "e458429da6e1d273953388cdc648523b9d7f3c52",
+   "physical_preimage_sha256": "39cb01e27cf4d104ea09ff221f826b63c338265842dbe469dce68c65e9efeb97",
+   "candidate_git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/major_qualification_report.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "64c975bdbfddc61aa208bae81d53e3c71ed144e7843333a0469d7a1301a4af99",
+    "bytes": 163910
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "41a88ee6e4a7240781785c7f3bd20524c036c3995ae90d75213022558eb8cb1a",
+    "bytes": 165729
+   },
+   "source_epoch_git_oid": "bdfac16a141ddcd3b9b091cf2c5d224db060432a",
+   "observed_HEAD_git_oid": "bdfac16a141ddcd3b9b091cf2c5d224db060432a",
+   "physical_preimage_sha256": "64c975bdbfddc61aa208bae81d53e3c71ed144e7843333a0469d7a1301a4af99",
+   "candidate_git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/major_readiness.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\major_readiness.py",
+    "sha256": "458aef171ca0d13e2613d112a23ca253d8ec34d7a53dad4c0e8779cc54bb10af",
+    "bytes": 83536
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\major_readiness.py",
+    "sha256": "17cc1f9e4e77a878a19311b56cfde46de0ccc2c870bb9b8964ebd2f0d3ff079a",
+    "bytes": 84278
+   },
+   "source_epoch_git_oid": "07341767a1240eb8c11b34c0afe73f3850891650",
+   "observed_HEAD_git_oid": "07341767a1240eb8c11b34c0afe73f3850891650",
+   "physical_preimage_sha256": "458aef171ca0d13e2613d112a23ca253d8ec34d7a53dad4c0e8779cc54bb10af",
+   "candidate_git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/major_native_observation.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\major_native_observation.py",
+    "sha256": "8966db335dd225490a1404e80ff24936333585402ac055ac9742e11c648434a6",
+    "bytes": 185114
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\major_native_observation.py",
+    "sha256": "74337065572143de5ecf308aaa81931299b9c253102969b93888baace51525d9",
+    "bytes": 186443
+   },
+   "source_epoch_git_oid": "62ecaae8b6772b130f4ec24ed5e2b9e13ff44ea6",
+   "observed_HEAD_git_oid": "62ecaae8b6772b130f4ec24ed5e2b9e13ff44ea6",
+   "physical_preimage_sha256": "8966db335dd225490a1404e80ff24936333585402ac055ac9742e11c648434a6",
+   "candidate_git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_major_qualification_report.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "864189f1f909eb3fa67897fa9fa84b39c18e89fa6fe262d60e9eae095c395a87",
+    "bytes": 328574
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "b8625bdf38273bb4743d4ca47c6897ded8e83fb8e13cc3ffc2bbedddc10088ea",
+    "bytes": 334774
+   },
+   "source_epoch_git_oid": "f6fcedd351a1770e9699efb6f7e8b667ad43d22a",
+   "observed_HEAD_git_oid": "f6fcedd351a1770e9699efb6f7e8b667ad43d22a",
+   "physical_preimage_sha256": "864189f1f909eb3fa67897fa9fa84b39c18e89fa6fe262d60e9eae095c395a87",
+   "candidate_git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_npm_binding_observation.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\test_npm_binding_observation.py",
+    "sha256": "618b9fce2dc364e2ea5adb4d27c08cf4fefed33f57ee46a751dfef22c050f957",
+    "bytes": 39035
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\test_npm_binding_observation.py",
+    "sha256": "3db3f66b20f423e00ac34239ef96e8e46a1eac6b1f7b2494c7273da09d949775",
+    "bytes": 44425
+   },
+   "source_epoch_git_oid": "593774aadcf69b97014d7fe823c7fb3a844398b7",
+   "observed_HEAD_git_oid": "593774aadcf69b97014d7fe823c7fb3a844398b7",
+   "physical_preimage_sha256": "618b9fce2dc364e2ea5adb4d27c08cf4fefed33f57ee46a751dfef22c050f957",
+   "candidate_git_index_oid": null
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate.patch",
+  "sha256": "2b85ba2d5074e03d488e7f76cc36036ba35545f4d31d09e3eabb88971d717067",
+  "bytes": 24043
+ },
+ "mapping": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\mapping.json",
+  "sha256": "8484df3228286d0b73c09a8c7a82c65784975fb7921be0ac6073248f94908e49",
+  "bytes": 2059
+ },
+ "obligations": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\obligations.json",
+  "sha256": "4ce7c0e9ef4cd12225ddbf2f83f11dd96141397b8f333926d6bc37155ea655dc",
+  "bytes": 1484
+ },
+ "source_bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\source-bindings.json",
+  "sha256": "34727e7f8f599473603c06d3f50290f912eca0b580bcbdcb1ee78d876abeb37f",
+  "bytes": 287737
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preservation.json",
+  "sha256": "ab7f5b2558ce31d20070b9ad6214447f6ad7c49fd5d8a91dd550e5eb90142dff",
+  "bytes": 1626
+ },
+ "fixture_dependency_correction": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\fixture-dependency-correction.json",
+  "sha256": "9550a5439f63fa3d6a342a16b995c880ba6c59e2a7f1c321db8c1b39e48a0df8",
+  "bytes": 1700
+ },
+ "checks": {
+  "target-red": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\target-red.json",
+    "sha256": "9be127491bbca6c6a909d27ff3e4335d8ca1f77854a25ca3202f4430d4d58076",
+    "bytes": 1482
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\target-red.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\target-red.stderr",
+    "sha256": "ec8f1f1e046aa7085e337531d78a91e48c11be7015fc3c2f648ae713555dc7f9",
+    "bytes": 6052
+   },
+   "exit_code": 1,
+   "seconds": 13.176285399997141
+  },
+  "target-green": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\target-green.json",
+    "sha256": "99902b6f05070823ce1cef2974588a77c72b9653febc39535a162b8d3209e449",
+    "bytes": 1486
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\target-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\target-green.stderr",
+    "sha256": "6aa9915e91dcfc644c4a4106cb88966e0dcbf875aaab263c60c0042b44163184",
+    "bytes": 521
+   },
+   "exit_code": 0,
+   "seconds": 11.54858490001061
+  },
+  "controls": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\controls.json",
+    "sha256": "127801c38117c7b028f7e54ee8d846a2450e52d6cc51e79069f5a422d363fb74",
+    "bytes": 1638
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\controls.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\controls.stderr",
+    "sha256": "d06b39d8a12915883902e5d551f780da4c31ebe09beffc585ad1288778bec2cb",
+    "bytes": 801
+   },
+   "exit_code": 0,
+   "seconds": 12.363234399992507
+  },
+  "affected": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\affected.json",
+    "sha256": "227a11fcd590db1fcda8d5a70e229926bc121cdd5e36a0765aa743845baa3145",
+    "bytes": 1867
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\affected.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\affected.stderr",
+    "sha256": "454d6f04ce3cfb720c867867cc930b696dcbe0596601e5f7ece67d9073fc47f0",
+    "bytes": 5969
+   },
+   "exit_code": 1,
+   "seconds": 75.86956749999081
+  },
+  "affected-fixture-successor": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\affected-fixture-successor.json",
+    "sha256": "800cbb7508fd7f1184b5d31ff9ef1f703f8dd947710a6f1b11542b37587bc0a0",
+    "bytes": 2112
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\affected-fixture-successor.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\affected-fixture-successor.stderr",
+    "sha256": "534a74262b530845dfc23005eb5009f540fbd06950e03fe12f2fb1a7a192beaa",
+    "bytes": 504
+   },
+   "exit_code": 0,
+   "seconds": 0.34073319999151863
+  }
+ },
+ "observed_counts": {
+  "new_target_assertion_RED": 2,
+  "new_target_GREEN": 2,
+  "new_negative_control_methods_GREEN": 3,
+  "affected_existing_distinct_purposes": 12,
+  "first_affected_run": "10PASS plus2 missing-source fixture failures retained",
+  "focused_successor": "same2 unchanged assertions PASS after copying exact5 original source dependencies"
+ },
+ "input_provenance": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\two-existing-finding-maps-input.txt",
+   "sha256": "49ed8049371a23b1e03f80390e7c892ee080cf8a2e9909b5ae8dd89637e81796",
+   "bytes": 12703
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\two-existing-finding-maps-context.json",
+   "sha256": "961efa5818bebe74253ae1c76d08aacd92f25a967cc3eafeb07f0548c2338d47",
+   "bytes": 22078
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining21-current-context-ft2344fk\\delivery.json",
+   "sha256": "e13ba46c06f9fb6fbeaa3bdc1e8614d02020c97f48eab17b6697008f59731399",
+   "bytes": 1661
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining21-finding-routes-igmco77y\\inventory.json",
+   "sha256": "f6f4d7c656d050431a52925a5a80346d7b2da15f012fb388a489abb91250eda1",
+   "bytes": 101723
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\tech-stack-read.json",
+   "sha256": "1d6fab3d44422ff51129ac0eccd2fbd47936664c5cfe216810dbb9b0a2212961",
+   "bytes": 14779
+  }
+ ],
+ "preserved_boundaries": [
+  "All existing67 selection groups remain byte-equivalent as data; exactly one new finite C-F02 group added.",
+  "All40 native recipes, existing native policy composition selection, HW04/NT04 task names, counts, source/runtime sidecar schema, selectors, budgets and runtime commands are unchanged.",
+  "No workflow/job/permissions/secret flow, executable source implementation, frozen contract, proof epoch, ledger/task status or actual runtime qualification changes.",
+  "Root sole canonical/index/ref/marker writer. No security marker or independent review is fabricated.",
+  "Source753+16 unsealed checkpoint remains separate and unchanged; these three reporter/requirements changes remain positive-input dependencies for the future final source batch."
+ ],
+ "limits": [
+  "Only pure Python admission fixtures and owned Git data fixtures ran; no actual release/Go/native/Node/SDK/Pi/Docker/provider/API/network/installed runtime or artifact acquisition. In-memory archive bytes are inert existing transport fixtures.",
+  "Seven changed private subjects only; five copied unchanged workflow/Go source dependencies are explicitly excluded from patch subjects.",
+  "Original missing-admission RED and subsequent private fixture failures remain exact immutable raw evidence; no blanket initial-green claim.",
+  "Observed d7 HEAD movement has disjoint candidate preimages and explicit broader Q02 dependency deltas; private pure checks are not restamped as exact d7 runtime execution.",
+  "No self-independent PASS, new reviewer fleet, main merge/publication authorization or release of user-testing hold."
+ ],
+ "sealed_at_utc": "2026-11-17T12:55:25.412748+00:00"
+}

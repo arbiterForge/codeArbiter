@@ -1,9 +1,13 @@
 """Selected legacy-board adoption inventory, before any native cutover."""
 
 import hashlib
+import os
+import stat
 import sys
 import tempfile
 import unittest
+from unittest import mock
+from types import SimpleNamespace
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -114,6 +118,207 @@ class AdoptionInventoryTest(unittest.TestCase):
         preview = _workadopt.preview(self.root)
         self.assertEqual(preview["rows"][0]["work_id"], selected)
         self.assertNotEqual(preview["rows"][0]["origin"], "review:pr854-integration")
+
+
+    def test_nonregular_archive_and_replay_refuse_before_read(self):
+        self.board.write_text("- [ ] Ordinary work\n", encoding="utf-8")
+        legacy = self.root / ".codearbiter" / "legacy"
+        legacy.mkdir()
+        (legacy / "open-tasks.md").write_text("- [ ] Saved work\n", encoding="utf-8")
+        real_open = os.open
+        real_path_open = Path.open
+        for replay, name in [(False, "done-tasks.md"),
+                             (True, "open-tasks.md"), (True, "done-tasks.md")]:
+            with self.subTest(replay=replay, name=name):
+                target = (legacy if replay else self.board.parent) / name
+                if not target.exists():
+                    target.write_bytes(b"")
+                read_fd, write_fd = os.pipe()
+                os.close(write_fd)  # EOF: even the broken reader cannot block.
+                self.addCleanup(os.close, read_fd)
+                opened = []
+                reads = []
+
+                def acquire(path, flags, *args, **kwargs):
+                    if Path(path) == target:
+                        fd = os.dup(read_fd)
+                        opened.append(fd)
+                        return fd
+                    return real_open(path, flags, *args, **kwargs)
+
+                def acquire_old(path, *args, **kwargs):
+                    if path == target:
+                        fd = os.dup(read_fd)
+                        opened.append(fd)
+                        handle = os.fdopen(fd, "rb")
+                        read = mock.Mock(wraps=handle.read)
+                        handle.read = read
+                        reads.append(read)
+                        return handle
+                    return real_path_open(path, *args, **kwargs)
+
+                native = mock.Mock()
+                with mock.patch("os.open", side_effect=acquire), \
+                        mock.patch.object(Path, "open", acquire_old):
+                    with self.assertRaisesRegex(ValueError, "regular"):
+                        if replay:
+                            _workadopt.adopt(self.root, native, "owned-op", replay=True)
+                        else:
+                            _workadopt.preview(self.root)
+                native.call.assert_not_called()
+                self.assertTrue(opened)
+                for read in reads:
+                    read.assert_not_called()
+                for fd in opened:
+                    with self.assertRaises(OSError):
+                        os.fstat(fd)
+
+
+
+    def test_reader_preserves_optional_size_utf8_and_regular_controls(self):
+        target = self.board.parent / "done-tasks.md"
+        self.assertIsNone(_workadopt._read(target, 3, optional=True))
+        with self.assertRaisesRegex(ValueError, "absent"):
+            _workadopt._read(target, 3)
+        target.write_bytes(b"abc")
+        self.assertEqual(_workadopt._read(target, 3), (b"abc", "abc"))
+        with self.assertRaisesRegex(ValueError, "read limit"):
+            _workadopt._read(target, 2)
+        target.write_bytes(b"\xff")
+        with self.assertRaisesRegex(ValueError, "not UTF-8"):
+            _workadopt._read(target, 3)
+        target.unlink()
+        target.mkdir()
+        with self.assertRaisesRegex(ValueError, "regular"):
+            _workadopt._read(target, 3, optional=True)
+
+    def test_reader_rejects_link_before_open(self):
+        self.board.write_bytes(b"owned")
+        target = self.board.parent / "done-tasks.md"
+        try:
+            target.symlink_to(self.board)
+        except OSError:
+            self.skipTest("symlinks unavailable")
+        with mock.patch("os.open") as acquire:
+            with self.assertRaisesRegex(ValueError, "linked"):
+                _workadopt._read(target, 16, optional=True)
+        acquire.assert_not_called()
+        self.assertEqual(self.board.read_bytes(), b"owned")
+
+    def test_reader_rejects_reparse_metadata_before_open(self):
+        info = SimpleNamespace(st_mode=stat.S_IFREG | 0o600,
+                               st_file_attributes=0x400)
+        with mock.patch.object(Path, "lstat", return_value=info), \
+                mock.patch("os.open") as acquire:
+            with self.assertRaisesRegex(ValueError, "linked"):
+                _workadopt._read(self.board, 16)
+        acquire.assert_not_called()
+
+    def test_reader_closes_descriptor_on_acquisition_validation_or_read_error(self):
+        self.board.write_bytes(b"owned")
+        real_open = os.open
+        real_fdopen = os.fdopen
+        for stage in ["fstat", "fdopen", "read"]:
+            with self.subTest(stage=stage):
+                opened = []
+
+                def acquire(*args, **kwargs):
+                    fd = real_open(*args, **kwargs)
+                    opened.append(fd)
+                    return fd
+
+                def wrap(*args, **kwargs):
+                    handle = real_fdopen(*args, **kwargs)
+                    handle.read = mock.Mock(side_effect=OSError("owned read failure"))
+                    return handle
+
+                fault = (mock.patch("os.fstat", side_effect=OSError("owned stat failure"))
+                         if stage == "fstat" else
+                         mock.patch("os.fdopen", side_effect=OSError("owned wrap failure"))
+                         if stage == "fdopen" else
+                         mock.patch("os.fdopen", side_effect=wrap))
+                with mock.patch("os.open", side_effect=acquire), fault:
+                    with self.assertRaisesRegex(OSError, "owned"):
+                        _workadopt._read(self.board, 16)
+                self.assertEqual(len(opened), 1)
+                with self.assertRaises(OSError):
+                    os.fstat(opened[0])
+        self.assertEqual(self.board.read_bytes(), b"owned")
+
+    def test_reader_rejects_acquisition_identity_drift_without_read(self):
+        real_open = os.open
+        for change in ["wrong_descriptor", "replaced_path", "removed_path"]:
+            with self.subTest(change=change):
+                self.board.write_bytes(b"original")
+                replacement = self.root / "replacement.md"
+                replacement.write_bytes(b"replacement")
+                opened = []
+
+                def acquire(path, flags, *args, **kwargs):
+                    if change == "replaced_path":
+                        replacement.replace(self.board)
+                    elif change == "removed_path":
+                        self.board.unlink()
+                    fd = real_open(replacement if change in {"wrong_descriptor", "removed_path"}
+                                   else path, flags, *args, **kwargs)
+                    opened.append(fd)
+                    return fd
+
+                with mock.patch("os.open", side_effect=acquire), \
+                        mock.patch("os.fdopen") as read:
+                    with self.assertRaisesRegex(ValueError, "changed during acquisition"):
+                        _workadopt._read(self.board, 16, optional=True)
+                read.assert_not_called()
+                self.assertEqual(len(opened), 1)
+                with self.assertRaises(OSError):
+                    os.fstat(opened[0])
+
+    def test_reader_requests_safe_available_flags_and_bounded_read(self):
+        self.board.write_bytes(b"abcdef")
+        real_open = os.open
+        real_fdopen = os.fdopen
+        reads = []
+
+        def wrap(*args, **kwargs):
+            handle = real_fdopen(*args, **kwargs)
+            spy = mock.Mock(wraps=handle.read)
+            handle.read = spy
+            reads.append(spy)
+            return handle
+
+        with mock.patch("os.open", wraps=real_open) as acquire, \
+                mock.patch("os.fdopen", side_effect=wrap):
+            with self.assertRaisesRegex(ValueError, "read limit"):
+                _workadopt._read(self.board, 3)
+        flags = acquire.call_args.args[1]
+        for name in ["O_BINARY", "O_NONBLOCK", "O_NOFOLLOW", "O_CLOEXEC"]:
+            required = getattr(os, name, 0)
+            self.assertEqual(flags & required, required, name)
+        reads[0].assert_called_once_with(4)
+
+
+
+    def test_replay_regular_snapshots_keep_exact_request_and_optional_absence(self):
+        legacy = self.board.parent / "legacy"
+        legacy.mkdir()
+        raw = b"- [ ] Preserved saved work\n"
+        active = legacy / "open-tasks.md"
+        active.write_bytes(raw)
+        native = mock.Mock()
+        native.call.return_value = {"operation_id": "owned-op", "replayed": True}
+        result = _workadopt.adopt(self.root, native, "owned-op", replay=True)
+        self.assertEqual(result, native.call.return_value)
+        native.call.assert_called_once()
+        operation, request = native.call.call_args.args
+        self.assertEqual(operation, "work-adopt")
+        self.assertEqual(request["operation_id"], "owned-op")
+        self.assertEqual(request["expected_board_sha256"], hashlib.sha256(raw).hexdigest())
+        self.assertIsNone(request["expected_archive_sha256"])
+        self.assertEqual(len(request["rows"]), 1)
+        self.assertEqual(request["rows"][0]["title"], "Preserved saved work")
+        self.assertNotIn("legacy_origin", request["rows"][0])
+        self.assertEqual(active.read_bytes(), raw)
+        self.assertFalse(self.board.exists())
 
 
 if __name__ == "__main__":

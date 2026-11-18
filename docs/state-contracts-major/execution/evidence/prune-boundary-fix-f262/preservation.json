@@ -1,0 +1,20 @@
+{
+ "changed_production_top_level_AST": [
+  "hook_run"
+ ],
+ "every_other_production_AST_identical": true,
+ "new_test_literal_unchanged_RED_GREEN": true,
+ "unchanged_existing_test_sources": [
+  "plugins/ca/hooks/tests/test_prune_single_parse.py",
+  "plugins/ca/hooks/tests/test_prune_nudge.py",
+  "plugins/ca/hooks/tests/_helpers.py"
+ ],
+ "private_source_stable_per_capture": true,
+ "canonical_preimages_still_exact": 102,
+ "test_tool_unchanged": true,
+ "actual_HEAD": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+ "actual_branch_after": "codex/state-contracts-prune-boundary",
+ "Root_metadata_branch_change_recorded": true,
+ "mirrors": "Not authored; Root owns canonical generation and parity.",
+ "coverage": "Not measured by this bounded stdlib unit run; no coverage or hosted-platform claim."
+}

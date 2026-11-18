@@ -1,0 +1,62 @@
+{
+ "schema": "codearbiter.binary-full-candidate-development/1",
+ "controller_anchor": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "changes": "Exact existing full staged diff candidate is now required alongside worktree identity and bounded binary binding in producer and both consumers; no legacy binary-only fallback.",
+ "evidence": {
+  "author": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/author.json",
+   "sha256": "dfaac00d0e415e4c07009c0145a3fd8b8c9f93fb67076ab0e35f278c6ed4e11e",
+   "bytes": 11079
+  },
+  "peer": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/peer.json",
+   "sha256": "4cfd9f0b8e767fd6ea61cb24a5a47564fa3f1f2100787a9c94492a12dd5aacd6",
+   "bytes": 10106
+  },
+  "red": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/red.json",
+   "sha256": "2ebfe5d3f8c60f70db2c71ab58e36dc647babbc9e7b84b746c3ef6067cc04610",
+   "bytes": 1336
+  },
+  "green-target": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/green-target.json",
+   "sha256": "4cbde5f79a8b457ff84a8dc268658fa4061cd516037c12a8f40182398ba74261",
+   "bytes": 1353
+  },
+  "green-owning": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/green-owning.json",
+   "sha256": "f03c3216af5572de6caf3ec5d4e2c1513ddd2fd00083b91451bb60cfbcc140be",
+   "bytes": 1086
+  },
+  "source-checks": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/source-checks.json",
+   "sha256": "42de174cc750e3c51a4f25e200c91689c4fcc2bb1254851087fdc73854a8b959",
+   "bytes": 1539
+  },
+  "tools": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/tools.json",
+   "sha256": "6a987801c772b8006f91a7b78f714c292280e38760b5d5067802ebd422970af6",
+   "bytes": 291
+  },
+  "read-denial": {
+   "path": "docs/state-contracts-major/execution/evidence/binary-full-candidate-2ed/read-denial.json",
+   "sha256": "be29ceadf01abf024088abe451d52d6066c9d9f2c838711304b0e4c21d00eec1",
+   "bytes": 734
+  }
+ },
+ "local_tests": {
+  "proper_red_tests": 3,
+  "proper_red_assertion_failures": 4,
+  "green_same_target": 3,
+  "green_owning_total": 77,
+  "passed": 76,
+  "existing_filesystem_capability_skip": 1,
+  "errors": 0
+ },
+ "code": "Three single-purpose production edits and9byte-equal generated mirrors. Original test module AST retained except one required marker-format expectation plus3new regression methods. _gitexec limits/hash/body unchanged.",
+ "scope": "Existing finite HOOK-B03/W-F06 contract; no actual Root marker/override written, broader override authority or task/ledger/runtime promotion.",
+ "source_drift": "Reassess affected original source-only clauses after final code epoch; no blind hash renewal. Prior2ed global inventory had1723pure source rows,999applicable724stale, distinct from explicit777cohort.",
+ "pending": "Exact Root parity/scanner/intent/original owner and commit gates; full hostedCI/Docs before child merge. Node shutdown cause remains unresolved. H18 optional combined-read denial remains an unconfirmed classifier issue, not a replayed probe or product regression.",
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

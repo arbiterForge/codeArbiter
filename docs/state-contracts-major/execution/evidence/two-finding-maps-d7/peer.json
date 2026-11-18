@@ -1,0 +1,111 @@
+{
+  "schema": "codearbiter.independent-finite-existing-transport-review/1",
+  "reviewer": "/root",
+  "author": "/root/acceptance_security_review",
+  "independent_of_authorship": true,
+  "verdict": "PASS",
+  "findings": [],
+  "source_commit": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+  "full_subjects": {
+    ".github/major-test-selections.json": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\major-test-selections.json",
+        "sha256": "e5218117ca2d1304443accb6aa4b14b2d46c32d1cde7e5ea3db42854c034a856",
+        "bytes": 94203
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\major-test-selections.json",
+        "sha256": "cf66dfe524b6728e18620d4789562587f77de3fb88c345ed406b51de3b4e0fbd",
+        "bytes": 96047
+      }
+    },
+    ".github/major-qualification-policy.json": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\major-qualification-policy.json",
+        "sha256": "39cb01e27cf4d104ea09ff221f826b63c338265842dbe469dce68c65e9efeb97",
+        "bytes": 8976
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\major-qualification-policy.json",
+        "sha256": "68b59d18f7343411806577879bd36771238526bfeab05468dadb81a2f62cf1c2",
+        "bytes": 9244
+      }
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\major_qualification_report.py",
+        "sha256": "64c975bdbfddc61aa208bae81d53e3c71ed144e7843333a0469d7a1301a4af99",
+        "bytes": 163910
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\major_qualification_report.py",
+        "sha256": "41a88ee6e4a7240781785c7f3bd20524c036c3995ae90d75213022558eb8cb1a",
+        "bytes": 165729
+      }
+    },
+    ".github/scripts/major_readiness.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\major_readiness.py",
+        "sha256": "458aef171ca0d13e2613d112a23ca253d8ec34d7a53dad4c0e8779cc54bb10af",
+        "bytes": 83536
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\major_readiness.py",
+        "sha256": "17cc1f9e4e77a878a19311b56cfde46de0ccc2c870bb9b8964ebd2f0d3ff079a",
+        "bytes": 84278
+      }
+    },
+    ".github/scripts/major_native_observation.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\major_native_observation.py",
+        "sha256": "8966db335dd225490a1404e80ff24936333585402ac055ac9742e11c648434a6",
+        "bytes": 185114
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\major_native_observation.py",
+        "sha256": "74337065572143de5ecf308aaa81931299b9c253102969b93888baace51525d9",
+        "bytes": 186443
+      }
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+        "sha256": "864189f1f909eb3fa67897fa9fa84b39c18e89fa6fe262d60e9eae095c395a87",
+        "bytes": 328574
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+        "sha256": "b8625bdf38273bb4743d4ca47c6897ded8e83fb8e13cc3ffc2bbedddc10088ea",
+        "bytes": 334774
+      }
+    },
+    ".github/scripts/test_npm_binding_observation.py": {
+      "preimage": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\preimages\\.github\\scripts\\test_npm_binding_observation.py",
+        "sha256": "618b9fce2dc364e2ea5adb4d27c08cf4fefed33f57ee46a751dfef22c050f957",
+        "bytes": 39035
+      },
+      "candidate": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-two-finding-maps-we5q72_0\\candidate\\.github\\scripts\\test_npm_binding_observation.py",
+        "sha256": "3db3f66b20f423e00ac34239ef96e8e46a1eac6b1f7b2494c7273da09d949775",
+        "bytes": 44425
+      }
+    }
+  },
+  "delivery_sha256": "223780a19493bf6517284ad541aeedbd94743798ab66e3377814b020fcb7c01e",
+  "context_input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\two-maps-root-peer-input.txt",
+  "assessment": [
+    "C-F02 exact singleton requires all8 actual SourceSelectionTest selectors, same Q02 profile, original Windows/contracts job, q02-release observation, manifest/source/run, release script and unfiltered two-argv command. Other Q02 cells retain old task-only exact guard; no new execution or real publication authority.",
+    "HOOK-F04 singleton flag is closed, requires HW04 launch task/native owner and cannot overlap ordinary native recipes or source dispositions. Runtime partition consumes only the explicit finding; old40 recipes/tasks/counts/selectors remain exact.",
+    "Native admit always validates runtime requirements/run first. Finding uses the same complete6platform original named parent/descendant tests and the same mandatory every-platform HW04 sidecar loops, exact memberships/workspace counts, upload identities and source/module/runtime/import/launch bindings. No partial native case or absent owner can qualify the finding.",
+    "Final verify reconstructs admit from authenticated original components and compares the entire record, including new requirements; tampered projections and skipped native children refuse. No new schema primitive, job/permission/token flow, source-reader fallback or broader native/installed claim.",
+    "All old production functions except the4explicit additive admission owners, all old test class ASTs and all67 prior groups/native constants preserved. SourceSelection and native implementation input bytes match across0ef/d7; original pure check epoch stays0ef, with d7 progress-only declared Q02 source intersection disclosed."
+  ],
+  "verification": "Proper2assertion missing-admission RED then same2GREEN;3new negative methodsPASS and12distinct old purposesPASS via10initial+2fixture-corrected. Earlier missing-file errors retained, no invented full-module success or broad rerun. Source/profile/entrypoint/namespace/complete-case omissions and all6platform sidecar/identity/count/nativechild/finalprojection negatives inspected.",
+  "coverage": "Python no numeric tooling perFACT005/NOTE005; direct public admission/refusal checks. No Go/TS/native runtime or coverage execution by author/reviewer.",
+  "limits": [
+    "Source/configuration/admission capability only; genuine original normal-run outcomes remain required for runtime disposition.",
+    "No independent self-approval, fake private indexOID, canonical/status/ledger/API/runtime writes.",
+    "Root must bind actual stage, scan and run original owner/intent gates; fresh exact-head hostedCI/Docs required. Main/publicationheld."
+  ]
+}

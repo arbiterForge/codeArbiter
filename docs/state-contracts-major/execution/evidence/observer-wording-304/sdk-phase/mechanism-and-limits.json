@@ -1,0 +1,27 @@
+{
+ "request_extension": "Private v3 optional progress:true only; v1/v2 and v3 without flag retain their exact output path. Parent sends flag only to the existing owned worker. No argv/env/path/new handle channel.",
+ "wire": "CA_SDK_PHASE ASCII prefix plus one exact JSON identity/phase record per line, before final existing JSON. At most9 ordered distinct phases, <=256bytes each, <=2304bytes total; existing128KiB collection cap and32KiB final JSON cap unchanged.",
+ "identity": [
+  "target pid",
+  "creationTime",
+  "profile",
+  "actual Popen worker pid"
+ ],
+ "closed_phases": [
+  "input",
+  "identity",
+  "provider-bind",
+  "engine-create",
+  "policy",
+  "attach",
+  "wait",
+  "stack",
+  "detach"
+ ],
+ "parent_result": "On no final worker acknowledgement, diagnostic.phase may retain sdk-<last complete valid phase>. Diagnostic key set and result versions unchanged. Existing statuses, primaryStatus, cleanupFailure, worker=None/threads=[] uncertainty and target state remain unchanged. Successful final result still passes unchanged decode_result.",
+ "partial_rule": "An incomplete row cannot replace the preceding complete valid checkpoint. Invalid complete/foreign/oversized/duplicate/out-of-order rows refuse progress. Unknown raw output is never reflected into diagnostics.",
+ "caller_budgets": "RPC30s and SDK5s unchanged. Inert test uses a smaller1s caller deadline; it changes no production timeout.",
+ "observability_limit": "Phase means last announced boundary, not proof a native call entered/completed. Pipe write/flush adds small bounded diagnostic work and can itself be delayed; it runs only in the already hard-bounded owned debugger. No Node-cause claim or successful attachment/detachment/frames inferred.",
+ "original_Node_cause": "UNRESOLVED; retained independent ca-debug receipt0cb466e1... plus primary projection addendum.",
+ "effects": "Only owned tiny isolated Python worker, synthetic kernel/engine and ordinary scratch files. No real SDK DLL, target process handle, Pi/Node/provider/install/home/network effects."
+}

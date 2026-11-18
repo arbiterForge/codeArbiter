@@ -1,0 +1,862 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-012",
+  "positive_input_join": {
+    ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": {
+      "sha256": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+      "bytes": 13541,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+        "bytes": 13541
+      }
+    },
+    ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": {
+      "sha256": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+      "bytes": 5347,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+        "bytes": 5347
+      }
+    },
+    ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": {
+      "sha256": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+      "bytes": 6103,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+        "bytes": 6103
+      }
+    },
+    ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": {
+      "sha256": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+      "bytes": 6742,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+        "bytes": 6742
+      }
+    },
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+      "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "bytes": 5797,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+        "bytes": 5797
+      }
+    },
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+      "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "bytes": 3015,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+        "bytes": 3015
+      }
+    },
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+      "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "bytes": 2450,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+        "bytes": 2450
+      }
+    },
+    "core/pysrc/_bashguardlib.py": {
+      "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+      "bytes": 159652,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+        "bytes": 159652
+      }
+    },
+    "core/pysrc/_gitexec.py": {
+      "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+      "bytes": 24644,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+        "bytes": 24644
+      }
+    },
+    "core/pysrc/_sensitivelib.py": {
+      "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "bytes": 35303,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+        "bytes": 35303
+      }
+    },
+    "core/pysrc/git-enforce.py": {
+      "sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+      "bytes": 19659,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+        "bytes": 19659
+      }
+    },
+    "core/pysrc/migration-pass.py": {
+      "sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+      "bytes": 6375,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+        "bytes": 6375
+      }
+    },
+    "core/pysrc/security-pass.py": {
+      "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+      "bytes": 9482,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+        "bytes": 9482
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/decisions.json": {
+      "sha256": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+      "bytes": 5339,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+        "bytes": 5339
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "docs/state-contracts-major/hooks-workflow-tasks.json": {
+      "sha256": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+      "bytes": 176108,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30",
+        "bytes": 176108
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:hooks:commit-gates",
+      "frozen_record": {
+        "machine_id": "hooks:commit-gates",
+        "name": "Commit candidate staging, sensitive-content binding and migration proof",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [
+          "HW-17"
+        ],
+        "source_intersection_task_ids": [
+          "HW-17",
+          "HW-23"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "848efc75963f3b2ab3d64cf605feaba463bc785c3f8b4e866262b38d6d38a7fa",
+      "group": "source-group-012",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Commit candidate staging, sensitive-content binding and migration proof. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:01",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:01",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "unchecked",
+          "event": "commit command / Git pre-commit",
+          "guard": "active and protected main/master branch or detached HEAD on protected tip",
+          "to": "blocked",
+          "effects": "Refuse direct protected branch commit.",
+          "failure_retry": "Unresolvable branch evidence fails closed.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:01"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ade12a7e956ccd93b7ba9a48951332c138da9ea825aaeb062fa7982b4a5ee217",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:02",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:02",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "unchecked",
+          "event": "commit or stage command",
+          "guard": "--no-verify/-n cluster or wildcard/all/directory/magic staging",
+          "to": "blocked",
+          "effects": "Require normal verification and explicit file candidates.",
+          "failure_retry": "Supported flags parsed with value-consuming short flags and -- boundary; commit -a itself is checked against actually absorbed sensitive/migration content, not universally blocked.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:02"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5796973e51692df35b52000e76fd423fafc01fb6008d8c4d2ec0a8c627d4dd50",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:03",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:03",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "sensitive or binary candidate",
+          "event": "commit form that absorbs unstaged content",
+          "guard": "commit -a/--all, pathspec or batched staging creates additional scan parts",
+          "to": "blocked",
+          "effects": "Require explicit stage, review exact staged candidate, record pass, then plain commit.",
+          "failure_retry": "Producer cannot bind hypothetical later worktree staging; ordinary nonsensitive commit forms still evaluate remaining gates.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:03"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c8964c5105a6a68012815149a779b7818055a28918a5b2ce5bcd9bd4e5f5ddfb",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:04",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:04",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "ordinary-candidate",
+          "event": "commit",
+          "guard": "readable diff/index no sensitive or migration material",
+          "to": "allowed if other gates pass",
+          "effects": "Proceed to Git commit.",
+          "failure_retry": "Unreadable/invalid diff cannot be treated as no findings.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:04"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "643809e4cd82e05865b3454ac52be21beb249c2e1bfd5cff03195b8f42436f4a",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:05",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:05",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "sensitive-candidate",
+          "event": "commit",
+          "guard": "marker worktree+complete staged candidate hash+every sensitive digest match",
+          "to": "covered",
+          "effects": "Allow gated candidate.",
+          "failure_retry": "Any full staged diff change invalidates security pass, even unrelated non-sensitive lines; rerun review/producer.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:05"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ea04624f240b2184ade2b3d3ee1049e8f796685df3af9c973303d655e27efd37",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:06",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:06",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "binary-candidate",
+          "event": "commit",
+          "guard": "exact binary candidate override with matching HEAD+index bindings and attribution audit",
+          "to": "covered",
+          "effects": "Allow only selected bound binary override candidate.",
+          "failure_retry": "Mixed binary plus reviewable sensitive text refuses; candidate/size/path/read bounds preserved.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:06"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d9781bf9592c2ccdd122ac4c5e50d8d17509752627114d05bd556bfa00591421",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:07",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:07",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "migration-candidate",
+          "event": "commit",
+          "guard": "exact worktree, path/status, HEAD preimage and staged content match migration marker",
+          "to": "covered",
+          "effects": "Allow reviewed migration candidate.",
+          "failure_retry": "Changed/renamed/deleted index binding requires renewed evidence; time alone does not expire hash-bound proof.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:07"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "a90d20ec08f349a81b910da611665454562df3aaf65585ce3870c9f9d05c83a9",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:commit-gates:08",
+      "frozen_record": {
+        "transition_id": "hooks:commit-gates:08",
+        "machine_id": "hooks:commit-gates",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "stale / missing marker",
+          "event": "commit",
+          "guard": "sensitive/migration gate applies",
+          "to": "blocked",
+          "effects": "Return candidate-specific recovery producer instructions.",
+          "failure_retry": "No best-effort allow on malformed evidence.",
+          "source": [
+            {
+              "path": "core/pysrc/git-enforce.py",
+              "symbol": "module",
+              "lines": "1-417",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+            },
+            {
+              "path": "core/pysrc/_bashguardlib.py",
+              "symbol": "module",
+              "lines": "1-3065",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+            },
+            {
+              "path": "core/pysrc/_sensitivelib.py",
+              "symbol": "module",
+              "lines": "1-716",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+            }
+          ],
+          "transition_id": "hooks:commit-gates:08"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-23",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8133a9a0de807ec9402937c60bc89384604b87f532741f03fef8f9912f5caf3b",
+      "group": "source-group-012",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/proofs/hooks-commit-gates-preserved.json",
+          "sha256": "278d5b1feda0237fc90c26a11d3e19bac5bda36774d6d89229bdb24e269e80ee",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "B03-full-candidate-binary-binding",
+      "paths": [
+        "core/pysrc/security-pass.py",
+        "core/pysrc/git-enforce.py",
+        "core/pysrc/_bashguardlib.py"
+      ],
+      "assessment": "Producer records full scan.candidate in addition to worktree and binary binding; both consumers require full candidate membership. New unrelated staged text therefore invalidates old binary approval. Attribution audit still precedes marker write; mixed sensitive text/binary refusal, read bounds, root/index identities and human/reviewer authority separation remain. All29 selected literal mode/commit/push/producer/override clauses were read; binary full-candidate strengthening agrees with their accepted scope."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

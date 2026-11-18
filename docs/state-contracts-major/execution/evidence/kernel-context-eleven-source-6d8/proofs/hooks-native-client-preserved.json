@@ -1,0 +1,389 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+  "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:native-client",
+  "disposition:transitions:hooks:native-client:01",
+  "disposition:transitions:hooks:native-client:03",
+  "disposition:transitions:hooks:native-client:04",
+  "disposition:transitions:hooks:native-client:05",
+  "disposition:transitions:hooks:native-client:06",
+  "disposition:transitions:hooks:native-client:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:native-client",
+   "frozen_row_sha256": "e07a66d261eca93f6e1b5ce6076a7603dce24a7da06a06b91d5f23d36182cfdb",
+   "clause_ids": [
+    "disposition:transitions:hooks:native-client:01",
+    "disposition:transitions:hooks:native-client:02",
+    "disposition:transitions:hooks:native-client:03",
+    "disposition:transitions:hooks:native-client:04",
+    "disposition:transitions:hooks:native-client:05",
+    "disposition:transitions:hooks:native-client:06",
+    "disposition:transitions:hooks:native-client:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._open_binary",
+     "start": 1058,
+     "end": 1122,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "84507b03117a32316ffc3303c13fe245a590dbee6cb28254b1e1b7f43f3e1284",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_host_platform",
+     "start": 1010,
+     "end": 1019,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "951511476e6034f5224521655a9f60c7bdd9f9dd17206b62b1e82e4f6b95855b",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_open_pinned_regular",
+     "start": 197,
+     "end": 221,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "1391e5ff6383464aa0950137c45d1f4ad88b39320e11306a34856437df5f01b9",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "symbol": "validate_release_manifest",
+     "start": 30,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+     "span_sha256": "35510918a64113be51e3ab8c2e0abe778d7729f086b96b3d8a4a7b6697d30915",
+     "git_oid": "1e84d812031a969be1decaa73ee8ea0bf8c613cb"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._exchange",
+     "start": 1140,
+     "end": 1213,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "78bc6e946e2eca5c2eaa0d5449dfc6a60a8eba134031d91ee00c2778b8b1e0ae",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_stage_darwin_executable",
+     "start": 224,
+     "end": 255,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "e3849ca9f47aa2f599f97b46e3c6abfa7a438753f1dc3e69bca0d8644567c71c",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_bounded_child",
+     "start": 903,
+     "end": 956,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "559ddaaf1b62cd13957bf1415e8e8e6fedc101c7d72f0115ac21fdd4a6f6d732",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_engine_timeout",
+     "start": 964,
+     "end": 980,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "06b2fe9356fa6fe7af6dddcfdaf8f084060e79e0d93d40790a71f3235a590db7",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_decode",
+     "start": 48,
+     "end": 74,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "872ba712a5710450b2a38a89423158724b60310317a5a99ea4558774e6582f1b",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.call",
+     "start": 1124,
+     "end": 1138,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "94d3ad1b36da1befe44c5ad8002ef00b65f09c7eadf65ec47a74f90aaff38630",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_installed_workflow_preflight",
+     "start": 362,
+     "end": 478,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "a2493e0b9dcf1228a1483ddfdd96760136188ced549577b50df5fe57c2d49760",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.workflow_preflight",
+     "start": 1032,
+     "end": 1034,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "49f23f88fc5574033cd6a59c286a5eea4b060d71da3f0425e37973b9d286e285",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "All 7 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "Architecture selects the host-qualified manifest entry and exact filename. The bridge checks OS magic, not an independent executable ISA decoder; actual native qualification belongs to its trusted producer.",
+    "The frozen note that the optional value is unchecked predates the shared closed manifest validator; current validation is stricter, without turning declarations into evidence.",
+    "These are pinned launch and output controls, not universal process-tree containment or full operation-specific semantic validation at the Python bridge.",
+    "No per-request echoed request ID is invented: current protocol/operation/envelope and caller-specific identity checks are the actual contract.",
+    "Frozen intake overstates this bridge as automatically inspecting durable native operation state. Literal baseline and current bridge instead report reconcile-before-retry; no unsupported automatic inspector or recovered outcome is claimed.",
+    "The current sys.platform repair is a scoped code correction, not proof of the original UNKNOWN Windows launch target or new Pi authority."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:native-client:01",
+   "frozen_row_sha256": "24521c687150c07dc4981b2b2c28aa2ae0e820b2c669c645b93b009a09e90bb6",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._open_binary",
+     "start": 1058,
+     "end": 1122,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "84507b03117a32316ffc3303c13fe245a590dbee6cb28254b1e1b7f43f3e1284",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_host_platform",
+     "start": 1010,
+     "end": 1019,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "951511476e6034f5224521655a9f60c7bdd9f9dd17206b62b1e82e4f6b95855b",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_open_pinned_regular",
+     "start": 197,
+     "end": 221,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "1391e5ff6383464aa0950137c45d1f4ad88b39320e11306a34856437df5f01b9",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactmanifestlib.py",
+     "symbol": "validate_release_manifest",
+     "start": 30,
+     "end": 63,
+     "file_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+     "span_sha256": "35510918a64113be51e3ab8c2e0abe778d7729f086b96b3d8a4a7b6697d30915",
+     "git_oid": "1e84d812031a969be1decaa73ee8ea0bf8c613cb"
+    }
+   ],
+   "semantic_assessment": "The client binds trusted root/installation and a bounded pinned regular release manifest. It requires the closed supported format/protocol/schema/platform entry with native_tested true, exact filename/digest, regular bounded executable, Unix owner execute permission and OS magic. Missing/untrusted/mismatched installation refuses without PATH fallback.",
+   "intake_variances": [
+    "Architecture selects the host-qualified manifest entry and exact filename. The bridge checks OS magic, not an independent executable ISA decoder; actual native qualification belongs to its trusted producer."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:native-client:03",
+   "frozen_row_sha256": "9ccaf28cd382e1e6e8f3234937e0e65e4601c88e189ce315c2289fafd50e7f84",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._exchange",
+     "start": 1140,
+     "end": 1213,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "78bc6e946e2eca5c2eaa0d5449dfc6a60a8eba134031d91ee00c2778b8b1e0ae",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_stage_darwin_executable",
+     "start": 224,
+     "end": 255,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "e3849ca9f47aa2f599f97b46e3c6abfa7a438753f1dc3e69bca0d8644567c71c",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_bounded_child",
+     "start": 903,
+     "end": 956,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "559ddaaf1b62cd13957bf1415e8e8e6fedc101c7d72f0115ac21fdd4a6f6d732",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_engine_timeout",
+     "start": 964,
+     "end": 980,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "06b2fe9356fa6fe7af6dddcfdaf8f084060e79e0d93d40790a71f3235a590db7",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "The bridge serializes finite JSON up to 8 MiB. Linux executes the verified descriptor, Darwin stages a verified owned copy, and Windows holds the verified descriptor across path launch. The child has bounded 64 KiB response and 8 KiB stderr. The operator environment timeout override is finite positive and capped at 3600 seconds, default 120; an explicit constructor timeout is a trusted caller input.",
+   "intake_variances": [
+    "These are pinned launch and output controls, not universal process-tree containment or full operation-specific semantic validation at the Python bridge."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:native-client:04",
+   "frozen_row_sha256": "ba93f8da887618babb5bec3abc8f393b83c625e85cb054da113847a22ac8f3b1",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient._exchange",
+     "start": 1140,
+     "end": 1213,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "78bc6e946e2eca5c2eaa0d5449dfc6a60a8eba134031d91ee00c2778b8b1e0ae",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_decode",
+     "start": 48,
+     "end": 74,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "872ba712a5710450b2a38a89423158724b60310317a5a99ea4558774e6582f1b",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "The response must match protocol and operation with a closed success/failure envelope. Success requires dictionary result and appropriate exit status; permit_invalid is limited to validate exit2 with valid false. Malformed, wrong-envelope or inconsistent exit results refuse; operation-specific result/identity checks remain with owning callers.",
+   "intake_variances": [
+    "No per-request echoed request ID is invented: current protocol/operation/envelope and caller-specific identity checks are the actual contract."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:native-client:05",
+   "frozen_row_sha256": "d2c8e3857c47423aa0c55417758b3b70ffc63414daa1c1e6151ee31bfcf8f354",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_bounded_child",
+     "start": 903,
+     "end": 956,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "559ddaaf1b62cd13957bf1415e8e8e6fedc101c7d72f0115ac21fdd4a6f6d732",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.call",
+     "start": 1124,
+     "end": 1138,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "94d3ad1b36da1befe44c5ad8002ef00b65f09c7eadf65ec47a74f90aaff38630",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "On child timeout the bridge kills/waits its direct child and raises TIMEOUT explicitly requiring mutation operation_id reconciliation before retry. It does not automatically replay that mutation or infer no effect. Reconciliation is a caller/native recovery responsibility.",
+   "intake_variances": [
+    "Frozen intake overstates this bridge as automatically inspecting durable native operation state. Literal baseline and current bridge instead report reconcile-before-retry; no unsupported automatic inspector or recovered outcome is claimed."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:native-client:06",
+   "frozen_row_sha256": "418898720d2d0a27b25544076622f84c4e3bb9ecb45f84972923e075f9e9cdf8",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.call",
+     "start": 1124,
+     "end": 1138,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "94d3ad1b36da1befe44c5ad8002ef00b65f09c7eadf65ec47a74f90aaff38630",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Only NO_LOCAL_STORE with initialization enabled on an operation other than init-store triggers one explicit init-store exchange followed by one exact original exchange. Initialization refusal remains NO_LOCAL_STORE with cause; second exchange errors propagate without a retry loop.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:native-client:07",
+   "frozen_row_sha256": "f7fc69bdd52fb7c302c6b598853170d2c4d1afb28e841ce25c85fed0773ec5b9",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "_installed_workflow_preflight",
+     "start": 362,
+     "end": 478,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "a2493e0b9dcf1228a1483ddfdd96760136188ced549577b50df5fe57c2d49760",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.workflow_preflight",
+     "start": 1032,
+     "end": 1034,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "49f23f88fc5574033cd6a59c286a5eea4b060d71da3f0425e37973b9d286e285",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Installed preflight inspects actual host manifest/resources and exact hook registry entries, reports resources_available separately and always live_host_verified false. Pi reports its production authority prerequisites unavailable; mere file shape is not live prompt/review/verification delivery. OS branching now uses sys.platform without platform.system subprocess side effects.",
+   "intake_variances": [
+    "The current sys.platform repair is a scoped code correction, not proof of the original UNKNOWN Windows launch target or new Pi authority."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:native-client finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

@@ -1,0 +1,17 @@
+{
+ "result": "PASS",
+ "all_prior19_selected_checks_source_methods_unchanged": true,
+ "all_prior_class_method_ASTs_preserved": 26,
+ "new_RED_and_GREEN_entire_test_bytes_equal": true,
+ "only_existing_production_function_changed_vs_predecessor": "_powershell_stdin_interpreter_view",
+ "other_functions_including_B03_and_closed_read_grammar_ASTs_unchanged": true,
+ "all_current_Root_preimages_equal": true,
+ "three_plugin_mirrors_exact_canonical": true,
+ "syntax_compile_without_execution": [
+  "core/pysrc/_bashguardlib.py",
+  ".github/scripts/test_literal_python_reads.py",
+  "plugins/ca/hooks/_bashguardlib.py",
+  "plugins/ca-codex/hooks/_bashguardlib.py",
+  "plugins/ca-pi/hooks/_bashguardlib.py"
+ ]
+}

@@ -1,0 +1,46 @@
+{
+ "schema": "codearbiter.finite-pi-sandbox-observation-development/1",
+ "controller_anchor": "91a22bf4ea29a156dd601c9385667d7f1feadedc",
+ "source_author_epoch": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "changes": "Add closed finding-to-original-profile/complete-selector compositions for SF01/SF02/SF03/SF12 and SF08/SF09/SF10. Preserve old TS_PROFILE_CELLS exact sets; actual build_report admits only seven explicit profile/selector recipes.",
+ "finite_routes": 7,
+ "required_named_selectors": 38,
+ "evidence": {
+  "author": {
+   "path": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/author.json",
+   "sha256": "c95be61ed440e69849b4f3488b9bc4174f7934e47df64a777ce2da1e87bd8ad5",
+   "bytes": 7202
+  },
+  "peer": {
+   "path": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/peer.json",
+   "sha256": "4503e426c06e7e5e42d706e1b6286cadf2d7319801bcd3e94c430fc6dd1cf5e1",
+   "bytes": 21791
+  },
+  "matrix": {
+   "path": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/matrix.json",
+   "sha256": "f2956f4cfb6baa013f231651aa4e5e7195d1fad6b18142cac201a0fd44fa1c2e",
+   "bytes": 66153
+  },
+  "source-joins": {
+   "path": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/source-joins.json",
+   "sha256": "f1a30d8ea47c159646016c2ecdd856461ab52650113aa60a71936960457476c6",
+   "bytes": 10657
+  },
+  "preservation": {
+   "path": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/preservation.json",
+   "sha256": "aa218441435b92d3f1b23893c012ea1928dc3d5ad204ee5418237fbbd507333c",
+   "bytes": 757
+  },
+  "history": {
+   "path": "docs/state-contracts-major/execution/evidence/pi-sandbox-seven-91a/history.json",
+   "sha256": "d78fc12a6f7c3935755e5b31cdafe350b0cb94cfe0f421290f0662833e127228",
+   "bytes": 2516
+  }
+ },
+ "local_checks": "Proper6-route missing-scope RED then4new controls GREEN; four unchanged legacy controls PASS on six-map predecessor. Proper missing-SF09 successor RED, five final pure controls PASS at exact seven-map candidate. No invented final legacy rerun.",
+ "SF09_correction": "Existing real Docker target-stopped/survivor-running overflow test was located at deadline.test.ts247. Initial not-located map was stale; no missing runtime capability or new Docker execution inferred.",
+ "claims": "Source/configuration capability only; original unfiltered TS/Docker/Pi observations must execute once under existing authenticated jobs before runtime disposition credit. No task/model/human/installed/main/publication qualification.",
+ "source_drift": "Before sealing source65 proof adoption, re-evaluate actual input applicability and hold any changed C06 family for final stable-code source reinspection. Existing proof/history/source epochs stay original.",
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

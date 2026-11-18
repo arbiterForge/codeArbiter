@@ -1,0 +1,61 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_modelib.py": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "core/pysrc/_prunelib.py": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+    "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:prune-execute:01",
+    "disposition:transitions:hooks:prune-execute:02",
+    "disposition:transitions:hooks:prune-execute:03",
+    "disposition:transitions:hooks:prune-execute:05",
+    "disposition:transitions:hooks:prune-execute:06",
+    "disposition:transitions:hooks:prune-execute:07",
+    "disposition:transitions:hooks:prune-execute:08",
+    "disposition:transitions:hooks:prune-plan:01",
+    "disposition:transitions:hooks:prune-plan:03",
+    "disposition:transitions:hooks:prune-plan:04",
+    "disposition:transitions:hooks:prune-plan:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-019-inspection.json",
+      "sha256": "a69c08040a06f1c73a7c8ce3412434b560e8c2d28d3ce9642f6f7523ff614e41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+      "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/prune/preserved.json",
+    "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-019-inspection.json",
+  "scope": "prune: 11 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ]
+}

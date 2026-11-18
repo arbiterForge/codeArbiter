@@ -1,0 +1,239 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+  "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+  "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:context-provenance",
+  "disposition:transitions:hooks:context-provenance:08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:context-provenance",
+   "frozen_row_sha256": "212a93d4ec06fa1d2401641125940be739bd39138e3fea6c9ad8a3f226232af3",
+   "clause_ids": [
+    "disposition:transitions:hooks:context-provenance:01",
+    "disposition:transitions:hooks:context-provenance:02",
+    "disposition:transitions:hooks:context-provenance:03",
+    "disposition:transitions:hooks:context-provenance:04",
+    "disposition:transitions:hooks:context-provenance:05",
+    "disposition:transitions:hooks:context-provenance:06",
+    "disposition:transitions:hooks:context-provenance:07",
+    "disposition:transitions:hooks:context-provenance:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "assess_context_provenance",
+     "start": 638,
+     "end": 794,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "4085050f201d6f17099f45a288cf816d1483496bd1ca017ef8e3c8478b5c3c2e",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "_read_context_store",
+     "start": 510,
+     "end": 592,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "515a61b2072c085ae6e14355a92442a1123bb8070a433134f9c1737d9fa59cda",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "read_provenance",
+     "start": 488,
+     "end": 507,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "248ecb1675f658f46ca2df9e1b67ebbbb73c461f9748e794c82b9ff63eccf5c6",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "write_provenance",
+     "start": 261,
+     "end": 332,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "1ea93c0a761528e92b5d63c69beae4f8096d3f283b69f282ca86516400290b9c",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "_valid_v2_record",
+     "start": 390,
+     "end": 444,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "e7425c62982ca86f142b62253461089b3c9693c89e3a928d4df0d0608a641d47",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "_v2_capability_supported",
+     "start": 339,
+     "end": 354,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "01149b2d87ea23187312c30d0d3e3ad4f3e584de35fbf02be2d3eca4cc94a6c4",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_contextsnapshotlib.py",
+     "symbol": "compare_context_dependencies",
+     "start": 842,
+     "end": 901,
+     "file_sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+     "span_sha256": "2d0766a76876b4069025005517e012f6c1b9eb8eadb4e4dd0dfb033ffd7d0272",
+     "git_oid": "cc89a71aa784b109fbdfe123a787b30dab957134"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "_first_manifest_after_interview_stub",
+     "start": 595,
+     "end": 635,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "1fb90a90c09ec612a064656d778a48239d988b99556a1c7536286f2dffe1d146",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "compute_drift",
+     "start": 959,
+     "end": 1027,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "7abfc16509fe74a4d42a4c865c7ee17a638c13a2fa6ddec59164f79c9eb185ac",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "startup_drift_line",
+     "start": 1424,
+     "end": 1540,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "5d299d2a235d3c9a5889edf5a1772353ca382321e63dbb01fff5881990d7604b",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "lint_code_map",
+     "start": 1548,
+     "end": 1641,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "b5f881629c03862779766c1dc5b10b9cd754ff49d12299d174a13013b5248ddd",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "v2_heal_worklist",
+     "start": 1119,
+     "end": 1217,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "1d19ab298c7c08243444d1cdf29634097db48b3c305abc92dd7ec341316bc1a0",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "heal_worklist",
+     "start": 1220,
+     "end": 1298,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "cf1f3bbd397a8bc1a60d0aa21637b5966a9e076b6345049155bcd9d3ef67601f",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "rebaseline",
+     "start": 1069,
+     "end": 1111,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "ac998302158ff3376db14c9a28e5daf187ac0966f370b5e82c919d95ea1c87bd",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_rebaseline",
+     "start": 460,
+     "end": 466,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "49b357966504f3f686f76bca9f65d0cf220f0bf0fd2bcc23fe41aabc02e2e611",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "All 8 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "Frozen intake attributes native HEAD/date persistence to the provenance helper. Both real owners are retained and distinguished; this proof invents no automatic persistence in _provenancelib.rebaseline."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-provenance:08",
+   "frozen_row_sha256": "5d4688fbaf09d2297105195eaf4a9e74ed7f671f41ebbed334d6e5de50ad49f9",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_provenancelib.py",
+     "symbol": "rebaseline",
+     "start": 1069,
+     "end": 1111,
+     "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+     "span_sha256": "ac998302158ff3376db14c9a28e5daf187ac0966f370b5e82c919d95ea1c87bd",
+     "git_oid": "790ec8470991180dacace9455d22da59fb16faec"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_rebaseline",
+     "start": 460,
+     "end": 466,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "49b357966504f3f686f76bca9f65d0cf220f0bf0fd2bcc23fe41aabc02e2e611",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "Legacy provenance rebaseline functionally copies records and replaces only matching entry hashes, preserving unknown/missing paths and other fields. Native knowledge rebaseline separately applies a current HEAD/date header mutation through CAS. Neither operation independently establishes human review.",
+   "intake_variances": [
+    "Frozen intake attributes native HEAD/date persistence to the provenance helper. Both real owners are retained and distinguished; this proof invents no automatic persistence in _provenancelib.rebaseline."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:context-provenance finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

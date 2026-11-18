@@ -5,6 +5,7 @@ import ctypes as C
 import importlib.util
 import json
 import math
+import os
 from pathlib import Path
 import sys
 import time
@@ -16,6 +17,94 @@ MAX_JSON = 32 << 10
 U32, U64, PTR, HR = C.c_uint32, C.c_uint64, C.c_void_p, C.c_int32
 PHASES = frozenset(("input", "identity", "provider-bind", "engine-create", "policy",
                     "attach", "wait", "stack", "detach"))
+
+
+PROGRESS_PREFIX = b"CA_SDK_PHASE "
+PROGRESS_PHASES = ("input", "identity", "provider-bind", "engine-create", "policy", "attach", "wait", "stack", "detach")
+MAX_PROGRESS_LINE = 256
+MAX_PROGRESS_BYTES = len(PROGRESS_PHASES) * MAX_PROGRESS_LINE
+
+
+def _progress_writer(request, stream):
+    """Opt-in closed metadata on the existing pipe, never a native result."""
+    fields = {"schemaVersion", "profile", "handle", "pid", "created", "image", "sdk", "hashes", "deadline", "progress"}
+    if (type(request) is not dict or set(request) != fields or request.get("schemaVersion") != 3
+            or type(request["schemaVersion"]) is not int or request["progress"] is not True
+            or request.get("profile") not in ("sdk-v1", "inbox-v1")
+            or type(request.get("pid")) is not int or not 0 < request["pid"] <= 0xFFFFFFFF
+            or type(request.get("created")) is not int or not 0 < request["created"] < 2**64):
+        return None
+    last, enabled = -1, True
+    def emit(phase):
+        nonlocal last, enabled
+        if not enabled or type(phase) is not str or phase not in PROGRESS_PHASES:
+            return
+        order = PROGRESS_PHASES.index(phase)
+        if order <= last:
+            return
+        record = {"schemaVersion": 1, "pid": request["pid"], "created": request["created"],
+                  "profile": request["profile"], "workerPid": os.getpid(), "phase": phase}
+        raw = PROGRESS_PREFIX + json.dumps(record, separators=(",", ":")).encode("ascii") + b"\n"
+        if len(raw) > MAX_PROGRESS_LINE:
+            enabled = False
+            return
+        try:
+            if stream.write(raw) != len(raw):
+                enabled = False
+                return
+            stream.flush()
+            last = order
+        except Exception:
+            # Progress cannot replace the existing worker outcome.
+            enabled = False
+    return emit
+
+
+def decode_progress(raw, pid, created, *, profile, worker_pid):
+    """Strip only complete, identity-bound finite prefixes; legacy JSON stays exact."""
+    if type(raw) is not bytes:
+        return None, b""
+    if not raw.startswith(PROGRESS_PREFIX):
+        return None, raw
+    original, cursor, last, count = raw, 0, -1, 0
+    if (type(worker_pid) is not int or not 0 < worker_pid <= 0xFFFFFFFF
+            or type(pid) is not int or not 0 < pid <= 0xFFFFFFFF
+            or type(created) is not int or not 0 < created < 2**64
+            or profile not in ("sdk-v1", "inbox-v1")):
+        return None, original
+    def unique(pairs):
+        result = {}
+        for key, value in pairs:
+            if key in result: raise ValueError("duplicate progress field")
+            result[key] = value
+        return result
+    try:
+        while raw[cursor:].startswith(PROGRESS_PREFIX):
+            end = raw.find(b"\n", cursor, cursor + MAX_PROGRESS_LINE)
+            if end < 0:
+                # A deadline may interrupt the next write; never admit that
+                # partial row, while retaining an earlier complete checkpoint.
+                if len(raw) - cursor > MAX_PROGRESS_LINE: return None, original
+                return (PROGRESS_PHASES[last] if last >= 0 else None), raw[cursor:]
+            size = end + 1 - cursor
+            count += 1
+            if size > MAX_PROGRESS_LINE or count > len(PROGRESS_PHASES) or end + 1 > MAX_PROGRESS_BYTES:
+                return None, original
+            row = json.loads(raw[cursor + len(PROGRESS_PREFIX):end].decode("ascii"), object_pairs_hook=unique)
+            if (type(row) is not dict or set(row) != {"schemaVersion", "pid", "created", "profile", "workerPid", "phase"}
+                    or type(row["schemaVersion"]) is not int or row["schemaVersion"] != 1
+                    or type(row["pid"]) is not int or row["pid"] != pid
+                    or type(row["created"]) is not int or row["created"] != created
+                    or type(row["workerPid"]) is not int or row["workerPid"] != worker_pid
+                    or row["profile"] != profile or type(row["phase"]) is not str
+                    or row["phase"] not in PROGRESS_PHASES):
+                return None, original
+            order = PROGRESS_PHASES.index(row["phase"])
+            if order <= last: return None, original
+            last, cursor = order, end + 1
+        return (PROGRESS_PHASES[last] if last >= 0 else None), raw[cursor:]
+    except (ValueError, TypeError, UnicodeError, RecursionError):
+        return None, original
 
 
 class GUID(C.Structure):
@@ -251,12 +340,17 @@ class EngineFailure(Exception):
         self.hr = hr
 
 
-def run(request, native, *, engine_factory=Engine):
+def run(request, native, *, engine_factory=Engine, _progress=None):
     started = time.monotonic()
     result = {"schemaVersion": 1, "status": "input_refused", "threads": [], "truncated": False,
               "pid": 0, "created": 0, "bound": False, "attached": False,
               "policy": 0, "detached": False, "hresult": None}
     engine, inherited = None, None
+    def phase(value):
+        result["phase"] = value
+        if _progress is not None:
+            try: _progress(value)
+            except Exception: pass  # Optional metadata cannot replace native outcomes.
     try:
         fields = {"handle", "pid", "created", "image", "sdk", "hashes", "deadline"}
         version = 1
@@ -268,7 +362,11 @@ def run(request, native, *, engine_factory=Engine):
             fields.update(("schemaVersion", "profile"))
             result.update(schemaVersion=version, profile=request["profile"])
             if version == 3:
+                if "progress" in request:
+                    fields.add("progress")
+                    if request["progress"] is not True: return result
                 result.update(phase="input", elapsedMs=0)
+                phase("input")
         if (type(request) is not dict or set(request) != fields
                 or any(type(request[k]) is not int or request[k] <= 0 for k in ("handle", "pid", "created"))
                 or request["handle"] >= 2**64 or request["pid"] > 0xFFFFFFFF or request["created"] >= 2**64
@@ -278,7 +376,7 @@ def run(request, native, *, engine_factory=Engine):
         result.update(pid=request["pid"], created=request["created"])
         inherited = request["handle"]
         if version == 3:
-            result["phase"] = "identity"
+            phase("identity")
         kernel = native.WindowsKernel()
         snapshot = kernel.snapshot(inherited)
         if (snapshot["pid"] != request["pid"] or snapshot["created"] != request["created"]
@@ -288,7 +386,7 @@ def run(request, native, *, engine_factory=Engine):
         result["bound"] = True
         deadline = min(request["deadline"], time.monotonic() + 5.0)
         if version == 3:
-            result["phase"] = "provider-bind"
+            phase("provider-bind")
         if version in (2, 3):
             sdk = native._bound_tool_profile(request["profile"], request["sdk"], request["hashes"], deadline)
         else:
@@ -305,28 +403,28 @@ def run(request, native, *, engine_factory=Engine):
         if time.monotonic() >= deadline:
             raise TimeoutError()
         if version == 3:
-            result["phase"] = "engine-create"
+            phase("engine-create")
         engine = engine_factory(sdk)
         if version == 3:
-            result["phase"] = "policy"
+            phase("policy")
         result["policy"] = engine.policy()
         if result["policy"] & POLICY != POLICY or result["policy"] & ALLOW_NETWORK:
             raise EngineFailure(0x80070005)
         if time.monotonic() >= deadline:
             raise TimeoutError()
         if version == 3:
-            result["phase"] = "attach"
+            phase("attach")
         engine.check(engine.call("client", 12, [U64, U32, U32], 0, snapshot["pid"], 1))
         result["attached"] = True
         remaining = max(0, min(5000, int((deadline - time.monotonic()) * 1000)))
         if version == 3:
-            result["phase"] = "wait"
+            phase("wait")
         wait = engine.call("control", 93, [U32, U32], 0, remaining)
         if wait == 1:
             raise TimeoutError()
         engine.check(wait)
         if version == 3:
-            result["phase"] = "stack"
+            phase("stack")
             result["threads"], result["truncated"] = engine.threads(deadline, include_instruction=True)
         else:
             result["threads"], result["truncated"] = engine.threads(deadline)
@@ -344,8 +442,11 @@ def run(request, native, *, engine_factory=Engine):
     finally:
         if engine is not None:
             if version == 3 and result["status"] in ("captured", "unrecognized"):
-                result["phase"] = "detach"
+                phase("detach")
             try:
+                if version == 3 and _progress is not None:
+                    try: _progress("detach")
+                    except Exception: pass
                 result["detached"] = engine.close()
             except Exception:
                 result["detached"] = False
@@ -368,10 +469,13 @@ if __name__ == "__main__":
         raw = sys.stdin.buffer.read(4097)
         if len(raw) > 4096:
             raise ValueError("input bound")
+        request = json.loads(raw)
+        progress = _progress_writer(request, sys.stdout.buffer)
+        if progress is not None: progress("input")
         spec = importlib.util.spec_from_file_location("worker_native_owner", Path(__file__).with_name("_windows_rpc_timeout.py"))
         native = importlib.util.module_from_spec(spec)
         spec.loader.exec_module(native)
-        report = run(json.loads(raw), native)
+        report = run(request, native, _progress=progress)
         encoded = (json.dumps(report, separators=(",", ":")) + "\n").encode("utf-8")
         if len(encoded) > MAX_JSON:
             raise ValueError("output bound")

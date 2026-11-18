@@ -21,7 +21,7 @@ import tomllib
 import unittest
 from unittest import mock
 from pathlib import Path
-from test_hook_ci_partition import reviewed_python_source_event_guards
+from test_hook_ci_partition import reviewed_python_source_event_guards, reviewed_impact_source_event_guards, impact_source_roles
 
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -52,13 +52,16 @@ NPM_AUDIT_GATE = "npm audit --omit=dev --audit-level=high"
 # `--omit=dev` gate above audits an empty graph there. This one covers the build
 # toolchain that actually exists - the dev dependencies that produce farm.js,
 # sandbox.js, and the ca-pi extension bundles. Same threshold, by contract.
-NPM_AUDIT_DEV_GATE = "npm audit --audit-level=high"
+NPM_AUDIT_DEV_GATE = (
+    "npm audit --include=dev --json | python3 ../../../.github/scripts/npm_audit_gate.py "
+    "--exceptions ../../../site/audit-exceptions.json --scope full --audit-level=high"
+)
 # The site graph's form of NPM_AUDIT_GATE: same scope and threshold, but the JSON
 # report is judged by npm_audit_gate.py, which admits only a GHSA recorded in
 # site/audit-exceptions.json with a dated backstop. Every other HIGH+ still fails.
 SITE_AUDIT_GATE = (
     "npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py "
-    "--exceptions audit-exceptions.json --audit-level=high"
+    "--exceptions audit-exceptions.json --scope production --audit-level=high"
 )
 PI_PROMOTION_WORKFLOW = REPO_ROOT / ".github" / "workflows" / "pi-promotion.yml"
 PI_TEST_DIR = REPO_ROOT / "plugins" / "ca-pi" / "tools" / "test"
@@ -171,10 +174,11 @@ def reviewed_cold_event_guards(block: str) -> set[str]:
 
 
 def reviewed_vitest_source_event_guards(block: str, job_id: str) -> set[str]:
-    """Only the two original source-report emitters can omit PR/queue reports."""
+    """Only the three original source-report emitters can omit PR/queue reports."""
     roles = {
         "coverage-union-pi": ("Pi", "pi", " && matrix.os == 'windows-latest'"),
         "ca-sandbox-tools": ("Sandbox", "sandbox", ""),
+        "tools": ("Farm", "farm", ""),
     }
     if job_id not in roles or not block.startswith("  " + job_id + ":"):
         raise ValueError("unknown Vitest source-report owner")
@@ -400,6 +404,35 @@ def run_step_index(job: str, command: str) -> int:
         ),
         -1,
     )
+
+
+def docs_coverage_step_index(job: str) -> int:
+    """Recognize the original coverage invocation and its exact observation wrapper."""
+    direct = run_step_index(job, "npm run coverage")
+    if direct >= 0:
+        return direct
+    from test_hook_ci_partition import step_blocks
+
+    expected = "\n".join((
+        '      - name: Test with coverage',
+        '        id: docs-source-tests',
+        '        env:',
+        '          DOCS_SOURCE_OBSERVE: ${{ steps.docs-source-mode.outputs.active == \'true\' && '
+        'github.event_name == \'push\' && contains(fromJSON(\'["refs/heads/main","refs/heads/major/state-contracts"]\'), github.ref) }}',
+        '        run: |',
+        '          if [ "$DOCS_SOURCE_OBSERVE" = true ]; then',
+        '            python -B ../.github/scripts/site_vitest_observation.py observe --repo .. \\',
+        '              --source-payload "$RUNNER_TEMP/docs-site-source/source-inputs" \\',
+        '              --raw-results "$RUNNER_TEMP/docs-site-source/primary-vitest.json" \\',
+        '              --output "$RUNNER_TEMP/docs-site-source/observation.json"',
+        '          else',
+        '            npm run coverage',
+        '          fi',
+    ))
+    matching = [step for step in step_blocks(job) if step.rstrip() == expected]
+    if len(matching) != 1:
+        return -1
+    return job[:job.index(expected)].count("\n")
 
 
 def push_trigger_paths(workflow: str) -> list[str]:
@@ -2143,6 +2176,20 @@ class WorkflowContractTest(unittest.TestCase):
                     "every audit gate in the repo must use the SAME threshold",
                 )
 
+    def test_every_approved_tool_graph_retains_a_plain_production_audit(self):
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        owners = {"plugins/ca/tools": "tools", "plugins/ca-sandbox/tools": "ca-sandbox-tools",
+                  "plugins/ca-pi/tools": "ca-pi-checks"}
+        audits = [(job, directory, command)
+                  for job, directory, step in npm_step_directories(workflow)
+                  for command in npm_audit_invocations(step)]
+        for directory, job in owners.items():
+            with self.subTest(directory=directory):
+                self.assertCountEqual(
+                    [(owner, command) for owner, cwd, command in audits if cwd == directory],
+                    [(job, f"run: {NPM_AUDIT_GATE}"), (job, f"run: {NPM_AUDIT_DEV_GATE}")],
+                )
+
     def test_every_npm_audit_step_exposes_http_diagnostics(self):
         # Main CI 33822155490 hid the original bulk-request failure behind
         # npm's retired quick-endpoint fallback. Keep status/timing visible
@@ -2390,7 +2437,7 @@ class WorkflowContractTest(unittest.TestCase):
         site_check = jobs["site-check"]
         generate = run_step_index(site_check, "npm run gen")
         typecheck = run_step_index(site_check, "npm run typecheck")
-        tests = run_step_index(site_check, "npm run coverage")
+        tests = docs_coverage_step_index(site_check)
         self.assertGreaterEqual(generate, 0, "site-check never generates applicability")
         self.assertGreater(typecheck, generate, "site-check typechecks before generation")
         self.assertGreater(tests, generate, "site-check tests before generation")
@@ -2955,13 +3002,17 @@ class WorkflowContractTest(unittest.TestCase):
         )
 
     def test_recovery_checks_have_required_native_cells_and_independent_exit_statuses(self):
-        jobs = workflow_jobs(CI_WORKFLOW.read_text(encoding="utf-8"))
+        from test_hook_ci_partition import validate_recovery
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        jobs = workflow_jobs(workflow)
         recovery = jobs["workflow-recovery"]
         self.assertIn("os: [ubuntu-latest, windows-latest, macos-latest]", recovery)
         self.assertIn("fail-fast: false", recovery)
         self.assertIn("timeout-minutes: 15", recovery)
         self.assertNotIn("continue-on-error", recovery)
-        self.assertNotIn("run: |", recovery)
+        # Only the upload resolver may use a block. The original suites must
+        # still execute as the separately accounted commands in the guard.
+        self.assertEqual(validate_recovery(workflow), {"commands": 5, "native_setup": 1, "cells": 3})
         for script in ("test_workflow_recovery.py", "test_workflow_recovery_cli.py",
                        "test_workflow_recovery_hosts.py", "test_workflow_recovery_generator.py",
                        "test_review_resubmission.py"):
@@ -3071,7 +3122,8 @@ class WorkflowContractTest(unittest.TestCase):
             block = jobs.get(job_id, "")
             cold_guards = reviewed_cold_event_guards(block) if job_id == "artifact-package-cold" else set()
             source_guards = reviewed_python_source_event_guards(block) if job_id == "hooks" else set()
-            vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools") else set()
+            impact_guards = reviewed_impact_source_event_guards(block) if job_id == "ci-impact" else set()
+            vitest_guards = reviewed_vitest_source_event_guards(block, job_id) if job_id in ("coverage-union-pi", "ca-sandbox-tools", "tools") else set()
             mapped_guards = reviewed_mapped_work_event_guards(block) if job_id == "artifact-native-bridges" else set()
             sdk_guards = reviewed_sdk_source_event_guards(ci, block) if job_id == "ca-pi-checks" else set()
             # Job-level AND step-level conditions: a step gated to
@@ -3086,7 +3138,7 @@ class WorkflowContractTest(unittest.TestCase):
                     report_step = block.split('- name: Emit named major qualification report', 1)[1].split('- name:', 1)[0]
                     self.assertIn('if: ' + condition, report_step)
                     continue
-                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards or condition in sdk_guards:
+                if condition in cold_guards or condition in source_guards or condition in vitest_guards or condition in mapped_guards or condition in sdk_guards or condition in impact_guards:
                     continue
                 if "github.event_name" not in condition:
                     continue
@@ -3511,6 +3563,26 @@ class DebugSuiteRegistrationTest(unittest.TestCase):
                       "'.github/scripts/test_debug_handoff.py']", jobs["artifact-native-bridges"])
         self.assertIn("matrix.partition == 'all' || matrix.partition == 'contracts'", jobs["hooks"])
         self.assertIn('python-version: "3.x"', jobs["hooks"])
+
+    def test_locked_debug_observation_precedes_nested_compatibility_checkouts(self):
+        workflow = CI_WORKFLOW.read_text(encoding="utf-8")
+        bridges = workflow_jobs(workflow)["artifact-native-bridges"]
+        names = re.findall(r"^      - name: (.+)$", bridges, re.M)
+        required = (
+            "Verify tested candidate bytes, source and native toolchain",
+            "Prepare locked debug reference source inputs",
+            "Test debug handoff model against the locked reference interpreter",
+            "Check out the fixed pre-assistive compatibility source",
+            "Check out the schema 0.3.2 integration-base compatibility source",
+            "Check out the fixed pre-cycle work compatibility source",
+            "Verify old work client refuses upgraded work and keeps later edits",
+            "Recheck native candidate after bridge and conformance tests",
+        )
+        for name in required:
+            self.assertEqual(names.count(name), 1, name)
+        positions = [names.index(name) for name in required]
+        self.assertEqual(positions, sorted(positions))
+        self.assertEqual(positions[1] + 1, positions[2])
 
     def test_debug_inputs_reach_the_jobs_that_execute_them(self):
         ci = CI_WORKFLOW.read_text(encoding="utf-8")
@@ -4017,8 +4089,10 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
 
     def test_existing_suite_runs_once_with_coverage_and_retains_its_report(self):
         job = self._job()
-        self.assertEqual(re.findall(r"(?m)^        run: (npm (?:test|run coverage))$", job),
+        self.assertEqual(re.findall(r"(?m)^ +(?:run: )?(npm (?:test|run coverage))$", job),
                          ["npm run coverage"])
+        coverage = docs_coverage_step_index(job)
+        self.assertGreaterEqual(coverage, 0, "original Docs coverage invocation is missing or changed")
         scripts = json.loads((REPO_ROOT / "site/package.json").read_text(encoding="utf-8"))["scripts"]
         self.assertEqual(scripts["coverage"].replace("vitest run --coverage", "vitest run"), scripts["test"])
         self.assertEqual(scripts["precoverage"], scripts["pretest"])
@@ -4027,8 +4101,8 @@ class SiteCoverageEvidenceTest(unittest.TestCase):
         self.assertIn('include: ["scripts/**/*.ts"]', config)
         self.assertIn('exclude: ["scripts/**/*.test.ts"]', config)
         self.assertNotRegex(config, r"(?m)^\s*thresholds:")
-        self.assertLess(job.index("id: coverage-source"), job.index("run: npm run coverage"))
-        self.assertLess(job.index("run: npm run coverage"), job.index("id: coverage-summary"))
+        self.assertLess(job[:job.index("id: coverage-source")].count("\n"), coverage)
+        self.assertLess(coverage, job[:job.index("id: coverage-summary")].count("\n"))
         artifact = next((step for step in job.split("\n      - ")
                          if "name: site-coverage-${{ github.sha }}" in step), "")
         self.assertIn("uses: actions/upload-artifact@", artifact)
@@ -4274,7 +4348,7 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         readonly = "    permissions:\n      contents: read\n      actions: read\n"
         privileged = "    permissions:\n      contents: read\n      pages: write\n      id-token: write\n"
         for job_id, job in jobs.items():
-            if job_id in ("build", "qualified-pages"):
+            if job_id in ("build", "qualified-pages", "site-check"):
                 expected = readonly
             elif job_id in ("deploy", "deploy-qualified"):
                 expected = privileged
@@ -4284,6 +4358,18 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             self.assertEqual(actual, [expected] if expected else [],
                              "only exact reviewed job roles may declare permissions")
             self.assertNotIn("secrets.", job)
+        from test_hook_ci_partition import step_blocks
+
+        site_check = jobs["site-check"]
+        checkout, = [step for step in step_blocks(site_check) if "actions/checkout@" in step]
+        self.assertEqual(re.findall(r"(?m)^          persist-credentials: (.+)$", checkout), ["false"])
+        emit, = [step for step in step_blocks(site_check)
+                 if step.startswith("      - name: Emit original Docs source-test qualification\n")]
+        self.assertIn("github.event_name == 'push'", emit)
+        self.assertIn("success() && steps.docs-source-mode.outputs.active == 'true'", emit)
+        self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", site_check),
+                         ["          GH_TOKEN: ${{ github.token }}"])
+        self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", emit)
         qualified = jobs["deploy-qualified"]
         self.assertRegex(qualified, r"(?m)^    needs: qualified-pages$")
         self.assertIn("    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.qualified_core_run_id != ''\n", qualified)
@@ -4561,6 +4647,46 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 
 
 class ArtifactEngineCIContractTest(unittest.TestCase):
+    def test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard(self):
+        # Read only the literal suite registry: importing it could run/build
+        # native code. The oracle here is actual workflow path selection.
+        registry_path = REPO_ROOT / ".github/scripts/test_artifact_conformance.py"
+        declarations = [node for node in ast.parse(registry_path.read_text(encoding="utf-8")).body
+                        if isinstance(node, ast.Assign) and any(isinstance(target, ast.Name)
+                            and target.id == "EXPECTED_SUITES" for target in node.targets)]
+        self.assertEqual(len(declarations), 1)
+        owners = ast.literal_eval(declarations[0].value)
+        self.assertIsInstance(owners, dict)
+        self.assertTrue(owners)
+        subjects = {".github/scripts/test_artifact_conformance.py"}
+        for name in owners:
+            self.assertIsInstance(name, str)
+            self.assertEqual(Path(name).name, name)
+            self.assertTrue(name.startswith("test_") and name.endswith(".py"))
+            subjects.add(".github/scripts/" + name)
+        ci = CI_WORKFLOW.read_text(encoding="utf-8")
+        def check(text):
+            selected = paths_filter(text, "impact")
+            self.assertIn("tools/ci-impact.py", selected)
+            job = workflow_jobs(text)["ci-impact"]
+            self.assertIn("if: needs.changes.outputs.impact == 'true'", job)
+            roles = impact_source_roles(job)
+            self.assertIn("Observe original impact planner contract tests", roles)
+            self.assertIn("-- .github/scripts/test_ci_impact.py", roles["Observe original impact planner contract tests"])
+            missing = [subject for subject in sorted(subjects)
+                       if not any(fnmatch.fnmatchcase(subject, pattern) for pattern in selected)]
+            self.assertEqual(missing, [], "edits skip their existing fast registry guard")
+        check(ci)
+        # Every newly-owned edge matters; removing any one must fail closed.
+        begin = ci.index("            impact:\n")
+        end = ci.index("            codex-resources:\n", begin)
+        original = ci[begin:end]
+        for subject in sorted(subjects):
+            entry = "              - '" + subject + "'\n"
+            self.assertIn(entry, original)
+            mutated = ci[:begin] + original.replace(entry, "", 1) + ci[end:]
+            with self.subTest(missing_input=subject), self.assertRaises(AssertionError): check(mutated)
+
     def test_retained_recovery_receives_independent_production_context(self):
         ci = (REPO_ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
         block = workflow_jobs(ci)["artifact-package-cold"]
@@ -5746,5 +5872,8 @@ class SdkFooterSourceWorkflowTests(unittest.TestCase):
 
 if __name__ == "__main__":
     if len(sys.argv) == 3 and sys.argv[1] == "--run-debug-suite":
+        if os.environ.get("MAJOR_DEBUG_SOURCE_PROFILE"):
+            from major_qualification_report import observe_original_debug_suite
+            raise SystemExit(observe_original_debug_suite(REPO_ROOT, sys.argv, run_debug_suite))
         raise SystemExit(run_debug_suite(Path(sys.argv[2])))
     unittest.main()

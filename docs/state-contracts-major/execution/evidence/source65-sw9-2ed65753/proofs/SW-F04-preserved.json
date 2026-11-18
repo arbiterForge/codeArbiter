@@ -1,0 +1,110 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/acceptance_security_review: finite accepted normative text and actual owner assessment; private author proposal"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "plugins/ca-sandbox/COMMANDS.md": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+    "plugins/ca-sandbox/README.md": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+    "plugins/ca-sandbox/commands/sandbox.md": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+    "plugins/ca-sandbox/tools/create.ts": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346"
+  },
+  "disposition_ids": [
+    "disposition:findings:SW-F04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-clause-assessment.json",
+      "sha256": "c893cd7fc0de73642e06fe2b3c7e9d8ce610cef875372bfbbf420068f41f3d01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/source-bindings.json",
+      "sha256": "7d5438daf15ececf16de433cdfa69a7ce00b310d4940b6a085f4966e23f54a41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-baseline-current-joins.json",
+      "sha256": "cb225ccdf9601fa6599f05889add061750b06de9739f6488d10bf69e7792b235"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:SW-F04",
+      "frozen_row_sha256": "e6847ae434fbf7e100f53222655b29055f67c730d2414b4c0fa2ba9bc5ad25c0",
+      "clause_ids": [
+        "SW-F04:1",
+        "SW-F04:2",
+        "SW-F04:3"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "start": 8,
+          "end": 14,
+          "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+          "span_sha256": "55bd9cf848550298a6fd6fa45b88e28fd51d8369dad40679b4c019aa131bf335"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "start": 18,
+          "end": 27,
+          "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+          "span_sha256": "a4b5887840fbf9fa78c2c3e1d714cf8acb8d0361c4322dd2ab56968ef95c93ec"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "start": 3,
+          "end": 7,
+          "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+          "span_sha256": "5dc2452170c141d3b3e781e1d1990071577f78d8c14cb6496f4228d2fff4a199"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "start": 46,
+          "end": 50,
+          "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+          "span_sha256": "546954ddfc90aad07f17b69d4a05634a6f7ca500c1967d65dca18dc9b4e561c7"
+        },
+        {
+          "path": "plugins/ca-sandbox/COMMANDS.md",
+          "start": 38,
+          "end": 49,
+          "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+          "span_sha256": "428b2872fd31d747ad1a912bf5b1fa4955c8d9ad9208ac5d6f1daf83aaa1ce97"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "start": 328,
+          "end": 377,
+          "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+          "span_sha256": "bd977e9aa7597f01c006f69050887f01754021acd8e73f7ec8eda85955f61d73"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "start": 433,
+          "end": 506,
+          "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+          "span_sha256": "ea07d1a3711e0b4ce14043aa087e20dc79b0df20c20de15299eed2cedc4c9c1c"
+        }
+      ],
+      "semantic_assessment": "Build preparation copies cloned source into an owned temporary host directory; runtime no-host-bind isolation is a separate narrower statement."
+    }
+  ],
+  "scope": "Only this finite normative finding at actual source; the frozen diagnosis is corrected by the explicitly narrowed accepted contract.",
+  "accepted_contract_note": "Build preparation copies cloned source into an owned temporary host directory; runtime no-host-bind isolation is a separate narrower statement.",
+  "limits": [
+    "Reasoned source guard/effect/retry or finite normative-text conformance only, not observed execution.",
+    "No tests, native/SDK/Pi/Docker/browser/provider/API/network/install or original-owner replay was performed.",
+    "No TESTED/runtime epoch, whole linked task, installed package, model behavior, human acceptance, final-main or publication qualification.",
+    "Existing storage denial, cooperative concurrency, per-resource acquisition, unsupported grammar and platform limits remain; no global atomicity, durability or adversarial attestation.",
+    "Private proposal only. Root owns adoption, original strict authentication, independent review and canonical/index/ref/marker writes."
+  ]
+}

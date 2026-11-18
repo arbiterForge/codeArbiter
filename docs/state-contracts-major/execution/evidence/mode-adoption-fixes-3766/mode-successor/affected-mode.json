@@ -1,0 +1,18 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\run-focused.py",
+  "TestFlip",
+  "TestFlipOutcome"
+ ],
+ "exit": 0,
+ "seconds": 0.5328820999711752,
+ "source_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+ "test_sha256": "dc860c2d14cfc82186b8acd54d78ee951ec2b8f91118d8f0263b3d602cefda10",
+ "script_sha256": "fbcc67873acbb76283e8499866b4c8aa4526322b352816b96873c4640e2b01bd",
+ "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "stderr_sha256": "8670f750323afa7425f2120124c6d798d84eb1f5687265bd792093051d634b5b"
+}

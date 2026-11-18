@@ -8,6 +8,12 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Changed
 
+- Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
+- Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
+- Attribute task-lock ignore-rule initialization to its actual owner in generated init guidance.
+- Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
+- Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
+- Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.
 - Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
 - Preserve no-bytecode execution when SessionStart launches the detached updater.
 - Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.

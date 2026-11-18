@@ -12,6 +12,23 @@ let atlas:ReturnType<typeof loadAtlas>;
 beforeAll(()=>{atlas=loadAtlas(root);});
 
 describe('assistive candidate versus retained historical routes',()=>{
+  it('binds reviewed init ownership and visible interpreter guards to their actual committed sources',()=>{
+    const expected=[
+      {path:'core/surface/commands/init.md',revision:'2ed6575320cc49b57186b997ed119789f7a754aa',blob:'74749ae037e276cda66cc6f90addf2d0ad88e914',phrases:['task-board writer retains its lock sidecar','initialization adds its exact Git-common info/exclude rule under an exclusive lock']},
+      {path:'core/pysrc/_bashguardlib.py',revision:'ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c',blob:'383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f',phrases:['Binary overrides bind the actual staged candidate','dynamic or nested stdin remains outside that finite projection']},
+    ];
+    const html=renderAtlasHtml(atlas,loadAtlasTheme(root));
+    for(const reviewed of expected){
+      const change=atlas.sourceUpdate!.changes.find(change=>change.path===reviewed.path)!;
+      expect(change.blob).toBe(reviewed.blob);
+      expect(change.revision).toBe(reviewed.revision);
+      expect(execFileSync('git',['--no-replace-objects','--no-lazy-fetch','rev-parse',`${reviewed.revision}:${reviewed.path}`],{cwd:root,encoding:'utf8'}).trim()).toBe(reviewed.blob);
+      for(const phrase of reviewed.phrases)expect(change.summary).toContain(phrase);
+      expect(html).toContain(`https://github.com/arbiterForge/codeArbiter/blob/${reviewed.revision}/${reviewed.path}`);
+    }
+    expect(atlas.sourceUpdate!.revision).toBe('f65f1e7543f2934a274909cb0d157b94ee909e61');
+  });
+
   it('binds each current explanation to real tracked owner bytes, not a new release claim',()=>{
     const historical=readFileSync(new URL('./atlas-data/assistive-update.json',import.meta.url),'utf8').replace(/\r\n/g,'\n');
     expect(createHash('sha256').update(historical).digest('hex'))

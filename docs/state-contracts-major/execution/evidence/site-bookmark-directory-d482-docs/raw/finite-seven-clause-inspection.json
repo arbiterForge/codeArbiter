@@ -1,0 +1,706 @@
+{
+ "format": "finite-original-browser-clause-successor/1",
+ "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "clauses": [
+  {
+   "cell": "disposition:transitions:S56:01",
+   "literal_frozen_baseline": {
+    "event": "read stored bookmark",
+    "guard": "valid exact schema/release/commit/lesson",
+    "to": "ready",
+    "effects": "Render continue link for declared current lesson.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/academy-bookmark.ts",
+      "symbol": "bookmark load/save validation",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+      "lines": "1-61"
+     },
+     {
+      "path": "site/src/components/AcademyBookmark.astro",
+      "symbol": "bookmark UI lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+      "lines": "1-86"
+     }
+    ],
+    "from": "connect",
+    "transition_id": "S56:01"
+   },
+   "frozen_record_sha256": "2dc23b9462f5be8e51efb77e420180b2803e309bfe6c3d5eb86aa01776538325",
+   "observed_named_cases": [
+    "a bookmark is opt-in, survives navigation, and never becomes completion"
+   ],
+   "assertion_scope": "Valid current bookmark saved by the explicit button survives lesson/all-lessons/back navigation and resolves only to the current declared practitioner lesson URL; source validates exact schema/release/commit/lesson before constructing its inventory-based URL.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/academy-bookmark.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "start": 1,
+     "end": 61,
+     "span_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "purpose": "bookmark load/save validation"
+    },
+    {
+     "path": "site/src/components/AcademyBookmark.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "start": 1,
+     "end": 86,
+     "span_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "purpose": "bookmark UI lifecycle"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  },
+  {
+   "cell": "disposition:transitions:S56:02",
+   "literal_frozen_baseline": {
+    "event": "no key",
+    "guard": "read succeeded",
+    "to": "empty",
+    "effects": "Show save/start state; do not infer progress.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/academy-bookmark.ts",
+      "symbol": "bookmark load/save validation",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+      "lines": "1-61"
+     },
+     {
+      "path": "site/src/components/AcademyBookmark.astro",
+      "symbol": "bookmark UI lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+      "lines": "1-86"
+     }
+    ],
+    "from": "connect/read",
+    "transition_id": "S56:02"
+   },
+   "frozen_record_sha256": "7d815e40ec31813d50b746bd83bb76e76d666f4f5bc2eb0527e94e10c92e05fe",
+   "observed_named_cases": [
+    "a bookmark is opt-in, survives navigation, and never becomes completion"
+   ],
+   "assertion_scope": "Initial declared owned key is null while the Save control is visible. Visiting the lesson does not create a record; saving is opt-in and the UI explicitly says completion is not checked.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/academy-bookmark.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "start": 1,
+     "end": 61,
+     "span_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "purpose": "bookmark load/save validation"
+    },
+    {
+     "path": "site/src/components/AcademyBookmark.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "start": 1,
+     "end": 86,
+     "span_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "purpose": "bookmark UI lifecycle"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  },
+  {
+   "cell": "disposition:transitions:S56:04",
+   "literal_frozen_baseline": {
+    "event": "storage read/write throws",
+    "guard": "browser storage denied/unavailable",
+    "to": "storage unavailable",
+    "effects": "Render unavailable state; distinguish from empty bookmark.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/academy-bookmark.ts",
+      "symbol": "bookmark load/save validation",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+      "lines": "1-61"
+     },
+     {
+      "path": "site/src/components/AcademyBookmark.astro",
+      "symbol": "bookmark UI lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+      "lines": "1-86"
+     }
+    ],
+    "from": "any bookmark UI",
+    "transition_id": "S56:04"
+   },
+   "frozen_record_sha256": "7f64d37aaea1dfbd9264fe962efa535f0253ebdd5a6c114ee46839163a766dfc",
+   "observed_named_cases": [
+    "denied storage retains the full lesson and an actionable explanation"
+   ],
+   "assertion_scope": "A denied localStorage getter exercises unavailable reading, then Save failure yields actionable could-not-be-saved text while the full lesson/action and curriculum link remain visible. This is deliberate storage denial, not ordinary empty state.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/academy-bookmark.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "start": 1,
+     "end": 61,
+     "span_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "purpose": "bookmark load/save validation"
+    },
+    {
+     "path": "site/src/components/AcademyBookmark.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "start": 1,
+     "end": 86,
+     "span_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "purpose": "bookmark UI lifecycle"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  },
+  {
+   "cell": "disposition:transitions:S56:05",
+   "literal_frozen_baseline": {
+    "event": "explicit save",
+    "guard": "valid current lesson identity",
+    "to": "saved",
+    "effects": "Write only scoped bookmark key; update display.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/academy-bookmark.ts",
+      "symbol": "bookmark load/save validation",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+      "lines": "1-61"
+     },
+     {
+      "path": "site/src/components/AcademyBookmark.astro",
+      "symbol": "bookmark UI lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+      "lines": "1-86"
+     }
+    ],
+    "from": "ready/empty",
+    "transition_id": "S56:05"
+   },
+   "frozen_record_sha256": "9796c123a49eb7198fb4e24ace0031bf306b0e6aac4c6c962e3b4cd130ad54f4",
+   "observed_named_cases": [
+    "a bookmark is opt-in, survives navigation, and never becomes completion",
+    "saving and removing a place work by keyboard in forced colors"
+   ],
+   "assertion_scope": "Explicit click and keyboard Save create the exact four-field current source/lesson record and update does-not-mark-complete feedback. Source inspection supplies the only-scoped-key clause: one derived-key setItem call inside saveBookmark, no other write route; no unobserved arbitrary account data claim.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/academy-bookmark.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "start": 1,
+     "end": 61,
+     "span_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "purpose": "bookmark load/save validation"
+    },
+    {
+     "path": "site/src/components/AcademyBookmark.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "start": 1,
+     "end": 86,
+     "span_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "purpose": "bookmark UI lifecycle"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  },
+  {
+   "cell": "disposition:transitions:S56:06",
+   "literal_frozen_baseline": {
+    "event": "clear",
+    "guard": "explicit user action",
+    "to": "cleared",
+    "effects": "Remove only owned key; preserve unrelated browser data.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/academy-bookmark.ts",
+      "symbol": "bookmark load/save validation",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-bookmark.ts",
+      "lines": "1-61"
+     },
+     {
+      "path": "site/src/components/AcademyBookmark.astro",
+      "symbol": "bookmark UI lifecycle",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyBookmark.astro",
+      "lines": "1-86"
+     }
+    ],
+    "from": "saved/stale/invalid",
+    "transition_id": "S56:06"
+   },
+   "frozen_record_sha256": "31378c5bef60febc7b666ad1c363b7292238ca3e4521331b31e33e87989f992e",
+   "observed_named_cases": [
+    "a bookmark is opt-in, survives navigation, and never becomes completion",
+    "stale source identity has no resume URL and clearing retains command preferences",
+    "saving and removing a place work by keyboard in forced colors"
+   ],
+   "assertion_scope": "Explicit clear removes the scoped bookmark, preserves independent academy-os=linux, hides resume and restores status/Save focus. Unknown verifier progress is never created or changed.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/academy-bookmark.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "start": 1,
+     "end": 61,
+     "span_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+     "purpose": "bookmark load/save validation"
+    },
+    {
+     "path": "site/src/components/AcademyBookmark.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "start": 1,
+     "end": 86,
+     "span_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+     "purpose": "bookmark UI lifecycle"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  },
+  {
+   "cell": "disposition:transitions:S58:01",
+   "literal_frozen_baseline": {
+    "event": "input/category change",
+    "guard": "query NFKC-normalized and bounded",
+    "to": "filtered or no matches",
+    "effects": "Require every normalized term and selected category; update cards, empty groups, count and no-results message.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/guide-filter.ts",
+      "symbol": "filter predicates",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/guide-filter.ts",
+      "lines": "1-12"
+     },
+     {
+      "path": "site/src/components/GuideDirectory.astro",
+      "symbol": "directory interaction",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/GuideDirectory.astro",
+      "lines": "1-129"
+     }
+    ],
+    "from": "all visible or filtered",
+    "transition_id": "S58:01"
+   },
+   "frozen_record_sha256": "aa638dfa2ded7f2f5bf98d7f09fbf735437712697369917fef121fc99083b996",
+   "observed_named_cases": [
+    "directory contains every guide and filters by both task and literal words",
+    "filtering makes no request or storage write and does not submit a query URL"
+   ],
+   "assertion_scope": "Actual category selection narrows to4; two required literal terms narrow to1; a nonmatch containing markup yields0, visible empty state and exact count. Source-only guard supplement: guideMatches applies NFKC/lowercase and bounded160-character normalized query, requires each term and matching selected category; no claim that a runtime Unicode boundary vector was executed.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/guide-filter.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+     "start": 1,
+     "end": 12,
+     "span_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+     "purpose": "filter predicates"
+    },
+    {
+     "path": "site/src/components/GuideDirectory.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+     "start": 1,
+     "end": 129,
+     "span_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+     "purpose": "directory interaction"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  },
+  {
+   "cell": "disposition:transitions:S58:02",
+   "literal_frozen_baseline": {
+    "event": "clear",
+    "guard": "user action",
+    "to": "cleared/all visible",
+    "effects": "Clear query/category as implemented; return focus to input.",
+    "failure_retry": "",
+    "source": [
+     {
+      "path": "site/src/scripts/guide-filter.ts",
+      "symbol": "filter predicates",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/guide-filter.ts",
+      "lines": "1-12"
+     },
+     {
+      "path": "site/src/components/GuideDirectory.astro",
+      "symbol": "directory interaction",
+      "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/GuideDirectory.astro",
+      "lines": "1-129"
+     }
+    ],
+    "from": "filtered/no matches",
+    "transition_id": "S58:02"
+   },
+   "frozen_record_sha256": "44a0835f3ecd1f95a0a4167955b660c5658f94d2a3a3917162ed79d96219549d",
+   "observed_named_cases": [
+    "directory contains every guide and filters by both task and literal words",
+    "filter controls and the review guide reconnect after client navigation and back"
+   ],
+   "assertion_scope": "Clear restores the complete declared card count and input focus. After real client navigation/back, controls remain usable and selecting initialize-and-understand yields3 cards. Read-only test separately asserts no request, storage write or query-URL submission.",
+   "witnesses": [
+    {
+     "path": "site/src/scripts/guide-filter.ts",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+     "start": 1,
+     "end": 12,
+     "span_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+     "purpose": "filter predicates"
+    },
+    {
+     "path": "site/src/components/GuideDirectory.astro",
+     "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+     "sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+     "start": 1,
+     "end": 129,
+     "span_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+     "purpose": "directory interaction"
+    }
+   ],
+   "source_limit": "Reuses unchanged literal product/test bodies. Source guard supplements do not become newly executed malformed/Unicode/boundary/lifecycle vectors."
+  }
+ ],
+ "input_joins": [
+  {
+   "path": "site/package.json",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/package-lock.json",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/playwright.config.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "1f8d2f99203986f48b92209918479f45bfb054043296745e0d987e415e199615",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8",
+   "literal_bytes_equal": false
+  },
+  {
+   "path": "site/astro.config.mjs",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/base.mjs",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": ".github/workflows/docs.yml",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+   "literal_bytes_equal": false
+  },
+  {
+   "path": "site/test/browser/academy-wayfinding.spec.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/components/AcademyBookmark.astro",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/scripts/academy-bookmark.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/styles/academy-wayfinding.css",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/components/AcademyWayfinding.astro",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "6796af6ab581bd06ed30a6282a9014d0b12344297b4d96dae499076bcea3ec3f",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "6796af6ab581bd06ed30a6282a9014d0b12344297b4d96dae499076bcea3ec3f",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/components/AcademyOverview.astro",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/scripts/academy-wayfinding.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/scripts/generate-academy.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/scripts/academy-source.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/test/browser/guide-discovery.spec.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/components/GuideDirectory.astro",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/scripts/guide-filter.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/scripts/guide-directory.ts",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/adding-a-dependency.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "54dfb6bc464a5a1dbe1fbb7fb24590637aaba0d7851a397a06544b91066a20bf",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "54dfb6bc464a5a1dbe1fbb7fb24590637aaba0d7851a397a06544b91066a20bf",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/autonomous-sprints.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "14ccb49c331be0f8b0551d299e764f616159cfdd287324cba227d04d1ecc6e31",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "14ccb49c331be0f8b0551d299e764f616159cfdd287324cba227d04d1ecc6e31",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/ca-sandbox.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "f5993258c611cb409b9668e03bbac4102d8d6074f5105dfd9daa244e29a109d9",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "f5993258c611cb409b9668e03bbac4102d8d6074f5105dfd9daa244e29a109d9",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/feature-lane.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "15ca6f3dc5183523a3ee2bf5091e87ab18999e7b9532ca778a0c59babef766db",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "15ca6f3dc5183523a3ee2bf5091e87ab18999e7b9532ca778a0c59babef766db",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/first-feature.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "93c29c3d9bf7f21784712f6fc3e9a1f8066e5ed72ebbf54508b92195e49aa63f",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "93c29c3d9bf7f21784712f6fc3e9a1f8066e5ed72ebbf54508b92195e49aa63f",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/index.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "974a8a43e3fbdb239a41c6f1dde94aa85cb0562923156b023318817dcbc119d7",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "974a8a43e3fbdb239a41c6f1dde94aa85cb0562923156b023318817dcbc119d7",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/investigate-and-fix.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "5250770887ffd964d64336b19ce8d18efa98494a7c0a2f1a6ed99aa99a65c942",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "5250770887ffd964d64336b19ce8d18efa98494a7c0a2f1a6ed99aa99a65c942",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/opt-in-a-repo.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "7c3816ecef1a294ef4f3246f0cd9599e3d7f722fdb593857c065b8f793b49a2e",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "7c3816ecef1a294ef4f3246f0cd9599e3d7f722fdb593857c065b8f793b49a2e",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/overriding-a-gate.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "7b955c5893f7604752bcba102e31ce47033d210a2ed6b557fbc7d0a6dc283754",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "7b955c5893f7604752bcba102e31ce47033d210a2ed6b557fbc7d0a6dc283754",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/plan-a-new-project.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "00d37a59a100c1461100e4121276d22ee79baf9a403c8557ee507656928bb85c",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "00d37a59a100c1461100e4121276d22ee79baf9a403c8557ee507656928bb85c",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/recording-adrs.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "f9166386645da1df268a09d6560728a8ef77cacf70e2fee2caba4f1ffc54b7b8",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "f9166386645da1df268a09d6560728a8ef77cacf70e2fee2caba4f1ffc54b7b8",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/releasing-a-version.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "70847a274253676d32ff0a86d8315a6e7c569982e0bf5e9c2331809c580bc8f4",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "70847a274253676d32ff0a86d8315a6e7c569982e0bf5e9c2331809c580bc8f4",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/resume-and-recover.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "c43958bb99f1373cda77486e56e20dc1296de2a94daff9fddad5e68d3bd143f0",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "c43958bb99f1373cda77486e56e20dc1296de2a94daff9fddad5e68d3bd143f0",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/return-to-a-project.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "cbf6eddce2d5503381652f68583562cab1403b0c31ffebd6cd30efe5574e08e2",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "cbf6eddce2d5503381652f68583562cab1403b0c31ffebd6cd30efe5574e08e2",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/review-and-ship.mdx",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "831c2d1d1b239679737de172fd01b472b3465f0d789a071ee93da2d85dc9c40d",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "831c2d1d1b239679737de172fd01b472b3465f0d789a071ee93da2d85dc9c40d",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/review-artifacts.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "928ecfc031896439303ddf4b551b13dd61779d2cbe8e8b67d05962349c72130a",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "928ecfc031896439303ddf4b551b13dd61779d2cbe8e8b67d05962349c72130a",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/the-statusline.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "6b72e46955c582a63c0bdce3466dabd1e0918d3d60770cde24b5a7adc3a20231",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "6b72e46955c582a63c0bdce3466dabd1e0918d3d60770cde24b5a7adc3a20231",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/troubleshooting.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "7cef502368aa76e8c1e0ba1f2b20afc567a079337039304700cd52bcbd8aa36f",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "7cef502368aa76e8c1e0ba1f2b20afc567a079337039304700cd52bcbd8aa36f",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/understand-an-existing-project.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "29f9a96290b6aa61f1dcba5f6feb8dd0835e7bb8b7cf2a7556f054d4abc39a47",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "29f9a96290b6aa61f1dcba5f6feb8dd0835e7bb8b7cf2a7556f054d4abc39a47",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/uninstalling.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "8cc0421237325747c86c6075da509b23c1162d91c920fd8312315d3ee64ecd35",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "8cc0421237325747c86c6075da509b23c1162d91c920fd8312315d3ee64ecd35",
+   "literal_bytes_equal": true
+  },
+  {
+   "path": "site/src/content/docs/guides/uninstalling/details.md",
+   "old_source": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "old_sha256": "0e4829de7a22056249dcc64905f065b7a431fd709af4e4b8bb72bb94ed002089",
+   "new_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+   "new_sha256": "0e4829de7a22056249dcc64905f065b7a431fd709af4e4b8bb72bb94ed002089",
+   "literal_bytes_equal": true
+  }
+ ],
+ "changed_input_assessment": {
+  "site/playwright.config.ts": "Adds optional JSON reporter alongside list, retaining hosted workers/forbidOnly/retries0, original timeout and selection. Actual203 unfiltered outcomes preserve original7 assertion bodies.",
+  ".github/workflows/docs.yml": "Trusted push program branch runs the original npm run test:browser once through passive observer, retains original list+JSON/report and read-only source/tool identities. Separate main-only qualified promotion grants no deploy here."
+ },
+ "limits": [
+  "No97MB screenshot archive or6.58MB Pages tar acquired",
+  "No current rebuilt-site membership/geometry/human review inferred",
+  "Original observation sourcedD482; original browser attempt1 and whole workflow success attempt2 stay distinct"
+ ]
+}

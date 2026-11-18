@@ -1,0 +1,241 @@
+{
+ "schema": "codearbiter.bounded-private-code-review/1",
+ "reviewer": "/root/acceptance_security_review",
+ "author": "other author; private SDK phase unit",
+ "independent_of_authorship": true,
+ "verdict": "PASS",
+ "findings": [],
+ "source_commit": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\delivery.json",
+  "sha256": "6db6f8bf83946ff7c7c8057b4b05a732b78dd8192b3d190e5024593d2b1b8906",
+  "bytes": 3661
+ },
+ "patch_sha256": "813e291706d2324560afdb991f65e10014c8bde92778804947197a023ec3a3d1",
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\candidate.patch",
+  "sha256": "813e291706d2324560afdb991f65e10014c8bde92778804947197a023ec3a3d1",
+  "bytes": 22167
+ },
+ "full_subjects": {
+  ".github/scripts/_windows_dbgeng.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\preimages\\.github\\scripts\\_windows_dbgeng.py",
+    "sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+    "bytes": 18333
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\candidate\\.github\\scripts\\_windows_dbgeng.py",
+    "sha256": "97fb2e2456572ed6fddbd8889b7c904aceea0409d8f2fcbc0a9e47126bb1dc4a",
+    "bytes": 23441
+   },
+   "source_epoch_git_oid": "870bcefb854ba1fe8e6479701cd4a58f88aa4b87",
+   "physical_preimage_sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/_windows_rpc_timeout.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\preimages\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+    "bytes": 32975
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\candidate\\.github\\scripts\\_windows_rpc_timeout.py",
+    "sha256": "656f275b817e568fec54d7b794e7568560e239c36271406aec402c423706d246",
+    "bytes": 33445
+   },
+   "source_epoch_git_oid": "35bade6a74539cf84e400fc4ea1d9d0e5d9f510f",
+   "physical_preimage_sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+   "physical_matches_preimage": true
+  },
+  ".github/scripts/test_pi_package.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\preimages\\.github\\scripts\\test_pi_package.py",
+    "sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+    "bytes": 331763
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\candidate\\.github\\scripts\\test_pi_package.py",
+    "sha256": "d2e70c382d99634a3b2bbbc1c2cccedda9a343d0a206a79bb603447bd81aed3a",
+    "bytes": 341523
+   },
+   "source_epoch_git_oid": "e7c4ef0bb68bf546306fba42b24f0f0ec422e79a",
+   "physical_preimage_sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+   "physical_matches_preimage": true
+  }
+ },
+ "metadata": {
+  "patch": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\candidate.patch",
+   "sha256": "813e291706d2324560afdb991f65e10014c8bde92778804947197a023ec3a3d1",
+   "bytes": 22167
+  },
+  "checks": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\checks.json",
+   "sha256": "a7087ff5012ea197ffdf4dcf4ebbfa619e7f128e783b90bb6a1ab498a865c729",
+   "bytes": 11423
+  },
+  "preservation": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\preservation.json",
+   "sha256": "abdd50cf162123c8459262fd10cd10136dd4d20897f810920a9f7a4a7da318ea",
+   "bytes": 2335
+  },
+  "mechanism": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\mechanism-and-limits.json",
+   "sha256": "92acdb3bee2c1064b370e84bcb111428c474e0ae916a37727cdabd5c7e38cdc8",
+   "bytes": 2047
+  }
+ },
+ "old_definition_preservation": {
+  ".github/scripts/_windows_dbgeng.py": {
+   "changed_old_definitions": [
+    "run"
+   ],
+   "new_definitions": [
+    "_progress_writer",
+    "decode_progress"
+   ]
+  },
+  ".github/scripts/_windows_rpc_timeout.py": {
+   "changed_old_definitions": [
+    "_debugger"
+   ],
+   "new_definitions": []
+  },
+  ".github/scripts/test_pi_package.py": {
+   "changed_old_definitions": [],
+   "new_definitions": [
+    "DebuggerPhaseProgressTests"
+   ]
+  }
+ },
+ "evidence": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-debugger-affected-actual.json",
+   "sha256": "6f334ba154da0010f74fd650784c87a0d3bcd61b2bdce92e400f7e1f8890fada",
+   "bytes": 2288
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-debugger-affected.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-debugger-affected.stderr",
+   "sha256": "b5702a807768e1a3d05a8f6eeb66bf925e3ac14a57261e6557c2169258c4fa04",
+   "bytes": 6891
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor-actual.json",
+   "sha256": "0fa035617deb9bffd12e271a57327265572a3e7d95630ba690e2ea67beabfa03",
+   "bytes": 808
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor.stderr",
+   "sha256": "4e0afc643c7d0c895f4156bf90961e49898ac4bb3ea81b7397fa2a898a4d87b2",
+   "bytes": 714
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-negative-controls-actual.json",
+   "sha256": "ef86500e18502fe5065a5d7bcfe0a7a9ed92255480d6a8f941c54d670a42a249",
+   "bytes": 717
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-negative-controls.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-negative-controls.stderr",
+   "sha256": "68d1ecd270206a046bff9f537aaeb085bed69e0a362fe41160dd61e013f928a9",
+   "bytes": 519
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green-actual.json",
+   "sha256": "8f88a49ab2eca1d8846e54f259d108efec5244164f809c064c821ccc1877b3bd",
+   "bytes": 606
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green.stderr",
+   "sha256": "c93986e1bfca6ea90cbc7f5a7347ce40c75f90a59cc89cfd9bb98b8137cb7261",
+   "bytes": 315
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-actual.json",
+   "sha256": "1875ad26aeae36a30d04a259e0dbaae4bb2b1fddd950309e0cf5201f7dbf47c3",
+   "bytes": 608
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red.stderr",
+   "sha256": "36870d39b8292524ae6955fa67c67937d58d52e07f18132ddd72828f1b0b544e",
+   "bytes": 1388
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-successor-actual.json",
+   "sha256": "7372b350aa321e859af136d897b88f29ff601de8e8075097ec5478336a098e3f",
+   "bytes": 607
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-successor.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-successor.stderr",
+   "sha256": "9021fc96522627332eb19533fdc7a5af2406f059a892deb2e56194ebd74a3de5",
+   "bytes": 1394
+  }
+ ],
+ "passive_dependency_joins": {
+  ".github/scripts/_boundedproc.py": {
+   "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "bytes": 12673
+  },
+  ".github/workflows/ci.yml": {
+   "sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "bytes": 277146
+  }
+ },
+ "input_proof": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\sdk-phase-peer-input.txt",
+   "sha256": "b0f4207d958b40876ab0afb527b36cc2f328ced0fcaa7c00ee1d2e43b841042b",
+   "bytes": 8623
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\sdk-phase-peer-context.json",
+   "sha256": "6958959dec9690b6a4b05188b9c051fc0d62a89a68cd1a12ab4db5226ac0b6f9",
+   "bytes": 11053
+  }
+ ],
+ "substantive_review": [
+  "Private v3 progress:true opt-in is exact-schema; v1/v2 and unflagged v3 remain legacy output. Parent adds only this request flag, no argv/env/handle/permission/ABI change. Engine, COM declarations and final decode_result ASTs identical.",
+  "Writer emits only nine enumerated strictly advancing phases. Each ASCII line is at most256bytes and complete accepted prefix is at most2304bytes. Partial/failed writes disable future progress; callbacks cannot replace the worker result. The worker may block in pipe/native work but remains the same parent-owned bounded child.",
+  "Decoder checks exact fields, unique keys, integer-not-bool pid/creation/worker identity, exact profile and phase, ordering/count/per-line/total bounds. Malformed complete/foreign/duplicate/out-of-order/oversized records refuse progress and preserve original raw buffer. A partial next row is never admitted; an earlier fully bound checkpoint may survive it. Nonprefix legacy JSON remains byte-exact.",
+  "Existing collector still drains at most128KiB under the same5s budget; final JSON remains32KiB and is decoded by unchanged strict owner. The2304byte diagnostic allowance fits within existing collector capacity. New metadata carries no raw text, paths, command, environment, token or exception data.",
+  "Last sdk-phase means last announced boundary only. A timeout/transport failure retains primaryStatus/failure and empty threads/worker uncertainty; no phase proves a native call returned, target exited, attachment/detachment or stack capture. Successful final decoding still sets worker-result. No Node cause inferred.",
+  "Worker-only kill/wait/handle close and independent target cleanup remain unchanged. No new subprocess or thread in production; fixture thread drains only a fixed tiny owned inert Python child. No real debugger/SDK/Pi/provider effects exercised by retained checks.",
+  "Entire preexisting test module AST is identical after removing the one new class. Proper target RED actually launches a tiny child and fails sdk-wait assertion on original production; its exact method AST matches GREEN. Negative cases discriminate identity/types/duplicate JSON/order/oversize/partial behavior and callback-before-boundary/final-schema compatibility.",
+  "Retained history is honest: initial RED fixture launch/string failure is not a capability reproduction; proper successor RED is used. Original owning purposes passed as16initial successes plus3unchanged missing-input successors, not a full19single-run green. One unrelated hash-only subprocess case was not executed. Dependency bytes for that scratch repair match immutable304."
+ ],
+ "limits": [
+  "Read-only private review; no test/scanner/owner/SDK/Pi/native/API/network replay or canonical/index/ref/marker mutation.",
+  "Source/test observability capability only. Node shutdown cause remains UNRESOLVED; no runtime/installed/task/ledger qualification or independent self-authored review.",
+  "No staged candidate or fake index OID asserted. Root owns actual adoption, composition and mandatory commit gates."
+ ]
+}

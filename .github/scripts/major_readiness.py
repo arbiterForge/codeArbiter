@@ -701,13 +701,18 @@ def runtime_record(record):
     if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
         inner = record.get('runtime')
         require(isinstance(inner, dict) and inner.get('schema') in
-                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4'),
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4', 'codearbiter-major-site-source-readiness/1'),
                 'invalid source envelope runtime schema')
         record = inner
     if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-readiness/4':
         inner = record.get('runtime')
         require(isinstance(inner, dict) and inner.get('schema') in
-                (SCHEMA, 'codearbiter-major-readiness/2'), 'invalid native envelope runtime schema')
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-site-source-readiness/1'), 'invalid native envelope runtime schema')
+        record = inner
+    if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-site-source-readiness/1':
+        inner = record.get('core')
+        require(isinstance(inner, dict) and inner.get('schema') in (SCHEMA, 'codearbiter-major-readiness/2'),
+                'invalid Docs source envelope Core runtime schema')
         record = inner
     return record
 
@@ -918,7 +923,31 @@ def _requirements(repo, source, run_id):
         require(native, 'npm binding task requires original native composition authority')
         native_fields.update(launch_binding_tasks=launch_tasks,
             launch_binding_inputs=launch.expected_inputs(repo, source, load))
-    return {**native_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
+    launch_findings = policy.get('native_launch_binding_findings', [])
+    if launch_findings:
+        from major_native_observation import launch_finding_selection
+        launch_finding_selection(launch_findings)
+        require(set(launch_findings) <= set(cells) and 'HW-04' in launch_tasks,
+                'launch finding requires its original HW04 population')
+        # An already assessed source disposition retains its typed result and
+        # original epoch rather than being relabelled as native execution.
+        selected_launch_findings = [cell for cell in launch_findings if cell not in source_dispositions]
+        if selected_launch_findings:
+            native_fields['launch_binding_findings'] = selected_launch_findings
+    source_finding_fields = {}
+    source_finding_cells = policy.get('source_finding_composite_cells', [])
+    require(isinstance(source_finding_cells, list), 'invalid source finding composition selection')
+    if source_finding_cells:
+        from major_qualification_report import source_finding_input_pins, source_finding_profiles
+        source_finding_profiles(source_finding_cells)
+        require(set(source_finding_cells) <= set(cells) and not set(source_finding_cells).intersection(
+                {*native, *native_fields.get('launch_binding_findings', [])}),
+                'source finding composition is outside its runtime disposition population')
+        selected = [cell for cell in source_finding_cells if cell not in source_dispositions]
+        if selected:
+            source_finding_fields = {'source_finding_composite_cells': selected,
+                'source_finding_inputs': source_finding_input_pins(selected, source, load)}
+    return {**native_fields, **source_finding_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
             "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
             "ci_run_id": int(run_id), "task_ids": sorted(required),
@@ -1022,6 +1051,10 @@ def validate_upload(job, artifact, step_name, *, job_log=None):
 def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_artifacts,
            payload_members=None):
     req = requirements
+    if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-site-source-readiness/1':
+        from site_vitest_observation import verify as verify_source_docs
+        return verify_source_docs(record=record, requirements=req, run=run, artifact=artifact,
+            archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts, payload_members=payload_members)
     if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-readiness/4':
         from major_native_observation import verify as verify_native
         return verify_native(record=record, requirements=req, run=run, artifact=artifact,
@@ -1035,7 +1068,7 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
                 'typed source readiness differs from authenticated requirements')
         inner = record.get('runtime')
         require(isinstance(inner, dict) and inner.get('schema') in
-                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4'),
+                (SCHEMA, 'codearbiter-major-readiness/2', 'codearbiter-major-readiness/4', 'codearbiter-major-site-source-readiness/1'),
                 'invalid source envelope runtime schema')
         return verify(record=inner, requirements=runtime_req, run=run,
             artifact=artifact, archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts,
@@ -1067,11 +1100,19 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
     rows = record.get("results", [])
     require(len(rows) == len(req["cells"]) and sorted(r.get("cell", "") for r in rows) == sorted(req["cells"]),
             "missing, extra or duplicate qualification cell")
+    from major_qualification_report import source_finding_evidence
+    composed, component_payloads = source_finding_evidence(req, build_artifacts, jobs, run=run)
     qualified_ids = set()
     for row in rows:
+        if row["cell"] in composed:
+            require(row == composed[row["cell"]], "readiness differs from original component evidence")
+            # The closed composition checked its own payload population before
+            # comparison. Ordinary job-local rows still use the legacy bound.
+            qualified_ids.update(row["evidence_artifact_ids"])
+            continue
         job = by_job.get(row.get("job_id"), {})
         require(row.get("result") == "PASSED" and job.get("conclusion") == "success"
-                and job.get("name") == req["cell_jobs"][row["cell"]],
+                and job.get("name") == req["cell_jobs"][row["cell"]] and "source_components" not in row,
                 "required qualification cell lacks successful named execution: " + row["cell"])
         qualified_ids.update(evidence_payload_ids(row))
     archives = record.get("artifacts", [])
@@ -1080,6 +1121,8 @@ def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_a
         identity = payload["artifact_id"]
         require(identity in qualified_ids, "artifact has no executed qualification")
         validate_artifact(by_artifact.get(identity), req, payload.get("archive_sha256"))
+        if identity in component_payloads:
+            require(payload == component_payloads[identity], "readiness payload differs from original component bytes")
         require(payload.get("members") and all(DIGEST.fullmatch(m.get("sha256", "")) for m in payload["members"]),
                 "payload member digests missing")
         if payload_members is not None:
@@ -1192,8 +1235,8 @@ def evidence_payload_ids(row):
     return bounded_payload_ids(row["evidence_artifact_ids"])
 
 
-def bounded_payload_ids(values):
-    require(isinstance(values, list) and 1 <= len(values) <= 2
+def bounded_payload_ids(values, *, limit=2):
+    require(limit in (2, 3) and isinstance(values, list) and 1 <= len(values) <= limit
             and all(type(value) is int and value > 0 for value in values)
             and values == sorted(set(values)), "invalid bounded plural payload identities")
     return values
@@ -1271,13 +1314,18 @@ def produce(req, artifacts, jobs):
     if 'native_compositions' in req:
         from major_native_observation import produce as produce_native
         return produce_native(req, artifacts, jobs)
+    from site_vitest_observation import docs_required as source_docs_required, produce as produce_source_docs
+    if source_docs_required(req):
+        return produce_source_docs(req, artifacts, jobs)
     if "Site | [Build] - Astro Pages" in req["cell_jobs"].values():
         from site_playwright_observation import produce as produce_docs
         return produce_docs(req, artifacts, jobs)
     by_name = {a["name"]: a for a in artifacts}
     by_id = {a["id"]: a for a in artifacts}
     results, payloads = [], {}
-    expected_jobs = set(req["cell_jobs"].values())
+    from major_qualification_report import source_finding_evidence
+    composed, component_payloads = source_finding_evidence(req, artifacts, jobs, producing=True)
+    expected_jobs = {name for cell, name in req["cell_jobs"].items() if cell not in composed}
     for name in sorted(expected_jobs):
         matches = [j for j in jobs if j["name"] == name]
         require(len(matches) == 1 and matches[0].get("conclusion") == "success",
@@ -1292,7 +1340,7 @@ def produce(req, artifacts, jobs):
                 and report.get("source_tree") == req["source_tree"]
                 and report.get("ci_run_id") == req["ci_run_id"] and report.get("job_id") == job["id"],
                 "qualification report source or runner identity differs")
-        expected = sorted(c for c in req["cells"] if req["cell_jobs"][c] == name)
+        expected = sorted(c for c in req["cells"] if c not in composed and req["cell_jobs"][c] == name)
         rows = report.get("results", [])
         require(sorted(r.get("cell", "") for r in rows) == expected,
                 "qualification report population differs: " + name)
@@ -1313,6 +1361,17 @@ def produce(req, artifacts, jobs):
                     payload = by_id[payload_id]
                     if payload.get("name") == SOURCE_INPUT_PAYLOAD:
                         validate_upload(job, payload, SOURCE_INPUT_UPLOAD)
+                    elif payload.get("name") == "major-source-inputs-hooks-findings-windows-contracts":
+                        require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+                                "hook finding source-test payload original owner differs")
+                        validate_upload(job, payload, "Upload hook finding source-test inputs")
+                    elif payload.get("name") in ("major-source-inputs-hooks-single-owner", "major-source-inputs-impact-single-owner"):
+                        owner_name, upload_step = {
+                            "major-source-inputs-hooks-single-owner": ("[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>", "Upload single-owner hook source-test inputs"),
+                            "major-source-inputs-impact-single-owner": ("[CHECK] | [REPO] | Impact planner contract", "Upload single-owner Impact source-test inputs"),
+                        }[payload["name"]]
+                        require(job.get("name") == owner_name, "single-owner source-test payload original owner differs")
+                        validate_upload(job, payload, upload_step)
                     elif payload.get("name") == "major-source-inputs-q02-implementation":
                         require(job.get("name") == "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
                                 "Q02 source-test payload original owner differs")
@@ -1325,10 +1384,11 @@ def produce(req, artifacts, jobs):
                         require(job.get("name") == "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
                                 "mapped source-test payload original owner differs")
                         validate_upload(job, payload, "Upload mapped-work source-test inputs")
-                    elif payload.get("name") in ("major-source-inputs-pi-windows-coverage", "major-source-inputs-sandbox-driver"):
+                    elif payload.get("name") in ("major-source-inputs-pi-windows-coverage", "major-source-inputs-sandbox-driver", "major-source-inputs-farm-dispatcher"):
                         owner_name, upload_step = {
                             "major-source-inputs-pi-windows-coverage": ("Coverage union (Pi)  <os: windows-latest>", "Upload Pi source-test inputs"),
                             "major-source-inputs-sandbox-driver": ("[CHECK] | [SBX ] | Sandbox driver contract", "Upload Sandbox source-test inputs"),
+                            "major-source-inputs-farm-dispatcher": ("[CHECK] | [CA  ] | Farm dispatcher contract", "Upload Farm source-test inputs"),
                         }[payload["name"]]
                         require(job.get("name") == owner_name, "source-test payload original owner differs")
                         validate_upload(job, payload, upload_step)
@@ -1347,6 +1407,10 @@ def produce(req, artifacts, jobs):
             else:
                 result["evidence_artifact_id"] = payload_ids[0]
             results.append(result)
+    for identity, payload in component_payloads.items():
+        require(identity not in payloads or payloads[identity] == payload, "original component payload binding differs")
+        payloads[identity] = payload
+    results.extend(composed.values())
     require(set(req["required_artifact_names"]) <= {by_id[i]["name"] for i in payloads},
             "qualification has no complete exact package cohort")
     producers = [j for j in jobs if j.get('name') == 'major readiness producer']

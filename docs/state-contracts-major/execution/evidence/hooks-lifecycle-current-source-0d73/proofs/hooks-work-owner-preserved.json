@@ -1,0 +1,228 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/artifacts/internal/operations/work.go": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+  "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+  "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+  "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+  "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:work-owner",
+  "disposition:transitions:hooks:work-owner:03"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:work-owner",
+   "frozen_row_sha256": "d134719dd6a3c6ca4a4b56d6cb76171b4d619057fbe4d9b3ed9ec63a61beb68e",
+   "clause_ids": [
+    "disposition:transitions:hooks:work-owner:01",
+    "disposition:transitions:hooks:work-owner:02",
+    "disposition:transitions:hooks:work-owner:03",
+    "disposition:transitions:hooks:work-owner:04",
+    "disposition:transitions:hooks:work-owner:05",
+    "disposition:transitions:hooks:work-owner:06",
+    "disposition:transitions:hooks:work-owner:07",
+    "disposition:transitions:hooks:work-owner:08",
+    "disposition:transitions:hooks:work-owner:09",
+    "disposition:transitions:hooks:work-owner:10"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/work.py",
+     "start": 30,
+     "end": 48,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "7beadf8bd7535d58953e72029368815b2a72c2a1a4d7dc3f6a55dbd7c4066f87",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 90,
+     "end": 183,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "ce145b43820ae8caeb67c7757791f12d79a855531b6644f3e1974a9f6d146f2a",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_arbiterstatelib.py",
+     "start": 162,
+     "end": 184,
+     "file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+     "span_sha256": "c78f229e14831568c2dd527369278f2dc8722981888210128469accfd8cb68af",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/artifacts/internal/operations/work.go",
+     "start": 106,
+     "end": 257,
+     "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+     "span_sha256": "0d45349b69947ed31bc1001cfdfbe9ffc5c678b63b982a6d7c5498531b092ff5",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/artifacts/internal/operations/work.go",
+     "start": 731,
+     "end": 850,
+     "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+     "span_sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 196,
+     "end": 402,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "309e617eedf7ddd894b5ea3cf0b402724a40011113d7498e0e6a2807087a73ae",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 41,
+     "end": 47,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "f04acc529e76a1afedc5a93a9756e3fdfa86edcb0d85f4be0de54a93c2055ba5",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 50,
+     "end": 52,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "0d9f9bfc37b47beec2a247f51a08a202147466781ce31387e14f18fa533a30b9",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 190,
+     "end": 366,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "728fa499b67fc751fc5a95f3ae07459c2484b3882ff423d99720f6c52449ad9d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 81,
+     "end": 87,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "031f3cf699c07f0a1afd013aedafe7f931864f1ea27062e02734af80c497e67c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/taskwrite.py",
+     "start": 139,
+     "end": 208,
+     "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+     "span_sha256": "3fe9c3c3603e6ecf6e4a856737904d187a8affced2e1dbec22a5dad1237e4bd6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 426,
+     "end": 467,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "ab9ae6d41c5c3f3a4400438257355756deed47fa0b5f42419a0b370e2843f6d6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:work-owner:03",
+   "frozen_row_sha256": "a13cf6bfd0cff5fed66d21b91291fb41c7b3c3eb547dfc7ab1bb41faed7fa50f",
+   "clause_ids": [
+    "disposition:transitions:hooks:work-owner:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/work.py",
+     "start": 196,
+     "end": 402,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "309e617eedf7ddd894b5ea3cf0b402724a40011113d7498e0e6a2807087a73ae",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 41,
+     "end": 47,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "f04acc529e76a1afedc5a93a9756e3fdfa86edcb0d85f4be0de54a93c2055ba5",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 50,
+     "end": 52,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "0d9f9bfc37b47beec2a247f51a08a202147466781ce31387e14f18fa533a30b9",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "start": 190,
+     "end": 366,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "728fa499b67fc751fc5a95f3ae07459c2484b3882ff423d99720f6c52449ad9d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/artifacts/internal/operations/work.go",
+     "start": 106,
+     "end": 257,
+     "file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+     "span_sha256": "0d45349b69947ed31bc1001cfdfbe9ffc5c678b63b982a6d7c5498531b092ff5",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

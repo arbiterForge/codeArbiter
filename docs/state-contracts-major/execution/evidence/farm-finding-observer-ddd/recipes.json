@@ -1,0 +1,55 @@
+{
+ "disposition:findings:SF04": {
+  "selectors": [
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations qualified-declaration-six-fields",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-field",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-format",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations malformed-context",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-platform",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-context-binary",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-field",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-platform-path",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unqualified-context",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations bounds UTF-8 bytes before parsing",
+   "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations rejects duplicate and escaped-duplicate keys"
+  ],
+  "scope": "Finite shared Farm parser acceptance of the optional sixth context_qualification declaration and all original malformed/unknown/duplicate/bounded input refusals. Fixtures are synthetic schema declarations, never native runtime or context qualification."
+ },
+ "disposition:findings:SF05": {
+  "selectors": [
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (source)",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (bundle)",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)",
+   "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)",
+   "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+   "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+   "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+   "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run"
+  ],
+  "scope": "Finite JSON/Markdown/effect-journal receipt failure remains explicit, previous complete report survives and independently running tasks drain; receipt-only recovery through actual source/bundle interruptions never calls an author or changes recorded refs/registry/original evidence. Deterministic local HTTP replies substitute model/provider; no real provider, installed approval or global process-containment qualification."
+ },
+ "disposition:findings:SF06": {
+  "selectors": [
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+  ],
+  "scope": "Finite preservation of failed containment through actual gate/runTask/setup consumers: no reset, mutation or second author; retained outcome and scratch resources remain unknown. Executor observations are injected, not OS containment proof."
+ },
+ "disposition:findings:SF07": {
+  "selectors": [
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations",
+   "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations"
+  ],
+  "scope": "Finite failed/malformed Git observation refusal, bounded read-only retry and fresh pre-stage dirty/unavailable/clean mutation decisions; fixture observations do not qualify arbitrary repository/concurrency or installed host state."
+ }
+}

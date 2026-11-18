@@ -142,6 +142,12 @@ class ReportTest(unittest.TestCase):
                 if (row.get("owner") or owners[row["task_ids"][0]]) == "hooks-workflows":
                     cells.append("disposition:" + group + ":" + row[key])
         self.assertEqual(len(cells), 895)
+        # Keep dedicated source-test and cross-job admissions separate from
+        # this ordinary report serialization fixture.
+        source_cells = {*owner.SOURCE_FINDING_COMPOSITIONS, *owner.RECOVERY_FINDING_CELLS,
+                        *owner.PYTHON_FINDING_RECIPES, *owner.SOURCE_PROFILE_CELLS,
+                        owner.HOOK_F02_CELL, "task:Q-02"}
+        cells = [cell for cell in cells if cell not in source_cells]
         hosts = json.loads((repo / "core/hosts.json").read_text())["hosts"]
         files = ["release.json"] + ["ca-artifact-" + p + (".exe" if p.startswith("windows") else "")
             for p in ("darwin-amd64", "darwin-arm64", "linux-amd64", "linux-arm64", "windows-amd64", "windows-arm64")]
@@ -2116,12 +2122,12 @@ IF EXIST "%NPM_PREFIX_NPM_CLI_JS%" (
 
 
 @contextmanager
-def autocrlf_source_checkout(profile):
+def autocrlf_source_checkout(profile, additional_paths=()):
     """Actual declared input bytes and attributes in a disposable local Git clone."""
     with tempfile.TemporaryDirectory(prefix="ca-source-autocrlf-") as temporary:
         base=Path(temporary).resolve();seed=base/'seed';seed.mkdir()
-        paths=owner.TS_PROFILE_PATHS[profile]
-        for relative in paths:
+        paths=owner.source_profile(profile)["paths"]
+        for relative in paths.union(additional_paths):
             path=seed/relative;path.parent.mkdir(parents=True,exist_ok=True)
             path.write_bytes((owner.ROOT/relative).read_bytes())
         (seed/'.gitattributes').write_bytes((owner.ROOT/'.gitattributes').read_bytes())
@@ -2165,6 +2171,20 @@ class SourceBytePolicyTests(unittest.TestCase):
                     owner.source_input_snapshot(f['repo'],profile)
                 with self.assertRaisesRegex(ValueError,'unknown source input profile'):
                     owner.source_input_snapshot(f['repo'],'foreign-profile')
+
+    def test_recovery_source_prepares_from_a_fresh_autocrlf_checkout(self):
+        profile = owner.RECOVERY_RUNTIME_PROFILE
+        spec = owner.source_profile(profile)
+        surface = {path for path in owner.SOURCE_PATHS if path.startswith("core/surface/")}
+        with autocrlf_source_checkout(profile, surface) as fixture:
+            repo = fixture["repo"]
+            payload = fixture["base"] / "recovery-source"
+            manifest = owner.prepare_source_payload(repo, payload, spec["job"], profile)
+            self.assertEqual({member["path"] for member in manifest["members"]}, spec["paths"])
+            contract = "core/workflow-recovery-contract.json"
+            expected = owner.git(repo, "show", "HEAD:" + contract, raw=True)
+            self.assertEqual((repo / contract).read_bytes(), expected)
+            self.assertEqual((payload / contract).read_bytes(), expected)
 
     def test_byte_diagnostic_rejects_foreign_unbounded_or_extra_data_and_never_emits_content(self):
         relative='.github/major-qualification-policy.json'
@@ -3128,6 +3148,20 @@ class Q02ReadinessSourceProfileTests(unittest.TestCase):
             self.assertEqual([row["cell"] for row in report["results"]],["task:Q-02"])
             self.assertEqual(report["results"][0]["executed_population"],sum(map(len,Q02_FIXTURE_SELECTORS.values())))
 
+    def test_q02_observation_rejects_another_profile_from_the_same_job(self):
+        with q02_python_source_fixture() as fixture:
+            observed = self.original(fixture)["release"]
+            req, payload = self.authenticate(fixture)
+            owner.admit_source_observation(observed, payload, req, fixture["job"], 9)
+
+            other = owner.source_profile(owner.SOURCE_PROFILE)
+            self.assertEqual(other["job"], fixture["job"])
+            observed["source_input_binding"].update(
+                profile=owner.SOURCE_PROFILE, payload_name=other["payload"],
+            )
+            with self.assertRaisesRegex(ValueError, "source test manifest profile differs"):
+                owner.admit_source_observation(observed, payload, req, fixture["job"], 9)
+
     def test_q02_requires_all_original_named_assertions_and_refuses_skip_failure_duplicate(self):
         with q02_python_source_fixture() as f:
             observed=self.original(f)
@@ -3308,6 +3342,1283 @@ class QualificationOutputFilenameTests(unittest.TestCase):
         for legacy in ('pi-qualification.json','sandbox-qualification.json','pi-sdk-qualification.json'):
             self.assertNotIn(legacy,source)
 
+
+
+HOOK_REVIEW_FIXTURE_PATHS = frozenset(['.codearbiter/reports/agent-lane-proof.json', '.github/major-qualification-policy.json', '.github/major-test-selections.json', '.github/scripts/_boundedproc.py', '.github/scripts/_contextverificationlib.py', '.github/scripts/_immutable_git_blobs.py', '.github/scripts/check_skill_proof_fresh.py', '.github/scripts/ci20_native_binding.py', '.github/scripts/major_qualification_report.py', '.github/scripts/major_readiness.py', '.github/scripts/test_check_skill_proof_fresh.py', '.github/scripts/test_generated_output.py', '.github/scripts/test_hook_ci_partition.py', '.github/scripts/test_review_funnel.py', '.github/workflows/ci.yml', 'core/artifact-release-manifest.json', 'core/hosts.json', 'core/pysrc/_artifactmanifestlib.py', 'core/pysrc/_gitexec.py', 'core/surface/COMMANDS.md', 'core/surface/README.md', 'core/surface/SPRINT.md', 'core/surface/agents/INDEX.md', 'core/surface/agents/architecture-drift-reviewer.md', 'core/surface/agents/auth-crypto-reviewer.md', 'core/surface/agents/authority-reviewer.md', 'core/surface/agents/backend-author.md', 'core/surface/agents/checkpoint-aggregator.md', 'core/surface/agents/coverage-auditor.md', 'core/surface/agents/decision-challenger.md', 'core/surface/agents/dependency-reviewer.md', 'core/surface/agents/design-quality-reviewer.md', 'core/surface/agents/finding-triage.md', 'core/surface/agents/frontend-author.md', 'core/surface/agents/grader.md', 'core/surface/agents/infra-author.md', 'core/surface/agents/map-deps.md', 'core/surface/agents/map-structure.md', 'core/surface/agents/migration-reviewer.md', 'core/surface/agents/scout.md', 'core/surface/agents/security-reviewer.md', 'core/surface/agents/tribunal-lens-reviewer.md', 'core/surface/agents/verdict-aggregator.md', 'core/surface/arbiter.md', 'core/surface/command-routes.json', 'core/surface/commands/add-dep.md', 'core/surface/commands/adr-status.md', 'core/surface/commands/adr.md', 'core/surface/commands/audit.md', 'core/surface/commands/checkpoint.md', 'core/surface/commands/chore.md', 'core/surface/commands/cleanup.md', 'core/surface/commands/commit.md', 'core/surface/commands/conflict.md', 'core/surface/commands/context-check.md', 'core/surface/commands/create-context.md', 'core/surface/commands/debug.md', 'core/surface/commands/decompose.md', 'core/surface/commands/doctor.md', 'core/surface/commands/feature.md', 'core/surface/commands/fix.md', 'core/surface/commands/init.md', 'core/surface/commands/override.md', 'core/surface/commands/pr.md', 'core/surface/commands/prune.md', 'core/surface/commands/reconcile.md', 'core/surface/commands/refactor.md', 'core/surface/commands/release.md', 'core/surface/commands/review.md', 'core/surface/commands/spike.md', 'core/surface/commands/sprint.md', 'core/surface/commands/standup.md', 'core/surface/commands/status.md', 'core/surface/commands/statusline.md', 'core/surface/commands/task.md', 'core/surface/commands/threat-model.md', 'core/surface/commands/tribunal.md', 'core/surface/commands/watch.md', 'core/surface/includes/anti-slop-design/INDEX.md', 'core/surface/includes/anti-slop-design/color.md', 'core/surface/includes/anti-slop-design/core.md', 'core/surface/includes/anti-slop-design/images.md', 'core/surface/includes/anti-slop-design/layout.md', 'core/surface/includes/anti-slop-design/medium-cli.md', 'core/surface/includes/anti-slop-design/medium-dataviz.md', 'core/surface/includes/anti-slop-design/medium-diagram.md', 'core/surface/includes/anti-slop-design/medium-documents.md', 'core/surface/includes/anti-slop-design/medium-slides.md', 'core/surface/includes/anti-slop-design/medium-web.md', 'core/surface/includes/anti-slop-design/typography.md', 'core/surface/includes/artifacts-attestation.md', 'core/surface/includes/artifacts.md', 'core/surface/includes/author-tdd-workflow.md', 'core/surface/includes/codex-host-notes.md', 'core/surface/includes/command-compatibility.md', 'core/surface/includes/compaction-charter.md', 'core/surface/includes/cut-docs.md', 'core/surface/includes/dangerous-mode.md', 'core/surface/includes/farm.md', 'core/surface/includes/fresh-verification.md', 'core/surface/includes/harvest.md', 'core/surface/includes/helper-invocation.md', 'core/surface/includes/knowledge.md', 'core/surface/includes/maturity-coverage.md', 'core/surface/includes/ops-mode.md', 'core/surface/includes/pi-host-notes.md', 'core/surface/includes/redirect.md', 'core/surface/includes/reference-map.md', 'core/surface/includes/review-matrix.md', 'core/surface/includes/reviewer-contract.md', 'core/surface/includes/routing-table.md', 'core/surface/includes/safety-core.md', 'core/surface/includes/security-gate-record.md', 'core/surface/includes/smarts/core.md', 'core/surface/includes/smarts/decision-log-format.md', 'core/surface/includes/smarts/lenses.md', 'core/surface/includes/sprint-authority.md', 'core/surface/includes/verification-boundary.md', 'core/surface/skills/INDEX.md', 'core/surface/skills/brainstorming/SKILL.md', 'core/surface/skills/commit-gate/SKILL.md', 'core/surface/skills/context-check/SKILL.md', 'core/surface/skills/context-creation/SKILL.md', 'core/surface/skills/context-creation/references/markdown-format.md', 'core/surface/skills/crypto-compliance/SKILL.md', 'core/surface/skills/debug/SKILL.md', 'core/surface/skills/debug/references/debug-handoff.schema.json', 'core/surface/skills/debug/references/handoff.md', 'core/surface/skills/debug/references/minimal-unresolved.json', 'core/surface/skills/debug/references/preparation.md', 'core/surface/skills/decision-lifecycle/SKILL.md', 'core/surface/skills/decision-lifecycle/references/adr-template.md', 'core/surface/skills/decision-lifecycle/references/authoring.md', 'core/surface/skills/decision-variance/SKILL.md', 'core/surface/skills/decision-variance/references/analysis.md', 'core/surface/skills/decompose/SKILL.md', 'core/surface/skills/decompose/references/markdown-format.md', 'core/surface/skills/dispatching-parallel-agents/SKILL.md', 'core/surface/skills/executing-plans/SKILL.md', 'core/surface/skills/finishing-a-development-branch/SKILL.md', 'core/surface/skills/post-merge-cleanup/SKILL.md', 'core/surface/skills/refactor/SKILL.md', 'core/surface/skills/release/SKILL.md', 'core/surface/skills/secret-handling/SKILL.md', 'core/surface/skills/security-architecture/SKILL.md', 'core/surface/skills/subagent-driven-development/SKILL.md', 'core/surface/skills/subagent-driven-development/references/farm-dispatch.md', 'core/surface/skills/tdd/SKILL.md', 'core/surface/skills/tribunal/SKILL.md', 'core/surface/skills/tribunal/references/ai-markers.md', 'core/surface/skills/tribunal/references/cost-and-models.md', 'core/surface/skills/tribunal/references/finding-record.md', 'core/surface/skills/tribunal/references/issue-filing.md', 'core/surface/skills/tribunal/references/lenses/appsec.md', 'core/surface/skills/tribunal/references/lenses/architecture.md', 'core/surface/skills/tribunal/references/lenses/change-closure.md', 'core/surface/skills/tribunal/references/lenses/coverage.md', 'core/surface/skills/tribunal/references/lenses/infra.md', 'core/surface/skills/tribunal/references/lenses/migration.md', 'core/surface/skills/tribunal/references/lenses/observability.md', 'core/surface/skills/tribunal/references/lenses/performance.md', 'core/surface/skills/tribunal/references/lenses/reliability.md', 'core/surface/skills/tribunal/references/lenses/secrets-supply.md', 'core/surface/skills/tribunal/references/lenses/semantic-contract.md', 'core/surface/skills/tribunal/references/lenses/test-fidelity.md', 'core/surface/skills/tribunal/references/lenses/typesafety.md', 'core/surface/skills/tribunal/references/report.md', 'core/surface/skills/tribunal/references/review-risk.md', 'core/surface/skills/tribunal/references/schemas.md', 'core/surface/skills/tribunal/references/telemetry.md', 'core/surface/skills/tribunal/references/triage.md', 'core/surface/skills/tribunal/references/verification-quality.md', 'core/surface/skills/using-git-worktrees/SKILL.md', 'core/surface/skills/writing-plans/SKILL.md', 'core/surface/skills/writing-plans/references/farm-plan.md', 'docs/state-contracts-major/PROGRAM.md', 'docs/state-contracts-major/contracts/decisions.json', 'docs/state-contracts-major/contracts/finding-dispositions.json', 'docs/state-contracts-major/contracts/tasks.json', 'plugins/ca-codex/agents/INDEX.md', 'plugins/ca-codex/agents/architecture-drift-reviewer.md', 'plugins/ca-codex/agents/auth-crypto-reviewer.md', 'plugins/ca-codex/agents/backend-author.md', 'plugins/ca-codex/agents/checkpoint-aggregator.md', 'plugins/ca-codex/agents/coverage-auditor.md', 'plugins/ca-codex/agents/decision-challenger.md', 'plugins/ca-codex/agents/dependency-reviewer.md', 'plugins/ca-codex/agents/design-quality-reviewer.md', 'plugins/ca-codex/agents/finding-triage.md', 'plugins/ca-codex/agents/frontend-author.md', 'plugins/ca-codex/agents/grader.md', 'plugins/ca-codex/agents/infra-author.md', 'plugins/ca-codex/agents/map-deps.md', 'plugins/ca-codex/agents/map-structure.md', 'plugins/ca-codex/agents/migration-reviewer.md', 'plugins/ca-codex/agents/scout.md', 'plugins/ca-codex/agents/security-reviewer.md', 'plugins/ca-codex/agents/tribunal-lens-reviewer.md', 'plugins/ca-codex/agents/verdict-aggregator.md', 'plugins/ca-codex/includes/reviewer-contract.md', 'plugins/ca-pi/agents/INDEX.md', 'plugins/ca-pi/agents/architecture-drift-reviewer.md', 'plugins/ca-pi/agents/auth-crypto-reviewer.md', 'plugins/ca-pi/agents/backend-author.md', 'plugins/ca-pi/agents/checkpoint-aggregator.md', 'plugins/ca-pi/agents/coverage-auditor.md', 'plugins/ca-pi/agents/decision-challenger.md', 'plugins/ca-pi/agents/dependency-reviewer.md', 'plugins/ca-pi/agents/design-quality-reviewer.md', 'plugins/ca-pi/agents/finding-triage.md', 'plugins/ca-pi/agents/frontend-author.md', 'plugins/ca-pi/agents/grader.md', 'plugins/ca-pi/agents/infra-author.md', 'plugins/ca-pi/agents/map-deps.md', 'plugins/ca-pi/agents/map-structure.md', 'plugins/ca-pi/agents/migration-reviewer.md', 'plugins/ca-pi/agents/scout.md', 'plugins/ca-pi/agents/security-reviewer.md', 'plugins/ca-pi/agents/tribunal-lens-reviewer.md', 'plugins/ca-pi/agents/verdict-aggregator.md', 'plugins/ca-pi/includes/reviewer-contract.md', 'plugins/ca/agents/INDEX.md', 'plugins/ca/agents/architecture-drift-reviewer.md', 'plugins/ca/agents/auth-crypto-reviewer.md', 'plugins/ca/agents/authority-reviewer.md', 'plugins/ca/agents/backend-author.md', 'plugins/ca/agents/checkpoint-aggregator.md', 'plugins/ca/agents/coverage-auditor.md', 'plugins/ca/agents/decision-challenger.md', 'plugins/ca/agents/dependency-reviewer.md', 'plugins/ca/agents/design-quality-reviewer.md', 'plugins/ca/agents/finding-triage.md', 'plugins/ca/agents/frontend-author.md', 'plugins/ca/agents/grader.md', 'plugins/ca/agents/infra-author.md', 'plugins/ca/agents/map-deps.md', 'plugins/ca/agents/map-structure.md', 'plugins/ca/agents/migration-reviewer.md', 'plugins/ca/agents/scout.md', 'plugins/ca/agents/security-reviewer.md', 'plugins/ca/agents/tribunal-lens-reviewer.md', 'plugins/ca/agents/verdict-aggregator.md', 'plugins/ca/includes/reviewer-contract.md', 'plugins/ca/skills/release/SKILL.md', 'site/src/curated/commands/review.md', 'tools/build-artifact-manifest-contract.py', 'tools/build-surface.py', 'tools/command_compatibility.py', 'tools/host_descriptors.py', 'tools/owned_output.py'])
+HOOK_REVIEW_FIXTURE_SELECTORS = frozenset(['python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_author_collection_does_not_invoke_review_verdict', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_persistence_is_explicit_and_non_overwriting', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_writer_reports_the_selected_dated_filename', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_curated_review_projection_uses_the_read_only_terminal', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_dispatch_contract_uses_canonical_routes_and_preserves_findings', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_inbound_pr_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_triage_requires_the_complete_batch_contract', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_verdict_has_unambiguous_incomplete_precedence_and_schema', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_working_diff_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking'])
+
+
+class HookReviewObservationProfileTests(unittest.TestCase):
+    """Original unfiltered suite; only its complete W-F03 policy group is mapped."""
+    fixture = None
+
+    @classmethod
+    def tearDownClass(cls):
+        if cls.fixture is not None:
+            cls.fixture["environment"].stop()
+            cls.fixture["temporary"].cleanup()
+            cls.fixture = None
+
+    def original(self):
+        cls = type(self)
+        if cls.fixture is None:
+            temporary = tempfile.TemporaryDirectory(prefix="ca-hook-review-profile-")
+            base = Path(temporary.name).resolve(); repo = base / "repo"; repo.mkdir()
+            canonical = Path(os.environ.get("CA_HOOKS_CANONICAL_ROOT", owner.ROOT))
+            for relative in HOOK_REVIEW_FIXTURE_PATHS:
+                target = repo / relative; target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes((canonical / relative).read_bytes())
+            git = shutil.which("git"); self.assertIsNotNone(git)
+            env = {k: v for k, v in os.environ.items() if k.upper() in
+                   ("SYSTEMROOT", "WINDIR", "SYSTEMDRIVE", "COMSPEC", "PATHEXT")}
+            env.update(PATH=os.pathsep.join([str(Path(git).parent), str(Path(sys.executable).parent)]),
+                       HOME=str(base), USERPROFILE=str(base), TEMP=str(base), TMP=str(base),
+                       GIT_CONFIG_GLOBAL=os.devnull, GIT_CONFIG_NOSYSTEM="1", GIT_OPTIONAL_LOCKS="0",
+                       GIT_AUTHOR_NAME="fixture", GIT_AUTHOR_EMAIL="fixture@invalid",
+                       GIT_COMMITTER_NAME="fixture", GIT_COMMITTER_EMAIL="fixture@invalid",
+                       GITHUB_RUN_ID="7", PYTHONDONTWRITEBYTECODE="1")
+            environment = mock.patch.dict(os.environ, env, clear=True); environment.start()
+            cls.fixture = f = dict(temporary=temporary, environment=environment, base=base, repo=repo,
+                staged=base/"inputs", output=base/"observation.json", profile="hooks-finding-contracts-v1",
+                job="[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+                payload="major-source-inputs-hooks-findings-windows-contracts")
+            for args in (["init"], ["config", "core.autocrlf", "false"], ["add", "."],
+                         ["-c", "commit.gpgsign=false", "commit", "-qm", "Hook source fixture"]):
+                run_git_phase([git, "-C", str(repo), *args], phase="init" if args[0] in ("init", "config")
+                              else "index" if args[0] == "add" else "commit", trace_dir=base)
+            try:
+                owner.prepare_source_payload(repo, f["staged"], f["job"], f["profile"])
+                with mock.patch.object(owner.runpy, "run_path", wraps=owner.runpy.run_path) as original:
+                    self.assertEqual(owner.observe_python(repo, ".github/scripts/test_review_funnel.py", [],
+                        f["output"], f["staged"], f["profile"]), 0)
+                    self.assertEqual(original.call_count, 1)
+            except ValueError as error:
+                self.fail("The existing original review-suite observation route is unavailable: " + str(error))
+            f["observed"] = owner.load_json(f["output"])
+            archive = io.BytesIO()
+            with zipfile.ZipFile(archive, "w") as z:
+                for path in sorted(f["staged"].rglob("*")):
+                    if path.is_file(): z.writestr(path.relative_to(f["staged"]).as_posix(), path.read_bytes())
+            f["req"] = {**owner.source_identity(repo, f["profile"]), "ci_run_id": 7}
+            job = {"id": 9, "name": f["job"], "status": "in_progress", "conclusion": None,
+                   "steps": [{"name": "Upload hook finding source-test inputs", "status": "completed", "conclusion": "success"}]}
+            with mock.patch.object(owner.readiness, "artifact_bytes", return_value=archive.getvalue()),                  mock.patch.object(owner.readiness, "validate_upload", side_effect=AssertionError("producer has no completed job log")):
+                f["authenticated"] = owner.authenticated_payload({"id": 8, "name": f["payload"]},
+                    f["req"], repo, source_job=job)
+        self.assertIn("observed", cls.fixture, "Earlier original invocation must succeed before admission controls")
+        return cls.fixture
+
+    def selection(self, f):
+        return {"schema": owner.SELECTIONS, "groups": [{"id": "hook-severity-policy", "job": f["job"],
+            "payload_name": f["payload"], "observation": "review", "proof_kind": "source-test",
+            "selectors": sorted(s for s in HOOK_REVIEW_FIXTURE_SELECTORS if ".SeverityDispositionPolicyTest." in s),
+            "cells": ["disposition:findings:W-F03"],
+            "scope": "W-F03 declarative severity policy only, not model behavior or task/installed acceptance"}]}
+
+    def admit(self, f, observed=None, payload=None, req=None, job=None, selection=None):
+        req = req or {**f["req"], "cells": ["disposition:findings:W-F03"],
+                      "cell_jobs": {"disposition:findings:W-F03": f["job"]}}
+        return owner.build_report(req, job_name=job or f["job"], job_id=9,
+            selections=selection or self.selection(f), observations={"review": observed or copy.deepcopy(f["observed"])},
+            payloads={f["payload"]: payload if payload is not None else copy.deepcopy(f["authenticated"])})
+
+    def test_a_original_unfiltered_review_suite_is_observed_once_with_only_its_finite_finding(self):
+        f = self.original()
+        self.assertEqual({t["id"] for t in f["observed"]["tests"]}, HOOK_REVIEW_FIXTURE_SELECTORS)
+        self.assertTrue(all(t["result"] == "passed" for t in f["observed"]["tests"]))
+        report = self.admit(f)
+        self.assertEqual([r["cell"] for r in report["results"]], ["disposition:findings:W-F03"])
+        self.assertEqual(report["results"][0]["selected_population"], 6)
+        self.assertEqual(report["results"][0]["executed_population"], 6)
+
+    def test_b_foreign_filtered_and_missing_payload_commands_refuse_before_original_execution(self):
+        f = self.original()
+        with mock.patch.object(owner.runpy, "run_path", side_effect=AssertionError("must not execute")):
+            for script, args, payload in ((".github/scripts/test_review_funnel.py", ["SeverityDispositionPolicyTest"], f["staged"]),
+                 (".github/scripts/major_qualification_report.py", [], f["staged"]),
+                 (".github/scripts/test_review_funnel.py", [], None)):
+                with self.subTest(script=script, args=args, payload=payload), self.assertRaises(ValueError):
+                    owner.observe_python(f["repo"], script, args, f["base"]/"refused.json", payload, f["profile"])
+        self.assertFalse((f["base"]/"refused.json").exists())
+
+    def test_c_reader_refuses_missing_duplicate_skipped_and_failed_selected_results(self):
+        f = self.original()
+        for failure in ("missing", "duplicate", "skipped", "failed"):
+            bad = copy.deepcopy(f["observed"])
+            index = next(i for i, row in enumerate(bad["tests"]) if ".SeverityDispositionPolicyTest." in row["id"])
+            if failure == "missing": bad["tests"].pop(index)
+            elif failure == "duplicate": bad["tests"].append(copy.deepcopy(bad["tests"][index]))
+            else: bad["tests"][index]["result"] = failure
+            with self.subTest(failure=failure), self.assertRaises(ValueError): self.admit(f, bad)
+
+    def test_d_reader_refuses_foreign_source_run_job_payload_profile_and_arguments(self):
+        f = self.original()
+        for key, value in (("source_commit", "f"*40), ("source_tree", "f"*40), ("ci_run_id", 8),
+                           ("source_stable", False), ("exit_code", 1), ("argv", ["python", ".github/scripts/test_review_funnel.py", "-k", "partial"])):
+            bad = copy.deepcopy(f["observed"]); bad[key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError): self.admit(f, bad)
+        for key, value in (("profile", owner.SOURCE_PROFILE), ("payload_name", "foreign"), ("manifest_sha256", "f"*64)):
+            bad = copy.deepcopy(f["observed"]); bad["source_input_binding"][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError): self.admit(f, bad)
+        with self.assertRaises(ValueError): self.admit(f, payload={})
+        with self.assertRaises(ValueError): self.admit(f, job="other job")
+        bad = copy.deepcopy(f["authenticated"]); bad["source_upload_job_id"] = 10
+        with self.assertRaises(ValueError): self.admit(f, payload=bad)
+
+    def test_e_changed_source_or_agent_inventory_cannot_be_freshened(self):
+        f = self.original(); path = f["repo"]/"plugins/ca/agents/dependency-reviewer.md"; raw = path.read_bytes()
+        try:
+            path.write_bytes(raw+b"\nchanged\n")
+            with self.assertRaises(ValueError): owner.source_observation_binding(f["repo"], f["staged"], f["req"], f["profile"])
+        finally: path.write_bytes(raw)
+        extra = f["repo"]/"plugins/ca/agents/unreviewed.md"
+        try:
+            extra.write_text("unreviewed", encoding="utf-8")
+            with self.assertRaises(ValueError): owner._hook_review_members(f["repo"])
+        finally: extra.unlink()
+
+    def test_f_profile_rejects_incomplete_composition_other_findings_tasks_and_hosts(self):
+        f = self.original()
+        for cell in ("disposition:findings:W-F08", "task:HW-09", "installed:claude:workflow"):
+            req = {**f["req"], "cells": [cell], "cell_jobs": {cell: f["job"]}}
+            selection = self.selection(f); selection["groups"][0]["cells"] = [cell]
+            with self.subTest(cell=cell), self.assertRaises(ValueError): self.admit(f, req=req, selection=selection)
+        for changed in ("missing-selector", "extra-selector", "duplicate-selector"):
+            selection = self.selection(f); selectors = selection["groups"][0]["selectors"]
+            if changed == "missing-selector": selectors.pop()
+            elif changed == "extra-selector": selectors.append(next(s for s in HOOK_REVIEW_FIXTURE_SELECTORS if ".ReadOnlyReviewFunnelTest." in s))
+            else: selectors.append(selectors[0])
+            with self.subTest(change=changed), self.assertRaises(ValueError): self.admit(f, selection=selection)
+
+    def test_g_final_reader_authenticates_original_hook_source_upload_and_owner(self):
+        cell="disposition:findings:W-F03";job_name="[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>"
+        raw=io.BytesIO()
+        with zipfile.ZipFile(raw,"w") as archive:archive.writestr("source-member",b"inert")
+        content=raw.getvalue();members=owner.readiness.members(content)
+        source={"id":8,"name":"major-source-inputs-hooks-findings-windows-contracts"};artifact={"id":10,"name":"major-qualification-9"}
+        job={"id":9,"name":job_name,"status":"completed","conclusion":"success"}
+        req={"source_commit":"a"*40,"source_tree":"b"*40,"ci_run_id":7,"cells":[cell],"cell_jobs":{cell:job_name},"required_artifact_names":[source["name"]]}
+        report={"schema":"codearbiter-major-qualification/2",**{key:req[key] for key in ("source_commit","source_tree","ci_run_id")},"job_id":9,
+          "payloads":[{"artifact_id":8,"archive_sha256":owner.readiness.digest(content),"members":members}],
+          "results":[{"cell":cell,"result":"PASSED","commands":[{"argv":["python",".github/scripts/test_review_funnel.py"],"exit_code":0}],"selected_population":1,"executed_population":1,"payload_artifact_id":8}]}
+        jobs=[job,{"id":11,"name":"major readiness producer"}]
+        with mock.patch.object(owner.readiness,"read_artifact_json",return_value=report), \
+             mock.patch.object(owner.readiness,"artifact_bytes",return_value=content), \
+             mock.patch.object(owner.readiness,"validate_upload") as attribution:
+            owner.readiness.produce(req,[source,artifact],jobs)
+            self.assertEqual(attribution.call_args_list,[mock.call(job,artifact,"Upload major qualification report"),
+                mock.call(job,source,"Upload hook finding source-test inputs")])
+            for failure in ("wrong-owner","in-progress","upload-refused"):
+                modified=copy.deepcopy(jobs);requirements=copy.deepcopy(req)
+                attribution.side_effect=None
+                if failure=="wrong-owner":
+                    modified[0]["name"]="other";requirements["cell_jobs"][cell]="other"
+                elif failure=="in-progress":modified[0].update(status="in_progress",conclusion=None)
+                else:attribution.side_effect=owner.readiness.ReadinessError("original source uploader refused")
+                with self.subTest(failure=failure),self.assertRaises(owner.readiness.ReadinessError):
+                    owner.readiness.produce(requirements,[source,artifact],modified)
+
+
+    def test_h_ci_wraps_one_original_execution_and_keeps_closed_source_roles(self):
+        import test_hook_ci_partition as partition
+        text = (owner.ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        def check(value):
+            block = partition.job_block(value, "hooks")
+            self.assertEqual(block.count("--source-profile hooks-finding-contracts-v1"), 2)
+            self.assertEqual(block.count("-- .github/scripts/test_review_funnel.py\n"), 1)
+            self.assertEqual(block.count("run: python .github/scripts/test_review_funnel.py\n"), 1)
+            fallback = next(step for step in partition.step_blocks(block)
+                            if step.startswith("      - name: Run read-only review funnel contract\n"))
+            self.assertIn("if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')", fallback)
+            self.assertLess(block.index("id: hook_finding_source_prepare"), block.index("id: hook_review_observed"))
+            self.assertLess(block.index("id: hook_review_observed"), block.index("id: hook_finding_source_upload"))
+            self.assertIn("steps.hook_review_observed.outcome == 'success'", block)
+            self.assertIn("steps.hook_finding_source_upload.outcome == 'success'", block)
+            self.assertIn('--observation "hook-review=${{ runner.temp }}/python-hook-review-observation.json"', block)
+            self.assertIn('--payload-root "major-source-inputs-hooks-findings-windows-contracts=${{ github.workspace }}"', block)
+            self.assertEqual(partition.validate(value)["contracts"], 75)
+        check(text)
+        for before, after in (("-- .github/scripts/test_review_funnel.py\n", "-- .github/scripts/test_review_funnel.py -k partial\n"),
+             ("steps.hook_review_observed.outcome == 'success'", "true"),
+             ("steps.hook_finding_source_upload.outcome == 'success'", "true"),
+             ("--source-profile hooks-finding-contracts-v1", "--source-profile unreviewed"),
+             ("Upload hook finding source-test inputs", "Upload unknown inputs")):
+            self.assertIn(before, text)
+            with self.subTest(change=before), self.assertRaises((AssertionError, ValueError)): check(text.replace(before, after, 1))
+
+
+
+class PiSandboxFiniteFindingRoutingTests(unittest.TestCase):
+    """Pure report admission over inert named outcomes; no TS/Docker/Pi execution."""
+    EXPECTED = {'disposition:findings:SF01': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population', 'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects'], 'scope': 'Finite SF01 source-test behavior: real loopback child proxy and parent gate precede exact owned file effects; bridge refusal, disabled/untrusted lifecycle, token/replay/expiry/sequence bounds refuse effects. Permission callback and native factories are fixture ports. No human TUI, installed author, shell containment or whole PI-D task qualification.'}, 'disposition:findings:SF02': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed', 'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session'], 'scope': 'Finite SF02 source-test persona readiness, failure, healthy/retry and retired-session behavior through shipped parent installation with fixture host/bridge ports; no model or installed-host qualification.'}, 'disposition:findings:SF03': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once', 'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once'], 'scope': 'Finite SF03 source-test late metrics cannot install into disposed/off sessions or degrade the current session; both completion orders preserve current-session installation and native rendering. Fixture TUI ports; no visible-host or terminal qualification.'}, 'disposition:findings:SF12': {'profile': 'pi-tools-v1', 'selectors': ['vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure', 'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads'], 'scope': 'Finite SF12 source-test compatibility declares private approval unavailable on Pi 1.5.0 and legacy runtime-gated only; isolated dialog controls are synthetic and never ordinary installed approval or human consent evidence. No production doctor or host-observed approval qualification.'}, 'disposition:findings:SF08': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box', 'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box'], 'scope': 'Finite SF08 requires pure cache-key/provenance/refusal guards AND both original real Docker builder cases: distinct staging names reuse the labeled immutable image, changed dependency bytes rebuild, concurrent cold requests converge and deleting one box preserves another. No remote clone/auth, arbitrary image or installed CLI credit.'}, 'disposition:findings:SF10': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction', 'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target'], 'scope': 'Finite SF10 source-test unavailable discovery, cancellation-independent compensation, retained unknown cleanup references and refusal to destroy unobserved targets through actual production functions with injected Docker observations. No universal cleanup, real daemon outage or host containment claim.'}, 'disposition:findings:SF09': {'profile': 'sandbox-tools-v1', 'selectors': ['vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment', 'vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box'], 'scope': 'Finite SF09 requires the original real Docker overflow case plus unit stop/inspect guard: actual capped exec overflows without timeout, exact target independently inspects stopped and a separate running box remains alive. No arbitrary workload, global cleanup or installed CLI qualification.'}}
+
+    def groups(self, profile):
+        return [{"id": "finite-" + cell.rsplit(":", 1)[1], "job": owner.TS_PROFILE_JOBS[profile],
+            "payload_name": owner.TS_PROFILE_PAYLOADS[profile], "observation": "pi-tools" if profile == "pi-tools-v1" else "sandbox-tools",
+            "proof_kind": "source-test", "selectors": row["selectors"], "cells": [cell], "scope": row["scope"]}
+            for cell, row in self.EXPECTED.items() if row["profile"] == profile]
+
+    def fixture_report(self, fixture, groups):
+        profile = fixture["spec"]["root"]
+        payload = VitestSourceProducerTests.authenticate(self, fixture)
+        names = sorted({name for group in groups for name in group["selectors"]})
+        observed = {"format": owner.OBSERVATION, **fixture["identity"], "ci_run_id": 7,
+            "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+            "argv": fixture["command"], "exit_code": 0,
+            "tests": [{"id": name, "result": "passed"} for name in names],
+            "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": fixture["manifest"]["profile"],
+                "payload_name": fixture["spec"]["payload"],
+                "manifest_sha256": owner.readiness.digest((fixture["staged"] / owner.SOURCE_MANIFEST).read_bytes())}}
+        req = {**fixture["identity"], "ci_run_id": 7, "cells": sorted(g["cells"][0] for g in groups),
+            "cell_jobs": {g["cells"][0]: fixture["spec"]["job"] for g in groups}}
+        def build(o=observed, p=payload, selected=groups, required=req, job=fixture["spec"]["job"]):
+            return owner.build_report(required, job_name=job, job_id=9,
+                selections={"schema": owner.SELECTIONS, "groups": selected},
+                observations={groups[0]["observation"]: o}, payloads={fixture["spec"]["payload"]: p})
+        return observed, payload, req, build
+
+    def test_a_complete_existing_finite_findings_reach_the_original_report_boundary(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with self.subTest(profile=profile), vitest_source_fixture(profile) as f:
+                groups = self.groups(profile)
+                _, _, req, build = self.fixture_report(f, groups)
+                try:
+                    report = build()
+                except ValueError as exc:
+                    self.fail("original report boundary lacks complete finite finding mapping: " + str(exc))
+                self.assertEqual({r["cell"] for r in report["results"]}, set(req["cells"]))
+
+    def test_b_configuration_requires_exact_complete_finite_compositions_and_existing_source_closure(self):
+        groups = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        selected = [g for g in groups if set(g["cells"]) & set(self.EXPECTED)]
+        self.assertEqual(len(selected), len(self.EXPECTED))
+        for cell, row in self.EXPECTED.items():
+            group, = [g for g in selected if cell in g["cells"]]
+            self.assertEqual(group["cells"], [cell])
+            self.assertEqual(group["job"], owner.TS_PROFILE_JOBS[row["profile"]])
+            self.assertEqual(policy["cell_job_bindings"][cell], group["job"])
+            self.assertEqual(group["payload_name"], owner.TS_PROFILE_PAYLOADS[row["profile"]])
+            self.assertEqual(group["observation"], "pi-tools" if row["profile"] == "pi-tools-v1" else "sandbox-tools")
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertEqual(set(group["selectors"]), set(row["selectors"]))
+            for selector in group["selectors"]:
+                path, title = selector[len("vitest:"):].split(":", 1)
+                self.assertIn(path, owner.TS_PROFILE_PATHS[row["profile"]])
+                body = (owner.ROOT / path).read_text(encoding="utf-8")
+                # Concrete source name witnesses: dynamic builder/order titles
+                # retain their exact two finite expansions, not regex selectors.
+                if ": distinct staging names" in title:
+                    self.assertIn("distinct staging names reuse the exact labeled image and preserve another box", body)
+                    self.assertIn('["dockerfile-fallback", "nixpacks"]', body)
+                elif "old and new session metrics resolve" in title:
+                    self.assertIn('"old and new session metrics resolve %s: only the new session installs, once"', body)
+                    self.assertIn('["old-first", "new-first"]', body)
+                else:
+                    self.assertTrue(any(title.endswith(t) for t in __import__('re').findall(r'(?:test|it)\("([^"\n]+)"', body)), selector)
+        held = "disposition:findings:SF11"
+        self.assertNotIn(held, policy["cell_job_bindings"])
+        self.assertFalse(any(held in g["cells"] for g in groups))
+
+    def test_c_no_missing_skipped_failed_or_duplicate_outcome_can_qualify_a_finding(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with vitest_source_fixture(profile) as f:
+                groups = self.groups(profile); observed, _, _, build = self.fixture_report(f, groups)
+                self.assertTrue(build()["results"])
+                for name in sorted({s for g in groups for s in g["selectors"]}):
+                    for state in ("missing", "skipped", "failed", "duplicate"):
+                        changed = copy.deepcopy(observed); item = next(t for t in changed["tests"] if t["id"] == name)
+                        if state == "missing": changed["tests"].remove(item)
+                        elif state == "duplicate": changed["tests"].append(dict(item))
+                        else: item["result"] = state
+                        with self.subTest(selector=name, state=state), self.assertRaisesRegex(ValueError, "selected named test"):
+                            build(o=changed)
+
+    def test_d_partial_added_cross_profile_and_unowned_scope_compositions_refuse(self):
+        for profile in TS_PROFILE_FIXTURES:
+            with vitest_source_fixture(profile) as f:
+                groups = self.groups(profile); observed, payload, req, build = self.fixture_report(f, groups)
+                for index, group in enumerate(groups):
+                    for selector in group["selectors"]:
+                        changed = copy.deepcopy(groups); changed[index]["selectors"].remove(selector)
+                        with self.subTest(cell=group["cells"], missing=selector), self.assertRaisesRegex(ValueError, "complete exact finite finding"):
+                            build(selected=changed)
+                    changed = copy.deepcopy(groups); changed[index]["selectors"].append("vitest:foreign.test.ts:invented")
+                    with self.assertRaisesRegex(ValueError, "complete exact finite finding"): build(selected=changed)
+                for failure in ("source", "run", "unstable", "exit", "profile", "manifest", "uploader", "role", "job"):
+                    o, p, selected, required = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(groups), copy.deepcopy(req)
+                    job = f["spec"]["job"]
+                    if failure == "source": o["source_commit"] = "f" * 40
+                    if failure == "run": o["ci_run_id"] = 8
+                    if failure == "unstable": o["source_stable"] = False
+                    if failure == "exit": o["exit_code"] = 1
+                    if failure == "profile": o["source_input_binding"]["profile"] = "sandbox-tools-v1" if profile == "pi-tools-v1" else "pi-tools-v1"
+                    if failure == "manifest": p["source_manifest_sha256"] = "0" * 64
+                    if failure == "uploader": p["source_upload_job_id"] = True
+                    if failure == "role": selected[0]["payload_name"] = "foreign-native-archive"
+                    if failure == "job":
+                        job = "unrelated job"
+                        for g in selected: g["job"] = job
+                        required["cell_jobs"] = dict.fromkeys(required["cells"], job)
+                    with self.subTest(failure=failure), self.assertRaises(ValueError): build(o, p, selected, required, job)
+                for cell in ("disposition:findings:SF11", "task:PI-D07", "task:SBX-C01", "installed:pi:1.5.0", "disposition:machines:S01"):
+                    changed = copy.deepcopy(groups[:1]); changed[0]["cells"] = [cell]
+                    required = {**req, "cells": [cell], "cell_jobs": {cell: f["spec"]["job"]}}
+                    with self.subTest(unowned=cell), self.assertRaises(ValueError): build(selected=changed, required=required)
+
+    def test_e_real_overflow_target_and_survivor_assertions_reach_existing_report_admission(self):
+        with vitest_source_fixture("sandbox-tools-v1") as f:
+            group, = [g for g in self.groups("sandbox-tools-v1") if g["cells"] == ["disposition:findings:SF09"]]
+            _, _, _, build = self.fixture_report(f, [group])
+            try:
+                report = build()
+            except ValueError as exc:
+                self.fail("original overflow report boundary lacks its real target/survivor composition: " + str(exc))
+            self.assertEqual([r["cell"] for r in report["results"]], ["disposition:findings:SF09"])
+
+
+class FarmFiniteFindingObservationPrerequisiteTests(unittest.TestCase):
+    """Criterion for original Farm source-test report admission, not runtime proof."""
+    PROFILE = "farm-tools-v1"
+    JOB = "[CHECK] | [CA  ] | Farm dispatcher contract"
+    PAYLOAD = "major-source-inputs-farm-dispatcher"
+    UPLOAD = "Upload Farm source-test inputs"
+    PATHS = frozenset(('.github/fixtures/artifact-release-manifest.json',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_boundedproc.py',
+ '.github/scripts/_contextverificationlib.py',
+ '.github/scripts/_immutable_git_blobs.py',
+ '.github/scripts/ci20_native_binding.py',
+ '.github/scripts/major_qualification_report.py',
+ '.github/scripts/major_readiness.py',
+ '.github/workflows/ci.yml',
+ 'core/artifact-release-manifest.json',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactmanifestlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_gitexec.py',
+ 'core/pysrc/_replylib.py',
+ 'plugins/ca/tools/.env.example',
+ 'plugins/ca/tools/__fixtures__/simple.plan.json',
+ 'plugins/ca/tools/artifact-manifest.test.ts',
+ 'plugins/ca/tools/artifact-manifest.ts',
+ 'plugins/ca/tools/exec.test.ts',
+ 'plugins/ca/tools/exec.ts',
+ 'plugins/ca/tools/farm-cleanup-observation.test.ts',
+ 'plugins/ca/tools/farm-dist.test.ts',
+ 'plugins/ca/tools/farm-interruption.test.ts',
+ 'plugins/ca/tools/farm-recovery.test.ts',
+ 'plugins/ca/tools/farm-recovery.ts',
+ 'plugins/ca/tools/farm-registry-lock.test.ts',
+ 'plugins/ca/tools/farm-surface.test.ts',
+ 'plugins/ca/tools/farm.js',
+ 'plugins/ca/tools/farm.test.ts',
+ 'plugins/ca/tools/farm.ts',
+ 'plugins/ca/tools/farm.unit.test.ts',
+ 'plugins/ca/tools/mutation.test.ts',
+ 'plugins/ca/tools/mutation.ts',
+ 'plugins/ca/tools/package-lock.json',
+ 'plugins/ca/tools/package.json',
+ 'plugins/ca/tools/plan-contract.test.ts',
+ 'plugins/ca/tools/plan.schema.json',
+ 'plugins/ca/tools/redactor.test.ts',
+ 'plugins/ca/tools/redactor.ts',
+ 'plugins/ca/tools/state-contracts.test.ts',
+ 'plugins/ca/tools/tsconfig.json',
+ 'plugins/ca/tools/vitest.config.ts',
+ 'plugins/ca/tools/worktree-fs.test.ts',
+ 'plugins/ca/tools/worktree-fs.ts'))
+    EXPECTED = {'disposition:findings:SF04': {'selectors': ['vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations candidate-five-fields',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations qualified-declaration-six-fields',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-field',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-format',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations malformed-context',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-context-platform',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations wrong-context-binary',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unknown-context-field',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations wrong-platform-path',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations unqualified-context',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations bounds UTF-8 bytes before parsing',
+                                             'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared '
+                                             'native manifest declarations rejects duplicate and '
+                                             'escaped-duplicate keys'],
+                               'scope': 'Finite shared Farm parser acceptance of the optional sixth '
+                                        'context_qualification declaration and all original '
+                                        'malformed/unknown/duplicate/bounded input refusals. Fixtures are '
+                                        'synthetic schema declarations, never native runtime or context '
+                                        'qualification.'},
+ 'disposition:findings:SF05': {'selectors': ['vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 '
+                                             'exclusive identities preserve evidence under a same-ID race',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 '
+                                             'reconciles a post-merge crash in real Git without changing a '
+                                             'ref or calling an author',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-merge process interruption preserves unknown cleanup '
+                                             'and concurrent receipt-only recovery (source)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-merge process interruption preserves unknown cleanup '
+                                             'and concurrent receipt-only recovery (bundle)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-commit process interruption retains unacknowledged '
+                                             'candidate without recovered green (source)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real post-commit process interruption retains unacknowledged '
+                                             'candidate without recovered green (bundle)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real pre-merge interruption preserves pending merge resources '
+                                             'through receipt-only recovery (source)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'real pre-merge interruption preserves pending merge resources '
+                                             'through receipt-only recovery (bundle)',
+                                             'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 '
+                                             'unblocked real post-merge hook control publishes normal green '
+                                             'receipt (bundle)',
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) #397: a failed report publication leaves the '
+                                             "previous run's complete report intact — never a truncated one",
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) #387: a green run whose farm-report.json cannot '
+                                             'be published exits non-zero and never claims a Report path',
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) FARM-R01 journal publication failure drains '
+                                             'independent tasks and retains their real outcomes',
+                                             'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication '
+                                             '(#397 / #387) #387: a failure to publish farm-report.md also '
+                                             'fails the run'],
+                               'scope': 'Finite JSON/Markdown/effect-journal receipt failure remains '
+                                        'explicit, previous complete report survives and independently '
+                                        'running tasks drain; receipt-only recovery through actual '
+                                        'source/bundle interruptions never calls an author or changes '
+                                        'recorded refs/registry/original evidence. Deterministic local HTTP '
+                                        'replies substitute model/provider; no real provider, installed '
+                                        'approval or global process-containment qualification.'},
+ 'disposition:findings:SF06': {'selectors': ['vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 '
+                                             'preserves failed containment and admits no reset or second '
+                                             'author',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate '
+                                             'retains executor outcome instead of flattening code 125 into '
+                                             'test failure',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 '
+                                             'uncontained sample setup retains scratch resources without '
+                                             'authoring or reset'],
+                               'scope': 'Finite preservation of failed containment through actual '
+                                        'gate/runTask/setup consumers: no reset, mutation or second author; '
+                                        'retained outcome and scratch resources remain unknown. Executor '
+                                        'observations are injected, not OS containment proof.'},
+ 'disposition:findings:SF07': {'selectors': ['vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 '
+                                             'refuses unknown Git drift instead of inventing a clean '
+                                             'observation',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 '
+                                             'bounded read-only retry accepts only a successful current '
+                                             'observation',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh '
+                                             'pre-stage dirty drift controls dependent mutations',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh '
+                                             'pre-stage unavailable drift controls dependent mutations',
+                                             'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh '
+                                             'pre-stage clean drift controls dependent mutations'],
+                               'scope': 'Finite failed/malformed Git observation refusal, bounded read-only '
+                                        'retry and fresh pre-stage dirty/unavailable/clean mutation '
+                                        'decisions; fixture observations do not qualify arbitrary '
+                                        'repository/concurrency or installed host state.'}}
+
+    def test_original_unfiltered_farm_findings_have_closed_source_and_named_report_admission(self):
+        # Existing public API must admit this finite original owner. The current
+        # absence is an assertion failure, never a missing method/import seam.
+        try:
+            spec = owner.source_profile(self.PROFILE)
+        except ValueError as exc:
+            self.fail("original Farm finding source profile is unavailable: " + str(exc))
+        self.assertEqual(spec, {"paths": self.PATHS, "job": self.JOB,
+            "payload": self.PAYLOAD, "upload": self.UPLOAD, "root": "plugins/ca/tools"})
+        configured = owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+        groups = [g for g in configured if set(g["cells"]) & set(self.EXPECTED)]
+        self.assertEqual(len(groups), len(self.EXPECTED))
+        policy = owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+        for cell, row in self.EXPECTED.items():
+            group, = [g for g in groups if cell in g["cells"]]
+            self.assertEqual(group["cells"], [cell])
+            self.assertEqual(group["job"], self.JOB)
+            self.assertEqual(policy["cell_job_bindings"][cell], self.JOB)
+            self.assertEqual(group["payload_name"], self.PAYLOAD)
+            self.assertEqual(group["observation"], "farm-tools")
+            self.assertEqual(group["proof_kind"], "source-test")
+            self.assertEqual(set(group["selectors"]), set(row["selectors"]))
+        fixture_spec = {"job": self.JOB, "payload": self.PAYLOAD, "root": "plugins/ca/tools",
+            "test": "plugins/ca/tools/state-contracts.test.ts", "paths": sorted(self.PATHS)}
+        with mock.patch.dict(TS_PROFILE_FIXTURES, {self.PROFILE: fixture_spec}), vitest_source_fixture(self.PROFILE) as f:
+            source_job = {"id": 9, "name": self.JOB, "status": "in_progress", "conclusion": None,
+                "steps": [{"name": self.UPLOAD, "status": "completed", "conclusion": "success"}]}
+            payload = VitestSourceProducerTests.authenticate(self, f, job=source_job)
+            observed = {"format": owner.OBSERVATION, **f["identity"], "ci_run_id": 7,
+                "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+                "argv": f["command"], "exit_code": 0,
+                "tests": [{"id": s, "result": "passed"} for s in sorted({s for r in self.EXPECTED.values() for s in r["selectors"]})],
+                "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": self.PROFILE,
+                    "payload_name": self.PAYLOAD,
+                    "manifest_sha256": owner.readiness.digest((f["staged"] / owner.SOURCE_MANIFEST).read_bytes())}}
+            required = {**f["identity"], "ci_run_id": 7, "cells": sorted(self.EXPECTED),
+                "cell_jobs": dict.fromkeys(self.EXPECTED, self.JOB)}
+            report = owner.build_report(required, job_name=self.JOB, job_id=9,
+                selections={"schema": owner.SELECTIONS, "groups": groups}, observations={"farm-tools": observed},
+                payloads={self.PAYLOAD: payload})
+            self.assertEqual({r["cell"] for r in report["results"]}, set(self.EXPECTED))
+            self.assertTrue(all(r["result"] == "PASSED" for r in report["results"]))
+
+    @contextmanager
+    def bound_farm(self):
+        fixture = {"job": self.JOB, "payload": self.PAYLOAD, "root": "plugins/ca/tools",
+            "test": "plugins/ca/tools/state-contracts.test.ts", "paths": sorted(self.PATHS)}
+        with mock.patch.dict(TS_PROFILE_FIXTURES, {self.PROFILE: fixture}), vitest_source_fixture(self.PROFILE) as f:
+            source_job = {"id": 9, "name": self.JOB, "status": "in_progress", "conclusion": None,
+                "steps": [{"name": self.UPLOAD, "status": "completed", "conclusion": "success"}]}
+            payload = VitestSourceProducerTests.authenticate(self, f, job=source_job)
+            groups = [g for g in owner.validate_selections(owner.load_json(owner.ROOT / ".github/major-test-selections.json"))
+                if set(g["cells"]) & set(self.EXPECTED)]
+            observed = {"format": owner.OBSERVATION, **f["identity"], "ci_run_id": 7,
+                "source_stable": True, "proof_kind": "source-test", "producer": "vitest-json-observer",
+                "argv": ["npm", "test"], "exit_code": 0,
+                "tests": [{"id": name, "result": "passed"} for name in sorted({s for r in self.EXPECTED.values() for s in r["selectors"]})],
+                "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": self.PROFILE,
+                    "payload_name": self.PAYLOAD, "manifest_sha256": payload["source_manifest_sha256"]}}
+            req = {**f["identity"], "ci_run_id": 7, "cells": sorted(self.EXPECTED),
+                "cell_jobs": dict.fromkeys(self.EXPECTED, self.JOB)}
+            def build(o=observed, consumed=payload, selected=groups, required=req, job=self.JOB):
+                return owner.build_report(required, job_name=job, job_id=9,
+                    selections={"schema": owner.SELECTIONS, "groups": selected},
+                    observations={"farm-tools": o}, payloads={self.PAYLOAD: consumed})
+            yield f, observed, payload, groups, req, build
+
+    def test_farm_exact_selector_unions_and_source_identities_refuse_partial_or_forged_credit(self):
+        with self.bound_farm() as (f, observed, payload, groups, req, build):
+            self.assertEqual(len(build()["results"]), 4)
+            for name in sorted({s for g in groups for s in g["selectors"]}):
+                for state in ("missing", "skipped", "failed", "duplicate"):
+                    changed = copy.deepcopy(observed); row = next(t for t in changed["tests"] if t["id"] == name)
+                    if state == "missing": changed["tests"].remove(row)
+                    elif state == "duplicate": changed["tests"].append(dict(row))
+                    else: row["result"] = state
+                    with self.subTest(selector=name, state=state), self.assertRaisesRegex(ValueError, "selected named test"):
+                        build(o=changed)
+            for index, group in enumerate(groups):
+                for selector in group["selectors"]:
+                    selected = copy.deepcopy(groups); selected[index]["selectors"].remove(selector)
+                    with self.subTest(reduced=selector), self.assertRaisesRegex(ValueError, "complete exact finite finding"):
+                        build(selected=selected)
+                selected = copy.deepcopy(groups); selected[index]["selectors"].append("vitest:foreign.test.ts:invented")
+                with self.assertRaises(ValueError): build(selected=selected)
+            for failure in ("source", "run", "unstable", "exit", "profile", "manifest", "upload", "role", "job"):
+                o, consumed, selected, required = copy.deepcopy(observed), copy.deepcopy(payload), copy.deepcopy(groups), copy.deepcopy(req)
+                job = self.JOB
+                if failure == "source": o["source_commit"] = "f" * 40
+                if failure == "run": o["ci_run_id"] = 8
+                if failure == "unstable": o["source_stable"] = False
+                if failure == "exit": o["exit_code"] = 1
+                if failure == "profile": o["source_input_binding"]["profile"] = "sandbox-tools-v1"
+                if failure == "manifest": consumed["source_manifest_sha256"] = "0" * 64
+                if failure == "upload": consumed["source_upload_job_id"] = True
+                if failure == "role": selected[0]["payload_name"] = "unrelated-native-archive"
+                if failure == "job":
+                    job = "foreign Farm owner"
+                    for g in selected: g["job"] = job
+                    required["cell_jobs"] = dict.fromkeys(required["cells"], job)
+                with self.subTest(failure=failure), self.assertRaises(ValueError): build(o, consumed, selected, required, job)
+            for cell in ("task:FARM-R01", "installed:farm:linux", "disposition:machines:S29", "disposition:findings:SF01"):
+                selected = copy.deepcopy(groups[:1]); selected[0]["cells"] = [cell]
+                required = {**req, "cells": [cell], "cell_jobs": {cell: self.JOB}}
+                with self.subTest(unowned=cell), self.assertRaises(ValueError): build(selected=selected, required=required)
+
+    def test_external_manifest_inputs_and_exact_farm_namespace_are_actually_bound(self):
+        with self.bound_farm() as (f, *_):
+            stage = f["base"] / "prepared"
+            self.assertEqual(owner.prepare_source_payload(f["repo"], stage, self.JOB, self.PROFILE), f["manifest"])
+            for name in ("core/artifact-release-manifest.json", ".github/fixtures/artifact-release-manifest.json"):
+                target = f["repo"] / name; before = target.read_bytes()
+                try:
+                    target.write_bytes(before + b"changed external declaration\n")
+                    with self.subTest(input=name), self.assertRaises(ValueError):
+                        owner.prepare_source_payload(f["repo"], f["base"] / "refused", self.JOB, self.PROFILE)
+                finally: target.write_bytes(before)
+            extra = f["repo"] / "plugins/ca/tools/unbound-contract.ts"; extra.write_bytes(b"unbound")
+            try:
+                with self.assertRaises(ValueError): owner._ts_members(f["repo"], self.PROFILE)
+            finally: extra.unlink()
+            self.assertEqual(owner.source_profile(self.PROFILE)["paths"], self.PATHS)
+
+    def test_final_farm_reader_authenticates_exact_original_upload_owner(self):
+        cell = "disposition:findings:SF05"; source = {"id": 8, "name": self.PAYLOAD}
+        artifact = {"id": 10, "name": "major-qualification-9"}
+        job = {"id": 9, "name": self.JOB, "status": "completed", "conclusion": "success"}
+        req = {"source_commit": "a" * 40, "source_tree": "b" * 40, "ci_run_id": 7,
+            "cells": [cell], "cell_jobs": {cell: self.JOB}, "required_artifact_names": [self.PAYLOAD]}
+        raw = io.BytesIO()
+        with zipfile.ZipFile(raw, "w") as archive: archive.writestr("source-member", b"inert final-reader role fixture")
+        content = raw.getvalue(); members = owner.readiness.members(content)
+        report = {"schema": "codearbiter-major-qualification/2", **{k: req[k] for k in ("source_commit", "source_tree", "ci_run_id")},
+            "job_id": 9, "payloads": [{"artifact_id": 8, "archive_sha256": owner.readiness.digest(content), "members": members}],
+            "results": [{"cell": cell, "result": "PASSED", "commands": [{"argv": ["npm", "test"], "exit_code": 0}],
+                "selected_population": 1, "executed_population": 1, "payload_artifact_id": 8}]}
+        jobs = [job, {"id": 11, "name": "major readiness producer"}]
+        with mock.patch.object(owner.readiness, "read_artifact_json", return_value=report), \
+             mock.patch.object(owner.readiness, "artifact_bytes", return_value=content), \
+             mock.patch.object(owner.readiness, "validate_upload") as attribution:
+            owner.readiness.produce(req, [source, artifact], jobs)
+            self.assertEqual(attribution.call_args_list, [mock.call(job, artifact, "Upload major qualification report"),
+                                                       mock.call(job, source, self.UPLOAD)])
+            def refuse(_job, _artifact, step):
+                if step == self.UPLOAD: raise owner.readiness.ReadinessError("original Farm source upload refused")
+            attribution.side_effect = refuse
+            with self.assertRaises(owner.readiness.ReadinessError): owner.readiness.produce(req, [source, artifact], jobs)
+            attribution.side_effect = None
+            foreign = {**job, "name": "foreign Farm source owner"}
+            with self.assertRaises(owner.readiness.ReadinessError):
+                owner.readiness.produce({**req, "cell_jobs": {cell: foreign["name"]}}, [source, artifact], [foreign, jobs[1]])
+
+    @staticmethod
+    def farm_workflow_contract(ci):
+        import re
+        import test_ci_impact as reader
+        block = reader.workflow_jobs(ci)["tools"]
+        predicate, = reader.reviewed_vitest_source_event_guards(block, "tools")
+        if block.count('GH_TOKEN: ${{ github.token }}') != 1 or 'continue-on-error:' in block:
+            raise ValueError("Farm authority or suppression differs")
+        if '    permissions:\n      contents: read\n      actions: read\n' not in block:
+            raise ValueError("Farm metadata permissions differ")
+        steps = {part.splitlines()[0]: part for part in re.split(r'(?m)^      - name: ', block)[1:]}
+        original = steps["Test"]
+        required = ['id: farm_tools_observed', '--execution-cwd plugins/ca/tools', '--source-payload "$RUNNER_TEMP/farm-source-inputs"',
+            '-- npm test -- --reporter=default --reporter=json', '--outputFile.json="$RUNNER_TEMP/farm-vitest.json"']
+        if any(t not in original for t in required) or block.count('-- npm test') != 1 or re.search(r'(?m)^        if:', original):
+            raise ValueError("original Farm execution differs or repeats")
+        if any(t in original for t in ('--filter', '--testNamePattern', 'GH_TOKEN:', '|| true')):
+            raise ValueError("original Farm population or credentials differ")
+        prepare, upload, emit = (steps[n] for n in ('Prepare Farm source-test inputs', 'Upload Farm source-test inputs',
+                                                   'Emit original Farm source qualification report'))
+        if not block.index('      - name: Fail if committed farm.js is stale') < block.index('      - name: Prepare Farm source-test inputs') < block.index('      - name: Test'):
+            raise ValueError("Farm build/source/test ordering differs")
+        if ('--source-profile farm-tools-v1' not in prepare or 'GH_TOKEN:' in prepare or
+            'name: major-source-inputs-farm-dispatcher' not in upload or
+            '--observation "farm-tools=$RUNNER_TEMP/farm-vitest-observation.json"' not in emit or
+            '--payload-root "major-source-inputs-farm-dispatcher=${{ github.workspace }}"' not in emit or
+            '--output "$RUNNER_TEMP/qualification.json"' not in emit):
+            raise ValueError("closed Farm producer role differs")
+        if block.index('      - name: Upload Farm source-test inputs') > block.index('      - name: Emit original Farm source qualification report'):
+            raise ValueError("Farm report precedes source upload")
+        return predicate
+
+    def test_farm_original_once_workflow_and_closed_authority_refuse_mutants(self):
+        ci = (owner.ROOT / ".github/workflows/ci.yml").read_text(encoding="utf-8")
+        self.assertIn("github.event_name == 'push'", self.farm_workflow_contract(ci))
+        for before, after in (
+            ('--source-profile farm-tools-v1', '--source-profile sandbox-tools-v1'),
+            ('-- npm test -- --reporter=default --reporter=json', '-- npm test -- --filter selected --reporter=default --reporter=json'),
+            ('--reporter=default --reporter=json', '--reporter=json'),
+            ('id: farm_tools_observed\n', 'id: farm_tools_observed\n        if: false\n'),
+            ('id: farm_tools_observed\n', 'id: farm_tools_observed\n        env:\n          GH_TOKEN: ${{ github.token }}\n'),
+            ('steps.farm_tools_observed.outcome == \'success\'', 'steps.farm_tools_observed.outcome != \'skipped\''),
+            ('steps.farm_source_upload.outcome == \'success\'', 'steps.farm_source_upload.outcome != \'skipped\''),
+            ('Emit original Farm source qualification report', 'Emit unreviewed Farm source qualification report'),
+            ('major-source-inputs-farm-dispatcher=${{ github.workspace }}', 'foreign-inputs=${{ github.workspace }}'),
+            ('--observation "farm-tools=', '--observation "foreign-tools='),
+        ):
+            self.assertIn(before, ci)
+            with self.subTest(mutation=before), self.assertRaises((ValueError, KeyError)): self.farm_workflow_contract(ci.replace(before, after, 1))
+
+
+class ReleaseSelectionFiniteFindingTests(unittest.TestCase):
+    """Synthetic original-transport admission; no release execution."""
+    CELL = "disposition:findings:C-F02"
+    METHODS = (
+        "test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+        "test_route_publication_is_observed_after_every_target_settles",
+        "test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+        "test_no_successful_ci_is_refused",
+        "test_source_no_longer_on_main_is_refused",
+        "test_expired_or_missing_artifacts_are_reported_not_hidden",
+        "test_selection_that_differs_from_the_approved_candidate_is_refused",
+        "test_workflow_run_event_binds_its_own_run",
+    )
+    SELECTORS = tuple("python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest." + name for name in METHODS)
+
+    @contextmanager
+    def fixture(self):
+        with q02_python_source_fixture() as f:
+            owner.prepare_source_payload(f["repo"], f["staged"], f["job"], f["profile"])
+            req, payload = Q02ReadinessSourceProfileTests().authenticate(f)
+            req.update(cells=[self.CELL], cell_jobs={self.CELL: f["job"]})
+            group = {"id": "finite-cf02", "job": f["job"], "payload_name": f["payload"],
+                     "observation": "q02-release", "proof_kind": "source-test", "cells": [self.CELL],
+                     "selectors": list(self.SELECTORS), "scope": "Inert finite admission fixture, not release qualification."}
+            observed = {"format": owner.OBSERVATION, "source_commit": req["source_commit"],
+                        "source_tree": req["source_tree"], "ci_run_id": 7, "source_stable": True,
+                        "proof_kind": "source-test", "producer": "python-test-result-observer",
+                        "argv": [sys.executable, ".github/scripts/test_release_workflow.py"], "exit_code": 0,
+                        "tests": [{"id": s, "result": "passed"} for s in self.SELECTORS],
+                        "source_input_binding": {"format": owner.SOURCE_BINDING, "profile": f["profile"],
+                            "payload_name": f["payload"], "manifest_sha256": payload["source_manifest_sha256"]}}
+            def build(observation=observed, selected=group, required=req, consumed=payload):
+                return owner.build_report(required, job_name=f["job"], job_id=9,
+                    selections={"schema": owner.SELECTIONS, "groups": [selected]},
+                    observations={"q02-release": observation}, payloads={f["payload"]: consumed})
+            yield f, observed, group, req, payload, build
+
+    def test_c_f02_uses_complete_original_release_selection_transport(self):
+        with self.fixture() as (f, observed, group, req, payload, build):
+            try:
+                report = build()
+            except ValueError as error:
+                self.fail("C-F02 original release observer admission is unavailable: " + str(error))
+            self.assertEqual([row["cell"] for row in report["results"]], [self.CELL])
+            self.assertEqual(report["results"][0]["executed_population"], 8)
+            self.assertFalse(f["counter"].exists(), "Admission must not reexecute either original suite")
+            maps = owner.load_json(owner.ROOT / ".github/major-test-selections.json")
+            actual, = [g for g in maps["groups"] if g["cells"] == [self.CELL]]
+            self.assertEqual(set(actual["selectors"]), set(self.SELECTORS))
+            self.assertEqual((actual["observation"], actual["payload_name"], actual["job"]),
+                             ("q02-release", f["payload"], f["job"]))
+            self.assertEqual(owner.load_json(owner.ROOT / ".github/major-qualification-policy.json")
+                             ["cell_job_bindings"][self.CELL], f["job"])
+
+    def test_c_f02_refuses_incomplete_foreign_source_profile_entrypoint_and_named_results(self):
+        with self.fixture() as (f, observed, group, req, payload, build):
+            for selector in self.SELECTORS:
+                for state in ("missing", "skipped", "failed", "duplicate", "reduced-map"):
+                    o, g = copy.deepcopy(observed), copy.deepcopy(group)
+                    row = next(t for t in o["tests"] if t["id"] == selector)
+                    if state == "missing": o["tests"].remove(row)
+                    elif state == "duplicate": o["tests"].append(dict(row))
+                    elif state == "reduced-map": g["selectors"].remove(selector)
+                    else: row["result"] = state
+                    with self.subTest(selector=selector, state=state), self.assertRaises(ValueError): build(o, g)
+            for mutation in ("source", "run", "manifest", "profile", "script", "filtered", "extra-map", "foreign-cell", "payload", "job"):
+                o, g, q, p = copy.deepcopy(observed), copy.deepcopy(group), copy.deepcopy(req), copy.deepcopy(payload)
+                if mutation == "source": o["source_commit"] = "f" * 40
+                elif mutation == "run": o["ci_run_id"] = 8
+                elif mutation == "manifest": p["source_manifest_sha256"] = "0" * 64
+                elif mutation == "profile": o["source_input_binding"]["profile"] = owner.SOURCE_PROFILE
+                elif mutation == "script": o["argv"][-1] = ".github/scripts/test_major_readiness.py"
+                elif mutation == "filtered": o["argv"].append("SourceSelectionTest")
+                elif mutation == "extra-map": g["selectors"].append("python:foreign.py:unexecuted")
+                elif mutation == "foreign-cell": g["cells"] = ["disposition:findings:C-F04"]; q.update(cells=g["cells"], cell_jobs=dict.fromkeys(g["cells"], f["job"]))
+                elif mutation == "payload": g["payload_name"] = "foreign"
+                elif mutation == "job": g["job"] = "foreign"
+                with self.subTest(mutation=mutation), self.assertRaises(ValueError): build(o, g, q, p)
+            extra = f["repo"] / "core/pysrc/unbound_finding_helper.py"
+            extra.write_text("# inert namespace control\n")
+            with self.assertRaises(ValueError): owner.prepare_source_payload(f["repo"], f["base"] / "refused", f["job"], f["profile"])
+
+
+
+class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
+    """Inert source/report fixture assertions; never executes the represented owners."""
+    EXPECTED = {'disposition:findings:HOOK-F01': {'profile': 'hooks-single-owner-findings-v1',
+                                   'script': '.github/scripts/test_prompt_submit.py',
+                                   'observation': 'finite-hookf01',
+                                   'selectors': ['python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery',
+                                                 'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery'],
+                                   'scope': 'Actual prompt/mode persona revisit, no-op, generation/session '
+                                            'and storage-failure fixture behavior; no live host or universal '
+                                            'double-denial redelivery.'},
+ 'disposition:findings:HOOK-F03': {'profile': 'hooks-single-owner-findings-v1',
+                                   'script': '.github/scripts/test_pi_payload_identity.py',
+                                   'observation': 'finite-hookf03',
+                                   'selectors': ['python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe',
+                                                 'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse',
+                                                 'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills',
+                                                 'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent'],
+                                   'scope': 'Actual check_payload predicate and actual PiHost/package '
+                                            'identity on owned files only; no doctor.main, native/npm, host '
+                                            'probe or installed health.'},
+ 'disposition:findings:C-F05': {'profile': 'impact-single-owner-findings-v1',
+                                'script': '.github/scripts/test_ci_impact.py',
+                                'observation': 'finite-cf05',
+                                'selectors': ['python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input',
+                                              'python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy'],
+                                'scope': 'Actual workflow input/event and deploy-authority declaration '
+                                         'controls; no Pages deployment.'},
+ 'disposition:findings:C-F06': {'profile': 'hooks-single-owner-findings-v1',
+                                'script': '.github/scripts/test_verdictlib.py',
+                                'observation': 'finite-cf06',
+                                'selectors': ['python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable',
+                                              'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly'],
+                                'scope': 'Typed injected outcomes and required-affirmative/source/refusal '
+                                         'contract; no actual branch/tag/Codex protection observation.'},
+ 'disposition:findings:C-F07': {'profile': 'impact-single-owner-findings-v1',
+                                'script': '.github/scripts/test_payload_version_gate.py',
+                                'observation': 'finite-cf07',
+                                'selectors': ['python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes',
+                                              'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump'],
+                                'scope': 'Owned Git base absent/valid/invalid/unresolved manifest '
+                                         'distinction; no release qualification.'},
+ 'disposition:findings:T-F02': {'profile': 'hooks-single-owner-findings-v1',
+                                'script': 'tools/test_measurement_contracts.py',
+                                'observation': 'finite-tf02',
+                                'selectors': ['python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives',
+                                              'python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output'],
+                                'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; '
+                                         'model reasoning quality and whole T01 remain unassessed.'}}
+
+    def test_a_six_existing_single_owner_findings_have_closed_original_profiles(self):
+        expected_jobs = {
+            "hooks-single-owner-findings-v1": "[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>",
+            "impact-single-owner-findings-v1": "[CHECK] | [REPO] | Impact planner contract",
+        }
+        for profile, job in expected_jobs.items():
+            with self.subTest(profile=profile):
+                try:
+                    spec = owner.source_profile(profile)
+                except ValueError as error:
+                    self.fail("actual source-profile boundary lacks the original single-owner finding route: " + str(error))
+                self.assertEqual(spec["job"], job)
+                self.assertTrue(spec["paths"])
+                self.assertTrue(all(row["script"] in spec["paths"] for row in self.EXPECTED.values() if row["profile"] == profile))
+
+    def fixture(self, cell):
+        recipe=self.EXPECTED[cell];spec=owner.source_profile(recipe['profile'])
+        req={'source_commit':'a'*40,'source_tree':'b'*40,'ci_run_id':7,
+             'cells':[cell],'cell_jobs':{cell:spec['job']}}
+        rows=[{'path':p,'sha256':'c'*64,'bytes':1,'git_mode':'100644'} for p in sorted(spec['paths'])]
+        manifest={'format':owner.SOURCE_FORMAT,'profile':recipe['profile'],'source_commit':req['source_commit'],
+                  'source_tree':req['source_tree'],'workflow':'.github/workflows/ci.yml','ci_run_id':7,
+                  'producer_job_name':spec['job'],'members':rows}
+        payload={'artifact_id':8,'archive_sha256':'d'*64,'source_manifest_sha256':'e'*64,
+                 'source_upload_job_id':9,'documents':{owner.SOURCE_MANIFEST:manifest},
+                 'members':[{'path':r['path'],'sha256':r['sha256']} for r in rows]+[
+                     {'path':owner.SOURCE_MANIFEST,'sha256':'e'*64}]}
+        observed={'format':owner.OBSERVATION,'source_commit':req['source_commit'],'source_tree':req['source_tree'],
+                  'ci_run_id':7,'source_stable':True,'proof_kind':'source-test',
+                  'producer':'python-test-result-observer','argv':['python',recipe['script']],'exit_code':0,
+                  'tests':[{'id':x,'result':'passed'} for x in recipe['selectors']],
+                  'source_input_binding':{'format':owner.SOURCE_BINDING,'profile':recipe['profile'],
+                     'payload_name':spec['payload'],'manifest_sha256':'e'*64}}
+        group={'id':recipe['observation'],'job':spec['job'],'payload_name':spec['payload'],
+               'observation':recipe['observation'],'proof_kind':'source-test','cells':[cell],
+               'selectors':list(recipe['selectors']),'scope':recipe['scope']}
+        def build(o=observed,g=group,r=req,p=payload,job=spec['job']):
+            return owner.build_report(r,job_name=job,job_id=9,
+                selections={'schema':owner.SELECTIONS,'groups':[g]},
+                observations={recipe['observation']:o},payloads={spec['payload']:p})
+        return recipe,spec,req,payload,observed,group,build
+
+    def test_b_complete_original_finite_compositions_and_policy_are_consumed(self):
+        selections=owner.load_json(owner.ROOT/'.github/major-test-selections.json')
+        policy=owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')
+        for cell in self.EXPECTED:
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            with self.subTest(cell=cell):
+                report=build();result,=report['results']
+                self.assertEqual(result['cell'],cell)
+                self.assertEqual(result['executed_population'],len(recipe['selectors']))
+                self.assertEqual(result['selected_population'],len(recipe['selectors']))
+                self.assertEqual(report['schema'],'codearbiter-major-qualification/2')
+                actual,=[g for g in selections['groups'] if g['cells']==[cell]]
+                self.assertEqual(actual,group)
+                self.assertEqual(policy['cell_job_bindings'][cell],spec['job'])
+
+    def test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory(self):
+        for cell in self.EXPECTED:
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            for selector in recipe['selectors']:
+                for state in ('missing','duplicate','failed','skipped','reduced-map'):
+                    o,g=copy.deepcopy(observed),copy.deepcopy(group)
+                    row=next(r for r in o['tests'] if r['id']==selector)
+                    if state=='missing':o['tests'].remove(row)
+                    elif state=='duplicate':o['tests'].append(dict(row))
+                    elif state=='reduced-map':g['selectors'].remove(selector)
+                    else:row['result']=state
+                    with self.subTest(cell=cell,selector=selector,state=state),self.assertRaises(ValueError):build(o,g)
+
+    def test_d_original_source_script_profile_job_and_payload_never_cross_authority(self):
+        for cell in self.EXPECTED:
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            for mutation in ('source','tree','run','unstable','exit','filtered','script','profile','payload','manifest',
+                             'uploader','foreign-cell','composite','extra-selector','wrong-job','missing-member'):
+                o,g,r,p=map(copy.deepcopy,(observed,group,req,payload))
+                if mutation=='source':o['source_commit']='f'*40
+                elif mutation=='tree':o['source_tree']='f'*40
+                elif mutation=='run':o['ci_run_id']=8
+                elif mutation=='unstable':o['source_stable']=False
+                elif mutation=='exit':o['exit_code']=1
+                elif mutation=='filtered':o['argv'].append('-k')
+                elif mutation=='script':o['argv'][-1]='.github/scripts/test_major_readiness.py'
+                elif mutation=='profile':o['source_input_binding']['profile']=owner.SOURCE_PROFILE
+                elif mutation=='payload':g['payload_name']='foreign'
+                elif mutation=='manifest':p['source_manifest_sha256']='f'*64
+                elif mutation=='uploader':p['source_upload_job_id']=10
+                elif mutation=='foreign-cell':g['cells']=['disposition:findings:HOOK-F02'];r.update(cells=g['cells'],cell_jobs=dict.fromkeys(g['cells'],spec['job']))
+                elif mutation=='composite':g['cells'].append('task:HW-27');r.update(cells=g['cells'],cell_jobs=dict.fromkeys(g['cells'],spec['job']))
+                elif mutation=='extra-selector':g['selectors'].append('python:foreign.py:unexecuted')
+                elif mutation=='wrong-job':g['job']='foreign'
+                else:p['members'].pop(0)
+                with self.subTest(cell=cell,mutation=mutation),self.assertRaises(ValueError):build(o,g,r,p)
+
+    def test_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit(self):
+        recipe,spec,req,payload,observed,group,build=self.fixture('disposition:findings:C-F05')
+        nested='python:'+recipe['script']+':__main__.OwnedNestedExample.test_expected_refusal'
+        observed['tests'].extend([{'id':nested,'result':'failed'},{'id':nested,'result':'skipped'}])
+        result,=build()['results']
+        self.assertEqual(result['executed_population'],len(recipe['selectors']))
+        self.assertEqual(len(observed['tests']),len(recipe['selectors'])+2)
+        observed['exit_code']=1
+        with self.assertRaises(ValueError):build()
+
+    def test_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution(self):
+        with tempfile.TemporaryDirectory(prefix='ca-six-profile-refusal-') as td:
+            base=Path(td).resolve();script='.github/scripts/test_prompt_submit.py';path=base/script
+            path.parent.mkdir(parents=True);path.write_text('# inert boundary only\n')
+            other=base/'.github/scripts/test_major_readiness.py';other.write_text('# inert foreign boundary\n')
+            with mock.patch.object(owner.runpy,'run_path',side_effect=AssertionError('must not execute')):
+                for name,args,payload in ((script,['-k','partial'],base/'payload'),(script,[],None),
+                                           (other.relative_to(base).as_posix(),[],base/'payload')):
+                    with self.subTest(script=name,args=args),self.assertRaises(ValueError):
+                        owner.observe_python(base,name,args,base/'absent.json',payload,'hooks-single-owner-findings-v1')
+            self.assertFalse((base/'absent.json').exists())
+
+    def test_g_final_reader_authenticates_each_original_upload_after_whole_run_success(self):
+        for profile in ('hooks-single-owner-findings-v1','impact-single-owner-findings-v1'):
+            cell=next(c for c,r in self.EXPECTED.items() if r['profile']==profile)
+            recipe,spec,req,payload,observed,group,build=self.fixture(cell)
+            raw=io.BytesIO()
+            with zipfile.ZipFile(raw,'w') as archive:archive.writestr('source-member',b'inert')
+            content=raw.getvalue();members=owner.readiness.members(content)
+            source={'id':8,'name':spec['payload']};artifact={'id':10,'name':'major-qualification-9'}
+            job={'id':9,'name':spec['job'],'status':'completed','conclusion':'success'}
+            req['required_artifact_names']=[source['name']]
+            report={'schema':'codearbiter-major-qualification/2',**{k:req[k] for k in ('source_commit','source_tree','ci_run_id')},'job_id':9,
+                'payloads':[{'artifact_id':8,'archive_sha256':owner.readiness.digest(content),'members':members}],
+                'results':[{'cell':cell,'result':'PASSED','commands':[{'argv':observed['argv'],'exit_code':0}],
+                    'selected_population':1,'executed_population':1,'payload_artifact_id':8}]}
+            with mock.patch.object(owner.readiness,'read_artifact_json',return_value=report), \
+                 mock.patch.object(owner.readiness,'artifact_bytes',return_value=content), \
+                 mock.patch.object(owner.readiness,'validate_upload') as upload:
+                owner.readiness.produce(req,[source,artifact],[job,{'id':11,'name':'major readiness producer'}])
+                self.assertEqual(upload.call_args_list,[mock.call(job,artifact,'Upload major qualification report'),mock.call(job,source,spec['upload'])])
+                for mutation in ('wrong-owner','in-progress','upload-refused'):
+                    jobs=[copy.deepcopy(job),{'id':11,'name':'major readiness producer'}];q=copy.deepcopy(req);upload.side_effect=None
+                    if mutation=='wrong-owner':jobs[0]['name']='foreign';q['cell_jobs'][cell]='foreign'
+                    elif mutation=='in-progress':jobs[0].update(status='in_progress',conclusion=None)
+                    else:upload.side_effect=owner.readiness.ReadinessError('original uploader refused')
+                    with self.subTest(profile=profile,mutation=mutation),self.assertRaises(owner.readiness.ReadinessError):
+                        owner.readiness.produce(q,[source,artifact],jobs)
+
+    def test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once(self):
+        profile='hooks-single-owner-findings-v1';spec=owner.source_profile(profile)
+        canonical=Path(os.environ.get('CA_HOOKS_CANONICAL_ROOT',owner.ROOT))
+        with tempfile.TemporaryDirectory(prefix='ca-single-owner-source-') as td:
+            base=Path(td).resolve();repo=base/'repo';repo.mkdir()
+            for relative in spec['paths']:
+                source=owner.ROOT/relative
+                if not source.is_file():source=canonical/relative
+                target=repo/relative;target.parent.mkdir(parents=True,exist_ok=True);target.write_bytes(source.read_bytes())
+            git=shutil.which('git');self.assertIsNotNone(git)
+            env={k:v for k,v in os.environ.items() if k.upper() in ('SYSTEMROOT','WINDIR','SYSTEMDRIVE','COMSPEC','PATHEXT','PATH')}
+            env.update(HOME=str(base),USERPROFILE=str(base),TEMP=str(base),TMP=str(base),
+                GIT_CONFIG_GLOBAL=os.devnull,GIT_CONFIG_NOSYSTEM='1',GIT_OPTIONAL_LOCKS='0',GIT_TERMINAL_PROMPT='0',
+                GIT_AUTHOR_NAME='fixture',GIT_AUTHOR_EMAIL='fixture@invalid',GIT_COMMITTER_NAME='fixture',GIT_COMMITTER_EMAIL='fixture@invalid',
+                GITHUB_RUN_ID='7',PYTHONDONTWRITEBYTECODE='1')
+            with mock.patch.dict(os.environ,env,clear=True):
+                for args in (['init'],['config','core.autocrlf','false'],['add','.'],['-c','commit.gpgsign=false','commit','-qm','source fixture']):
+                    run_git_phase([git,'-C',str(repo),*args],phase='init' if args[0] in ('init','config') else 'index' if args[0]=='add' else 'commit',trace_dir=base)
+                staged=base/'inputs';owner.prepare_source_payload(repo,staged,spec['job'],profile)
+                output=base/'observation.json'
+                with (mock.patch.object(sys, "dont_write_bytecode", False),
+                      mock.patch.object(owner.runpy, "run_path", wraps=owner.runpy.run_path) as original):
+                    self.assertEqual(owner.observe_python(
+                        repo, ".github/scripts/test_pi_payload_identity.py", [], output, staged, profile), 0)
+                    self.assertEqual(original.call_count, 1)
+                    self.assertFalse(sys.dont_write_bytecode)
+                observed=owner.load_json(output)
+                self.assertEqual({r['id'] for r in observed['tests']},set(self.EXPECTED['disposition:findings:HOOK-F03']['selectors']))
+                self.assertTrue(all(r['result']=='passed' for r in observed['tests']))
+                archive=io.BytesIO()
+                with zipfile.ZipFile(archive,'w') as z:
+                    for path in staged.rglob('*'):
+                        if path.is_file():z.writestr(path.relative_to(staged).as_posix(),path.read_bytes())
+                req={**owner.source_identity(repo,profile),'ci_run_id':7}
+                job={'id':9,'name':spec['job'],'status':'in_progress','conclusion':None,
+                     'steps':[{'name':spec['upload'],'status':'completed','conclusion':'success'}]}
+                with mock.patch.object(owner.readiness,'artifact_bytes',return_value=archive.getvalue()), \
+                     mock.patch.object(owner.readiness,'validate_upload',side_effect=AssertionError('producer job has no completed log')):
+                    payload=owner.authenticated_payload({'id':8,'name':spec['payload']},req,repo,source_job=job)
+                    owner.admit_source_observation(observed,payload,req,spec['job'],9)
+                    bad=copy.deepcopy(job);bad['steps'][0]['conclusion']='failure'
+                    with self.assertRaises(ValueError):owner.authenticated_payload({'id':8,'name':spec['payload']},req,repo,source_job=bad)
+                extra=repo/'core/pysrc/unbound_finding_shadow.py';extra.write_text('# inert namespace refusal\n')
+                with self.assertRaises(ValueError):owner.source_input_snapshot(repo,profile)
+                extra.unlink()
+                path=staged/'.github/scripts/test_pi_payload_identity.py';path.write_bytes(path.read_bytes()+b'\n# changed stage\n')
+                with self.assertRaises(ValueError):owner.source_observation_binding(repo,staged,owner.source_identity(repo,profile),profile)
+
+    def test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources(self):
+        with tempfile.TemporaryDirectory(prefix='ca-finding-members-') as td:
+            base=Path(td).resolve()
+            for profile,spec in owner.PYTHON_FINDING_PROFILES.items():
+                repo=base/profile;repo.mkdir()
+                for relative in spec['paths']:
+                    path=repo/relative;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(b'inert namespace fixture\n')
+                owner._finding_python_members(repo,profile)
+                extra=repo/'.github/scripts/unbound_finding_shadow.py';extra.write_text('# extra\n')
+                with self.subTest(profile=profile,mutation='extra'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
+                extra.unlink()
+                path=repo/'tools/test_measurement_contracts.py';path.unlink()
+                with self.subTest(profile=profile,mutation='missing'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
+
+    def test_emit_joins_both_python_finding_source_payloads_to_their_uploaders(self):
+        for cell in ('disposition:findings:HOOK-F03', 'disposition:findings:C-F07'):
+            profile = self.EXPECTED[cell]['profile']
+            # Keep the actual profile's role and uploader. Use one inert input
+            # to exercise the report and archive join without replaying a suite.
+            original = owner.PYTHON_FINDING_PROFILES[profile]
+            path = self.EXPECTED[cell]['script']
+            tiny = dict(original, paths=frozenset({path}))
+            with (self.subTest(profile=profile),
+                  tempfile.TemporaryDirectory(prefix='ca-python-source-emit-') as directory,
+                  mock.patch.dict(owner.PYTHON_FINDING_PROFILES, {profile: tiny})):
+                root = Path(directory).resolve()
+                repo = root / 'repo'
+                code = b'# inert source for emitter join\n'
+                source = repo / path
+                source.parent.mkdir(parents=True)
+                source.write_bytes(code)
+                recipe, spec, req, payload, observed, group, _ = self.fixture(cell)
+                manifest = payload['documents'][owner.SOURCE_MANIFEST]
+                manifest['members'][0].update(sha256=owner.readiness.digest(code), bytes=len(code))
+                raw = json.dumps(manifest).encode('utf8')
+                observed['source_input_binding']['manifest_sha256'] = owner.readiness.digest(raw)
+                archive = io.BytesIO()
+                with zipfile.ZipFile(archive, 'w') as zipped:
+                    zipped.writestr(path, code)
+                    zipped.writestr(owner.SOURCE_MANIFEST, raw)
+                (repo / '.github/major-test-selections.json').write_text(
+                    json.dumps({'schema': owner.SELECTIONS, 'groups': [group]}), encoding='utf8')
+                observation = root / 'observation.json'
+                observation.write_text(json.dumps(observed), encoding='utf8')
+                metadata = {'id': 8, 'name': spec['payload']}
+                step = {'name': spec['upload'], 'status': 'completed', 'conclusion': 'success'}
+                job = {'id': 9, 'name': spec['job'], 'status': 'in_progress', 'conclusion': None, 'steps': [step]}
+                identity = {**req, 'clean': True}
+                env = {'GITHUB_ACTIONS': 'true', 'GITHUB_REPOSITORY': owner.readiness.REPOSITORY,
+                       'GITHUB_REF': 'refs/heads/major/state-contracts', 'GITHUB_EVENT_NAME': 'push',
+                       'GITHUB_SHA': req['source_commit'], 'GITHUB_RUN_ID': str(req['ci_run_id'])}
+                out = root / 'qualification.json'
+                stderr = io.StringIO()
+                argv = ['emit', '--repo', str(repo), '--output', str(out), '--job-name', spec['job'],
+                        '--observation', recipe['observation'] + '=' + str(observation),
+                        '--payload-root', spec['payload'] + '=' + str(repo)]
+                with (mock.patch.dict(os.environ, env, clear=True),
+                      mock.patch.object(owner, 'source_identity', return_value=identity),
+                      mock.patch.object(owner, 'source_input_snapshot', return_value={**identity, 'members': manifest['members']}),
+                      mock.patch.object(owner.readiness, 'collect', return_value=(req, None, [metadata], [job])),
+                      mock.patch.object(owner.readiness, 'artifact_bytes', return_value=archive.getvalue()),
+                      mock.patch('sys.stderr', stderr)):
+                    # Refuse a merely named step that did not actually complete.
+                    step['conclusion'] = 'failure'
+                    self.assertEqual(owner.main(argv), 1)
+                    self.assertFalse(out.exists())
+                    step['conclusion'] = 'success'
+                    stderr.seek(0)
+                    stderr.truncate()
+                    self.assertEqual(owner.main(argv), 0, stderr.getvalue())
+                result, = owner.load_json(out)['results']
+                self.assertEqual(result['cell'], cell)
+                self.assertEqual(result['selected_population'], len(recipe['selectors']))
+                self.assertEqual(result['payload_artifact_id'], metadata['id'])
+
+
+class HookF02CompleteCompositionTests(unittest.TestCase):
+    CELL='disposition:findings:HOOK-F02'
+    COMPONENTS=[{'script': '.github/scripts/test_modelib.py',
+  'observation': 'finite-hookf02-modelib',
+  'selectors': ['python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle',
+                'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter',
+                'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled',
+                'python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once']},
+ {'script': '.github/scripts/test_prompt_submit.py',
+  'observation': 'finite-hookf01',
+  'selectors': ['python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates',
+                'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode']}]
+
+    def fixture(self):
+        _,spec,base_req,payload,prompt,old_group,_=SingleOwnerPythonFindingProfileTests().fixture('disposition:findings:HOOK-F01')
+        req=copy.deepcopy(base_req);req.update(cells=[self.CELL],cell_jobs={self.CELL:spec['job']})
+        groups=[];observations={}
+        for component in self.COMPONENTS:
+            o=copy.deepcopy(prompt);o['argv']=['python',component['script']]
+            if component['script'].endswith('test_modelib.py'):o['tests']=[]
+            o['tests'].extend({'id':selector,'result':'passed'} for selector in component['selectors'])
+            observations[component['observation']]=o
+            groups.append({'id':'finite-hookf02-'+('modelib' if component['script'].endswith('test_modelib.py') else 'prompt'),
+                'job':spec['job'],'payload_name':spec['payload'],'observation':component['observation'],
+                'proof_kind':'source-test','selectors':list(component['selectors']),'cells':[self.CELL],
+                'scope':'HOOK-F02 actual raw/effective mode outcome, refusal, audit debt/retry/no-op and prompt-message assertion composition; no universal durability or task/installed credit.'})
+        def build(obs=observations,gs=groups,r=req,p=payload):
+            return owner.build_report(r,job_name=spec['job'],job_id=9,
+                selections={'schema':owner.SELECTIONS,'groups':gs},observations=obs,payloads={spec['payload']:p})
+        return spec,req,payload,observations,groups,build
+
+    def test_a_complete_two_original_owners_admit_one_finite_finding(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        try:report=build()
+        except ValueError as error:self.fail('actual same-job source-report boundary lacks complete HOOK-F02 composition: '+str(error))
+        result,=report['results']
+        self.assertEqual(result['cell'],self.CELL)
+        self.assertEqual(result['selected_population'],37)
+        self.assertEqual(result['executed_population'],37)
+        self.assertEqual(len(result['commands']),2)
+        self.assertEqual(len(report['payloads']),1)
+
+    def test_b_both_complete_components_and_each_named_guard_effect_and_retry_are_required(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        for index in range(2):
+            for mode in ('missing-group','repeat-group','missing-observation','one-observation-twice'):
+                obs,gs=copy.deepcopy(observations),copy.deepcopy(groups)
+                if mode=='missing-group':gs.pop(index)
+                elif mode=='repeat-group':extra=copy.deepcopy(gs[index]);extra['id']+='-duplicate';gs.append(extra)
+                elif mode=='missing-observation':obs.pop(gs[index]['observation'])
+                else:gs[index]['observation']=gs[1-index]['observation']
+                with self.subTest(component=index,mode=mode),self.assertRaises(ValueError):build(obs,gs)
+        for component in self.COMPONENTS:
+            key=component['observation']
+            for selector in component['selectors']:
+                for mode in ('missing','duplicate','skipped','failed','partial-group'):
+                    obs,gs=copy.deepcopy(observations),copy.deepcopy(groups)
+                    row=next(r for r in obs[key]['tests'] if r['id']==selector)
+                    if mode=='missing':obs[key]['tests'].remove(row)
+                    elif mode=='duplicate':obs[key]['tests'].append(dict(row))
+                    elif mode=='partial-group':next(g for g in gs if g['observation']==key)['selectors'].remove(selector)
+                    else:row['result']=mode
+                    with self.subTest(selector=selector,mode=mode),self.assertRaises(ValueError):build(obs,gs)
+
+    def test_c_no_component_can_borrow_foreign_source_script_command_job_or_authority(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        for key in observations:
+            for mode in ('source','tree','run','stable','exit','filtered','wrong-script','profile','payload','manifest','producer'):
+                obs=copy.deepcopy(observations);o=obs[key]
+                if mode=='source':o['source_commit']='f'*40
+                elif mode=='tree':o['source_tree']='f'*40
+                elif mode=='run':o['ci_run_id']=8
+                elif mode=='stable':o['source_stable']=False
+                elif mode=='exit':o['exit_code']=1
+                elif mode=='filtered':o['argv'].append('-k')
+                elif mode=='wrong-script':o['argv'][-1]='.github/scripts/test_verdictlib.py'
+                elif mode=='profile':o['source_input_binding']['profile']='impact-single-owner-findings-v1'
+                elif mode=='payload':o['source_input_binding']['payload_name']='major-source-inputs-hooks-windows-contracts'
+                elif mode=='manifest':o['source_input_binding']['manifest_sha256']='f'*64
+                else:o['producer']='go-named-ci20-join'
+                with self.subTest(component=key,mode=mode),self.assertRaises(ValueError):build(obs)
+        for index in range(2):
+            for mode in ('job','different-payload','proof-kind','extra-selector','foreign-cell','composite-cell'):
+                gs,r=copy.deepcopy(groups),copy.deepcopy(req);g=gs[index]
+                if mode=='job':g['job']='foreign'
+                elif mode=='different-payload':g['payload_name']='major-source-inputs-hooks-windows-contracts'
+                elif mode=='proof-kind':g['proof_kind']='native-module'
+                elif mode=='extra-selector':g['selectors'].append('python:foreign.py:unexecuted')
+                elif mode=='foreign-cell':g['cells']=['disposition:findings:W-F02'];r.update(cells=g['cells'],cell_jobs=dict.fromkeys(g['cells'],spec['job']))
+                else:g['cells'].append('task:HW-02');r.update(cells=[self.CELL,'task:HW-02'],cell_jobs={self.CELL:spec['job'],'task:HW-02':spec['job']})
+                with self.subTest(component=index,mode=mode),self.assertRaises(ValueError):build(gs=gs,r=r)
+        obs,gs,p=copy.deepcopy(observations),copy.deepcopy(groups),copy.deepcopy(payload)
+        binding={'inert':'foreign native authority'};p['native_bindings']=[binding]
+        for o in obs.values():o.update(proof_kind='native-module',producer='go-named-ci20-join',native_binding=binding)
+        for g in gs:g['proof_kind']='native-module'
+        with self.assertRaises(ValueError):build(obs,gs,p=p)
+        for mutation in ('missing-uploader','wrong-uploader','missing-manifest-member'):
+            p=copy.deepcopy(payload)
+            if mutation=='missing-uploader':p.pop('source_upload_job_id')
+            elif mutation=='wrong-uploader':p['source_upload_job_id']=10
+            else:p['members'].pop(0)
+            with self.subTest(mutation=mutation),self.assertRaises(ValueError):build(p=p)
+
+    def test_d_prompt_record_is_reused_without_another_execution_or_payload(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        _,_,_,_,_,existing,_=SingleOwnerPythonFindingProfileTests().fixture('disposition:findings:HOOK-F01')
+        req.update(cells=['disposition:findings:HOOK-F01',self.CELL],cell_jobs={'disposition:findings:HOOK-F01':spec['job'],self.CELL:spec['job']})
+        groups.append(existing)
+        with mock.patch.object(owner.runpy,'run_path',side_effect=AssertionError('admission must never execute original suites')):
+            report=build()
+        results={r['cell']:r for r in report['results']}
+        self.assertEqual(results[self.CELL]['executed_population'],37)
+        self.assertEqual(results['disposition:findings:HOOK-F01']['executed_population'],13)
+        self.assertEqual(len(observations),2)
+        self.assertEqual(len(report['payloads']),1)
+        self.assertEqual(results[self.CELL]['payload_artifact_id'],results['disposition:findings:HOOK-F01']['payload_artifact_id'])
+
+    def test_e_configuration_contains_only_the_complete_finite_two_group_finding(self):
+        spec,req,payload,observations,groups,build=self.fixture()
+        actual=owner.load_json(owner.ROOT/'.github/major-test-selections.json')
+        selected=[g for g in actual['groups'] if self.CELL in g['cells']]
+        self.assertEqual(selected,groups)
+        self.assertEqual(owner.load_json(owner.ROOT/'.github/major-qualification-policy.json')['cell_job_bindings'][self.CELL],spec['job'])
+        self.assertEqual(len(owner.PYTHON_FINDING_RECIPES),6)
+        self.assertTrue({'.github/scripts/test_modelib.py','.github/scripts/test_prompt_submit.py','core/pysrc/_modelib.py','core/pysrc/prompt-submit.py'}<=spec['paths'])
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

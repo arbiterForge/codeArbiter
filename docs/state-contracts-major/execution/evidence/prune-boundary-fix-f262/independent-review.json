@@ -1,0 +1,134 @@
+{
+ "schema": "codearbiter.independent-private-code-review/1",
+ "reviewer": "/root/acceptance_security_review",
+ "author": "/root/ci_repair_review",
+ "independent_of_authorship": true,
+ "role": "security-reviewer",
+ "verdict": "PASS",
+ "gate_status": "PASS",
+ "findings": [],
+ "source_commit": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\delivery.json",
+  "sha256": "b319935f8f93440b75bfbe89c50689a803a0894f5ed989f72e3d863555825ba6",
+  "bytes": 6359
+ },
+ "patch_sha256": "412107727d3ccb2787b69e7808a313b3928ac9974eeedca0095be2117a21e756",
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\candidate.patch",
+  "sha256": "412107727d3ccb2787b69e7808a313b3928ac9974eeedca0095be2117a21e756",
+  "bytes": 6106
+ },
+ "full_subjects": {
+  "core/pysrc/_prunelib.py": {
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\candidates\\core\\pysrc\\_prunelib.py",
+   "sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+   "bytes": 58415,
+   "index_oid": null,
+   "binding_kind": "private unstaged code candidate; no invented index OID",
+   "preimage": {
+    "git_commit": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+    "git_oid": "ed0626c34ca98efecb4049f9321deb8bb263ace3",
+    "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "bytes": 58271
+   }
+  },
+  "plugins/ca/hooks/tests/test_prune_containment.py": {
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\candidates\\plugins\\ca\\hooks\\tests\\test_prune_containment.py",
+   "sha256": "8ebae3c0e6b0671d828e3c8bb195dfd495d63b3e8c5eb7f727037451cff6e251",
+   "bytes": 5293,
+   "index_oid": null,
+   "binding_kind": "private unstaged code candidate; no invented index OID",
+   "preimage": {
+    "absent_in_Git": true,
+    "absent_physical": true
+   }
+  }
+ },
+ "inventory": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-boundary-independent-review-46iaqn2s\\inventory.json",
+  "sha256": "9f36df9d294a78879b800a2a675945efa5f4bc006e8633180a70be72d5d8643f",
+  "bytes": 8423
+ },
+ "substantive_review": [
+  "The old canonicalized string-prefix check admitted .claude-other/.claude.old/.claude2. The new commonpath equality is component-aware and explicit base inequality requires a proper descendant. Existing normcase/normpath/realpath canonicalization is preserved.",
+  "Containment refusal still precedes arbiter_active, Config and self_heal; commonpath/canonicalization errors return0 inside the existing exception boundary. This preserves nonblocking pruner behavior while refusing transcript processing.",
+  "No added import, dependency, policy/threshold/session/nudge/tail/backup/write behavior. Full AST comparison isolates only the one guard condition.",
+  "Seven new controls distinguish actual refusal-before-heal/activation from merely returning0. Positive contained and normalized descendant paths still reach the prior healing route. Base-as-regular-file, outside traversal, canonicalization/commonpath error and actual outside symlink controls are meaningful.",
+  "Six unchanged owning cases preserve real prune shrinkage/single parse/bounded opens plus dry/off/no-mutation behavior. Source snapshots and actual imported fixture bind the retained original RED and final GREEN to the exact original/final production bytes."
+ ],
+ "retained_execution_evidence": {
+  "reviewer_reran_tests": false,
+  "original_named_regression": "plugins/ca/hooks/tests/test_prune_containment.py::PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal",
+  "RED": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\result.json",
+    "sha256": "f109c8725d8ab6215864a60bb2b037a80a32b3d33c9fbdc0058260332ccb499a",
+    "bytes": 24650
+   },
+   "named": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\named-results.json",
+    "sha256": "be7b7c8a84e8b0b2369ca84ecd8f213736f9485315069800872cb932bf6fe2c5",
+    "bytes": 913
+   },
+   "raw": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\target-red\\stderr.log",
+    "sha256": "e828cae923b3d4f97d8087d1cc7855f3c9673857e7b07f903b9eee5d1a18a09b",
+    "bytes": 3773
+   },
+   "actual_failures": 3,
+   "errors": 0,
+   "reason": "Expected self_heal not called; actually called once for each of three owned prefix siblings."
+  },
+  "GREEN": {
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\result.json",
+    "sha256": "67f5e8730539cf2c26ee97c9c4e21a83f0f5832f9571a00338aa0f346c20d209",
+    "bytes": 24702
+   },
+   "named": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\named-results.json",
+    "sha256": "77aff2319d22fc11b194fb8410efcb86bf6f6a8a386f0ffe8571f23d4281a406",
+    "bytes": 4845
+   },
+   "raw": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-prune-component-containment-fix-uspdvkn6\\focused-green\\stderr.log",
+    "sha256": "b57e538d43e2fd72af88c27588553348fd07d6e38f1f41a8fb077a3436ae0c84",
+    "bytes": 2190
+   },
+   "methods": 13,
+   "new": 7,
+   "unchanged": 6,
+   "skips": 0,
+   "actual_owned_symlink_case": "PASS, no skip"
+  },
+  "original_test_sources": {
+   "plugins/ca/hooks/tests/test_prune_single_parse.py": {
+    "sha256": "276bd44c15e997288507e7da0183ac87834a5d7db21a2fb6718685d2c53056f9",
+    "bytes": 5553,
+    "old_and_final_capture_bytes_equal": true
+   },
+   "plugins/ca/hooks/tests/test_prune_nudge.py": {
+    "sha256": "e51fee97accab0933640875ff092235f1154fe9d445c6bb0e9dec790fa65429e",
+    "bytes": 29553,
+    "old_and_final_capture_bytes_equal": true
+   },
+   "plugins/ca/hooks/tests/_helpers.py": {
+    "sha256": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+    "bytes": 7612,
+    "old_and_final_capture_bytes_equal": true
+   }
+  }
+ },
+ "controls": [
+  "CTX-SECURITY-CONTROLS/CON-007 safe filesystem reads/behavior",
+  "CTX-SECURITY-CONTROLS/CON-011 bounded integrity/recovery and honest qualification",
+  "CTX-SECURITY-CONTROLS/CON-009 immutable evidence/actual underlying review"
+ ],
+ "limits": [
+  "This is canonical path-component admission, not descriptor-pinned access, ancestor/race freedom, universal Windows/POSIX confinement or a malicious-writer boundary. Existing later use of the original path remains unchanged.",
+  "The actual symlink observation is one owned Windows fixture; commonpath ValueError is an inert cross-root/error seam, not a separate-drive or cross-platform execution claim.",
+  "No reviewer test/runtime/native/owner/API/network/home or provider execution. Retained13 tests do not qualify full pruning, installed hosts, source rows, tasks or whole program.",
+  "Two private candidate subjects only, not staged/canonical; no actual Git index OIDs invented. Root alone generates mirrors, adopts, stages and records any sanctioned marker after final candidate checks. Main/publication holds remain."
+ ]
+}

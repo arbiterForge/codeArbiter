@@ -1,0 +1,51 @@
+{
+ "schema": "codearbiter.private-docs-chore-delivery/1",
+ "state": "PRIVATE_CANDIDATE_NOT_APPLIED",
+ "source_epoch": "3766b0115bb1a568b375d778bc6da9cb48e57816",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "classification": "ca-chore/docs selected one-field public caution",
+ "subject": {
+  "path": "site/scripts/generator/configuration-reference.ts",
+  "preimage_sha256": "727e8a6d430afb2bcb3604856692cba42f5bbf95ed970e04e441a7a145d0c120",
+  "preimage_bytes": 16263,
+  "candidate": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-run-id-caution-docs-8io6pqfk\\configuration-reference.ts",
+   "sha256": "a957946901da48101ca6d257a65f8259da0c1ebb9de3846a108acb5a8e10d140",
+   "bytes": 16343
+  }
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-run-id-caution-docs-8io6pqfk\\caution.diff",
+  "sha256": "98de8f78fbbf57647006d359c1d3c165644b33fb97c90130aeca9ff5c2207c20",
+  "bytes": 660
+ },
+ "source_basis": [
+  {
+   "path": "core/surface/includes/farm.md",
+   "lines": [
+    266,
+    428
+   ],
+   "meaning": "Existing identities refused; receipt-only reconciliation or explicit unused attempt identities."
+  },
+  {
+   "path": "plugins/ca/tools/farm-recovery.ts",
+   "lines": [
+    29,
+    38
+   ],
+   "meaning": "createRunDirectory exclusively mkdirs run dir; existing/unclaimable refuses."
+  },
+  {
+   "path": "plugins/ca/tools/farm.ts",
+   "lines": [
+    3454,
+    3487
+   ],
+   "meaning": "createRunDirectory occurs before stream initialization."
+  }
+ ],
+ "preservation": "Exactly one caution string replaced; all other source bytes, row inventory, defaults and executable control flow unchanged.",
+ "checks": "Source and literal replacement inspection only. No tests/render/runtime for prose; not a new observed Farm result.",
+ "held_source_cells": "generator:public-catalog machine and four edges remain PLANNED at3766; this uncommitted private candidate does not qualify them."
+}

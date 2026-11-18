@@ -1,0 +1,126 @@
+{
+ "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+ "executable": "C:\\Python314\\python.exe",
+ "tests_run": 13,
+ "failures": 0,
+ "errors": 0,
+ "skips": 0,
+ "duration_seconds": 0.131133899994893,
+ "outcomes": [
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_canonicalization_and_cross_root_errors_refuse_without_processing",
+   "outcome": "PASS",
+   "duration_seconds": 0.0051377000054344535
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_claude_base_itself_is_not_a_descendant_even_if_regular",
+   "outcome": "PASS",
+   "duration_seconds": 0.0013898999895900488
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_contained_descendants_preserve_original_healing_route (normalized=True)",
+   "outcome": "PASS",
+   "duration_seconds": 0.0014992999786045402
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_contained_descendants_preserve_original_healing_route (normalized=False)",
+   "outcome": "PASS",
+   "duration_seconds": 0.001843799982452765
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_contained_descendants_preserve_original_healing_route",
+   "outcome": "PASS",
+   "duration_seconds": 0.002288499992573634
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_disabled_and_dry_modes_keep_their_existing_no_heal_behavior (mode='off')",
+   "outcome": "PASS",
+   "duration_seconds": 0.001048400008585304
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_disabled_and_dry_modes_keep_their_existing_no_heal_behavior (mode='dry')",
+   "outcome": "PASS",
+   "duration_seconds": 0.0013741000148002058
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_disabled_and_dry_modes_keep_their_existing_no_heal_behavior (mode='unknown')",
+   "outcome": "PASS",
+   "duration_seconds": 0.0015090999950189143
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_disabled_and_dry_modes_keep_their_existing_no_heal_behavior",
+   "outcome": "PASS",
+   "duration_seconds": 0.0019502000068314373
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_outside_symlink_is_canonicalized_before_admission",
+   "outcome": "PASS",
+   "duration_seconds": 0.006283800001256168
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal (sibling='.claude-other')",
+   "outcome": "PASS",
+   "duration_seconds": 0.001640000002225861
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal (sibling='.claude.old')",
+   "outcome": "PASS",
+   "duration_seconds": 0.0029389999981503934
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal (sibling='.claude2')",
+   "outcome": "PASS",
+   "duration_seconds": 0.00398110001697205
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_prefix_siblings_are_refused_before_self_heal",
+   "outcome": "PASS",
+   "duration_seconds": 0.004659500002162531
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_unrelated_and_escaping_paths_are_refused_before_processing (path_form=True)",
+   "outcome": "PASS",
+   "duration_seconds": 0.0012920000008307397
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_unrelated_and_escaping_paths_are_refused_before_processing (path_form=False)",
+   "outcome": "PASS",
+   "duration_seconds": 0.001587400009157136
+  },
+  {
+   "name": "test_prune_containment.PruneContainmentTests.test_unrelated_and_escaping_paths_are_refused_before_processing",
+   "outcome": "PASS",
+   "duration_seconds": 0.002017700026044622
+  },
+  {
+   "name": "test_prune_single_parse.SingleParseTest.test_load_lines_called_exactly_once_per_hook_run",
+   "outcome": "PASS",
+   "duration_seconds": 0.035510099987732247
+  },
+  {
+   "name": "test_prune_single_parse.SingleParseTest.test_prune_still_executes_and_shrinks",
+   "outcome": "PASS",
+   "duration_seconds": 0.02690759999677539
+  },
+  {
+   "name": "test_prune_single_parse.SingleParseTest.test_transcript_path_opened_at_most_five_times",
+   "outcome": "PASS",
+   "duration_seconds": 0.02755609998712316
+  },
+  {
+   "name": "test_prune_nudge.TestO2WrongMode.test_dry_mode_returns_0",
+   "outcome": "PASS",
+   "duration_seconds": 0.007869599998230115
+  },
+  {
+   "name": "test_prune_nudge.TestO2WrongMode.test_off_mode_returns_0",
+   "outcome": "PASS",
+   "duration_seconds": 0.0038622000138275325
+  },
+  {
+   "name": "test_prune_nudge.TestO2WrongMode.test_transcript_untouched_in_dry_mode",
+   "outcome": "PASS",
+   "duration_seconds": 0.005253899988019839
+  }
+ ]
+}

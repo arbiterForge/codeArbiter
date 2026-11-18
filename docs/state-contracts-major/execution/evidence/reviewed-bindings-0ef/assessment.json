@@ -1,0 +1,69 @@
+{
+ "cause": "Reviewed init attribution prose changed2ed; existing default/Atlas expected bytes were not acknowledged. Separate reviewed B03 + PowerShell visible-body correction also superseded an effective major override; exact full inventory found it before another CI cycle. Hook reader omitted two actual stronger success predicates.",
+ "inventory": {
+  "all_effective_candidate_paths": 117,
+  "before_mismatches": [
+   {
+    "path": "core/pysrc/_bashguardlib.py",
+    "owner": "MAJOR_SOURCE_BLOBS",
+    "pin": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3",
+    "equal": false,
+    "permittedChangelogGrowth": false
+   },
+   {
+    "path": "core/surface/commands/init.md",
+    "owner": "MAJOR_SOURCE_BLOBS",
+    "pin": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
+    "equal": false,
+    "permittedChangelogGrowth": false
+   }
+  ],
+  "after_mismatches": []
+ },
+ "affected_routes": [
+  {
+   "owner": "init.md",
+   "nodes": [
+    "o-init",
+    "o-runtime",
+    "c-live"
+   ],
+   "basis": "Real init calls ensure_task_lock_excluded; _taskexcludelib uses exclusive exclude.lock, fresh binding/contents and exact rule. Task-board retains OS lock sidecar. No new policy or permission."
+  },
+  {
+   "owner": "_bashguardlib.py",
+   "nodes": [
+    "f-recovery",
+    "c-read",
+    "c-proof"
+   ],
+   "basis": "Actual binary_candidate stamp added; visible literal PowerShell here-string interpreter projection before protected-write scanning. Dynamic/nested stdin remains finite limit."
+  }
+ ],
+ "preservation": {
+  "historical_init_sha256": "e37a00a1b0d5d8ce05c5120449a0bc3a9bb29a0995c10a6e3abc60cb4b684f1d",
+  "other_major_rows": 39,
+  "global_revision_unchanged": "f65f1e7543f2934a274909cb0d157b94ee909e61",
+  "atlas_ts_unchanged": true,
+  "historical_packets_and_geometry_unchanged": true,
+  "compat_old_methods_unchanged_except_exact_default_init_branch": true,
+  "integration_all_other_ASTs_and_old_assertions_preserved": true,
+  "assistive_old_bytes_unchanged_after_removing_one_new_method": true
+ },
+ "checks": {
+  "compatibility": "15 tests PASS0.022s (13 original+2new);6 mutation vectors in new control.",
+  "integration": "1 actual existing token-scope test PASS0.015s;5old+2new omission mutants.",
+  "atlas": "23 unique selected Atlas methods eventually PASS across20PASS+3adapterERROR, affected2PASS+1adapterERROR, affected1PASS; all initial errors preserved, only affected reruns. New source/link regression included.",
+  "strict_source": "3 unchanged explicit-source/CRLF/symlink/missing-object guards PASS; Vitest tests260ms/outer1.1258181s. Other159 methods explicitly unselected.",
+  "inventory": "117 after candidate rows,0actualmismatches; only existing root changelog growth exception retained."
+ },
+ "honest_limits": [
+  "No fullsite build/browser/npm/install/native/SDK/Pi/provider/API/network or canonical changes.",
+  "Private Vitest adapters supply actualRoot and read-only canonical core/docs paths; no production source substitution.",
+  "First new Python mutant draft incorrectly nested subTest owner under assertRaises; corrected fixture to inspect real TestResult, retained initial failure and proper corrected checksum RED before helper.",
+  "First Atlas controller lacked private read-through core/docs/CHANGELOG paths and left one default root call; setup errors retained and only affected methods rerun.",
+  "A single Vitest JSON output was overwritten by later focused commands before sealing; raw full stdout/stderr for all commands retained. No claimed single all-green23 command/full suite.",
+  "Generated standalone export content test not selected; original generator/build in hosted CI owns regeneration.",
+  "No hosted acceptance/qualification claimed."
+ ]
+}

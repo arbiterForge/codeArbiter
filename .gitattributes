@@ -155,6 +155,11 @@ site/**/*.json    text eol=lf
 # Keep fresh Windows checkouts canonical without touching historical/raw files.
 /.github/major-qualification-policy.json text eol=lf
 /.github/major-test-selections.json text eol=lf
+/core/workflow-recovery-contract.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/agent-posttooluse.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/agent-pretooluse.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/subagentstart.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/subagentstop-first.json text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/go/go.mod text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/go/main.go text eol=lf
 /plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt text eol=lf
@@ -166,3 +171,8 @@ site/**/*.json    text eol=lf
 # unittest subcase label's trailing space and Docker stderr's final blank line.
 /docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/red.stderr whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
 /docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/stderr.log whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+
+# Farm source observations bind these exact manifest and example-input bytes.
+/.github/fixtures/artifact-release-manifest.json text eol=lf
+/core/artifact-release-manifest.json text eol=lf
+/plugins/ca/tools/.env.example text eol=lf

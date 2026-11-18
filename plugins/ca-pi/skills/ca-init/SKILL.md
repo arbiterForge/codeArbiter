@@ -20,9 +20,9 @@ populating before normal operation.
 
 Governance records live in `.codearbiter/`. Opted-in hooks also maintain managed
 Git shims and Git-common enforcement bookkeeping; the task-board writer retains
-its lock sidecar and maintains its exact Git-common `info/exclude` rule. These
-owners retain their existing permissions and preserve foreign hooks and user
-configuration. Use the explicit-root passive check below before entering an
+its lock sidecar. Initialization adds the sidecar's exact Git-common `info/exclude`
+rule under an exclusive lock. These owners retain their existing permissions and
+preserve foreign hooks and user configuration. Use the explicit-root passive check below before entering an
 unfamiliar repository session; a later skill cannot undo startup effects.
 
 <!-- catalog-command-modes:start -->

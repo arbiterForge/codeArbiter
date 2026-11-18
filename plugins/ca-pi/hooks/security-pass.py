@@ -152,7 +152,7 @@ def main(argv=None):
         os.makedirs(marker_dir, exist_ok=True)
         marker = os.path.join(marker_dir, "security-gate-passed")
         write_text_atomic(marker, "\n".join(
-            (worktree_marker_binding(root), binding)) + "\n")
+            (worktree_marker_binding(root), scan.candidate, binding)) + "\n")
         print("binary security override recorded: exact staged candidate bound to "
               + os.path.relpath(marker, write_root))
         return

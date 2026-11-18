@@ -1,0 +1,59 @@
+{
+ "source_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "source_tree": "2dfcf37c50ccc3dd7c5aac1c43cc321c6e7f3793",
+ "run": {
+  "id": 44046125414,
+  "path": ".github/workflows/docs.yml",
+  "head_sha": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "head_branch": "major/state-contracts",
+  "event": "push",
+  "status": "completed",
+  "conclusion": "success",
+  "run_attempt": 2,
+  "created_at": "2026-11-17T10:36:06Z",
+  "updated_at": "2026-11-17T10:38:33Z"
+ },
+ "original_job": {
+  "id": 133912127642,
+  "name": "Site | [Build] - Astro Pages",
+  "run_id": 44046125414,
+  "run_attempt": 1,
+  "status": "completed",
+  "conclusion": "success",
+  "started_at": "2026-11-17T08:22:08Z",
+  "completed_at": "2026-11-17T08:31:56Z",
+  "runner_id": 1000128169
+ },
+ "attempt2_builder_alias": {
+  "id": 133980845215,
+  "name": "Site | [Build] - Astro Pages",
+  "run_id": 44046125414,
+  "run_attempt": 2,
+  "status": "completed",
+  "conclusion": "success",
+  "started_at": "2026-11-17T08:22:08Z",
+  "completed_at": "2026-11-17T08:31:56Z",
+  "runner_id": 1000128169
+ },
+ "alias_basis": "Both API jobs have exactly the same original started/completed times and runner; their separately acquired authenticated logs are byte-identical and name original report/job1. No new attempt2 browser execution inferred.",
+ "original_job_log_sha256": "30583d8204dc9764475532134cf5f0a6d9a08325a7ccb1d8a5227b45d74578dd",
+ "alias_log_sha256": "30583d8204dc9764475532134cf5f0a6d9a08325a7ccb1d8a5227b45d74578dd",
+ "artifact": {
+  "id": 14311124383,
+  "name": "major-docs-qualification-133912127642",
+  "digest": "sha256:8e2cf1a3cbf8e0069c7a2984e4ac630e355414ac11c9a2c3ade0bfd0b02d5c9e",
+  "size_in_bytes": 54982,
+  "expired": false,
+  "created_at": "2026-11-17T08:31:53Z",
+  "expires_at": "2026-11-20T08:22:06Z",
+  "workflow_run": {
+   "id": 44046125414,
+   "repository_id": 1233366728,
+   "head_repository_id": 1233366728,
+   "head_branch": "major/state-contracts",
+   "head_sha": "d4822a5689cd9c3b157242303236cb26227e0ea5"
+  }
+ },
+ "watch_result": "Whole source-D482 trusted push Docs succeeded at attempt2; original successful browser observation is attempt1. All deployment jobs skipped; no publication.",
+ "not_final_pages_readiness": true
+}

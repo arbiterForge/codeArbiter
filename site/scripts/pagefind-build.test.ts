@@ -1,9 +1,15 @@
+import * as fs from 'node:fs';
 import { mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as pagefind from 'pagefind';
 import { buildSearchIndex, completePagefind, validateSearchFiles, writeSearchFiles } from './pagefind-build';
+
+vi.mock('node:fs', async original => {
+  const actual = await original<typeof import('node:fs')>();
+  return { ...actual, renameSync: vi.fn(actual.renameSync) };
+});
 
 const directories: string[] = [];
 async function fixture() {
@@ -34,6 +40,63 @@ describe('complete search bundle publication', () => {
     expect(await readdir(join(directory, 'pagefind'))).not.toContain('obsolete');
     expect((await readdir(directory)).filter(name => name.startsWith('.pagefind-stage-'))).toEqual([]);
     expect(report.files.every(file => /^[a-f0-9]{64}$/.test(file.sha256) && file.bytes > 0)).toBe(true);
+  });
+
+  it('restores the previous search index after a late promotion failure and converges on rerun', async () => {
+    const directory = fs.realpathSync(await fixture());
+    const destination = join(directory, 'pagefind');
+    const previous = files();
+    await writeSearchFiles(directory, previous, 1);
+    const obsolete = join(destination, 'obsolete');
+    const article = join(directory, 'index.html');
+    await writeFile(obsolete, 'previous search-only asset');
+    await writeFile(article, 'handwritten page');
+    const snapshot = () => Object.fromEntries(
+      fs.readdirSync(directory, { recursive: true }).map(path => String(path)).sort()
+        .filter(path => fs.lstatSync(join(directory, path)).isFile())
+        .map(path => [path, fs.readFileSync(join(directory, path)).toString('hex')]),
+    );
+    const before = snapshot();
+    const updated = files();
+    updated[0].content = bytes('export const search = async () => ({results: [1]});');
+    updated[2].content = Uint8Array.from([4, 255, 2, 1]);
+    updated.push({ path: 'fragment/added.pf_fragment', content: Uint8Array.from([1, 0, 255]) });
+    const early = join(destination, updated[2].path);
+    const added = join(destination, 'fragment', 'added.pf_fragment');
+    const late = join(destination, 'pagefind.js');
+    const real = (await vi.importActual<typeof import('node:fs')>('node:fs')).renameSync;
+    let failedPromotions = 0;
+    vi.mocked(fs.renameSync).mockImplementation((from, to) => {
+      if (String(from).endsWith('.new') && to === late) {
+        expect(fs.readFileSync(early)).toEqual(Buffer.from(updated[2].content));
+        expect(fs.existsSync(added)).toBe(true);
+        expect(fs.existsSync(obsolete)).toBe(false);
+        failedPromotions++;
+        throw new Error('controlled late Pagefind promotion failure');
+      }
+      real(from, to);
+    });
+    try {
+      await expect(writeSearchFiles(directory, updated, 1))
+        .rejects.toThrow('controlled late Pagefind promotion failure');
+    } finally {
+      vi.mocked(fs.renameSync).mockImplementation(real);
+    }
+    expect(failedPromotions).toBe(1);
+    expect(snapshot()).toEqual(before);
+    expect((await readdir(directory)).sort()).toEqual(['index.html', 'pagefind']);
+
+    const report = await writeSearchFiles(directory, updated, 1);
+    expect(report.files.map(file => file.path)).toEqual(updated.map(file => file.path));
+    for (const file of updated) {
+      expect(await readFile(join(destination, file.path))).toEqual(Buffer.from(file.content));
+    }
+    expect(fs.existsSync(obsolete)).toBe(false);
+    expect(await readFile(article, 'utf8')).toBe('handwritten page');
+    const settled = snapshot();
+    expect(await writeSearchFiles(directory, updated, 1)).toEqual(report);
+    expect(snapshot()).toEqual(settled);
+    expect((await readdir(directory)).sort()).toEqual(['index.html', 'pagefind']);
   });
 
   it('rejects the observed 32 KiB incomplete-module shape and preserves the prior output', async () => {

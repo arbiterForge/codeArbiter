@@ -1,0 +1,403 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/artifacts/internal/operations/context_assistive.go": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+  "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+  "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+  "core/pysrc/_contextwriterlib.py": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+  "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:context-writer",
+  "disposition:transitions:hooks:context-writer:01",
+  "disposition:transitions:hooks:context-writer:02",
+  "disposition:transitions:hooks:context-writer:03",
+  "disposition:transitions:hooks:context-writer:04",
+  "disposition:transitions:hooks:context-writer:05",
+  "disposition:transitions:hooks:context-writer:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:context-writer",
+   "frozen_row_sha256": "e6d08c0e02185db299196065ccb6708a9b54d9d0a3041c4209ff9cb9374da98f",
+   "clause_ids": [
+    "disposition:transitions:hooks:context-writer:01",
+    "disposition:transitions:hooks:context-writer:02",
+    "disposition:transitions:hooks:context-writer:03",
+    "disposition:transitions:hooks:context-writer:04",
+    "disposition:transitions:hooks:context-writer:05",
+    "disposition:transitions:hooks:context-writer:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "symbol": "prepare_document_preview",
+     "start": 37,
+     "end": 96,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "272095dd347b9399c788cbb88f07a6216b2c7b0e1d807097e4abe2d7e83202fa",
+     "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+    },
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "symbol": "_read_file",
+     "start": 20,
+     "end": 34,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "8e9ef337139da6c10d1e7500426f4b6700e26f4feb901ed78af0e7173dbdc35e",
+     "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+    },
+    {
+     "path": "core/pysrc/_contextsnapshotlib.py",
+     "symbol": "digest_file",
+     "start": 200,
+     "end": 292,
+     "file_sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+     "span_sha256": "ee24ac1e4265d90e5c3efd1808771b523aa7fb4e1c915254c3e754f78a2a5728",
+     "git_oid": "cc89a71aa784b109fbdfe123a787b30dab957134"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.require_context_workflow",
+     "start": 1036,
+     "end": 1056,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "551bbf83b6317e9b57a4d8f94250cead36fc523ff6c58a2263ff19c57e5f8870",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "symbol": "375-426",
+     "start": 375,
+     "end": 426,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "fcc6ea04fbc9ccbc022ca8880ccbefb2cf13548e292659f7f4c455e1e57d3b32",
+     "git_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4"
+    },
+    {
+     "path": "core/artifacts/internal/operations/context_assistive.go",
+     "symbol": "contextOrdinaryPreview",
+     "start": 40,
+     "end": 130,
+     "file_sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+     "span_sha256": "df30ab60599b9ddddb794edc761eafcb70c73cd2f5017d257624a98528a85cf8",
+     "git_oid": "5e506d1069511c7a15ca381d58354e3c8f0d95a6"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "validate_context_writer_request",
+     "start": 146,
+     "end": 185,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "010caefe93f13fa07bb082e69537ba069c2d6a7e5fdfe26bf46eeb35a543c9be",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/artifacts/internal/operations/context_assistive.go",
+     "symbol": "contextOrdinaryApply",
+     "start": 131,
+     "end": 197,
+     "file_sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+     "span_sha256": "7ce25617c1dcdd5781334eb640fcf35aad4c77552b62345643edd46fd3470be5",
+     "git_oid": "5e506d1069511c7a15ca381d58354e3c8f0d95a6"
+    },
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "symbol": "prepare_finalization_preview",
+     "start": 99,
+     "end": 114,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "1566644a4f0af5dfa0872f9a0ce5b7cfd729f69b076884d119b09ee2cf84fafb",
+     "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+    },
+    {
+     "path": "core/pysrc/_protectedstatelib.py",
+     "symbol": "context_writer_protection",
+     "start": 219,
+     "end": 229,
+     "file_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+     "span_sha256": "91ae2b783c54a89f7f74a6eab032c6caad01f42f28f44e9c54cfff7fa5d83860",
+     "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1"
+    },
+    {
+     "path": "core/pysrc/_protectedstatelib.py",
+     "symbol": "_committed_context_journal",
+     "start": 232,
+     "end": 346,
+     "file_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+     "span_sha256": "de623b77d658781a358d1465f9dec9724107575b60b256dc198ae488c5203188",
+     "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1"
+    },
+    {
+     "path": "core/pysrc/_protectedstatelib.py",
+     "symbol": "_context_policy",
+     "start": 349,
+     "end": 360,
+     "file_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+     "span_sha256": "349e9e7ff1228cedd2902a3fc83e04292c0c8b6c337af16741f0d9f4256e0f84",
+     "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "The inspected operations delegate transactional effects; this source proposal does not execute or independently prove crash recovery/durability.",
+    "Frozen shorthand says five documents; the actual map contains five narrative documents, five provenance files and three bookkeeping outputs, thirteen paths total.",
+    "These are framework guard policies and declared ownership checks, not a sandbox against arbitrary external filesystem writers."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-writer:01",
+   "frozen_row_sha256": "c7de7877d2d2733506316ae84167de9fd5724b36bb416036db9e735633cd67a0",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "symbol": "prepare_document_preview",
+     "start": 37,
+     "end": 96,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "272095dd347b9399c788cbb88f07a6216b2c7b0e1d807097e4abe2d7e83202fa",
+     "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+    },
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "symbol": "_read_file",
+     "start": 20,
+     "end": 34,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "8e9ef337139da6c10d1e7500426f4b6700e26f4feb901ed78af0e7173dbdc35e",
+     "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+    },
+    {
+     "path": "core/pysrc/_contextsnapshotlib.py",
+     "symbol": "digest_file",
+     "start": 200,
+     "end": 292,
+     "file_sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+     "span_sha256": "ee24ac1e4265d90e5c3efd1808771b523aa7fb4e1c915254c3e754f78a2a5728",
+     "git_oid": "cc89a71aa784b109fbdfe123a787b30dab957134"
+    }
+   ],
+   "semantic_assessment": "The preview convenience function writes nothing. It accepts one registered document and 1-64 source paths excluding its document/provenance outputs, reads bounded UTF8 draft/current preimages and exact source digests, preserves malformed/unsupported existing provenance, and constructs deterministic content-based create/adopt/update request with semantic_review unreviewed.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-writer:02",
+   "frozen_row_sha256": "33179804f7028b2265f9775a162a217d03233cf9305a82eb1e50be542d4733e5",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "ArtifactClient.require_context_workflow",
+     "start": 1036,
+     "end": 1056,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "551bbf83b6317e9b57a4d8f94250cead36fc523ff6c58a2263ff19c57e5f8870",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "symbol": "375-426",
+     "start": 375,
+     "end": 426,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "fcc6ea04fbc9ccbc022ca8880ccbefb2cf13548e292659f7f4c455e1e57d3b32",
+     "git_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4"
+    },
+    {
+     "path": "core/artifacts/internal/operations/context_assistive.go",
+     "symbol": "contextOrdinaryPreview",
+     "start": 40,
+     "end": 130,
+     "file_sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+     "span_sha256": "df30ab60599b9ddddb794edc761eafcb70c73cd2f5017d257624a98528a85cf8",
+     "git_oid": "5e506d1069511c7a15ca381d58354e3c8f0d95a6"
+    }
+   ],
+   "semantic_assessment": "The installed capability must expose registered/default-enabled host-owned context mutation and the exact preview/finalize/apply operations. Native ordinary preview validates the typed request, preimages/current evidence and retained-format contract, then stores content-addressed preview with presented changes and evidence_assessed false. No second authority approval arm is minted.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-writer:03",
+   "frozen_row_sha256": "16fe35d723177200a2da41824546f2ab1b8d755ba4f875b06566ddc8a5d62412",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "validate_context_writer_request",
+     "start": 146,
+     "end": 185,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "010caefe93f13fa07bb082e69537ba069c2d6a7e5fdfe26bf46eeb35a543c9be",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "symbol": "375-426",
+     "start": 375,
+     "end": 426,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "fcc6ea04fbc9ccbc022ca8880ccbefb2cf13548e292659f7f4c455e1e57d3b32",
+     "git_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4"
+    },
+    {
+     "path": "core/artifacts/internal/operations/context_assistive.go",
+     "symbol": "contextOrdinaryApply",
+     "start": 131,
+     "end": 197,
+     "file_sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+     "span_sha256": "7ce25617c1dcdd5781334eb640fcf35aad4c77552b62345643edd46fd3470be5",
+     "git_oid": "5e506d1069511c7a15ca381d58354e3c8f0d95a6"
+    }
+   ],
+   "semantic_assessment": "Apply accepts the exact closed retained preview ref/SHA or explicitly compatible receipt route. Native ordinary apply revalidates stored bytes, request and preview binding and calls the contextdocument mutation owner; document/provenance transaction and recovery are delegated to that owner rather than performed by this convenience layer.",
+   "intake_variances": [
+    "The inspected operations delegate transactional effects; this source proposal does not execute or independently prove crash recovery/durability."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-writer:04",
+   "frozen_row_sha256": "e35df4c0a9b532b396fbce5548a230466ddf12af9af6517ae1f58b7de76ef767",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "symbol": "prepare_finalization_preview",
+     "start": 99,
+     "end": 114,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "1566644a4f0af5dfa0872f9a0ce5b7cfd729f69b076884d119b09ee2cf84fafb",
+     "git_oid": "0d66d9ba1b72fdbef2045bc00b8a1945a8059af3"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "validate_context_writer_request",
+     "start": 146,
+     "end": 185,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "010caefe93f13fa07bb082e69537ba069c2d6a7e5fdfe26bf46eeb35a543c9be",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    }
+   ],
+   "semantic_assessment": "Finalization digests every registered required output and derives its operation ID from that exact map. Missing/unsafe/changed documents or provenance inputs refuse instead of finalizing partial initialization.",
+   "intake_variances": [
+    "Frozen shorthand says five documents; the actual map contains five narrative documents, five provenance files and three bookkeeping outputs, thirteen paths total."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-writer:05",
+   "frozen_row_sha256": "fe1846103e601ad490b4001362c0866700d93822be3e58def6bb8e3d9f82c125",
+   "witnesses": [
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "symbol": "375-426",
+     "start": 375,
+     "end": 426,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "fcc6ea04fbc9ccbc022ca8880ccbefb2cf13548e292659f7f4c455e1e57d3b32",
+     "git_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4"
+    },
+    {
+     "path": "core/pysrc/_artifactlib.py",
+     "symbol": "validate_context_writer_request",
+     "start": 146,
+     "end": 185,
+     "file_sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+     "span_sha256": "010caefe93f13fa07bb082e69537ba069c2d6a7e5fdfe26bf46eeb35a543c9be",
+     "git_oid": "0074f23a0a3d3a1994081d0be41c63e7fe06dff3"
+    },
+    {
+     "path": "core/artifacts/internal/operations/context_assistive.go",
+     "symbol": "contextOrdinaryApply",
+     "start": 131,
+     "end": 197,
+     "file_sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+     "span_sha256": "7ce25617c1dcdd5781334eb640fcf35aad4c77552b62345643edd46fd3470be5",
+     "git_oid": "5e506d1069511c7a15ca381d58354e3c8f0d95a6"
+    }
+   ],
+   "semantic_assessment": "The public helper sends the validated retained finalization preview through native context-apply. Native ordinary apply verifies finalization binding before FinalizeOrdinary; the legacy receipt form remains a separate explicit accepted parser route, not a guessed fallback.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:context-writer:06",
+   "frozen_row_sha256": "55cff7b9ffd71ea9e176483a81a12a62449be79626b1347e329b1e5b840cba83",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_protectedstatelib.py",
+     "symbol": "context_writer_protection",
+     "start": 219,
+     "end": 229,
+     "file_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+     "span_sha256": "91ae2b783c54a89f7f74a6eab032c6caad01f42f28f44e9c54cfff7fa5d83860",
+     "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1"
+    },
+    {
+     "path": "core/pysrc/_protectedstatelib.py",
+     "symbol": "_committed_context_journal",
+     "start": 232,
+     "end": 346,
+     "file_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+     "span_sha256": "de623b77d658781a358d1465f9dec9724107575b60b256dc198ae488c5203188",
+     "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1"
+    },
+    {
+     "path": "core/pysrc/_protectedstatelib.py",
+     "symbol": "_context_policy",
+     "start": 349,
+     "end": 360,
+     "file_sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+     "span_sha256": "349e9e7ff1228cedd2902a3fc83e04292c0c8b6c337af16741f0d9f4256e0f84",
+     "git_oid": "1d90335465271ba4920fb119bb564a94ca56e8f1"
+    }
+   ],
+   "semantic_assessment": "Protected context target policy enrolls only a freshly qualified shipped writer or a matching committed two-target journal. Unsafe/unreadable/prepared or ambiguous relevant journal evidence conservatively yields HELPER_ONLY, while absent/empty inventory alone does not enroll. Preview construction itself is read-only; native retained-preview storage is a separate effect.",
+   "intake_variances": [
+    "These are framework guard policies and declared ownership checks, not a sandbox against arbitrary external filesystem writers."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:context-writer finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

@@ -1,0 +1,64 @@
+{
+ "definition_asts": {
+  ".github/scripts/_windows_dbgeng.py": {
+   "changed_old_definitions": [
+    "run"
+   ],
+   "new_definitions": [
+    "_progress_writer",
+    "decode_progress"
+   ],
+   "all_other_definition_asts_identical": true
+  },
+  ".github/scripts/_windows_rpc_timeout.py": {
+   "changed_old_definitions": [
+    "_debugger"
+   ],
+   "new_definitions": [],
+   "all_other_definition_asts_identical": true
+  },
+  ".github/scripts/test_pi_package.py": {
+   "changed_old_definitions": [],
+   "new_definitions": [
+    "DebuggerPhaseProgressTests"
+   ],
+   "all_other_definition_asts_identical": true
+  }
+ },
+ "proper_red_target_ast_identical": true,
+ "final_decode_result_abi_and_engine_asts_identical": true,
+ "source_joins": [
+  {
+   "path": ".github/scripts/_windows_dbgeng.py",
+   "epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+   "literal_git_sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+   "physical_preimage_sha256": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+   "physical_equals_literal": true,
+   "current_physical_equals_preimage": true
+  },
+  {
+   "path": ".github/scripts/_windows_rpc_timeout.py",
+   "epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+   "literal_git_sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+   "physical_preimage_sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+   "physical_equals_literal": true,
+   "current_physical_equals_preimage": true
+  },
+  {
+   "path": ".github/scripts/test_pi_package.py",
+   "epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+   "literal_git_sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+   "physical_preimage_sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+   "physical_equals_literal": true,
+   "current_physical_equals_preimage": true
+  }
+ ],
+ "current_head_observed_at_seal": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "tool_identity_at_seal": {
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+ },
+ "captures_all_private_source_stable": true,
+ "no_canonical_or_eight_subject_candidate_writes": true
+}

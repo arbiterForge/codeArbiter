@@ -1,0 +1,89 @@
+{
+  "schema": "codearbiter.independent-code-review/1",
+  "reviewer": "/root",
+  "role": "Security and critical coverage",
+  "independent_of_authorship": true,
+  "author": "/root/crypto_evidence_review",
+  "verdict": "PASS",
+  "findings": [],
+  "source_commit": "d5f41252f4610d614eb51d709357ec511730313d",
+  "proposal_sha256": "20bfeafaa4fd0fd638e1158f47b5c7532ba4620638778763b7938c8c7c68fdf9",
+  "full_subjects": {
+    "core/pysrc/_bashguardlib.py": {
+      "preimage": {
+        "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+        "bytes": 156954
+      },
+      "candidate": {
+        "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+        "bytes": 159652
+      }
+    },
+    ".github/scripts/test_literal_python_reads.py": {
+      "preimage": {
+        "sha256": "a95105f4c4ed155c756d519e5428dd8dd77c867a52ca517b92693aba22013a53",
+        "bytes": 12965
+      },
+      "candidate": {
+        "sha256": "b1345cde7b7ee68658fca334aa84d90b92e1d392997a73a83194100d4f48bbb7",
+        "bytes": 21725
+      }
+    },
+    "plugins/ca/hooks/_bashguardlib.py": {
+      "preimage": {
+        "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+        "bytes": 156954
+      },
+      "candidate": {
+        "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+        "bytes": 159652
+      }
+    },
+    "plugins/ca-codex/hooks/_bashguardlib.py": {
+      "preimage": {
+        "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+        "bytes": 156954
+      },
+      "candidate": {
+        "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+        "bytes": 159652
+      }
+    },
+    "plugins/ca-pi/hooks/_bashguardlib.py": {
+      "preimage": {
+        "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+        "bytes": 156954
+      },
+      "candidate": {
+        "sha256": "972d23f99eb3603b871ac81261e8bb8a11ca4e5e7edc43942e58c077ad69bf52",
+        "bytes": 159652
+      }
+    }
+  },
+  "context_input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\guard-stdin-root-peer-input.txt",
+  "context_sha256": "da9068e2fd8553a0cbad9c01df8a18b1b84417303c8dd35cf29fcfb9b8cba999",
+  "checks": {
+    "all_five_subjects_bound": true,
+    "all_old_guard_functions_except_one_call_AST_unchanged": true,
+    "all_old_test_classes_AST_unchanged": true,
+    "B03_and_closed_read_profiles_unchanged": true,
+    "mirrors_equal": true,
+    "actual_tail_RED": 10,
+    "actual_final_selected_methods_PASS": 21,
+    "syntax_compile": "PASS"
+  },
+  "security_assessment": [
+    "Visible PowerShell here-string consumer is projected before intact original source; no source hiding or read exemption is added.",
+    "Python default/explicit stdin uses inline-code guard view; explicit script/-c/-m data retains existing registered-state exception. Value/combined option parsing stays conservative on unknown grammar.",
+    "Root found the real predecessor tail-borrowing gap. Successor uses existing quote-aware layout to bound argv before first top-level separator; uncertain escapes/expansion/comments/nesting/redirection retain conservative inline classification. Actual ten RED assertions and same-test GREEN verify the correction.",
+    "Actual pure full guards cover H05/H11/H18/H19/H22, LF/CRLF, quoted absolute consumer, script-data/read/nonexecutor controls and statement/pipeline tails. Owned context is asserted unchanged; no supplied command body executes.",
+    "No new primitive, credential, egress, native, release, policy or marker authority. Complete CTX-SECURITY-CONTROLS and reviewer contract read."
+  ],
+  "coverage": "Python numeric tooling unavailable under FACT005/NOTE005 and maturity-coverage no-tooling rule; direct critical behavior and actual pre-fix negative controls used. Existing two process/Git fixture methods remain pending Root or hosted execution; not claimed passed here.",
+  "limits": [
+    "Only bounded visible Python stdin ownership; dynamic/nested stdin and live installed-host enforcement remain unqualified.",
+    "Original unsupported compound read remains conservatively refused.",
+    "Private peer has no index identity; Root must separately bind actual stage and run scanner/commit/hosted gates.",
+    "Main1098 and publication remain held."
+  ]
+}

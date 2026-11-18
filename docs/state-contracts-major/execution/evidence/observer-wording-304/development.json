@@ -1,0 +1,156 @@
+{
+ "schema": "codearbiter.major.observer-wording-development/1",
+ "recorded_at": "2026-11-17T10:09:51.862536+00:00",
+ "controller_anchor": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "branch": "codex/state-contracts-prune-boundary",
+ "changes": [
+  "Closed250input W-F03 original six-policy-test composition; original15-method suite executes once in its existing owning cell, exact uploader/source/run identity and finalmain boundaries retained.",
+  "Nine native registry/suite input paths now select the existing fast guard; exact native membership remains strict.",
+  "Prune prose states separate container/volume discovery sets, notoneglobalstart guarantee; init attribution corrected canonically andinallthreeprojections plusREADME."
+ ],
+ "evidence": {
+  "code-author": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/code-author.json",
+   "sha256": "35a4ee41843e7d2a6132a9fe2402dca8aaa374b5965b09f307ea6755b846ac1d",
+   "bytes": 9322
+  },
+  "code-peer": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/code-peer.json",
+   "sha256": "586f61483f8fd9df13e2f446295d3f340c8d6a90bbf45dc910bfba7ebbf9c9fe",
+   "bytes": 5838
+  },
+  "docs-author": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/docs-author.json",
+   "sha256": "6061b4a1f8412512eaea304c31d552b4d64bee50db9c51adbfc22e9bfa63714e",
+   "bytes": 14459
+  },
+  "docs-peer": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/docs-peer.json",
+   "sha256": "6ec6f2dfeaefb3bf8cc8e3183f393acf9be20bd1abf36d1dbfcc6c1cf9363e5b",
+   "bytes": 7967
+  },
+  "actual-checks": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/actual-checks.json",
+   "sha256": "bf887b2a126c4a57ffec2648f97e0b04895b1c050033409c616fd363edfdbad4",
+   "bytes": 22276
+  },
+  "preservation": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/preservation.json",
+   "sha256": "223fb6678f77fb198109ec987846ebad9a5b74e7580eef38444322b0c88340cf",
+   "bytes": 687
+  },
+  "source-joins": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/source-joins.json",
+   "sha256": "77201c03e951954e14ab9bb1c97b08438d1df137250d8ef3418dc541447f9c95",
+   "bytes": 48821
+  },
+  "original-local-observation": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/original-local-observation.json",
+   "sha256": "1b6eb92a9d1ccdf3e6077908d8ed49e4908aa5d31e13b0e99039e74abdb2058f",
+   "bytes": 3807
+  },
+  "source-impact": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/prospective-source-impact.json",
+   "sha256": "5b3c733eb20700e210a1265d41ca53170e873f8550946142d98fdb0edb4b7cde",
+   "bytes": 30496
+  }
+ },
+ "local_checks": "Proper profile/refusal and ninepathselection assertionREDs andaffectedGREENs. Original15suitePASS. All8newassertionmethods+oldQ02wiringassertionpassed in final-profile process, then optionalTempcapturehookerrored afterfixtureenvironmentclearing; correctedcapture-only successor exited0. Existing52partition and10source purposes have actual splitpassing affectedsuccessors, notoneinventedfullcohort exit0.",
+ "prose_checks": "No new tests for reversibleprose; Root posttransferbuild-surfacecheck follows. One authoredMarkdowncandidate canonicalized CRLFtoLF under text:set/eol:lf nofilter/encoding, separateauthor/Git/physicalhashes retained.",
+ "source_accounting": {
+  "prior_authenticated_source_records": 777,
+  "source_epoch": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+  "changed_positive_inputs_cells": 64,
+  "untouched_current_source_records": 713,
+  "strict_current713": "PENDING_STAGED_OWNER",
+  "followup": "Source-only semantic reinspection/current-successor proofs for55CI+9init cells; preserve alloldhistory, do notblindhashrenew.",
+  "affected_source_binding_assessments": 65,
+  "additional_retired_NA": "disposition:transitions:SW01:16; separate from the explicit777-PRESERVED source projection cohort. Its changed lifecycle-skill input and retirement rationale were reassessed, not silently omitted.",
+  "semantic_reinspection": {
+   "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/source-semantic-reinspection.json",
+   "sha256": "f821f296a9c33e649105653742e85463ff036e888a63d5a54a5754cf0f76749c",
+   "bytes": 33829
+  },
+  "source_epoch_sealing": "Await actual committed new code/docs epoch. No staged bytes relabelled as304."
+ },
+ "PLANNED": {
+  "findings": 49,
+  "machines": 0,
+  "transitions": 8,
+  "total": 57
+ },
+ "original_PR1119_304": {
+  "CI": 44056497843,
+  "CI_result": "FAILURE",
+  "Docs": 44056497562,
+  "Docs_result": "SUCCESS",
+  "checks": {
+   "success": 86,
+   "failure": 2,
+   "skipped": 11
+  },
+  "primary": "WindowsPi doctor RPC processwait30s EOF timeout; NodePID9220independentlyRUNNING during5.003s capture. UnderlyingcauseUNKNOWN, mergegatefailureconsequential. All6nativeadaptersPASS.",
+  "diagnostic": "ExistingSDKworkerphase lost onitsdeadline; separatelyauthorizedboundedphase-retention improvement underway. No timebudgetincrease or claimedNodecausefix.",
+  "actual_checkout": "8024a7607181c5fb708097e9953d7e2d5d574988 syntheticmerge, treeequals304 f1de7483c24cdbc7ad4995003be78806c7ac1a04 viaactualGitHubAPIprojection."
+ },
+ "native8": "Actual6originald482componentauthentication/714assertionspassed; private266inputsuccessorproposal awaitsRootreview/originalowneradmission, ledgerunchanged.",
+ "task_status_promotion": false,
+ "runtime_epoch_renewal": false,
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED",
+ "sdk_phase_retention": {
+  "evidence": {
+   "author": {
+    "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/sdk-phase/author.json",
+    "sha256": "6db6f8bf83946ff7c7c8057b4b05a732b78dd8192b3d190e5024593d2b1b8906",
+    "bytes": 3661
+   },
+   "peer": {
+    "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/sdk-phase/peer.json",
+    "sha256": "3d7782dce9b377aaa117e68737b178a40b5315f5689e08d564a37c471c1167ab",
+    "bytes": 12525
+   },
+   "checks": {
+    "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/sdk-phase/checks.json",
+    "sha256": "a7087ff5012ea197ffdf4dcf4ebbfa619e7f128e783b90bb6a1ab498a865c729",
+    "bytes": 11423
+   },
+   "preservation": {
+    "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/sdk-phase/preservation.json",
+    "sha256": "abdd50cf162123c8459262fd10cd10136dd4d20897f810920a9f7a4a7da318ea",
+    "bytes": 2335
+   },
+   "mechanism-and-limits": {
+    "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/sdk-phase/mechanism-and-limits.json",
+    "sha256": "92acdb3bee2c1064b370e84bcb111428c474e0ae916a37727cdabd5c7e38cdc8",
+    "bytes": 2047
+   }
+  },
+  "subjects": [
+   ".github/scripts/_windows_dbgeng.py",
+   ".github/scripts/_windows_rpc_timeout.py",
+   ".github/scripts/test_pi_package.py"
+  ],
+  "checks": "Proper inert-owned-worker phase assertion RED, same target GREEN; two negative/boundary controls PASS. Nineteen unchanged owning purposes passed across 16 original plus 3 missing-passive-input successors; one unrelated hash-only control not run. No actual SDK/Pi/Node probe.",
+  "limits": "Last announced SDK boundary only; worker/target cleanup uncertainty and original 5s SDK/30s RPC budgets unchanged. This does not fix or qualify Node shutdown.",
+  "source_impact": "Recompute actual current source applicability including these three changed subjects before sealing source-only successor proofs."
+ },
+ "genuine_pending_merge": {
+  "path": "docs/state-contracts-major/execution/evidence/observer-wording-304/zero-delta-integration-merge.json",
+  "sha256": "2e57785b91ffdaff5beb5b13b3d91d0eb4b0d4126ae923b0d57657ed6916476d",
+  "bytes": 926
+ },
+ "genuine_pending_merge_limit": "D482 is an actual pending merge parent; merge-base3766 has exactly the same tree as D482. The ordinary no-commit merge used a private alternate index and left the actual staged index, physical subjects and11protected artifact files byte-exact. Normal final Git commit will use the real MERGE_HEAD.",
+ "pages_recovery": {
+  "original_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "original_browser_attempt": 1,
+  "whole_docs_success_attempt": 2,
+  "original_job": 133912127642,
+  "artifact": 14311124383,
+  "same_status_rows": 7,
+  "history": "Previous full proof bytes/raw references and exact old active record retained; no status promotion.",
+  "review_sha256": "f092ed256f86229c8954695a383b9ef4220763e58612e5284ae3c055017f7d15",
+  "full_original_owner": "PENDING_ACTUAL_STAGED_OWNER",
+  "final_Pages_readiness": false
+ }
+}

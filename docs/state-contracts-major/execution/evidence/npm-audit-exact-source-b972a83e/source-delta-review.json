@@ -1,0 +1,104 @@
+{
+  "schema": "codearbiter.current-policy-source-inspection/1",
+  "source_commit": "b972a83e48826112467c43b4255f3ad853e49416",
+  "prior_source_checkpoint": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67",
+  "delta": {
+    ".codearbiter/context/security-controls.html": {
+      "before": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "current": "acc40c8be54720df2c281417c414184a098ace7cd3d2e36ff9092eec00891d22",
+      "assessment": "The only changed normative statement is the accepted dependency audit policy. Existing security/context statements and all runtime control predicates of these finite source cells are unchanged."
+    },
+    ".codearbiter/context/tech-stack.html": {
+      "before": "bcbe7f53b4067b44fc4a5165fce0975bfab23e207c9e7989ac2f0b663281adda",
+      "current": "ab7965d6591bfb60e311edebd4ceec1b558cd88526f2d92f4e241a3aba4f5a46",
+      "assessment": "The only changed normative note is the accepted dependency audit commands/scope under supply chain, publication and retained decisions. Other normative notes, concrete relationships and declared owner predicates are unchanged."
+    },
+    ".github/scripts/npm_audit_gate.py": {
+      "before": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea",
+      "current": "98847cb2bf9dca7ab653a7e057eaa8e0a9f0e145a41b27c77e5567236d75f7e3",
+      "assessment": "The changed policy owner is evaluated individually for the complete C35 machine and its four finite transitions."
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "before": "02e5c0554ddd6ad06fe4da39283595a69d1a05fb020a6c32e5f58ebee3171501",
+      "current": "bceace04fb243eafb547293d2e54ba72848ba8609fa6c7b9fec0036927b5b32c",
+      "assessment": "Original planner prediction and receipt are unchanged. The workflow contract fixture replaces only audit command assertions and adds the exact independent production/full route check. No new planner or input disposition is inferred."
+    },
+    ".github/scripts/test_npm_audit_gate.py": {
+      "before": "0ad04251f59a646d002a0b59ea313d8f24741a2d3edfaa68c039f81a7a078715",
+      "current": "28af4233a9d8467910fea52c390cab9f326c0a020699c9559a701834d1c926c9",
+      "assessment": "The relocated policy boundary is supported by current guard source and preserved historical evidence. No checks were replayed for this packet."
+    },
+    ".github/workflows/ci.yml": {
+      "before": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "current": "e612f43aba135a700ab29b7aac3aca67850244f070b44667c123790bb81392fc",
+      "assessment": "Root workflow diff is confined to the audit callsites of artifact-browser, tools, ca-sandbox-tools, ca-pi-checks, and the three additive existing path-filter lanes. Impact\u2019s unchanged audit test invocation only receives a clarified display label. Original triggers, job IDs, aggregate/native/release/canary edges and unchanged gates retain their prior assessment. Original tool production audits remain plain. The C01 selection predicate has the additional explicit named policy paths; no false skip is inferred."
+    },
+    ".github/workflows/docs.yml": {
+      "before": "40d2cc1efab2bf71073973a3ca22477ff20041adefb1beb5326e3e8191fef11c",
+      "current": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+      "assessment": "Site-check keeps its original audit position, production scope, original coverage, join and downstream job graph. Only the selected judge and its audit comments gain exact graph scope. Current-source claims are static; existing Docs runtime receipts retain their original applicability."
+    },
+    "site/audit-exceptions.json": {
+      "before": "23d64aa0111c47c6b4091239245783d802b02f938b1604963c2f99b22f701d28",
+      "current": "c0a5584a4f5cc2069f712d4c6ac186a6d8d7658d0ab2a64f53de3669ec1c8e0e",
+      "assessment": "The original empty registry is replaced by exactly one authorized seven-day approval with four exact unchanged lockfile digests. The registry does not select any plain tool production audit."
+    }
+  },
+  "exact_approval": {
+    "ghsa": "GHSA-fc5q-39xc-vjpf",
+    "package": "picomatch",
+    "severity": "high",
+    "reason": "No patched release as of approval. These exact graphs use picomatch during Docs builds and plugin builds or tests. The shipped plugin and static Docs artifacts do not include the package.",
+    "approved_by": "Brennon (@SUaDtL)",
+    "approved_on": "2026-11-17",
+    "backstop": "2026-11-24",
+    "lockfiles": {
+      "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8"
+    }
+  },
+  "security_knowledge_models": {
+    ".codearbiter/context/security-controls.html": {
+      "sole_semantic_model_field": [
+        "normative",
+        "records",
+        4,
+        "statement"
+      ],
+      "original_sha256": "82c4d67fe17a2d366a257073d963b1cb16de4330b3afea1e6da4c322b76204db",
+      "current_sha256": "50a2fed069a46b38749c624b21987d1bdc5d27e150e46c86b4eb84ffdbc0a48f",
+      "current_revision": 6
+    },
+    ".codearbiter/context/tech-stack.html": {
+      "sole_semantic_model_field": [
+        "normative",
+        "notes",
+        5,
+        "text"
+      ],
+      "original_sha256": "7bf8552fd3505b22e47e6d752ed93d4c219d59fca27ca2de7b239045cda2ea41",
+      "current_sha256": "22701a94450810fec913d62f8b69b3d132dbfab750282509de43e7b976a13cef",
+      "current_revision": 11
+    }
+  },
+  "ci_touched_jobs": [
+    "artifact-browser",
+    "ca-pi-checks",
+    "ca-sandbox-tools",
+    "changes",
+    "ci-impact",
+    "tools"
+  ],
+  "docs_touched_jobs": [
+    "site-check"
+  ],
+  "policy_changed_c35_clauses": {
+    "C35": "Authorized narrowing of the four composed audit clauses. Exact approved scope, package, advisory, severity, graph, checked bytes and decision validity combine with the existing fail-closed gate and removal note.",
+    "C35:01": "Closed v2 policy retains named maintainer/rationale, no future approvals, duplicate refusal and inclusive 30-day upper bound. It adds exact known lockfile declarations with SHA-256 and a real failing identity read within the selected graph. The approved backstop is November 24, 2026.",
+    "C35:02": "Versioned report and exact vulnerability-count inventory must agree. Every pointer resolves, and reported severity has a reachable direct advisory at least as severe. Pointer-only entries do not create an independent advisory. Unrecognized URLs cannot match an approval. Error, empty, unreadable and inconsistent reports still fail.",
+    "C35:03": "Authorized stricter change from severity at most approved to exact severity for at-threshold findings. An approval must match canonical GHSA, exact package, severity, allowed working-directory graph and scope, and exact audited lockfile SHA-256. Unapproved high or critical findings fail; the three independent plain production commands have no exception input.",
+    "C35:04": "The removal note applies to an unused current approval for the specific audited graph. Expiry still fails load even with no finding. Backstop or renewal requires a reviewed registry edit; the extra lockfile predicate also fails on graph drift."
+  }
+}

@@ -1,5 +1,73 @@
 # State-contract program checkpoint
 
+## November 17 hosted follow-up
+
+The original Docs, Farm, Sandbox and Pi tool audits accepted only the approved picomatch advisory. The three plain tool production audits reported zero vulnerabilities. Windows Pi RPC and shutdown passed, as did Windows Hook isolation and Linux and macOS Hook checks. [Child CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44215833586) · [Docs CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44215833774)
+
+Three separate failures have local repairs. The Docs coverage test now checks both execution paths followed by the rendered verification. Windows Recovery passed its original suites and observations, then the uploader refused parent-directory segments. The upload now resolves the original directory and requires the two exact files. Linux locked debug capture now runs before the three nested compatibility checkouts. All ten compatibility steps retain their commands and order. The clean-source guard still rejects nested checkout dirt.
+
+The 120 affected source bindings were refreshed. All 1,739 source records verify locally. The successor requires fresh hosted CI and Docs before the child can merge. #1098 remains draft for user testing.
+
+## November 17 scoped audit approval
+
+Brennon approved GHSA-fc5q-39xc-vjpf at high severity through November 24, 2026 for four exact lockfiles. The shared checker verified current npm reports for the Docs graph and all three plugin build and test toolchains. The three plain npm tool production audits passed independently. The approval expires automatically and a changed lockfile fails the gate. [GitHub advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+
+The ledger refresh updates 393 affected source records. The original source reader verified all 1,739 records. Historical runtime results retain their original source and CI bindings. Fresh hosted checks are required before #1119 can merge.
+
+## November 17 verification
+
+The local code binds the remaining original route, command catalog, debug-resubmission and output-rollback evidence. Local checks passed 132 readiness tests and 21 Docs authority tests. A clean Windows checkout built the native helper after 525 passing Go tests and three skips. Recovery source preparation and its 40 runtime tests passed. The separate npm binding test passed all 20 cases across five local runs. The original hosted npm timeout remains open.
+
+The source reader verified 1,739 of 1,739 source records. The final CI and Atlas review refreshed 140 existing records while retaining their prior evidence and disposition. Thirty-three findings still require qualified evidence. The task record has 72 implemented and unqualified tasks, nine in progress, and one waiting to start.
+
+The hosted head of #1119 is `48bf82eb`. The original CI and Docs runs finished with 59 successful checks, 11 failures, two cancellations and 12 skips among the selected jobs. Windows Pi RPC and shutdown passed. Four jobs failed the same high severity picomatch advisory and GitHub lists no patched release. A scoped audit decision is pending. The local repairs require fresh hosted execution. [Child CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44160520956) · [Docs CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44160520838) · [Advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+
+#1098 is a draft for user testing before a merge to main. Installed, upgrade, rollback and participant qualification remain open.
+
+## November 17 continuation
+
+The local successor includes both Python source uploader routes, the complete readiness fixtures, and a shared profile check that rejects mixing two profiles from the same job. The C-F04 release-order check requires the original Hooks and Generated surface evidence from the same CI attempt. The Workflow recovery reader can authenticate nine cases from its original runtime suite. The installed recovery complement is still in progress. All 123 local readiness tests passed.
+
+The source reader authenticated 1,218 of 1,739 source records against the candidate. The ledger gained 16 finite source findings and refreshed 240 existing bindings with their prior proof history. There are 521 stale source records and 33 planned findings. The task list records 72 implemented and unqualified tasks, nine in progress, and one waiting to start.
+
+The hosted head of #1119 is `4d1145ad`. The Docs build and three plugin toolchains failed the high severity picomatch audit. GitHub lists no patched release. The original Windows Pi 1.5.0 job collected all 57 RPC records, settled the agent, and closed stdin before the process timed out. The retained debugger captured no stack. The tested read-context provider now attaches the passive shutdown trace locally. The shutdown cause still needs evidence.
+
+#1098 remains a draft for user testing before any merge to `main`. [Child CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44152342841) · [Docs CI](https://github.com/arbiterForge/codeArbiter/actions/runs/44152342782) · [Advisory](https://github.com/advisories/GHSA-fc5q-39xc-vjpf)
+
+## Earlier checkpoints
+
+The current local successor binds a finite W-F03 original policy observation, selects the fast native registry guard on all nine actual inputs, retains bounded SDK diagnostic phases, and corrects initialization/Sandbox prose. Proper affected regressions and scoped independent reviews are retained. The Windows Pi shutdown cause remains unresolved; no runtime deadline was increased.
+
+Eight remaining native transitions now have exact six-platform named test compositions at original D482.133 native component records and7 bookmark/directory records receive same-status successors with old history preserved, replacing expired/near-expiry artifacts without new execution.49 findings remain PLANNED; this is accounting, not49 missing features.65 changed source-only bindings have provisional clause reassessment and require successors at the actual new committed code/docs epoch.
+
+The original D482 CI passed. Docs attempt1 failed a Generator timeout; one failed-only retry passed at attempt2. The retained successful browser/report is still attempt1, not a new browser run or final-main Pages qualification.1119 head304 had86 successful checks,2 failures and11 skips: Windows Pi EOF was primary and merge readiness consequential. The current successor requires original staged admission and fresh exact-head CI/Docs before authorized integration merge. #1098 remains held from main for Brennon testing; publication is unauthorized. [Current development observations](evidence/observer-wording-304/development.json).
+
+## Previous retained checkpoint
+
+The #1119 successor includes the already reviewed mode/reader and prune repairs, final source60 admission and an exact eight-name native-suite registry correction. The original reader tests passed; snapshot membership failed because the expected list still named seven tests. The existing static eight-suite guard reproduced that mismatch and now passes. The next committed head requires fresh CI and Docs before merge.
+
+Original normal `d4822a56` CI44046125471 finished SUCCESS; Docs44046125414 failed the single five-second Generator timeout (91 successful checks,1 failure,10 skipped). Its scoped Linux Pi RPC/scripted-parent package observation passed with all273 installed files unchanged. This does not qualify other hosts, human consent/fullPI-D07 or the whole normal run. Source777 is committed and authenticated;57 disposition obligations remain. #1098 stays held from `main` and publication remains unauthorized. [Current observations](evidence/work-adopt-registry-e408/development.json).
+
+## Previous retained checkpoint
+
+The prune hook now refuses canonical prefix siblings such as `.claude-other` before `self_heal`. Commit `2e09c637` includes the shared owner, all host mirrors and seven new boundary cases; the actual focused run passed13 tests with no skips after three original sibling regressions failed. These are local Windows checks with explicit race/platform limits.
+
+60 additional source mappings complete current-source coverage of the remaining hook/work machines and edges:777 source records authenticate privately, and57 PLANNED dispositions remain (49 findings,8 native transitions). All28 previously advanced rows and their evidence histories remain exact. Source conformance does not promote tasks, runtime, installed hosts or participant acceptance. [Current observations](evidence/remaining-source60-followup/development.json).
+
+The original normal `d4822a56` Docs run failed one Generator checksum-drift rejection test on its five-second limit (1570 passed,1 failed), with no checksum mismatch assertion reported; cause remains unknown. The separate #1119 Docs run succeeded. Both original CI watches remain distinct and pending at this checkpoint. #1098 remains draft and held from `main` for Brennon testing; publication is unauthorized.
+
+## Previous retained checkpoint
+
+PR #1118 merged into `major/state-contracts` at `d4822a56` after its original exact-head CI and Docs passed: 88 checks passed, 11 skipped. Fresh premerge verification also checked every reported context and the required merge gate. #1098 remains draft and held from `main` for Brennon testing; publication is unauthorized.
+
+The next child contains committed mode exit/entry audit pairs and regular-file work adoption acquisition, generated across all three hosts. Actual original regressions, focused checks and independent code reviews are retained at their exact epochs. Recovery retains its queue, dual-storage-denial, crash/concurrency and platform/ancestor limits. The public Farm warning now agrees with existing run-ID refusal. These repairs are implemented; they are not future implementation tasks.
+
+205 additional source-only mappings bring the selected current-source total to 717. Remaining PLANNED accounting is 117: 49 findings, 12 hook machines and 56 transitions. All old advanced rows and task/runtime histories remain intact. This is source/evidence accounting, not 117 missing features or task/scenario/installed/human qualification. [Current observations](evidence/source205-current-followup/development.json).
+
+The original trusted normal run for `d4822a56` has started. Its exact-package installed qualification remains pending; the older Ac82 Linux Pi run failed the input guard after ten bytecode additions despite actual RPC/parent-TUI execution. The detached no-bytecode repair does not prove the sole historical writer. A new child source epoch still requires its own applicable hosted and installed qualification.
+
+## Previous retained checkpoint
+
 PR #1117 merged into `major/state-contracts` at `ac826ed2` after exact-head CI and Docs passed: 92 checks passed, 8 skipped. Its true merge preserves source ancestry. The original normal integration Docs run passed; CI remains running with a confirmed Linux installed Pi failure. The failing phase is under original log/artifact inspection. Main #1098 stays held for Brennon testing.
 
 This local follow-up fixes legacy statusline uninstall overwriting a later user choice and link-audit filesystem escape, including Windows separators. Named original regressions and independent reviews are retained; all 82 statusline module tests pass, and the reviewed link-audit candidate has 40 passing focused tests plus scoped type checking. No installed/global-host acceptance follows from owned fixtures. Farm run-ID recovery wording and the Codex persona manual hint are corrected through their maintained owners.

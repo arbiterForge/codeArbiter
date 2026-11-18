@@ -210,7 +210,7 @@ def source_checkout(repo, profile=None):
     fresh HEAD index forces a current-policy read; the real index is checked
     independently so staged or unmerged changes cannot disappear in that view.
     """
-    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE) or profile in TS_PROFILE_PATHS, "unknown source identity profile")
+    require(profile is None or profile in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES) or profile in TS_PROFILE_PATHS or profile in PYTHON_FINDING_PROFILES, "unknown source identity profile")
     source = _source_git(repo, "rev-parse", "HEAD").decode("ascii").strip()
     tree = _source_git(repo, "rev-parse", source + "^{tree}").decode("ascii").strip()
     before, actual_raw = _source_indices(repo, retain=True)
@@ -633,6 +633,147 @@ TS_PROFILE_CELLS = {"pi-tools-v1": frozenset("disposition:transitions:pi-qualifi
                     "sandbox-tools-v1": frozenset(("disposition:transitions:S54:01",
                         "disposition:transitions:S51:01", "disposition:transitions:S51:02",
                         "disposition:transitions:S52:06"))}
+
+# Additional finite findings use the same original typed source profiles.
+# Every required assertion must survive selection; this is not installed/task credit.
+TS_FINDING_RECIPES = {
+    'disposition:findings:SF01': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population',
+        'vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects',
+    ))},
+    'disposition:findings:SF02': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed',
+        'vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session',
+    ))},
+    'disposition:findings:SF03': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once',
+        'vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once',
+    ))},
+    'disposition:findings:SF12': {"profile": 'pi-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure',
+        'vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads',
+    ))},
+    'disposition:findings:SF08': {"profile": 'sandbox-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input',
+        'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box',
+        'vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box',
+    ))},
+    'disposition:findings:SF10': {"profile": 'sandbox-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction',
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target',
+    ))},
+    'disposition:findings:SF09': {"profile": 'sandbox-tools-v1', "selectors": frozenset((
+        'vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment',
+        'vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box',
+    ))},
+}
+
+# Farm reuses the original unfiltered source-test observer; native manifest
+# declarations do not confer native runtime or installed-host qualification.
+TS_PROFILE_PATHS["farm-tools-v1"] = TS_COMMON_PATHS | frozenset(('.github/fixtures/artifact-release-manifest.json',
+ 'core/artifact-release-manifest.json',
+ 'plugins/ca/tools/.env.example',
+ 'plugins/ca/tools/__fixtures__/simple.plan.json',
+ 'plugins/ca/tools/artifact-manifest.test.ts',
+ 'plugins/ca/tools/artifact-manifest.ts',
+ 'plugins/ca/tools/exec.test.ts',
+ 'plugins/ca/tools/exec.ts',
+ 'plugins/ca/tools/farm-cleanup-observation.test.ts',
+ 'plugins/ca/tools/farm-dist.test.ts',
+ 'plugins/ca/tools/farm-interruption.test.ts',
+ 'plugins/ca/tools/farm-recovery.test.ts',
+ 'plugins/ca/tools/farm-recovery.ts',
+ 'plugins/ca/tools/farm-registry-lock.test.ts',
+ 'plugins/ca/tools/farm-surface.test.ts',
+ 'plugins/ca/tools/farm.js',
+ 'plugins/ca/tools/farm.test.ts',
+ 'plugins/ca/tools/farm.ts',
+ 'plugins/ca/tools/farm.unit.test.ts',
+ 'plugins/ca/tools/mutation.test.ts',
+ 'plugins/ca/tools/mutation.ts',
+ 'plugins/ca/tools/package-lock.json',
+ 'plugins/ca/tools/package.json',
+ 'plugins/ca/tools/plan-contract.test.ts',
+ 'plugins/ca/tools/plan.schema.json',
+ 'plugins/ca/tools/redactor.test.ts',
+ 'plugins/ca/tools/redactor.ts',
+ 'plugins/ca/tools/state-contracts.test.ts',
+ 'plugins/ca/tools/tsconfig.json',
+ 'plugins/ca/tools/vitest.config.ts',
+ 'plugins/ca/tools/worktree-fs.test.ts',
+ 'plugins/ca/tools/worktree-fs.ts'))
+TS_PROFILE_ROOTS["farm-tools-v1"] = "plugins/ca/tools"
+TS_PROFILE_JOBS["farm-tools-v1"] = "[CHECK] | [CA  ] | Farm dispatcher contract"
+TS_PROFILE_PAYLOADS["farm-tools-v1"] = "major-source-inputs-farm-dispatcher"
+TS_PROFILE_UPLOADS["farm-tools-v1"] = "Upload Farm source-test inputs"
+TS_PROFILE_CELLS["farm-tools-v1"] = frozenset()
+TS_FINDING_RECIPES.update({
+    'disposition:findings:SF04': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations qualified-declaration-six-fields',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-field',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-format',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations malformed-context',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-platform',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-context-binary',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-field',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-platform-path',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unqualified-context',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations bounds UTF-8 bytes before parsing',
+        'vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations rejects duplicate and escaped-duplicate keys',
+    ))},
+    'disposition:findings:SF05': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (bundle)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)',
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact — never a truncated one",
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path',
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes',
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run',
+    ))},
+    'disposition:findings:SF06': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset',
+    ))},
+    'disposition:findings:SF07': {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations',
+        'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations',
+    ))},
+})
+
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
 
 
@@ -755,6 +896,184 @@ Q02_SOURCE_PAYLOAD = "major-source-inputs-q02-implementation"
 Q02_SOURCE_UPLOAD = "Upload Q02 implementation source-test inputs"
 Q02_SOURCE_CELLS = frozenset(("task:Q-02",))
 Q02_SOURCE_SCRIPTS = frozenset((".github/scripts/test_major_readiness.py", ".github/scripts/test_release_workflow.py"))
+ROUTE_RELEASE_SOURCE_PROFILE = "route-release-state-component-v1"
+ROUTE_RELEASE_SOURCE_SCRIPT = ".github/scripts/test_command_route_release_state.py"
+ROUTE_COMPATIBILITY_SCRIPT = ".github/scripts/test_command_route_compatibility.py"
+ROUTE_GENERATOR_SCRIPT = ".github/scripts/test_build_surface.py"
+SF13_CELL = "disposition:findings:SF13"
+SF13_SYNC_SCRIPT = ".github/scripts/test_sync_core.py"
+OUTER_UNITTEST_RESULT = "entrypoint-text-runner"
+ROUTE_RELEASE_SOURCE = {
+    "job": "[CHECK] | [CORE] | Generated surface",
+    "payload": "major-source-inputs-route-release-state",
+    "upload": "Upload release-state classifier source-test inputs",
+    "scripts": (ROUTE_RELEASE_SOURCE_SCRIPT, ROUTE_COMPATIBILITY_SCRIPT),
+    "paths": frozenset((
+        ROUTE_RELEASE_SOURCE_SCRIPT,
+        ROUTE_COMPATIBILITY_SCRIPT,
+        ".codearbiter/plans/reaudit-ra11-catalog-rationalization.md",
+        ".codearbiter/specs/reaudit-ra11-catalog-rationalization.md",
+        ".codearbiter/sprint-log.md",
+        ".github/major-qualification-policy.json",
+        ".github/scripts/_boundedproc.py",
+        ".github/scripts/_contextverificationlib.py",
+        ".github/scripts/_immutable_git_blobs.py",
+        ".github/scripts/check_command_route_release_state.py",
+        ".github/scripts/ci20_native_binding.py",
+        ".github/scripts/major_qualification_report.py",
+        ".github/scripts/major_readiness.py",
+        ".github/workflows/ci.yml",
+        "core/pysrc/_artifactmanifestlib.py",
+        "core/pysrc/_gitexec.py",
+        "core/surface/command-routes.json",
+        "core/surface/includes/command-compatibility.md",
+        "plugins/ca/.claude-plugin/plugin.json",
+        "plugins/ca-codex/.codex-plugin/plugin.json",
+        "plugins/ca-pi/package.json",
+        "tools/command_compatibility.py",
+    )) | frozenset(path for path in SOURCE_PATHS if path.startswith("core/surface/")),
+}
+RECOVERY_RUNTIME_PROFILE = "workflow-recovery-runtime-v1"
+RECOVERY_RUNTIME_SCRIPT = ".github/scripts/test_workflow_recovery.py"
+RECOVERY_INSTALLED_SCRIPTS = {
+    ".github/scripts/test_workflow_recovery_cli.py": ("cli", "InstalledRecoveryTest"),
+    ".github/scripts/test_workflow_recovery_hosts.py": ("hosts", "RecoveryHostTest"),
+}
+RECOVERY_INSTALLATION_ENV = "WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION"
+RECOVERY_NATIVE_PLATFORM = "windows/amd64"
+RECOVERY_NATIVE_BINARY = "ca-artifact-windows-amd64.exe"
+RECOVERY_FINDING_CELLS = ("disposition:findings:HOOK-B04", "disposition:findings:W-F04")
+DEBUG_RESUBMISSION_FINDING = "disposition:findings:W-F02"
+DEBUG_LAUNCHER = ".github/scripts/test_ci_impact.py"
+DEBUG_WORKFLOW_SUITE = ".github/scripts/test_debug_workflow.py"
+DEBUG_HANDOFF_SUITE = ".github/scripts/test_debug_handoff.py"
+DEBUG_RESUBMISSION_SCRIPT = ".github/scripts/test_review_resubmission.py"
+DEBUG_LOCKED_PROFILE = "debug-reference-component-v1"
+DEBUG_LOCK_PATH = ".github/requirements/artifact-conformance-py314.lock"
+DEBUG_HOOK_PROFILE = "hooks-single-owner-findings-v1"
+DEBUG_RUNNERS = {
+    DEBUG_HOOK_PROFILE: ("hooks", DEBUG_WORKFLOW_SUITE, "single-owner-hook-source-inputs", "python-debug-workflow-observation.json"),
+    DEBUG_LOCKED_PROFILE: ("artifact-native-bridges", DEBUG_HANDOFF_SUITE, "debug-reference-source-inputs", "debug-reference-observation.json"),
+}
+CATALOG_SOURCE_PROFILE = "command-catalog-component-v1"
+CATALOG_SCRIPT = ".github/scripts/test_command_catalog.py"
+CATALOG_FINDING_CELL = "disposition:findings:W-F08"
+CATALOG_COMMAND_PATHS = frozenset("plugins/ca/commands/" + PurePosixPath(path).name
+    for path in SOURCE_PATHS if path.startswith("core/surface/commands/") and path.endswith(".md"))
+PYTHON_COMPONENT_PROFILES = {
+    ROUTE_RELEASE_SOURCE_PROFILE: ROUTE_RELEASE_SOURCE,
+    CATALOG_SOURCE_PROFILE: {
+        "job": "[CHECK] | [CA  ] | Documentation consistency",
+        "payload": "major-source-inputs-command-catalog",
+        "upload": "Upload command catalog source-test inputs",
+        "scripts": (CATALOG_SCRIPT,),
+        "paths": CATALOG_COMMAND_PATHS | frozenset((
+            CATALOG_SCRIPT,
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/check_command_catalog.py",
+            ".github/scripts/ci20_native_binding.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/workflows/ci.yml",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_gitexec.py",
+            "core/surface/skills/INDEX.md",
+            "plugins/ca/COMMANDS.md",
+            "plugins/ca/skills/INDEX.md",
+            "plugins/ca-codex/routines/INDEX.md",
+            "plugins/ca-pi/routines/INDEX.md",
+        )),
+    },
+    DEBUG_LOCKED_PROFILE: {
+        "job": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+        "payload": "major-source-inputs-debug-reference",
+        "upload": "Upload locked debug reference source-test inputs",
+        "scripts": (DEBUG_HANDOFF_SUITE,),
+        "paths": frozenset((
+            DEBUG_LAUNCHER, DEBUG_HANDOFF_SUITE, DEBUG_LOCK_PATH,
+            ".github/fixtures/debug/cases.json",
+            ".github/fixtures/debug/handoff-examples.json",
+            ".github/fixtures/debug/qualification-cells.json",
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/ci20_native_binding.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_hook_ci_partition.py",
+            ".github/workflows/ci.yml",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_debughandofflib.py",
+            "core/pysrc/_gitexec.py",
+            "core/pysrc/debug-handoff.py",
+            "tools/ci-impact.py",
+        )) | frozenset(path for path in SOURCE_PATHS if path.startswith("core/surface/skills/debug/")),
+    },
+    RECOVERY_RUNTIME_PROFILE: {
+        "job": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+        "payload": "major-source-inputs-workflow-recovery-runtime",
+        "upload": "Upload workflow recovery runtime source inputs",
+        "scripts": (RECOVERY_RUNTIME_SCRIPT, DEBUG_RESUBMISSION_SCRIPT, *RECOVERY_INSTALLED_SCRIPTS),
+        "paths": frozenset((
+            RECOVERY_RUNTIME_SCRIPT,
+            DEBUG_RESUBMISSION_SCRIPT,
+            ".github/scripts/fixtures/claude-hooks/agent-posttooluse.json",
+            ".github/scripts/fixtures/claude-hooks/agent-pretooluse.json",
+            ".github/scripts/fixtures/claude-hooks/subagentstart.json",
+            ".github/scripts/fixtures/claude-hooks/subagentstop-first.json",
+            *RECOVERY_INSTALLED_SCRIPTS,
+            ".github/scripts/_boundedproc.py",
+            ".github/scripts/_contextverificationlib.py",
+            ".github/scripts/_immutable_git_blobs.py",
+            ".github/scripts/ci20_native_binding.py",
+            ".github/scripts/major_qualification_report.py",
+            ".github/scripts/major_readiness.py",
+            ".github/scripts/test_artifact_authoring.py",
+            ".github/scripts/test_artifact_authority_adapter.py",
+            ".github/workflows/ci.yml",
+            "core/artifact-release-manifest.json",
+            "core/pysrc/_activationlib.py",
+            "core/pysrc/_arbiterstatelib.py",
+            "core/pysrc/_artifactauthoritylib.py",
+            "core/pysrc/_artifactlib.py",
+            "core/pysrc/_artifactmanifestlib.py",
+            "core/pysrc/_artifactpromptlib.py",
+            "core/pysrc/_gitexec.py",
+            "core/pysrc/_hooklib.py",
+            "core/pysrc/_modelib.py",
+            "core/pysrc/_pathnorm.py",
+            "core/pysrc/_protectedlib.py",
+            "core/pysrc/_protectedstatelib.py",
+            "core/pysrc/_replylib.py",
+            "core/pysrc/_scopelib.py",
+            "core/pysrc/_sensitivelib.py",
+            "core/pysrc/_taskboardlib.py",
+            "core/pysrc/_workflowrecoverylib.py",
+            "core/pysrc/_worklib.py",
+            "core/pysrc/hostapi.py",
+            "core/pysrc/taskwrite.py",
+            "core/pysrc/work.py",
+            "core/pysrc/workflow-recovery.py",
+            "core/workflow-recovery-contract.json",
+            "plugins/ca/.claude-plugin/plugin.json",
+            "plugins/ca/hooks/prompt-submit.py",
+            "plugins/ca/hooks/session-start.py",
+            "plugins/ca/hooks/workflow-recovery.py",
+            "plugins/ca-codex/.codex-plugin/plugin.json",
+            "plugins/ca-codex/hooks/pre-tool-adapter.py",
+            "plugins/ca-codex/hooks/prompt-submit.py",
+            "plugins/ca-codex/hooks/session-start.py",
+            "plugins/ca-codex/hooks/workflow-recovery.py",
+            "plugins/ca-pi/hooks/pi-bridge.py",
+            "plugins/ca-pi/hooks/workflow-recovery.py",
+            "plugins/ca-pi/package.json",
+            "tools/build-artifacts.py",
+            "tools/go_test_parallel.py",
+        )),
+    },
+}
 Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md',
  '.codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md',
  '.codearbiter/decisions/0043-assistive-state-engine.md',
@@ -1410,18 +1729,950 @@ Q02_REQUIRED_SELECTORS = frozenset(('python:.github/scripts/test_major_readiness
  'python:.github/scripts/test_release_workflow.py:__main__.TriggerTest.test_releases_follow_successful_main_ci_and_manual_retry'))
 
 
-def _q02_python_command(argv):
+# Exact declarative W-F03 severity-policy composition; shared task links do
+# not make this a model, whole-task or installed-host qualification.
+HOOK_REVIEW_SOURCE_PROFILE = "hooks-finding-contracts-v1"
+HOOK_REVIEW_SOURCE_JOB = SOURCE_JOB
+HOOK_REVIEW_SOURCE_PAYLOAD = "major-source-inputs-hooks-findings-windows-contracts"
+HOOK_REVIEW_SOURCE_UPLOAD = "Upload hook finding source-test inputs"
+HOOK_REVIEW_SOURCE_SCRIPT = ".github/scripts/test_review_funnel.py"
+HOOK_REVIEW_SOURCE_PATHS = SOURCE_PATHS | frozenset(['.github/major-qualification-policy.json', '.github/major-test-selections.json', '.github/scripts/test_hook_ci_partition.py', '.github/scripts/test_review_funnel.py', '.github/workflows/ci.yml', 'docs/state-contracts-major/PROGRAM.md', 'docs/state-contracts-major/contracts/decisions.json', 'docs/state-contracts-major/contracts/finding-dispositions.json', 'docs/state-contracts-major/contracts/tasks.json', 'plugins/ca-codex/agents/INDEX.md', 'plugins/ca-codex/agents/architecture-drift-reviewer.md', 'plugins/ca-codex/agents/auth-crypto-reviewer.md', 'plugins/ca-codex/agents/backend-author.md', 'plugins/ca-codex/agents/checkpoint-aggregator.md', 'plugins/ca-codex/agents/coverage-auditor.md', 'plugins/ca-codex/agents/decision-challenger.md', 'plugins/ca-codex/agents/dependency-reviewer.md', 'plugins/ca-codex/agents/design-quality-reviewer.md', 'plugins/ca-codex/agents/finding-triage.md', 'plugins/ca-codex/agents/frontend-author.md', 'plugins/ca-codex/agents/grader.md', 'plugins/ca-codex/agents/infra-author.md', 'plugins/ca-codex/agents/map-deps.md', 'plugins/ca-codex/agents/map-structure.md', 'plugins/ca-codex/agents/migration-reviewer.md', 'plugins/ca-codex/agents/scout.md', 'plugins/ca-codex/agents/security-reviewer.md', 'plugins/ca-codex/agents/tribunal-lens-reviewer.md', 'plugins/ca-codex/agents/verdict-aggregator.md', 'plugins/ca-codex/includes/reviewer-contract.md', 'plugins/ca-pi/agents/INDEX.md', 'plugins/ca-pi/agents/architecture-drift-reviewer.md', 'plugins/ca-pi/agents/auth-crypto-reviewer.md', 'plugins/ca-pi/agents/backend-author.md', 'plugins/ca-pi/agents/checkpoint-aggregator.md', 'plugins/ca-pi/agents/coverage-auditor.md', 'plugins/ca-pi/agents/decision-challenger.md', 'plugins/ca-pi/agents/dependency-reviewer.md', 'plugins/ca-pi/agents/design-quality-reviewer.md', 'plugins/ca-pi/agents/finding-triage.md', 'plugins/ca-pi/agents/frontend-author.md', 'plugins/ca-pi/agents/grader.md', 'plugins/ca-pi/agents/infra-author.md', 'plugins/ca-pi/agents/map-deps.md', 'plugins/ca-pi/agents/map-structure.md', 'plugins/ca-pi/agents/migration-reviewer.md', 'plugins/ca-pi/agents/scout.md', 'plugins/ca-pi/agents/security-reviewer.md', 'plugins/ca-pi/agents/tribunal-lens-reviewer.md', 'plugins/ca-pi/agents/verdict-aggregator.md', 'plugins/ca-pi/includes/reviewer-contract.md', 'plugins/ca/agents/INDEX.md', 'plugins/ca/agents/architecture-drift-reviewer.md', 'plugins/ca/agents/auth-crypto-reviewer.md', 'plugins/ca/agents/authority-reviewer.md', 'plugins/ca/agents/backend-author.md', 'plugins/ca/agents/checkpoint-aggregator.md', 'plugins/ca/agents/coverage-auditor.md', 'plugins/ca/agents/decision-challenger.md', 'plugins/ca/agents/dependency-reviewer.md', 'plugins/ca/agents/design-quality-reviewer.md', 'plugins/ca/agents/finding-triage.md', 'plugins/ca/agents/frontend-author.md', 'plugins/ca/agents/grader.md', 'plugins/ca/agents/infra-author.md', 'plugins/ca/agents/map-deps.md', 'plugins/ca/agents/map-structure.md', 'plugins/ca/agents/migration-reviewer.md', 'plugins/ca/agents/scout.md', 'plugins/ca/agents/security-reviewer.md', 'plugins/ca/agents/tribunal-lens-reviewer.md', 'plugins/ca/agents/verdict-aggregator.md', 'plugins/ca/includes/reviewer-contract.md', 'site/src/curated/commands/review.md'])
+HOOK_REVIEW_REQUIRED_SELECTORS = frozenset(['python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_author_collection_does_not_invoke_review_verdict', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_persistence_is_explicit_and_non_overwriting', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_writer_reports_the_selected_dated_filename', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_curated_review_projection_uses_the_read_only_terminal', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_dispatch_contract_uses_canonical_routes_and_preserves_findings', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_inbound_pr_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_triage_requires_the_complete_batch_contract', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_verdict_has_unambiguous_incomplete_precedence_and_schema', 'python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_working_diff_review_route_is_byte_invariant', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking'])
+HOOK_REVIEW_FINDING_SELECTORS = frozenset(['python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception', 'python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking'])
+HOOK_REVIEW_FINDING_CELL = "disposition:findings:W-F03"
+
+
+def _hook_review_python_command(argv):
     require(isinstance(argv, list) and len(argv) == 2 and all(type(v) is str and v for v in argv)
-            and any(argv[1].replace("\\", "/") == script or argv[1].replace("\\", "/").endswith("/" + script)
-                    for script in Q02_SOURCE_SCRIPTS),
+            and (argv[1].replace("\\", "/") == HOOK_REVIEW_SOURCE_SCRIPT
+                 or argv[1].replace("\\", "/").endswith("/" + HOOK_REVIEW_SOURCE_SCRIPT)),
+            "hook review profile requires its original unfiltered Python entry point")
+
+
+def _hook_review_members(repo):
+    for tree in ("core/surface", "plugins/ca", "plugins/ca-codex", "plugins/ca-pi"):
+        folder = Path(repo) / tree / "agents"
+        info = folder.lstat()
+        require(stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                "hook review agent directory is unsafe")
+        actual = {p.relative_to(repo).as_posix() for p in folder.glob("*.md")}
+        expected = {p for p in HOOK_REVIEW_SOURCE_PATHS if p.startswith(tree + "/agents/")}
+        require(actual == expected, "hook review agent inventory differs")
+
+
+Q02_FINDING_RECIPES = {
+    "disposition:findings:C-F02": {
+        "script": ".github/scripts/test_release_workflow.py",
+        "observation": "q02-release",
+        "selectors": frozenset(
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest." + name
+            for name in (
+                "test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+                "test_route_publication_is_observed_after_every_target_settles",
+                "test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+                "test_no_successful_ci_is_refused",
+                "test_source_no_longer_on_main_is_refused",
+                "test_expired_or_missing_artifacts_are_reported_not_hidden",
+                "test_selection_that_differs_from_the_approved_candidate_is_refused",
+                "test_workflow_run_event_binds_its_own_run",
+            )
+        ),
+    },
+}
+
+
+# Single-owner finding routes use existing unfiltered commands. Shared source
+# transport grants no multi-owner, whole-task, model or installed-host claim.
+_HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
+ 'plugins/ca/skills/debug/SKILL.md', 'plugins/ca/skills/debug/references/preparation.md',
+ 'plugins/ca-codex/routines/debug/SKILL.md', 'plugins/ca-codex/routines/debug/references/preparation.md',
+ 'plugins/ca-pi/routines/debug/SKILL.md', 'plugins/ca-pi/routines/debug/references/preparation.md',
+ '.gitattributes',
+ '.github/major-qualification-policy.json',
+ '.github/major-test-selections.json',
+ '.github/scripts/_codex_cli_profile.py',
+ '.github/scripts/_context_fixturelib.py',
+ '.github/scripts/_git_fixture_diagnostics.py',
+ '.github/scripts/_npm_publishlib.py',
+ '.github/scripts/_pi_rpc_profile.py',
+ '.github/scripts/_releaselib.py',
+ '.github/scripts/_sandbox_docker_profile.py',
+ '.github/scripts/_verdictlib.py',
+ '.github/scripts/_windows_dbgeng.py',
+ '.github/scripts/_windows_rpc_timeout.py',
+ '.github/scripts/academy_promotion.py',
+ '.github/scripts/acquire_nixpacks.py',
+ '.github/scripts/adr_lifecycle.py',
+ '.github/scripts/build_release_targets_provenance.py',
+ '.github/scripts/check-plugin-refs.py',
+ '.github/scripts/check_adr_identity.py',
+ '.github/scripts/check_adr_lifecycle.py',
+ '.github/scripts/check_auto_release_candidate.py',
+ '.github/scripts/check_badge_consistency.py',
+ '.github/scripts/check_branch_protection.py',
+ '.github/scripts/check_codex_host.py',
+ '.github/scripts/check_codex_skill_resources.py',
+ '.github/scripts/check_codex_static_package.py',
+ '.github/scripts/check_command_catalog.py',
+ '.github/scripts/check_command_route_release_state.py',
+ '.github/scripts/check_control_bytes.py',
+ '.github/scripts/check_destructive_registry.py',
+ '.github/scripts/check_docs_contract.py',
+ '.github/scripts/check_license_consistency.py',
+ '.github/scripts/check_routing_index_parity.py',
+ '.github/scripts/check_sandbox_docker_layers.py',
+ '.github/scripts/check_site_voice.py',
+ '.github/scripts/check_skill_portability.py',
+ '.github/scripts/check_state_contracts_integration.py',
+ '.github/scripts/check_tag_immutability.py',
+ '.github/scripts/codex_agent_routes.py',
+ '.github/scripts/codex_live_report_profile.py',
+ '.github/scripts/codex_runtime_acquisition.py',
+ '.github/scripts/coordinate_codex_host.py',
+ '.github/scripts/coordinate_pi_host.py',
+ '.github/scripts/coordinate_sandbox_installed.py',
+ '.github/scripts/coverage_union.py',
+ '.github/scripts/create_codex_distribution_token.py',
+ '.github/scripts/fixtures/claude-hooks/2.1.286/agent-posttooluse.json',
+ '.github/scripts/fixtures/claude-hooks/2.1.286/agent-pretooluse.json',
+ '.github/scripts/fixtures/claude-hooks/2.1.286/handback-posttooluse.json',
+ '.github/scripts/fixtures/claude-hooks/2.1.286/handback-pretooluse.json',
+ '.github/scripts/fixtures/claude-hooks/2.1.286/subagentstart.json',
+ '.github/scripts/fixtures/claude-hooks/2.1.286/subagentstop-first.json',
+ '.github/scripts/fixtures/claude-hooks/README.md',
+ '.github/scripts/fixtures/claude-hooks/agent-posttooluse.json',
+ '.github/scripts/fixtures/claude-hooks/agent-pretooluse.json',
+ '.github/scripts/fixtures/claude-hooks/bash-posttooluse.json',
+ '.github/scripts/fixtures/claude-hooks/bash-posttoolusefailure.json',
+ '.github/scripts/fixtures/claude-hooks/bash-pretooluse.json',
+ '.github/scripts/fixtures/claude-hooks/subagentstart.json',
+ '.github/scripts/fixtures/claude-hooks/subagentstop-first.json',
+ '.github/scripts/fixtures/claude-hooks/subagentstop-second.json',
+ '.github/scripts/fixtures/release-trace/commit-graph.json',
+ '.github/scripts/fixtures/release-trace/manifests/ca-codex-plugin.json',
+ '.github/scripts/fixtures/release-trace/manifests/ca-pi-package.json',
+ '.github/scripts/fixtures/release-trace/manifests/ca-pi-root-package.json',
+ '.github/scripts/fixtures/release-trace/manifests/ca-plugin.json',
+ '.github/scripts/fixtures/release-trace/manifests/ca-sandbox-plugin.json',
+ '.github/scripts/fixtures/release-trace/release-targets.md',
+ '.github/scripts/fixtures/release-trace/tags.txt',
+ '.github/scripts/integration_candidate.py',
+ '.github/scripts/major_native_observation.py',
+ '.github/scripts/mapped_work_observation.py',
+ '.github/scripts/npm_audit_gate.py',
+ '.github/scripts/npm_binding_observation.py',
+ '.github/scripts/observe_codex_installed_cli.py',
+ '.github/scripts/observe_pi_installed_rpc.py',
+ '.github/scripts/observe_sandbox_installed_docker.py',
+ '.github/scripts/pages_readiness.py',
+ '.github/scripts/payload_scope.py',
+ '.github/scripts/payload_version_gate.py',
+ '.github/scripts/pi_benchmark.py',
+ '.github/scripts/pi_cli_resolver.py',
+ '.github/scripts/pi_evidence.py',
+ '.github/scripts/pi_host_locks.py',
+ '.github/scripts/pi_live_report_profile.py',
+ '.github/scripts/pi_parent_tui_observation.py',
+ '.github/scripts/pi_promotion.py',
+ '.github/scripts/prepare_adr_acceptance.py',
+ '.github/scripts/project_knowledge.py',
+ '.github/scripts/qualify_workflow_recovery_cohort.py',
+ '.github/scripts/reconcile_tag_receipt.py',
+ '.github/scripts/release_source.py',
+ '.github/scripts/release_target.py',
+ '.github/scripts/retained_archive_cli_observation.py',
+ '.github/scripts/run_artifact_authority_shard.py',
+ '.github/scripts/run_concurrent_suites.py',
+ '.github/scripts/sandbox_live_report_profile.py',
+ '.github/scripts/site_playwright_observation.py',
+ '.github/scripts/site_vitest_observation.py',
+ '.github/scripts/test_site_vitest_observation.py',
+ '.github/scripts/tag_publication_receipt.py',
+ '.github/scripts/test_academy_promotion.py',
+ '.github/scripts/test_acquire_nixpacks.py',
+ '.github/scripts/test_adr_identity.py',
+ '.github/scripts/test_adr_lifecycle.py',
+ '.github/scripts/test_artifact_approval_adapter.py',
+ '.github/scripts/test_artifact_authoring.py',
+ '.github/scripts/test_artifact_authority_adapter.py',
+ '.github/scripts/test_artifact_authority_retention.py',
+ '.github/scripts/test_artifact_bridge.py',
+ '.github/scripts/test_artifact_cli.py',
+ '.github/scripts/test_artifact_conformance.py',
+ '.github/scripts/test_artifact_consumers.py',
+ '.github/scripts/test_artifact_coverage.py',
+ '.github/scripts/test_artifact_farm.py',
+ '.github/scripts/test_artifact_git_excludes.py',
+ '.github/scripts/test_artifact_installed_host.py',
+ '.github/scripts/test_artifact_manifest_contract.py',
+ '.github/scripts/test_artifact_native.py',
+ '.github/scripts/test_artifact_npm_nested_launch.py',
+ '.github/scripts/test_artifact_package.py',
+ '.github/scripts/test_artifact_prerequisite_adapter.py',
+ '.github/scripts/test_artifact_reconciliation_adapter.py',
+ '.github/scripts/test_artifact_surface.py',
+ '.github/scripts/test_artifact_work_cli.py',
+ '.github/scripts/test_artifact_workflow.py',
+ '.github/scripts/test_auto_release_candidate.py',
+ '.github/scripts/test_badge_consistency.py',
+ '.github/scripts/test_board_sync.py',
+ '.github/scripts/test_boundedproc.py',
+ '.github/scripts/test_branch_protection.py',
+ '.github/scripts/test_build_surface.py',
+ '.github/scripts/test_check_codex_host.py',
+ '.github/scripts/test_check_plugin_refs.py',
+ '.github/scripts/test_check_routing_index_parity.py',
+ '.github/scripts/test_ci20_native_pipeline.py',
+ '.github/scripts/test_ci_impact.py',
+ '.github/scripts/test_cleanup_contract.py',
+ '.github/scripts/test_cleanuplib.py',
+ '.github/scripts/test_cleanuplib_inventory.py',
+ '.github/scripts/test_cleanuplib_mutation.py',
+ '.github/scripts/test_codex_adapter.py',
+ '.github/scripts/test_codex_candidate_provenance.py',
+ '.github/scripts/test_codex_ci_wiring.py',
+ '.github/scripts/test_codex_marketplace_distribution.py',
+ '.github/scripts/test_codex_parity_fixture.py',
+ '.github/scripts/test_codex_release_identity.py',
+ '.github/scripts/test_codex_skill_resources.py',
+ '.github/scripts/test_codex_static_candidate.py',
+ '.github/scripts/test_codex_static_package.py',
+ '.github/scripts/test_command_catalog.py',
+ '.github/scripts/test_command_route_compatibility.py',
+ '.github/scripts/test_command_route_release_state.py',
+ '.github/scripts/test_consumer_smoke.py',
+ '.github/scripts/test_context_consumers.py',
+ '.github/scripts/test_context_contracts.py',
+ '.github/scripts/test_context_evaluation.py',
+ '.github/scripts/test_context_fixtures.py',
+ '.github/scripts/test_context_host.py',
+ '.github/scripts/test_context_installed.py',
+ '.github/scripts/test_context_named_output.py',
+ '.github/scripts/test_context_native.py',
+ '.github/scripts/test_context_verification.py',
+ '.github/scripts/test_context_workflow.py',
+ '.github/scripts/test_control_bytes.py',
+ '.github/scripts/test_coverage_union.py',
+ '.github/scripts/test_debug_handoff.py',
+ '.github/scripts/test_debug_helper_invocation.py',
+ '.github/scripts/test_debug_package.py',
+ '.github/scripts/test_debug_qualification.py',
+ '.github/scripts/test_debug_workflow.py',
+ '.github/scripts/test_dual_host_store.py',
+ '.github/scripts/test_go_test_parallel.py',
+ '.github/scripts/test_greenfield_context.py',
+ '.github/scripts/test_hook_ci_partition.py',
+ '.github/scripts/test_hook_guards.py',
+ '.github/scripts/test_hooklib.py',
+ '.github/scripts/test_hooks_cold_install.py',
+ '.github/scripts/test_host_descriptors.py',
+ '.github/scripts/test_immutable_git_blobs.py',
+ '.github/scripts/test_integration_candidate.py',
+ '.github/scripts/test_knowledge_cli.py',
+ '.github/scripts/test_license_consistency.py',
+ '.github/scripts/test_literal_python_reads.py',
+ '.github/scripts/test_major_native_observation.py',
+ '.github/scripts/test_major_qualification_report.py',
+ '.github/scripts/test_major_readiness.py',
+ '.github/scripts/test_marketplace_git_channels.py',
+ '.github/scripts/test_migration_backstop.py',
+ '.github/scripts/test_mode_compaction.py',
+ '.github/scripts/test_mode_readers.py',
+ '.github/scripts/test_mode_surface.py',
+ '.github/scripts/test_modelib.py',
+ '.github/scripts/test_npm_audit_gate.py',
+ '.github/scripts/test_npm_binding_observation.py',
+ '.github/scripts/test_observe_codex_installed_cli.py',
+ '.github/scripts/test_observe_pi_installed_rpc.py',
+ '.github/scripts/test_observe_sandbox_installed_docker.py',
+ '.github/scripts/test_payload_scope.py',
+ '.github/scripts/test_payload_version_gate.py',
+ '.github/scripts/test_persona_composition.py',
+ '.github/scripts/test_pi_benchmark.py',
+ '.github/scripts/test_pi_child_live.py',
+ '.github/scripts/test_pi_ci_wiring.py',
+ '.github/scripts/test_pi_compaction_surface.py',
+ '.github/scripts/test_pi_doctor.py',
+ '.github/scripts/test_pi_host_locks.py',
+ '.github/scripts/test_pi_package.py',
+ '.github/scripts/test_pi_parent_tui_observation.py',
+ '.github/scripts/test_pi_parity.py',
+ '.github/scripts/test_pi_payload_identity.py',
+ '.github/scripts/test_pi_platform_contract.py',
+ '.github/scripts/test_pi_process_tree.py',
+ '.github/scripts/test_pi_promotion.py',
+ '.github/scripts/test_pi_security.py',
+ '.github/scripts/test_pi_shared_store.py',
+ '.github/scripts/test_planfilelib.py',
+ '.github/scripts/test_pre_read.py',
+ '.github/scripts/test_prompt_submit.py',
+ '.github/scripts/test_provenance_wiring.py',
+ '.github/scripts/test_provenancelib.py',
+ '.github/scripts/test_prune_nudge.py',
+ '.github/scripts/test_prune_policy_parity.py',
+ '.github/scripts/test_public_codex_docs.py',
+ '.github/scripts/test_public_pi_docs.py',
+ '.github/scripts/test_readinjectlib.py',
+ '.github/scripts/test_reconcile_tag_receipt.py',
+ '.github/scripts/test_recorded_intent_surface.py',
+ '.github/scripts/test_release_lib.py',
+ '.github/scripts/test_release_target.py',
+ '.github/scripts/test_release_trace.py',
+ '.github/scripts/test_release_workflow.py',
+ '.github/scripts/test_replylib.py',
+ '.github/scripts/test_retained_archive_cli_observation.py',
+ '.github/scripts/test_retained_cold_observer_pipeline.py',
+ '.github/scripts/test_review_funnel.py',
+ '.github/scripts/test_review_resubmission.py',
+ '.github/scripts/test_routing_and_cleanup_surface.py',
+ '.github/scripts/test_run_concurrent_suites.py',
+ '.github/scripts/test_sandbox_ci_wiring.py',
+ '.github/scripts/test_sandbox_docker_layers.py',
+ '.github/scripts/test_ship_set_inputs.py',
+ '.github/scripts/test_site_playwright_observation.py',
+ '.github/scripts/test_skill_portability.py',
+ '.github/scripts/test_smarts_engine_contract.py',
+ '.github/scripts/test_smarts_integration_surface.py',
+ '.github/scripts/test_spike_findings_contract.py',
+ '.github/scripts/test_startup_emitters.py',
+ '.github/scripts/test_state_contracts_integration.py',
+ '.github/scripts/test_suite_hermeticity.py',
+ '.github/scripts/test_suite_observation.py',
+ '.github/scripts/test_sync_core.py',
+ '.github/scripts/test_tag_immutability.py',
+ '.github/scripts/test_tag_publication_receipt.py',
+ '.github/scripts/test_taskboardlib.py',
+ '.github/scripts/test_taskwriter.py',
+ '.github/scripts/test_ux_conversion.py',
+ '.github/scripts/test_validate_codex_plugin.py',
+ '.github/scripts/test_verdictlib.py',
+ '.github/scripts/test_verify_pi_support.py',
+ '.github/scripts/test_work_adopt.py',
+ '.github/scripts/test_work_github.py',
+ '.github/scripts/test_workflow_recovery.py',
+ '.github/scripts/test_workflow_recovery_cli.py',
+ '.github/scripts/test_workflow_recovery_contract.py',
+ '.github/scripts/test_workflow_recovery_generator.py',
+ '.github/scripts/test_workflow_recovery_hosts.py',
+ '.github/scripts/validate_codex_distribution_identity.py',
+ '.github/scripts/validate_codex_plugin.py',
+ '.github/scripts/verify_codex_candidate_provenance.py',
+ '.github/scripts/verify_codex_distribution_rulesets.py',
+ '.github/scripts/verify_codex_static_candidate.py',
+ '.github/scripts/verify_pi_support.py',
+ '.github/workflows/academy-promotion.yml',
+ '.github/workflows/ci.yml',
+ '.github/workflows/codeql.yml',
+ '.github/workflows/docs.yml',
+ '.github/workflows/pi-promotion.yml',
+ '.github/workflows/release.yml',
+ 'core/pysrc/_activationlib.py',
+ 'core/pysrc/_adrlifecycle.py',
+ 'core/pysrc/_adrlifecyclegit.py',
+ 'core/pysrc/_adrlifecyclewrite.py',
+ 'core/pysrc/_appendonlyconflictlib.py',
+ 'core/pysrc/_approvallib.py',
+ 'core/pysrc/_arbiterstatelib.py',
+ 'core/pysrc/_artifactauthoritylib.py',
+ 'core/pysrc/_artifactlib.py',
+ 'core/pysrc/_artifactpromptlib.py',
+ 'core/pysrc/_babysitlib.py',
+ 'core/pysrc/_bashguardlib.py',
+ 'core/pysrc/_boxlib.py',
+ 'core/pysrc/_cleanuplib.py',
+ 'core/pysrc/_colorlib.py',
+ 'core/pysrc/_contextmergelib.py',
+ 'core/pysrc/_contextreportlib.py',
+ 'core/pysrc/_contextselectlib.py',
+ 'core/pysrc/_contextsnapshotlib.py',
+ 'core/pysrc/_contextwriterlib.py',
+ 'core/pysrc/_debughandofflib.py',
+ 'core/pysrc/_durabilitylib.py',
+ 'core/pysrc/_entrylib.py',
+ 'core/pysrc/_fmtlib.py',
+ 'core/pysrc/_githooks.py',
+ 'core/pysrc/_gitlib.py',
+ 'core/pysrc/_hooklib.py',
+ 'core/pysrc/_intentlib.py',
+ 'core/pysrc/_knowledgelib.py',
+ 'core/pysrc/_ledgerlib.py',
+ 'core/pysrc/_modelib.py',
+ 'core/pysrc/_overrideappendlib.py',
+ 'core/pysrc/_pathnorm.py',
+ 'core/pysrc/_planfilelib.py',
+ 'core/pysrc/_prerequisitelib.py',
+ 'core/pysrc/_protectedlib.py',
+ 'core/pysrc/_protectedstatelib.py',
+ 'core/pysrc/_provenancelib.py',
+ 'core/pysrc/_prunelib.py',
+ 'core/pysrc/_prunepolicy.py',
+ 'core/pysrc/_readinjectlib.py',
+ 'core/pysrc/_reconciliationlib.py',
+ 'core/pysrc/_releaselib.py',
+ 'core/pysrc/_replylib.py',
+ 'core/pysrc/_scopelib.py',
+ 'core/pysrc/_segmentslib.py',
+ 'core/pysrc/_sensitivelib.py',
+ 'core/pysrc/_sessionlib.py',
+ 'core/pysrc/_sloplib.py',
+ 'core/pysrc/_sprintapprovallib.py',
+ 'core/pysrc/_standuplib.py',
+ 'core/pysrc/_subagentslib.py',
+ 'core/pysrc/_taskboardlib.py',
+ 'core/pysrc/_taskexcludelib.py',
+ 'core/pysrc/_tribunalinventorylib.py',
+ 'core/pysrc/_tribunalrunlib.py',
+ 'core/pysrc/_updatelib.py',
+ 'core/pysrc/_usagelib.py',
+ 'core/pysrc/_workadopt.py',
+ 'core/pysrc/_workflowrecoverylib.py',
+ 'core/pysrc/_workgithub.py',
+ 'core/pysrc/_worklib.py',
+ 'core/pysrc/adr-acceptance.py',
+ 'core/pysrc/adr-merge-method.py',
+ 'core/pysrc/append-override.py',
+ 'core/pysrc/artifact-authority-hook.py',
+ 'core/pysrc/artifact-authority.py',
+ 'core/pysrc/artifact-reconcile.py',
+ 'core/pysrc/babysit.py',
+ 'core/pysrc/boardsync.py',
+ 'core/pysrc/debug-handoff.py',
+ 'core/pysrc/doctor.py',
+ 'core/pysrc/git-enforce.py',
+ 'core/pysrc/hostapi.py',
+ 'core/pysrc/init-codearbiter.py',
+ 'core/pysrc/knowledge.py',
+ 'core/pysrc/migration-pass.py',
+ 'core/pysrc/post-write-edit.py',
+ 'core/pysrc/pre-bash.py',
+ 'core/pysrc/pre-edit.py',
+ 'core/pysrc/pre-read.py',
+ 'core/pysrc/pre-write.py',
+ 'core/pysrc/prompt-submit.py',
+ 'core/pysrc/prune-transcript.py',
+ 'core/pysrc/releasehash.py',
+ 'core/pysrc/resolve-append-only-conflict.py',
+ 'core/pysrc/resolve-context-conflict.py',
+ 'core/pysrc/security-pass.py',
+ 'core/pysrc/session-start.py',
+ 'core/pysrc/statusline.py',
+ 'core/pysrc/taskwrite.py',
+ 'core/pysrc/tribunal.py',
+ 'core/pysrc/update-refresh.py',
+ 'core/pysrc/wire-statusline.py',
+ 'core/pysrc/work.py',
+ 'core/pysrc/workflow-recovery.py',
+ 'docs/state-contracts-major/PROGRAM.md',
+ 'docs/state-contracts-major/contracts/decisions.json',
+ 'docs/state-contracts-major/contracts/finding-dispositions.json',
+ 'docs/state-contracts-major/contracts/tasks.json',
+ 'plugins/ca-codex/arbiter.md',
+ 'plugins/ca-codex/includes/dangerous-mode.md',
+ 'plugins/ca-codex/includes/ops-mode.md',
+ 'plugins/ca-codex/includes/safety-core.md',
+ 'plugins/ca-pi/arbiter.md',
+ 'plugins/ca-pi/hooks/_host.py',
+ 'plugins/ca-pi/includes/dangerous-mode.md',
+ 'plugins/ca-pi/includes/ops-mode.md',
+ 'plugins/ca-pi/includes/safety-core.md',
+ 'plugins/ca-pi/package.json',
+ 'plugins/ca/arbiter.md',
+ 'plugins/ca/hooks/hooks.json',
+ 'plugins/ca/includes/dangerous-mode.md',
+ 'plugins/ca/includes/ops-mode.md',
+ 'plugins/ca/includes/safety-core.md',
+ 'tools/README.md',
+ 'tools/artifact-coverage.py',
+ 'tools/build-artifacts.py',
+ 'tools/build-host-packages.py',
+ 'tools/build-workflow-recovery-contract.py',
+ 'tools/ci-impact.py',
+ 'tools/ci20_baseline.py',
+ 'tools/ci20_inventory.py',
+ 'tools/codex-parity-fixture.py',
+ 'tools/create-artifact-examples.py',
+ 'tools/farm-first-pass.py',
+ 'tools/generate-artifact-types.py',
+ 'tools/go-test-timings.json',
+ 'tools/go_test_parallel.py',
+ 'tools/install-artifact-payload.py',
+ 'tools/live-smarts-exercise.py',
+ 'tools/measure-knowledge-retrieval.py',
+ 'tools/promote-claude-marketplace.py',
+ 'tools/promote-codex-marketplace.py',
+ 'tools/reviewer-yield.py',
+ 'tools/statusline-bench.py',
+ 'tools/statusline-screenshot.py',
+ 'tools/sync-core.py',
+ 'tools/test-artifact-mixed-schema.py',
+ 'tools/test-artifact-work-old-client.py',
+ 'tools/test_ci20_baseline.py',
+ 'tools/test_measurement_contracts.py',
+ 'tools/tribunal-eval.py'])
+
+PYTHON_FINDING_PROFILES = {
+    'hooks-single-owner-findings-v1': {"paths": _HOOK_SINGLE_OWNER_PATHS,
+        'job': '[CHECK] | [CORE] | Hook contract  <os: windows-latest · partition: contracts>',
+        'payload': 'major-source-inputs-hooks-single-owner',
+        'upload': 'Upload single-owner hook source-test inputs',
+        'roots': ('core/pysrc', '.github/scripts', '.github/workflows', 'tools'),
+    },
+    'impact-single-owner-findings-v1': {"paths": Q02_SOURCE_PATHS | _HOOK_SINGLE_OWNER_PATHS | frozenset(['.codearbiter/context/code-map.html',
+ '.codearbiter/context/coding-standards.html',
+ '.codearbiter/context/project.html',
+ '.codearbiter/context/security-controls.html',
+ '.codearbiter/context/tech-stack.html',
+ 'core/artifacts/cmd/ca-artifact/cli_boundary_contract_test.go',
+ 'core/artifacts/cmd/ca-artifact/main_test.go',
+ 'core/artifacts/go.mod',
+ 'core/artifacts/internal/authority/observed_event_test.go',
+ 'core/artifacts/internal/authority/reuse.go',
+ 'core/artifacts/internal/canonical/canonical_test.go',
+ 'core/artifacts/internal/canonical/json.go',
+ 'core/artifacts/internal/conformance/conformance_test.go',
+ 'core/artifacts/internal/contextdocument/assistive_recovery_test.go',
+ 'core/artifacts/internal/contextdocument/contract_test.go',
+ 'core/artifacts/internal/contextdocument/document_selection.go',
+ 'core/artifacts/internal/contextdocument/evidence_test.go',
+ 'core/artifacts/internal/contextdocument/finalization_test.go',
+ 'core/artifacts/internal/contextdocument/knowledge.go',
+ 'core/artifacts/internal/contextdocument/knowledge_test.go',
+ 'core/artifacts/internal/contextdocument/markdown.go',
+ 'core/artifacts/internal/contextdocument/markdown_test.go',
+ 'core/artifacts/internal/contextdocument/operations_test.go',
+ 'core/artifacts/internal/contextdocument/preview_contract.go',
+ 'core/artifacts/internal/contextdocument/preview_contract_test.go',
+ 'core/artifacts/internal/contextdocument/recovery_test.go',
+ 'core/artifacts/internal/contextdocument/refresh_test.go',
+ 'core/artifacts/internal/contextdocument/render.go',
+ 'core/artifacts/internal/contextdocument/render_test.go',
+ 'core/artifacts/internal/contextdocument/sections.go',
+ 'core/artifacts/internal/contextdocument/validation.go',
+ 'core/artifacts/internal/contextdocument/validation_test.go',
+ 'core/artifacts/internal/evidence/completion_identity_other.go',
+ 'core/artifacts/internal/evidence/completion_identity_unix.go',
+ 'core/artifacts/internal/evidence/completion_identity_windows.go',
+ 'core/artifacts/internal/evidence/completion_identity_windows_test.go',
+ 'core/artifacts/internal/evidence/completion_workspace_test.go',
+ 'core/artifacts/internal/evidence/launch_binding_limits_test.go',
+ 'core/artifacts/internal/evidence/output_contract_test.go',
+ 'core/artifacts/internal/evidence/review_regressions_test.go',
+ 'core/artifacts/internal/evidence/snapshot_bounds_test.go',
+ 'core/artifacts/internal/evidence/snapshot_canonical_test.go',
+ 'core/artifacts/internal/evidence/snapshot_hardening_test.go',
+ 'core/artifacts/internal/evidence/snapshot_short_other_test.go',
+ 'core/artifacts/internal/evidence/snapshot_short_windows_test.go',
+ 'core/artifacts/internal/evidence/snapshot_test.go',
+ 'core/artifacts/internal/evidence/verification.go',
+ 'core/artifacts/internal/fault/fault.go',
+ 'core/artifacts/internal/fault/fault_test.go',
+ 'core/artifacts/internal/kind/contracts.go',
+ 'core/artifacts/internal/kind/contracts_test.go',
+ 'core/artifacts/internal/model/artifact_test.go',
+ 'core/artifacts/internal/model/types_generated.go',
+ 'core/artifacts/internal/observation/completion.go',
+ 'core/artifacts/internal/observation/contract_test.go',
+ 'core/artifacts/internal/observation/native_v1_test.go',
+ 'core/artifacts/internal/observation/native_v2_test.go',
+ 'core/artifacts/internal/observation/runner_contract_test.go',
+ 'core/artifacts/internal/observation/sprint_test.go',
+ 'core/artifacts/internal/operations/assistive_test.go',
+ 'core/artifacts/internal/operations/capabilities_test.go',
+ 'core/artifacts/internal/operations/capture_boundary_test.go',
+ 'core/artifacts/internal/operations/catalog_bench_test.go',
+ 'core/artifacts/internal/operations/catalog_cap_linux_test.go',
+ 'core/artifacts/internal/operations/check_conflicts_test.go',
+ 'core/artifacts/internal/operations/completion_fixture_test.go',
+ 'core/artifacts/internal/operations/completion_git_diagnostics_test.go',
+ 'core/artifacts/internal/operations/completion_rerun_test.go',
+ 'core/artifacts/internal/operations/completion_review_test.go',
+ 'core/artifacts/internal/operations/concurrent_readers_test.go',
+ 'core/artifacts/internal/operations/context_assistive_test.go',
+ 'core/artifacts/internal/operations/context_authority_test.go',
+ 'core/artifacts/internal/operations/context_capability_test.go',
+ 'core/artifacts/internal/operations/context_finalization_test.go',
+ 'core/artifacts/internal/operations/context_preview_output_test.go',
+ 'core/artifacts/internal/operations/context_preview_reserved_test.go',
+ 'core/artifacts/internal/operations/context_readonly_linux_test.go',
+ 'core/artifacts/internal/operations/context_refresh_test.go',
+ 'core/artifacts/internal/operations/corrected_attempt_test.go',
+ 'core/artifacts/internal/operations/creation_review_scope_contract_test.go',
+ 'core/artifacts/internal/operations/cycle_view.go',
+ 'core/artifacts/internal/operations/dependency_advice_test.go',
+ 'core/artifacts/internal/operations/dependent_progress_history_test.go',
+ 'core/artifacts/internal/operations/descriptor_effects_test.go',
+ 'core/artifacts/internal/operations/descriptors.go',
+ 'core/artifacts/internal/operations/descriptors_test.go',
+ 'core/artifacts/internal/operations/eligible_bounds_test.go',
+ 'core/artifacts/internal/operations/engine_test.go',
+ 'core/artifacts/internal/operations/evidence_reads_test.go',
+ 'core/artifacts/internal/operations/farm_projection_test.go',
+ 'core/artifacts/internal/operations/index_page_bench_test.go',
+ 'core/artifacts/internal/operations/init_store_test.go',
+ 'core/artifacts/internal/operations/input_scope_test.go',
+ 'core/artifacts/internal/operations/intentional_change_test.go',
+ 'core/artifacts/internal/operations/knowledge_ops_test.go',
+ 'core/artifacts/internal/operations/knowledge_sections.go',
+ 'core/artifacts/internal/operations/knowledge_test.go',
+ 'core/artifacts/internal/operations/legacy_replay_contract_test.go',
+ 'core/artifacts/internal/operations/main_test.go',
+ 'core/artifacts/internal/operations/migration_test.go',
+ 'core/artifacts/internal/operations/native_recipe_portable_contract_test.go',
+ 'core/artifacts/internal/operations/native_v1_review_test.go',
+ 'core/artifacts/internal/operations/native_v2_review_test.go',
+ 'core/artifacts/internal/operations/next_native_boundary_contract_test.go',
+ 'core/artifacts/internal/operations/observed_fixture_test.go',
+ 'core/artifacts/internal/operations/ordinary_progress_contract_test.go',
+ 'core/artifacts/internal/operations/prerequisite_observation_test.go',
+ 'core/artifacts/internal/operations/preservation_contract_test.go',
+ 'core/artifacts/internal/operations/preservation_journal_test.go',
+ 'core/artifacts/internal/operations/project_view_test.go',
+ 'core/artifacts/internal/operations/protocol_boundary_test.go',
+ 'core/artifacts/internal/operations/protocol_test.go',
+ 'core/artifacts/internal/operations/read_mode_effects_test.go',
+ 'core/artifacts/internal/operations/read_only_windows_test.go',
+ 'core/artifacts/internal/operations/readiness_decision_contract_test.go',
+ 'core/artifacts/internal/operations/reorder_test.go',
+ 'core/artifacts/internal/operations/retirement_test.go',
+ 'core/artifacts/internal/operations/review_regression_test.go',
+ 'core/artifacts/internal/operations/review_regressions_test.go',
+ 'core/artifacts/internal/operations/smarts_epoch_test.go',
+ 'core/artifacts/internal/operations/sprint_active_writer_contract_test.go',
+ 'core/artifacts/internal/operations/sprint_authority_test.go',
+ 'core/artifacts/internal/operations/task_check_test.go',
+ 'core/artifacts/internal/operations/task_context_test.go',
+ 'core/artifacts/internal/operations/task_knowledge.go',
+ 'core/artifacts/internal/operations/verification_check_test.go',
+ 'core/artifacts/internal/operations/work_board_lock.go',
+ 'core/artifacts/internal/operations/work_board_lock_other.go',
+ 'core/artifacts/internal/operations/work_board_lock_unix.go',
+ 'core/artifacts/internal/operations/work_board_lock_windows.go',
+ 'core/artifacts/internal/operations/work_check_status_test.go',
+ 'core/artifacts/internal/operations/work_page_bench_test.go',
+ 'core/artifacts/internal/operations/work_project_bootstrap_test.go',
+ 'core/artifacts/internal/operations/work_project_test.go',
+ 'core/artifacts/internal/operations/work_test.go',
+ 'core/artifacts/internal/operations/work_transition_map_test.go',
+ 'core/artifacts/internal/operations/work_view.go',
+ 'core/artifacts/internal/operations/work_view_test.go',
+ 'core/artifacts/internal/read/outline_bench_test.go',
+ 'core/artifacts/internal/read/read_test.go',
+ 'core/artifacts/internal/render/assets/artifact.css',
+ 'core/artifacts/internal/render/assets/logo.svg',
+ 'core/artifacts/internal/render/brand.go',
+ 'core/artifacts/internal/render/cycle_view.go',
+ 'core/artifacts/internal/render/path_values_test.go',
+ 'core/artifacts/internal/render/project_view.go',
+ 'core/artifacts/internal/render/render_test.go',
+ 'core/artifacts/internal/render/review_compat_test.go',
+ 'core/artifacts/internal/render/work_check_provenance_test.go',
+ 'core/artifacts/internal/render/work_view.go',
+ 'core/artifacts/internal/render/work_view_test.go',
+ 'core/artifacts/internal/repository/catalog_bench_test.go',
+ 'core/artifacts/internal/repository/catalog_test.go',
+ 'core/artifacts/internal/repository/knowledge.go',
+ 'core/artifacts/internal/schema/common.schema.json',
+ 'core/artifacts/internal/schema/context.schema.json',
+ 'core/artifacts/internal/schema/decomposition.schema.json',
+ 'core/artifacts/internal/schema/diagnostics_test.go',
+ 'core/artifacts/internal/schema/knowledge.schema.json',
+ 'core/artifacts/internal/schema/pattern_test.go',
+ 'core/artifacts/internal/schema/plan.schema.json',
+ 'core/artifacts/internal/schema/schema.go',
+ 'core/artifacts/internal/schema/spec.schema.json',
+ 'core/artifacts/internal/store/backends.go',
+ 'core/artifacts/internal/store/backends_test.go',
+ 'core/artifacts/internal/store/crash_test.go',
+ 'core/artifacts/internal/store/entryname.go',
+ 'core/artifacts/internal/store/fs_linux.go',
+ 'core/artifacts/internal/store/fs_other_boundary_test.go',
+ 'core/artifacts/internal/store/hardening_unix_test.go',
+ 'core/artifacts/internal/store/io_fault.go',
+ 'core/artifacts/internal/store/io_linux_test.go',
+ 'core/artifacts/internal/store/io_windows_test.go',
+ 'core/artifacts/internal/store/journal_contract_boundary_test.go',
+ 'core/artifacts/internal/store/journal_contract_denial_unix_test.go',
+ 'core/artifacts/internal/store/journal_contract_denial_windows_test.go',
+ 'core/artifacts/internal/store/journal_diagnostics_test.go',
+ 'core/artifacts/internal/store/journal_digest_test.go',
+ 'core/artifacts/internal/store/journal_scan_bench_test.go',
+ 'core/artifacts/internal/store/journal_scan_hardening_unix_test.go',
+ 'core/artifacts/internal/store/journal_scan_open_test.go',
+ 'core/artifacts/internal/store/journal_unreadable_linux_test.go',
+ 'core/artifacts/internal/store/junction_windows_test.go',
+ 'core/artifacts/internal/store/openflags_darwin.go',
+ 'core/artifacts/internal/store/openflags_windows.go',
+ 'core/artifacts/internal/store/openstats.go',
+ 'core/artifacts/internal/store/readonly_lock_windows_test.go',
+ 'core/artifacts/internal/store/recovery_effect_contract_test.go',
+ 'core/artifacts/internal/store/review_regression_test.go',
+ 'core/artifacts/internal/store/review_regressions_test.go',
+ 'core/artifacts/internal/store/store_test.go',
+ 'core/artifacts/internal/symbol/index_test.go',
+ 'core/artifacts/internal/testutil/fixtures.go',
+ 'core/artifacts/internal/testutil/readonly_windows.go',
+ 'core/artifacts/internal/testutil/root.go',
+ 'core/artifacts/internal/validate/input_policy.go',
+ 'core/artifacts/internal/validate/review_policy_test.go',
+ 'core/artifacts/internal/validate/validate_test.go',
+ 'core/artifacts/schemas/common.schema.json',
+ 'core/artifacts/schemas/context.schema.json',
+ 'core/artifacts/schemas/decomposition.schema.json',
+ 'core/artifacts/schemas/knowledge.schema.json',
+ 'core/artifacts/schemas/plan.schema.json',
+ 'core/artifacts/schemas/spec.schema.json',
+ 'core/artifacts/schemas/work.schema.json',
+ 'core/artifacts/testdata/compat/knowledge-paths-0.3.2.html',
+ 'core/artifacts/testdata/compat/plan-0.3.0.html',
+ 'core/artifacts/testdata/compat/spec-0.3.0.html',
+ 'core/artifacts/testdata/reference/plan.html',
+ 'core/artifacts/testdata/reference/plan.json',
+ 'core/artifacts/testdata/reference/spec.html',
+ 'core/artifacts/testdata/reference/spec.json',
+ 'core/artifacts/testdata/spec-plan-golden/README.md',
+ 'plugins/ca-pi/tools/test/activation.test.ts',
+ 'plugins/ca-pi/tools/test/activity.test.ts',
+ 'plugins/ca-pi/tools/test/approval-dialog.test.ts',
+ 'plugins/ca-pi/tools/test/audit-sink.test.ts',
+ 'plugins/ca-pi/tools/test/background-jobs.test.ts',
+ 'plugins/ca-pi/tools/test/benchmark-boundary.ts',
+ 'plugins/ca-pi/tools/test/bridge.test.ts',
+ 'plugins/ca-pi/tools/test/child-env.test.ts',
+ 'plugins/ca-pi/tools/test/commands.test.ts',
+ 'plugins/ca-pi/tools/test/compaction.test.ts',
+ 'plugins/ca-pi/tools/test/delegated-executor.test.ts',
+ 'plugins/ca-pi/tools/test/delegation-contract.test.ts',
+ 'plugins/ca-pi/tools/test/delegation-journal.test.ts',
+ 'plugins/ca-pi/tools/test/delegation-session.test.ts',
+ 'plugins/ca-pi/tools/test/dispatch.test.ts',
+ 'plugins/ca-pi/tools/test/doctor.test.ts',
+ 'plugins/ca-pi/tools/test/farm.test.ts',
+ 'plugins/ca-pi/tools/test/final-arguments-live.test.ts',
+ 'plugins/ca-pi/tools/test/final-arguments.test.ts',
+ 'plugins/ca-pi/tools/test/fixtures/live-governed-extension.mjs',
+ 'plugins/ca-pi/tools/test/fixtures/live-later-extension.mjs',
+ 'plugins/ca-pi/tools/test/fixtures/pi-0.80.5-help.txt',
+ 'plugins/ca-pi/tools/test/fixtures/pi-0.80.6-help.txt',
+ 'plugins/ca-pi/tools/test/footer.test.ts',
+ 'plugins/ca-pi/tools/test/git-facts.test.ts',
+ 'plugins/ca-pi/tools/test/inference-broker.test.ts',
+ 'plugins/ca-pi/tools/test/module-structure.test.ts',
+ 'plugins/ca-pi/tools/test/notices.test.ts',
+ 'plugins/ca-pi/tools/test/package.test.ts',
+ 'plugins/ca-pi/tools/test/parent-delegation.test.ts',
+ 'plugins/ca-pi/tools/test/path-boundary.test.ts',
+ 'plugins/ca-pi/tools/test/plan-mode.test.ts',
+ 'plugins/ca-pi/tools/test/policy.test.ts',
+ 'plugins/ca-pi/tools/test/process-tree.test.ts',
+ 'plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts',
+ 'plugins/ca-pi/tools/test/runner-isolation.test.ts',
+ 'plugins/ca-pi/tools/test/runtime-resolver.test.ts',
+ 'plugins/ca-pi/tools/test/security.test.ts',
+ 'plugins/ca-pi/tools/test/sidebar-compositor.test.ts',
+ 'plugins/ca-pi/tools/test/sidebar-data.test.ts',
+ 'plugins/ca-pi/tools/test/sidebar-manager.test.ts',
+ 'plugins/ca-pi/tools/test/sidebar-probe-live.test.ts',
+ 'plugins/ca-pi/tools/test/sidebar-window-contract.test.ts',
+ 'plugins/ca-pi/tools/test/sidebar.test.ts',
+ 'plugins/ca-pi/tools/test/status.test.ts',
+ 'plugins/ca-pi/tools/test/tool-guard.test.ts',
+ 'plugins/ca-pi/tools/test/windows-supervisor.test.ts',
+ 'plugins/ca-pi/tools/test/workflow-recovery.test.ts']),
+        'job': '[CHECK] | [REPO] | Impact planner contract',
+        'payload': 'major-source-inputs-impact-single-owner',
+        'upload': 'Upload single-owner Impact source-test inputs',
+        'roots': ('core/pysrc',
+ '.github/scripts',
+ '.github/workflows',
+ 'tools',
+ 'plugins/ca-pi/tools/test',
+ 'core/artifacts',
+ '.codearbiter/context'),
+    },
+}
+PYTHON_FINDING_RECIPES = {'disposition:findings:HOOK-F01': {'profile': 'hooks-single-owner-findings-v1',
+                                   'script': '.github/scripts/test_prompt_submit.py',
+                                   'observation': 'finite-hookf01',
+                                   'selectors': frozenset({'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona',
+                                                           'python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery'}),
+                                   'scope': 'Actual prompt/mode persona revisit, no-op, generation/session and '
+                                            'storage-failure fixture behavior; no live host or universal double-denial '
+                                            'redelivery.'},
+ 'disposition:findings:HOOK-F03': {'profile': 'hooks-single-owner-findings-v1',
+                                   'script': '.github/scripts/test_pi_payload_identity.py',
+                                   'observation': 'finite-hookf03',
+                                   'selectors': frozenset({'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills',
+                                                           'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent',
+                                                           'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse',
+                                                           'python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe'}),
+                                   'scope': 'Actual check_payload predicate and actual PiHost/package identity on '
+                                            'owned files only; no doctor.main, native/npm, host probe or installed '
+                                            'health.'},
+ 'disposition:findings:C-F05': {'profile': 'impact-single-owner-findings-v1',
+                                'script': '.github/scripts/test_ci_impact.py',
+                                'observation': 'finite-cf05',
+                                'selectors': frozenset({'python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input',
+                                                        'python:.github/scripts/test_ci_impact.py:__main__.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy'}),
+                                'scope': 'Actual workflow input/event and deploy-authority declaration controls; no '
+                                         'Pages deployment.'},
+ 'disposition:findings:C-F06': {'profile': 'hooks-single-owner-findings-v1',
+                                'script': '.github/scripts/test_verdictlib.py',
+                                'observation': 'finite-cf06',
+                                'selectors': frozenset({'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event',
+                                                        'python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity'}),
+                                'scope': 'Typed injected outcomes and required-affirmative/source/refusal contract; no '
+                                         'actual branch/tag/Codex protection observation.'},
+ 'disposition:findings:C-F07': {'profile': 'impact-single-owner-findings-v1',
+                                'script': '.github/scripts/test_payload_version_gate.py',
+                                'observation': 'finite-cf07',
+                                'selectors': frozenset({'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction',
+                                                        'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing',
+                                                        'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes',
+                                                        'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes',
+                                                        'python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump'}),
+                                'scope': 'Owned Git base absent/valid/invalid/unresolved manifest distinction; no '
+                                         'release qualification.'},
+ 'disposition:findings:T-F02': {'profile': 'hooks-single-owner-findings-v1',
+                                'script': 'tools/test_measurement_contracts.py',
+                                'observation': 'finite-tf02',
+                                'selectors': frozenset({'python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output',
+                                                        'python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives'}),
+                                'scope': 'Actual SMARTS predicate/producer-refusal on inert output fixtures; model '
+                                         'reasoning quality and whole T01 remain unassessed.'}}
+
+HOOK_F02_CELL = "disposition:findings:HOOK-F02"
+HOOK_F02_COMPONENTS = {'finite-hookf02-modelib': {'script': '.github/scripts/test_modelib.py',
+                            'selectors': frozenset({'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled',
+                                                    'python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once'})},
+ 'finite-hookf01': {'script': '.github/scripts/test_prompt_submit.py',
+                    'selectors': frozenset({'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates',
+                                            'python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode'})}}
+
+def _finding_python_command(argv, profile, script=None):
+    permitted = {row["script"] for row in PYTHON_FINDING_RECIPES.values() if row["profile"] == profile}
+    if profile == "hooks-single-owner-findings-v1":
+        permitted |= {row["script"] for row in HOOK_F02_COMPONENTS.values()}
+        permitted.update((ROUTE_GENERATOR_SCRIPT, SF13_SYNC_SCRIPT))
+    require(isinstance(argv, list) and len(argv) == 2 and all(type(value) is str and value for value in argv),
+            "single-owner profile requires its unfiltered Python entry point")
+    path = argv[1].replace("\\", "/")
+    require(any(path == candidate or path.endswith("/" + candidate) for candidate in permitted)
+            and (script is None or path == script or path.endswith("/" + script)),
+            "single-owner profile entry point differs")
+
+
+def _finding_python_members(repo, profile):
+    _source_root_members(repo)
+    spec = PYTHON_FINDING_PROFILES[profile]
+    found, directories = set(), 0
+    for relative in spec["roots"]:
+        pending = [Path(repo) / relative]
+        while pending:
+            folder = pending.pop(); directories += 1
+            info = folder.lstat()
+            require(directories <= 512 and stat.S_ISDIR(info.st_mode) and not folder.is_symlink()
+                    and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                    "Python finding source namespace is unsafe or unbounded")
+            for path in folder.iterdir():
+                info = path.lstat()
+                require(not path.is_symlink() and not getattr(info, "st_file_attributes", 0) & stat.FILE_ATTRIBUTE_REPARSE_POINT,
+                        "Python finding source namespace contains a link")
+                if stat.S_ISDIR(info.st_mode):
+                    if path.name != "__pycache__": pending.append(path)
+                else:
+                    require(stat.S_ISREG(info.st_mode), "Python finding source namespace is not regular")
+                    found.add(path.relative_to(repo).as_posix())
+                    require(len(found) <= 2048, "Python finding source namespace exceeds bound")
+    expected = {path for path in spec["paths"] if any(path.startswith(root + "/") for root in spec["roots"])}
+    require(found == expected, "Python finding source namespace differs")
+
+
+def original_python_entrypoint(argv, script):
+    if not isinstance(argv, list) or len(argv) != 2 or not all(type(value) is str and value for value in argv):
+        return False
+    path = argv[1].replace("\\", "/")
+    return path == script or path.endswith("/" + script)
+
+
+def original_debug_entrypoint(argv, profile):
+    role = DEBUG_RUNNERS.get(profile)
+    return (role is not None and isinstance(argv, list) and len(argv) == 4
+            and original_python_entrypoint(argv[:2], DEBUG_LAUNCHER)
+            and argv[2:] == ["--run-debug-suite", role[1]])
+
+
+def _q02_python_command(argv):
+    require(any(original_python_entrypoint(argv, script) for script in Q02_SOURCE_SCRIPTS),
             "Q02 source profile requires an original unfiltered owning Python entry point")
 
 
 def source_profile(profile=SOURCE_PROFILE):
+    if profile in PYTHON_COMPONENT_PROFILES:
+        return PYTHON_COMPONENT_PROFILES[profile]
+    if profile in PYTHON_FINDING_PROFILES:
+        return {key: value for key, value in PYTHON_FINDING_PROFILES[profile].items() if key != "roots"}
     if profile == SOURCE_PROFILE:
         return {"paths": SOURCE_PATHS, "job": SOURCE_JOB, "payload": SOURCE_PAYLOAD, "upload": SOURCE_UPLOAD}
     if profile == SDK_SOURCE_PROFILE:
         return {"paths": SDK_SOURCE_PATHS, "job": SDK_SOURCE_JOB, "payload": SDK_SOURCE_PAYLOAD, "upload": SDK_SOURCE_UPLOAD}
+    if profile == HOOK_REVIEW_SOURCE_PROFILE:
+        return {"paths": HOOK_REVIEW_SOURCE_PATHS, "job": HOOK_REVIEW_SOURCE_JOB, "payload": HOOK_REVIEW_SOURCE_PAYLOAD, "upload": HOOK_REVIEW_SOURCE_UPLOAD}
     if profile == Q02_SOURCE_PROFILE:
         return {"paths": Q02_SOURCE_PATHS, "job": Q02_SOURCE_JOB, "payload": Q02_SOURCE_PAYLOAD, "upload": Q02_SOURCE_UPLOAD}
     require(type(profile) is str and profile in TS_PROFILE_PATHS, "unknown source input profile")
@@ -1523,8 +2774,10 @@ def _source_root_members(repo):
 def _source_byte_mismatch(relative, expected, actual):
     # Do not decode source content or forward arbitrary paths/metadata. This
     # diagnostic describes only one bounded member of a closed source profile.
-    require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS or relative in Q02_SOURCE_PATHS
-            or any(relative in paths for paths in TS_PROFILE_PATHS.values())),
+    require(type(relative) is str and (relative in SOURCE_PATHS or relative in SDK_SOURCE_PATHS or relative in Q02_SOURCE_PATHS or relative in HOOK_REVIEW_SOURCE_PATHS
+            or any(relative in spec["paths"] for spec in PYTHON_COMPONENT_PROFILES.values())
+            or any(relative in paths for paths in TS_PROFILE_PATHS.values())
+            or any(relative in spec["paths"] for spec in PYTHON_FINDING_PROFILES.values())),
             "byte mismatch diagnostic member is outside fixed profiles")
     require(type(expected) is bytes and type(actual) is bytes
             and len(expected) <= 8 * 1024 * 1024 and len(actual) <= 8 * 1024 * 1024,
@@ -1546,9 +2799,18 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
     paths = spec["paths"]
     identity = source_identity(repo, profile)
     require(identity["clean"], "source payload checkout is not clean")
-    if profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE): _source_root_members(repo)
+    if profile in PYTHON_FINDING_PROFILES:
+        _finding_python_members(repo, profile)
+    elif profile == HOOK_REVIEW_SOURCE_PROFILE:
+        _source_root_members(repo)
+        _hook_review_members(repo)
+    elif profile in (SOURCE_PROFILE, Q02_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES): _source_root_members(repo)
     elif profile == SDK_SOURCE_PROFILE: _sdk_source_members(repo)
     else: _ts_members(repo, profile)
+    if profile == CATALOG_SOURCE_PROFILE:
+        current = {path.relative_to(repo).as_posix() for path in (repo / "plugins/ca/commands").glob("*.md")
+                   if path.stem.upper() != "INDEX"}
+        require(current == CATALOG_COMMAND_PATHS, "command catalog source namespace differs")
     rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
     entries = []
     for row in rows.split(b"\0"):
@@ -1587,7 +2849,7 @@ def validate_source_manifest(record, req, job_name, members):
     paths = spec["paths"]
     fields = {"format", "profile", "source_commit", "source_tree", "workflow", "ci_run_id", "producer_job_name", "members"}
     require(isinstance(record, dict) and set(record) == fields and record["format"] == SOURCE_FORMAT
-            and record["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, *TS_PROFILE_PATHS) and record["workflow"] == ".github/workflows/ci.yml"
+            and record["workflow"] == ".github/workflows/ci.yml"
             and job_name == record["producer_job_name"] == spec["job"]
             and type(record["source_commit"]) is str and record["source_commit"] == req["source_commit"] and readiness.SHA.fullmatch(record["source_commit"])
             and type(record["source_tree"]) is str and record["source_tree"] == req["source_tree"] and readiness.SHA.fullmatch(record["source_tree"])
@@ -1678,14 +2940,28 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
     binding = observed.get("source_input_binding")
     spec = source_profile(binding.get("profile") if isinstance(binding, dict) else None)
     require(isinstance(binding, dict) and set(binding) == {"format", "profile", "payload_name", "manifest_sha256"}
-            and binding["format"] == SOURCE_BINDING and binding["profile"] in (SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, *TS_PROFILE_PATHS)
+            and binding["format"] == SOURCE_BINDING
             and binding["payload_name"] == spec["payload"]
             and binding["manifest_sha256"] == payload.get("source_manifest_sha256")
             and type(payload.get("source_upload_job_id")) is int and payload.get("source_upload_job_id") == job_id,
             "source test payload binding missing or differs")
-    if binding["profile"] == Q02_SOURCE_PROFILE:
+    debug = original_debug_entrypoint(observed.get("argv"), binding["profile"])
+    if debug:
+        require(observed.get("producer") == "python-test-result-observer" and observed.get("test_result_scope") == OUTER_UNITTEST_RESULT,
+                "debug suite requires the original entrypoint runner results")
+    elif binding["profile"] in PYTHON_FINDING_PROFILES:
+        require(observed.get("producer") == "python-test-result-observer", "single-owner profile requires original Python observer")
+        _finding_python_command(observed.get("argv"), binding["profile"])
+    elif binding["profile"] == HOOK_REVIEW_SOURCE_PROFILE:
+        require(observed.get("producer") == "python-test-result-observer", "hook review profile requires original Python observer")
+        _hook_review_python_command(observed.get("argv"))
+    elif binding["profile"] == Q02_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "Q02 source profile requires original Python observer")
         _q02_python_command(observed.get("argv"))
+    elif binding["profile"] in PYTHON_COMPONENT_PROFILES:
+        require(observed.get("producer") == "python-test-result-observer"
+                and any(original_python_entrypoint(observed.get("argv"), script) for script in spec["scripts"]),
+                "component source profile requires original Python observer")
     elif binding["profile"] == SDK_SOURCE_PROFILE:
         require(observed.get("producer") == "python-test-result-observer", "SDK source profile requires original Python observer")
         _sdk_python_command(observed.get("argv"))
@@ -1693,35 +2969,526 @@ def admit_source_observation(observed, payload, req, job_name, job_id):
         require(observed.get("producer") == "vitest-json-observer", "TS source profile requires original Vitest observer")
     record = payload.get("documents", {}).get(SOURCE_MANIFEST)
     validate_source_manifest(record, req, job_name, payload.get("members", []))
+    require(record["profile"] == binding["profile"], "source test manifest profile differs")
+    if debug and binding["profile"] == DEBUG_LOCKED_PROFILE:
+        lock_sha = next(row["sha256"] for row in record["members"] if row["path"] == DEBUG_LOCK_PATH)
+        require(observed.get("debug_runtime") == {"python": "3.14", "lock_sha256": lock_sha},
+                "debug suite locked interpreter differs from retained source")
     require(next(row["sha256"] for row in payload["members"] if row["path"] == SOURCE_MANIFEST)
             == binding["manifest_sha256"], "source test manifest digest differs")
 
 
-def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE):
+def source_component(profile, script, artifact_prefix, upload, member, cases):
+    module = PurePosixPath(script).stem if script in (DEBUG_HANDOFF_SUITE, DEBUG_WORKFLOW_SUITE) else "__main__"
+    return {"profile": profile, "script": script, "artifact_prefix": artifact_prefix,
+            "upload": upload, "member": member,
+            "selectors": sorted(f"python:{script}:{module}.{case}" for case in cases)}
+
+
+def route_release_component(cases):
+    return source_component(ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_RELEASE_SOURCE_SCRIPT,
+        "route-release-state-observation-", "Retain original release-state classifier observation",
+        "route-release-state-observation.json", cases)
+
+
+def route_compatibility_component(cases):
+    return source_component(ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_COMPATIBILITY_SCRIPT,
+        "route-compatibility-observation-", "Retain original route compatibility observation",
+        "route-compatibility-observation.json", cases)
+
+
+def route_generator_component(cases):
+    return source_component("hooks-single-owner-findings-v1", ROUTE_GENERATOR_SCRIPT,
+        "python-source-observations-", "Retain original Python source-test observations",
+        "python-route-generator-observation.json", cases)
+
+
+ROUTE_RELEASE_COMPONENT = route_release_component((
+    "ReleaseStateClassifierTest.test_absent_tag_and_absent_release_is_a_planned_candidate",
+    "ReleaseStateClassifierTest.test_exact_non_draft_release_is_published",
+    "ReleaseStateClassifierTest.test_tag_without_a_release_is_not_publication",
+    "ReleaseStateClassifierTest.test_draft_release_is_not_publication",
+    "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
+    "ReleaseStateClassifierTest.test_release_tag_mismatch_is_not_publication",
+    "ReleaseStateClassifierTest.test_release_target_mismatch_is_not_publication",
+    "ReleaseStateClassifierTest.test_tag_payload_mismatch_is_not_publication",
+    "ObserveIntegrationTest.test_exact_tags_payloads_and_release_responses_pass_end_to_end",
+    "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
+    "ObserveIntegrationTest.test_tag_only_response_fails_the_aggregate_end_to_end",
+))
+ROUTE_GENERATOR_REVIEW_COMPONENT = route_generator_component((
+    "CommandCatalogTest.test_real_registry_taxonomy_and_host_gaps_are_frozen",
+    "CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",
+    "ReviewFeedbackRegressionTest.test_tribunal_lens_directory_matches_each_host_surface",
+))
+
+
+SOURCE_FINDING_COMPOSITIONS = {
+    DEBUG_RESUBMISSION_FINDING: (
+        source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
+            "Retain original locked debug reference observation", "debug-reference-observation.json", (
+                "HandoffByteDecoderTest.test_utf8_byte_and_depth_limits_accept_exact_boundaries",
+                "PrivateDebugEntryTest.test_corrected_resubmission_contract",
+            )),
+        source_component(DEBUG_HOOK_PROFILE, DEBUG_WORKFLOW_SUITE, "python-source-observations-",
+            "Retain original Python source-test observations", "python-debug-workflow-observation.json", (
+                "CorrectedResubmissionSurfaceTest.test_every_rendered_resource_allows_a_corrected_resubmission",
+            )),
+        source_component(RECOVERY_RUNTIME_PROFILE, DEBUG_RESUBMISSION_SCRIPT, "review-resubmission-observation-",
+            "Retain original review resubmission observation", "review-resubmission-observation.json", (
+                "ReviewResubmissionTest.test_changed_target_and_contract_are_captured_fresh_and_stale_child_cannot_pass",
+                "ReviewResubmissionTest.test_changes_requested_and_block_are_never_success_by_resubmitting",
+                "ReviewResubmissionTest.test_denied_unknown_and_arbitrary_terminal_failure_cannot_be_cleared",
+                "ReviewResubmissionTest.test_exact_retry_after_each_persisted_boundary_never_creates_another_successor",
+                "ReviewResubmissionTest.test_malformed_first_report_gets_fresh_linked_capture_without_mutating_original",
+            )),
+    ),
+    SF13_CELL: (
+        source_component(SOURCE_PROFILE, ".github/scripts/test_generated_output.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-publisher-observation.json", (
+            'GeneratedOutputTests.test_concurrent_writer_refuses_without_deleting_other_marker',
+            'GeneratedOutputTests.test_consumers_refuse_any_pending_contract_publication',
+            'GeneratedOutputTests.test_foreign_target_refuses_and_handwritten_files_survive',
+            'GeneratedOutputTests.test_late_rename_failure_rolls_back_and_clean_rerun_converges',
+            'GeneratedOutputTests.test_late_stage_failure_preserves_old_complete_set',
+            'GeneratedOutputTests.test_rollback_failure_retains_explicit_unusable_marker_and_journal',
+            'GeneratedOutputTests.test_second_host_render_failure_has_no_first_host_effect',
+            'GeneratedOutputTests.test_surface_write_success_changes_only_owned_drift_and_preserves_equal_files',
+            'GeneratedOutputTests.test_windows_junction_ancestor_and_owner_refuse_before_any_effect',
+            )),
+        source_component("hooks-single-owner-findings-v1", SF13_SYNC_SCRIPT,
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-sf13-sync-observation.json", (
+            'TestSyncOwnerAcceptance.test_declared_inventory_excludes_host_adapter_and_nonpython_owners',
+            'TestSyncOwnerAcceptance.test_invalid_real_descriptor_refuses_before_publication_or_other_effect',
+            'TestSyncOwnerAcceptance.test_later_host_publish_fault_restores_complete_set_then_rerun_converges',
+            )),
+    ),
+    "disposition:findings:C-F04": (
+        source_component(Q02_SOURCE_PROFILE, ".github/scripts/test_release_workflow.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-q02-release-observation.json", (
+                "SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
+            )),
+        ROUTE_RELEASE_COMPONENT,
+    ),
+    "disposition:findings:SF14": (
+        route_generator_component(("CommandCatalogTest.test_retirement_policy_is_closed_and_rendered_from_its_owner",)),
+        ROUTE_RELEASE_COMPONENT,
+        route_compatibility_component((
+            "CommandRouteCompatibilityTest.test_source_route_set_is_frozen_except_explicit_retirement",
+            "CommandRouteCompatibilityTest.test_canonical_argument_hints_expose_modes_without_stealing_pr_titles",
+            "CommandRouteCompatibilityTest.test_registry_has_the_verified_taxonomy_and_only_safe_replacements",
+            "CommandRouteCompatibilityTest.test_package_descriptions_do_not_freeze_inventory_counts",
+            "CommandRouteCompatibilityTest.test_ra11_governance_and_operator_prose_remains_unambiguous",
+            "CommandRouteCompatibilityTest.test_legacy_bodies_are_byte_frozen_except_for_one_migration_notice",
+            "CommandRouteCompatibilityTest.test_markdown_format_procedures_stay_byte_frozen_in_their_references",
+            "CommandRouteCompatibilityTest.test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes",
+            "CommandRouteCompatibilityTest.test_status_recovery_projection_keeps_exact_read_only_bounded_contract",
+            "CommandRouteCompatibilityTest.test_status_recovery_normalization_does_not_hide_unrelated_body_drift",
+            "CommandRouteCompatibilityTest.test_mode_markers_and_notices_close_over_each_safe_replacement",
+            "CommandRouteCompatibilityTest.test_compatibility_clock_starts_only_on_independent_publication",
+            "CommandRouteCompatibilityTest.test_first_containing_declarations_are_stable_when_manifests_advance",
+        )),
+    ),
+    CATALOG_FINDING_CELL: (
+        source_component(CATALOG_SOURCE_PROFILE, CATALOG_SCRIPT,
+            "command-catalog-observation-", "Retain original command catalog observation", "command-catalog-observation.json", (
+                "CommandCatalogGuardTest.test_exact_catalog_passes",
+                "CommandCatalogGuardTest.test_extra_catalog_route_fails",
+                "CommandCatalogGuardTest.test_live_generated_catalog_is_exact",
+                "CommandCatalogGuardTest.test_missing_catalog_route_fails",
+            )),
+        ROUTE_GENERATOR_REVIEW_COMPONENT,
+        source_component(HOOK_REVIEW_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_SCRIPT,
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-hook-review-observation.json", (
+                selector.split(":__main__.", 1)[1] for selector in HOOK_REVIEW_FINDING_SELECTORS
+            )),
+    ),
+    "disposition:findings:W-F09": (
+        ROUTE_GENERATOR_REVIEW_COMPONENT,
+        route_release_component((
+            "ObserveIntegrationTest.test_observer_refuses_missing_retirement_prerequisites_or_unknown_policy",
+            "ReleaseStateClassifierTest.test_api_unavailability_is_distinct_and_fail_closed",
+            "ReleaseStateClassifierTest.test_draft_release_is_not_publication",
+            "ReleaseStateClassifierTest.test_tag_without_a_release_is_not_publication",
+        )),
+        route_compatibility_component((
+            "CommandRouteCompatibilityTest.test_compatibility_clock_starts_only_on_independent_publication",
+            "CommandRouteCompatibilityTest.test_source_route_set_is_frozen_except_explicit_retirement",
+        )),
+    ),
+}
+
+
+def source_finding_profiles(cells):
+    readiness.require(isinstance(cells, list) and all(type(cell) is str and (cell in SOURCE_FINDING_COMPOSITIONS
+                                                                            or cell in RECOVERY_FINDING_CELLS) for cell in cells)
+                      and cells == sorted(set(cells)), "invalid original source finding composition selection")
+    return sorted({component["profile"] for cell in cells
+                   for component in SOURCE_FINDING_COMPOSITIONS.get(cell, RECOVERY_COMPONENTS)})
+
+
+def source_member_digest(rows):
+    data = [[row["path"], row["bytes"], row["sha256"]] for row in rows]
+    return readiness.digest(json.dumps(data, separators=(",", ":")).encode("utf-8"))
+
+
+def source_finding_input_pins(cells, source, load):
+    return {profile: source_profile_input_pin(profile, source, load) for profile in source_finding_profiles(cells)}
+
+
+def source_profile_input_pin(profile, source, load):
+    rows = []
+    for path in sorted(source_profile(profile)["paths"]):
+        raw = load(source, path)
+        rows.append({"path": path, "bytes": len(raw), "sha256": readiness.digest(raw)})
+    return source_member_digest(rows)
+
+
+def source_component_archive(archive, member, *, source_paths=None, shared=False):
+    limit = (64 if source_paths is not None else 8) * 1024 * 1024
+    readiness.require(len(archive) <= limit, "original component archive exceeds bound")
+    with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+        entries = zipped.infolist()
+        readiness.require(len(entries) <= 4096, "original component archive has too many members")
+        names = [info.filename for info in entries if not info.is_dir()]
+        readiness.require(len(set(names)) == len(names) and member in names
+                          and sum(info.file_size for info in entries) <= limit,
+                          "original component archive population or size differs")
+        if source_paths is not None:
+            readiness.require(set(names) == source_paths | {member}, "original component source archive membership differs")
+        elif shared:
+            readiness.require(len(names) <= 32 and all(name.startswith("python-") and name.endswith("-observation.json")
+                              and "/" not in name for name in names), "original Python observation archive membership differs")
+        else:
+            readiness.require(names == [member], "original component observation archive membership differs")
+        readiness.require(zipped.getinfo(member).file_size <= 1024 * 1024, "original component document exceeds bound")
+        members = readiness.members(archive)
+        return json.loads(zipped.read(member), object_pairs_hook=unique), members
+
+
+def source_component_job(spec, run, jobs):
+    matches = [job for job in jobs if job.get("name") == spec["job"]]
+    readiness.require(len(matches) == 1, "exact original component job required")
+    job = matches[0]
+    readiness.require(type(job.get("id")) is int and job["id"] > 0 and job.get("run_id") == run["id"]
+                      and job.get("run_attempt") == run["run_attempt"] and job.get("status") == "completed"
+                      and job.get("conclusion") == "success", "original component job did not succeed in the selected attempt")
+    return job
+
+
+def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=None, installation=None):
+    profile = component["profile"]
+    spec = source_profile(profile)
+    job = source_component_job(spec, run, jobs)
+    name = component["artifact_prefix"] + f"{req['source_commit']}-{run['id']}-{run['run_attempt']}"
+    source = [artifact for artifact in artifacts if artifact.get("name") == spec["payload"]]
+    captures = [artifact for artifact in artifacts if artifact.get("name") == name]
+    readiness.require(len(source) == len(captures) == 1 and source[0].get("id") != captures[0].get("id"),
+                      "exact original component artifact required")
+    source, capture = source[0], captures[0]
+    readiness.require(all(type(item.get("size_in_bytes")) is int and 0 < item["size_in_bytes"] <= limit
+                          for item, limit in ((source, 64 << 20), (capture, 8 << 20))),
+                      "original component archive metadata exceeds bound")
+    log = readiness.api(f"actions/jobs/{job['id']}/logs", binary=True) if job_log is None else job_log
+    readiness.validate_upload(job, source, spec["upload"], job_log=log)
+    readiness.validate_upload(job, capture, component["upload"], job_log=log)
+    source_archive = readiness.artifact_bytes(source, req)
+    manifest, members = source_component_archive(source_archive, SOURCE_MANIFEST, source_paths=spec["paths"])
+    validate_source_manifest(manifest, req, job["name"], members)
+    readiness.require(manifest["profile"] == profile and source_member_digest(manifest["members"]) == req["source_finding_inputs"][profile],
+                      "original component source bytes differ from the immutable source")
+    capture_archive = readiness.artifact_bytes(capture, req)
+    observed, _ = source_component_archive(capture_archive, component["member"],
+                                           shared=component["artifact_prefix"] == "python-source-observations-")
+    argv = observed.get("argv") if isinstance(observed, dict) else None
+    script = component["script"]
+    if script in (DEBUG_HANDOFF_SUITE, DEBUG_WORKFLOW_SUITE):
+        command_matches = original_debug_entrypoint(argv, profile) and argv[3] == script
+    else:
+        command_matches = original_python_entrypoint(argv, script)
+    readiness.require(isinstance(observed, dict) and observed.get("format") == OBSERVATION
+                      and observed.get("source_commit") == req["source_commit"] and observed.get("source_tree") == req["source_tree"]
+                      and type(observed.get("ci_run_id")) is int and observed["ci_run_id"] == run["id"]
+                      and observed.get("clean") is True and observed.get("source_stable") is True
+                      and observed.get("proof_kind") == "source-test" and observed.get("producer") == "python-test-result-observer"
+                      and type(observed.get("exit_code")) is int and observed["exit_code"] == 0
+                      and command_matches,
+                      "original component observation is absent, stale, filtered or unsuccessful")
+    admit_source_observation(observed, {"source_manifest_sha256": next(row["sha256"] for row in members
+        if row["path"] == SOURCE_MANIFEST), "source_upload_job_id": job["id"], "members": members,
+        "documents": {SOURCE_MANIFEST: manifest}}, req, job["name"], job["id"])
+    if component["script"] == ROUTE_COMPATIBILITY_SCRIPT:
+        readiness.require(observed.get("test_result_scope") == OUTER_UNITTEST_RESULT,
+                          "route compatibility requires the original entrypoint runner results")
+    tests = observed.get("tests")
+    readiness.require(isinstance(tests, list) and len(tests) <= MAX_TESTS
+                      and all(isinstance(test, dict) and set(test) == {"id", "result"}
+                              and type(test["id"]) is str and 0 < len(test["id"].encode("utf-8")) <= MAX_TEST_ID_BYTES
+                              for test in tests), "invalid or unbounded original component named outcomes")
+    outcomes = {test["id"]: test["result"] for test in tests}
+    readiness.require(len(outcomes) == len(tests) and all(outcomes.get(selector) == "passed" for selector in component["selectors"]),
+                      "selected named test missing, repeated, skipped or failed in original component")
+    binary_fields = {}
+    if component["script"] in RECOVERY_INSTALLED_SCRIPTS:
+        _, fixture = RECOVERY_INSTALLED_SCRIPTS[component["script"]]
+        readiness.require(installation is not None and observed.get("workflow_recovery_installation") == {
+            "format": "codearbiter.workflow-recovery-installation/1", "fixture": fixture, "platform": RECOVERY_NATIVE_PLATFORM,
+            "installation": installation, "fixture_copy": installation,
+            "hosts": dict.fromkeys(("claude", "codex", "pi"), installation),
+        }, "workflow recovery consumed installation differs from the original native archive")
+        binary_fields = {"consumed_native_installation": installation}
+    return ({"job_id": job["id"], "run_attempt": run["run_attempt"], "source_artifact_id": source["id"],
+             "observation_artifact_id": capture["id"], "observation_archive_sha256": readiness.digest(capture_archive),
+             "selectors": component["selectors"], **binary_fields},
+            {"artifact_id": source["id"], "archive_sha256": readiness.digest(source_archive), "members": members})
+
+
+def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
+    readiness.require(SF13_CELL not in req.get("cells", ()),
+                      "SF13 requires both original Core and Docs evidence")
+    cells = req.get("source_finding_composite_cells", [])
+    profiles = source_finding_profiles(cells)
+    if not cells:
+        return {}, {}
+    pins = req.get("source_finding_inputs")
+    readiness.require(set(cells) <= set(req["cells"]) and isinstance(pins, dict) and set(pins) == set(profiles)
+                      and all(type(pin) is str and readiness.DIGEST.fullmatch(pin) for pin in pins.values()),
+                      "original component recipe lacks immutable source inputs")
+    if run is None:
+        run = readiness.api(f"actions/runs/{req['ci_run_id']}")
+    readiness.validate_run(run, req, producing=producing)
+    readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0, "original component run attempt missing")
+    rows, payloads = {}, {}
+    recovery = None
+    for cell in cells:
+        if cell in RECOVERY_FINDING_CELLS:
+            if recovery is None:
+                recovery, recovery_payloads = workflow_recovery_evidence(req, run, artifacts, jobs)
+                payloads.update(recovery_payloads)
+            rows[cell] = {"cell": cell, "result": "PASSED", **recovery}
+            continue
+        components, owners, captures, capture_members = [], {}, {}, set()
+        for component in SOURCE_FINDING_COMPOSITIONS[cell]:
+            evidence, payload = source_component_evidence(component, req, run, artifacts, jobs)
+            components.append(evidence)
+            identity = (evidence["job_id"], payload["artifact_id"])
+            readiness.require(owners.setdefault(component["profile"], identity) == identity,
+                              "components under the same source profile must share original job and source payload")
+            readiness.require(payloads.setdefault(payload["artifact_id"], payload) == payload,
+                              "original source payload bytes differ between components")
+            capture_role = (evidence["job_id"], component["artifact_prefix"], component["upload"])
+            capture_member = (capture_role, component["member"])
+            readiness.require(captures.setdefault(capture_role, evidence["observation_artifact_id"]) == evidence["observation_artifact_id"]
+                              and capture_member not in capture_members,
+                              "original shared observation archive member is ambiguous or repeated")
+            capture_members.add(capture_member)
+        identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()),
+                                                   limit=3 if cell in (CATALOG_FINDING_CELL, DEBUG_RESUBMISSION_FINDING) else 2)
+        expected_jobs = {source_profile(profile)["job"] for profile in owners}
+        readiness.require(len({job_id for job_id, _ in owners.values()}) == len(expected_jobs),
+                          "original source profiles require their exact owning jobs")
+        readiness.require(len({*identities, *captures.values()}) == len(identities) + len(captures),
+                          "each original component requires distinct source and observation artifacts")
+        rows[cell] = {"cell": cell, "result": "PASSED", "source_components": components,
+                      "evidence_artifact_ids": identities}
+    return rows, payloads
+
+
+RECOVERY_RUNTIME_COMPONENT = source_component(
+    RECOVERY_RUNTIME_PROFILE, RECOVERY_RUNTIME_SCRIPT, "workflow-recovery-runtime-observation-",
+    "Retain original workflow recovery runtime observation", "workflow-recovery-runtime-observation.json", (
+        "RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "RecoveryRuntimeTest.test_every_declared_producer_captures_before_terminal_effect",
+        "RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    ))
+RECOVERY_COMPONENTS = (RECOVERY_RUNTIME_COMPONENT,
+    source_component(RECOVERY_RUNTIME_PROFILE, ".github/scripts/test_workflow_recovery_cli.py",
+        "workflow-recovery-cli-observation-", "Retain original workflow recovery CLI observation",
+        "workflow-recovery-cli-observation.json", (
+            "InstalledRecoveryTest.test_all_three_authenticated_helpers_capture_and_observe_same_local_store",
+            "InstalledRecoveryTest.test_automatic_scan_child_environment_has_no_provider_credentials",
+            "InstalledRecoveryTest.test_changed_native_project_and_dual_owner_hold_only_affected_obligation",
+            "InstalledRecoveryTest.test_old_install_read_preserves_pending_recovery_and_targets",
+            "InstalledRecoveryTest.test_real_native_work_effect_is_reconciled_after_actual_process_death",
+            "InstalledRecoveryTest.test_real_stalled_optional_scan_child_is_killed_and_independent_code_continues",
+            "InstalledRecoveryTest.test_unknown_helper_foreign_manifest_and_arbitrary_storage_argument_refuse",
+        )),
+    source_component(RECOVERY_RUNTIME_PROFILE, ".github/scripts/test_workflow_recovery_hosts.py",
+        "workflow-recovery-hosts-observation-", "Retain original workflow recovery host observation",
+        "workflow-recovery-hosts-observation.json", (
+            "RecoveryHostTest.test_codex_pretool_context_does_not_synthesize_allow_or_change_block",
+            "RecoveryHostTest.test_corrupt_inventory_notice_never_repairs_or_blocks_real_host_entry",
+            "RecoveryHostTest.test_dormant_snapshot_and_missing_ledger_create_no_state",
+            "RecoveryHostTest.test_pi_closed_snapshot_codec_reads_pending_state_without_any_effect",
+            "RecoveryHostTest.test_real_startup_prompt_and_compaction_keep_notice_separate_from_persona",
+        )),
+)
+
+
+def workflow_recovery_native_archive(req, run, artifacts, job, job_log):
+    builds = [step for step in job.get("steps", []) if step.get("name") == "Qualify one native installation for workflow recovery"]
+    readiness.require(len(builds) == 1 and builds[0].get("status") == "completed"
+                      and builds[0].get("conclusion") == "success", "original workflow recovery native installation was not built")
+    artifact_name = f"workflow-recovery-native-{req['source_commit']}-{run['id']}-{run['run_attempt']}"
+    matches = [artifact for artifact in artifacts if artifact.get("name") == artifact_name]
+    readiness.require(len(matches) == 1, "exact original workflow recovery native installation archive required")
+    artifact = matches[0]
+    limit = 64 * 1024 * 1024
+    readiness.require(type(artifact.get("size_in_bytes")) is int and 0 < artifact["size_in_bytes"] <= limit,
+                      "workflow recovery native archive metadata exceeds bound")
+    readiness.validate_upload(job, artifact, "Upload original workflow recovery native installation", job_log=job_log)
+    archive = readiness.artifact_bytes(artifact, req)
+    readiness.require(len(archive) <= limit, "workflow recovery native archive exceeds bound")
+    with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+        entries = zipped.infolist()
+        filenames = {"release.json", RECOVERY_NATIVE_BINARY}
+        readiness.require(len(entries) == 2 and {entry.filename for entry in entries} == filenames
+                          and sum(entry.file_size for entry in entries) <= limit
+                          and zipped.getinfo("release.json").file_size <= 65536,
+                          "workflow recovery native archive members differ or exceed bound")
+        members = readiness.members(archive)
+        with tempfile.TemporaryDirectory(prefix="recovery-native-identity-") as directory:
+            for filename in filenames:
+                (Path(directory) / filename).write_bytes(zipped.read(filename))
+            identity = native_binding_owner.candidate_identity(Path(directory), RECOVERY_NATIVE_PLATFORM)
+    return identity, {"artifact_id": artifact["id"], "archive_sha256": readiness.digest(archive), "members": members}
+
+
+def workflow_recovery_evidence(req, run, artifacts, jobs):
+    job = source_component_job(source_profile(RECOVERY_RUNTIME_PROFILE), run, jobs)
+    log = readiness.api(f"actions/jobs/{job['id']}/logs", binary=True)
+    installation, native_payload = workflow_recovery_native_archive(req, run, artifacts, job, log)
+    captured = [source_component_evidence(component, req, run, artifacts, jobs, job_log=log, installation=installation)
+                for component in RECOVERY_COMPONENTS]
+    components = [evidence for evidence, _ in captured]
+    source_payload = captured[0][1]
+    readiness.require(all(payload == source_payload for _, payload in captured), "workflow recovery source component payloads differ")
+    ids = readiness.bounded_payload_ids(sorted([source_payload["artifact_id"], native_payload["artifact_id"]]))
+    readiness.require(len({*ids, *(value["observation_artifact_id"] for value in components)}) == 5,
+                      "workflow recovery requires distinct original installation, source and observation artifacts")
+    return ({"source_components": components, "evidence_artifact_ids": ids,
+             "workflow_recovery_installation": {**installation, "artifact_id": native_payload["artifact_id"],
+                                                "platform": RECOVERY_NATIVE_PLATFORM}},
+            {payload["artifact_id"]: payload for payload in (source_payload, native_payload)})
+
+
+def workflow_recovery_runtime_evidence(req, run, artifacts, jobs, load):
+    """Read the legacy/runtime component for HOOK-B04 and W-F04."""
+    readiness.validate_run(run, req)
+    readiness.require(type(run.get("run_attempt")) is int and run["run_attempt"] > 0,
+                      "workflow recovery original run attempt missing")
+    pin = source_profile_input_pin(RECOVERY_RUNTIME_PROFILE, req["source_commit"], load)
+    component_req = {**req, "source_finding_inputs": {RECOVERY_RUNTIME_PROFILE: pin}}
+    evidence, payload = source_component_evidence(RECOVERY_RUNTIME_COMPONENT, component_req, run, artifacts, jobs)
+    return {"schema": "codearbiter.workflow-recovery-runtime-component/1",
+            "source_commit": req["source_commit"], "source_tree": req["source_tree"], "ci_run_id": req["ci_run_id"],
+            "component": evidence, "source_payload": payload}
+
+
+def locked_debug_runtime(repo):
+    venv = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True) / "artifact-conformance-venv"
+    executable = venv / "bin/python"
+    require(Path(os.environ["ARTIFACT_CONFORMANCE_PYTHON"]).absolute() == executable
+            and Path(sys.executable).absolute() == executable and executable.is_file() and Path(sys.prefix).resolve(strict=True) == venv
+            and Path(sys.base_prefix).resolve(strict=True) != venv and sys.version_info[:2] == (3, 14),
+            "debug suite must retain the original Python 3.14 reference interpreter")
+    return {"python": "3.14", "lock_sha256": readiness.digest(_source_file(repo, DEBUG_LOCK_PATH,
+                                                                    source_profile(DEBUG_LOCKED_PROFILE)["paths"]))}
+
+
+def observe_original_debug_suite(repo, argv, run_suite):
+    profile = os.environ.get("MAJOR_DEBUG_SOURCE_PROFILE")
+    role = DEBUG_RUNNERS.get(profile)
+    require(role is not None and os.environ.get("GITHUB_JOB") == role[0], "debug suite observer job/profile differs")
+    _, suite, source, output = role
+    repo = Path(repo).resolve(strict=True)
+    require(len(argv) == 3 and argv[1] == "--run-debug-suite"
+            and Path(argv[0]).resolve(strict=True) == repo / DEBUG_LAUNCHER
+            and Path(argv[2]).resolve(strict=True) == repo / suite,
+            "debug suite observer requires the exact original launcher and suite")
+    temp = Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)
+    return observe_python(repo, DEBUG_LAUNCHER, ["--run-debug-suite", suite], temp / output, temp / source,
+                          profile, debug_runner=run_suite)
+
+
+def observe_python(repo, script, arguments, output, source_payload=None, profile=SOURCE_PROFILE, *, debug_runner=None):
     """Run the original Python entry point once, observing actual TestResult calls."""
     repo = Path(repo).resolve(strict=True)
     script = (repo / script).resolve(strict=True)
     relative = script.relative_to(repo).as_posix()
     require(script.suffix == ".py" and not Path(output).exists() and not Path(output).is_symlink(),
             "new Python observation required")
-    source_profile(profile)
-    if profile == Q02_SOURCE_PROFILE:
+    spec = source_profile(profile)
+    debug_runtime = None
+    if debug_runner is not None:
+        require(relative == DEBUG_LAUNCHER and source_payload is not None
+                and original_debug_entrypoint([sys.executable, relative, *arguments], profile),
+                "debug suite requires the exact original unfiltered launcher")
+        relative = arguments[1]
+        expected_module = PurePosixPath(relative).stem
+        if profile == DEBUG_LOCKED_PROFILE:
+            debug_runtime = locked_debug_runtime(repo)
+    elif profile in PYTHON_FINDING_PROFILES:
+        require(arguments == [] and source_payload is not None, "single-owner profile requires its original unfiltered command and payload")
+        _finding_python_command([sys.executable, relative], profile)
+    elif profile == HOOK_REVIEW_SOURCE_PROFILE:
+        require(relative == HOOK_REVIEW_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
+                "hook review profile requires its original unfiltered Python entry point and payload")
+    elif profile == Q02_SOURCE_PROFILE:
         require(relative in Q02_SOURCE_SCRIPTS and arguments == [] and source_payload is not None,
                 "Q02 source profile requires its original unfiltered Python entry point and payload")
+    elif profile in PYTHON_COMPONENT_PROFILES:
+        require(relative in spec["scripts"] and arguments == [] and source_payload is not None,
+                "component source profile requires its original unfiltered Python entry point and payload")
     elif profile == SDK_SOURCE_PROFILE:
         require(relative == SDK_SOURCE_SCRIPT and arguments == [] and source_payload is not None,
                 "SDK source profile requires its original unfiltered Python entry point and payload")
     else:
         require(profile == SOURCE_PROFILE, "Python observer requires a closed Python source profile")
+    installation_output = None
+    if profile == RECOVERY_RUNTIME_PROFILE and relative in RECOVERY_INSTALLED_SCRIPTS:
+        role, _ = RECOVERY_INSTALLED_SCRIPTS[relative]
+        installation_output = Path(output).with_name(f"workflow-recovery-{role}-installation.json")
+        require(Path(os.environ.get(RECOVERY_INSTALLATION_ENV, "")) == installation_output
+                and not installation_output.exists() and not installation_output.is_symlink(),
+                "new owned workflow recovery installation observation required")
     before = source_identity(repo, profile)
     source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
+    outer_only = debug_runner is not None or (profile == ROUTE_RELEASE_SOURCE_PROFILE and relative == ROUTE_COMPATIBILITY_SCRIPT)
+    outer_result = None
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()
 
+    def make_result(original):
+        def wrapped(runner):
+            nonlocal outer_result
+            result = original(runner)
+            if outer_result is None:
+                outer_result = result
+            return result
+        return wrapped
+
     def start(original):
         def wrapped(result, test):
+            if outer_only and result is not outer_result:
+                return original(result, test)
             test_id = test.id()
+            if debug_runner is not None:
+                loaded = sys.modules.get(expected_module)
+                require(test_id.startswith(expected_module + ".") and loaded is not None
+                        and Path(loaded.__file__).resolve(strict=True) == repo / relative,
+                        "debug named result did not originate from the approved discovered suite")
             require(isinstance(test_id, str) and 0 < len(test_id.encode("utf-8")) <= 2048
                     and len(rows) < MAX_TESTS, "Python named observation exceeds bound")
             row = {"id": "python:" + relative + ":" + test_id, "result": "unknown"}
@@ -1732,14 +3499,14 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
 
     def outcome(original, name):
         def wrapped(result, test, *args, **kwargs):
-            if id(test) in active:
+            if (not outer_only or result is outer_result) and id(test) in active:
                 active[id(test)]["result"] = name
             return original(result, test, *args, **kwargs)
         return wrapped
 
     def subtest(original):
         def wrapped(result, test, sub, error):
-            if error is not None and id(test) in active:
+            if (not outer_only or result is outer_result) and error is not None and id(test) in active:
                 active[id(test)]["result"] = "failed"
             return original(result, test, sub, error)
         return wrapped
@@ -1750,6 +3517,14 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
         sys.argv[:] = [str(script), *arguments]
         sys.path[0] = str(script.parent)
         with ExitStack() as stack:
+            # In-process imports must leave the checked source tree clean,
+            # even when the caller did not start Python with -B.
+            stack.enter_context(mock.patch.object(sys, "dont_write_bytecode", True))
+            if outer_only:
+                # Nested TestResult calls are fixture controls. The entrypoint
+                # runner alone owns the observed suite result.
+                stack.enter_context(mock.patch.object(unittest.TextTestRunner, "_makeResult",
+                                                      make_result(unittest.TextTestRunner._makeResult)))
             stack.enter_context(mock.patch.object(unittest.TestResult, "startTest", start(unittest.TestResult.startTest)))
             for name, state in (("addSuccess", "passed"), ("addFailure", "failed"), ("addError", "failed"),
                                 ("addSkip", "skipped"), ("addExpectedFailure", "expected-failure"),
@@ -1757,7 +3532,10 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
                 stack.enter_context(mock.patch.object(unittest.TestResult, name, outcome(getattr(unittest.TestResult, name), state)))
             stack.enter_context(mock.patch.object(unittest.TestResult, "addSubTest", subtest(unittest.TestResult.addSubTest)))
             try:
-                runpy.run_path(str(script), run_name="__main__")
+                if debug_runner is None:
+                    runpy.run_path(str(script), run_name="__main__")
+                else:
+                    code = debug_runner(Path(arguments[1]))
             except SystemExit as error:
                 code = error.code if type(error.code) is int else 0 if error.code is None else 1
             except BaseException:
@@ -1781,6 +3559,14 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
                        "argv": [sys.executable, str(script), *arguments],
                        "exit_code": code, "tests": rows}
     if source_binding is not None: document["source_input_binding"] = source_binding
+    if outer_only:
+        require(outer_result is not None and rows, "original entrypoint runner outcomes missing")
+        document["test_result_scope"] = OUTER_UNITTEST_RESULT
+    if debug_runtime is not None:
+        document["debug_runtime"] = debug_runtime
+    if installation_output is not None and code == 0:
+        require(installation_output.lstat().st_size <= 4096, "workflow recovery installation observation exceeds bound")
+        document["workflow_recovery_installation"] = load_json(installation_output)
     new_output(output, document)
     return code if not source_payload or stable else 1
 
@@ -2155,9 +3941,19 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
     groups = resolved
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
     require(expected, "job has no required mapped cells")
+    require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_FINDING_CELLS}),
+            "composed source findings require all original owners and components")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,
             "semantic cell mapping is missing, extra or assigned to another job")
+    if HOOK_F02_CELL in expected:
+        components = [group for group in selected_groups if HOOK_F02_CELL in group["cells"]]
+        spec = source_profile("hooks-single-owner-findings-v1")
+        require(len(components) == 2 and {group["observation"] for group in components} == set(HOOK_F02_COMPONENTS)
+                and all(group["proof_kind"] == "source-test" and group["job"] == spec["job"]
+                        and group["payload_name"] == spec["payload"] and set(group["cells"]) == {HOOK_F02_CELL}
+                        for group in components),
+                "HOOK-F02 requires both complete original source-test components exactly once under their owning job and payload")
     if "task:Q-02" in expected:
         q02_groups = [g for g in selected_groups if "task:Q-02" in g["cells"]]
         require(all(g["proof_kind"] == "source-test" and g["payload_name"] == Q02_SOURCE_PAYLOAD for g in q02_groups),
@@ -2251,16 +4047,55 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 profile = binding.get("profile") if isinstance(binding, dict) else None
                 spec = source_profile(profile)
                 require(group["payload_name"] == spec["payload"], "source test payload binding role differs")
-                if profile == Q02_SOURCE_PROFILE:
-                    require(set(group["cells"]) <= Q02_SOURCE_CELLS
-                            and set(group["selectors"]) <= Q02_REQUIRED_SELECTORS,
-                            "Q02 implementation profile cannot qualify another task or scope")
+                if profile in PYTHON_FINDING_PROFILES:
+                    if cell == HOOK_F02_CELL:
+                        component = HOOK_F02_COMPONENTS.get(group["observation"])
+                        require(profile == "hooks-single-owner-findings-v1" and isinstance(component, dict)
+                                and set(group["cells"]) == {cell} and set(group["selectors"]) == component["selectors"]
+                                and job_name == spec["job"], "HOOK-F02 component script, job or complete finite selectors differ")
+                        _finding_python_command(argv, profile, component["script"])
+                    else:
+                        recipe = PYTHON_FINDING_RECIPES.get(cell)
+                        require(isinstance(recipe, dict) and recipe["profile"] == profile
+                                and set(group["cells"]) == {cell} and set(group["selectors"]) == recipe["selectors"]
+                                and group["observation"] == recipe["observation"] and job_name == spec["job"],
+                                "single-owner profile requires its complete exact finite finding")
+                        _finding_python_command(argv, profile, recipe["script"])
+                elif profile == HOOK_REVIEW_SOURCE_PROFILE:
+                    require(set(group["cells"]) == {HOOK_REVIEW_FINDING_CELL}
+                            and set(group["selectors"]) == HOOK_REVIEW_FINDING_SELECTORS,
+                            "hook finding profile requires its complete exact declarative finding composition")
+                elif profile == Q02_SOURCE_PROFILE:
+                    if cell in Q02_FINDING_RECIPES:
+                        recipe = Q02_FINDING_RECIPES[cell]
+                        require(set(group["cells"]) == {cell}
+                                and set(group["selectors"]) == recipe["selectors"]
+                                and job_name == Q02_SOURCE_JOB
+                                and group["observation"] == recipe["observation"],
+                                "Q02 profile requires the complete exact finite finding composition")
+                        _q02_python_command(argv)
+                        require(argv[1].replace("\\", "/") == recipe["script"]
+                                or argv[1].replace("\\", "/").endswith("/" + recipe["script"]),
+                                "Q02 finite finding requires its original release entry point")
+                    else:
+                        require(set(group["cells"]) <= Q02_SOURCE_CELLS
+                                and set(group["selectors"]) <= Q02_REQUIRED_SELECTORS,
+                                "Q02 implementation profile cannot qualify another task or scope")
                 elif profile == SOURCE_PROFILE:
                     require(set(group["cells"]) <= SOURCE_PROFILE_CELLS, "Python profile cannot qualify another software scope")
                 elif profile == SDK_SOURCE_PROFILE:
                     require(set(group["cells"]) <= SDK_SOURCE_CELLS, "SDK Python profile cannot qualify another software scope")
+                elif profile in PYTHON_COMPONENT_PROFILES:
+                    require(False, "source component observations require independent original admission")
                 else:
-                    require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
+                    if cell in TS_FINDING_RECIPES:
+                        recipe = TS_FINDING_RECIPES[cell]
+                        require(set(group["cells"]) == {cell} and profile == recipe["profile"]
+                                and job_name == TS_PROFILE_JOBS[profile]
+                                and set(group["selectors"]) == recipe["selectors"],
+                                "TS profile requires its complete exact finite finding composition")
+                    else:
+                        require(set(group["cells"]) <= TS_PROFILE_CELLS[profile], "TS profile cannot qualify another software scope")
                 admit_source_observation(observed, payloads.get(spec["payload"], {}), req, job_name, job_id)
             if group["proof_kind"] == "native-module":
                 native_bindings.append(observed.get("native_binding"))
@@ -2409,7 +4244,7 @@ def main(argv=None):
     parser.add_argument("--output", required=True, type=Path)
     parser.add_argument("--observation", action="append", default=[], help="key=JSON path")
     parser.add_argument("--source-payload", type=Path)
-    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, *TS_PROFILE_PATHS), help="closed prepare-source input profile")
+    parser.add_argument("--source-profile", default=SOURCE_PROFILE, choices=(SOURCE_PROFILE, SDK_SOURCE_PROFILE, Q02_SOURCE_PROFILE, HOOK_REVIEW_SOURCE_PROFILE, *PYTHON_COMPONENT_PROFILES, *TS_PROFILE_PATHS, *PYTHON_FINDING_PROFILES), help="closed prepare-source input profile")
     parser.add_argument("--native-binding", type=Path)
     parser.add_argument("--raw-results", type=Path)
     parser.add_argument("--execution-cwd", type=Path)
@@ -2461,6 +4296,12 @@ def main(argv=None):
                     req.setdefault("native_module_sha256", {})[order] = pin
             run = readiness.api(f"actions/runs/{run_id}")
             native_components[mapped_keys[0]] = authenticate_component(req, run, artifacts, jobs, "windows/amd64")
+        source_payload_names = {
+            SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, HOOK_REVIEW_SOURCE_PAYLOAD,
+            *TS_PROFILE_PAYLOADS.values(),
+            *(spec["payload"] for spec in PYTHON_FINDING_PROFILES.values()),
+            "major-source-inputs-mapped-work-windows",
+        }
         payloads = {}
         for item in args.payload_root:
             name, path = item.split("=", 1)
@@ -2472,8 +4313,9 @@ def main(argv=None):
                 payloads[name] = authenticate_native_consumption(path, native_components[mapped_keys[0]])
                 require(found[0].get("id") == payloads[name]["artifact_id"], "mapped native artifact API identity differs")
             else:
-                payloads[name] = authenticated_payload(found[0], req, path, source_job=matching[0]
-                    if name in (SOURCE_PAYLOAD, SDK_SOURCE_PAYLOAD, Q02_SOURCE_PAYLOAD, *TS_PROFILE_PAYLOADS.values(), "major-source-inputs-mapped-work-windows") else None)
+                payloads[name] = authenticated_payload(
+                    found[0], req, path, source_job=matching[0] if name in source_payload_names else None,
+                )
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0],

@@ -1,0 +1,50 @@
+[
+ {
+  "path": "plugins/ca/hooks/tests/test_release_workflow_followup.py",
+  "base_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "current_commit": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+  "git_blob_oid": "006ee215653c954857d21198d6687f25e4d30789",
+  "literal_sha256": "0de60f68d30b1a927bd6c5f270b9888692840bb1fdc057ba547f08ae5b4562a7",
+  "physical_sha256": "0de60f68d30b1a927bd6c5f270b9888692840bb1fdc057ba547f08ae5b4562a7",
+  "literal_bytes": 20967,
+  "physical_bytes": 20967,
+  "literal_base_current_equal": true,
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "plugins/ca/skills/release/SKILL.md",
+  "base_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "current_commit": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+  "git_blob_oid": "155b1b54e97236537fd391740dbef2ab8b78af9c",
+  "literal_sha256": "945fc4ff8f1248766001f50aa314e9fb123a769dc5caffabdaf6811a833d0ffd",
+  "physical_sha256": "945fc4ff8f1248766001f50aa314e9fb123a769dc5caffabdaf6811a833d0ffd",
+  "literal_bytes": 143097,
+  "physical_bytes": 143097,
+  "literal_base_current_equal": true,
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "plugins/ca/hooks/_releaselib.py",
+  "base_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "current_commit": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+  "git_blob_oid": "7cf0e15740304100bad69c5b20e1ed1bfa6c0ec8",
+  "literal_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+  "physical_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+  "literal_bytes": 211540,
+  "physical_bytes": 211540,
+  "literal_base_current_equal": true,
+  "physical_LF_normalized_equals_literal": true
+ },
+ {
+  "path": "plugins/ca/hooks/_gitexec.py",
+  "base_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "current_commit": "d7a1090984ed296523d8ee4eab8963090bc9d2e6",
+  "git_blob_oid": "6f959b77dbe4a1779bb55e7002ddc237c9b0eab1",
+  "literal_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "physical_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "literal_bytes": 24644,
+  "physical_bytes": 24644,
+  "literal_base_current_equal": true,
+  "physical_LF_normalized_equals_literal": true
+ }
+]

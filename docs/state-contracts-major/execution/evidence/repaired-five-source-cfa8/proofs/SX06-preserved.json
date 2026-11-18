@@ -1,0 +1,290 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root: current source-only literal26-clause reinspection after audited mode repair; actual prior independent source/code review reuse"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "site/base.mjs": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+  "site/scripts/academy-wayfinding.ts": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+  "site/scripts/concept-directory.ts": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+  "site/scripts/decision-evidence.ts": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+  "site/scripts/diagram-audit.ts": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+  "site/scripts/execution-maps/locations.ts": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+  "site/scripts/execution-maps/model.ts": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+  "site/scripts/execution-maps/render.ts": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+  "site/scripts/execution-maps/workflows.ts": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+  "site/scripts/generate-diagrams.ts": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+  "site/scripts/guide-directory.ts": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+  "site/scripts/journey-navigation.ts": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+  "site/scripts/link-audit.ts": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+  "site/scripts/link-audit/lib.ts": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+  "site/scripts/reference-sidebar.ts": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+  "site/scripts/rehype-base-links.ts": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+  "site/scripts/rehype-table-shell.ts": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+  "site/scripts/topic-map.ts": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX06",
+  "disposition:transitions:SX06:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX06",
+   "frozen_row_sha256": "4d356b58f96f8b9fa6ed49ef47d2dd6190da8ae38533fad2265a694ea1e01478",
+   "clause_ids": [
+    "disposition:transitions:SX06:01",
+    "disposition:transitions:SX06:02",
+    "disposition:transitions:SX06:03",
+    "disposition:transitions:SX06:04",
+    "disposition:transitions:SX06:05",
+    "disposition:transitions:SX06:06",
+    "disposition:transitions:SX06:07"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/academy-wayfinding.ts",
+     "start": 1,
+     "end": 47,
+     "file_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+     "span_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31"
+    },
+    {
+     "path": "site/scripts/guide-directory.ts",
+     "start": 1,
+     "end": 60,
+     "file_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+     "span_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717"
+    },
+    {
+     "path": "site/scripts/concept-directory.ts",
+     "start": 33,
+     "end": 43,
+     "file_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+     "span_sha256": "9c382ae4306774fa8639dc4187519bf98f8184fa9166287e608d137825954e08"
+    },
+    {
+     "path": "site/scripts/reference-sidebar.ts",
+     "start": 45,
+     "end": 113,
+     "file_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+     "span_sha256": "e1a187e503e6ec9efbb436f84bb7f3da6017714acc3ba16bb6329873cd199c93"
+    },
+    {
+     "path": "site/scripts/journey-navigation.ts",
+     "start": 1,
+     "end": 62,
+     "file_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+     "span_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a"
+    },
+    {
+     "path": "site/scripts/topic-map.ts",
+     "start": 36,
+     "end": 132,
+     "file_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+     "span_sha256": "4b5b4fed41f919dd1fab3a8ce7258dd16aed310ad77e3590660fd53d06a648ca"
+    },
+    {
+     "path": "site/scripts/rehype-base-links.ts",
+     "start": 29,
+     "end": 77,
+     "file_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+     "span_sha256": "85c1520103c0653a1bc2eb7098f560db800b3458d794a84d9e4482911e3653d9"
+    },
+    {
+     "path": "site/scripts/rehype-table-shell.ts",
+     "start": 13,
+     "end": 99,
+     "file_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+     "span_sha256": "d7ae71034ca33424dff2a2ef3909d5f564cfdb6aa63309a2adaf99e74bf5ca83"
+    },
+    {
+     "path": "site/base.mjs",
+     "start": 20,
+     "end": 64,
+     "file_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+     "span_sha256": "7167fef64c0e991a95d577712991818c8641b543d40429c9d73952d0dc9d9fc4"
+    },
+    {
+     "path": "site/scripts/execution-maps/model.ts",
+     "start": 501,
+     "end": 549,
+     "file_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+     "span_sha256": "6f707e25d86bd7ff5568a3ef3952669af54aa31d09e038a5e55a37aca9f00a5a"
+    },
+    {
+     "path": "site/scripts/execution-maps/render.ts",
+     "start": 14,
+     "end": 109,
+     "file_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+     "span_sha256": "6f80da412c6ef498c1a9991384343535d6bfc8dc7d4aee693fd8cfa1a01f2798"
+    },
+    {
+     "path": "site/scripts/execution-maps/locations.ts",
+     "start": 1,
+     "end": 19,
+     "file_sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+     "span_sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84"
+    },
+    {
+     "path": "site/scripts/generate-diagrams.ts",
+     "start": 29,
+     "end": 69,
+     "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+     "span_sha256": "7005fb4750c62e849d74627882da8291f667267d05f3cfa3a9de476cd8f8aff1"
+    },
+    {
+     "path": "site/scripts/generate-diagrams.ts",
+     "start": 134,
+     "end": 175,
+     "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+     "span_sha256": "b7d9bfde8944bcba5c14449fe4c3e8327db4a8bb4ae690c5df7536f4fcd35340"
+    },
+    {
+     "path": "site/scripts/generate-diagrams.ts",
+     "start": 496,
+     "end": 540,
+     "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+     "span_sha256": "5b617237cb00304aa5db560182c6f85714e73d3a25099c8306c9ea03ec22a1b5"
+    },
+    {
+     "path": "site/scripts/diagram-audit.ts",
+     "start": 1,
+     "end": 146,
+     "file_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+     "span_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 34,
+     "end": 86,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "ad0a67e38889235af28f1f0a3635e070f319cfbd67bc30e1a0395bf71d2fd7bd"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 98,
+     "end": 150,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "68a3c6bcd7907ae19a86edab3a8e0e62bc2d549804754027f5a1eaa46ca37961"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 165,
+     "end": 229,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "3b468f7cde10ef213c0699c6bf04a9853bcc846df87d0ed943b87d15295f4bba"
+    },
+    {
+     "path": "site/scripts/link-audit.ts",
+     "start": 13,
+     "end": 44,
+     "file_sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+     "span_sha256": "dc3719a58c03fa8d811c39490b6f8a5270389d50a28f000d1d996dba99f3df2c"
+    },
+    {
+     "path": "site/scripts/decision-evidence.ts",
+     "start": 1,
+     "end": 32,
+     "file_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+     "span_sha256": "4b6db9f30105a9c62310536d998c3d723ed174fe931ec9f42df89ba9ed1c8e3d"
+    },
+    {
+     "path": "site/scripts/decision-evidence.ts",
+     "start": 73,
+     "end": 168,
+     "file_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+     "span_sha256": "c9eb7c1cd1f420a449e4ce588251fbe1205bcf4599465c5a2cb04d7e89ac47e9"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses, including retained advanced children, are mapped to current/pinned owners and essential callee spans. Exact accepted repairs and honest limitations are explicit per clause. This authored source-only assessment does not renew runtime evidence or close actual task/host/human acceptance.",
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:SX06:06",
+   "frozen_row_sha256": "917688964c4df357c836419c23c3ebf81b9c4d50d5418d948cd3a559922bc1b0",
+   "witnesses": [
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 34,
+     "end": 86,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "ad0a67e38889235af28f1f0a3635e070f319cfbd67bc30e1a0395bf71d2fd7bd"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 98,
+     "end": 150,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "68a3c6bcd7907ae19a86edab3a8e0e62bc2d549804754027f5a1eaa46ca37961"
+    },
+    {
+     "path": "site/scripts/link-audit/lib.ts",
+     "start": 165,
+     "end": 229,
+     "file_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+     "span_sha256": "3b468f7cde10ef213c0699c6bf04a9853bcc846df87d0ed943b87d15295f4bba"
+    },
+    {
+     "path": "site/scripts/link-audit.ts",
+     "start": 13,
+     "end": 44,
+     "file_sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+     "span_sha256": "dc3719a58c03fa8d811c39490b6f8a5270389d50a28f000d1d996dba99f3df2c"
+    },
+    {
+     "path": "site/base.mjs",
+     "start": 20,
+     "end": 64,
+     "file_sha256": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+     "span_sha256": "7167fef64c0e991a95d577712991818c8641b543d40429c9d73952d0dc9d9fc4"
+    }
+   ],
+   "semantic_assessment": "The built-dist gate requires nonempty HTML and favicon/hashed-logo assets. It skips documented external/pure fragment forms, normalizes root/relative URL dot segments and checks lexical host-filesystem containment before reads; missing targets and redirect stubs are failures, cached once per file. CLI refuses missing dist or any failure.",
+   "intake_variances": [
+    "The accepted repair closes root-dot and host-separator sibling escapes while preserving existing regex double-quoted href/src coverage. It is not a realpath/symlink confinement guarantee, a browser URL parser, fragment validator or live served-site qualification."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  }
+ ],
+ "scope": "Authored reasoned source-only preservation of selected PLANNED cells; no actual execution, installed/runtime acceptance, host consent, model/benchmark or publication claim.",
+ "limits": [
+  "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+  "All26 literal frozen transition rows are mapped, including9 advanced rows; only5 PLANNED machines and17 PLANNED transitions are proposed PRESERVED. No source row is proposed TESTED or N/A.",
+  "Accepted persona recovery, later-user statusline ownership, Farm receipt recovery, link containment and parity hint corrections are explicit per clause. No historical defect is silently asserted to remain current.",
+  "Future launches, double storage denial, shared Git concurrency, lexical-not-realpath link checks and manual/two-host qualification remain explicit boundaries.",
+  "No subject code/runtime, tests, owner validation, models/providers, network/API, tools/install, source edits, Root/index/ref/marker/ledger writes or new reviewer fleet are performed by this author lane. Sole CI watcher is a separately authorized read-only lane."
+ ]
+}

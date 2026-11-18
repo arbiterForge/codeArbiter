@@ -1,0 +1,182 @@
+{
+ "schema": "codearbiter.private-independent-review/1",
+ "verdict": "NEEDS_CORRECTION",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\delivery.json",
+  "sha256": "b22c5aa485625e2777a1b30c75d9c056b0e84fcdc950d7c47784869267b4602a"
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\canonical-test.diff",
+  "sha256": "304f901246df1311fad6c7f4746de284a7537953df29392b9dd1f395faaf0424",
+  "bytes": 19507
+ },
+ "full_subjects": [
+  {
+   "path": "core/pysrc/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\core\\pysrc\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\.github\\scripts\\test_modelib.py",
+    "sha256": "d2b40141c36400c8518f081424920c7a02ade611f08c01a8fa1a2908776c005c",
+    "bytes": 68705
+   },
+   "preimage_git_oid": "c6e814c7fd2fb724fbe03424bb07b03b46e6993a",
+   "preimage_sha256": "4fbb84b4eab120345e522543e76c6e0e4e02bba0b8c3dc852016ed290b9eb5aa",
+   "physical_sha256": "4fbb84b4eab120345e522543e76c6e0e4e02bba0b8c3dc852016ed290b9eb5aa",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca/hooks/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\plugins\\ca\\hooks\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca-codex/hooks/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\plugins\\ca-codex\\hooks\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca-pi/hooks/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\plugins\\ca-pi\\hooks\\_modelib.py",
+    "sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db",
+    "bytes": 45405
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  }
+ ],
+ "corroborating_unchanged_subjects": [
+  {
+   "path": "core/pysrc/prompt-submit.py",
+   "sha256": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf"
+  },
+  {
+   "path": ".github/scripts/test_prompt_submit.py",
+   "sha256": "86e0e8d628296b7021e22b166dadcd91ceb4ea6f7282f16eaf0841b023fbd3d2"
+  }
+ ],
+ "observed_head": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "named_original_source_epoch": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "review_context_source_epoch": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "findings": [
+  {
+   "id": "MODE-AUDIT-DEBT-GUIDANCE-01",
+   "severity": "MEDIUM",
+   "priority": 2,
+   "path": "core/pysrc/_modelib.py",
+   "lines": [
+    423,
+    433
+   ],
+   "title": "Unrelated pending debt can mask loss of this transition pair",
+   "contract": "HW-02 typed partial outcome must supply a recoverable next action; ADR0030 Decision4 requires attributable exit/enter. Existing explicit dual-denial limitation is accepted, but recovery guidance must report it truthfully.",
+   "source_trace": [
+    "An older pending row from another session remains in dev-close-pending.json.",
+    "A new attributable mode transition commits its marker; both best-effort writes of the expanded pending queue fail and all appends fail.",
+    "_settle_dev_close returns with the old file intact and the new pair absent; _flip correctly returns failed/owed.",
+    "flip_outcome tests only the global owed_audit_rows count. The unrelated row makes it nonzero, selecting replay/re-send guidance instead of the new inspect/repair warning.",
+    "A future replay cannot reconstruct this transition\u2019s prior exit. If older requested-mode backing exists, a repeated token may also become noop once the unrelated queue settles."
+   ],
+   "evidence_kind": "SOURCE_CONFIRMED_NOT_EXECUTED_BY_REVIEWER",
+   "related_lines": {
+    "_write_dev_pending_close": [
+     711,
+     721
+    ],
+    "_settle_dev_close": [
+     841,
+     845,
+     858,
+     867,
+     883,
+     887
+    ]
+   },
+   "requested_change": "Base persistence guidance on this transition\u2019s actual missing rows, not the repository-global queue count. Add one meaningful seeded-unrelated-debt dual-denial regression; preserve global owed_rows semantics and accepted durability limits.",
+   "test_gap": "test_failed_queue_and_trail_do_not_claim_persisted_debt begins with an empty queue and only proves the zero-global-debt case."
+  }
+ ],
+ "verified": {
+  "descriptor_records": 45,
+  "all_sealed_descriptor_hashes_and_sizes": true,
+  "five_literal_git_preimages_and_physical_bytes": true,
+  "four_source_copies_equal": true,
+  "all_old_test_module_AST_preserved_removing_only_ten_additions": true,
+  "only_four_named_production_functions_changed": [
+   "_mode_audit_line",
+   "flip_outcome",
+   "_flip",
+   "_settle_dev_close"
+  ],
+  "all_eleven_dependency_source_joins": true
+ },
+ "accepted_behavior": [
+  "Readable confirmed current session plus audit backing gates prior exit; implicit/absent/corrupt fallback and unbacked raw marker produce no synthetic exit.",
+  "Legacy dangerous backing remains narrowly preserved.",
+  "Matching pending enter is retried before accepting historical requested-mode backing as noop.",
+  "Opaque shared transition NOTE distinguishes same-second cycles; saved exact bytes preserve replay identity.",
+  "Existing caps, single-line callers, journal append ordering and response-loss retry semantics are preserved."
+ ],
+ "retained_results_read": {
+  "original_missing_exit_assertion_red": true,
+  "intermediate_absent_corrupt_assertion_red": true,
+  "mode": {
+   "run": 83,
+   "passed": 82,
+   "unchanged_skip": 1,
+   "seconds": 0.7448272999899928
+  },
+  "prompt": {
+   "passed": 24,
+   "seconds": 2.7643631000246387
+  },
+  "fresh_process_pair": {
+   "processes": 2,
+   "both_exit": 0,
+   "saved_pair_replayed_once": true
+  },
+  "legacy_CRLF_test_oracle_correction_retained": true
+ },
+ "limits": [
+  "No tests, product imports, runtime replay, API/network/dependency/provider effects or canonical/index/ref/marker writes by reviewer.",
+  "Marker-before-journal crash gap, dual storage denial and shared-queue concurrency limits are accepted and must remain explicit; no universal durability guarantee.",
+  "Private five-subject review only; no staged candidate or CI/runtime qualification claim."
+ ],
+ "verified_bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-independent-review-lr1zqfn0\\verified-bindings.json",
+  "sha256": "9b5ea3962fd9318d50cc219748d203cb441ea092049946e4e26bfb574447c978"
+ }
+}

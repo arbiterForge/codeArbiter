@@ -1,0 +1,909 @@
+{
+  "schema": "codearbiter.committed-positive-input-bindings/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "source_tree": "f593d0e108deeb6887dcd268d31c75a2b74d1b39",
+  "verified_unchanged_at_candidate": "a26b2818903aa4b937f71f2d8576f680be99124f",
+  "candidate_tree": "506973b75ec817ebb0272aca2f1197fc69622f83",
+  "subjects": {
+    "docs/state-contracts-major/PROGRAM.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+      "candidate_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/finding-dispositions.json": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "baf65ee0ecb011a1731cf8963927c542a98013a4",
+      "candidate_oid": "baf65ee0ecb011a1731cf8963927c542a98013a4",
+      "sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+      "bytes": 80913,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+        "bytes": 80913
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+      "candidate_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+      "candidate_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "plugins/ca-sandbox/COMMANDS.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "954fd343526752c9581d42252fbac3ef43ab3af3",
+      "candidate_oid": "954fd343526752c9581d42252fbac3ef43ab3af3",
+      "sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "bytes": 5949,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+        "bytes": 5949
+      }
+    },
+    "plugins/ca-sandbox/README.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "fed88ae274afabefb8027ba9675e115a5a873208",
+      "candidate_oid": "fed88ae274afabefb8027ba9675e115a5a873208",
+      "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "bytes": 6301,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+        "bytes": 6301
+      }
+    },
+    "plugins/ca-sandbox/commands/sandbox.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "cc804da1129ea887d474758a8c2100cf6fc09304",
+      "candidate_oid": "cc804da1129ea887d474758a8c2100cf6fc09304",
+      "sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+      "bytes": 1533,
+      "physical_join": {
+        "kind": "GIT_CLEAN_CRLF_TEXT",
+        "sha256": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+        "bytes": 1547
+      }
+    },
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "246893bbbd0e8e3af1331edd9294da0d1905f715",
+      "candidate_oid": "246893bbbd0e8e3af1331edd9294da0d1905f715",
+      "sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "bytes": 6047,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+        "bytes": 6047
+      }
+    },
+    "plugins/ca-sandbox/tools/build.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "882c93d28f80b9598d466bda285803c6eff99b9f",
+      "candidate_oid": "882c93d28f80b9598d466bda285803c6eff99b9f",
+      "sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "bytes": 45428,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+        "bytes": 45428
+      }
+    },
+    "plugins/ca-sandbox/commands/sandbox-shell.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "2c4daa6bb80d177b0b5252dc1df602d09b19d83f",
+      "candidate_oid": "2c4daa6bb80d177b0b5252dc1df602d09b19d83f",
+      "sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+      "bytes": 2159,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+        "bytes": 2159
+      }
+    },
+    "plugins/ca-sandbox/tools/cli.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "a8048935840d4b5e04e1ab049257e5680dfe4315",
+      "candidate_oid": "a8048935840d4b5e04e1ab049257e5680dfe4315",
+      "sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "bytes": 19688,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+        "bytes": 19688
+      }
+    },
+    "plugins/ca-sandbox/commands/sandbox-destroy.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "6ed845deda09debd980cf65cc59e5bbca93ce6ce",
+      "candidate_oid": "6ed845deda09debd980cf65cc59e5bbca93ce6ce",
+      "sha256": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b",
+      "bytes": 1260,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b",
+        "bytes": 1260
+      }
+    },
+    "plugins/ca-sandbox/tools/destroy.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "9458f56a96624f701bf7f09e52c12907cb14db47",
+      "candidate_oid": "9458f56a96624f701bf7f09e52c12907cb14db47",
+      "sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "bytes": 17156,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+        "bytes": 17156
+      }
+    },
+    "plugins/ca-sandbox/tools/create.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "8db15149c9d0744a24525e1ae4a5b5f95d7a0f00",
+      "candidate_oid": "8db15149c9d0744a24525e1ae4a5b5f95d7a0f00",
+      "sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "bytes": 24777,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+        "bytes": 24777
+      }
+    },
+    "plugins/ca-sandbox/tools/run.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "e0fa7d1fefb223a6f9ca2fac8cbeddbc79948748",
+      "candidate_oid": "e0fa7d1fefb223a6f9ca2fac8cbeddbc79948748",
+      "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "bytes": 9135,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+        "bytes": 9135
+      }
+    },
+    "plugins/ca-sandbox/tools/dephash.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "b699a2caa65966529cd286527bee9d53b7755237",
+      "candidate_oid": "b699a2caa65966529cd286527bee9d53b7755237",
+      "sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "bytes": 3730,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+        "bytes": 3730
+      }
+    },
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "8a8fa2354360c0ab9b4a0a8f46b8d37a2b944e4f",
+      "candidate_oid": "8a8fa2354360c0ab9b4a0a8f46b8d37a2b944e4f",
+      "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "bytes": 9931,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+        "bytes": 9931
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "cc0445dce11e4c04a0a777db3c574006e5bcf002",
+      "candidate_oid": "cc0445dce11e4c04a0a777db3c574006e5bcf002",
+      "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "bytes": 8027,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+        "bytes": 8027
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside.ts": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "f7b854ef496f520c567178e798b32e13b1b93993",
+      "candidate_oid": "f7b854ef496f520c567178e798b32e13b1b93993",
+      "sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+      "bytes": 20507,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+        "bytes": 20507
+      }
+    },
+    "core/pysrc/_githooks.py": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "c30c2fbebdc49d481126adc2fd3994eb416c9ecf",
+      "candidate_oid": "c30c2fbebdc49d481126adc2fd3994eb416c9ecf",
+      "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "bytes": 64758,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+        "bytes": 64758
+      }
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+      "candidate_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "bytes": 49147,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      }
+    },
+    "core/pysrc/_taskexcludelib.py": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+      "candidate_oid": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+      "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+      "bytes": 10102,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+        "bytes": 10102
+      }
+    },
+    "core/pysrc/init-codearbiter.py": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+      "candidate_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+      "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+      "bytes": 27811,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+        "bytes": 27811
+      }
+    },
+    "core/pysrc/session-start.py": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "f7c09b4505b787811cca20c7600843cd18ecbf6a",
+      "candidate_oid": "f7c09b4505b787811cca20c7600843cd18ecbf6a",
+      "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+      "bytes": 71649,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+        "bytes": 71649
+      }
+    },
+    "core/pysrc/taskwrite.py": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+      "candidate_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+      "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "bytes": 22686,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+        "bytes": 22686
+      }
+    },
+    "core/surface/commands/init.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+      "candidate_oid": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+      "sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+      "bytes": 8075,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+        "bytes": 8075
+      }
+    },
+    "plugins/ca-codex/skills/ca-init/SKILL.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "1efec599ace874b10e1fff1d84e760b87f7cd476",
+      "candidate_oid": "1efec599ace874b10e1fff1d84e760b87f7cd476",
+      "sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+      "bytes": 7719,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+        "bytes": 7719
+      }
+    },
+    "plugins/ca-pi/skills/ca-init/SKILL.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "1542250cbfd63dfc722160fa9ab07cd418630ec3",
+      "candidate_oid": "1542250cbfd63dfc722160fa9ab07cd418630ec3",
+      "sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+      "bytes": 7681,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+        "bytes": 7681
+      }
+    },
+    "plugins/ca/README.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "2d22f82143d45e4a308edc417fc5dbbf4e03c277",
+      "candidate_oid": "2d22f82143d45e4a308edc417fc5dbbf4e03c277",
+      "sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+      "bytes": 4128,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+        "bytes": 4128
+      }
+    },
+    "plugins/ca/commands/init.md": {
+      "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+      "source_oid": "708cad856e1726e38055a08fe3c0eed4683e4095",
+      "candidate_oid": "708cad856e1726e38055a08fe3c0eed4683e4095",
+      "sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+      "bytes": 7821,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+        "bytes": 7821
+      }
+    }
+  },
+  "witnesses": [
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/commands/sandbox.md",
+      "start": 1,
+      "end": 14,
+      "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+      "span_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02"
+    },
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "start": 1,
+      "end": 25,
+      "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "span_sha256": "2852ad582f733d7417cd7a79b238783183740ea05bf04fce1d8c1f080a851918"
+    },
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 12,
+      "end": 16,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "b5cb38bc7d0d6cdb80898257d045d8d1190162c9c6d58bd7fd06c6207ad071a4"
+    },
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 13,
+      "end": 19,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "7c798a03c66d910be7e54e502f75ab360a4cf8f5cc6a97a528d603580c5bcd9d"
+    },
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/tools/build.ts",
+      "start": 241,
+      "end": 325,
+      "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "span_sha256": "deb49656664ef2027e791bd358e00bf98e236cbc011d54311df21f7a8109847d"
+    },
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/tools/build.ts",
+      "start": 386,
+      "end": 467,
+      "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "span_sha256": "82ec5dc461d0d36031f239681b73a3bc7e47adb7a9d94283eca78e511475fcbb"
+    },
+    {
+      "cell": "disposition:findings:SW-F01",
+      "path": "plugins/ca-sandbox/tools/build.ts",
+      "start": 803,
+      "end": 865,
+      "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "span_sha256": "d221609375171719d4b7f5f589dc5fdb81a7a069a5a7ed940b805016e238591a"
+    },
+    {
+      "cell": "disposition:findings:SW-F02",
+      "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+      "start": 15,
+      "end": 26,
+      "file_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+      "span_sha256": "12771ef91d008ef32bd3c4271c1d3aaace31ffea51d02baf76fa15d4c0ffa2a9"
+    },
+    {
+      "cell": "disposition:findings:SW-F02",
+      "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "start": 28,
+      "end": 41,
+      "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "span_sha256": "2e40e72e48b9928287fc99ccb3ca581e3e51f5427b6a750e063a609df03c7e91"
+    },
+    {
+      "cell": "disposition:findings:SW-F02",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 25,
+      "end": 32,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "468c07bf7c1a619e45fd5e3d75e0800c42819a94f0e755d61157693eb3b62ffc"
+    },
+    {
+      "cell": "disposition:findings:SW-F02",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 48,
+      "end": 50,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "a488b6bbc849bd3a8fe54f66239d25daefa1d291db007f5d276794e12e30dab1"
+    },
+    {
+      "cell": "disposition:findings:SW-F02",
+      "path": "plugins/ca-sandbox/tools/cli.ts",
+      "start": 304,
+      "end": 315,
+      "file_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "span_sha256": "40c39c1d9845398107578dd0c6760307e74821d14085eedc03c03ac51dd50d85"
+    },
+    {
+      "cell": "disposition:findings:SW-F02",
+      "path": "plugins/ca-sandbox/tools/cli.ts",
+      "start": 410,
+      "end": 435,
+      "file_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "span_sha256": "e51bcb6d0de44e3d571eb6f4981af7a30834949fce18b86d10f91bfedc862afd"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+      "start": 1,
+      "end": 14,
+      "file_sha256": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b",
+      "span_sha256": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "start": 37,
+      "end": 43,
+      "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "span_sha256": "3195f9032660028b2fe44c561b5e1533def5e3c3a38d49d7c10ea174c1ab259e"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 25,
+      "end": 32,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "468c07bf7c1a619e45fd5e3d75e0800c42819a94f0e755d61157693eb3b62ffc"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 67,
+      "end": 76,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "c691580b97a90ec17cb9d37098463d947d0a3da0e6e2d4bb95c221b59645fc44"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 48,
+      "end": 50,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "a488b6bbc849bd3a8fe54f66239d25daefa1d291db007f5d276794e12e30dab1"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/tools/destroy.ts",
+      "start": 239,
+      "end": 288,
+      "file_sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "span_sha256": "24bd753a486dce2b034cf79fb3ab4e7f17f933ce1a2be3afa51ece3531b0f9a3"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/tools/destroy.ts",
+      "start": 308,
+      "end": 341,
+      "file_sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "span_sha256": "d37d5f509b802e9744d60a928f7af280b11e05d2134f5ea566204c8e83b8ef89"
+    },
+    {
+      "cell": "disposition:findings:SW-F03",
+      "path": "plugins/ca-sandbox/tools/cli.ts",
+      "start": 417,
+      "end": 437,
+      "file_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "span_sha256": "ed6358a7d7c999e8e0049d97e23c174a3294783106b3e2eedf37a6dba3978f98"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/commands/sandbox.md",
+      "start": 8,
+      "end": 14,
+      "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+      "span_sha256": "55bd9cf848550298a6fd6fa45b88e28fd51d8369dad40679b4c019aa131bf335"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "start": 18,
+      "end": 27,
+      "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "span_sha256": "a4b5887840fbf9fa78c2c3e1d714cf8acb8d0361c4322dd2ab56968ef95c93ec"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 3,
+      "end": 7,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "5dc2452170c141d3b3e781e1d1990071577f78d8c14cb6496f4228d2fff4a199"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 46,
+      "end": 50,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "546954ddfc90aad07f17b69d4a05634a6f7ca500c1967d65dca18dc9b4e561c7"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 38,
+      "end": 49,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "428b2872fd31d747ad1a912bf5b1fa4955c8d9ad9208ac5d6f1daf83aaa1ce97"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/tools/create.ts",
+      "start": 328,
+      "end": 377,
+      "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "span_sha256": "bd977e9aa7597f01c006f69050887f01754021acd8e73f7ec8eda85955f61d73"
+    },
+    {
+      "cell": "disposition:findings:SW-F04",
+      "path": "plugins/ca-sandbox/tools/create.ts",
+      "start": 433,
+      "end": 506,
+      "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "span_sha256": "ea07d1a3711e0b4ce14043aa087e20dc79b0df20c20de15299eed2cedc4c9c1c"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/commands/sandbox.md",
+      "start": 10,
+      "end": 14,
+      "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+      "span_sha256": "342d9045be9b2cbabe5e27b4bc35419020679d3b752b7a1849080e802e88c4cc"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "start": 10,
+      "end": 27,
+      "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "span_sha256": "a4a255f0fa8126082d4aacde5d473f22e0923913f6c95a9a8c005efdc444c2d3"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 46,
+      "end": 50,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "546954ddfc90aad07f17b69d4a05634a6f7ca500c1967d65dca18dc9b4e561c7"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 51,
+      "end": 56,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "654ff7aeba6468b551ed6830b81de5d6f209bcfc35b5e2e2f88ecad688fbb992"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/tools/run.ts",
+      "start": 62,
+      "end": 81,
+      "file_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "span_sha256": "98a636a28e1330b02ba1f3f2754b430d12a255fae09b0dfbdbcfeb2ac4fe7ef9"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/tools/run.ts",
+      "start": 122,
+      "end": 222,
+      "file_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "span_sha256": "72bcacc0e9f3a0323b45cbe281e6f2b9bb746790141b8a549743aedaac4b4fb1"
+    },
+    {
+      "cell": "disposition:findings:SW-F05",
+      "path": "plugins/ca-sandbox/tools/create.ts",
+      "start": 439,
+      "end": 503,
+      "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "span_sha256": "458d8a57d39c9d4819d55c06974b109e7cea7e83ab2d7241e26771091490e123"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 58,
+      "end": 65,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "bc0fdc7c557aa861d043b8dc5a275eb2d98c49dd51ed8286cd73ac11117ce112"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 52,
+      "end": 54,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "2808d34675e46f78272cbf65590e97e6757c1c3687b460a5d4a3f228a2214cec"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/commands/sandbox.md",
+      "start": 6,
+      "end": 14,
+      "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+      "span_sha256": "1a4a6d4e552e67b37e97216657fd31dc829f9534152d15db55671b5a42f0ac95"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "start": 19,
+      "end": 25,
+      "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+      "span_sha256": "ecbc1ed0e308669b9db314076c395836ffe135547f9f420375b8b1a2a7cdc171"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/tools/build.ts",
+      "start": 794,
+      "end": 865,
+      "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+      "span_sha256": "17185069c3b9eba668421c27599313a2522f48ddb885a20e4491c9dd1179758a"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/tools/dephash.ts",
+      "start": 1,
+      "end": 82,
+      "file_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "span_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c"
+    },
+    {
+      "cell": "disposition:findings:SW-F06",
+      "path": "plugins/ca-sandbox/tools/create.ts",
+      "start": 348,
+      "end": 354,
+      "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+      "span_sha256": "add08e13d3eb110a5c288ed205adfea592070689476b8aa954dc413de1a0ec1b"
+    },
+    {
+      "cell": "disposition:findings:SW-F07",
+      "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+      "start": 15,
+      "end": 28,
+      "file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "span_sha256": "3cdb6ac432dffe6d9fbf6845c6a6c0a8b5ee4035ce7042474f460c2d4667f08d"
+    },
+    {
+      "cell": "disposition:findings:SW-F07",
+      "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+      "start": 35,
+      "end": 56,
+      "file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "span_sha256": "ef2a056a5c783a320ff508dbe79d144bcc1f33b03bd1272beddb8d7ea95f7fec"
+    },
+    {
+      "cell": "disposition:findings:SW-F07",
+      "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+      "start": 136,
+      "end": 153,
+      "file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "span_sha256": "ff5288fb4c279872f2482a7f397af5a531aec36fa25a9a0e57cd97724b27dfb9"
+    },
+    {
+      "cell": "disposition:findings:SW-F07",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 12,
+      "end": 16,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "b5cb38bc7d0d6cdb80898257d045d8d1190162c9c6d58bd7fd06c6207ad071a4"
+    },
+    {
+      "cell": "disposition:findings:SW-F07",
+      "path": "plugins/ca-sandbox/README.md",
+      "start": 56,
+      "end": 60,
+      "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "span_sha256": "53424f6aec1bb22e2eca5aca6b67907094acce1acbdaace89b80393c790aadc6"
+    },
+    {
+      "cell": "disposition:findings:SW-F07",
+      "path": "plugins/ca-sandbox/COMMANDS.md",
+      "start": 88,
+      "end": 91,
+      "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+      "span_sha256": "9ba3184659047c861596cdd7073afe94b7a87ebe784c8b7bb603a63c5b9f6912"
+    },
+    {
+      "cell": "disposition:findings:SW-F08",
+      "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+      "start": 15,
+      "end": 28,
+      "file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "span_sha256": "3cdb6ac432dffe6d9fbf6845c6a6c0a8b5ee4035ce7042474f460c2d4667f08d"
+    },
+    {
+      "cell": "disposition:findings:SW-F08",
+      "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "start": 1,
+      "end": 17,
+      "file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "span_sha256": "51bcf3e5f9c27b5ac7ab622d06a7eb04eb35980b8cba02be2e7f4bca0aa0a2dc"
+    },
+    {
+      "cell": "disposition:findings:SW-F08",
+      "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "start": 59,
+      "end": 109,
+      "file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "span_sha256": "0b8fb555e19c0a3b747300812210bb074af953aee1af3346327e41d1082be9f5"
+    },
+    {
+      "cell": "disposition:findings:SW-F08",
+      "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "start": 113,
+      "end": 175,
+      "file_sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "span_sha256": "424228fe413756848210fcb716713584aa2663be3f56fa993276d1f6fe222d7a"
+    },
+    {
+      "cell": "disposition:findings:SW-F08",
+      "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+      "start": 263,
+      "end": 335,
+      "file_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+      "span_sha256": "b7132ee1b675eb87b2180258382013d5b751631ea1441227b081015c79dcfc2e"
+    },
+    {
+      "cell": "disposition:findings:SW-F08",
+      "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+      "start": 385,
+      "end": 437,
+      "file_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+      "span_sha256": "e21565e71635b930d7b6ba2d9986f60ea6bb13bc9557423a54a8972f32748185"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "plugins/ca/README.md",
+      "start": 18,
+      "end": 36,
+      "file_sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+      "span_sha256": "34ca723171824ac95eaec350a2f82a9832fe0640ee863edcd214b1965b1757e2"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/session-start.py",
+      "start": 414,
+      "end": 470,
+      "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+      "span_sha256": "b59d280c98a0ab73cecee1a07554d72684a6371f131493c1c5014e8429639071"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/session-start.py",
+      "start": 1217,
+      "end": 1275,
+      "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+      "span_sha256": "9e87d94c0286dd16cb1a7fbd4228e06ff359b5bcf06260634183eb20ffe162d4"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/_githooks.py",
+      "start": 1070,
+      "end": 1122,
+      "file_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "span_sha256": "fc713589881361fb4d6f6a632fdd334312479f0fa214509dddd50892f1b24ab5"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/_githooks.py",
+      "start": 1140,
+      "end": 1243,
+      "file_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+      "span_sha256": "f17d448a5bb02314e918c5c44cc0480502c06f0653b175405e8acfe89846ae36"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/init-codearbiter.py",
+      "start": 470,
+      "end": 503,
+      "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+      "span_sha256": "e1d4958ac1a710bcbe32cc73ac681905fdf286821a471a54bfcfee23808b17df"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/_taskexcludelib.py",
+      "start": 147,
+      "end": 223,
+      "file_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+      "span_sha256": "3f0657e66f69cfa5b48c9ff2782ab3b10584e6b1463a859279df04b103729fb1"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/taskwrite.py",
+      "start": 334,
+      "end": 365,
+      "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "span_sha256": "6a7e32686045dd2db12257bdb676134f0fd26a41401bc4f8a6d50ff8415eeb02"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/pysrc/_hooklib.py",
+      "start": 508,
+      "end": 561,
+      "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "span_sha256": "66fe5a8670a1abe4ab99651faf92f7a50657271613930e9ff6d22c74c6a53a15"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "core/surface/commands/init.md",
+      "start": 18,
+      "end": 26,
+      "file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+      "span_sha256": "ed32078219935916983b8f6ded21b1dbafc5f4475b26fa4db2da3bab06c7a725"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "plugins/ca/commands/init.md",
+      "start": 18,
+      "end": 26,
+      "file_sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+      "span_sha256": "ed32078219935916983b8f6ded21b1dbafc5f4475b26fa4db2da3bab06c7a725"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "plugins/ca-codex/skills/ca-init/SKILL.md",
+      "start": 18,
+      "end": 26,
+      "file_sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+      "span_sha256": "f6ac406ef35bcaf6f2ba58350e5a9ec46be4ad6f17953d0989055121dba6bbe6"
+    },
+    {
+      "cell": "disposition:findings:SW-F09",
+      "path": "plugins/ca-pi/skills/ca-init/SKILL.md",
+      "start": 18,
+      "end": 26,
+      "file_sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+      "span_sha256": "f6ac406ef35bcaf6f2ba58350e5a9ec46be4ad6f17953d0989055121dba6bbe6"
+    }
+  ],
+  "scope": "Only the positive inputs and exact literal span checks declared by SW-F01 through SW-F09.",
+  "no_full_dependency_or_import_namespace_guarantee": true
+}

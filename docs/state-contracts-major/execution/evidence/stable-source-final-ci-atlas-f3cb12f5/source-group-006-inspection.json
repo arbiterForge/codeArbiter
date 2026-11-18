@@ -1,0 +1,751 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-006",
+  "positive_input_join": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "site/scripts/academy-wayfinding.ts": {
+      "sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "previous_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "bytes": 2494,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+        "bytes": 2494
+      }
+    },
+    "site/scripts/concept-directory.ts": {
+      "sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "previous_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "bytes": 3036,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+        "bytes": 3036
+      }
+    },
+    "site/scripts/decision-evidence.ts": {
+      "sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "previous_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "bytes": 16409,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+        "bytes": 16409
+      }
+    },
+    "site/scripts/diagram-audit.ts": {
+      "sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "previous_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "bytes": 4987,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+        "bytes": 4987
+      }
+    },
+    "site/scripts/execution-maps/locations.ts": {
+      "sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+      "previous_sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+      "bytes": 971,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "be6f3ee913be4ba3934b45126bdf12e15f93df7fbdb4050dc3346e9548e53c84",
+        "bytes": 971
+      }
+    },
+    "site/scripts/execution-maps/render.ts": {
+      "sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "previous_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "bytes": 7823,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+        "bytes": 7823
+      }
+    },
+    "site/scripts/generate-diagrams.ts": {
+      "sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "previous_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "bytes": 25309,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+        "bytes": 25309
+      }
+    },
+    "site/scripts/guide-directory.ts": {
+      "sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "previous_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "bytes": 3511,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+        "bytes": 3511
+      }
+    },
+    "site/scripts/journey-navigation.ts": {
+      "sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "previous_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "bytes": 5093,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+        "bytes": 5093
+      }
+    },
+    "site/scripts/link-audit.ts": {
+      "sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+      "previous_sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+      "bytes": 1599,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ae26407ea0f8adb88302a0965635659384d340a588831ccbe73ad96b03bfc46f",
+        "bytes": 1599
+      }
+    },
+    "site/scripts/link-audit/lib.ts": {
+      "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+      "previous_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+      "bytes": 9643,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+        "bytes": 9643
+      }
+    },
+    "site/scripts/reference-sidebar.ts": {
+      "sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "previous_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "bytes": 3861,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+        "bytes": 3861
+      }
+    },
+    "site/scripts/rehype-base-links.ts": {
+      "sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "previous_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "bytes": 2889,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+        "bytes": 2889
+      }
+    },
+    "site/scripts/rehype-table-shell.ts": {
+      "sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "previous_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "bytes": 4379,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+        "bytes": 4379
+      }
+    },
+    "site/scripts/topic-map.ts": {
+      "sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "previous_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "bytes": 6126,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+        "bytes": 6126
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "The composition concerns source-limited site teaching, diagram, navigation or content-link structure. Current Atlas/Docs observation changes retain the generators, checked-in sources, authored scope, containment limits and original coverage route.",
+    "atlas_leaf_review": {
+      "core/surface/commands/init.md": {
+        "path": "core/surface/commands/init.md",
+        "revision": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "blob": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+        "historical_nodes_unchanged": [
+          "o-init",
+          "o-runtime",
+          "c-live"
+        ],
+        "reviewed_summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. The task-board writer retains its lock sidecar; initialization adds its exact Git-common info/exclude rule under an exclusive lock. Existing permissions, foreign hooks and user configuration remain preserved."
+      },
+      "core/pysrc/_bashguardlib.py": {
+        "path": "core/pysrc/_bashguardlib.py",
+        "revision": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+        "blob": "383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f",
+        "historical_nodes_unchanged": [
+          "f-recovery",
+          "c-read",
+          "c-proof"
+        ],
+        "reviewed_summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Binary overrides bind the actual staged candidate. Visible literal PowerShell here-string interpreter bodies reach protected-write guards; dynamic or nested stdin remains outside that finite projection. Conservative checks and existing authority gates remain in place."
+      }
+    },
+    "exact_atlas_payload_deltas": {
+      "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+        "previous_sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+        "current_sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf"
+      },
+      "site/scripts/execution-maps/atlas-assistive.test.ts": {
+        "previous_sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+        "current_sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318"
+      }
+    },
+    "docs_scope": "Original Docs coverage is still selected once. The reporting mode surrounds that same source owner with a bounded static observer, with the exact original coverage command on the fallback path. No publish or generated-site execution is claimed."
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:SX06:02",
+      "frozen_record": {
+        "transition_id": "SX06:02",
+        "machine_id": "SX06",
+        "owner": "site-and-release",
+        "baseline": {
+          "from": "Topic map",
+          "event": "Validate closure",
+          "guard": "Known pages/lessons, nonempty nonduplicate lists, every lesson mapped",
+          "to": "Resolved topic graph / failure",
+          "effects": "Join real page titles and lesson references; return per-lesson pages.",
+          "failure_retry": "Unknown/unmapped membership throws with explicit problems.",
+          "source": [
+            {
+              "path": "site/scripts/academy-wayfinding.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/academy-wayfinding.ts"
+            },
+            {
+              "path": "site/scripts/concept-directory.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/concept-directory.ts"
+            },
+            {
+              "path": "site/scripts/guide-directory.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/guide-directory.ts"
+            },
+            {
+              "path": "site/scripts/journey-navigation.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/journey-navigation.ts"
+            },
+            {
+              "path": "site/scripts/reference-sidebar.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/reference-sidebar.ts"
+            },
+            {
+              "path": "site/scripts/topic-map.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/topic-map.ts"
+            },
+            {
+              "path": "site/scripts/link-audit.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit.ts"
+            },
+            {
+              "path": "site/scripts/link-audit/lib.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/link-audit/lib.ts"
+            },
+            {
+              "path": "site/scripts/rehype-base-links.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-base-links.ts"
+            },
+            {
+              "path": "site/scripts/rehype-table-shell.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/rehype-table-shell.ts"
+            },
+            {
+              "path": "site/scripts/diagram-audit.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/diagram-audit.ts"
+            },
+            {
+              "path": "site/scripts/generate-diagrams.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generate-diagrams.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/render.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/render.ts"
+            },
+            {
+              "path": "site/scripts/execution-maps/locations.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/execution-maps/locations.ts"
+            },
+            {
+              "path": "site/scripts/decision-evidence.ts",
+              "symbol": "Complete module",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/decision-evidence.ts"
+            }
+          ],
+          "transition_id": "SX06:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "58e2699aedb699cd783ae73863b80b9a5ab22393061b253d5d2175fcd1dd46be",
+      "group": "source-group-006",
+      "assessment": "These are conditional typed content/metadata projectors and audits, not actual content inventory/browser/Academy completion. link-audit final lexical containment is a strengthened bound; frozen cited helper inputs do not mean every projector calls that helper or gains global validation. No OS/symlink containment claim.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "prune-and-site-containment"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+          "sha256": "7197787486e1c129b9fafeedcdc1042fa71d5558fa5cd62b9d26a6b7792f320a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "site/scripts/topic-map.ts",
+      "old_span": [
+        35,
+        137
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "block_sha256_LF": "bb82ea2656bc5a0f25627cfa17dcaae70b8d76e050a208887cfebf6c2a03dafd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          35,
+          137
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          35,
+          137
+        ]
+      ],
+      "actual0ef_file_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          35,
+          137
+        ]
+      ],
+      "current_f3_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1"
+    },
+    {
+      "path": "site/scripts/academy-wayfinding.ts",
+      "old_span": [
+        17,
+        47
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "4414c3eabaa6c4fbcebb731587ff5e06b79ffe5ae7ebd8a0f57bc7387bec1208",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          17,
+          47
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          17,
+          47
+        ]
+      ],
+      "actual0ef_file_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          17,
+          47
+        ]
+      ],
+      "current_f3_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31"
+    },
+    {
+      "path": "site/scripts/guide-directory.ts",
+      "old_span": [
+        34,
+        60
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "79fba00a047b541cd9fe2600ccdcc81813262ca2ddd36785f29632ebd2368ef8",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          34,
+          60
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          34,
+          60
+        ]
+      ],
+      "actual0ef_file_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          34,
+          60
+        ]
+      ],
+      "current_f3_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717"
+    },
+    {
+      "path": "site/scripts/concept-directory.ts",
+      "old_span": [
+        33,
+        43
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "9c382ae4306774fa8639dc4187519bf98f8184fa9166287e608d137825954e08",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          33,
+          43
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          33,
+          43
+        ]
+      ],
+      "actual0ef_file_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          33,
+          43
+        ]
+      ],
+      "current_f3_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157"
+    },
+    {
+      "path": "site/scripts/reference-sidebar.ts",
+      "old_span": [
+        45,
+        113
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "e1a187e503e6ec9efbb436f84bb7f3da6017714acc3ba16bb6329873cd199c93",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          45,
+          113
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          45,
+          113
+        ]
+      ],
+      "actual0ef_file_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          45,
+          113
+        ]
+      ],
+      "current_f3_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9"
+    },
+    {
+      "path": "site/scripts/journey-navigation.ts",
+      "old_span": [
+        35,
+        62
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "789b43c858ab5c7fe0fca89375ddf4f2f492472771ed8b39da86fbff7ae15993",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          35,
+          62
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          35,
+          62
+        ]
+      ],
+      "actual0ef_file_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          35,
+          62
+        ]
+      ],
+      "current_f3_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a"
+    },
+    {
+      "path": "site/scripts/rehype-base-links.ts",
+      "old_span": [
+        27,
+        77
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "e08a724de65497691bf4f700b510a05474147b388d49baa724179f6297772769",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          27,
+          77
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          27,
+          77
+        ]
+      ],
+      "actual0ef_file_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          27,
+          77
+        ]
+      ],
+      "current_f3_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b"
+    },
+    {
+      "path": "site/scripts/rehype-table-shell.ts",
+      "old_span": [
+        27,
+        99
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "37c2ea2b52427238a144307b23b628ad80e0da5b083f940233bdd7f7e7000604",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          27,
+          99
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          27,
+          99
+        ]
+      ],
+      "actual0ef_file_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          27,
+          99
+        ]
+      ],
+      "current_f3_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7"
+    },
+    {
+      "path": "site/scripts/execution-maps/render.ts",
+      "old_span": [
+        14,
+        111
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "427992d8fe915169da1a94dbf7eff8ecd2f5d7d31cd0dc8129a8ed3f94fad1df",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          14,
+          111
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          14,
+          111
+        ]
+      ],
+      "actual0ef_file_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          14,
+          111
+        ]
+      ],
+      "current_f3_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328"
+    },
+    {
+      "path": "site/scripts/generate-diagrams.ts",
+      "old_span": [
+        495,
+        540
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "e5909ed14badd72a7c6a03ffb7a08ce941d81abb9d927110a2e17c49f5e93304",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          495,
+          540
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          495,
+          540
+        ]
+      ],
+      "actual0ef_file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          495,
+          540
+        ]
+      ],
+      "current_f3_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8"
+    },
+    {
+      "path": "site/scripts/diagram-audit.ts",
+      "old_span": [
+        28,
+        146
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "5467eec52e81abc41546e03084d0420637ebd174f41db739776cc724c2663100",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          28,
+          146
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          28,
+          146
+        ]
+      ],
+      "actual0ef_file_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          28,
+          146
+        ]
+      ],
+      "current_f3_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63"
+    },
+    {
+      "path": "site/scripts/decision-evidence.ts",
+      "old_span": [
+        149,
+        168
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/navigation-source-d594/inspection.json",
+      "block_sha256_LF": "3058710b7e3c226afe5372a5bd39755596958816665d67873e09be5ba33b0bac",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          149,
+          168
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/citation-owner-successor-d594/topic-closure-preserved.json",
+      "actual0ef_spans": [
+        [
+          149,
+          168
+        ]
+      ],
+      "actual0ef_file_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          149,
+          168
+        ]
+      ],
+      "current_f3_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "prune-and-site-containment",
+      "paths": [
+        "core/pysrc/_prunelib.py",
+        "site/scripts/link-audit/lib.ts"
+      ],
+      "assessment": "Retain actual independently reviewed component/proper-descendant refusal before prune self-heal, and URL/final filesystem containment refusal before a sibling can satisfy an internal site target. These are intended strengthened rejection boundaries. Exact unchanged caller witnesses can be reused with these helper effects, without OS/symlink/host/browser qualification."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

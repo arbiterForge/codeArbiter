@@ -1,0 +1,315 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_prunelib.py": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+  "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+  "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:prune-plan",
+  "disposition:transitions:hooks:prune-plan:02",
+  "disposition:transitions:hooks:prune-plan:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:prune-plan",
+   "frozen_row_sha256": "bcc8601e7970c432ba09fa2b59cd26c3f1984b7b3b549da4c7a93b2be64a5070",
+   "clause_ids": [
+    "disposition:transitions:hooks:prune-plan:01",
+    "disposition:transitions:hooks:prune-plan:02",
+    "disposition:transitions:hooks:prune-plan:03",
+    "disposition:transitions:hooks:prune-plan:04",
+    "disposition:transitions:hooks:prune-plan:05",
+    "disposition:transitions:hooks:prune-plan:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "hook_run",
+     "start": 1214,
+     "end": 1358,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "a8063a9fdcd0c064fa4dc3c926d0ff7300d6f77ff05700d9a6016fc85870c868"
+    },
+    {
+     "path": "core/pysrc/prune-transcript.py",
+     "symbol": "main",
+     "start": 156,
+     "end": 231,
+     "git_oid": "f6a8bfb89b12d225a323c327d8792442ea28af8f",
+     "file_sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+     "span_sha256": "99f89f71ee17d56b50e5ac566d1547e315ced718da3a45e871d059780ca98798"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "select_strategies",
+     "start": 166,
+     "end": 172,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "5426e1808d1ccd14af6a76f3df52a7e7be4752e9536db2241b0f9e93efea1ff8"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "protected_ordinal",
+     "start": 175,
+     "end": 190,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "32ab280d778f74519972628f38abfe6ea9ffdc3c6ca83ac6e9601b824d429848"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "plan_prune",
+     "start": 204,
+     "end": 261,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "474c05e1b9755775050f531d24b3e516f47ee7c9e996609198c3a6be3429a5f3"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "build_index",
+     "start": 139,
+     "end": 215,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "64628c86121e76cf66808d273b98d263873b886c9a7c5334bc0e4e33d0776d60"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "_protected",
+     "start": 226,
+     "end": 234,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "0665792babaf2af3127442845594a6130cf0a8fd1880fbc84026f764d0ea089a"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "s_repeat_reminder_fold",
+     "start": 555,
+     "end": 591,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "1d844f75c0cf3034d4efcf63a197bb0d7003068d2695e212cb34c9d53c72a2e3"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "s_inline_image_evict",
+     "start": 594,
+     "end": 626,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "e4ee7dc4648c2cc4eb08d6486c5e14be278bd209eea0dfe4babffa68d641301d"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "apply_strategies",
+     "start": 700,
+     "end": 704,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "2d27ca308d6138b83ae1fc33795e6a574d13a4945d603579b8af4cc1ab04a411"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "validate",
+     "start": 734,
+     "end": 793,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "549fb43223d7d1ee64a53c4667adf50affc324c2fe7303c0b4ad6a6e517e57af"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "run",
+     "start": 1375,
+     "end": 1439,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "e77e0a7b9337bda58185753573e494bc475d2ec536740dbee143d3634cca2b79"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "reduction_metrics",
+     "start": 110,
+     "end": 140,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "f80c85b141d07bde73e17bb71fc90786dd9c36ff5ed272a55232dc229ffb1703"
+    },
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_prune_plan",
+     "start": 234,
+     "end": 292,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    }
+   ],
+   "semantic_assessment": "All6 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "Frozen user/system wording overstates actual baseline: old eligible tool-result/reminder/image fields may be condensed even when transported in a user/system message. PROGRAM preserves the real healthy baseline; no new role exclusion or runtime observation is invented.",
+    "The frozen sources omit this closed-schema owner. Pure plan_prune alone does not enforce unique IDs or a closed request; those guards belong to pi-bridge._prune_plan and are explicitly bound here."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:prune-plan:02",
+   "frozen_row_sha256": "648ca74699cd35a28eda056388aa7b8f1319da1bc4ac16c113a4280630e247ae",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "select_strategies",
+     "start": 166,
+     "end": 172,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "5426e1808d1ccd14af6a76f3df52a7e7be4752e9536db2241b0f9e93efea1ff8"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "protected_ordinal",
+     "start": 175,
+     "end": 190,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "32ab280d778f74519972628f38abfe6ea9ffdc3c6ca83ac6e9601b824d429848"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "plan_prune",
+     "start": 204,
+     "end": 261,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "474c05e1b9755775050f531d24b3e516f47ee7c9e996609198c3a6be3429a5f3"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "build_index",
+     "start": 139,
+     "end": 215,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "64628c86121e76cf66808d273b98d263873b886c9a7c5334bc0e4e33d0776d60"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "_protected",
+     "start": 226,
+     "end": 234,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "0665792babaf2af3127442845594a6130cf0a8fd1880fbc84026f764d0ea089a"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "s_repeat_reminder_fold",
+     "start": 555,
+     "end": 591,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "1d844f75c0cf3034d4efcf63a197bb0d7003068d2695e212cb34c9d53c72a2e3"
+    },
+    {
+     "path": "core/pysrc/_prunelib.py",
+     "symbol": "s_inline_image_evict",
+     "start": 594,
+     "end": 626,
+     "git_oid": "20e9bd3174431e617754c1f6582b75260556acbb",
+     "file_sha256": "0fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72",
+     "span_sha256": "e4ee7dc4648c2cc4eb08d6486c5e14be278bd209eea0dfe4babffa68d641301d"
+    }
+   ],
+   "semantic_assessment": "Tier selection and deterministic markers remain unchanged. keep_recent defaults10 tool-bearing turn anchors (result anchors fallback), additionally protects the latest assistant boundary, and persona sentinel message entries are pinned; merely quoted sentinel tool results are not pinned. Marked fields are skipped by their strategy. This is field/anchor protection, not unconditional role-wide retention.",
+   "intake_variances": [
+    "Frozen user/system wording overstates actual baseline: old eligible tool-result/reminder/image fields may be condensed even when transported in a user/system message. PROGRAM preserves the real healthy baseline; no new role exclusion or runtime observation is invented."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:prune-plan:05",
+   "frozen_row_sha256": "84c54b07953f1211590a06f90cf851eaefc491f1b9f684a7c44021a7a0a67094",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/hooks/pi-bridge.py",
+     "symbol": "_prune_plan",
+     "start": 234,
+     "end": 292,
+     "git_oid": "cacd5ef75ad180648ae03515e175fbd8c649b15f",
+     "file_sha256": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+     "span_sha256": "81f42fd8e21ca01353df32236d87c3d66355e8b64850d901baee09aad3decf57"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "plan_prune",
+     "start": 204,
+     "end": 261,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "474c05e1b9755775050f531d24b3e516f47ee7c9e996609198c3a6be3429a5f3"
+    },
+    {
+     "path": "core/pysrc/_prunepolicy.py",
+     "symbol": "protected_ordinal",
+     "start": 175,
+     "end": 190,
+     "git_oid": "0ae81c9e5e6ab086061d82d24bc3ae7fe0c09be6",
+     "file_sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+     "span_sha256": "32ab280d778f74519972628f38abfe6ea9ffdc3c6ca83ac6e9601b824d429848"
+    }
+   ],
+   "semantic_assessment": "The actual Pi request adapter validates exact entries/policy fields, unique bounded IDs, contiguous ordered ordinals, finite enumerated roles/kinds, Boolean fields, tier and numeric limits before pure planning. The first-kept ID comes directly from an admitted entry; absence of a kept boundary refuses. The planner performs no transcript I/O.",
+   "intake_variances": [
+    "The frozen sources omit this closed-schema owner. Pure plan_prune alone does not enforce unique IDs or a closed request; those guards belong to pi-bridge._prune_plan and are explicitly bound here."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "hooks:prune-plan finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

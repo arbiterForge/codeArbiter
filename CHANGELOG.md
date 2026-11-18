@@ -16,6 +16,17 @@ predate the plugin rewrite and are grouped by date.
 
 ### Changed
 
+- Retain exact original Python observations for six finite findings, including Pi payload identity and measurement refusal checks, with closed source and CI authority bindings.
+- Run the three new native-launch finding admission controls with their existing pure Hook owner while preserving the native producer split.
+- Report bounded setup phases when release guard tests time out, retaining their original deadlines and outcomes.
+- Collect finite Farm finding observations from the existing test run with exact source, named-case, upload and trusted-job bindings.
+- Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
+- Add closed original-observation mappings for seven finite Pi and Sandbox findings, retaining exact named selectors and existing job authority.
+- Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
+- Clarify initialization and Sandbox discovery owners; retain original review-policy evidence and select fast native-suite guards for every owned input.
+- Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
+- Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
+- Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.
 - Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
 - Preserve no-bytecode execution when SessionStart launches the detached updater.
 - Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.

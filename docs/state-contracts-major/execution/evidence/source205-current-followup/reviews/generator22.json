@@ -1,0 +1,121 @@
+{
+  "schema": "codearbiter.private-source-independent-review/1",
+  "reviewer": "/root",
+  "author": "/root/ci_repair_review",
+  "verdict": "PASS",
+  "findings": [],
+  "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+  "delivery_sha256": "2a00c327baed2d7172bd310a4476b0115355a3e09baf7537bf63c868aa536f40",
+  "full_subjects": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\adoption-filemap.json",
+      "sha256": "727024759805101cfa42ea946c42dcda88fcf52d7869e58ab5f6a6f83ffaa5e3",
+      "bytes": 4591
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\authored-clause-data.json",
+      "sha256": "cc86841038aad9fc71991a9293352723f0afce816564d27ace687e4c7427d3df",
+      "bytes": 12415
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\baseline-current-joins.json",
+      "sha256": "a463f15a20be7e42fe52f0a47fa1cca2bce66f07f8f7e0b71b112f940ef50dd1",
+      "bytes": 6799
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\build-metadata.py",
+      "sha256": "364da8e0d2f102619bc24b383d43babcbe42db6dc9247c138c0aa1ebc83f7f29",
+      "bytes": 17350
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\cas-proposal.json",
+      "sha256": "7b240cb8b9fbf00d0be3860278dbe639d076a6bb2eb1d0f7c49550fa15868cbe",
+      "bytes": 44830
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\clause-inspection.json",
+      "sha256": "81248b3b9c7bb3c1c99a4221c1f3929fa581840e50c406bd83f52d44d6b80899",
+      "bytes": 130358
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\01-predecessor.json",
+      "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+      "bytes": 4644
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\02-predecessor.json",
+      "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf",
+      "bytes": 26208
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\03-predecessor.json",
+      "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+      "bytes": 26267
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited-evidence-inventory.json",
+      "sha256": "c400619a82717d35be1aa63df9f4fa7b5862243cd6c577e5f10253302ccb7bea",
+      "bytes": 12442
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\prior-inspection-reuse.json",
+      "sha256": "3de7de21f93bad8f80172960be8428c0922f18db9ee9bc0f52c1feffbc9b1dab",
+      "bytes": 933
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\proofs\\generator-discovery-preserved.json",
+      "sha256": "5ba03a8d5efec5788183ff701dc3918630a45f12476581aa40a20d98560d3e1c",
+      "bytes": 17122
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\proofs\\generator-hook-extractor-preserved.json",
+      "sha256": "88973f1c843761eb208045b79e81501fb404434b689e6b18d21a401ac71069bf",
+      "bytes": 20655
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\proofs\\generator-public-catalog-preserved.json",
+      "sha256": "176ed34051ec778818ec8c0ba73db141a7d33696f4220ab74dce6644b3306635",
+      "bytes": 15841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\proofs\\pi-qualification-disposable-home-preserved.json",
+      "sha256": "53bd78cd2029a19c9033006c143923aadd0afe8e290716674ab19154ed9f7d4d",
+      "bytes": 5405
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\proofs\\pi-qualification-runtime-discovery-preserved.json",
+      "sha256": "1190ce1049184a9d8fdea7b417c5b93ff6a096c560bda65628977a97c6e0e47e",
+      "bytes": 5374
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\source-bindings.json",
+      "sha256": "3adaff2059ca2cdf5707fe3482a31d48bfaa32c2946a479102d7632d7eb0943a",
+      "bytes": 24026
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\summary.json",
+      "sha256": "7441db3e2e2d19c179fd066988e657c0750c78c88d475e6a76273d274bcd5bae",
+      "bytes": 778
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\validation.json",
+      "sha256": "ce21964d491ca54236031ab5a70fc34dd2de7255a3510e6c24ac64ce05210e07",
+      "bytes": 663
+    }
+  ],
+  "literal_clauses": 25,
+  "proposed_rows": 22,
+  "source_bindings": 27,
+  "witness_hash_joins": 198,
+  "semantic_review": [
+    "Root independently read all25 literal assessments and actual generator/Pi owners in the prior source pass; directly rechecked current catalog caution against exclusive run creation/stream ordering, version-facts getter and process-level cache, and source-embed commit/main URLs versus version labels.",
+    "Discovery scopes, propagated read failures, global emitted-slug reservation, lexical/dynamic/skipped hook extraction, static host catalog projection and independent manual Forge allowlist are accurately bounded. No runtime-registration or complete Python analysis is asserted.",
+    "Pi PATH/ancestor/fallback/bin discovery does not authenticate a release or launch a host; disposable HOME setup and exit cleanup keep early failure/residue and no environment restore explicit. Eight existing advanced observations are not renewed."
+  ],
+  "limits": [
+    "Private source-only proposal review, not strict prospective owner, runtime/native/installed/user/task/scenario qualification. Existing current-code tests/reviews are not replayed."
+  ],
+  "retained_advanced_rows": 8,
+  "lossless_old_proof_copies": 3,
+  "scope": "Independent actual finite-source semantic review plus immutable/physical/witness/CAS/advanced history authentication only. No runtime/test replay, source code execution or owner qualification."
+}

@@ -1,0 +1,46 @@
+{
+  "schema": "exact-watch-delivery/1",
+  "verdict": "BLOCK",
+  "expected_head": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+  "observed_head": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+  "ci": {
+    "id": 44092400578,
+    "head_sha": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "path": ".github/workflows/ci.yml",
+    "head_branch": "codex/state-contracts-mode-and-adoption",
+    "status": "completed",
+    "conclusion": "failure"
+  },
+  "docs": {
+    "id": 44092400026,
+    "head_sha": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "path": ".github/workflows/docs.yml",
+    "head_branch": "codex/state-contracts-mode-and-adoption",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "terminal_receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-ebdc46c7-watch-7b7lxe8p\\terminal-receipt.json",
+    "sha256": "6c815d1d466aa063f4cc4b38678728b29bb4b8b7325456e896f5b4bf24e85e31",
+    "bytes": 531453
+  },
+  "diagnostic_projection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-ebdc46c7-watch-7b7lxe8p\\terminal-diagnostic-projection.json",
+    "sha256": "66cbb619a690af62382599866f5a942379f9b59b2044315c6a87cb4ca6f0a634",
+    "bytes": 7524
+  },
+  "control_coverage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-ebdc46c7-watch-7b7lxe8p\\terminal-control-coverage-projection.json",
+    "sha256": "938b87d85ce24014e9abc014ae5fb6de875d467adef842c55c54aa1c2dcc23c5",
+    "bytes": 4733
+  },
+  "all_checks": {
+    "skipped": 8,
+    "failure": 6,
+    "success": 86
+  }
+}

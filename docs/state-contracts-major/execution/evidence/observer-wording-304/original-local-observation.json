@@ -1,0 +1,83 @@
+{
+  "format": "codearbiter.major-test-observation/1",
+  "source_commit": "ce23ef7d7304f6ba07ee506c90b4e69662551c82",
+  "source_tree": "d2a8cf16de2240f3a312aea43f1417e352d37a11",
+  "clean": true,
+  "source_stable": true,
+  "ci_run_id": 7,
+  "proof_kind": "source-test",
+  "producer": "python-test-result-observer",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\final-capture-successor-profile\\ca-hook-review-profile-cwkv_cns\\repo\\.github\\scripts\\test_review_funnel.py"
+  ],
+  "exit_code": 0,
+  "tests": [
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_author_collection_does_not_invoke_review_verdict",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_persistence_is_explicit_and_non_overwriting",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_checkpoint_writer_reports_the_selected_dated_filename",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_curated_review_projection_uses_the_read_only_terminal",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_dispatch_contract_uses_canonical_routes_and_preserves_findings",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_inbound_pr_review_route_is_byte_invariant",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_triage_requires_the_complete_batch_contract",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_verdict_has_unambiguous_incomplete_precedence_and_schema",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.ReadOnlyReviewFunnelTest.test_working_diff_review_route_is_byte_invariant",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception",
+      "result": "passed"
+    },
+    {
+      "id": "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking",
+      "result": "passed"
+    }
+  ],
+  "source_input_binding": {
+    "format": "codearbiter.source-test-input-binding/1",
+    "profile": "hooks-finding-contracts-v1",
+    "payload_name": "major-source-inputs-hooks-findings-windows-contracts",
+    "manifest_sha256": "171acca61b164abbed9992574d0962461454b47f1abc8ec686525f301449173f"
+  }
+}

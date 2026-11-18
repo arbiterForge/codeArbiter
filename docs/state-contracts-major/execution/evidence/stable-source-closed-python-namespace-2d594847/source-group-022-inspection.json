@@ -1,0 +1,2402 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "2d594847888619a98aa964ad1757a31a788aa5c4",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-022",
+  "positive_input_join": {
+    ".github/scripts/test_work_github.py": {
+      "sha256": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+      "bytes": 128722,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+        "bytes": 128722
+      }
+    },
+    "core/pysrc/_activationlib.py": {
+      "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "bytes": 13390,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+        "bytes": 13390
+      }
+    },
+    "core/pysrc/_arbiterstatelib.py": {
+      "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "bytes": 14372,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+        "bytes": 14372
+      }
+    },
+    "core/pysrc/_artifactlib.py": {
+      "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+      "bytes": 64924,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+        "bytes": 64924
+      }
+    },
+    "core/pysrc/_hooklib.py": {
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "bytes": 49147,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      }
+    },
+    "core/pysrc/_modelib.py": {
+      "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+      "bytes": 45342,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+        "bytes": 45342
+      }
+    },
+    "core/pysrc/_taskboardlib.py": {
+      "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "bytes": 69125,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+        "bytes": 69125
+      }
+    },
+    "core/pysrc/_workadopt.py": {
+      "sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+      "bytes": 11275,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+        "bytes": 11275
+      }
+    },
+    "core/pysrc/_workgithub.py": {
+      "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+      "bytes": 83583,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+        "bytes": 83583
+      }
+    },
+    "core/pysrc/_worklib.py": {
+      "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "bytes": 18760,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+        "bytes": 18760
+      }
+    },
+    "core/pysrc/hostapi.py": {
+      "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "bytes": 38083,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+        "bytes": 38083
+      }
+    },
+    "core/pysrc/taskwrite.py": {
+      "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "bytes": 22686,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+        "bytes": 22686
+      }
+    },
+    "core/pysrc/work.py": {
+      "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "bytes": 30378,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+        "bytes": 30378
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json": {
+      "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+      "bytes": 3588,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+        "bytes": 3588
+      }
+    },
+    "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/source-inspection.json": {
+      "sha256": "88082d609f36b2c52a7b336b84ee3456ce36c0ccf92173d6b95227d07038c64b",
+      "bytes": 31737,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "88082d609f36b2c52a7b336b84ee3456ce36c0ccf92173d6b95227d07038c64b",
+        "bytes": 31737
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "scope": "Baseline work owner/state/transport clauses, whose test is the exact named work transport fixture.",
+    "namespace": {
+      "profile": {
+        "profile": "python-import-directory-v1",
+        "root": ".github/scripts",
+        "path_order": "windows"
+      },
+      "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+      "current_source": "2d594847888619a98aa964ad1757a31a788aa5c4",
+      "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+      "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+      "entries_before": 281,
+      "entries_now": 284,
+      "added": [
+        {
+          "path": ".github/scripts/site_vitest_observation.py",
+          "sha256_at_review": "98b5620ce215a73d72c6af137e3a63547b0254886dd2d6c8502861affc530608",
+          "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+        },
+        {
+          "path": ".github/scripts/test_pi_payload_identity.py",
+          "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+          "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+        },
+        {
+          "path": ".github/scripts/test_site_vitest_observation.py",
+          "sha256_at_review": "d72a94774f9efa10ae6e1b73cb87900567b6acfc248ddb03f9dc9817b08c0293",
+          "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+        }
+      ],
+      "negative_scope": "No old namespace member, mode or object class changed. Physical and lexical resolution inside reviewed paths names existing sources, tools, plugins or scratch/candidate scopes, and never uses the new names. Their bytes are identified at review, while the strict namespace digest binds names, object classes and modes."
+    },
+    "referenced_script_roles": {
+      ".github/scripts/test_work_github.py": {
+        "role": "Explicit work transport fixture module only. No dynamic import or directory discovery.",
+        "sha256": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+        "reviewed_discovery_calls": [],
+        "new_name_references": []
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:hooks:taskwrite",
+      "frozen_record": {
+        "machine_id": "hooks:taskwrite",
+        "name": "Locked legacy task transition and archive-first recovery",
+        "domain": "Python hooks and shared state",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [
+          "HW-12",
+          "HW-15"
+        ],
+        "source_intersection_task_ids": [
+          "HW-12"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 8,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "164d53f13e7cf43574a40be9c8b83ef74cce1f4949684c10fbb4e2d830882867",
+      "group": "source-group-022",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Locked legacy task transition and archive-first recovery. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:01",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:01",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "queued",
+          "event": "start",
+          "guard": "selected task valid; current owner and optional bound blockSHA rechecked under lock",
+          "to": "in-progress",
+          "effects": "Apply taskboard transform and atomic board write.",
+          "failure_retry": "Invalid transition/missing row/no change returns nonzero; no free-form board replacement.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:01"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5cd9bf8ebff7f9a9e79495e455aee01e58a2e3dedb419ce513aaa20c1d2b009b",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:02",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:02",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "in-progress",
+          "event": "done",
+          "guard": "selected task valid",
+          "to": "done",
+          "effects": "Stamp completion through taskboard transform.",
+          "failure_retry": "When selection is by origin, underlying transform also permits queued->done; legacy ordinary-ID path requires in-progress.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:02"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "33b109af7f1b02ffefd5741c84e9e40626ac686cc4da9aa79fc783fe3d0141fb",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:03",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:03",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "queued / in-progress / done",
+          "event": "rename/attach/reopen through work.py",
+          "guard": "bound WORK ID and exact blockSHA supplied",
+          "to": "updated / reopened",
+          "effects": "Apply constrained selected record edit.",
+          "failure_retry": "Unbound direct helper invocation refuses these operations.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:03"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ca5bbaab05ffb82f2ff14f007a499774406c71a1e6291f5a88cf23b0557bc4e2",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:04",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:04",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "any",
+          "event": "add from origin",
+          "guard": "source origin unique across open and archive, operation ID not reused for another source",
+          "to": "queued or reused",
+          "effects": "Insert exact structured task or return existing source record.",
+          "failure_retry": "Existing origin is idempotent; conflicting opid refuses.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:04"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b17535ae120ed9ea08dbe5dff9c202c562922754923fa3a67b6d1bc2c24b262d",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:05",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:05",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "done",
+          "event": "archive",
+          "guard": "completion date present or explicit allow-undated; readable archive",
+          "to": "archivable",
+          "effects": "Compute pure transform under board lock.",
+          "failure_retry": "Unreadable archive returns exit3 before either board write; undated without allowance refuses.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:05"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8377c29eed665bcd2eab524792b512b12febbc8e1660aa7e985c2211c511727b",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:06",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:06",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "archivable",
+          "event": "persist archive",
+          "guard": "validated deduplicated output",
+          "to": "archive-written",
+          "effects": "Write done-tasks.md first.",
+          "failure_retry": "If next open-board write fails, duplicate exact copy remains visible as archive_pending.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:06"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5f4b39f1466a9c203b4bb23892320d78cb8e41b0af4a73e4835a4318602d8054",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:07",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:07",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "archive-written",
+          "event": "persist open board / retry archive",
+          "guard": "archive already holds exact ID/rawline copy",
+          "to": "archived",
+          "effects": "Remove completed task from open board; retries dedup archive.",
+          "failure_retry": "Archive-first sequence prioritizes preservation over pretending pair is atomic.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:07"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9b60e2d378320906434f10acabc2ca784dad54b8ed52700a415e32af5b61ccdf",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:taskwrite:08",
+      "frozen_record": {
+        "transition_id": "hooks:taskwrite:08",
+        "machine_id": "hooks:taskwrite",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "any",
+          "event": "lock/owner/hash changed",
+          "guard": "competing owner or stale selected work",
+          "to": "refused",
+          "effects": "Leave task transformation unapplied.",
+          "failure_retry": "Refresh selected work or retry after lock release.",
+          "source": [
+            {
+              "path": "core/pysrc/taskwrite.py",
+              "symbol": "module",
+              "lines": "1-464",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/taskwrite.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            }
+          ],
+          "transition_id": "hooks:taskwrite:08"
+        },
+        "task_ids": [
+          "HW-12",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "326db58c265eef7cffc66d0bb49d4d741265af24ec6d4abfa0b4a9caf582a1b7",
+      "group": "source-group-022",
+      "assessment": "Task edits remain constrained board transforms under lock/current owner/blockSHA. Archive-first preserves exact copies and exposes archive_pending rather than claiming pair atomicity. Ordinary-ID and origin transition differences stay explicit; stale/owner conflict refuses.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:01",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:01",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "repository work state",
+          "event": "select owner",
+          "guard": "regular legacy board present and no nonempty/unsafe native work",
+          "to": "legacy-selected",
+          "effects": "Use LegacyClient and blockSHA optimistic concurrency.",
+          "failure_retry": "Both owners present or unsafe directory -> owner conflict; no automatic migration.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:01"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "28dea244a7844e9b74fb255b653509136b17490bf23dae063a84d403bdbc17e6",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:02",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:02",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "repository work state",
+          "event": "select owner",
+          "guard": "no legacy board and selected native work namespace",
+          "to": "native-selected",
+          "effects": "Use pinned ArtifactClient and native revision/model identities.",
+          "failure_retry": "Malformed owner state refuses; display projection reports unknown where classification cannot prove owner.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:02"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9a8771bb9122e6f20216a4dc7e19798c5da4be46e40a80f032c9e87281307529",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:04",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:04",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "multiple same-origin records",
+          "event": "lookup/create",
+          "guard": "ambiguous duplicate source identity",
+          "to": "ambiguous-origin",
+          "effects": "Hide ambiguous records from normal authoritative lookup and refuse source-key creation.",
+          "failure_retry": "Resolve duplicate identity explicitly; do not choose first row.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:04"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "762158e6cab5e70be51cd37682bb5d27f6f43f33860af332b94d874f3ac8d6e7",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:05",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:05",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "open completed work + exact archived copy",
+          "event": "scan",
+          "guard": "exact copied archive record",
+          "to": "archive-pending",
+          "effects": "Expose recoverable partial archive without treating it as two independent tasks.",
+          "failure_retry": "Archive retry completes removal with deduplication.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:05"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "292bf368ad0d7d5647296aeccd0b1143675e09cf440e50657f000fbe926e9a7a",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:06",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:06",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "keyed legacy work",
+          "event": "update",
+          "guard": "current exact blockSHA; operation ID provided",
+          "to": "updated",
+          "effects": "Invoke bound taskwrite edit/transition.",
+          "failure_retry": "Operation ID is echoed but legacy update has no durable replay ledger; stale SHA is conflict.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:06"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c1afc2847f32932f4bbb36e355e5fc6316c4dd4e7181d5998d71de774f5b24ff",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:07",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:07",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "keyed native work",
+          "event": "update",
+          "guard": "expected revision and model both supplied or read together",
+          "to": "updated",
+          "effects": "Pass native CAS mutation.",
+          "failure_retry": "One expected field without the other refuses; legacy/native identity types cannot be interchanged.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:07"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "daed5db74a9c80b2b9fca4598f723a6ae104ac2cc2ba12da9ab12990c01c5f9b",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:08",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:08",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "work list",
+          "event": "context page",
+          "guard": "bounded requested records/cursor membership IDs",
+          "to": "partial projection",
+          "effects": "Return context_complete=false; legacy paging binds membership IDs, not all content bytes.",
+          "failure_retry": "Does not join knowledge or prove whole-workspace context.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:08"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c7a692af25cffaff53d6db2a719470f4aadbeb8e427d3733146d453b1bf33b4d",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:09",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:09",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "native work projection",
+          "event": "save derived view",
+          "guard": "known marker and safe exact .codearbiter/views/work/WORK-*.html path",
+          "to": "derived-view",
+          "effects": "Atomic tempfile+fsync+replace only recognized generated output.",
+          "failure_retry": "Unrecognized existing file/link/unsafe ancestor is preserved/refused.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:09"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "470eb9e934e88bae8268a83e59f8b68133605872c023571f2cbc0b4fb266e75b",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:hooks:work-owner:10",
+      "frozen_record": {
+        "transition_id": "hooks:work-owner:10",
+        "machine_id": "hooks:work-owner",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "external issue/Project operation",
+          "event": "dispatch",
+          "guard": "native owner/capability selected",
+          "to": "provider state machine",
+          "effects": "Delegate to _workgithub for staged, sent, reconciled, mapped intents.",
+          "failure_retry": "Legacy owner refuses unsupported native/provider operations; host agent owns provider transition table.",
+          "source": [
+            {
+              "path": "core/pysrc/_arbiterstatelib.py",
+              "symbol": "module",
+              "lines": "1-290",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_arbiterstatelib.py"
+            },
+            {
+              "path": "core/pysrc/_worklib.py",
+              "symbol": "module",
+              "lines": "1-366",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_worklib.py"
+            },
+            {
+              "path": "core/pysrc/work.py",
+              "symbol": "module",
+              "lines": "1-510",
+              "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/work.py"
+            }
+          ],
+          "transition_id": "hooks:work-owner:10"
+        },
+        "task_ids": [
+          "HW-10",
+          "HW-12",
+          "HW-13",
+          "HW-15",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-10",
+          "SEQ-11"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3c173c1969aaa00533e737e24dab52648a12c1602758564bea5b6668e530a24a",
+      "group": "source-group-022",
+      "assessment": "Legacy/native selection and ambiguity remain typed; no automatic migration. Descriptor-regular adoption read strengthens bounded optional/archive/replay inputs. BlockSHA/native revision+model are not interchangeable; legacy opid is not durable replay, bounded context is incomplete, derived view never overwrites foreign files. Provider operations retain their separate state machine.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "artifact-platform-dispatch",
+        "mode-and-adoption-repair-reuse"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-owner-taskwrite/preserved.json",
+          "sha256": "96a85dac5706030d09e52bd9dada79960bd607d4461e96af35e8febda69ddbac",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+          "sha256": "59cf8f94638cf8538c49f679117f7b2560459fd3aaf331063fd9b316083e7b8f",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/work.py",
+      "old_span": [
+        30,
+        48
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "7beadf8bd7535d58953e72029368815b2a72c2a1a4d7dc3f6a55dbd7c4066f87",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          30,
+          48
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          30,
+          48
+        ]
+      ],
+      "actual0ef_file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/work.py",
+      "old_span": [
+        26,
+        48
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "8dcff0c7403c5079190761586f0452896494bd9a27fdb50fb55926ac61da9849",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          26,
+          48
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          26,
+          48
+        ]
+      ],
+      "actual0ef_file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_arbiterstatelib.py",
+      "old_span": [
+        162,
+        184
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "c78f229e14831568c2dd527369278f2dc8722981888210128469accfd8cb68af",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          162,
+          184
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          162,
+          184
+        ]
+      ],
+      "actual0ef_file_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        90,
+        183
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "ce145b43820ae8caeb67c7757791f12d79a855531b6644f3e1974a9f6d146f2a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          90,
+          183
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          90,
+          183
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        208,
+        217
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "0b72f0aec2aca1572b64ddb1dab6df5f2181c0caab5370de1bba09cc97d61338",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          208,
+          217
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          208,
+          217
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        312,
+        330
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "4b304c63f4cfdf94deba7a4e4def87e5e85bf58de54de7af173a0608963a8190",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          312,
+          330
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          312,
+          330
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        81,
+        183
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "6ec4d4147dc1e8f634a24cb83bac8fdaafafa89788f6675661a9a0cd0e9cf541",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          81,
+          183
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          81,
+          183
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        331,
+        366
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "d2896834a563b5ada381a7060f3032ffface0906d066df509809678497a1fc13",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          331,
+          366
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          331,
+          366
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        350,
+        387
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "3f06965c9d54ae651ce979a4cf8668d5b851d190373283cf8c1f75f1fe6d8667",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          350,
+          387
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          350,
+          387
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/work.py",
+      "old_span": [
+        362,
+        402
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "375b483cb8827cbf889c82585c8ee82aa5f3213c1e0cf64ed41fd008ad2af523",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          362,
+          402
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          362,
+          402
+        ]
+      ],
+      "actual0ef_file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        259,
+        311
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "a62e436732202a25f5ce3a78d48f463a5eedeac079f40409f4f249068f99bb4f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          259,
+          311
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          259,
+          311
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/work.py",
+      "old_span": [
+        423,
+        467
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "a125ac5d42da41af1fe19021c921e585e5ac9873f801677d8a6caf0c322f2bf5",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          423,
+          467
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          423,
+          467
+        ]
+      ],
+      "actual0ef_file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/work.py",
+      "old_span": [
+        312,
+        360
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "6c252edc0f7df913c640be9d9ff83cfbec68850ececa79c5963a8de260606308",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          312,
+          360
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          312,
+          360
+        ]
+      ],
+      "actual0ef_file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        190,
+        207
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "5a808a9b9817fb3fd0cbc9a0c8a05ab787aededc36e90687f11c55a185d50bf9",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          190,
+          207
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          190,
+          207
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        211,
+        272
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "1f8bfadef1673a3ca5d0f72394d3f4109c4783726db8a992e657da14e346c5a7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          211,
+          272
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          211,
+          272
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        333,
+        387
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "867af14fa4c85cef7a3cc0b3d89cf3a3152e1e63aa0abfd1da8408a3c21d64b3",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          333,
+          387
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          333,
+          387
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        431,
+        446
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "679f72a2e364953c7dd6d5a4391860200a3ffbcd2d034cd15be9ad5dfac47257",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          431,
+          446
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          431,
+          446
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        255,
+        272
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "db9247c07fdebdffc6d34244f4d92618af2f9caacd77ceb9a2469cf282d7d8bd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          255,
+          272
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          255,
+          272
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_taskboardlib.py",
+      "old_span": [
+        1281,
+        1344
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "c73efe223725c35a8bda94e934558618fc3171a43ca09ec87a2105b002c76fe6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1281,
+          1344
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          1281,
+          1344
+        ]
+      ],
+      "actual0ef_file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        242,
+        253
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "8792164f23eeb01ab4db11d0676574a8a5f13f4291bb6046e4cc55ce9564c110",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          242,
+          253
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          242,
+          253
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        327,
+        331
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "f3ed15a16a747246e1e90df0ec686532fc751f8d0ce1e6ff7debdd0312302893",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          327,
+          331
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          327,
+          331
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        368,
+        387
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "8fb533760cb37958d440cd78288164769938eb47e848d3b86d3ec8cb976f860f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          368,
+          387
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          368,
+          387
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        403,
+        430
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "ca4bfa0b5cda6b7b66b4cd5f08d0d9a20592abf2aeb9c775c3fdafec9a02dc5b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          403,
+          430
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          403,
+          430
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_taskboardlib.py",
+      "old_span": [
+        931,
+        1028
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "947309dd2fd3cb668c4656bc0e90710d1187468551e5efeab591abcef95b3a8e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          931,
+          1028
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          931,
+          1028
+        ]
+      ],
+      "actual0ef_file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        139,
+        208
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "3fe9c3c3603e6ecf6e4a856737904d187a8affced2e1dbec22a5dad1237e4bd6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          139,
+          208
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          139,
+          208
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        389,
+        402
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "e8df1eae72ea66172b31def9768144f1f368fdc0cd22648a25c883f1ac127202",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          389,
+          402
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          389,
+          402
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        202,
+        208
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "b83d20cd7aaab3097d090f168b771a2b2a6c6400b4752c35eecc261fec1063ed",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          202,
+          208
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          202,
+          208
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_worklib.py",
+      "old_span": [
+        147,
+        165
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "fb7c75f48007d8b8d320075944eac9fbde8bd601eb214bd1de36342fa019fb81",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          147,
+          165
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          147,
+          165
+        ]
+      ],
+      "actual0ef_file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_taskboardlib.py",
+      "old_span": [
+        1182,
+        1223
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "8fe1fcebb76a38c76008ffe1f994f3d7587cd4cf10ae62fe21e3cb68dec353a4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1182,
+          1223
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          1182,
+          1223
+        ]
+      ],
+      "actual0ef_file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "old_span": [
+        389,
+        442
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/source-inspection.json",
+      "block_sha256_LF": "8f63d666a0a1420bbdeaab3867482ee3311529194521c4feb126a0d0c0aede9f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          389,
+          442
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-owner-taskwrite/preserved.json",
+      "actual0ef_spans": [
+        [
+          389,
+          442
+        ]
+      ],
+      "actual0ef_file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "artifact-platform-dispatch",
+      "paths": [
+        "core/pysrc/_artifactlib.py"
+      ],
+      "assessment": "Actual full deltas from7ac/d594/7eba are the same: sys.platform replaces platform.system for supported OS/commandWindows/verified-descriptor launch dispatch. No protocol, gate, request/environment, JSON, root/index or recovery API shape changes. Callers retain finite unsupported-platform and transport limits; fewer platform-discovery effects are not new native qualification."
+    },
+    {
+      "id": "mode-and-adoption-repair-reuse",
+      "paths": [
+        "core/pysrc/_modelib.py",
+        "core/pysrc/_workadopt.py"
+      ],
+      "assessment": "Use the actual committed exit/enter audit repair and transition-owned persistence guidance, never global unrelated debt as replay proof. Safe regular descriptor acquisition covers optional/archive/replay with bounded reads, link/reparse refusal, before/fstat/after identity and explicit close; platform flags remain limited. Prior own repair analyses/independent closures apply only at matching bytes; no universal storage durability or OS race confinement."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

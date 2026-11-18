@@ -1,0 +1,55 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "plugins/ca-pi/tools/src/audit-sink.ts": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+    "plugins/ca-pi/tools/src/policy.ts": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca-pi/tools/test/audit-sink.test.ts": "508dea1980c3342a751585aa49d6b275fd825bc63e4d2c5e774ee3410f421fde",
+    "plugins/ca-pi/tools/test/tool-guard.test.ts": "55d73f2ebadfaa034584309a1cd04aacd7559320c4b2e752bfbc8d1ac53e64db",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    "plugins/ca-pi/tools/vitest.config.ts": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+    "plugins/ca/hooks/secret-detection-corpus.json": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d"
+  },
+  "disposition_ids": [
+    "disposition:machines:S16",
+    "disposition:transitions:S16:01",
+    "disposition:transitions:S16:02",
+    "disposition:transitions:S16:03",
+    "disposition:transitions:S16:04",
+    "disposition:transitions:S16:05",
+    "disposition:transitions:S16:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-032-inspection.json",
+      "sha256": "5998edc1c08d22d70e2ab06704ea000a8123318005e29172f48dbc62402daec1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+      "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/pi-s16-audit-source-current/pi-s16-source-preserved.json",
+    "sha256": "b221c1ad604307a3c2e513c627f493ead3e9896783851562fb738fb324398a9c",
+    "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-032-inspection.json",
+  "scope": "Finite declared guard, effect and retry source conformance with inherited limits.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ]
+}

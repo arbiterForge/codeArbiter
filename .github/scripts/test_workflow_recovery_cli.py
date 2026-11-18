@@ -34,10 +34,26 @@ class InstalledRecoveryFixture:
 
     @classmethod
     def setUpClass(cls):
+        capture = os.environ.get("WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION")
+        cls.installation_observation = Path(capture) if capture else None
+        if cls.installation_observation is not None:
+            from ci20_native_binding import candidate_identity
+            roles = {"InstalledRecoveryTest": "cli", "RecoveryHostTest": "hosts"}
+            role = roles.get(cls.__name__)
+            if (role is None or cls.installation_observation.name != f"workflow-recovery-{role}-installation.json"
+                    or cls.installation_observation.parent.resolve(strict=True) != Path(os.environ["RUNNER_TEMP"]).resolve(strict=True)):
+                raise ValueError("workflow recovery requires its owned class observation path")
+            cls.installation_source = ROOT.parent / "workflow-recovery-native"
+            if Path(os.environ["ARTIFACT_TEST_INSTALLATION"]).absolute().resolve(strict=True) != cls.installation_source:
+                raise ValueError("workflow recovery requires the original job installation")
+            original = candidate_identity(cls.installation_source, "windows/amd64")
         cls.isolate_environment()
         from test_artifact_authoring import build_installation
         cls.native_owner, cls.native = build_installation()
+        if cls.native_owner is not None:
+            cls.addClassCleanup(cls.native_owner.cleanup)
         cls.host_owner = tempfile.TemporaryDirectory(prefix="ca-recovery-installed-hosts-")
+        cls.addClassCleanup(cls.host_owner.cleanup)
         cls.hosts = {}
         for host, directory in (("claude", "ca"), ("codex", "ca-codex"), ("pi", "ca-pi")):
             source = ROOT / "plugins" / directory
@@ -54,12 +70,37 @@ class InstalledRecoveryFixture:
             for filename in ("_workflowrecoverylib.py", "workflow-recovery.py"):
                 assert (target / "hooks" / filename).read_bytes() == (ROOT / "core/pysrc" / filename).read_bytes(), filename
             cls.hosts[host] = target
+        if cls.installation_observation is not None:
+            cls.installation_before = cls.installation_snapshot()
+            if cls.installation_before != cls.installation_projection(original):
+                raise ValueError("workflow recovery fixture consumed different native installation bytes")
+
+    @classmethod
+    def installation_projection(cls, identity):
+        return {"format": "codearbiter.workflow-recovery-installation/1", "fixture": cls.__name__,
+                "platform": "windows/amd64", "installation": identity, "fixture_copy": identity,
+                "hosts": dict.fromkeys(("claude", "codex", "pi"), identity)}
+
+    @classmethod
+    def installation_snapshot(cls):
+        from ci20_native_binding import candidate_identity
+        platform = "windows/amd64"
+        original = candidate_identity(cls.installation_source, platform)
+        projection = cls.installation_projection(original)
+        projection["fixture_copy"] = candidate_identity(cls.native, platform)
+        projection["hosts"] = {host: candidate_identity(root / "helpers/artifacts", platform)
+                               for host, root in cls.hosts.items()}
+        return projection
 
     @classmethod
     def tearDownClass(cls):
-        cls.host_owner.cleanup()
-        if cls.native_owner is not None:
-            cls.native_owner.cleanup()
+        if cls.installation_observation is not None:
+            after = cls.installation_snapshot()
+            if after != cls.installation_before:
+                raise ValueError("workflow recovery native installation changed during its fixture")
+            with cls.installation_observation.open("x", encoding="utf-8") as output:
+                json.dump(after, output, indent=2)
+                output.write("\n")
 
     def setUp(self):
         self.owner = tempfile.TemporaryDirectory(prefix="ca-recovery-installed-repo-")

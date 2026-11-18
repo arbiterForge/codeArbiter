@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor.stderr",
+ "original_sha256": "4e0afc643c7d0c895f4156bf90961e49898ac4bb3ea81b7397fa2a898a4d87b2",
+ "original_bytes": 714,
+ "utf8_text": "test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes (test_pi_package.DebuggerInboxTests.test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes) ... ok\r\ntest_hash_only_warm_records_are_closed_not_authority_and_pid_associated (test_pi_package.DebuggerInboxTests.test_hash_only_warm_records_are_closed_not_authority_and_pid_associated) ... ok\r\ntest_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution (test_pi_package.DebuggerInboxTests.test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 3 tests in 0.138s\r\n\r\nOK\r\n"
+}

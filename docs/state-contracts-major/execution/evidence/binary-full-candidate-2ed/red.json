@@ -1,0 +1,50 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-I",
+  "-S",
+  "-B",
+  "-X",
+  "utf8",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\run_tests.py",
+  "test_security_pass:TestSecurityPassBranches.test_binary_override_rejects_changed_full_staged_candidate_with_unchanged_binary",
+  "test_security_pass:TestSecurityPassBranches.test_binary_override_rejects_legacy_binary_only_marker",
+  "test_security_pass:TestSecurityPassBranches.test_binary_override_rejects_same_candidate_in_another_linked_worktree"
+ ],
+ "exit_code": 1,
+ "boundary": null,
+ "elapsed_seconds": 5.689982899988536,
+ "private_environment_keys": [
+  "APPDATA",
+  "COMSPEC",
+  "GCM_INTERACTIVE",
+  "GIT_CONFIG_GLOBAL",
+  "GIT_CONFIG_NOSYSTEM",
+  "GIT_TEMPLATE_DIR",
+  "GIT_TERMINAL_PROMPT",
+  "HOME",
+  "LOCALAPPDATA",
+  "PATH",
+  "PATHEXT",
+  "PYTHONDONTWRITEBYTECODE",
+  "PYTHONNOUSERSITE",
+  "PYTHONUTF8",
+  "SystemRoot",
+  "TEMP",
+  "TMP",
+  "USERPROFILE",
+  "WINDIR"
+ ],
+ "timeout_seconds": 240,
+ "stream_cap_bytes": 8388608,
+ "outputs": {
+  "red.stdout": {
+   "sha256": "8bea6f428e5f1a0988929647345a037bd500c56e0cedf2c9ed23073de0f1c3f3",
+   "bytes": 91
+  },
+  "red.stderr": {
+   "sha256": "fa118bdc7190ab947528f46fddbc41de545ee96efd197c924ed7642621986c1f",
+   "bytes": 4676
+  }
+ }
+}

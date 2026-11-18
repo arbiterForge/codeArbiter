@@ -1,0 +1,50 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-I",
+  "-S",
+  "-B",
+  "-X",
+  "utf8",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\run_tests.py",
+  "test_security_pass:",
+  "test_git_enforce_worktree_markers:",
+  "test_gitexec:"
+ ],
+ "exit_code": 0,
+ "boundary": null,
+ "elapsed_seconds": 24.152753300004406,
+ "private_environment_keys": [
+  "APPDATA",
+  "COMSPEC",
+  "GCM_INTERACTIVE",
+  "GIT_CONFIG_GLOBAL",
+  "GIT_CONFIG_NOSYSTEM",
+  "GIT_TEMPLATE_DIR",
+  "GIT_TERMINAL_PROMPT",
+  "HOME",
+  "LOCALAPPDATA",
+  "PATH",
+  "PATHEXT",
+  "PYTHONDONTWRITEBYTECODE",
+  "PYTHONNOUSERSITE",
+  "PYTHONUTF8",
+  "SystemRoot",
+  "TEMP",
+  "TMP",
+  "USERPROFILE",
+  "WINDIR"
+ ],
+ "timeout_seconds": 240,
+ "stream_cap_bytes": 8388608,
+ "outputs": {
+  "green-owning.stdout": {
+   "sha256": "82bf5b968d98ffbb2d8a5ca544e5f1b14b1a4342e73019ed1cf8913cb9f986f8",
+   "bytes": 94
+  },
+  "green-owning.stderr": {
+   "sha256": "5565f6a82390c393dbf00b0481d0b180c4fa78b87ce3c49658cb2aa39dd143fa",
+   "bytes": 14835
+  }
+ }
+}

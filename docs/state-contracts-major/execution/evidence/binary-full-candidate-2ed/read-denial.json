@@ -1,0 +1,9 @@
+{
+ "classification": "controller read-only command denied before target tests; not product RED",
+ "action": "no retry or bypass of protected path; no protected file read occurred",
+ "guard": "H-18",
+ "reported_reason": ".codearbiter/CONTEXT.md is activation switch; shell rewrites, edits, or deletions prohibited",
+ "protected_command_component": "Get-Content -LiteralPath 'C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/.codearbiter/CONTEXT.md' -First 12",
+ "other_components": "Python read-only current policy equality projection, and Get-Content of existing Temp tech-stack snapshot",
+ "followup": "Root retains possible command-classifier false-positive for separate diagnosis; no B03 gate bypass"
+}

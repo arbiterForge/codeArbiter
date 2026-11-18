@@ -1,0 +1,31 @@
+{
+ "schema": "codearbiter.pages-seven-root-review/1",
+ "reviewer": "/root",
+ "independent_of_authorship": true,
+ "verdict": "PASS",
+ "findings": [],
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-docs-attempt2-watch-fkwh74we\\delivery.json",
+  "sha256": "d675fba091babf9a8d9f65a903dd890b1ed3e71b8833e77e02ac30ef696f93c1"
+ },
+ "checks": {
+  "sealed_files": 10,
+  "same_status_rows": 7,
+  "actual_selected_names": 7,
+  "actual_unfiltered_population": 203,
+  "original_member_matches_authenticated_archive": true,
+  "literal_source_witness_joins": true,
+  "old_proof_bytes_preserved": true
+ },
+ "semantic_review": [
+  "Read actual seven named Playwright assertion bodies and bookmark/guide helper predicates. They cover opt-in/read/denial/save/clear/filter/focus boundaries; malformed/Unicode normalization supplements are source statements, not newly executed vectors.",
+  "Original browser and uploader are attempt1/job133912127642; whole Docs success is retry2. Reused alias has identical times/log, not a new browser run.",
+  "D482 original inputs, archive/member hashes and output identities stay separate from304/current candidate. Pending genuine merge supplies ancestry.",
+  "Root composition also appends the exact old record to row.evidence_history, preserving the sealed author proposal and complete raw lineage."
+ ],
+ "limits": [
+  "No new browser/build/runtime, screenshot/tar acquisition or fake cache/attempt identity.",
+  "No final main-only Pages envelope, whole program/task/installed/model/human/publication qualification.",
+  "Genuine full original-record owner after actual staged adoption remains required."
+ ]
+}

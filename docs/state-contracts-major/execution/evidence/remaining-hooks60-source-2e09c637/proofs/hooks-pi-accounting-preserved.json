@@ -1,0 +1,312 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+  "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:pi-accounting",
+  "disposition:transitions:hooks:pi-accounting:04",
+  "disposition:transitions:hooks:pi-accounting:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:pi-accounting",
+   "frozen_row_sha256": "c3a1c11699f9fed2a48b0e5174c950f73255ec716034adadcad2b105ddd8b14a",
+   "clause_ids": [
+    "disposition:transitions:hooks:pi-accounting:01",
+    "disposition:transitions:hooks:pi-accounting:02",
+    "disposition:transitions:hooks:pi-accounting:03",
+    "disposition:transitions:hooks:pi-accounting:04",
+    "disposition:transitions:hooks:pi-accounting:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_normalize_chunk",
+     "start": 1408,
+     "end": 1433,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "19a611c9d7de9d657ff88c95d9efac3ca5f5f458eeaee20a405cace76aed43be"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_resolve_path",
+     "start": 1317,
+     "end": 1347,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "3a7d25b2851ba05e7115212a2cbd2c2d3a9bae9d3b6e1ac7da3ef9a008770351"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_ledger_update_unlocked",
+     "start": 1664,
+     "end": 1689,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "85f5220cec7288b93d8e983725aaa43781d577d760ef95ff4a38fbde9e50b0d6"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_apply_facts",
+     "start": 1506,
+     "end": 1528,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "0e78e3bebdee4e91382c1b4ce8246350f5385d138e8ffe029abde03bf3ebfd9c"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_finish_update",
+     "start": 1612,
+     "end": 1629,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "2059d37c30020b90d2acc384dd1b21b0ddf4c32d5a5c5beac9364f4fb4a09c3a"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_write_pi_snapshot",
+     "start": 1602,
+     "end": 1609,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "c6a6343aa82ab08119dbd4cd45abc4cb905e8652cce5cad18196333622f0cbaf"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_shard_valid",
+     "start": 1453,
+     "end": 1466,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "c26d99005504cad882594b2f906841e93eefd0903505207cf586048d7b9eb934"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_collect_shards",
+     "start": 1531,
+     "end": 1562,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "c95c004e329b39dd3a398bb52e027e3f28e98adc0d5d78698d9afc503f47dd87"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_retain_shards",
+     "start": 1565,
+     "end": 1583,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "897830f2b60f4d7f5d6afb1eb3be7d1e7a62830500abffffd6ddbcdffd37e392"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_today_from_shards",
+     "start": 1586,
+     "end": 1599,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "05d8cfb5ce2572c59b9971492d136e24d02dd3dfdc4db15996357b2a6d5f1052"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "pi_ledger_update",
+     "start": 1632,
+     "end": 1661,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "3314fd592f6e40cd0e03d6801afc1436fcb569f165c07a7b6c572521e00a7035"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_result",
+     "start": 1259,
+     "end": 1270,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "dc42805d1ceb8d9f526770a1d2a7562830ad4d809e99378401f02b3f02645601"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "symbol": "acquire_lock",
+     "start": 508,
+     "end": 553,
+     "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "a04294f3295b8a4aeaf39334d6786a3ea299956711f8dd8e72a1ef2c9dff481f"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "symbol": "release_lock",
+     "start": 556,
+     "end": 575,
+     "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "c1d6a7925876ba1175b9e6a9f2aaa56195da47142b67a3130276a33b57932762"
+    }
+   ],
+   "semantic_assessment": "All5 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "256 is the successful-retention target, not a guarantee that denied removals leave <=256 physical files. Unsafe special shards are ignored, current-shard special/corrupt state refuses; errors remain signaled.",
+    "Before a readable shard/lock exists, failures use unknown highWater=-1 and blank display totals; they do not always return prior durable highWater. Aggregate failure can report known shard highWater with acceptedThrough=-1. This is explicit nonacceptance, not forged zero usage."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-accounting:04",
+   "frozen_row_sha256": "e1b0a00c07b42fc4176a791311678e1edd0a59613e520d9485d576850280dde0",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_shard_valid",
+     "start": 1453,
+     "end": 1466,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "c26d99005504cad882594b2f906841e93eefd0903505207cf586048d7b9eb934"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_collect_shards",
+     "start": 1531,
+     "end": 1562,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "c95c004e329b39dd3a398bb52e027e3f28e98adc0d5d78698d9afc503f47dd87"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_retain_shards",
+     "start": 1565,
+     "end": 1583,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "897830f2b60f4d7f5d6afb1eb3be7d1e7a62830500abffffd6ddbcdffd37e392"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_today_from_shards",
+     "start": 1586,
+     "end": 1599,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "05d8cfb5ce2572c59b9971492d136e24d02dd3dfdc4db15996357b2a6d5f1052"
+    }
+   ],
+   "semantic_assessment": "Valid shards have at most64 day totals. Recognized digest.json entries are bounded at8192; unrelated files are ignored. Retention sorts current session first, then descending updatedAt and key, removes excess beyond256, reloads and sums retained valid shards. Corrupt/read/delete/overflow state returns an explicit non-ok status, never a success acknowledgement.",
+   "intake_variances": [
+    "256 is the successful-retention target, not a guarantee that denied removals leave <=256 physical files. Unsafe special shards are ignored, current-shard special/corrupt state refuses; errors remain signaled."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:hooks:pi-accounting:05",
+   "frozen_row_sha256": "589c3923b45f28081ec2c7d87026d44449a97f26e5cec488c7a7200fd9625e0f",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "pi_ledger_update",
+     "start": 1632,
+     "end": 1661,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "3314fd592f6e40cd0e03d6801afc1436fcb569f165c07a7b6c572521e00a7035"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_ledger_update_unlocked",
+     "start": 1664,
+     "end": 1689,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "85f5220cec7288b93d8e983725aaa43781d577d760ef95ff4a38fbde9e50b0d6"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_result",
+     "start": 1259,
+     "end": 1270,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "dc42805d1ceb8d9f526770a1d2a7562830ad4d809e99378401f02b3f02645601"
+    },
+    {
+     "path": "core/pysrc/_ledgerlib.py",
+     "symbol": "_pi_finish_update",
+     "start": 1612,
+     "end": 1629,
+     "git_oid": "48a66da46a8b33e9b56df5934a97be931a33adf1",
+     "file_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+     "span_sha256": "2059d37c30020b90d2acc384dd1b21b0ddf4c32d5a5c5beac9364f4fb4a09c3a"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "symbol": "acquire_lock",
+     "start": 508,
+     "end": 553,
+     "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "a04294f3295b8a4aeaf39334d6786a3ea299956711f8dd8e72a1ef2c9dff481f"
+    },
+    {
+     "path": "core/pysrc/_hooklib.py",
+     "symbol": "release_lock",
+     "start": 556,
+     "end": 575,
+     "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+     "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+     "span_sha256": "c1d6a7925876ba1175b9e6a9f2aaa56195da47142b67a3130276a33b57932762"
+    }
+   ],
+   "semantic_assessment": "Lock acquisition/refusal and shard write failure return fixed lock_failed/write_failed without accepting the new chunk; locks are released. Only status ok can carry acceptedThrough. Caller may retry the same chunk; durable shard replay prevents recharge.",
+   "intake_variances": [
+    "Before a readable shard/lock exists, failures use unknown highWater=-1 and blank display totals; they do not always return prior durable highWater. Aggregate failure can report known shard highWater with acceptedThrough=-1. This is explicit nonacceptance, not forged zero usage."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "hooks:pi-accounting finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

@@ -1,0 +1,8 @@
+{
+ "schema": "codearbiter.exact-raw-utf8-projection/1",
+ "original_local_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\original-red.stderr",
+ "original_sha256": "c4c2e3ff52e67fa1598923e427050d39dfdf1330900b6a68bf5f2550a2e76b6d",
+ "original_bytes": 1086,
+ "utf8_text": "test_transition_exits_prior_mode_exactly_once (test_modelib.TestFlip.test_transition_exits_prior_mode_exactly_once) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_transition_exits_prior_mode_exactly_once (test_modelib.TestFlip.test_transition_exits_prior_mode_exactly_once)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-fix-9ubezw5y\\fixture\\.github\\scripts\\test_modelib.py\", line 438, in test_transition_exits_prior_mode_exactly_once\r\n    self.assertEqual(rows.count(\"MODE: dangerous exit\"), 1,\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n                     \"committed dangerous-to-ops transition lost prior exit\")\r\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: 0 != 1 : committed dangerous-to-ops transition lost prior exit\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.020s\r\n\r\nFAILED (failures=1)\r\n",
+ "scope": "Reversible JSON transport of exact original UTF8 output; original Temp bytes retained unchanged. This projection is not the original raw file."
+}

@@ -8,6 +8,7 @@ import json
 from pathlib import Path
 import re
 import unittest
+from unittest import mock
 
 
 REPO = Path(__file__).resolve().parents[2]
@@ -178,6 +179,18 @@ def _historical_status_body(body):
     return body
 
 
+# The reviewed owner-attribution correction changes only this paragraph. Keep
+# the historical whole-default digest above and reject every other byte drift.
+_INIT_ATTRIBUTION_BEFORE = 'Governance records live in `.codearbiter/`. Opted-in hooks also maintain managed\nGit shims and Git-common enforcement bookkeeping; the task-board writer retains\nits lock sidecar and maintains its exact Git-common `info/exclude` rule. These\nowners retain their existing permissions and preserve foreign hooks and user\nconfiguration. Use the explicit-root passive check below before entering an\nunfamiliar repository session; a later skill cannot undo startup effects.\n'
+_INIT_ATTRIBUTION_REVIEWED = "Governance records live in `.codearbiter/`. Opted-in hooks also maintain managed\nGit shims and Git-common enforcement bookkeeping; the task-board writer retains\nits lock sidecar. Initialization adds the sidecar's exact Git-common `info/exclude`\nrule under an exclusive lock. These owners retain their existing permissions and\npreserve foreign hooks and user configuration. Use the explicit-root passive check below before entering an\nunfamiliar repository session; a later skill cannot undo startup effects.\n"
+
+
+def _historical_init_body(body):
+    if body.count(_INIT_ATTRIBUTION_REVIEWED) != 1 or _INIT_ATTRIBUTION_BEFORE in body:
+        raise AssertionError("init attribution correction differs from its reviewed contract")
+    return body.replace(_INIT_ATTRIBUTION_REVIEWED, _INIT_ATTRIBUTION_BEFORE, 1)
+
+
 def command_source(slug: str) -> str:
     text = (COMMANDS / f"{slug}.md").read_text(encoding="utf-8")
     if slug in COMPOSED_OWNERS:
@@ -323,7 +336,36 @@ class CommandRouteCompatibilityTest(unittest.TestCase):
                 else:
                     if slug == "status":
                         body = _historical_status_body(body)
+                    elif slug == "init":
+                        body = _historical_init_body(body)
                     self.assertEqual(digest(MODES_RE.sub("", body)), expected)
+
+    def test_reviewed_init_owner_attribution_preserves_the_historical_default(self):
+        # The approved correction names the actual writer without changing the
+        # activation, scaffold, permissions, passive check or additive modes.
+        self.assertEqual(EXPECTED_DEFAULT_BODY_SHA256["init"],
+                         "e37a00a1b0d5d8ce05c5120449a0bc3a9bb29a0995c10a6e3abc60cb4b684f1d")
+        self.test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes()
+
+    def test_init_attribution_normalization_refuses_changed_duplicate_or_unrelated_text(self):
+        original = command_body
+        body = original("init")
+        reviewed = "Governance records live in `.codearbiter/`. Opted-in hooks also maintain managed\nGit shims and Git-common enforcement bookkeeping; the task-board writer retains\nits lock sidecar. Initialization adds the sidecar's exact Git-common `info/exclude`\nrule under an exclusive lock. These owners retain their existing permissions and\npreserve foreign hooks and user configuration. Use the explicit-root passive check below before entering an\nunfamiliar repository session; a later skill cannot undo startup effects.\n"
+        altered = (
+            body.replace(reviewed, ""),
+            body + reviewed,
+            body.replace("Initialization adds the sidecar's exact", "Every writer adds the sidecar's exact"),
+            body.replace("under an exclusive lock", "without an exclusive lock"),
+            body.replace("Use the explicit-root passive check", "Skip the explicit-root passive check"),
+            body.replace("no symlinks, no shims, no dual", "symlinks, shims and a dual"),
+        )
+        for candidate in altered:
+            with self.subTest(candidate=candidate[-80:]):
+                self.assertNotEqual(candidate, body)
+                with mock.patch(__name__ + ".command_body", side_effect=lambda slug: candidate if slug == "init" else original(slug)):
+                    result = unittest.TestResult()
+                    self.__class__("test_default_canonical_bodies_are_byte_frozen_except_for_additive_modes").run(result)
+                    self.assertFalse(result.wasSuccessful(), "unreviewed init text was accepted")
 
     def test_status_recovery_projection_keeps_exact_read_only_bounded_contract(self):
         body = command_body("status")

@@ -1,0 +1,785 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-011",
+  "positive_input_join": {
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": {
+      "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+      "bytes": 9931,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+        "bytes": 9931
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": {
+      "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "bytes": 8027,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+        "bytes": 8027
+      }
+    },
+    "plugins/ca-sandbox/README.md": {
+      "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+      "bytes": 6301,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+        "bytes": 6301
+      }
+    }
+  },
+  "current_input_membership": [],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:SW02:02",
+      "frozen_record": {
+        "transition_id": "SW02:02",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "routed",
+          "from_state": "routed",
+          "event": "invoke separate driver",
+          "guard": "operator follows prescribed skill route",
+          "to": "workflow gate pending",
+          "effects": "Use separate claude-inside.js entrypoint rather than sandbox subcommand.",
+          "failure_retry": "Binary separation is routing/discoverability, not mechanical verification that five prose phases occurred; SW-F08.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "separate binary claim",
+              "lines": [
+                30,
+                45
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:02"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e0a054bcc0dfcc7ebd3cf4fbeb789e0034c5cff80aabbee747734bd349afda33",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:03",
+      "frozen_record": {
+        "transition_id": "SW02:03",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "preflight evidence read",
+          "from_state": "preflight evidence read",
+          "event": "choose posture",
+          "guard": "named offline or anthropic-only policy and explicit token-only boundary",
+          "to": "posture chosen",
+          "effects": "Default offline; label Anthropic-only experimental; state that this box carries token and no untrusted source.",
+          "failure_retry": "Wide-open/third policy rejected; token+source request stops and must be split into distinct boxes.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "Phase 1",
+              "lines": [
+                51,
+                67
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:03"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "15967585516d4529549d04807de0a9cd9674bd0ac1c55563ee4f8ec09ded2530",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:04",
+      "frozen_record": {
+        "transition_id": "SW02:04",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "posture chosen",
+          "from_state": "posture chosen",
+          "event": "build or reuse image",
+          "guard": "pinned Claude CLI SemVer, DISABLE_AUTOUPDATER=1, reviewed digest-pinned node base",
+          "to": "image qualified by instruction",
+          "effects": "Prescribe image construction and version/base inspection through driver builder.",
+          "failure_retry": "Floating CLI/base fails model-guided gate; arbitrary --image acceptance is not evidence of completed qualification.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "Phase 2",
+              "lines": [
+                69,
+                90
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:04"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9e192466d0073d20822756277f1d149371feb445f166be011d9c625b40fafeeb",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:05",
+      "frozen_record": {
+        "transition_id": "SW02:05",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "image definition changes",
+          "from_state": "image definition changes",
+          "event": "change base digest",
+          "guard": "reviewed dependency change selected",
+          "to": "requalification requested",
+          "effects": "Prescribe digest resolution and credential-boundary/isolation-suite rerun.",
+          "failure_retry": "Previous Spike/ADR is historical evidence; does not automatically qualify changed image.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "base update",
+              "lines": [
+                85,
+                90
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:05"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ef32944fe67baf9097911c00c655a5225ba7a474c229bbfcaccb84e4dba57053",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:06",
+      "frozen_record": {
+        "transition_id": "SW02:06",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "image qualified by instruction",
+          "from_state": "image qualified by instruction",
+          "event": "source credential",
+          "guard": "approved-store OAuth token available in scoped environment; no argv/bind/log/prompt exposure",
+          "to": "token source checked",
+          "effects": "Pass CLAUDE_CODE_OAUTH_TOKEN by environment only.",
+          "failure_retry": "Do not invent missing token or store approval; --token/source-volume flags are separately rejected by actual CLI.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "Phase 3",
+              "lines": [
+                92,
+                109
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:06"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8ca8f1e8fa4c436f0cde78f5c5042e34e7ee40eafe13f5c0a0bc214d0725a90e",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:07",
+      "frozen_record": {
+        "transition_id": "SW02:07",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "token source checked",
+          "from_state": "token source checked",
+          "event": "choose home persistence",
+          "guard": "HOME backed by named volume, not host bind",
+          "to": "home volume selected",
+          "effects": "Prescribe writable in-container home and retention across restart when same volume reused.",
+          "failure_retry": "Persistence description does not establish an observed authenticated session; no live host was exercised in this audit.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "home persistence",
+              "lines": [
+                103,
+                109
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:07"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "fd19d7fa26cd2619c6e5a2d1d5c4c6fcf5a5158ff7dfe5548fdbf1954735be0b",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:08",
+      "frozen_record": {
+        "transition_id": "SW02:08",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "posture/image/token checks satisfied",
+          "from_state": "posture/image/token checks satisfied",
+          "event": "launch",
+          "guard": "builder-generated argv; no sourceVolume; named policy and isolation requirements",
+          "to": "launch requested",
+          "effects": "Invoke buildClaudeRunArgs/runClaudeInside with token-only home volume; offline or experimental firewall policy.",
+          "failure_retry": "Co-mount rejection is structural; additional phase evidence remains model-guided.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "Phase 4",
+              "lines": [
+                111,
+                125
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:08"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6efbc6f8b9900dc641f9dbcecea7a3ea9300d0efb7652f58884e1bb3d81f24bd",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:10",
+      "frozen_record": {
+        "transition_id": "SW02:10",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "live proof/invariants accepted by operator",
+          "from_state": "live proof/invariants accepted by operator",
+          "event": "proceed with use",
+          "guard": "all model-guided gates judged satisfied",
+          "to": "ready",
+          "effects": "Report usable token-only box according to driver outcome.",
+          "failure_retry": "Actual separate CLI validates arguments/token presence and calls runtime; it does not receive a five-phase completion record.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "runClaudeInsideCli",
+              "lines": [
+                139,
+                181
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+            }
+          ],
+          "transition_id": "SW02:10"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "34762b9f36bcab2928dc9a3bd5655b88c2434a5a89ee19b31c081063d8fb85a6",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:11",
+      "frozen_record": {
+        "transition_id": "SW02:11",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "ready",
+          "from_state": "ready",
+          "event": "teardown",
+          "guard": "operation/session ends",
+          "to": "teardown requested",
+          "effects": "Prescribe remove container and default removal of credential home volume.",
+          "failure_retry": "Runtime S51 cleanup/unknown rules must be observed; a failed remove cannot be described as destroyed.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "Phase 5",
+              "lines": [
+                132,
+                145
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:11"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ec891b24bbc527986ee98190e42f0d62772a9de8140ed29376b3eed08967c029",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:12",
+      "frozen_record": {
+        "transition_id": "SW02:12",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "explicit recorded --keep-volume choice",
+          "guard": "retention deliberately selected and recorded",
+          "to": "credential volume retained",
+          "effects": "Keep named home volume; remove container; identify retained credential-bearing resource.",
+          "failure_retry": "Prose does not define the durable record format; do not fabricate one or treat default retention as authorized.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "explicit credential retention",
+              "lines": [
+                136,
+                145
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:12"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c32cbd243e9ea8bc3ecf60478158590702e524ac094f98ffeaa4417b7439435d",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:13",
+      "frozen_record": {
+        "transition_id": "SW02:13",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "default cleanup completes",
+          "guard": "container/credential volume absent in selected scope",
+          "to": "credential volume removed",
+          "effects": "Report verified absence and retained cached images only.",
+          "failure_retry": "Unknown/failing observation blocks success. Global-label wording should not authorize removal of other unrelated active boxes.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "cleanup confirmation",
+              "lines": [
+                139,
+                145
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:13"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d3f35b4d5f113618e111e7b2fb0c65689500ae3ed57c94538c4ea505bec659fb",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:SW02:14",
+      "frozen_record": {
+        "transition_id": "SW02:14",
+        "machine_id": "SW02",
+        "owner": "sandbox",
+        "baseline": {
+          "from": "retained credential volume",
+          "from_state": "retained credential volume",
+          "event": "new token-only container on same volume",
+          "guard": "explicit subsequent run passes posture/image/token gates again",
+          "to": "persistence reused",
+          "effects": "Instruction expects retained home state/session to be available after restart.",
+          "failure_retry": "Existing volume does not waive token/source separation or current policy admission.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+              "symbol": "restart semantics",
+              "lines": [
+                103,
+                105
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+            }
+          ],
+          "transition_id": "SW02:14"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d270cbabad77f9547ccc03e024a0598a6071b9613ce3a5f7bd2dbce0da0fc0d6",
+      "group": "source-group-011",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "sandbox-normative-boundaries",
+      "paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside.js"
+      ],
+      "assessment": "Actual command/skill/catalog/README use separate container and volume discovery snapshots, not globalt0 or arbitrary new-resource preservation. Claude-inside header/usage identify phases as guidance and preserve real token/argv/policy/co-mount guards. Prior complete finite SW/source65 analyses apply; no model execution, default global destruction, consumer maintainer prerequisites or new approval ceremony."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

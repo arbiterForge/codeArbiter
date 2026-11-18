@@ -1,0 +1,24 @@
+{
+ "schema": "codearbiter.genuine-zero-delta-integration-merge/1",
+ "head": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "incoming": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "merge_base": "3766b0115bb1a568b375d778bc6da9cb48e57816",
+ "identical_incoming_base_tree": "2dfcf37c50ccc3dd7c5aac1c43cc321c6e7f3793",
+ "actual_command": [
+  "git",
+  "merge",
+  "--no-commit",
+  "--no-ff",
+  "d4822a5689cd9c3b157242303236cb26227e0ea5"
+ ],
+ "owned_alternate_index": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-zero-delta-integration-merge-rttarcun\\index",
+ "returncode": 0,
+ "real_index_unchanged": true,
+ "real_status_unchanged": true,
+ "head_unchanged": true,
+ "physical_subjects_unchanged": true,
+ "protected_artifacts_unchanged": true,
+ "merge_head": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "final_commit": "PENDING normal reviewed commit with actual MERGE_HEAD and the preserved real staged index",
+ "main_merge": false
+}

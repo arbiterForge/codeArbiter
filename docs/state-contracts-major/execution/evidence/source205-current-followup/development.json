@@ -1,0 +1,86 @@
+{
+ "schema": "codearbiter.major.source205-current-followup/1",
+ "recorded_at": "2026-11-17T08:27:28.387761+00:00",
+ "controller_anchor": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "branch": "codex/state-contracts-mode-and-adoption",
+ "integration_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "source_cells_added": 205,
+ "actual_private_source_records": 717,
+ "planned": {
+  "findings": 49,
+  "machines": 12,
+  "transitions": 56,
+  "total": 117
+ },
+ "reviews": [
+  {
+   "scope": "kernel67-original",
+   "path": "docs/state-contracts-major/execution/evidence/source205-current-followup/reviews/kernel67-original.json",
+   "sha256": "29639ae12300ff8ced46e0558536379758fffef46d2488abc634a57e4239c4af",
+   "bytes": 11228
+  },
+  {
+   "scope": "kernel7-owner-correction",
+   "path": "docs/state-contracts-major/execution/evidence/source205-current-followup/reviews/kernel7-owner-correction.json",
+   "sha256": "d8add6ebf84bcd6ea15a3b0a0bb6ed809f0e1016e6cb1200d9bbc63a9a70cda4",
+   "bytes": 1747
+  },
+  {
+   "scope": "hooks-lifecycle94",
+   "path": "docs/state-contracts-major/execution/evidence/source205-current-followup/reviews/hooks-lifecycle94.json",
+   "sha256": "bd93303e9c7074d4dac7d9f2a89d7f5a40aa6f6d8b801d0889f4886e66f7cd44",
+   "bytes": 15005
+  },
+  {
+   "scope": "repaired22-current",
+   "path": "docs/state-contracts-major/execution/evidence/source205-current-followup/reviews/repaired22-current.json",
+   "sha256": "26e191d12d1b400a210be78379cd94dc72cae6e0148656281cd9f80fa7cf5b91",
+   "bytes": 7260
+  },
+  {
+   "scope": "generator22",
+   "path": "docs/state-contracts-major/execution/evidence/source205-current-followup/reviews/generator22.json",
+   "sha256": "59b4b77c8ebef7011a4ee851ba47a15548cfeb5519ad3fc0e3d65f7b28eba9bb",
+   "bytes": 6539
+  },
+  {
+   "scope": "generator-copy-followthrough",
+   "path": "docs/state-contracts-major/execution/evidence/source205-current-followup/reviews/generator-copy-followthrough.json",
+   "sha256": "84970e196b11bbec708f0dbf9c6792202b3665baee950d24022eee8eaf581043",
+   "bytes": 2703
+  }
+ ],
+ "verification": "Original immutable owner authenticates717 current source-only projections in a distinct prospective fixture. Full staged owner follows. No original historical runtime evidence renewed. One7cell missing owning knowledge.py input was corrected with actual owner/callee inspection; other198cells already passed.",
+ "preserved_history": "Every old advanced row/history is retained. Three copied historical Pi proof JSON files retain their original exact bytes/CRLF after immutable original-path/ref-commit authentication; only these raw objects receive per-file CR handling. All current authored JSON is ordinary checked content.",
+ "code_delivered_locally": {
+  "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+  "mode": "Attributable prior exit/new entry pair, bounded exact replay and truthful storage uncertainty; implicitdefault/unbacked prior marker no fabricated exit.",
+  "work_reader": "Regular acquired descriptor, unchanged identity and bounded read; platform/ancestor/content-race limits retained.",
+  "docs_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+  "docs": "Existing Farm run ID refusal reflected in public caution."
+ },
+ "merged_child": {
+  "pr": 1118,
+  "head_commit": "3766b0115bb1a568b375d778bc6da9cb48e57816",
+  "merge_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "merged_at": "2026-11-17T08:22:03Z",
+  "original_checks_passed": 88,
+  "original_checks_skipped": 11,
+  "CI": 44041677698,
+  "Docs": 44041677642,
+  "result": "SUCCESS"
+ },
+ "normal_integration": {
+  "head_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "CI": 44046125471,
+  "Docs": 44046125414,
+  "state": "STARTED_NOT_QUALIFIED",
+  "producer": "Original trusted push on major/state-contracts; sole watcher owns readback.",
+  "prior_Ac82": "FAILED: exactly10addedpyc, RPC andparentTUIexecuted; effectsacceptanceassertionnotrun. Detached-Bfix preventsfuturewrites, nohistoricalsolewriterclaim."
+ },
+ "task_status_promotion": false,
+ "runtime_epoch_renewal": false,
+ "remaining": "49 findings,12hook machines,48hook+8native transitions. Missing disposition evidence does not establish missing implementation. Reconcile actual named tests/source, normal13installedcells and uncovered behavioral/upgrade/rollback/participant journeys before qualified task closure.",
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

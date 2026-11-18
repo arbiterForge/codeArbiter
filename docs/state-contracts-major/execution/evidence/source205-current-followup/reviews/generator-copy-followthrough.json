@@ -1,0 +1,49 @@
+{
+  "verdict": "PASS",
+  "reviewer": "/root",
+  "prior_review_sha256": "59b4b77c8ebef7011a4ee851ba47a15548cfeb5519ad3fc0e3d65f7b28eba9bb",
+  "retained_advanced_whole_rows": 8,
+  "lossless_inherited_proof_copies": 3,
+  "verification": "All3copies equal exact immutable original_path at explicit ref_commit when present, otherwise current retained object. Includes prior historical isolation proof beyond the2active proof digests. No source/runtime renewal.",
+  "proofs": [
+    {
+      "original_path": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-preserved-proof.json",
+      "copy": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\01-predecessor.json",
+        "sha256": "e00ed970e3acaadf1ff491748f4bbc5341c57dea745ca5e56339a75c97105f95",
+        "bytes": 4644
+      },
+      "destination": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited/01-predecessor.json",
+      "kind": "conformance-check",
+      "original_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref_commit": null,
+      "scope": "Lossless historical proof transport; no fresh source/runtime claim."
+    },
+    {
+      "original_path": "docs/state-contracts-major/execution/evidence/pi-committed51-45a6/isolation3-tested.json",
+      "copy": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\02-predecessor.json",
+        "sha256": "155786c392363c9a2a0e44bf0100e35d4ec047ece8d80c5a061b3b27305daddf",
+        "bytes": 26208
+      },
+      "destination": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited/02-predecessor.json",
+      "kind": "test",
+      "original_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "ref_commit": null,
+      "scope": "Lossless historical proof transport; no fresh source/runtime claim."
+    },
+    {
+      "original_path": "docs/state-contracts-major/execution/evidence/pi-committed51-a0f4/isolation3-tested.json",
+      "copy": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\inherited\\03-predecessor.json",
+        "sha256": "782cdfbed8d09400351d876ac814ee2806c5c1adc7a87d493a8dcf1795c58dd4",
+        "bytes": 26267
+      },
+      "destination": "docs/state-contracts-major/execution/evidence/generator-pi-source-cfa8/inherited/03-predecessor.json",
+      "kind": "test",
+      "original_commit": "a0f4bc274c78613b739757743616bd23b1fe63ef",
+      "ref_commit": "45a6a8e33db6c6143bbddc4bd009b7e7bac79207",
+      "scope": "Lossless historical proof transport; no fresh source/runtime claim."
+    }
+  ]
+}

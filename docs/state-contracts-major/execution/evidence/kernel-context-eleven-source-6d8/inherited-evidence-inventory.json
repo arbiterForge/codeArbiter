@@ -1,0 +1,654 @@
+{
+ "schema": "codearbiter.retained-scope-inventory/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "rows": [
+  {
+   "section": "transitions",
+   "id": "hooks:verifier:07",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-04",
+     "HW-08",
+     "HW-11",
+     "HW-27"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+      "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334"
+     },
+     {
+      "kind": "test",
+      "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+      "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/ce3-producer-component.json",
+      "sha256": "f890791dada7ea5dad8fd5da3afb00e1f7c430539760a2daf8e9cc923b825c71"
+     },
+     {
+      "kind": "test",
+      "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "ref": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/local-installed-stage-component.json",
+      "sha256": "0bd0dbc7603b09ee20da7b930468ba47410fc29c6de4248d3112ab8e9db8d580"
+     }
+    ],
+    "candidate_contract_note": "Real Python npm-script producer on Windows0/30/31/32workspaces emits4/35/36/37files; current Go schema, role and completion consumers accept. Current named negatives reject33workspace roles,38totalfiles, duplicate/unknown roles, changed runtime hash, mutated argv/path, missing root/helper and malformed/unknown fields.",
+    "evidence_history": [
+     {
+      "kind": "test",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-current-proposed/hooks-npm-boundary-tested.json",
+      "sha256": "e049ab751db5dd06ad7f83360b31280f93cade7a7b26faf2db2426c45cb182ea",
+      "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+     },
+     {
+      "kind": "test",
+      "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-verifier07-successor/hooks-verifier07-tested-successor.json",
+      "sha256": "6d6441230526abdbcf44ba0dc691d59cb4c6ec5669316cd6c4cb6560dc16646a",
+      "ref_commit": "acf1aeeafc44696fbac966cba7eb999e14857514"
+     }
+    ]
+   },
+   "row_sha256": "0e50e6eb8070d7a105530d92a5da2951daa906ad86aa1d29d4609dc2a36ed0d4",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:native-client:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "HW-11",
+     "HW-25",
+     "DIST-M01",
+     "HW-27"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json",
+      "sha256": "0ebebeb80ad5d8c904a45b188de0a36419ac57f4622d225da7b82056fc4e183d"
+     }
+    ]
+   },
+   "row_sha256": "46b10a09624c54d77a83794ae3a76a52d90e05420cb1cb1e90bb62bed0881550",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:06",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-provenance:07",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-snapshot:02",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-snapshot:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-snapshot:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-snapshot:06",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-delivery:01",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-delivery:03",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-delivery:04",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-delivery:05",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  },
+  {
+   "section": "transitions",
+   "id": "hooks:context-delivery:06",
+   "row": {
+    "owner": "hooks-workflows",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "HW-27"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+      "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617"
+     }
+    ],
+    "candidate_contract_note": "Whole baseline source guard/effect/retry conformance only; no runtime/model/host/task/scenario or changed-event acceptance.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "b03efcbd1bed00be2207d182aa9bfbd83ecb4fea2c683ffeb04848b18027c664",
+   "history_policy": "Entire row retained; no successor/ref/status/epoch mutation"
+  }
+ ],
+ "proofs": [
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/hosted-Go-component.json",
+   "literal_copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\01-predecessor.json",
+    "sha256": "bcdbfe671a9124b1d79daa23ae4c1defb753172c909e0a6e4bbece8c781e4334",
+    "bytes": 44029
+   },
+   "kind": "test",
+   "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "scope": "Historical retained proof only; original raw refs and limits remain unchanged."
+  },
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/ce3-producer-component.json",
+   "literal_copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\02-predecessor.json",
+    "sha256": "f890791dada7ea5dad8fd5da3afb00e1f7c430539760a2daf8e9cc923b825c71",
+    "bytes": 53366
+   },
+   "kind": "test",
+   "commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+   "scope": "Historical retained proof only; original raw refs and limits remain unchanged."
+  },
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/native-eight-M46-components/local-installed-stage-component.json",
+   "literal_copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\03-predecessor.json",
+    "sha256": "0bd0dbc7603b09ee20da7b930468ba47410fc29c6de4248d3112ab8e9db8d580",
+    "bytes": 93317
+   },
+   "kind": "test",
+   "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+   "scope": "Historical retained proof only; original raw refs and limits remain unchanged."
+  },
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json",
+   "literal_copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\04-predecessor.json",
+    "sha256": "0ebebeb80ad5d8c904a45b188de0a36419ac57f4622d225da7b82056fc4e183d",
+    "bytes": 4063
+   },
+   "kind": "test",
+   "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+   "scope": "Historical retained proof only; original raw refs and limits remain unchanged."
+  },
+  {
+   "original_path": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-hooks-and-work143.json",
+   "literal_copy": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\inherited\\05-predecessor.json",
+    "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+    "bytes": 49859
+   },
+   "kind": "conformance-check",
+   "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+   "scope": "Historical retained proof only; original raw refs and limits remain unchanged."
+  }
+ ]
+}

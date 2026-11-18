@@ -1,0 +1,1494 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-046",
+  "positive_input_join": {
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "docs/state-contracts-major/surfaces-tasks.json": {
+      "sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+      "previous_sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+      "bytes": 147873,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+        "bytes": 147873
+      }
+    },
+    "site/scripts/execution-maps/atlas-model.ts": {
+      "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "previous_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+      "bytes": 10780,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+        "bytes": 10780
+      }
+    },
+    "site/scripts/execution-maps/atlas-render.ts": {
+      "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "previous_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "bytes": 14581,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+        "bytes": 14581
+      }
+    },
+    "site/scripts/execution-maps/atlas-theme.ts": {
+      "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "previous_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "bytes": 1559,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+        "bytes": 1559
+      }
+    },
+    "site/src/components/WorkflowAtlas.astro": {
+      "sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "previous_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "bytes": 386,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+        "bytes": 386
+      }
+    },
+    "site/src/scripts/workflow-atlas.ts": {
+      "sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "previous_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "bytes": 23374,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+        "bytes": 23374
+      }
+    },
+    "site/src/styles/workflow-atlas.css": {
+      "sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "previous_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "bytes": 10495,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+        "bytes": 10495
+      }
+    }
+  },
+  "current_input_membership": [],
+  "closed_namespace_review": null,
+  "current_owner_delta_review": {
+    "scope": "Atlas client/component/theme bounds are the same finite route, selection, markup, keyboard, responsive, zoom and print/export predicates. Historical product source labels changed at two already-declared nodes; client/type-only integration and these navigation/geometry predicates are unchanged.",
+    "atlas_leaf_review": {
+      "core/surface/commands/init.md": {
+        "path": "core/surface/commands/init.md",
+        "revision": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "blob": "74749ae037e276cda66cc6f90addf2d0ad88e914",
+        "historical_nodes_unchanged": [
+          "o-init",
+          "o-runtime",
+          "c-live"
+        ],
+        "reviewed_summary": "Repository activation gates governance and per-turn persona delivery; startup can settle mode or repair an owned global statusline earlier. The task-board writer retains its lock sidecar; initialization adds its exact Git-common info/exclude rule under an exclusive lock. Existing permissions, foreign hooks and user configuration remain preserved."
+      },
+      "core/pysrc/_bashguardlib.py": {
+        "path": "core/pysrc/_bashguardlib.py",
+        "revision": "ddd98dc1ab7a5ceb9a13ffdb4a84c7d2131d094c",
+        "blob": "383ad7d3ead2cb2cd924b2ce815cdcfd79b8317f",
+        "historical_nodes_unchanged": [
+          "f-recovery",
+          "c-read",
+          "c-proof"
+        ],
+        "reviewed_summary": "Simple quote-balanced top-level statements keep interpreter write scanning within each invocation. Binary overrides bind the actual staged candidate. Visible literal PowerShell here-string interpreter bodies reach protected-write guards; dynamic or nested stdin remains outside that finite projection. Conservative checks and existing authority gates remain in place."
+      }
+    },
+    "exact_atlas_payload_deltas": {
+      "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": {
+        "previous_sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+        "current_sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf"
+      },
+      "site/scripts/execution-maps/atlas-assistive.test.ts": {
+        "previous_sha256": "d6f067000f04a07c63a517b6842be41eadd1e73af73f860baf3b097d13788273",
+        "current_sha256": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318"
+      }
+    },
+    "docs_scope": "Original Docs coverage is still selected once. The reporting mode surrounds that same source owner with a bounded static observer, with the exact original coverage command on the fallback path. No publish or generated-site execution is claimed."
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:S61",
+      "frozen_record": {
+        "machine_id": "S61",
+        "name": "Site workflow atlas view, route, node, zoom, print and export",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "site",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 13,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "3304b09f6e6614c21436721e5d6cb1af68049f92163cce183ba391c409f20903",
+      "group": "source-group-046",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Site workflow atlas view, route, node, zoom, print and export. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "atlas-per-leaf-revisions"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+          "sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "docs/state-contracts-major/PROGRAM.md",
+      "old_span": [
+        1,
+        62
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          62
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          62
+        ]
+      ],
+      "actual0ef_file_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          62
+        ]
+      ],
+      "current_f3_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7"
+    },
+    {
+      "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+      "old_span": [
+        1,
+        8463
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          8463
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          8463
+        ]
+      ],
+      "actual0ef_file_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          8463
+        ]
+      ],
+      "current_f3_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd"
+    },
+    {
+      "path": "docs/state-contracts-major/contracts/tasks.json",
+      "old_span": [
+        1,
+        6291
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          6291
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          6291
+        ]
+      ],
+      "actual0ef_file_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          6291
+        ]
+      ],
+      "current_f3_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f"
+    },
+    {
+      "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+      "old_span": [
+        1,
+        75131
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          75131
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          75131
+        ]
+      ],
+      "actual0ef_file_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          75131
+        ]
+      ],
+      "current_f3_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+    },
+    {
+      "path": "docs/state-contracts-major/surfaces-tasks.json",
+      "old_span": [
+        1,
+        2613
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          2613
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          2613
+        ]
+      ],
+      "actual0ef_file_sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          2613
+        ]
+      ],
+      "current_f3_sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-theme.ts",
+      "old_span": [
+        1,
+        14
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "actual0ef_file_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          14
+        ]
+      ],
+      "current_f3_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0"
+    },
+    {
+      "path": "site/src/components/WorkflowAtlas.astro",
+      "old_span": [
+        1,
+        10
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          10
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          10
+        ]
+      ],
+      "actual0ef_file_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          10
+        ]
+      ],
+      "current_f3_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        1,
+        565
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          565
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          565
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          565
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/styles/workflow-atlas.css",
+      "old_span": [
+        1,
+        92
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "block_sha256_LF": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          92
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          1,
+          92
+        ]
+      ],
+      "actual0ef_file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          1,
+          92
+        ]
+      ],
+      "current_f3_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        36,
+        73
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "bdea6d73f6622f6944fe3ceb637560866f7f05288a3e91ef2d53dbe2aca42842",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          36,
+          73
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          36,
+          73
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          36,
+          73
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        261,
+        296
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "d528ff692afd9cb939846c0472b5198a1184dd4bae0f1832a87fcaff10f6254a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          261,
+          296
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          261,
+          296
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          261,
+          296
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        337,
+        350
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "de1d23025fb4221828f90626a14cc1caf465ba07ed3aa44bb95832edba4e6195",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          337,
+          350
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          337,
+          350
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          337,
+          350
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/components/WorkflowAtlas.astro",
+      "old_span": [
+        7,
+        10
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "28f2e210a83428c4bf8553f0f98946affff39146da9d5548bc3026168cc9191c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          7,
+          10
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          7,
+          10
+        ]
+      ],
+      "actual0ef_file_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          7,
+          10
+        ]
+      ],
+      "current_f3_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "old_span": [
+        47,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "2a8fa5ea7a952f2632d3ed6d345bbbd077d1e217f6fc8d592ebf682a36e8f768",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          47,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          47,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          47,
+          49
+        ]
+      ],
+      "current_f3_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        353,
+        420
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "c926a553106d525741a4394e717f4f2f4f7705924c4a77765e2e03b67800e7da",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          353,
+          420
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          353,
+          420
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          353,
+          420
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        160,
+        178
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "da4c1f64a6b5fe563a00407f1eb3b2292a4eea17db77d2278cd0a02e6ae1f0d8",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          160,
+          178
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          160,
+          178
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          160,
+          178
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        365,
+        386
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "e1ad94132feb1267586a448751aa4d514d1fd0a6d09fb07f7bc694d96989fc9c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          365,
+          386
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          365,
+          386
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          365,
+          386
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        422,
+        430
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "960f52ca6045019ec9df5cf7a9f27271d2997f2f33348d42b7ce9d9be7b0408e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          422,
+          430
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          422,
+          430
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          422,
+          430
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        111,
+        114
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "94480efa23e74022342521e37e031982dd634bb0867409bf3b57c3d35f5ec3a2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          111,
+          114
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          111,
+          114
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          111,
+          114
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        180,
+        223
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "b3f1cd156251b067060f9361c326edec0c3cc17bfe766f26272dabd547ad4543",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          180,
+          223
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          180,
+          223
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          180,
+          223
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        261,
+        273
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "c625266e6ca1d40a6502815834653aa2acc826c37f1186d86608fea95a7a3abe",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          261,
+          273
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          261,
+          273
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          261,
+          273
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        307,
+        324
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "b53f223edb4acc75220855e9670fb41d668455a7add0c2ae3e33c6fbb192837b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          307,
+          324
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          307,
+          324
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          307,
+          324
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        261,
+        275
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "0e854c069cc9b3ecb8a11c5328052e2262fb6a01369671bb966e4c26e1c9f7a6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          261,
+          275
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          261,
+          275
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          261,
+          275
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        327,
+        335
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "0693bff4c6675a51d85b7c7dff9ab61b1b34fd219e77d58eaecee9864a8b56da",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          327,
+          335
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          327,
+          335
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          327,
+          335
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        129,
+        158
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "c21fdc0c570ace8a2d6b98aa54ff9bd06f9e03309bbc16146826d1bbcd428b17",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          129,
+          158
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          129,
+          158
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          129,
+          158
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        445,
+        538
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "f2d4bcfefb3f81e7368e3928c4dc281c8a1f8fafdecb14f78a2b4fcbd142168a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          445,
+          538
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          445,
+          538
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          445,
+          538
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        44,
+        53
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "5e3002ef7eec32bf15efc1de2897c35334f25c0af4fec327887e8c668dd3b2f0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          44,
+          53
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          44,
+          53
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          44,
+          53
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        224,
+        241
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "a672dfbfa1fd98d35bb4fc4e7a6431f18a7c5e75b4a74d8f9060d7b31ccdf235",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          224,
+          241
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          224,
+          241
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          224,
+          241
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        465,
+        475
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "1c504a6e9c0f0b4711678164bf95aed1e31ce969bdeb3174fef962a834bee23b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          465,
+          475
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          465,
+          475
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          465,
+          475
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        522,
+        537
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "9b2e74478dfbd305dab9138454f5ee9f2524551f632c43d0865ac35ee7d757ba",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          522,
+          537
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          522,
+          537
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          522,
+          537
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        118,
+        123
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "3b135f5f7a9762452f8f664fdfc02ff32f5ce7025969af6258b289e8ced5b768",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          118,
+          123
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          118,
+          123
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          118,
+          123
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        256,
+        260
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "71ba1bb379c59d635861c897d219ed8c13d718d9475abbffeaafea4fa54cd6c4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          256,
+          260
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          256,
+          260
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          256,
+          260
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "old_span": [
+        49,
+        49
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "0cc584450d1af95227800cf80e3abde4bd61be2ddf92a34a2f12273b9280688d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          49,
+          49
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          49,
+          49
+        ]
+      ],
+      "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          49,
+          49
+        ]
+      ],
+      "current_f3_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        242,
+        255
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "c956684ca6332141b7d0d93f92f24d6d0b09c6d1a430f04f4acedbb9417a40cb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          242,
+          255
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          242,
+          255
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          242,
+          255
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/styles/workflow-atlas.css",
+      "old_span": [
+        92,
+        92
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "df877c7e18370f5aeff01adba5e117b49579e7ecae3b0610d495758fd570e53d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          92,
+          92
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          92,
+          92
+        ]
+      ],
+      "actual0ef_file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          92,
+          92
+        ]
+      ],
+      "current_f3_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        299,
+        305
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "8e05e083e19454f1eab6fb7f4c6671aeb188a0c0724672139b9379147f0229a5",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          299,
+          305
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          299,
+          305
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          299,
+          305
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        541,
+        560
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "0e8f9cb0b233ae10d1d762b403fa1f4e61ea90721b95cb823f8952ec7a4395ae",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          541,
+          560
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          541,
+          560
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          541,
+          560
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    },
+    {
+      "path": "site/src/scripts/workflow-atlas.ts",
+      "old_span": [
+        280,
+        305
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S61-inspection.json",
+      "block_sha256_LF": "190a636e4208a27ebd1edf6ccdcd657e24da9e41d6eeb33d9d3013ff78af6442",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          280,
+          305
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "actual0ef_spans": [
+        [
+          280,
+          305
+        ]
+      ],
+      "actual0ef_file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION",
+      "current_f3_spans": [
+        [
+          280,
+          305
+        ]
+      ],
+      "current_f3_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+    }
+  ],
+  "changed_old_literals": [
+    {
+      "path": "site/scripts/execution-maps/atlas-model.ts",
+      "older_witness": {
+        "path": "site/scripts/execution-maps/atlas-model.ts",
+        "old_span": [
+          1,
+          123
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+        "block_sha256_LF": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "atlas-per-leaf-revisions",
+          "paths": [
+            "site/scripts/execution-maps/atlas-model.ts",
+            "site/scripts/execution-maps/atlas-render.ts"
+          ],
+          "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+        }
+      ]
+    },
+    {
+      "path": "site/scripts/execution-maps/atlas-render.ts",
+      "older_witness": {
+        "path": "site/scripts/execution-maps/atlas-render.ts",
+        "old_span": [
+          1,
+          50
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+        "block_sha256_LF": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "atlas-per-leaf-revisions",
+          "paths": [
+            "site/scripts/execution-maps/atlas-model.ts",
+            "site/scripts/execution-maps/atlas-render.ts"
+          ],
+          "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+        }
+      ]
+    }
+  ],
+  "reused_helper_assessments": [
+    {
+      "id": "atlas-per-leaf-revisions",
+      "paths": [
+        "site/scripts/execution-maps/atlas-model.ts",
+        "site/scripts/execution-maps/atlas-render.ts"
+      ],
+      "assessment": "Optional per-change revision is validated as an exact string revision and used for that leaf, with update-level fallback only when absent. sourceHref gains an explicit string check. Escaping, source-path bounds and fixed GitHub URL remain; no hosted navigation or screenshot truth is inferred."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

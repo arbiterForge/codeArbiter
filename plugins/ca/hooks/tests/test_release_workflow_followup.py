@@ -15,11 +15,15 @@ import os
 from pathlib import Path
 import re
 import shutil
+import shlex
+import stat
 import subprocess
 import sys
 import tempfile
 import textwrap
 import unittest
+from unittest import mock
+from types import SimpleNamespace
 
 PLUGIN = Path(__file__).resolve().parents[2]
 SKILL = PLUGIN / "skills" / "release" / "SKILL.md"
@@ -62,6 +66,48 @@ def isolated_env():
     env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull,
                GIT_TERMINAL_PROMPT="0", PY=sys.executable)
     return env
+
+
+_PHASES = (b"bash-entered", b"definition-ready", b"invocation-entered", b"invocation-returned")
+_PHASE_BYTES = 128
+
+
+def _phase_regular(info):
+    return stat.S_ISREG(info.st_mode) and info.st_nlink == 1 and not (
+        getattr(info, "st_file_attributes", 0) & 0x400)
+
+
+def _phase_version(info):
+    return (info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns)
+
+
+def _last_fixture_phase(path, identity):
+    if path is None:
+        return "unavailable"
+    try:
+        before = path.lstat()
+        if not _phase_regular(before) or (before.st_dev, before.st_ino) != identity:
+            return "unavailable"
+        fd = os.open(path, os.O_RDONLY | getattr(os, "O_NOFOLLOW", 0))
+        with os.fdopen(fd, "rb") as stream:
+            opened = os.fstat(stream.fileno())
+            if not _phase_regular(opened) or _phase_version(opened) != _phase_version(before):
+                return "unavailable"
+            raw = stream.read(_PHASE_BYTES + 1)
+            after = os.fstat(stream.fileno())
+        final = path.lstat()
+        if (len(raw) > _PHASE_BYTES or not _phase_regular(final) or
+                _phase_version(after) != _phase_version(before) or
+                _phase_version(final) != _phase_version(before)):
+            return "unavailable"
+        if not raw:
+            return "entry-not-observed"
+        rows = raw[:-1].split(b"\n")
+        if not raw.endswith(b"\n") or tuple(rows) != _PHASES[:len(rows)] or len(rows) > len(_PHASES):
+            return "unavailable"
+        return rows[-1].decode("ascii")
+    except OSError:
+        return "unavailable"
 
 
 class Consumer:
@@ -191,9 +237,45 @@ class ReleaseWorkflowFollowupTest(unittest.TestCase):
         # This is the installed Claude rendering. No canonical source lookup
         # or Python reimplementation of the shell decision is involved.
         script = "set -eu\n" + body + "\n" + (trailer or name + ' "$@"\n')
-        return subprocess.run([BASH, "--noprofile", "--norc", "-c", script, "release-test", *args],
-                              cwd=consumer.root, env={**consumer.env, **(env or {})},
-                              text=True, capture_output=True, timeout=20)
+        phase = None
+        identity = None
+        diagnostic_ready = False
+        try:
+            fd, filename = tempfile.mkstemp(prefix="release-fixture-phase-", dir=self.tmp.name)
+            phase = Path(filename)
+            try:
+                info = os.fstat(fd)
+                identity = info.st_dev, info.st_ino
+            finally:
+                os.close(fd)
+            quoted = shlex.quote(os.path.relpath(phase, consumer.root).replace(os.sep, "/"))
+            def announce(value):
+                return "printf '%s\\n' " + value + " 2>/dev/null >> " + quoted + " || :\n"
+            script = ("set -eu\n" + announce("bash-entered") + body + "\n" +
+                      announce("definition-ready") + announce("invocation-entered") +
+                      (trailer or name + ' "$@"\n') + "_release_fixture_status=$?\n" +
+                      announce("invocation-returned") + 'exit "$_release_fixture_status"\n')
+            diagnostic_ready = True
+        except (OSError, ValueError):
+            # Diagnostics are best-effort and never replace the original invocation.
+            pass
+        try:
+            return subprocess.run([BASH, "--noprofile", "--norc", "-c", script, "release-test", *args],
+                                  cwd=consumer.root, env={**consumer.env, **(env or {})},
+                                  text=True, capture_output=True, timeout=20)
+        except subprocess.TimeoutExpired as failure:
+            failure.add_note("release fixture last observed phase: " +
+                             (_last_fixture_phase(phase, identity) if diagnostic_ready else "unavailable") +
+                             "; announcement only, not effect or exit completion")
+            raise
+        finally:
+            if phase is not None:
+                try:
+                    current = phase.lstat()
+                    if _phase_regular(current) and (current.st_dev, current.st_ino) == identity:
+                        phase.unlink()
+                except OSError:
+                    pass
 
     def test_first_release_reentry_for_every_merge_method(self):
         for method in ("ff", "squash", "merge"):
@@ -388,6 +470,133 @@ class ReleaseWorkflowFollowupTest(unittest.TestCase):
                 self.assertEqual(result.stdout, "")
                 self.assertIn("timed out" if mode == "timeout" else "injected probe failure", result.stderr)
                 self.assertEqual(before, c.fingerprint())
+
+
+class ReleaseFixtureDiagnosticsTest(unittest.TestCase):
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory(prefix="ca-release-phase-control-")
+        self.addCleanup(self.tmp.cleanup)
+        root = Path(self.tmp.name) / "consumer"
+        root.mkdir()
+        self.consumer = SimpleNamespace(root=root, env={"FIXTURE": "inert"})
+        self.driver = ReleaseWorkflowFollowupTest("test_prepared_nondefault_branch_passes_actual_guard")
+        self.driver.tmp = self.tmp
+        self.driver.text = SKILL.read_text(encoding="utf-8")
+
+    def test_timeout_retains_last_closed_phase_and_the_original_exception(self):
+        captured = {}
+        def timeout(argv, **kwargs):
+            captured.update(argv=argv, kwargs=kwargs)
+            for phase in Path(self.tmp.name).glob("release-fixture-phase-*"):
+                phase.write_bytes(b"bash-entered\ndefinition-ready\ninvocation-entered\n")
+            failure = subprocess.TimeoutExpired(argv, 20, output=b"original output", stderr=b"original error")
+            captured["failure"] = failure
+            raise failure
+        with mock.patch.object(subprocess, "run", side_effect=timeout):
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                self.driver.run_definition(self.consumer, "release_require_commit_path", args=("one value",))
+        self.assertIs(raised.exception, captured["failure"])
+        self.assertEqual(raised.exception.timeout, 20)
+        self.assertEqual(raised.exception.output, b"original output")
+        self.assertEqual(raised.exception.stderr, b"original error")
+        self.assertEqual(captured["kwargs"], dict(cwd=self.consumer.root, env=self.consumer.env,
+                                                text=True, capture_output=True, timeout=20))
+        self.assertEqual(captured["argv"][:4], [BASH, "--noprofile", "--norc", "-c"])
+        self.assertEqual(captured["argv"][5:], ["release-test", "one value"])
+        self.assertIn(shell_definition(self.driver.text, "release_require_commit_path"), captured["argv"][4])
+        self.assertIn('release_require_commit_path "$@"\n', captured["argv"][4])
+        self.assertEqual(getattr(raised.exception, "__notes__", []), [
+            "release fixture last observed phase: invocation-entered; announcement only, not effect or exit completion"])
+
+
+    def _timeout_with_phase(self, raw, mutate=None):
+        before = set(Path(self.tmp.name).glob("release-fixture-phase-*"))
+        def timeout(argv, **kwargs):
+            phases = set(Path(self.tmp.name).glob("release-fixture-phase-*")) - before
+            self.assertEqual(len(phases), 1)
+            phase = phases.pop()
+            phase.write_bytes(raw)
+            if mutate:
+                mutate(phase)
+            raise subprocess.TimeoutExpired(argv, 20, output=b"kept output", stderr=b"kept error")
+        with mock.patch.object(subprocess, "run", side_effect=timeout):
+            with self.assertRaises(subprocess.TimeoutExpired) as raised:
+                self.driver.run_definition(self.consumer, "release_require_commit_path")
+        self.assertEqual(raised.exception.output, b"kept output")
+        self.assertEqual(raised.exception.stderr, b"kept error")
+        return raised.exception.__notes__
+
+    def test_empty_prefix_malformed_and_oversized_progress_have_closed_notes(self):
+        for raw, expected in (
+            (b"", "entry-not-observed"),
+            (b"bash-entered\n", "bash-entered"),
+            (b"bash-entered\ndefinition-ready\n", "definition-ready"),
+            (b"bash-entered\ndefinition-ready\ninvocation-entered\ninvocation-returned\n", "invocation-returned"),
+            (b"invocation-entered\n", "unavailable"),
+            (b"bash-entered\r\n", "unavailable"),
+            (b"bash-entered", "unavailable"),
+            (b"bash-entered\nraw-secret-path-environment-canary\n", "unavailable"),
+            (b"x" * 129, "unavailable"),
+        ):
+            with self.subTest(expected=expected, bytes=len(raw)):
+                notes = self._timeout_with_phase(raw)
+                self.assertEqual(notes, ["release fixture last observed phase: " + expected +
+                                         "; announcement only, not effect or exit completion"])
+                self.assertNotIn("canary", str(notes))
+
+    def test_nonregular_replaced_linked_or_unreadable_progress_is_unavailable(self):
+        def directory(path):
+            path.unlink()
+            path.mkdir()
+        def replaced(path):
+            original = path.with_suffix(".prior")
+            path.rename(original)
+            path.write_bytes(b"bash-entered\n")
+        def linked(path):
+            os.link(path, path.with_suffix(".linked"))
+        for mutation in (directory, replaced, linked):
+            with self.subTest(mutation=mutation.__name__):
+                self.assertIn("phase: unavailable;", self._timeout_with_phase(b"bash-entered\n", mutation)[0])
+        path = Path(self.tmp.name) / "unreadable-control"
+        path.write_bytes(b"bash-entered\n")
+        info = path.stat()
+        with mock.patch.object(os, "open", side_effect=PermissionError("must not enter a note")) as denied:
+            self.assertEqual(_last_fixture_phase(path, (info.st_dev, info.st_ino)), "unavailable")
+        denied.assert_called_once()
+
+    def test_real_shell_sink_denial_preserves_streams_arguments_and_exit_status(self):
+        real_run = subprocess.run
+        for status in (0, 17):
+            self.driver.text = '```sh\nfixture_control() (\n  printf "%s" "$1"\n  printf "kept stderr" >&2\n  exit ' + str(status) + '\n)\n```\n'
+            for denial in ("create", "write"):
+                with self.subTest(status=status, denial=denial):
+                    before = set(Path(self.tmp.name).glob("release-fixture-phase-*"))
+                    def invoke(argv, **kwargs):
+                        self.assertEqual(kwargs["timeout"], 20)
+                        self.assertEqual(argv[5:], ["release-test", "one literal $value with spaces"])
+                        if denial == "write":
+                            phases = set(Path(self.tmp.name).glob("release-fixture-phase-*")) - before
+                            self.assertEqual(len(phases), 1)
+                            phase = phases.pop()
+                            phase.unlink()
+                            phase.mkdir()  # Real shell redirection refusal, never an arbitrary file.
+                        return real_run(argv, **kwargs)
+                    with mock.patch.object(subprocess, "run", side_effect=invoke):
+                        if denial == "create":
+                            with mock.patch.object(tempfile, "mkstemp", side_effect=PermissionError("private trace denied")):
+                                result = self.driver.run_definition(self.consumer, "fixture_control", args=("one literal $value with spaces",))
+                        else:
+                            result = self.driver.run_definition(self.consumer, "fixture_control", args=("one literal $value with spaces",))
+                    self.assertEqual(result.returncode, status)
+                    self.assertEqual(result.stdout, "one literal $value with spaces")
+                    self.assertEqual(result.stderr, "kept stderr")
+
+    def test_ordinary_completed_process_is_returned_without_projection(self):
+        result = subprocess.CompletedProcess(["fixed original argv"], 23, "original stdout", "original stderr")
+        with mock.patch.object(subprocess, "run", return_value=result):
+            observed = self.driver.run_definition(self.consumer, "release_require_commit_path", env={"EXTRA": "inert"})
+        self.assertIs(observed, result)
+        self.assertEqual((observed.returncode, observed.stdout, observed.stderr), (23, "original stdout", "original stderr"))
 
 
 if __name__ == "__main__":

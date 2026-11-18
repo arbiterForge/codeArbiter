@@ -1,0 +1,241 @@
+{
+ "actual_commands": [
+  {
+   "label": "existing-debugger-affected",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\runner.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\green-repo",
+    "DebuggerInboxTests.test_collector_outcome_survives_final_wait_failure",
+    "DebuggerInboxTests.test_final_owned_worker_cleanup_keeps_poll_and_wait_operations",
+    "DebuggerInboxTests.test_closed_transport_error_codes_reject_bool_range_and_exception_text",
+    "DebuggerInboxTests.test_pipe_known_winerror_is_retained_before_closed_transport",
+    "DebuggerInboxTests.test_parent_retains_closed_transport_operation_and_primary_failure",
+    "DebuggerInboxTests.test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes",
+    "DebuggerInboxTests.test_hash_only_warm_records_are_closed_not_authority_and_pid_associated",
+    "DebuggerInboxTests.test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution",
+    "DebuggerInboxTests.test_collector_provider_attribution_distinguishes_missing_refused_and_deadline",
+    "DebuggerInboxTests.test_current_instruction_projection_uses_actual_stack_frame_offsets",
+    "DebuggerInboxTests.test_worker_v3_attribution_and_legacy_readers_remain_closed",
+    "DebuggerInboxTests.test_parent_preserves_validated_worker_failure_and_detach_fields",
+    "DebuggerInboxTests.test_worker_fixed_phase_distinguishes_provider_policy_and_stack_failure",
+    "DebuggerInboxTests.test_dll_only_inbox_collector_uses_one_bound_inert_worker_without_cdb",
+    "DebuggerInboxTests.test_profiles_preserve_sdk_precedence_and_refuse_partial_or_unsafe_files",
+    "DebuggerInboxTests.test_system_directory_uses_typed_os_api_and_rejects_invalid_paths",
+    "DebuggerInboxTests.test_worker_rebinds_closed_profile_path_hashes_and_target_before_engine",
+    "DebuggerInboxTests.test_profile_transport_keeps_legacy_decoder_and_refuses_mismatches",
+    "DebuggerInboxTests.test_collector_rejects_wrong_profile_legacy_or_malformed_worker_transport"
+   ],
+   "exit_code": 1,
+   "elapsed_seconds": 0.3540394000010565,
+   "stdout_bytes": 0,
+   "stderr_bytes": 6891,
+   "scope": "isolatedPython/privateHOME/TEMP/emptyPATH; tiny inert marked Python child only; network-deny audit",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-debugger-affected-actual.json",
+    "sha256": "6f334ba154da0010f74fd650784c87a0d3bcd61b2bdce92e400f7e1f8890fada",
+    "bytes": 2288
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-debugger-affected.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-debugger-affected.stderr",
+    "sha256": "b5702a807768e1a3d05a8f6eeb66bf925e3ac14a57261e6557c2169258c4fa04",
+    "bytes": 6891
+   },
+   "private_source_stable": true
+  },
+  {
+   "label": "existing-missing-input-successor",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\runner.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\green-repo",
+    "DebuggerInboxTests.test_warm_refusal_timeout_and_uncontained_helper_have_distinct_target_outcomes",
+    "DebuggerInboxTests.test_hash_only_warm_records_are_closed_not_authority_and_pid_associated",
+    "DebuggerInboxTests.test_observed_windows_warm_preflight_precedes_owned_target_without_effect_substitution"
+   ],
+   "exit_code": 0,
+   "elapsed_seconds": 0.3077523999963887,
+   "stdout_bytes": 0,
+   "stderr_bytes": 714,
+   "scope": "isolatedPython/privateHOME/TEMP/emptyPATH; tiny inert marked Python child only; network-deny audit",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor-actual.json",
+    "sha256": "0fa035617deb9bffd12e271a57327265572a3e7d95630ba690e2ea67beabfa03",
+    "bytes": 808
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\existing-missing-input-successor.stderr",
+    "sha256": "4e0afc643c7d0c895f4156bf90961e49898ac4bb3ea81b7397fa2a898a4d87b2",
+    "bytes": 714
+   },
+   "private_source_stable": true
+  },
+  {
+   "label": "phase-negative-controls",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\runner.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\green-repo",
+    "DebuggerPhaseProgressTests.test_progress_decoder_refuses_unbound_malformed_partial_and_unbounded_rows",
+    "DebuggerPhaseProgressTests.test_real_worker_phase_callbacks_precede_inert_boundaries_and_keep_final_schema"
+   ],
+   "exit_code": 0,
+   "elapsed_seconds": 0.17358649999368936,
+   "stdout_bytes": 0,
+   "stderr_bytes": 519,
+   "scope": "isolatedPython/privateHOME/TEMP/emptyPATH; tiny inert marked Python child only; network-deny audit",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-negative-controls-actual.json",
+    "sha256": "ef86500e18502fe5065a5d7bcfe0a7a9ed92255480d6a8f941c54d670a42a249",
+    "bytes": 717
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-negative-controls.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-negative-controls.stderr",
+    "sha256": "68d1ecd270206a046bff9f537aaeb085bed69e0a362fe41160dd61e013f928a9",
+    "bytes": 519
+   },
+   "private_source_stable": true
+  },
+  {
+   "label": "phase-target-green",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\runner.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\green-repo",
+    "DebuggerPhaseProgressTests.test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames"
+   ],
+   "exit_code": 0,
+   "elapsed_seconds": 1.17844150000019,
+   "stdout_bytes": 0,
+   "stderr_bytes": 315,
+   "scope": "isolatedPython/privateHOME/TEMP/emptyPATH; tiny inert marked Python child only; network-deny audit",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green-actual.json",
+    "sha256": "8f88a49ab2eca1d8846e54f259d108efec5244164f809c064c821ccc1877b3bd",
+    "bytes": 606
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green.stderr",
+    "sha256": "c93986e1bfca6ea90cbc7f5a7347ce40c75f90a59cc89cfd9bb98b8137cb7261",
+    "bytes": 315
+   },
+   "private_source_stable": true
+  },
+  {
+   "label": "phase-target-red",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\runner.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\red-repo",
+    "DebuggerPhaseProgressTests.test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames"
+   ],
+   "exit_code": 1,
+   "elapsed_seconds": 0.18989889998920262,
+   "stdout_bytes": 0,
+   "stderr_bytes": 1388,
+   "scope": "isolatedPython/privateHOME/TEMP/emptyPATH; tiny inert marked Python child only; network-deny audit",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-actual.json",
+    "sha256": "1875ad26aeae36a30d04a259e0dbaae4bb2b1fddd950309e0cf5201f7dbf47c3",
+    "bytes": 608
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red.stderr",
+    "sha256": "36870d39b8292524ae6955fa67c67937d58d52e07f18132ddd72828f1b0b544e",
+    "bytes": 1388
+   },
+   "private_source_stable": true
+  },
+  {
+   "label": "phase-target-red-successor",
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\runner.py",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\red-repo",
+    "DebuggerPhaseProgressTests.test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames"
+   ],
+   "exit_code": 1,
+   "elapsed_seconds": 1.1805186999845318,
+   "stdout_bytes": 0,
+   "stderr_bytes": 1394,
+   "scope": "isolatedPython/privateHOME/TEMP/emptyPATH; tiny inert marked Python child only; network-deny audit",
+   "receipt": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-successor-actual.json",
+    "sha256": "7372b350aa321e859af136d897b88f29ff601de8e8075097ec5478336a098e3f",
+    "bytes": 607
+   },
+   "stdout": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-successor.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   "stderr": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-red-successor.stderr",
+    "sha256": "9021fc96522627332eb19533fdc7a5af2406f059a892deb2e56194ebd74a3de5",
+    "bytes": 1394
+   },
+   "private_source_stable": true
+  }
+ ],
+ "correct_history": {
+  "initial_target": "Initial test asserted phase after fixture launch failed because STARTUPINFO mock also affected the real tiny Python launcher; nested child string was also syntactically invalid. Retained as fixture failure, not a capability RED.",
+  "proper_target": "Corrected fixture checks actual workerSpawned first. Unchanged production then failed actual phase assertion worker-transport vs sdk-wait. That target AST is unchanged in GREEN.",
+  "affected_legacy": "16 of19 original controls passed initially; three errored solely on missing passive _boundedproc/ci.yml scratch inputs. Those exact unchanged three passed after copying immutable304 inputs. No single full19 exit0 claim.",
+  "excluded": "One unchanged unrelated hash-only subprocess control was not executed; no full20/SDK/Pi/live-runtime claim."
+ }
+}

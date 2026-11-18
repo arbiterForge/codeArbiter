@@ -1,0 +1,50 @@
+{
+ "finding": "HOOK-MODE-AUDIT-EXIT-01",
+ "accepted_scope": "An exit is emitted only for a readable present current session entry with accepted audit backing, including supported legacy dangerous backing. Implicit/absent/corrupt fallback arbiter and unbacked raw markers create no synthetic prior operator event. A later departure from explicitly entered arbiter does get an exit. Same mode no-op remains no-op unless matching debt must settle.",
+ "strategy": "Fresh transition exit+enter share an opaque 128-bit random NOTE identity and are staged together through existing max8 write-ahead queue. Exact saved bytes are replay identity, so historical same-second rows cannot satisfy a fresh failed transition. Existing legacy single-new-line callers/format remain supported. Entropy is an event identity, not a credential/authorization grant.",
+ "failure_truth": "Marker write must verify before audit. Partial append retains remaining pair debt and same token retries it even with older requested-mode backing. Failed queue persistence plus failed audit can leave no durable debt; outcome stays failed/owed with owed_rows0 and explicit inspect/repair guidance instead of promising replay.",
+ "limits": [
+  "The existing marker-before-audit interval is not an atomic multi-file transaction; a process crash before queue persistence can lose prior exit identity.",
+  "If both journal persistence and trail append are denied, future processes cannot reconstruct lost old-mode exit solely from the new marker. The explicit new control records this limit; no unconditional durable guarantee.",
+  "Existing bounded queue can discard oldest rows with its aggregate drop note. Cap remains8. Existing tail replay bound remains64KiB.",
+  "Existing shared pending-queue read/modify/write is not globally serialized across arbitrary concurrent sessions. This repair adds no universal queue-concurrency or hostile same-user filesystem guarantee.",
+  "Existing legacy backing acceptance is retained, not broadened or independently authenticated by this repair.",
+  "No installed host, real audit/config/settings/home, network/API, provider, native build or publication was exercised."
+ ],
+ "trial_history": [
+  {
+   "receipt": "original-red.json",
+   "classification": "Proper original public-API missing-exit assertion RED; exact named regression retained in final test."
+  },
+  {
+   "receipt": "final-modelib.json",
+   "classification": "One newly added legacy-history test initially compared LF text with Windows CRLF bytes; corrected only its byte-prefix oracle, production unchanged. This was not another product regression."
+  },
+  {
+   "receipt": "intermediate-fallback-red.json",
+   "classification": "Two proper assertion REDs on intermediate candidate81aa for invented exits with absent/corrupt current markers; final guard closed this before seal."
+  }
+ ],
+ "final_checks": {
+  "mode_suite": {
+   "run": 83,
+   "passed": 82,
+   "skipped": 1,
+   "failures": 0,
+   "receipt": "sealed-modelib.json"
+  },
+  "prompt_owner_subset": {
+   "run": 24,
+   "passed": 24,
+   "skipped": 0,
+   "failures": 0,
+   "receipt": "sealed-prompt.json"
+  },
+  "fresh_process_pair_recovery": {
+   "processes": 2,
+   "both_exit": 0,
+   "receipt": "sealed-restart.json"
+  }
+ },
+ "old_test_updates": "None; entire original test module AST is preserved after removing only ten added TestFlip methods."
+}

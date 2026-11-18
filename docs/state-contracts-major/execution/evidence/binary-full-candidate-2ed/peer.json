@@ -1,0 +1,157 @@
+{
+ "schema": "codearbiter.bounded-independent-security-review/1",
+ "reviewer": "/root as composed security-reviewer",
+ "author": "/root/crypto_evidence_review",
+ "independent_of_authorship": true,
+ "verdict": "PASS",
+ "findings": [],
+ "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "proposal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\proposal.json",
+  "sha256": "dfaac00d0e415e4c07009c0145a3fd8b8c9f93fb67076ab0e35f278c6ed4e11e"
+ },
+ "patch_sha256": "172e20cb588e8b2a4e56db887e261ead9ab6be372c0af76a5c7a58916eb761f8",
+ "full_subjects": {
+  "core/pysrc/security-pass.py": {
+   "path": "core/pysrc/security-pass.py",
+   "preimage_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "preimage_bytes": 9466,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\core\\pysrc\\security-pass.py",
+   "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+   "bytes": 9482,
+   "source_git_oid": "6cd472e73368b9e0609b18ebc3f805f231570b59"
+  },
+  "core/pysrc/git-enforce.py": {
+   "path": "core/pysrc/git-enforce.py",
+   "preimage_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "preimage_bytes": 19608,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\core\\pysrc\\git-enforce.py",
+   "sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+   "bytes": 19659,
+   "source_git_oid": "bf26b26b73f5db048b3e21126a131938c962c06e"
+  },
+  "core/pysrc/_bashguardlib.py": {
+   "path": "core/pysrc/_bashguardlib.py",
+   "preimage_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "preimage_bytes": 156897,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\core\\pysrc\\_bashguardlib.py",
+   "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "bytes": 156954,
+   "source_git_oid": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3"
+  },
+  "plugins/ca/hooks/tests/test_security_pass.py": {
+   "path": "plugins/ca/hooks/tests/test_security_pass.py",
+   "preimage_sha256": "9e46c4f879b40ee7d1d663233f54734c5766a6fbb7a350d1a5acc8c643119bfa",
+   "preimage_bytes": 34601,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca\\hooks\\tests\\test_security_pass.py",
+   "sha256": "412a0f97a63bd9ff581caea4d308ea40f1b4fdaf5d96b78950ff18621d779c47",
+   "bytes": 40350,
+   "source_git_oid": "25fa1880c335173333e31d4f921dbf71e681d5d4"
+  },
+  "plugins/ca/hooks/security-pass.py": {
+   "path": "plugins/ca/hooks/security-pass.py",
+   "preimage_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "preimage_bytes": 9466,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca\\hooks\\security-pass.py",
+   "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+   "bytes": 9482,
+   "source_git_oid": "6cd472e73368b9e0609b18ebc3f805f231570b59"
+  },
+  "plugins/ca-codex/hooks/security-pass.py": {
+   "path": "plugins/ca-codex/hooks/security-pass.py",
+   "preimage_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "preimage_bytes": 9466,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca-codex\\hooks\\security-pass.py",
+   "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+   "bytes": 9482,
+   "source_git_oid": "6cd472e73368b9e0609b18ebc3f805f231570b59"
+  },
+  "plugins/ca-pi/hooks/security-pass.py": {
+   "path": "plugins/ca-pi/hooks/security-pass.py",
+   "preimage_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "preimage_bytes": 9466,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca-pi\\hooks\\security-pass.py",
+   "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+   "bytes": 9482,
+   "source_git_oid": "6cd472e73368b9e0609b18ebc3f805f231570b59"
+  },
+  "plugins/ca/hooks/git-enforce.py": {
+   "path": "plugins/ca/hooks/git-enforce.py",
+   "preimage_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "preimage_bytes": 19608,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca\\hooks\\git-enforce.py",
+   "sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+   "bytes": 19659,
+   "source_git_oid": "bf26b26b73f5db048b3e21126a131938c962c06e"
+  },
+  "plugins/ca-codex/hooks/git-enforce.py": {
+   "path": "plugins/ca-codex/hooks/git-enforce.py",
+   "preimage_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "preimage_bytes": 19608,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca-codex\\hooks\\git-enforce.py",
+   "sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+   "bytes": 19659,
+   "source_git_oid": "bf26b26b73f5db048b3e21126a131938c962c06e"
+  },
+  "plugins/ca-pi/hooks/git-enforce.py": {
+   "path": "plugins/ca-pi/hooks/git-enforce.py",
+   "preimage_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "preimage_bytes": 19608,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca-pi\\hooks\\git-enforce.py",
+   "sha256": "2343874b25d13c9675ac9fa2f9a5bb9b68e26ce14264c9ee20052b00093ab199",
+   "bytes": 19659,
+   "source_git_oid": "bf26b26b73f5db048b3e21126a131938c962c06e"
+  },
+  "plugins/ca/hooks/_bashguardlib.py": {
+   "path": "plugins/ca/hooks/_bashguardlib.py",
+   "preimage_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "preimage_bytes": 156897,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca\\hooks\\_bashguardlib.py",
+   "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "bytes": 156954,
+   "source_git_oid": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3"
+  },
+  "plugins/ca-codex/hooks/_bashguardlib.py": {
+   "path": "plugins/ca-codex/hooks/_bashguardlib.py",
+   "preimage_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "preimage_bytes": 156897,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca-codex\\hooks\\_bashguardlib.py",
+   "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "bytes": 156954,
+   "source_git_oid": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3"
+  },
+  "plugins/ca-pi/hooks/_bashguardlib.py": {
+   "path": "plugins/ca-pi/hooks/_bashguardlib.py",
+   "preimage_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "preimage_bytes": 156897,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\candidate\\plugins\\ca-pi\\hooks\\_bashguardlib.py",
+   "sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "bytes": 156954,
+   "source_git_oid": "85e332e9b7eb3a385e66afcd7052b9d39ec4bce3"
+  }
+ },
+ "input_proof": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\binary-full-candidate-root-peer-context.json",
+   "sha256": "80313b3c74c130cdc0beaba23eb4b2e84f8b7d921ce132a3ed604720aaaa12d4"
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\binary-full-candidate-root-peer-input.txt",
+   "sha256": "11ed3a1135b4d12f8d6f106a063a41633c33b332f07846b7cc1a1c4b926c50a3"
+  }
+ ],
+ "substantive_review": [
+  "Only three production changes: marker adds existing full diff candidate; both consumers require it alongside worktree binding and bounded binary binding. Exact source replacement check excludes other production changes.",
+  "security_scan_diff derives candidate from complete pinned diff before per-file exemptions; BinarySecurityContext retains it. Both consumers use this same value. Old binary-only marker has no candidate line and is refused. No permissive legacy fallback.",
+  "Crypto/secret mixed-binary refusal, non-UTF8/malformed failure, binary file/count/size/hash bounds, explicit override arguments and audit append before marker, alternate-index recovery, linked-worktree binding and unstaged-absorbing command refusal remain exact.",
+  "Proper real-Git RED runs actual producer and both consumers, verifies no sensitive text, proves binary binding unchanged while whole candidate differs, and discriminates both stale marker cases. Positive unchanged candidate and linked-worktree negative checks remain.",
+  "Three added methods have exact RED/GREEN AST. The entire original module AST remains exact after removing them and reversing only one required expected marker-format literal. All nine generated mirrors byte-match canonical source.",
+  "Observed three-test GREEN and full affected77 cohort76PASS/one existing filesystem invalid-byte skip are genuine. No Python numeric coverage claim; direct critical-path controls meet declared no-tooling profile.",
+  "No new crypto primitive, secret storage/disclosure, network permission or override authority; existing staged-index/concurrency limitations are not relabelled as atomic snapshot proof."
+ ],
+ "limits": [
+  "Private read-only code/security review, no test/API/native/Pi/provider/install or canonical/index/ref/marker replay.",
+  "No hosted/current installed/human/task/program qualification. Root actual transfer, generated parity, scanner/intent/original-owner/commit gates remain separate.",
+  "H18 denied optional combined readonly CONTEXT command retained as unconfirmed classifier issue; not a productRED and no retry/bypass asserted."
+ ]
+}

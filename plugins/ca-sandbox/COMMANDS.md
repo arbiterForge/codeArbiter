@@ -26,7 +26,7 @@ the effective builder; fallback does not add Go/Rust support.
 | `/ca-sandbox:sandbox-shell` | `<id>` | Attach an interactive shell at `/work/repo` under the container's existing non-root, read-only-root isolation. Shell exit detaches and leaves the box running. |
 | `/ca-sandbox:sandbox-exec` | `<id> -- <cmd> [args...]` | Run one command and report its real exit code, separate stdout/stderr, truncation and any independent containment outcome. |
 | `/ca-sandbox:sandbox-cp` | `<id>:<container-path> <host-destination>` | Copy out at host request with `docker cp`; do not introduce a host bind or grant the container a writable host path. |
-| `/ca-sandbox:sandbox-destroy` | `<id> [--keep-volume]` or explicit `--prune` request | Named destroy targets only that instance. A separately requested broad prune maps to the driver's `prune` subcommand and acts on its initial plugin-labeled snapshot. Cached images remain. |
+| `/ca-sandbox:sandbox-destroy` | `<id> [--keep-volume]` or explicit `--prune` request | Named destroy targets only that instance. A separately requested broad prune maps to the driver's `prune` subcommand and uses separate container and volume discovery sets. Cached images remain. |
 
 The ordinary driver grammar is `sandbox.js create <url> [--net ...]`, `shell`,
 `exec`, `cp`, `destroy <id> [--keep-volume]`, or `prune`. An omitted destroy ID is
@@ -67,8 +67,10 @@ intact. Image pinning is not a reproducible Nix package-closure claim.
 Shell exit detaches. Explicit named destroy removes only the selected labeled
 container(s) and source volume; `--keep-volume` deliberately retains that volume.
 Do not follow named destroy with automatic prune. Broad prune needs its own
-requested scope, preserves unrelated/newly created instances, and retains cached
-images. Report removed, kept, remaining and unknown resources separately. Failed
+requested scope. It discovers containers before removing them, then discovers
+volumes. Only references in each discovery set are targeted; there is no single
+global target snapshot at the start. Cached images remain. Report removed, kept,
+remaining and unknown resources separately. Failed
 discovery/removal/verification is incomplete cleanup with nonzero exit, not proof
 of an empty scope. Killing a Docker client alone does not prove its container
 workload stopped.

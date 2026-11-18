@@ -317,7 +317,7 @@ def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic,
 
 
 def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict) -> dict:
-    from _windows_dbgeng import decode_result
+    from _windows_dbgeng import decode_result, decode_progress
     started = time.monotonic()
     result = {"status": "unavailable", "threads": [], "truncated": False,
               "temporarilySuspends": False, "toolHashes": None,
@@ -344,7 +344,7 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
             root = _regular(Path(directory), directory=True)
             worker = _regular(Path(__file__).with_name("_windows_dbgeng.py"))
             duplicate = kernel.duplicate_query(binding["handle"])
-            request = {"schemaVersion": 3, "profile": profile,
+            request = {"schemaVersion": 3, "profile": profile, "progress": True,
                        "handle": duplicate, "pid": pid, "created": binding["created"],
                        "image": binding["image"], "sdk": str(sdk), "hashes": hashes,
                        "deadline": deadline}
@@ -374,6 +374,12 @@ def _debugger(pid: int, kernel: WindowsKernel, deadline: float, *, binding: dict
             process.stdin.close()
             _phase(diagnostic, "worker-transport")
             status, raw = _collect(process, kernel.available, deadline=deadline, _diagnostic=diagnostic)
+            last_phase, raw = decode_progress(raw, pid, binding["created"], profile=profile,
+                                              worker_pid=getattr(process, "pid", None))
+            if last_phase is not None:
+                # Last announced SDK boundary, not proof the call completed or
+                # that the target exited, attached, detached or yielded frames.
+                _phase(diagnostic, "sdk-" + last_phase)
             if status != "captured":
                 primary = diagnostic["primaryStatus"] or status
                 result.update(status=status, truncated=primary == "output_limit")
