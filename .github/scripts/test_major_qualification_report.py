@@ -4526,6 +4526,32 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 self.assertEqual(actual,group)
                 self.assertEqual(policy['cell_job_bindings'][cell],spec['job'])
 
+    def test_native_manifest_cell_requires_the_four_original_python_outcomes(self):
+        history = owner.ROOT / 'docs/state-contracts-major/execution/evidence/packaging-local-94b/pure-manifest.json'
+        receipt = owner.load_json(history)
+        cell, = receipt['disposition_ids']
+        script = '.github/scripts/test_artifact_manifest_contract.py'
+        selectors = [f'python:{script}:' + row['id'] for row in receipt['original_named_assertions']]
+        selection = owner.load_json(owner.ROOT / '.github/major-test-selections.json')
+        group, = [group for group in selection['groups'] if group['cells'] == [cell]]
+        self.assertEqual(group['selectors'], selectors)
+        self.assertEqual(len(selectors), 4)
+        _, spec, req, payload, observed, _, _ = self.fixture('disposition:findings:T-F02')
+        self.assertIn('.github/fixtures/artifact-release-manifest.json', spec['paths'])
+        req.update(cells=[cell], cell_jobs={cell: spec['job']})
+        observed.update(argv=['python', script], tests=[{'id': name, 'result': 'passed'} for name in selectors])
+
+        def build():
+            return owner.build_report(req, job_name=spec['job'], job_id=9,
+                selections={'schema': owner.SELECTIONS, 'groups': [group]},
+                observations={'finite-native-manifest': observed}, payloads={spec['payload']: payload})
+
+        row, = build()['results']
+        self.assertEqual((row['cell'], row['executed_population']), (cell, 4))
+        observed['tests'].pop()
+        with self.assertRaisesRegex(ValueError, 'selected named test missing'):
+            build()
+
     def test_bounded_reader_cells_share_one_original_capture(self):
         self.assert_shared_original_capture("finite-bounded-reader", 6, 14)
 

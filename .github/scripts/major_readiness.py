@@ -35,6 +35,12 @@ COVERAGE_LEDGER = CORPUS + "execution/coverage-ledger.json"
 LEDGER_ROUTING_PROFILE = "qualification-ledger-routing-v1"
 LEDGER_ROUTING_GROUPS = ("findings", "machines", "transitions", "added_transitions")
 LEDGER_ROUTING_CELLS = frozenset(f"disposition:findings:{finding}" for finding in ("C-F02", "C-F04", "C-F05", "C-F07"))
+P02_FIXTURE_LEDGER_PROFILE = "p02-unittest-fixture-ledger-v1"
+P02_FIXTURE_TRANSITIONS = frozenset((
+    "P02:added-frozen-anchor", "P02:added-origin-mix", "P02:added-original-tamper",
+    "P02:added-selected-gate", "P02:added-stale-history", "P02:added-unknown-input",
+))
+P02_FIXTURE_CELLS = frozenset(f"disposition:added_transitions:{identity}" for identity in P02_FIXTURE_TRANSITIONS)
 SHA = re.compile(r"(?!0{40}$)[0-9a-f]{40}")
 DIGEST = re.compile(r"[0-9a-f]{64}")
 RECORDED_API_OPERATIONS = (
@@ -454,7 +460,7 @@ def _lookup_present(repo, source, lookup, cache):
     return True
 
 
-def _qualification_ledger_routing(raw):
+def _decode_qualification_ledger(raw):
     def unique_object(pairs):
         result = {}
         for key, value in pairs:
@@ -466,6 +472,11 @@ def _qualification_ledger_routing(raw):
     except (ValueError, UnicodeError, RecursionError) as error:
         raise ReadinessError("malformed qualification ledger routing input") from error
     require(isinstance(ledger, dict), "qualification ledger must be an object")
+    return ledger
+
+
+def _qualification_ledger_routing(raw):
+    ledger = _decode_qualification_ledger(raw)
     routing = {}
     for group in LEDGER_ROUTING_GROUPS:
         rows = ledger.get(group, {})
@@ -485,6 +496,28 @@ def _qualification_ledger_routing(raw):
     return routing
 
 
+def normalize_p02_fixture_ledger(raw):
+    """Initialize the disposable P02 unittest ledger before seeded proof mutations."""
+    # The fixture supplies its own active evidence. History changes on the six
+    # rows this fixture proves have no role in the seeded test scenarios.
+    ledger = _decode_qualification_ledger(raw)
+    for group in LEDGER_ROUTING_GROUPS:
+        rows = ledger.get(group)
+        require(isinstance(rows, dict), "invalid P02 fixture ledger group")
+        for identity, row in rows.items():
+            require(isinstance(row, dict), "invalid P02 fixture ledger row")
+            row.update(status="PLANNED", evidence=[])
+            if group == "added_transitions" and identity in P02_FIXTURE_TRANSITIONS:
+                row.pop("evidence_history", None)
+    return ledger
+
+
+def p02_fixture_ledger_digest(raw):
+    normalized = normalize_p02_fixture_ledger(raw)
+    encoded = json.dumps(normalized, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+    return digest(P02_FIXTURE_LEDGER_PROFILE.encode("ascii") + b"\n" + encoded)
+
+
 def _ledger_routing_digest(source, load, cache):
     key = (LEDGER_ROUTING_PROFILE, source)
     if key not in cache:
@@ -494,30 +527,47 @@ def _ledger_routing_digest(source, load, cache):
     return cache[key]
 
 
-def _ledger_routing_declaration(record):
+def _ledger_projection_digest(profile, source, load, cache):
+    if profile == LEDGER_ROUTING_PROFILE:
+        return _ledger_routing_digest(source, load, cache)
+    require(profile == P02_FIXTURE_LEDGER_PROFILE, "unsupported qualification input projection")
+    key = (profile, source)
+    if key not in cache:
+        cache[key] = p02_fixture_ledger_digest(load(source, COVERAGE_LEDGER))
+    return cache[key]
+
+
+def _ledger_projection_declaration(record):
     if "input_projections" not in record:
         return None
     projections = record["input_projections"]
     cells = record.get("disposition_ids")
     producer = record.get("producer")
+    inputs = record.get("inputs")
     require(isinstance(projections, list) and len(projections) == 1
             and record.get("kind") == "hosted-run" and record.get("result") == "PASSED"
             and isinstance(producer, dict) and producer.get("class") == "hosted"
-            and isinstance(cells, list) and cells
-            and all(isinstance(cell, str) and cell in LEDGER_ROUTING_CELLS for cell in cells)
-            and COVERAGE_LEDGER in record.get("inputs", {}), "unsupported qualification input projection")
+            and isinstance(cells, list) and cells and all(isinstance(cell, str) for cell in cells)
+            and isinstance(inputs, dict) and COVERAGE_LEDGER in inputs, "unsupported qualification input projection")
     projection = projections[0]
     require(isinstance(projection, dict) and set(projection) == {"path", "profile", "sha256"}
-            and projection["path"] == COVERAGE_LEDGER and projection["profile"] == LEDGER_ROUTING_PROFILE
+            and projection["path"] == COVERAGE_LEDGER
             and isinstance(projection["sha256"], str) and DIGEST.fullmatch(projection["sha256"]),
-            "invalid qualification ledger routing projection")
-    return projection["sha256"]
+            "invalid qualification ledger projection")
+    profile = projection["profile"]
+    require((profile == LEDGER_ROUTING_PROFILE and set(cells) <= LEDGER_ROUTING_CELLS)
+            or (profile == P02_FIXTURE_LEDGER_PROFILE and len(cells) == len(P02_FIXTURE_CELLS)
+                and set(cells) == P02_FIXTURE_CELLS), "unsupported qualification input projection")
+    return profile, projection["sha256"]
 
 
 def _authenticate_scope_evidence(repo, source, record, load, cache):
-    routing = _ledger_routing_declaration(record)
-    if routing is not None:
-        require(_ledger_routing_digest(source, load, cache) == routing, "original qualification ledger routing differs")
+    projection = _ledger_projection_declaration(record)
+    if projection is not None:
+        profile, expected = projection
+        require(_ledger_projection_digest(profile, source, load, cache) == expected,
+                "original qualification ledger routing differs" if profile == LEDGER_ROUTING_PROFILE
+                else "original P02 fixture ledger projection differs")
     scopes, absent = _scope_declarations(record)
     for scope in scopes:
         require(_scope_membership(repo, source, scope, load, cache) == scope['sha256'],
@@ -529,12 +579,13 @@ def _authenticate_scope_evidence(repo, source, record, load, cache):
 def disposition_input_applicability(repo, source, record, load, cache):
     """Compare only declared inputs/scopes; history was authenticated separately."""
     scopes, absent = _scope_declarations(record)
-    routing = _ledger_routing_declaration(record)
+    projection = _ledger_projection_declaration(record)
     changed, unavailable = set(), set()
     for path, expected in record['inputs'].items():
         try:
-            if path == COVERAGE_LEDGER and routing is not None:
-                differs = _ledger_routing_digest(source, load, cache) != routing
+            if path == COVERAGE_LEDGER and projection is not None:
+                profile, projected_sha256 = projection
+                differs = _ledger_projection_digest(profile, source, load, cache) != projected_sha256
             else:
                 differs = digest(load(source, path)) != expected
             if differs:

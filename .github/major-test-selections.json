@@ -1986,6 +1986,23 @@
       "scope": "Original measurement verdict assertions for T10:08."
     },
     {
+      "id": "finite-native-manifest",
+      "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "payload_name": "major-source-inputs-hooks-single-owner",
+      "observation": "finite-native-manifest",
+      "proof_kind": "source-test",
+      "selectors": [
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation",
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source",
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing",
+        "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_shared_declarations_and_negative_cases"
+      ],
+      "cells": [
+        "disposition:transitions:hooks:native-client:02"
+      ],
+      "scope": "Original Python manifest parsing, bounds, duplicate-key refusal and canonical generated contract parity."
+    },
+    {
       "id": "finite-tf02",
       "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
       "payload_name": "major-source-inputs-hooks-single-owner",

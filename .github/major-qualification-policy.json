@@ -113,6 +113,7 @@
     "disposition:transitions:T08:05": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:transitions:T10:07": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:transitions:T10:08": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:transitions:hooks:native-client:02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "installed:claude:workflow": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
     "installed:codex:0.143.0": "[CHECK] | [CDX ] | Installed retained package <codex: 0.143.0>",
     "installed:codex:0.145.0": "[CHECK] | [CDX ] | Installed retained package <codex: 0.145.0>",
@@ -231,6 +232,12 @@
     "disposition:transitions:S32:07": "[CHECK] | [CA  ] | Farm dispatcher contract"
   },
   "source_finding_composite_cells": [
+    "disposition:added_transitions:P02:added-frozen-anchor",
+    "disposition:added_transitions:P02:added-origin-mix",
+    "disposition:added_transitions:P02:added-original-tamper",
+    "disposition:added_transitions:P02:added-selected-gate",
+    "disposition:added_transitions:P02:added-stale-history",
+    "disposition:added_transitions:P02:added-unknown-input",
     "disposition:added_transitions:WR-01",
     "disposition:added_transitions:WR-02",
     "disposition:added_transitions:WR-03",

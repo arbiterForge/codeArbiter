@@ -982,6 +982,51 @@ if __name__ == "__main__":
         with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
             reports.source_finding_evidence(req, [*self.artifacts, dict(capture, id=1000)], [job], run=self.run)
 
+    def test_p02_routes_bind_the_exact_original_windows_named_population(self):
+        import major_qualification_report as reports
+
+        root = Path(__file__).resolve().parents[2]
+        reference = root / 'docs/state-contracts-major/execution/evidence/p02-six-current-63d3cf92/tested.json'
+        historical = json.loads(reference.read_bytes())
+        script = '.github/scripts/test_state_contracts_integration.py'
+        expected = {row['disposition_ids'][0]: sorted(f'python:{script}:__main__.' + case.split('.', 1)[1]
+                    for case in row['observed_named_cases']) for row in historical['semantic_groups']}
+        selectors = sorted({case for cases in expected.values() for case in cases})
+        self.assertEqual((len(expected), len(selectors)), (6, 14))
+        policy = json.loads((root / '.github/major-qualification-policy.json').read_bytes())
+        self.assertTrue(expected.keys() <= set(policy['source_finding_composite_cells']))
+        profile = reports.PROGRAM_INTEGRITY_PROFILE
+        self.assertEqual(reports.source_finding_profiles(sorted(expected)), [profile])
+        spec = reports.source_profile(profile)
+        job = dict(self.jobs[0], name=spec['job'], steps=[])
+        component, = reports.SOURCE_FINDING_COMPOSITIONS[next(iter(expected))]
+        req = dict(self.req, cells=sorted(expected), source_finding_composite_cells=sorted(expected))
+        files = {path: b'owned inert source fixture' for path in sorted(spec['paths'])}
+        manifest = {'format': reports.SOURCE_FORMAT, 'profile': profile, 'source_commit': req['source_commit'],
+                    'source_tree': req['source_tree'], 'ci_run_id': 7, 'producer_job_name': job['name'],
+                    'workflow': '.github/workflows/ci.yml', 'members': [{'path': path, 'bytes': len(raw),
+                    'sha256': owner.digest(raw), 'git_mode': '100644'} for path, raw in files.items()]}
+        files[reports.SOURCE_MANIFEST] = manifest_bytes = json.dumps(manifest).encode()
+        req['source_finding_inputs'] = {profile: reports.source_member_digest(manifest['members'])}
+        source = self.archive(spec['payload'], job, spec['upload'], files)
+        with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
+            reports.source_finding_evidence(req, self.artifacts, [job], run=self.run)
+        observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'], source_tree=req['source_tree'],
+            ci_run_id=7, source_stable=True, clean=True, proof_kind='source-test', producer='python-test-result-observer',
+            argv=['python', script], exit_code=0, source_input_binding=dict(format=reports.SOURCE_BINDING,
+            profile=profile, payload_name=spec['payload'], manifest_sha256=owner.digest(manifest_bytes)),
+            tests=[dict(id=name, result='passed') for name in selectors])
+        name = component['artifact_prefix'] + req['source_commit'] + '-7-3'
+        capture = self.archive(name, job, component['upload'], {component['member']: json.dumps(observed).encode()})
+        with mock.patch.object(owner, 'artifact_bytes', wraps=owner.artifact_bytes) as download:
+            rows, _ = reports.source_finding_evidence(req, self.artifacts, [job], run=self.run)
+        self.assertEqual([call.args[0]['id'] for call in download.call_args_list], [source['id'], capture['id']])
+        self.assertEqual({cell: row['source_components'][0]['selectors'] for cell, row in rows.items()}, expected)
+        with self.assertRaisesRegex(owner.ReadinessError, 'original component job'):
+            reports.source_finding_evidence(req, self.artifacts, [dict(job, run_attempt=2)], run=self.run)
+        with self.assertRaisesRegex(owner.ReadinessError, 'trusted main'):
+            reports.source_finding_evidence(req, self.artifacts, [job], run=dict(self.run, conclusion='failure'))
+
     def test_recovery_runtime_reader_authenticates_only_the_original_nine_cases(self):
         import major_qualification_report as reports
 
@@ -2581,6 +2626,109 @@ class LedgerRoutingApplicabilityTests(unittest.TestCase):
             )
         duplicate = self.original.replace(b'"findings": {', b'"findings": {}, "findings": {', 1)
         self.assertEqual(self.applicability(duplicate), (set(), {self.path}))
+
+
+class P02FixtureLedgerApplicabilityTests(unittest.TestCase):
+    path = "docs/state-contracts-major/execution/coverage-ledger.json"
+    profile = "p02-unittest-fixture-ledger-v1"
+
+    def setUp(self):
+        from major_qualification_report import PROGRAM_INTEGRITY_CASES
+
+        self.cells = sorted(PROGRAM_INTEGRITY_CASES)
+        self.ids = [cell.split(":", 2)[2] for cell in self.cells]
+        self.ledger = {"schema": "ledger-fixture", "status_vocabulary": ["PLANNED", "TESTED"],
+            "findings": {}, "machines": {}, "transitions": {"unrelated": {"evidence_history": ["old"]}},
+            "added_transitions": {identity: {"owner": "integration-architect", "treatment": "FIXTURE",
+                "task_ids": ["P-02"], "status": "TESTED", "evidence": ["old"], "evidence_history": ["prior"]}
+                for identity in self.ids}}
+        self.normalized = copy.deepcopy(self.ledger)
+        self.normalized["transitions"]["unrelated"].update(status="PLANNED", evidence=[])
+        for row in self.normalized["added_transitions"].values():
+            row.update(status="PLANNED", evidence=[])
+            row.pop("evidence_history")
+        self.original = self.encode(self.ledger)
+        self.proof = {"kind": "hosted-run", "result": "PASSED", "producer": {"class": "hosted"},
+            "disposition_ids": self.cells, "inputs": {self.path: owner.digest(self.original)},
+            "input_projections": [{"path": self.path, "profile": self.profile,
+                "sha256": owner.digest(self.profile.encode() + b"\n" + self.encode(self.normalized))}]}
+        self.adopted = copy.deepcopy(self.ledger)
+        for row in self.adopted["added_transitions"].values():
+            row["evidence_history"].extend(row["evidence"])
+            row["evidence"] = ["replacement fixture record"]
+
+    @staticmethod
+    def encode(doc):
+        return json.dumps(doc, sort_keys=True, separators=(",", ":"), ensure_ascii=False).encode("utf-8")
+
+    def applicability(self, successor, proof=None):
+        return owner.disposition_input_applicability(Path("."), "b" * 40,
+            self.proof if proof is None else proof, lambda commit, path: self.encode(successor), {})
+
+    def test_exact_fixture_projection_keeps_six_row_adoption_applicable(self):
+        self.assertEqual(self.applicability(self.adopted), (set(), set()))
+        self.assertEqual(owner.normalize_p02_fixture_ledger(self.encode(self.adopted)), self.normalized)
+        self.assertEqual(owner.normalize_p02_fixture_ledger(self.original), self.normalized)
+        self.assertNotEqual(owner.digest(self.encode(self.adopted)), self.proof["inputs"][self.path])
+        raw_proof = {key: value for key, value in self.proof.items() if key != "input_projections"}
+        self.assertEqual(self.applicability(self.adopted, raw_proof), ({self.path}, set()))
+
+    def test_fixture_projection_detects_consumed_fields_population_and_unrelated_history(self):
+        for field, value in (("owner", "other"), ("treatment", "other"), ("task_ids", ["Q-02"])):
+            changed = copy.deepcopy(self.adopted)
+            changed["added_transitions"][self.ids[0]][field] = value
+            with self.subTest(field=field):
+                self.assertEqual(self.applicability(changed), ({self.path}, set()))
+        for mutate in (lambda d: d["added_transitions"].pop(self.ids[0]),
+                       lambda d: d["transitions"].update(new={}),
+                       lambda d: d["status_vocabulary"].append("unknown"),
+                       lambda d: d["transitions"]["unrelated"]["evidence_history"].append("extra")):
+            changed = copy.deepcopy(self.adopted)
+            mutate(changed)
+            self.assertEqual(self.applicability(changed), ({self.path}, set()))
+
+    def test_projection_refuses_wrong_cells_input_path_producer_and_kind(self):
+        projection = self.proof["input_projections"][0]
+        for changes in ({"disposition_ids": self.cells[:-1]},
+                        {"disposition_ids": self.cells[:-1] + ["disposition:findings:C-F05"]},
+                        {"disposition_ids": self.cells[:-1] + self.cells[:1]}, {"kind": "test"},
+                        {"result": "PRESERVED"}, {"producer": {"class": "local-host"}}, {"inputs": {}},
+                        {"input_projections": [{**projection, "path": "other.json"}]}):
+            with self.subTest(changes=changes), self.assertRaises(owner.ReadinessError):
+                self.applicability(self.ledger, {**self.proof, **changes})
+
+    def test_projection_preserves_exact_raw_ledger_hosted_archive_attempt_and_tested_scope(self):
+        raw, make_record, mock_api, _ = HostedRawAuthenticationCacheTest().fixture()
+        record = {**make_record(), **self.proof, "producer": {"class": "hosted", "identity": "inert P02 job"}}
+        record["raw_evidence"][0]["run_attempt"] = 1
+        source, candidate = record["source_commit"], "b" * 40
+
+        def verify(proof=record, original=self.original, status="TESTED"):
+            encoded = self.encode(proof)
+            row = {"status": status, "evidence": [{"kind": "hosted-run", "commit": source,
+                "ref": "proof.json", "sha256": owner.digest(encoded)}]}
+            def load(commit, path):
+                if path == "proof.json":
+                    return encoded
+                self.assertEqual(path, self.path)
+                return original if commit == source else self.encode(self.adopted)
+            return owner.authenticate_disposition(Path("."), candidate, self.cells[0], row, {self.path}, load, {})
+
+        with (mock.patch.object(owner, "command", return_value=b""),
+              mock.patch.object(owner, "api", side_effect=mock_api),
+              mock.patch.object(owner, "artifact_bytes", return_value=raw) as fetch):
+            self.assertEqual(len(verify()), 1)
+            with self.assertRaisesRegex(owner.ReadinessError, "retained evidence bytes differ"):
+                verify(original=self.encode(self.adopted))
+            with self.assertRaisesRegex(owner.ReadinessError, "requires a tested"):
+                verify(status="INSTALLED_QUALIFIED")
+            forged = copy.deepcopy(record)
+            forged["raw_evidence"][0]["run_attempt"] = 2
+            with self.assertRaisesRegex(owner.ReadinessError, "run attempt differs"):
+                verify(proof=forged)
+            fetch.return_value = b"different archive"
+            with self.assertRaisesRegex(owner.ReadinessError, "original hosted evidence digest differs"):
+                verify()
 
 
 if __name__ == "__main__":

@@ -46,10 +46,7 @@ class IntegrationIntegrityTest(unittest.TestCase):
         put(C + "execution/tools/coverage_ledger.py", original(C + "execution/tools/coverage_ledger.py"))
         cls.progress = json.loads(original(C + "execution/progress.json"))
         put(C + "execution/progress.json", cls.progress)
-        cls.ledger = json.loads(original(C + "execution/coverage-ledger.json"))
-        for group in ("findings", "machines", "transitions", "added_transitions"):
-            for row in cls.ledger[group].values():
-                row.update(status="PLANNED", evidence=[])
+        cls.ledger = owner.readiness.normalize_p02_fixture_ledger(original(C + "execution/coverage-ledger.json"))
         put(C + "execution/coverage-ledger.json", cls.ledger)
         git("add", ".")
         git("commit", "-qm", "Original partial program fixture")
@@ -620,6 +617,9 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
     TRANSPORT_STEP = "Read completed dependency log through isolated Actions transport"
     TRANSPORT_IF = ("github.event_name == 'push' || github.event_name == 'merge_group' || "
                     "(github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository)")
+    PROGRAM_CAPTURE = ("matrix.os == 'windows-latest' && github.event_name == 'push' && "
+                       "(github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && "
+                       "hashFiles('.github/integration-candidate.json') != ''")
     COMMANDS = [
         "python docs/state-contracts-major/execution/tools/coverage_ledger.py check",
         "python .github/scripts/test_immutable_git_blobs.py",
@@ -656,8 +656,29 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
         self.assertNotIn("build-artifacts.py", job)
         self.assertNotIn("continue-on-error:", job)
         self.assertNotIn("--require-complete", job)
-        self.assertEqual(re.findall(r"(?m)^        run: (.*)$", job), ["|", *self.COMMANDS])
-        self.assertEqual(re.findall(r"(?m)^        if: (.*)$", job), [self.TRANSPORT_IF])
+        self.assertEqual(re.findall(r"(?m)^        run: (.*)$", job), ["|", *self.COMMANDS[:-1], "|"])
+        uploads_if = "${{ " + self.PROGRAM_CAPTURE + " && steps.program_integrity_observed.outcome == 'success' }}"
+        self.assertEqual(re.findall(r"(?m)^        if: (.*)$", job), [self.TRANSPORT_IF, uploads_if, uploads_if])
+        steps = re.split(r"(?m)^      - ", job)[1:]
+        capture, = [step for step in steps if 'id: program_integrity_observed' in step]
+        self.assertIn('OBSERVE_PROGRAM_INTEGRITY: ${{ ' + self.PROGRAM_CAPTURE + ' }}', capture)
+        self.assertIn('          if [ "$OBSERVE_PROGRAM_INTEGRITY" = true ]; then\n', capture)
+        observed, direct = capture.split('          else\n', 1)
+        self.assertEqual(direct, '            ' + self.COMMANDS[-1] + '\n          fi\n')
+        self.assertEqual(observed.count('prepare-source'), 1)
+        self.assertEqual(observed.count('observe-python'), 1)
+        self.assertIn('            python -B .github/scripts/major_qualification_report.py prepare-source', observed)
+        self.assertIn('            python -B .github/scripts/major_qualification_report.py observe-python', observed)
+        self.assertTrue(observed.endswith('              -- .github/scripts/test_state_contracts_integration.py\n'))
+        self.assertEqual(job.count('.github/scripts/test_state_contracts_integration.py'), 2)
+        self.assertEqual([name.splitlines()[0] for name in steps[-2:]], [
+            'name: Upload program integrity source-test inputs', 'name: Retain original program integrity observation'])
+        for upload in steps[-2:]:
+            self.assertIn('actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9', upload)
+            self.assertIn('overwrite: false', upload)
+            self.assertIn('if-no-files-found: error', upload)
+        self.assertIn('name: major-source-inputs-program-integrity', steps[-2])
+        self.assertIn('name: program-integrity-observation-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}', steps[-1])
         self.assertEqual(job.count("      - name: " + self.TRANSPORT_STEP + "\n"), 1)
         hooks = self.job(text, "hooks")
         self.assertIn("    timeout-minutes: ${{ matrix.os == 'windows-latest' && matrix.partition == 'contracts' && 45 || 20 }}\n", hooks)
@@ -716,7 +737,7 @@ class IntegrationWorkflowWiringTest(unittest.TestCase):
             if step not in (consumers[0], controls[0]):
                 self.assertNotIn("GH_TOKEN:", step)
         # Hooks has one reviewed report producer; its token remains step-local.
-        expected_hook_guard = "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}"
+        expected_hook_guard = "${{ !cancelled() && matrix.os == 'windows-latest' && matrix.partition == 'contracts' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != '' && steps.python_publisher_observed.outcome == 'success' && steps.python_proof_observed.outcome == 'success' && steps.python_source_upload.outcome == 'success' && steps.q02_readiness_observed.outcome == 'success' && steps.q02_release_observed.outcome == 'success' && steps.q02_source_upload.outcome == 'success' && steps.hook_review_observed.outcome == 'success' && steps.hook_finding_source_upload.outcome == 'success' && steps.single_hook_prepare.outcome == 'success' && steps.single_hookf02_modelib_observed.outcome == 'success' && steps.single_hookf01_observed.outcome == 'success' && steps.single_hookf03_observed.outcome == 'success' && steps.single_cf06_observed.outcome == 'success' && steps.bounded_reader_observed.outcome == 'success' && steps.git_channel_observed.outcome == 'success' && steps.native_manifest_observed.outcome == 'success' && steps.single_tf02_observed.outcome == 'success' && steps.single_hook_upload.outcome == 'success' }}"
         def assert_hook_token_scope(document):
             hooks = self.job(document, "hooks")
             prefix = hooks.split("    steps:\n", 1)[0]
