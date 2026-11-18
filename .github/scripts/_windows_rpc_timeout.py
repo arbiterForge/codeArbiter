@@ -631,7 +631,7 @@ def provider_warm_read():
 
 
 def preflight_provider(home):
-    """Optional owned five-second warm read before an observed Windows target.
+    """Optional owned five-second warm read before a Windows diagnostic target.
 
     This result is diagnostic only. Failure/worker full hashes below are never
     replaced by a cached digest, preflight result or readiness Boolean.

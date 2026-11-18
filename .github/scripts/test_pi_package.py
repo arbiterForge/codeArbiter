@@ -944,7 +944,8 @@ export default function registerCaptureProvider(pi: any) {
     if _rpc_command is not None:
         command = _rpc_command
     provider_warmup = None
-    if _observe_shutdown:
+    diagnostic_dir = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
+    if os.name == "nt" and (_observe_shutdown or diagnostic_dir):
         try:
             from _windows_rpc_timeout import preflight_provider
             provider_warmup = preflight_provider(home)
@@ -953,9 +954,8 @@ export default function registerCaptureProvider(pi: any) {
         if provider_warmup is not None and provider_warmup.get("containment") == "unconfirmed":
             try:
                 from _windows_rpc_timeout import retain_preflight
-                selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
-                if selected:
-                    retain_preflight(provider_warmup, None, Path(selected))
+                if diagnostic_dir:
+                    retain_preflight(provider_warmup, None, Path(diagnostic_dir))
             except Exception:
                 pass
             raise AssertionError("Pi provider hash helper containment unconfirmed; RPC target not spawned")
@@ -977,12 +977,10 @@ export default function registerCaptureProvider(pi: any) {
         start_new_session=os.name != "nt",
         creationflags=(subprocess.CREATE_NEW_PROCESS_GROUP if os.name == "nt" else 0),
     )
-    if provider_warmup is not None:
+    if provider_warmup is not None and diagnostic_dir:
         try:
             from _windows_rpc_timeout import retain_preflight
-            selected = os.environ.get("CA_PI_RPC_DIAGNOSTICS_DIR")
-            if selected:
-                retain_preflight(provider_warmup, process.pid, Path(selected))
+            retain_preflight(provider_warmup, process.pid, Path(diagnostic_dir))
         except Exception:
             pass
     reader: threading.Thread | None = None
@@ -5930,8 +5928,15 @@ class DebuggerInboxTests(unittest.TestCase):
         import _boundedproc as bounded
         from types import SimpleNamespace
         current=sys.modules[__name__]
-        for observed,windows,expect in ((True,True,['preflight','target']),(False,True,['target']),(True,False,['target'])):
-            with self.subTest(observed=observed,windows=windows),tempfile.TemporaryDirectory() as raw:
+        cases = (
+            (True, True, False, ['preflight', 'target']),
+            (False, True, True, ['preflight', 'target']),
+            (False, True, False, ['target']),
+            (False, False, True, ['target']),
+            (True, False, False, ['target']),
+        )
+        for observed, windows, retained, expect in cases:
+            with self.subTest(observed=observed, windows=windows, retained=retained), tempfile.TemporaryDirectory() as raw:
                 root=Path(raw).resolve();cwd=root/'cwd';cwd.mkdir();order=[]
                 report={'schemaVersion':1,'kind':'protected-provider-warm-read','status':'complete',
                         'profile':'sdk-v1','filesHashed':3,'phase':'provider-hash-dbghelp','failure':None,'elapsedMs':1}
@@ -5947,10 +5952,18 @@ class DebuggerInboxTests(unittest.TestCase):
                         return json.dumps(report),''
                     return SimpleNamespace(returncode=0,communicate=communicate)
                 def target(*args,**kwargs):
-                    order.append('target');raise RuntimeError('inert-target-stop')
+                    order.append('target')
+                    self.assertEqual(kwargs['env'].get('NODE_DISABLE_COMPILE_CACHE'), '1' if observed else None)
+                    raise RuntimeError('inert-target-stop')
+                environment = dict(os.environ)
+                environment.pop('CA_PI_RPC_DIAGNOSTICS_DIR', None)
+                if retained:
+                    environment['CA_PI_RPC_DIAGNOSTICS_DIR'] = str(root / 'retained')
                 os_model=SimpleNamespace(name='nt' if windows else 'posix',environ=os.environ)
                 startup=lambda:SimpleNamespace(dwFlags=0,wShowWindow=0)
-                with mock.patch.object(native,'os',os_model),mock.patch.object(bounded,'_VerifierProcess',side_effect=preflight), \
+                with mock.patch.dict(os.environ, environment, clear=True), \
+                     mock.patch.object(current, 'os', os_model), \
+                     mock.patch.object(native,'os',os_model),mock.patch.object(bounded,'_VerifierProcess',side_effect=preflight), \
                      mock.patch.object(current,'live_pi_cli',return_value=(sys.executable,root/'unused-cli')), \
                      mock.patch.object(current,'read_json',return_value={'packages':['inert']}), \
                      mock.patch.object(subprocess,'run',return_value=subprocess.CompletedProcess([],0,'','')), \
@@ -5960,7 +5973,7 @@ class DebuggerInboxTests(unittest.TestCase):
                      mock.patch.object(subprocess,'SW_HIDE',0,create=True):
                     with self.assertRaisesRegex(RuntimeError,'inert-target-stop'):
                         run_rpc_commands(cwd,root/'agent',root/'home',_rpc_command=['inert-target'],_observe_shutdown=observed)
-                self.assertEqual(order,expect,'observed Windows target spawned without bounded hash-only preflight')
+                self.assertEqual(order, expect, 'Windows diagnostic target must follow bounded hash-only preflight')
 
     def test_collector_provider_attribution_distinguishes_missing_refused_and_deadline(self):
         import _windows_rpc_timeout as native

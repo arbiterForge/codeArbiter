@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Warm the debugger provider before Windows Pi RPC diagnostic runs  (from github:arbiterForge/codeArbiter:actions-job:135047091700:pi-debugger-provider-preflight)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions-job:135047091700:pi-debugger-provider-preflight
+  - Desc: Add the existing bounded hash warmup before standalone Windows RPC CI targets that request retained diagnostics. The original doctor failure at job 135047091700 reached the diagnostic provider hash deadline before attaching. Preserve raw package behavior, the exit deadline, and the original failure.
+  - Work type: fix
+  - Work ID: WORK-3D6B45043C30BBBC7DE77E865736768F
+  - Work operation ID: work-27c532f5fffe866749d1d6c85c9b4c371936b717
 - [x] Run audit append shell fixtures without an interactive console  (from github:arbiterForge/codeArbiter:actions:44331430097:134896781356)  (done 2026-11-18)
   - Work origin: github:arbiterForge/codeArbiter:actions:44331430097:134896781356
   - Desc: The Windows Hook isolation suite timed out in its PowerShell append fixture. Close standard input and disable PowerShell prompts in the fixture while exercising the original append commands and their existing UTF-8, prefix and timeout checks.
