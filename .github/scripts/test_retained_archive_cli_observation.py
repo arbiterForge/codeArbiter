@@ -596,7 +596,7 @@ class UploadHTTPReasonProjectionTest(unittest.TestCase):
 
 
 
-from contextlib import contextmanager
+from contextlib import contextmanager, nullcontext
 
 
 @contextmanager
@@ -786,5 +786,125 @@ class RuntimeSnapshotAliasTests(unittest.TestCase):
                 owner.regular_bytes(alias)
             self.assertEqual(ordinary.read_bytes(), b"inert runtime fixture\n")
             self.assertEqual(oversized.stat().st_size, 64 * 1024 * 1024 + 1)
+
+
+class ColdOriginalArtifactLookupTest(unittest.TestCase):
+    def test_original_cold_dispatch_does_not_page_over_unrelated_live_artifacts(self):
+        import major_qualification_report as reports
+        import major_readiness as readiness
+        import retained_archive_cli_observation as owner
+
+        source = "a" * 40
+        run_route = "actions/runs/7"
+        stage = {"id": 81, "name": "artifact-host-payloads-" + source}
+        package = {"id": 82, "name": "artifact-release-packages-" + source}
+        expected_artifacts = {
+            f"{run_route}/artifacts?name={row['name']}&per_page=2": row
+            for row in (stage, package)
+        }
+        assembly = {"id": 42, "name": "[CHECK] | [CORE] | Structured artifact package assembly", "conclusion": "success"}
+        current = {"id": 43, "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+                   "status": "in_progress", "run_attempt": 1}
+
+        def api(route):
+            if route == run_route:
+                return {"head_sha": source, "event": "push", "path": owner.WORKFLOW,
+                        "repository": {"full_name": readiness.REPOSITORY}, "head_branch": "major/state-contracts"}
+            return {"total_count": 1, "artifacts": [expected_artifacts[route]]}
+
+        def listing(argv):
+            if argv[-1].endswith("/artifacts?per_page=100"):
+                # Unrelated uploads can cross the boundary between the two live pages.
+                unrelated = {"id": 99, "name": "unrelated-in-progress"}
+                return json.dumps([{"artifacts": [unrelated, stage]}, {"artifacts": [unrelated, package]}])
+            self.assertTrue(argv[-1].endswith("/jobs?filter=latest&per_page=100"))
+            return json.dumps([{"jobs": [assembly, current]}])
+
+        environment = {"GITHUB_ACTIONS": "true", "GITHUB_REPOSITORY": readiness.REPOSITORY,
+                       "GITHUB_EVENT_NAME": "push", "GITHUB_REF": "refs/heads/major/state-contracts",
+                       "GITHUB_SHA": source, "GITHUB_RUN_ID": "7", "GITHUB_RUN_ATTEMPT": "1"}
+        with mock.patch.dict("os.environ", environment), \
+             mock.patch.object(owner, "private_environment", return_value=nullcontext()), \
+             mock.patch.object(owner, "_project_imports", return_value=nullcontext()), \
+             mock.patch.object(readiness, "api", side_effect=api) as exact, \
+             mock.patch.object(readiness, "command", side_effect=listing) as paginated, \
+             mock.patch.object(readiness, "validate_upload") as validate, \
+             mock.patch.object(reports, "git", return_value="b" * 40), \
+             mock.patch.object(reports, "authenticated_payload", side_effect=lambda row, req, path: row["id"]) as authenticate, \
+             mock.patch.object(owner, "observe", return_value=0) as observe:
+            self.assertEqual(owner.main(["--stage", "stage", "--package-root", "package", "--host", "claude",
+                                        "--platform", "windows/amd64", "--output", "observation.json"]), 0)
+
+        self.assertEqual(exact.call_args_list, [mock.call(run_route), *map(mock.call, expected_artifacts)])
+        self.assertEqual(paginated.call_count, 1)
+        self.assertEqual(validate.call_args_list, [
+            mock.call(assembly, stage, "Preserve the exact multi-host package overlay"),
+            mock.call(assembly, package, "Preserve the exact normal release package cohort"),
+        ])
+        self.assertEqual([call.args[2] for call in authenticate.call_args_list], [Path("stage"), Path("package")])
+        self.assertEqual(observe.call_args.kwargs["job_id"], current["id"])
+        self.assertEqual(observe.call_args.kwargs["authenticated_payloads"], {row["name"]: row["id"] for row in (stage, package)})
+
+    def test_cold_report_dispatch_uses_only_the_two_consumed_archives(self):
+        import major_qualification_report as reports
+        import major_readiness as readiness
+        import retained_archive_cli_observation as owner
+
+        source = "a" * 40
+        names = ("artifact-host-payloads-" + source, "artifact-release-packages-" + source)
+        archive_rows = {name: {"id": index, "name": name} for index, name in enumerate(names, 81)}
+        job = {"id": 43, "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+               "status": "in_progress"}
+        run = {"id": 7, "head_sha": source, "event": "push", "path": owner.WORKFLOW,
+               "repository": {"full_name": readiness.REPOSITORY}, "head_branch": "major/state-contracts"}
+        request = {"source_commit": source, "ci_run_id": 7}
+        cold = {"producer": owner.PRODUCER, "proof_kind": "retained-archive-cli"}
+        routes = {f"actions/runs/7/artifacts?name={name}&per_page=2": {"total_count": 1, "artifacts": [row]}
+                  for name, row in archive_rows.items()}
+        routes["actions/runs/7"] = run
+        env = {"GITHUB_ACTIONS": "true", "GITHUB_REPOSITORY": readiness.REPOSITORY,
+               "GITHUB_EVENT_NAME": "push", "GITHUB_REF": "refs/heads/major/state-contracts",
+               "GITHUB_SHA": source, "GITHUB_RUN_ID": "7"}
+        with mock.patch.dict("os.environ", env), \
+             mock.patch.object(reports, "source_identity", return_value={"clean": True, "source_commit": source}), \
+             mock.patch.object(reports, "load_json", side_effect=[cold, {}]), \
+             mock.patch.object(readiness, "producer_requirements", return_value=request), \
+             mock.patch.object(readiness, "api", side_effect=routes.__getitem__) as api, \
+             mock.patch.object(readiness, "command", return_value=json.dumps([{"jobs": [job]}])) as list_jobs, \
+             mock.patch.object(reports, "authenticated_payload", side_effect=lambda row, req, path, **kw: row["id"]), \
+             mock.patch.object(reports, "build_report", return_value={}) as build, \
+             mock.patch.object(reports, "new_output") as output:
+            self.assertEqual(reports.main(["emit", "--job-name", job["name"],
+                                          "--output", "qualification.json", "--observation", "cold=observation.json",
+                                          "--payload-root", names[0] + "=stage", "--payload-root", names[1] + "=package"]), 0)
+        self.assertEqual([call.args[0] for call in api.call_args_list], ["actions/runs/7", *list(routes)[:2]])
+        self.assertTrue(list_jobs.call_args.args[0][-1].endswith("/jobs?filter=latest&per_page=100"))
+        self.assertEqual(list_jobs.call_count, 1)
+        self.assertEqual(build.call_args.kwargs["observations"], {"cold": cold})
+        self.assertEqual(build.call_args.kwargs["payloads"], {name: row["id"] for name, row in archive_rows.items()})
+        output.assert_called_once_with(Path("qualification.json"), {})
+
+    def test_exact_lookup_rejects_missing_ambiguous_and_malformed_metadata(self):
+        import major_readiness as readiness
+        import retained_archive_cli_observation as owner
+
+        name = "artifact-host-payloads-" + "a" * 40
+        exact = {"id": 81, "name": name}
+        documents = (
+            None,
+            {"total_count": 0, "artifacts": []},
+            {"total_count": 2, "artifacts": [exact, {**exact, "id": 82}]},
+            {"total_count": 1, "artifacts": [exact, exact]},
+            {"total_count": 1, "artifacts": [{**exact, "name": name + "-other"}]},
+            {"total_count": True, "artifacts": [exact]},
+            {"total_count": 1, "artifacts": [{**exact, "id": False}]},
+        )
+        for document in documents:
+            with self.subTest(document=document), mock.patch.object(readiness, "api", return_value=document):
+                with self.assertRaisesRegex(ValueError, "exact retained cold artifact") as error:
+                    readiness.exact_run_artifact(7, name)
+                self.assertEqual(owner._diagnostic_code(error.exception), "COLD_ARTIFACT_LOOKUP_REJECTED")
+
+
 
 if __name__ == "__main__": unittest.main(verbosity=2)

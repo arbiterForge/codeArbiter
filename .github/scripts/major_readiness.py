@@ -18,6 +18,7 @@ from pathlib import Path, PurePosixPath, PureWindowsPath
 import re
 import subprocess
 import sys
+from urllib.parse import urlencode
 import zipfile
 from _boundedproc import start, terminate_tree
 from _contextverificationlib import hash_go_module_entries, VerificationError
@@ -1195,15 +1196,37 @@ def artifact_bytes(artifact, req):
     return content
 
 
-def collect(repo, source, run_id, producing=False, *, allow_program_branch=False, producer_scope=False):
+def exact_run_artifact(run_id, name):
+    # A live run can add unrelated uploads between pages of the complete inventory.
+    query = urlencode({"name": name, "per_page": 2})
+    page = api(f"actions/runs/{run_id}/artifacts?{query}")
+    reason = "exact retained cold artifact is missing, ambiguous or malformed"
+    require(isinstance(page, dict) and type(page.get("total_count")) is int and page["total_count"] == 1,
+            reason)
+    artifacts = page.get("artifacts")
+    require(isinstance(artifacts, list) and len(artifacts) == 1, reason)
+    artifact = artifacts[0]
+    require(isinstance(artifact, dict) and artifact.get("name") == name
+            and type(artifact.get("id")) is int and artifact["id"] > 0, reason)
+    return artifact
+
+
+def collect(repo, source, run_id, producing=False, *, allow_program_branch=False, producer_scope=False,
+            artifact_names=None):
     require(not producer_scope or producing, "finite producer scope is producing-only")
+    require(artifact_names is None or producer_scope, "named artifact lookup requires finite producer scope")
     req = producer_requirements(repo, source, run_id) if producer_scope else requirements(repo, source, run_id)
     run = api(f"actions/runs/{run_id}")
     validate_run(run, req, producing, allow_program_branch=allow_program_branch)
-    # gh's complete paginated list is bounded before consumption.
-    artifacts = json.loads(command(["gh", "api", "--paginate", "--slurp",
-        f"repos/{REPOSITORY}/actions/runs/{run_id}/artifacts?per_page=100"]))
-    artifacts = [a for p in artifacts for a in p["artifacts"]]
+    if artifact_names is not None:
+        require(len(artifact_names) <= 512 and len(set(artifact_names)) == len(artifact_names),
+                "duplicate or unbounded requested artifacts")
+        artifacts = [exact_run_artifact(run_id, name) for name in artifact_names]
+    else:
+        # Readiness consumers authenticate the completed run's full inventory.
+        pages = json.loads(command(["gh", "api", "--paginate", "--slurp",
+            f"repos/{REPOSITORY}/actions/runs/{run_id}/artifacts?per_page=100"]))
+        artifacts = [a for page in pages for a in page["artifacts"]]
     require(len(artifacts) <= 512, "artifact population exceeds bound")
     require(len({a["id"] for a in artifacts}) == len(artifacts)
             and len({a["name"] for a in artifacts}) == len(artifacts),
