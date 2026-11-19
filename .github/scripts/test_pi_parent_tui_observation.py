@@ -151,7 +151,7 @@ class ProviderProtocolTests(unittest.TestCase):
         chain = state.inspection
         task = {"protocol":"codearbiter-dispatch-v1", "task":chain.task, "response":{}}
         if reviewer:
-            summary = chain.author_summary.replace(chain.canary, owner.INSPECTION_REDACTION) if prior is None else prior
+            summary = chain.redacted_author_summary if prior is None else prior
             task["prior"] = {"role":"backend-author", "state":"accepted", "summary":summary}
         fixture = self.body(False, previous, content)
         fixture["messages"][0]["content"] = [{"type":"text", "text":owner.compact(task)}]
@@ -164,7 +164,7 @@ class ProviderProtocolTests(unittest.TestCase):
         effects = {"profile":owner.PROFILE, "observation":"parent-recorded", **dict.fromkeys(owner.EFFECT_COUNTS, 0)}
         if counts is not None:
             effects.update(counts)
-        children = [{"role":"backend-author", "state":"accepted", "summary":chain.author_summary, "effects":effects},
+        children = [{"role":"backend-author", "state":"accepted", "summary":chain.redacted_author_summary, "effects":effects},
                     {"role":"coverage-auditor", "state":"accepted", "summary":chain.reviewer_summary}]
         request = self.body(True, state.parent_call_id)
         request["messages"].append({"role":"tool", "tool_call_id":chain.call_id,

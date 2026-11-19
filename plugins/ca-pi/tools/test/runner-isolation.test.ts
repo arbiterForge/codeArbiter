@@ -1454,8 +1454,50 @@ describe("Task 6 exact Pi child launch", () => {
     }
   });
 
+  test("preserves a closed role judgment while redacting only its sensitive summary line", async () => {
+    const { runPiChild } = await loadModule<RunnerModule>("../src/runner.ts", "runner");
+    const child = new FakeChild();
+    const request = await materializedRequest();
+    const finalMessage = {
+      ...assistantMessage,
+      content: [{ type: "text", text: JSON.stringify({
+        state: "accepted",
+        summary: "Observed prior output.\nSynthetic secret marker.\nNo changes made.",
+      }) }],
+    };
+    let input = "";
+    child.stdin.on("data", (chunk) => {
+      input += chunk.toString("utf8");
+      const records = input.trimEnd().split("\n");
+      if (records.length === 1) writeValidAttestation(child, request);
+      else if (records.length === 2) {
+        child.stdout.write(JSON.stringify({ type: "response", id: "aaaaaaaa-bbbb-4ccc-8ddd-eeeeeeeeeeee-handshake", command: "prompt", success: true }) + "\n");
+      } else if (records.length === 3) {
+        const task = JSON.parse(records[2]!) as { id: string };
+        child.stdout.write(JSON.stringify({ type: "response", id: task.id, command: "prompt", success: true }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_start" }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_end", messages: [finalMessage], willRetry: false }) + "\n");
+        child.stdout.write(JSON.stringify({ type: "agent_settled", aborted: false }) + "\n");
+        child.close();
+      }
+    });
+    runnerMocks.spawn.mockReturnValue(child);
+
+    const result = await runPiChild(request as never, new AbortController().signal);
+
+    expect(result.terminal).toBe("completed");
+    expect(JSON.parse(result.output!)).toEqual({
+      state: "accepted",
+      summary: "Observed prior output.\n[REDACTED — secret-pattern match removed before transmission]\nNo changes made.",
+    });
+    expect(result.output).not.toContain("Synthetic secret marker.");
+  });
+
   test.each([
     ["provider environment", "dummy-openai-value"],
+    ["escaped provider environment", "dummy-openai-value"],
+    ["escaped provider environment with BOM", "dummy-openai-value"],
+    ["malformed escaped provider environment", "dummy-openai-value"],
     ["projected stored auth", "selected-provider-file-secret"],
     ["delegation bearer", "c".repeat(64)],
   ] as const)("fails closed when assistant output contains an exact %s credential value", async (_source, secret) => {
@@ -1471,10 +1513,13 @@ describe("Task 6 exact Pi child launch", () => {
     request.parentEnv.HOME = operatorHome;
     request.parentEnv.USERPROFILE = operatorHome;
     request.parentEnv.PI_CODING_AGENT_DIR = operatorAgent;
-    const leakingAssistant = {
-      ...assistantMessage,
-      content: [{ type: "text", text: `result ${secret}` }],
-    };
+    let text = `result ${secret}`;
+    if (_source.includes("escaped provider environment")) {
+      text = JSON.stringify({ state: "accepted", summary: text }).replaceAll("-", "\\u002d");
+    }
+    if (_source === "escaped provider environment with BOM") text = "\uFEFF" + text;
+    if (_source === "malformed escaped provider environment") text = text.replace("result ", "result \u0000");
+    const leakingAssistant = { ...assistantMessage, content: [{ type: "text", text }] };
     let input = "";
     child.stdin.on("data", (chunk) => {
       input += chunk.toString("utf8");

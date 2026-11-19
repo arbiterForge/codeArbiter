@@ -156,6 +156,7 @@ class InspectionChain:
         self.task = "Inspect existing PI-D07 fixture results without changing them " + nonce
         self.canary = "synthetic secret marker " + nonce
         self.author_summary = "Observed prior command output.\n" + self.canary + "\nInspection only; no changes made."
+        self.redacted_author_summary = self.author_summary.replace(self.canary, INSPECTION_REDACTION)
         self.reviewer_summary = "Read the prior author file. No changes made."
         self.turn = 0
         self.read_sha256 = {}
@@ -185,8 +186,7 @@ class InspectionChain:
         require(type(task) is dict and set(task) == (keys | {"prior"} if reviewer else keys)
                 and task["protocol"] == "codearbiter-dispatch-v1" and task["task"] == self.task, "inspection-task")
         if reviewer:
-            redacted = self.author_summary.replace(self.canary, INSPECTION_REDACTION)
-            require(task["prior"] == {"role": INSPECTION_ROLES[0], "state": "accepted", "summary": redacted},
+            require(task["prior"] == {"role": INSPECTION_ROLES[0], "state": "accepted", "summary": self.redacted_author_summary},
                     "inspection-redacted-prior")
             self.prior_sha256 = sha(task["prior"]["summary"].encode())
         call_id = "fixture-inspection-read-" + role + "-" + self.nonce
@@ -212,7 +212,8 @@ class InspectionChain:
         result = decode(raw.encode(), 4096)
         require(type(result) is dict and set(result) == {"state", "children"} and result["state"] == "accepted"
                 and type(result["children"]) is list and len(result["children"]) == 2, "inspection-parent-result")
-        for child, role, expected in zip(result["children"], INSPECTION_ROLES, (self.author_summary, self.reviewer_summary)):
+        summaries = (self.redacted_author_summary, self.reviewer_summary)
+        for child, role, expected in zip(result["children"], INSPECTION_ROLES, summaries):
             require(type(child) is dict and child.get("role") == role and child.get("state") == "accepted"
                     and child.get("summary") == expected, "inspection-role-result")
         author, reviewer = result["children"]
