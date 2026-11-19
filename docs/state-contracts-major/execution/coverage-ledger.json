@@ -52,9 +52,18 @@
    "evidence": [
     {
      "kind": "hosted-run",
+     "commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+     "ref": "docs/state-contracts-major/execution/evidence/work-policy-runtime-original-aebb53c9/proof-01.json",
+     "sha256": "8931036673e32a0ea728d56c9dbb94cbb8105e51c84ed5e88d4e3f933837ed2a"
+    }
+   ],
+   "evidence_history": [
+    {
+     "kind": "hosted-run",
      "commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
      "ref": "docs/state-contracts-major/execution/evidence/original-direct-findings-hosted-00fd5fff/hooks-findings-windows-contracts-hosted-tested.json",
-     "sha256": "dcceb5cb8db3dcdf00dcb26699faf2991d2de31cefeea97703bbe136d0f3af59"
+     "sha256": "dcceb5cb8db3dcdf00dcb26699faf2991d2de31cefeea97703bbe136d0f3af59",
+     "ref_commit": "ec90a84e0af8e76cd08e791f58932c08f3e3259a"
     }
    ]
   },
@@ -19300,12 +19309,21 @@
    "evidence": [
     {
      "kind": "test",
-     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
-     "ref": "docs/state-contracts-major/execution/evidence/native-reconcile-closure-9a26600f/command-successor-tested.json",
-     "sha256": "4ae8e6d2396a7db0793c4f635b642cc2b0ca2beccfbbfcf50cbe90811bdde74e"
+     "commit": "1e84bccf58cc28f8b590a81b5783f9a0051fa80a",
+     "ref": "docs/state-contracts-major/execution/evidence/native-reconcile-current-1e84bccf/tested.json",
+     "sha256": "ebca143477bd9d299d43df84188546f539771c42717292b96f9b5c0fb244db18"
     }
    ],
-   "candidate_contract_note": "Actual Windows/amd64 finite receipt-bearing reconciliation: all three output targets, exact receipt append/replay/CAS and current/stale binding/freshness refusals. Accepted ADR0046 D-PROGRESS=B intentionally preserves dependent progress/check history instead of old destructive invalidation. Complete245-member native source closure observed before/after the fresh9a command. Synthetic fixture authority only; no live host, installed/platform matrix, task/scenario or program completion."
+   "candidate_contract_note": "Actual Windows/amd64 finite receipt-bearing reconciliation: all three output targets, exact receipt append/replay/CAS and current/stale binding/freshness refusals. Accepted ADR0046 D-PROGRESS=B intentionally preserves dependent progress/check history instead of old destructive invalidation. Complete245-member native source closure observed before/after the fresh9a command. Synthetic fixture authority only; no live host, installed/platform matrix, task/scenario or program completion.",
+   "evidence_history": [
+    {
+     "kind": "test",
+     "commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+     "ref": "docs/state-contracts-major/execution/evidence/native-reconcile-closure-9a26600f/command-successor-tested.json",
+     "sha256": "4ae8e6d2396a7db0793c4f635b642cc2b0ca2beccfbbfcf50cbe90811bdde74e",
+     "ref_commit": "d3d02d7525ebb82e1ddb5f9b251d93061174c31c"
+    }
+   ]
   },
   "N10:03": {
    "owner": "native",

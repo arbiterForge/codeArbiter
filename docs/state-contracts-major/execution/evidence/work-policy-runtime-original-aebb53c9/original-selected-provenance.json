@@ -1,0 +1,53 @@
+{
+  "schema": "codearbiter-original-direct-runtime-preflight/1",
+  "source_commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+  "source_tree": "9816342bfc56f7018b548906378515ef850f7ce8",
+  "run_id": 44425846015,
+  "run_attempt": 1,
+  "whole_core_conclusion": "success",
+  "terminal_receipt_sha256": "9f1b6355d79ae7495aad72a57d0db427360d6c6c96d29341ef0e19792e662328",
+  "mode": "current",
+  "verified_by_lane": {
+    "hook": 1
+  },
+  "requested_counts": {
+    "hook": 1
+  },
+  "held": {},
+  "owner_methods": {
+    "disposition:findings:W-F03": "rebuilt from original named results and exact consumed input manifest"
+  },
+  "original_uploads": {
+    "disposition:findings:W-F03": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531972,
+        "artifact_id": 14486241261,
+        "sha256": "c3459dd2ff9680c75a8c6f32dadd10352b64383cbb1ca4d414787e88218b4960"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531972,
+        "artifact_id": 14486276073,
+        "sha256": "210e78ab300c5cbc343196614b19678dde4b35376493deb11cd4ebca344a4e2c"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531972,
+        "artifact_id": 14486950588,
+        "sha256": "9b10de45ecec8da4616ef57f126435892f21330c49d6d5908dddb2271c7f2b13"
+      }
+    ]
+  },
+  "current_rows_changed": 0,
+  "already_current": [],
+  "active": [
+    "disposition:findings:W-F03"
+  ],
+  "workflow_readback": true,
+  "source_only_reclassified": 0,
+  "status_changes": 0
+}
