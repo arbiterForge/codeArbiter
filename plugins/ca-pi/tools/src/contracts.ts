@@ -1,3 +1,5 @@
+export const ROLE_JUDGMENT_STATES = ["accepted", "changes_requested", "blocked"] as const;
+
 export interface BridgeRequest {
   version: 1;
   event: string;

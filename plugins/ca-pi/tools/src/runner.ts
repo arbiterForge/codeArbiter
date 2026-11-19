@@ -18,6 +18,7 @@ import {
   childAttestationDigest,
 } from "./attestation.ts";
 import { compatibilityDirection } from "./compatibility.ts";
+import { ROLE_JUDGMENT_STATES } from "./contracts.ts";
 import { encodeBootstrapEnvelope } from "./delegation-contract.ts";
 import type { DelegationSummary } from "./delegation-contract.ts";
 import { lexicallyInside } from "./path-boundary.ts";
@@ -718,9 +719,24 @@ function assistantText(message: unknown, containsSensitiveValue: (text: string) 
     const block = item as Record<string, unknown>;
     return block.type === "text" && typeof block.text === "string" ? [block.text] : [];
   }).join("");
-  if (text.trim() === "" || Buffer.byteLength(text, "utf8") > MAX_OUTPUT_BYTES) return undefined;
+  const trimmed = text.trim();
+  if (trimmed === "" || Buffer.byteLength(text, "utf8") > MAX_OUTPUT_BYTES) return undefined;
   if (containsSensitiveValue(text)) return undefined;
-  const safe = safeDiagnostic(text, MAX_OUTPUT_BYTES);
+  let report: unknown;
+  try { report = JSON.parse(trimmed); }
+  catch { /* Diagnostics outside the role protocol still use ordinary text redaction. */ }
+  let safe: string;
+  if (report !== null && typeof report === "object" && !Array.isArray(report)
+    && Object.keys(report).length === 2 && "state" in report && "summary" in report
+    && typeof report.summary === "string" && ROLE_JUDGMENT_STATES.some((state) => state === report.state)) {
+    // Compare the decoded field too, since JSON can escape an exact operator value.
+    if (containsSensitiveValue(report.summary)) return undefined;
+    safe = JSON.stringify({ state: report.state, summary: safeDiagnostic(report.summary, MAX_OUTPUT_BYTES) });
+  } else {
+    safe = safeDiagnostic(text, MAX_OUTPUT_BYTES);
+    // Diagnostic normalization cannot turn a malformed object into a role report.
+    if (report === undefined && safe.startsWith("{") && safe !== trimmed) return undefined;
+  }
   return safe === "" || Buffer.byteLength(safe, "utf8") > MAX_OUTPUT_BYTES ? undefined : safe;
 }
 

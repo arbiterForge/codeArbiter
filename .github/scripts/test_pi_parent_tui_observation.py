@@ -14,17 +14,62 @@ def dialog(operation, cwd="/private/project"):
     text = owner.compact(operation["params"])
     return ("\x1b[32mAllow governed operation?\x1b[0m\r\nDelegated " + operation["tool"] + " in " + cwd
             + "\r\n" + text + "\r\nSHA-256: " + owner.sha(text.encode())
-            + "\r\nThe parent executes this exact request on the trusted host.\r\nYes\r\nNo\r\n").encode()
+            + "\r\nThe parent executes this exact request on the trusted host.\r\n→ Yes\r\nNo\r\n").encode()
 
 class PromptProtocolTests(unittest.TestCase):
     def test_new_exact_rendered_prompt_is_required_before_each_consent(self):
         gate = owner.PromptGate(NONCE)
-        for operation in gate.ops:
+        for operation in owner.operations(NONCE):
             self.assertIsNone(gate.consent("/private/project"))
             gate.feed(dialog(operation))
             self.assertEqual(gate.consent("/private/project"), b"\r")
             self.assertIsNone(gate.consent("/private/project"), "old prompt output cannot approve the next operation")
         self.assertEqual(len(gate.events), 3)
+
+    def test_decline_requires_fresh_dialog_and_visible_no_before_enter(self):
+        cwd = "/private/project"
+        gate = owner.PromptGate(NONCE)
+        for operation in owner.operations(NONCE):
+            gate.feed(dialog(operation))
+            self.assertEqual(gate.consent(cwd), b"\r")
+        gate.feed(dialog(gate.ops[-2]))
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed(dialog(owner.declined_write(NONCE)))
+        self.assertEqual(gate.consent(cwd), b"j")
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed("→ Yes\r\n".encode())
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed(b" No\r\n")
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed("  \x1b[32m→ No\x1b[0m\r\n".encode())
+        self.assertEqual(gate.consent(cwd), b"\r")
+        self.assertEqual(len(gate.events), 4)
+        self.assertEqual(gate.events[-1]["input_hex"], "6a0d")
+        self.assertEqual(gate.events[-1]["decision"], "declined")
+        self.assertGreater(gate.events[-1]["no_selected_output_end"], gate.events[-1]["new_output_end"])
+        self.assertIsNone(gate.consent(cwd))
+
+    def test_decline_recognizes_cursor_positioned_selector_rows(self):
+        cwd = "/private/project"
+        gate = owner.PromptGate(NONCE)
+        for operation in owner.operations(NONCE):
+            gate.feed(dialog(operation))
+            self.assertEqual(gate.consent(cwd), b"\r")
+
+        def repaint(*lines):
+            return "".join(
+                f"\x1b[{row};1H\x1b[2K{line:<72}"
+                for row, line in enumerate(lines, start=28)
+            ).encode()
+
+        rows = dialog(owner.declined_write(NONCE)).decode().splitlines()
+        gate.feed(repaint(*rows))
+        self.assertEqual(gate.consent(cwd), b"j")
+        gate.feed(repaint("  Yes", "  No"))
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed(repaint("  Yes", " \x1b[38;5;5m→ No\x1b[39m"))
+        self.assertEqual(gate.consent(cwd), b"\r")
+        self.assertEqual(gate.events[-1]["decision"], "declined")
 
     def test_wrong_digest_nonce_tool_cwd_and_partial_prompt_never_consent(self):
         operation = owner.operations(NONCE)[0]
@@ -58,28 +103,122 @@ class PromptProtocolTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "json-cap"): owner.decode(b" " * (owner.REQUEST_CAP + 1))
 
 class ProviderProtocolTests(unittest.TestCase):
-    def body(self, parent, previous=None):
+    def body(self, parent, previous=None, content="owned result"):
         return {"model":"gpt-fixture", "stream":True, "tools":[{"type":"function","function":{"name":name}} for name in (["codearbiter_dispatch"] if parent else ["write","edit","bash"])],
-                "messages":[{"role":"user","content":"owned fixture"}] + ([] if previous is None else [{"role":"tool","tool_call_id":previous,"content":"owned result"}])}
+                "messages":[{"role":"user","content":"owned fixture"}] + ([] if previous is None else [{"role":"tool","tool_call_id":previous,"content":content}])}
 
-    def test_original_sse_shape_routes_parent_dispatch_and_three_child_effects(self):
-        state = owner.ProviderProtocol(NONCE)
+    def original_author(self, state):
         first, finish = state.response(self.body(True))
         self.assertEqual(first["tool_calls"][0]["function"]["name"], "codearbiter_dispatch")
         self.assertEqual(finish, "tool_calls")
         previous = None
-        for operation in owner.operations(NONCE):
+        for operation in [*owner.operations(NONCE), owner.declined_write(NONCE)]:
             result, finish = state.response(self.body(False, previous))
             call = result["tool_calls"][0]
             self.assertEqual(call["function"]["name"], operation["tool"])
             self.assertEqual(json.loads(call["function"]["arguments"]), operation["params"])
             previous = call["id"]
-        result, finish = state.response(self.body(False, previous))
+        refused = self.refused()
+        for bad in ("owned result", "Parent delegation unavailable", json.dumps({**refused, "execution":"completed"}),
+                    json.dumps({**refused, "reason":"no-parent-ui"}), json.dumps({**refused, "requestId":"invalid"})):
+            with self.assertRaisesRegex(ValueError, "declined-write-result"):
+                state.response(self.body(False, previous, bad))
+        result, finish = state.response(self.body(False, previous, json.dumps(refused)))
         self.assertEqual(json.loads(result["content"])["state"], "accepted")
+        self.assertEqual(state.declined_result, refused)
+        return state
+
+    def test_original_sse_routes_three_effects_and_exact_decline_before_one_review_chain(self):
+        state = self.original_author(owner.ProviderProtocol(NONCE))
+        state.inspection_snapshot = lambda: {"declined_target_present": False, "journal": {}, "effects": {}}
         result, finish = state.response(self.body(True, state.parent_call_id))
-        self.assertEqual(finish, "stop"); self.assertIn(NONCE, result["content"])
+        self.assertEqual(finish, "tool_calls")
+        call = result["tool_calls"][0]
+        self.assertEqual(call["function"]["name"], "codearbiter_dispatch")
+        self.assertEqual(json.loads(call["function"]["arguments"])["roles"], ["backend-author", "coverage-auditor"])
+        self.assertFalse(state.complete)
+        self.run_inspection_children(state)
+        result, finish = state.response(self.inspection_parent(state))
+        self.assertEqual(finish, "stop")
+        self.assertIn(NONCE, result["content"])
         self.assertTrue(state.complete)
-        with self.assertRaises(ValueError): state.response(self.body(True, state.parent_call_id))
+        self.assertEqual(state.inspection.receipt["roles"], ["backend-author", "coverage-auditor"])
+        self.assertEqual(len(state.inspection.receipt["read_sha256"]), 2)
+        with self.assertRaises(ValueError):
+            state.response(self.inspection_parent(state))
+
+    def inspection_body(self, state, *, reviewer=False, previous=None, content=None, prior=None):
+        chain = state.inspection
+        task = {"protocol":"codearbiter-dispatch-v1", "task":chain.task, "response":{}}
+        if reviewer:
+            summary = chain.redacted_author_summary if prior is None else prior
+            task["prior"] = {"role":"backend-author", "state":"accepted", "summary":summary}
+        fixture = self.body(False, previous, content)
+        fixture["messages"][0]["content"] = [{"type":"text", "text":owner.compact(task)}]
+        fixture["tools"] = [{"function":{"name":name}} for name in
+                            (["read","bash"] if reviewer else ["read","bash","write","edit"])]
+        return fixture
+
+    def inspection_parent(self, state, *, counts=None):
+        chain = state.inspection
+        effects = {"profile":owner.PROFILE, "observation":"parent-recorded", **dict.fromkeys(owner.EFFECT_COUNTS, 0)}
+        if counts is not None:
+            effects.update(counts)
+        children = [{"role":"backend-author", "state":"accepted", "summary":chain.redacted_author_summary, "effects":effects},
+                    {"role":"coverage-auditor", "state":"accepted", "summary":chain.reviewer_summary}]
+        request = self.body(True, state.parent_call_id)
+        request["messages"].append({"role":"tool", "tool_call_id":chain.call_id,
+                                    "content": owner.compact({"state":"accepted","children":children})})
+        return request
+
+    def run_inspection_children(self, state):
+        for reviewer, path, content in ((False, "command-"+NONCE+".txt", "command-"+NONCE+"\n"),
+                                        (True, "effect-"+NONCE+".txt", "after-"+NONCE)):
+            delta, finish = state.response(self.inspection_body(state, reviewer=reviewer))
+            call = delta["tool_calls"][0]
+            self.assertEqual(finish, "tool_calls")
+            self.assertEqual(call["function"]["name"], "read")
+            self.assertEqual(json.loads(call["function"]["arguments"]), {"path":path})
+            result = self.inspection_body(state, reviewer=reviewer, previous=call["id"], content=content)
+            judgement, finish = state.response(result)
+            self.assertEqual(finish, "stop")
+            self.assertEqual(json.loads(judgement["content"])["state"], "accepted")
+
+    def test_inspection_refuses_out_of_order_turns_wrong_read_and_unredacted_prior(self):
+        state = self.original_author(owner.ProviderProtocol(NONCE))
+        state.inspection_snapshot = lambda: {"declined_target_present": False, "journal": {}, "effects": {}}
+        state.response(self.body(True, state.parent_call_id))
+        with self.assertRaisesRegex(ValueError, "inspection-route"):
+            state.response(self.inspection_parent(state))
+        with self.assertRaisesRegex(ValueError, "inspection-role-tools"):
+            state.response(self.inspection_body(state, reviewer=True))
+        delta, _ = state.response(self.inspection_body(state))
+        read_id = delta["tool_calls"][0]["id"]
+        with self.assertRaisesRegex(ValueError, "inspection-read-result"):
+            state.response(self.inspection_body(state, previous=read_id, content="fake accepted"))
+        state.response(self.inspection_body(state, previous=read_id, content="command-"+NONCE+"\n"))
+        with self.assertRaisesRegex(ValueError, "inspection-redacted-prior"):
+            state.response(self.inspection_body(state, reviewer=True, prior=state.inspection.author_summary))
+
+    def test_inspection_acceptance_refuses_nonzero_effects_and_changed_snapshot(self):
+        observed = {"declined_target_present":False,"journal":{},"effects":{}}
+        state = self.original_author(owner.ProviderProtocol(NONCE))
+        state.inspection_snapshot = lambda: dict(observed)
+        state.response(self.body(True, state.parent_call_id))
+        self.run_inspection_children(state)
+        for counts in ({"requested":1}, {"refused":1}, {"unknown":1}, {"completed":False}):
+            with self.assertRaisesRegex(ValueError, "inspection-zero-effects"):
+                state.response(self.inspection_parent(state, counts=counts))
+        observed["declined_target_present"] = True
+        with self.assertRaisesRegex(ValueError, "inspection-effect-drift"):
+            state.response(self.inspection_parent(state))
+        self.assertFalse(state.complete)
+
+    @staticmethod
+    def refused():
+        return {"v":1, "requestId":"01234567-89ab-4def-8abc-01234567890a", "admission":"denied",
+                "execution":"not-started", "containment":"not-applicable", "observation":"unavailable",
+                "recovery":"new-operation-required", "reason":"permission-denied"}
 
     def test_no_child_before_dispatch_no_retry_no_extra_turn_or_unknown_model(self):
         state = owner.ProviderProtocol(NONCE)
@@ -99,11 +238,61 @@ class ProviderProtocolTests(unittest.TestCase):
             with self.assertRaises(ValueError): owner.transport_length(method,path,headers,NONCE)
         self.assertEqual(owner.transport_length("POST","/v1/chat/completions",{"Authorization":"Bearer dummy-"+NONCE,"Content-Length":"4"},NONCE),4)
         state=owner.ProviderProtocol(NONCE)
-        for _ in range(10): state.record({"refused":True})
-        self.assertEqual(len(state.records),8)
+        for _ in range(15): state.record({"refused":True})
+        self.assertEqual(len(state.records),owner.PROVIDER_RECORDS+1)
         self.assertTrue(state.failed)
 
 class AdmissionAndReceiptTests(unittest.TestCase):
+    def test_inspection_snapshot_binds_owned_file_and_raw_journal_bytes(self):
+        import tempfile
+        from observe_pi_installed_rpc import raw
+        with tempfile.TemporaryDirectory() as folder:
+            cwd = Path(folder).resolve()
+            journal = cwd/".git/codearbiter/pi-delegation/v1"
+            journal.mkdir(parents=True)
+            claimed = journal/"test-claimed.json"
+            claimed.write_bytes(b'{"record":{}}\n')
+            original = cwd/("effect-"+NONCE+".txt")
+            original.write_bytes(("after-"+NONCE).encode())
+            command = cwd/("command-"+NONCE+".txt")
+            command.write_bytes(("command-"+NONCE+"\n").encode())
+            rows, effects, before = owner.effect_observation(NONCE, cwd, raw)
+            self.assertEqual(rows, [{"record":{}}])
+            self.assertEqual(effects["command"], ("command-"+NONCE+"\n").encode())
+            self.assertFalse(before["declined_target_present"])
+            claimed.write_bytes(b'{"record": {}}\n')
+            _, _, after = owner.effect_observation(NONCE, cwd, raw)
+            self.assertNotEqual(before["journal"], after["journal"])
+            self.assertEqual(before["effects"], after["effects"])
+            command.write_bytes(("command-"+NONCE).encode())
+            self.assertNotEqual(after["effects"], owner.effect_observation(NONCE, cwd, raw)[2]["effects"])
+
+    def test_decline_requires_absent_canary_no_claim_and_exact_durable_audit(self):
+        import tempfile
+        protocol = owner.ProviderProtocol(NONCE)
+        protocol.declined_result = refused = ProviderProtocolTests.refused()
+        correlation = owner.sha((protocol.parent_call_id + ":" + refused["requestId"]).encode())
+        row = f"[2026-11-18T12:34:56.000Z] | HOST: pi | RULE: PI-PERMISSION | CORRELATION: {correlation} | TOOL_CLASS: WRITE | ACTION_CLASSES: source-write | DECISION: cancelled"
+        raw = (row + "\n").encode()
+        with tempfile.TemporaryDirectory() as folder:
+            cwd = Path(folder)
+            receipt = owner.check_decline(protocol, cwd, [], raw)
+            self.assertEqual(receipt["permission_audit"], row)
+            self.assertEqual(receipt["result"], refused)
+            self.assertFalse(receipt["target_present"])
+            self.assertFalse(receipt["journal_claim_present"])
+            for bad in (b"", raw + raw, raw[:-1], raw.replace(b"cancelled", b"approved"),
+                        raw.replace(correlation.encode(), b"0" * 64), raw.replace(b"WRITE", b"EDIT")):
+                with self.assertRaisesRegex(ValueError, "declined-write-audit"):
+                    owner.check_decline(protocol, cwd, [], bad)
+            for identity in ({"requestId": refused["requestId"]},
+                             {"digest":owner.sha(owner.compact({"profile":owner.PROFILE, **owner.declined_write(NONCE)}).encode())}):
+                with self.assertRaisesRegex(ValueError, "declined-write-journal"):
+                    owner.check_decline(protocol, cwd, [{"record":identity}], raw)
+            (cwd / owner.declined_write(NONCE)["params"]["path"]).touch()
+            with self.assertRaisesRegex(ValueError, "declined-write-target"):
+                owner.check_decline(protocol, cwd, [], raw)
+
     def test_owned_outputs_cannot_mutate_any_authenticated_input(self):
         import tempfile
         root=Path(tempfile.gettempdir()).resolve()/"pi-tui-layout-test"

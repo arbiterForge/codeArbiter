@@ -5,6 +5,30 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Preserve Pi role report structure during redaction  (from github:arbiterForge:codeArbiter:pull:1135:real-pi-structured-role-redaction)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1135:real-pi-structured-role-redaction
+  - Desc: The real packaged runner replaces a whole one-line role response when its summary has a sensitive pattern. Validate the closed response and redact only its summary while refusing exact operator values on both serialized and decoded views.
+  - Work type: fix
+  - Work ID: WORK-F187DF2FF154EC83D94AEE0878B2E904
+  - Work operation ID: work-44339213e1648b91c535bdc4e5f98846f61a6e7c
+- [x] Recognize positioned Yes and No rows in the Pi TUI fixture  (from github:arbiterForge:codeArbiter:pull:1135:positioned-pi-confirmation)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1135:positioned-pi-confirmation
+  - Desc: The exact retained full-screen terminal capture lost cursor row boundaries before selection was checked. Preserve those boundaries so the distinct decline request waits for the actual No redraw before sending Enter.
+  - Work type: fix
+  - Work ID: WORK-B254EB75FEF02AB0A855E0FA51B0EC1E
+  - Work operation ID: work-cdb4ec59e66415b9ceb4bb14e4bc8f32b9abceda
+- [x] Verify reviewer inspection and a no-change author in the retained Pi TUI  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change
+  - Desc: Run one bounded inspection chain on the exact retained Pi package. Verify two real read results, a redacted reviewer handoff and zero recorded mutation requests while the earlier approve and decline evidence stays intact.
+  - Work type: feature
+  - Work ID: WORK-AF8EAFE6391DB3D77C85484AA1AE116B
+  - Work operation ID: work-80e95841f8ac9a32e442ff1c280513b027588803
+- [x] Qualify denial in the retained Pi parent TUI fixture  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline
+  - Desc: Exercise a genuinely rendered declined tool confirmation in the existing installed Linux Pi 1.5.0 fixture. Require an exact child refusal, durable cancel audit and no canary effect while preserving the approved write, edit and command.
+  - Work type: feature
+  - Work ID: WORK-DA95F739E7251449E791CDEEAF8EBEA5
+  - Work operation ID: work-9133f2f3e86d10f9425b12648522715efb131be1
 - [x] Align original Windows isolation launcher and retain append timeout state  (from github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher)  (done 2026-11-18)
   - Work origin: github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher
   - Desc: The original Windows isolation launcher uses Git Bash while the pull request isolation uses native PowerShell. Use native PowerShell for the recorder and retain the owned audit fixture state at each process timeout.

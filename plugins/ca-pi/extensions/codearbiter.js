@@ -7277,6 +7277,9 @@ import { randomUUID as randomUUID5 } from "node:crypto";
 import { resolve as resolve12 } from "node:path";
 import { types as utilTypes9 } from "node:util";
 
+// src/contracts.ts
+var ROLE_JUDGMENT_STATES = ["accepted", "changes_requested", "blocked"];
+
 // src/roles.ts
 import { readFile as readFile4, realpath as realpath4 } from "node:fs/promises";
 import { isAbsolute as isAbsolute5, resolve as resolve10 } from "node:path";
@@ -8969,9 +8972,22 @@ function assistantText(message, containsSensitiveValue) {
     const block = item;
     return block.type === "text" && typeof block.text === "string" ? [block.text] : [];
   }).join("");
-  if (text2.trim() === "" || Buffer.byteLength(text2, "utf8") > MAX_OUTPUT_BYTES) return void 0;
+  const trimmed = text2.trim();
+  if (trimmed === "" || Buffer.byteLength(text2, "utf8") > MAX_OUTPUT_BYTES) return void 0;
   if (containsSensitiveValue(text2)) return void 0;
-  const safe = safeDiagnostic(text2, MAX_OUTPUT_BYTES);
+  let report;
+  try {
+    report = JSON.parse(trimmed);
+  } catch {
+  }
+  let safe;
+  if (report !== null && typeof report === "object" && !Array.isArray(report) && Object.keys(report).length === 2 && "state" in report && "summary" in report && typeof report.summary === "string" && ROLE_JUDGMENT_STATES.some((state) => state === report.state)) {
+    if (containsSensitiveValue(report.summary)) return void 0;
+    safe = JSON.stringify({ state: report.state, summary: safeDiagnostic(report.summary, MAX_OUTPUT_BYTES) });
+  } else {
+    safe = safeDiagnostic(text2, MAX_OUTPUT_BYTES);
+    if (report === void 0 && safe.startsWith("{") && safe !== trimmed) return void 0;
+  }
   return safe === "" || Buffer.byteLength(safe, "utf8") > MAX_OUTPUT_BYTES ? void 0 : safe;
 }
 function successfulFinalAssistant(message, launch, containsSensitiveValue) {
@@ -9370,7 +9386,7 @@ var DISPATCH_POLICY = Object.freeze({
   maxAggregateOutputBytes: 262144,
   timeoutMs: 12e4
 });
-var JUDGMENT_STATES = /* @__PURE__ */ new Set(["accepted", "changes_requested", "blocked"]);
+var JUDGMENT_STATES = new Set(ROLE_JUDGMENT_STATES);
 var MODE_SET = new Set(DISPATCH_MODES);
 var LIMIT_KEYS = /* @__PURE__ */ new Set(["concurrency", "maxDepth", "maxChildOutputBytes", "maxAggregateOutputBytes", "timeoutMs"]);
 function fixedResult(state, children = []) {
@@ -9496,7 +9512,7 @@ function taskEnvelope(task, prior) {
     } },
     response: {
       exactKeys: ["state", "summary"],
-      states: ["accepted", "changes_requested", "blocked"],
+      states: ROLE_JUDGMENT_STATES,
       summary: "Put the complete Markdown report required by your role charter in this JSON string. Emit only the JSON object."
     }
   });

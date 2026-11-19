@@ -32,6 +32,7 @@ All notable changes to `ca-pi` are documented in this file.
 
 ### Fixed
 
+- Redact sensitive lines inside a valid role summary while keeping its structured judgment usable by the parent and reviewer. Refuse exact credential values even when the child JSON escapes them.
 - Avoid Windows version-discovery shell commands in the shared native bridge while retaining native architecture, binary identity and process guards.
 - Regenerate the shipped parent bundle with the HTTPS admission and redirect controls.
 - Preserve exact audit file and directory identities on Windows; refuse rounded numeric IDs before any audit append.

@@ -24,7 +24,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "e40e2692aff17f7b08203308d49ea19473cc1dd0",
+      "hash": "556ab003428a362ef78f0bfe334309fc453422a2",
       "path": "plugins/ca-pi/CHANGELOG.md"
     },
     {
@@ -34,7 +34,7 @@
     },
     {
       "drift_trigger": true,
-      "hash": "f15838b04fc9eff55aea215e6d29f7afdc198c81",
+      "hash": "a600b1ed501a02f9c951cfef46e1b541aad7f666",
       "path": "plugins/ca-pi/extensions/codearbiter.js"
     },
     {

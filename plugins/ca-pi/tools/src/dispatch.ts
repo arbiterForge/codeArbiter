@@ -11,6 +11,7 @@ import type {
 import { publishActivity } from "./activity.ts";
 import type { ActivityPublisher } from "./activity.ts";
 import { appendAuditLine, auditField } from "./audit-sink.ts";
+import { ROLE_JUDGMENT_STATES } from "./contracts.ts";
 import { redactSecrets, safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog, validRoleName } from "./roles.ts";
 import type { PiRole } from "./roles.ts";
@@ -148,7 +149,7 @@ interface DispatchDependencies {
   loadRoles(packageRoot: string): Promise<ReadonlyMap<string, PiRole>>;
 }
 
-const JUDGMENT_STATES = new Set<DispatchTerminal>(["accepted", "changes_requested", "blocked"]);
+const JUDGMENT_STATES = new Set<DispatchTerminal>(ROLE_JUDGMENT_STATES);
 const MODE_SET = new Set<string>(DISPATCH_MODES);
 const LIMIT_KEYS = new Set(["concurrency", "maxDepth", "maxChildOutputBytes", "maxAggregateOutputBytes", "timeoutMs"]);
 
@@ -284,7 +285,7 @@ function taskEnvelope(task: string, prior?: InternalChild): string {
     } }),
     response: {
       exactKeys: ["state", "summary"],
-      states: ["accepted", "changes_requested", "blocked"],
+      states: ROLE_JUDGMENT_STATES,
       summary: "Put the complete Markdown report required by your role charter in this JSON string. Emit only the JSON object.",
     },
   });
