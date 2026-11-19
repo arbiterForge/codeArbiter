@@ -2709,10 +2709,8 @@ class P02FixtureLedgerApplicabilityTests(unittest.TestCase):
     profile = "p02-unittest-fixture-ledger-v1"
 
     def setUp(self):
-        from major_qualification_report import PROGRAM_INTEGRITY_CASES
-
-        self.cells = sorted(PROGRAM_INTEGRITY_CASES)
-        self.ids = [cell.split(":", 2)[2] for cell in self.cells]
+        self.ids = sorted(owner.P02_FIXTURE_TRANSITIONS)
+        self.cells = [f"disposition:added_transitions:{identity}" for identity in self.ids]
         self.ledger = {"schema": "ledger-fixture", "status_vocabulary": ["PLANNED", "TESTED"],
             "findings": {}, "machines": {}, "transitions": {"unrelated": {"evidence_history": ["old"]}},
             "added_transitions": {identity: {"owner": "integration-architect", "treatment": "FIXTURE",
