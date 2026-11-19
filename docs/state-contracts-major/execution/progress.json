@@ -805,10 +805,11 @@
       "tested": [
         "14namedcanonical tests PASS10.560s: allregistration transaction failpoints, exactreplay, actualtargetcommit/settlementfail, multiprocessclaim/correct/resumeonewinner+exacttargetcount, liveOSlock, changedsource, denial, future/corruptschema, stalecursor,32summary/256KiB pagebounds, partialbatch, tombstone dedup/history and notice failure.",
         "All22 introduced recovery edges now have per-row named canonical component assertions from the exact8a108552 run. Actual original3688 production archives separately passed Windows cold3, retained recovery10 and real Pi1.5 RPC discovery; these older archive observations are not new-source installed qualification.",
-        "One actual Windows/Python published0.26.9→authenticatedM0b0→publishedold→freshM reinstall case PASS19.002s,20helpercalls: pending/claimed/compacted records and independent board edits retained, three origins deduped, absent-effect reconcile and settled no-mutation replay verified. This is one local legacy-board slice; fullHW15 remains open."
+        "One actual Windows/Python published0.26.9→authenticatedM0b0→publishedold→freshM reinstall case PASS19.002s,20helpercalls: pending/claimed/compacted records and independent board edits retained, three origins deduped, absent-effect reconcile and settled no-mutation replay verified. This is one local legacy-board slice; fullHW15 remains open.",
+        "Three scoped Windows cases against the authenticated 90cdc6a8 archive passed. Claude and Codex used the packaged Python helpers and Pi used offline installed RPC startup plus packaged recovery readback. Pending, claimed, and compacted history and an independent task-board edit survived each rollback and fresh reinstall."
       ],
       "remaining": [
-        "Production retained-cohort qualification requires actual archives/trustedworkflow+run/package stage/promotionreceipt via qualify_workflow_recovery_cohort.py; actualhost/platform sourcebinding stays explicit. ActualrevokedPi delegation observation belongs Pi lane. No new production code gap identified in this bounded requirement review."
+        "Authenticate the retained production recovery matrix against the final candidate and verify remaining HW-15 acceptance criteria. All six historical 90cdc6a8 platform owners passed ten named retained-package CLI and hook-event cases each. Pi delegation qualification belongs to the Pi lane."
       ],
       "evidence": [
         {
@@ -827,6 +828,12 @@
           "commit": "0b0ae193496335c0d87337e5993f032a9385fffb",
           "ref": "docs/state-contracts-major/execution/evidence/hw15-published-rollback-M0b0/proof.json",
           "scope": "One Windows/Python Codex downgrade/reinstall; no full task/program qualification."
+        },
+        {
+          "kind": "scoped-installed-package-lifecycle",
+          "commit": "90cdc6a83d434c22f0587365c90ab82595ef22c9",
+          "ref": "docs/state-contracts-major/execution/evidence/hw15-windows-90cdc6a8/proof.json",
+          "scope": "Three Windows recovery slices for the historical test cohort. Full HW-15 remains open."
         }
       ]
     },
@@ -1646,9 +1653,10 @@
     {
       "id": "PROV-RELEASE-TARGETS-01",
       "owner": "integrator",
-      "status": "OPEN",
+      "status": "DONE",
       "detail": "Legacy (non-enrolled v1) .codearbiter/.provenance/release-targets.json hashes are stale for several files (plugins/ca-pi/extensions/codearbiter.js already differed at 033db6d7). Not enforced by test_provenance_wiring; decide refresh via legacy rebaseline owner or retire at G-01.",
-      "source": "version + Pi lane hand-backs"
+      "source": "version + Pi lane hand-backs",
+      "current_detail": "Commit d3d02d7525ebb82e1ddb5f9b251d93061174c31c refreshed the stale legacy identity. All 16 declared paths exist and match the recorded Git object hashes at 24303da3a3e9b6e2aa2f67a31e9afc95a58c4eb0. The existing provenance suite checks trigger coverage and reports source drift."
     },
     {
       "id": "DEF-GO-REPEATED-01",
@@ -1762,9 +1770,10 @@
     {
       "id": "QUAL-P02-LEGACY-SCOPES-01",
       "owner": "program-integrity",
-      "status": "OPEN",
+      "status": "IN_PROGRESS",
       "source": "89333ff30221f3b7a145de055a9d7a8d2eb42500",
-      "detail": "Reconcile legacy runtime proofs with genuine retained module fingerprints and relevant owned lookup observations, or execute only missing scoped acceptance. Do not convert positive-file cones into unobserved completeness or rewrite original results. New reader correctly reports150UNKNOWN/86STALE/131APPLICABLE among367authentic records; these counts are current applicability, not changed recorded progress. Current final draft preserves368 authentic recorded dispositions:240APPLICABLE/128UNKNOWN/0STALE. The128 remaining unknown runtime-native scopes await genuine current native/module/lookup observations; source preservation is not promoted to runtime completeness."
+      "detail": "Reconcile legacy runtime proofs with genuine retained module fingerprints and relevant owned lookup observations, or execute only missing scoped acceptance. Do not convert positive-file cones into unobserved completeness or rewrite original results. New reader correctly reports150UNKNOWN/86STALE/131APPLICABLE among367authentic records; these counts are current applicability, not changed recorded progress. Current final draft preserves368 authentic recorded dispositions:240APPLICABLE/128UNKNOWN/0STALE. The128 remaining unknown runtime-native scopes await genuine current native/module/lookup observations; source preservation is not promoted to runtime completeness.",
+      "current_detail": "The original 128 native scopes now have explicit module and lookup declarations. The retained 90cdc6a8 native run passed all selectors for those scopes across six platforms. At bcab97e9, 120 Go-only cells retain all declared inputs. Eight mixed cells still need fresh original installed-consumer evidence for two existing Windows native npm verification cases."
     },
     {
       "id": "DEF-FARM-LATE-DRIFT-01",

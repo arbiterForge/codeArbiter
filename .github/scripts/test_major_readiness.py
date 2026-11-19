@@ -1156,11 +1156,16 @@ if __name__ == "__main__":
     def test_recovery_finding_receipt_requires_native_archive_and_both_consumed_copies(self):
         import major_qualification_report as reports
 
-        cells = list(reports.RECOVERY_FINDING_CELLS)
-        req = dict(self.req, cells=cells, cell_jobs=dict.fromkeys(cells, 'major qualification / workflow-recovery'),
-                   source_finding_composite_cells=cells)
+        cells = [*reports.RECOVERY_FINDING_CELLS, 'scenario:SEQ-10']
         profile = reports.RECOVERY_RUNTIME_PROFILE
         spec = reports.source_profile(profile)
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_bytes())
+        self.assertTrue(set(cells) <= set(policy['source_finding_composite_cells']))
+        self.assertNotIn('scenario:SEQ-11', policy['source_finding_composite_cells'])
+        self.assertEqual(policy['cell_job_bindings']['scenario:SEQ-10'], spec['job'])
+        jobs_by_cell = dict.fromkeys(reports.RECOVERY_FINDING_CELLS, 'major qualification / workflow-recovery')
+        jobs_by_cell['scenario:SEQ-10'] = spec['job']
+        req = dict(self.req, cells=cells, cell_jobs=jobs_by_cell, source_finding_composite_cells=cells)
         source_bytes = b'owned immutable fixture'
         req['source_finding_inputs'] = reports.source_finding_input_pins(cells, req['source_commit'],
                                                                       lambda _source, _path: source_bytes)
@@ -1216,6 +1221,9 @@ if __name__ == "__main__":
             self.assertEqual([len(c['selectors']) for c in result['source_components']], [9, 7, 5])
             self.assertEqual(result['workflow_recovery_installation']['binary_sha256'], owner.digest(binary))
             self.assertEqual([c['consumed_native_installation'] for c in result['source_components'][1:]], [identity] * 2)
+        wrong_owner = dict(req, cell_jobs={**req['cell_jobs'], 'scenario:SEQ-10': 'another workflow'})
+        with self.assertRaisesRegex(owner.ReadinessError, 'workflow recovery scenario route owner differs'):
+            owner.produce(wrong_owner, self.artifacts, jobs)
         with self.assertRaisesRegex(owner.ReadinessError, 'native installation archive required'):
             owner.produce(req, self.artifacts[:-1], jobs)
         with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
@@ -1276,11 +1284,12 @@ class CompletedPopulationTest(unittest.TestCase):
                                                          'sha256': 'e' * 64, 'commit': 'f' * 40}])
 
     def setUp(self):
-        # Launch-binding task and finding archives have their own fixtures.
+        # Launch-binding archives have their own fixtures.
         # This fixture exercises the complete reviewed source population.
         policy = json.loads((self.repo / '.github/major-qualification-policy.json').read_bytes())
         policy['native_launch_binding_tasks'] = []
         policy['native_launch_binding_findings'] = []
+        policy['native_launch_binding_scenarios'] = []
         self.overrides = {
             owner.CORPUS + 'execution/progress.json': json.dumps(self.progress).encode(),
             owner.CORPUS + 'execution/coverage-ledger.json': json.dumps(self.ledger).encode(),

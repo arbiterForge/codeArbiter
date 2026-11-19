@@ -79,6 +79,9 @@ on:
       - "tools/build-host-packages.py"
       - "tools/owned_output.py"
       - "tools/ci-impact.py"
+      - "tools/ci20_baseline.py"
+      - "tools/ci20_inventory.py"
+      - "tools/test_measurement_contracts.py"
       # The structured-artifact protocol and its payload builders are a
       # required native-host contract even when a change touches no plugin.
       - "docs/artifacts/**"
@@ -312,6 +315,8 @@ jobs:
               - 'tools/live-smarts-exercise.py'
               - 'tools/statusline-bench.py'
               - 'tools/statusline-screenshot.py'
+              - 'tools/ci20_baseline.py'
+              - 'tools/ci20_inventory.py'
               - 'tools/test_measurement_contracts.py'
               - 'tools/build-artifacts.py'
               - 'tools/go_test_parallel.py'

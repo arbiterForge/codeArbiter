@@ -460,7 +460,10 @@ SOURCE_PATHS = frozenset(('.codearbiter/reports/agent-lane-proof.json',
  'tools/build-surface.py',
  'tools/command_compatibility.py',
  'tools/host_descriptors.py',
- 'tools/owned_output.py'))
+ 'tools/owned_output.py',
+ 'tools/build-host-packages.py',
+ '.github/scripts/_releaselib.py',
+ 'core/pysrc/_releaselib.py'))
 
 SOURCE_PROFILE = "hooks-proof-publisher-v1"
 SOURCE_MANIFEST = "source-test-inputs.json"
@@ -765,6 +768,13 @@ TS_FINDING_RECIPES = {
     ))},
 }
 
+TS_FINDING_RECIPES["scenario:SEQ-15"] = {
+    "profile": "pi-tools-v1",
+    "selectors": (TS_FINDING_RECIPES["disposition:findings:SF02"]["selectors"] |
+                  TS_FINDING_RECIPES["disposition:findings:SF03"]["selectors"]),
+}
+
+
 # Farm reuses the original unfiltered source-test observer; native manifest
 # declarations do not confer native runtime or installed-host qualification.
 TS_PROFILE_PATHS["farm-tools-v1"] = TS_COMMON_PATHS | frozenset(('.github/fixtures/artifact-release-manifest.json',
@@ -900,6 +910,25 @@ TS_FINDING_RECIPES.update({
         'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations',
     ))},
 })
+
+TS_FINDING_RECIPES["scenario:SEQ-18"] = {
+    "profile": "farm-tools-v1",
+    "selectors": (TS_FINDING_RECIPES["disposition:findings:SF06"]["selectors"] |
+                  TS_FINDING_RECIPES["disposition:findings:SF07"]["selectors"]),
+}
+
+
+TS_FINDING_RECIPES["scenario:SEQ-19"] = TS_FINDING_RECIPES["disposition:findings:SF08"]
+
+TS_FINDING_RECIPES["scenario:SEQ-20"] = {
+    "profile": "sandbox-tools-v1",
+    "selectors": frozenset((
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SEQ-20 overflow preserves failure and re-observes only the surviving target",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SEQ-20 abort preserves failure and re-observes only the surviving target",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box",
+    )),
+}
+
 
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
 
@@ -1075,7 +1104,10 @@ RECOVERY_INSTALLATION_ENV = "WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION"
 RECOVERY_NATIVE_PLATFORM = "windows/amd64"
 RECOVERY_NATIVE_BINARY = "ca-artifact-windows-amd64.exe"
 RECOVERY_FINDING_CELLS = ("disposition:findings:HOOK-B04", "disposition:findings:W-F04")
+RECOVERY_INTERRUPTION_SCENARIO = "scenario:SEQ-10"
+RECOVERY_COMPOSITION_CELLS = (*RECOVERY_FINDING_CELLS, RECOVERY_INTERRUPTION_SCENARIO)
 DEBUG_RESUBMISSION_FINDING = "disposition:findings:W-F02"
+DEBUG_RESUBMISSION_SCENARIO = "scenario:SEQ-09"
 DEBUG_LAUNCHER = ".github/scripts/test_ci_impact.py"
 DEBUG_WORKFLOW_SUITE = ".github/scripts/test_debug_workflow.py"
 DEBUG_HANDOFF_SUITE = ".github/scripts/test_debug_handoff.py"
@@ -3798,7 +3830,26 @@ def statusline_component(cases):
             "selectors": sorted(_statusline_test_id(name) for name in cases)}
 
 
+MEASUREMENT_FIXTURE_CASE = "MeasurementContracts.test_dirty_workflow_cannot_bind_measurement_evidence"
+MEASUREMENT_SCENARIO = "scenario:SEQ-26"
+MEASUREMENT_IDENTITY_FINDING = "disposition:findings:T-F03"
+
+
+def measurement_component(cases):
+    return source_component("hooks-single-owner-findings-v1", "tools/test_measurement_contracts.py",
+        "python-source-observations-", "Retain original Python source-test observations",
+        "python-finite-tf02-observation.json", cases)
+
+
 SOURCE_FINDING_COMPOSITIONS = {
+    MEASUREMENT_IDENTITY_FINDING: (measurement_component((MEASUREMENT_FIXTURE_CASE,)),),
+    MEASUREMENT_SCENARIO: (measurement_component((
+        MEASUREMENT_FIXTURE_CASE,
+        "MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+        "MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        *_ILLUSTRATION_FAILURE_CASES,
+    )),),
     **{cell: (statusline_component(cases),) for cell, cases in _STATUSLINE_CASES.items()},
     **{cell: (program_integrity_component(cases),) for cell, cases in PROGRAM_INTEGRITY_CASES.items()},
     **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
@@ -3956,9 +4007,7 @@ SOURCE_FINDING_COMPOSITIONS = {
             )),
     ),
     "scenario:SEQ-25": (
-        source_component("hooks-single-owner-findings-v1", "tools/test_measurement_contracts.py",
-            "python-source-observations-", "Retain original Python source-test observations",
-            "python-finite-tf02-observation.json", (
+        measurement_component((
                 "MeasurementContracts.test_empty_statusline_reports_cannot_pass",
                 "MeasurementContracts.test_unknown_statusline_scenario_is_rejected_before_measurement",
             )),
@@ -4080,9 +4129,12 @@ SOURCE_FINDING_COMPOSITIONS = {
 }
 
 
+SOURCE_FINDING_COMPOSITIONS[DEBUG_RESUBMISSION_SCENARIO] = SOURCE_FINDING_COMPOSITIONS[DEBUG_RESUBMISSION_FINDING]
+
+
 def source_finding_profiles(cells):
     readiness.require(isinstance(cells, list) and all(type(cell) is str and (cell in SOURCE_FINDING_COMPOSITIONS
-                                                                            or cell in RECOVERY_FINDING_CELLS) for cell in cells)
+                                                                            or cell in RECOVERY_COMPOSITION_CELLS) for cell in cells)
                       and cells == sorted(set(cells)), "invalid original source finding composition selection")
     return sorted({component["profile"] for cell in cells
                    for component in SOURCE_FINDING_COMPOSITIONS.get(cell, RECOVERY_COMPONENTS)})
@@ -4237,7 +4289,10 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
         component, = SOURCE_FINDING_COMPOSITIONS[cell]
         selectors_by_profile.setdefault(component["profile"], set()).update(component["selectors"])
     for cell in cells:
-        if cell in RECOVERY_FINDING_CELLS:
+        if cell in RECOVERY_COMPOSITION_CELLS:
+            if cell == RECOVERY_INTERRUPTION_SCENARIO:
+                readiness.require(req["cell_jobs"].get(cell) == source_profile(RECOVERY_RUNTIME_PROFILE)["job"],
+                                  "workflow recovery scenario route owner differs")
             if recovery is None:
                 recovery, recovery_payloads = workflow_recovery_evidence(req, run, artifacts, jobs)
                 payloads.update(recovery_payloads)
@@ -4267,8 +4322,9 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
                               and capture_member not in capture_members,
                               "original shared observation archive member is ambiguous or repeated")
             capture_members.add(capture_member)
+        three_owner_cells = (CATALOG_FINDING_CELL, DEBUG_RESUBMISSION_FINDING, DEBUG_RESUBMISSION_SCENARIO)
         identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()),
-                                                   limit=3 if cell in (CATALOG_FINDING_CELL, DEBUG_RESUBMISSION_FINDING) else 2)
+                                                   limit=3 if cell in three_owner_cells else 2)
         expected_jobs = {source_profile(profile)["job"] for profile in owners}
         readiness.require(len({job_id for job_id, _ in owners.values()}) == len(expected_jobs),
                           "original source profiles require their exact owning jobs")
@@ -4930,7 +4986,7 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 "a composed cell also has a direct report selection")
         expected.difference_update(composed)
     require(expected, "job has no required mapped cells")
-    require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_FINDING_CELLS}),
+    require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_COMPOSITION_CELLS}),
             "composed source findings require all original owners and components")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,

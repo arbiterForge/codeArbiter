@@ -1164,6 +1164,14 @@ def _requirements(repo, source, run_id):
         selected_launch_findings = [cell for cell in launch_findings if cell not in source_dispositions]
         if selected_launch_findings:
             native_fields['launch_binding_findings'] = selected_launch_findings
+    launch_scenarios = policy.get('native_launch_binding_scenarios', [])
+    if launch_scenarios:
+        from major_native_observation import launch_scenario_selection
+        launch_scenario_selection(launch_scenarios)
+        require(set(launch_scenarios) <= set(cells) and 'HW-04' in launch_tasks
+                and not set(launch_scenarios).intersection(source_dispositions),
+                'launch scenario requires its original HW04 population')
+        native_fields['launch_binding_scenarios'] = launch_scenarios
     source_finding_fields = {}
     source_finding_cells = policy.get('source_finding_composite_cells', [])
     require(isinstance(source_finding_cells, list), 'invalid source finding composition selection')

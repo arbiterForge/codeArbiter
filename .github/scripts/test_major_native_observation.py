@@ -1469,7 +1469,14 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         }
 
     def expected_native_recipes(self):
-        return {**EXPECTED_NATIVE_RECIPES, **self.windows_ordinary_recipes()}
+        ordinary = self.windows_ordinary_recipes()
+        progress = EXPECTED_NATIVE_RECIPES["disposition:findings:N-F03"]["windows/amd64"]
+        authority = ordinary["disposition:findings:N-F04"]["windows/amd64"]
+        return {**EXPECTED_NATIVE_RECIPES, **ordinary,
+                "scenario:SEQ-03": ordinary["disposition:findings:N-F01"],
+                "task:NT-02": ordinary["disposition:findings:N-F01"],
+                "scenario:SEQ-06": ordinary["disposition:findings:N-F10"],
+                "scenario:SEQ-07": {"windows/amd64": sorted(set(progress + authority))}}
 
     def test_current_progress_recipes_keep_all_original_routes_and_complete_required_children(self):
         import major_native_observation as native
@@ -2554,3 +2561,98 @@ class NativeRecipeSourceMembershipTests(unittest.TestCase):
                 self.assertTrue(all(len(row['owners']) == 2 for row in errors))
                 duplicate.unlink()
             self.assertEqual(_native_recipe_source_errors(owned, recipes), [])
+
+
+class Seq05LaunchScenarioAdmissionTests(unittest.TestCase):
+    """Scenario admission reuses the actual HW04 transport; fixture bytes only."""
+    CELL = "scenario:SEQ-05"
+
+    def fixture(self):
+        from test_npm_binding_observation import AdmissionTests
+        helper = AdmissionTests()
+        helper.setUp()
+        f = helper.f
+        f.req["cells"].append(self.CELL)
+        f.req["cell_jobs"][self.CELL] = "major qualification / native"
+        f.req["launch_binding_scenarios"] = [self.CELL]
+        return helper, f
+
+    def test_seq05_requires_complete_original_six_platform_launch_transport(self):
+        import npm_binding_observation as launch
+        import major_native_observation as native
+        helper, f = self.fixture()
+        try:
+            record = f.produce()
+        except (ValueError, KeyError) as error:
+            self.fail("SEQ-05 original HW04 launch admission is unavailable: " + str(error))
+        result, = [row for row in record["native"]["results"] if row["cell"] == self.CELL]
+        self.assertEqual({row["platform"] for row in result["components"]}, set(binding_owner.PLATFORMS))
+        for row in result["components"]:
+            self.assertEqual(row["selectors"], launch.selectors(row["platform"]))
+        self.assertEqual(set(record["native"]["launch_components"]), set(binding_owner.PLATFORMS))
+        for row in record["native"]["launch_components"].values():
+            self.assertEqual({x["workspace_count"] for x in row["observations"]}, set(launch.COUNTS))
+        self.assertEqual(f.verify(record)["state"], "PREPUBLICATION_READY")
+        policy = json.loads((Path(__file__).resolve().parents[2] / ".github/major-qualification-policy.json").read_bytes())
+        self.assertEqual(policy["native_launch_binding_scenarios"], [self.CELL])
+        self.assertEqual(policy["cell_job_bindings"][self.CELL], "major qualification / native")
+        self.assertNotIn(self.CELL, native.RECIPES)
+        self.assertEqual(tuple(launch.TASKS), ("HW-04", "NT-04"))
+
+    def test_seq05_refuses_missing_owner_or_unreviewed_finding_authority(self):
+        import npm_binding_observation as launch
+        import major_native_observation as native
+        helper, f = self.fixture()
+        original = copy.deepcopy(f.req)
+        for mutation in ("missing-selection", "foreign", "duplicate", "empty", "missing-HW04", "missing-inputs", "foreign-job"):
+            f.req = copy.deepcopy(original)
+            if mutation == "missing-selection": f.req.pop("launch_binding_scenarios")
+            elif mutation == "foreign": f.req["launch_binding_scenarios"] = ["disposition:findings:HOOK-F01"]
+            elif mutation == "duplicate": f.req["launch_binding_scenarios"] *= 2
+            elif mutation == "empty": f.req["launch_binding_scenarios"] = []
+            elif mutation == "missing-HW04": f.req["launch_binding_tasks"] = ["NT-04"]
+            elif mutation == "missing-inputs": f.req.pop("launch_binding_inputs")
+            else: f.req["cell_jobs"][self.CELL] = "foreign"
+            with self.subTest(mutation=mutation), self.assertRaises((ValueError, KeyError)): f.produce()
+
+    def test_seq05_refuses_sidecar_identity_incomplete_named_case_and_projection_tampering(self):
+        import npm_binding_observation as launch
+        import major_native_observation as native
+        helper, f = self.fixture()
+        record = f.produce()
+        changed = copy.deepcopy(record)
+        result = next(r for r in changed["native"]["results"] if r["cell"] == self.CELL)
+        result["components"][0]["selectors"].pop()
+        with self.assertRaises(ValueError): f.verify(changed)
+        for platform in sorted(binding_owner.PLATFORMS):
+            identity = helper.sidecars[platform]
+            saved, metadata = f.data[identity], copy.deepcopy(helper.sidecar_metadata[identity])
+            helper.mutate_sidecar(platform, lambda files: files.pop("workspaces-32.json"))
+            with self.subTest(platform=platform), self.assertRaises(ValueError): f.produce()
+            f.data[identity] = saved
+            helper.sidecar_metadata[identity].clear(); helper.sidecar_metadata[identity].update(metadata)
+        for mutation in ("source", "profile", "runtime", "imports", "count", "launch"):
+            platform = "windows/amd64"; identity = helper.sidecars[platform]
+            saved, metadata = f.data[identity], copy.deepcopy(helper.sidecar_metadata[identity])
+            def corrupt(files):
+                raw = json.loads(files["workspaces-32.json"])
+                if mutation == "source": raw["source_commit"] = "f" * 40
+                elif mutation == "profile": raw["profile"] = "foreign"
+                elif mutation == "runtime": raw["runtime_after"]["isolated"] = 0
+                elif mutation == "imports": raw["imports"][0]["path"] = "core/pysrc/_host.py"
+                elif mutation == "count": raw["workspace_count"] = 31
+                else: raw["launch_files"].pop()
+                files["workspaces-32.json"] = json.dumps(raw).encode()
+            helper.mutate_sidecar(platform, corrupt)
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError): f.produce()
+            f.data[identity] = saved
+            helper.sidecar_metadata[identity].clear(); helper.sidecar_metadata[identity].update(metadata)
+        def skipped(files):
+            raw = json.loads(files["native-tests.json"])
+            row = next(r for r in raw["subtests"] if r["test"].endswith("/workspaces-32"))
+            row["result"] = "skip"
+            files["native-tests.json"] = json.dumps(raw).encode()
+            stamp = json.loads(files["ci20-native-tested.json"])
+            files["native-observation.json"] = json.dumps(reports.admit_go(raw, stamp, f.tree)).encode()
+        f.rewrite("linux/arm64", skipped)
+        with self.assertRaises(ValueError): f.produce()

@@ -1,0 +1,135 @@
+{
+  "schema": "codearbiter-hw15-scoped-lifecycle/1",
+  "task": "HW-15",
+  "source_commit": "90cdc6a83d434c22f0587365c90ab82595ef22c9",
+  "source_tree": "7c34ce06fa737612f88fd99f98e7a9882e4bd72a",
+  "core_run_id": 44450011233,
+  "core_run_attempt": 1,
+  "testing_package_artifact_id": 14496573983,
+  "testing_package_archive_sha256": "ad4c69b78b2c49c17cdf54019d08b349ed127e4b08d1eff0f6022589f6dbbfd3",
+  "results": [
+    {
+      "host": "codex",
+      "scope": "Windows Python packaged recovery helpers and owned legacy task board",
+      "previous_version": "0.26.9",
+      "previous_archive_sha256": "df348d8926a6590346ab333abfefbeba88347dfdc665760d874e37c5f24c09ee",
+      "previous_publication_receipt_sha256": "6cf4eb6733423daa2dcd3837fd6fe3df1c2af0019bce9c5965ee8f745ae23dfa",
+      "candidate_version": "0.30.0",
+      "candidate_archive_sha256": "2c0fe5429db7266595db520fcdb3b541efbc4ce1ee48e7baef359b9597436da3",
+      "actual_helper_calls": 20,
+      "elapsed_seconds": 30.954,
+      "checks": [
+        "pending_claimed_and_compacted_records_preserved",
+        "old_package_reads_do_not_mutate_recovery_or_target",
+        "fresh_reinstall_uses_exact_original_archive",
+        "compaction_keeps_previous_history_hashes",
+        "origin_ids_dedup_without_store_or_target_mutation",
+        "independent_board_edit_preserved",
+        "claimed_absent_effect_reconciliation_returns_pending_without_board_write",
+        "settled_replay_has_no_effect",
+        "owned_finding_source_bytes_preserved"
+      ],
+      "original_local_proof_sha256": "a9f060bd48161402265c3cd68dc837267ff724ad0aa43f0e8c7e4ce0fa065464",
+      "original_local_delivery_sha256": "09978d3981388b02967ca4b6b8c52b7b281064c01988565a8bfb7602e59135a6"
+    },
+    {
+      "host": "claude",
+      "scope": "Windows Python packaged recovery helpers and owned legacy task board",
+      "previous_version": "3.8.9",
+      "previous_archive_sha256": "1348c1e8f43841a686a617c6eabf5d0f3e5c6b0c2f44a9e872da973872284c85",
+      "previous_publication_receipt_sha256": "22f13097972d7eec65701831d298344ff6c6e165423f0923021ab9c27463416f",
+      "candidate_version": "4.0.0",
+      "candidate_archive_sha256": "6446195833aa7612ad881262964348819ba95a9b6dc6f095e2f5fd408eae1b5b",
+      "actual_helper_calls": 20,
+      "elapsed_seconds": 21.403,
+      "checks": [
+        "pending_and_claimed_and_compacted_settled_retained",
+        "three_origin_IDs_dedup_without_write",
+        "prior_history_bytes_retained",
+        "independent_target_edit_retained",
+        "claim_reconcile_absent_effect_no_target_write",
+        "settled_replay_no_write",
+        "finding_source_bytes_unchanged",
+        "literal_driver_oracles_unchanged_after_host_normalization"
+      ],
+      "original_local_proof_sha256": "c1c181c4bf007bebe1f28cdd23dcaee9c766112676732dec1f08070201bd4420",
+      "original_local_delivery_sha256": "475859845309d2cb65d10a6ad6ca99dab527c0e562583d19d468f7662e7bdd1f"
+    },
+    {
+      "host": "pi",
+      "scope": "Windows Pi 1.5.0 offline installed RPC startup and packaged recovery readback",
+      "previous_version": "0.27.9",
+      "previous_release_id": 443733002,
+      "previous_archive_sha256": "bf4081bbe065414b2db30fcfcc49f93c23ca4dcbb978ff8537ad03adb7f85aa6",
+      "candidate_version": "0.30.0",
+      "candidate_archive_sha256": "d2b30e15455c7e3df1b9d4a601760f515cb4b299fff11e60f736e6216f2ad580",
+      "pending": 1,
+      "claimed": 1,
+      "compacted_history_preserved": true,
+      "unchanged_recovery_members": 38,
+      "independent_board_edit_sha256": "1cfffac6cc1f2f4dc9a2007d4a1561bb7809725130e0e1b17342f9870d3ac266",
+      "original_local_proof_sha256": "f1dfc2499022ef573f49d4bdb497751858a56710c3cfae388fbb5f99239fda57"
+    }
+  ],
+  "qualification": "Historical Windows rollback cases and hosted retained-package CLI and hook-event cases. Full HW-15 qualification is tied to the final candidate and its recovery acceptance criteria.",
+  "original_retained_recovery": {
+    "production_cohort_sha256": "857e2e6d04f88041de648e89b4ee135eb7baaf0491c087855daf45c608db72cd",
+    "case_names": [
+      "test_changed_owner",
+      "test_codex_pretool",
+      "test_corrupt_inventory",
+      "test_credential_boundary",
+      "test_dormant",
+      "test_foreign_helper",
+      "test_host_reentry",
+      "test_native_response_loss",
+      "test_pi_codec",
+      "test_shared_store"
+    ],
+    "platforms": {
+      "darwin/arm64": {
+        "job_id": 135329696901,
+        "artifact_id": 14497795926,
+        "archive_sha256": "25c582005254259dd2aa3efa7ffc20e1f10ab2d054b304e48023b74824753822",
+        "original_log_sha256": "76c0905456b2f3fa3081bb5f2ba75a4e8402dfbbc5eca59fd5e6a5c89bb41f79",
+        "passed": 10
+      },
+      "darwin/amd64": {
+        "job_id": 135329696917,
+        "artifact_id": 14497497366,
+        "archive_sha256": "2d1bdb66b536a7d8c5cd80cf251863f6c5ee55942b325f541df47324f2d4a9f0",
+        "original_log_sha256": "9072da540a94a3048523805f76cbcc9fcbe43d63abc92558e8b87531392c0b67",
+        "passed": 10
+      },
+      "linux/amd64": {
+        "job_id": 135329696940,
+        "artifact_id": 14496919842,
+        "archive_sha256": "27ab283be8907bafbadfa21d5745b8766d4a0216341240521cb7663964f98870",
+        "original_log_sha256": "83fb9df64d0337adb84a4c2a0499093b13b04ca97d4bb61aa1dcde90685a12b7",
+        "passed": 10
+      },
+      "linux/arm64": {
+        "job_id": 135329696947,
+        "artifact_id": 14498100099,
+        "archive_sha256": "27ab283be8907bafbadfa21d5745b8766d4a0216341240521cb7663964f98870",
+        "original_log_sha256": "6367a49c65daf2fb78d8dba1416f77d3bd6214a4ebbcb6dca636c5455346eb2e",
+        "passed": 10
+      },
+      "windows/arm64": {
+        "job_id": 135329696951,
+        "artifact_id": 14497915905,
+        "archive_sha256": "66f6c369cd51393a9d2527bdd214ffe5258c147e2707d049a04b0b1bd7a2f6eb",
+        "original_log_sha256": "eb8d6687f42984d1c9039a4647017767367e712d2775187c12f10502f2a51d1f",
+        "passed": 10
+      },
+      "windows/amd64": {
+        "job_id": 135329696993,
+        "artifact_id": 14496419520,
+        "archive_sha256": "26358fc93f2f4839ba631ad6f69510e26454ad26105730e2200747b1c6e27f42",
+        "original_log_sha256": "95246b6b0058ee7572e0512b28c2fd68b728a599c8ab0de01fbbb66062792d43",
+        "passed": 10
+      }
+    },
+    "readback_sha256": "f3f4dcc3f60c4fa9c34908afc8277461f3770d17dc6137a6ae79801ade5585bc"
+  }
+}

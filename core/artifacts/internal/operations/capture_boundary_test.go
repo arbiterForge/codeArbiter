@@ -3,6 +3,7 @@
 package operations
 
 import (
+	"maps"
 	"os"
 	"path/filepath"
 	"testing"
@@ -42,6 +43,61 @@ func pendingVerificationSource(t *testing.T, h *harness, legacy bool) (object, o
 	source := observedSourceForContextFixture(t, h.root, model.M(context["subject"]), "verification", "verification_runner", "passed",
 		"Synthetic pending-capture fixture, not actual command evidence.", payload, issued)
 	return source, context
+}
+
+func TestLegacyCaptureRefusalMatchesDiscoveryDescriptor(t *testing.T) {
+	h := newHarness(t)
+	h.createPair()
+	scopedWrite(t, h.root, "src/stage1.go", "package stage1\n")
+	h.approvePair()
+	h.start("T-001")
+	h.mut("task-check", "PLAN-EXAMPLE", reportedCommand("fail", true))
+	observed, _ := pendingVerificationSource(t, h, false)
+	raw, err := os.ReadFile(filepath.Join(h.root, filepath.FromSlash(model.S(observed["source_ref"]))))
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy, err := canonical.Object(raw)
+	if err != nil {
+		t.Fatal(err)
+	}
+	legacy["format"] = "codearbiter.workflow-event/0.1.0"
+	delete(legacy, "observation_ref")
+	delete(legacy, "observation_sha256")
+	legacySource := h.authoritySource(legacy)
+
+	before := descriptorEffectSnapshot(t, h.root)
+	for _, source := range []object{legacySource, observed} {
+		if _, err := h.request("capture", source); fault.Code(err) != "OBSERVATION_REQUIRED" {
+			t.Fatalf("deprecated capture did not refuse a bound event: %v", err)
+		}
+	}
+	if after := descriptorEffectSnapshot(t, h.root); !maps.Equal(after, before) {
+		t.Fatal("deprecated capture wrote repository state on refusal")
+	}
+
+	// Demonstrate that the observed source is valid and the current handler
+	// really emits the evidence classes that discovery advertises for it.
+	captured := h.run("capture-observation", observed)
+	for _, field := range []string{"event", "receipt"} {
+		ref := model.S(captured[field])
+		if bytes, err := os.ReadFile(filepath.Join(h.root, filepath.FromSlash(ref))); err != nil || len(bytes) == 0 {
+			t.Fatalf("capture-observation did not retain %s: %v", field, err)
+		}
+	}
+	caps := h.run("capabilities", object{})
+	rows := model.A(model.M(caps["operation_contract"])["operations"])
+	for _, item := range rows {
+		row := model.M(item)
+		if row["name"] == "capture" {
+			if row["effect"] != "observation" || row["lock"] != "exclusive" || row["evidence"] != "none" ||
+				row["journaled"] != false || len(model.A(row["writes"])) != 0 {
+				t.Fatalf("deprecated capture descriptor disagrees with its refusal behavior: %v", row)
+			}
+			return
+		}
+	}
+	t.Fatal("discovery lost the compatibility operation")
 }
 
 func TestCapturePreservesIssuedCheckBoundary(t *testing.T) {

@@ -3,12 +3,12 @@ import { tmpdir } from "node:os";
 import path from "node:path";
 import { it, expect } from "vitest";
 import { execInSandbox } from "./exec.ts";
-import type { DockerRun } from "./docker.ts";
+import type { DockerRun, RunResult } from "./docker.ts";
 import { ordinaryNetworkCapability, buildRunArgs } from "./run.ts";
-import { destroySandbox } from "./destroy.ts";
+import { destroySandbox, formatTeardownDiagnostic, teardownIncomplete } from "./destroy.ts";
 import { runClaudeInside } from "./claude-inside.ts";
 import { createSandbox, CreateFailure, readManifests } from "./create.ts";
-import { listSandboxes } from "./registry.ts";
+import { findSandbox, listSandboxes } from "./registry.ts";
 import { buildOrReuseImage, buildCapabilities, defaultEnsureNixpacks, type BuildDeps } from "./build.ts";
 
 it("SBX-C01 equal inputs in different checkout basenames select a verified stable key", async () => {
@@ -46,6 +46,86 @@ it("SBX-C02 treats overflow as lost observation and verifies target containment"
   expect(calls.some(c => c[0] === "stop" && c.at(-1) === "owned-target")).toBe(true);
   expect(calls.some(c => c[0] === "inspect" && c.at(-1) === "owned-target")).toBe(true);
   expect(r).toMatchObject({ overflowed: true, containment: "verified-stopped" });
+});
+
+async function verifyTeardownReobservation(reason: "overflow" | "abort"): Promise<void> {
+  const id = "selected";
+  const container = "selected-container";
+  const volume = "selected-volume";
+  const filters = ["--filter", "label=ca.sandbox=1", "--filter", "label=ca.sandbox.id=selected"];
+  const ps = ["ps", "-a", "-q", "--no-trunc", ...filters];
+  const volumes = ["volume", "ls", "-q", ...filters];
+  const scope = "label=ca.sandbox=1 label=ca.sandbox.id=selected";
+  const controller = new AbortController();
+  const aborting = reason === "abort";
+  const failure = aborting ? {aborted: true} : {overflowed: true};
+  const exitCode = aborting ? 130 : 1;
+  const output = "output-".repeat(20);
+  const result = (code: number, stdout = "", stderr = ""): RunResult => ({code, stdout, stderr});
+  const commands: [string[], RunResult][] = [
+    [["exec", container, "fixture-command"], {...result(exitCode, output, "command failed"), ...failure}],
+    [["stop", "--time", "0", container], result(41, "", "stop denied")],
+    [["inspect", "--format", "{{.State.Running}}", container], result(42, "false\n", "inspect failed")],
+    [ps, result(0, container + "\n")],
+    [volumes, result(0, volume + "\n")],
+    [["rm", "-f", container], result(43, "", "remove denied")],
+    [["volume", "rm", "-f", volume], result(44, "", "volume in use")],
+    [ps, result(45, "unrelated-container\n", "container observation failed")],
+    [volumes, result(46, "unrelated-volume\n", "volume observation failed")],
+    [ps, result(0, container + "\n")],
+    [volumes, result(47, "unrelated-volume\n", "target observation still failed")],
+    [ps, result(0, container + "\n")],
+    [volumes, result(0, volume + "\n")],
+  ];
+  let next = 0;
+  const dockerRun: DockerRun = async (args, options) => {
+    const index = next++;
+    const expected = commands[index];
+    if (!expected) throw new Error("unexpected Docker command: " + args.join(" "));
+    expect(args).toEqual(expected[0]);
+    expect(options?.signal).toBe(index === 0 ? controller.signal : undefined);
+    if (index === 0 && aborting) controller.abort();
+    return expected[1];
+  };
+
+  const failed = await execInSandbox(container, ["fixture-command"], {
+    dockerRun, signal: controller.signal, maxBytes: 96,
+  });
+  expect(failed).toMatchObject({
+    id: container, exitCode, ...failure, truncated: true, containment: "unknown",
+  });
+  expect(failed.stdout).toBe(output.slice(0, 96));
+  expect(failed.stderr).toContain("command failed");
+  expect(failed).not.toHaveProperty("timedOut");
+  expect(failed).not.toHaveProperty(aborting ? "overflowed" : "aborted");
+
+  const cleanup = await destroySandbox(id, {dockerRun});
+  expect(teardownIncomplete(cleanup)).toBe(true);
+  expect(cleanup).toMatchObject({
+    id, removedContainers: [], removedVolumes: [], remainingContainers: [], remainingVolumes: [], failureCount: 4,
+    failures: [
+      {op: "remove-container", ref: container, code: 43},
+      {op: "remove-volume", ref: volume, code: 44},
+      {op: "list-containers", ref: scope, code: 45},
+      {op: "list-volumes", ref: scope, code: 46},
+    ],
+  });
+  await expect(findSandbox(id, dockerRun)).rejects.toThrow(/volume observation unavailable \(exit 47\)/);
+  await expect(findSandbox(id, dockerRun)).resolves.toEqual({id, containers: [container], volumes: [volume]});
+  expect(next).toBe(commands.length);
+
+  const diagnostic = formatTeardownDiagnostic("destroy", cleanup);
+  expect(diagnostic).toContain("teardown INCOMPLETE");
+  expect(diagnostic).not.toContain("0 container(s) and 0 volume(s) still present");
+  expect(diagnostic).toContain("Resource observation was incomplete.");
+}
+
+it("SEQ-20 overflow preserves failure and re-observes only the surviving target", async () => {
+  await verifyTeardownReobservation("overflow");
+});
+
+it("SEQ-20 abort preserves failure and re-observes only the surviving target", async () => {
+  await verifyTeardownReobservation("abort");
 });
 
 it("SBX-C03 reports failed resource observations as unavailable, not empty", async () => {

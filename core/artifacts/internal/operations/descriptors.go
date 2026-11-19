@@ -7,10 +7,9 @@ package operations
 // from this one table, and tests check it against the request-schema switch and
 // the Run dispatcher in both directions.
 //
-// Traits describe what an operation can actually do, not what it is allowed to
-// do: no trait is a permission. In particular Journaled=false does not mean
-// "writes nothing" (capture writes immutable events and receipts; a contextual
-// read writes delivery tokens).
+// Traits describe runtime effects. The host owns permission decisions.
+// The engine can write immutable events, receipts, and contextual delivery
+// tokens outside the mutation journal.
 type OperationDescriptor struct {
 	Name string
 	// Effect is the operation's broadest effect class:
@@ -105,7 +104,7 @@ var descriptors = []OperationDescriptor{
 	exclusiveRead("farm-verify", "explicit"),
 	{Name: "recover", Effect: "recovery", Journaled: true, Lock: "exclusive", Writes: []string{"canonical-artifact", "local-work-state", "transactions", "history"}, Evidence: "none"},
 	exclusiveRead("diff", "none"),
-	{Name: "capture", Effect: "immutable-capture", Lock: "exclusive", Writes: []string{"events", "receipts"}, Evidence: "explicit"},
+	exclusiveRead("capture", "none"),
 	{Name: "capture-observation", Effect: "immutable-capture", Lock: "exclusive", Writes: []string{"events", "receipts"}, Evidence: "explicit"},
 	{Name: "export", Effect: "journaled-mutation", Journaled: true, Lock: "exclusive", Writes: []string{"standalone-export", "transactions", "history"}, Evidence: "none"},
 	exclusiveRead("migration-preview", "none"),

@@ -105,7 +105,7 @@ per section, mapping every meaningful section to active record or note
 references in its matching knowledge document. `apply` also requires the
 preview's input identities and commits the cutover in one journaled transaction.
 
-`capture` **writes** immutable events and receipts even though it does not increment an artifact revision. Locks, journals and a contextual-pagination key are engine-managed metadata; “read operation” does not mean the filesystem can never acquire such metadata. Host permission classification must distinguish content writes and event writes from ordinary reads. No generic content mutation can set approval or task acceptance.
+`capture-observation` **writes** immutable events and receipts without incrementing an artifact revision. The compatibility operation `capture` refuses evidence writes. The engine manages lock metadata, journals and the contextual-pagination key. Hosts classify ordinary reads, content writes and event writes separately. Approval and task acceptance use their dedicated operations.
 
 ## Identity domains
 
@@ -988,7 +988,7 @@ legacy proof path; normal orchestration is being converted separately in T05.
 
 ## Cooperative approval and evidence
 
-`capture` persists a **host-supplied actual workflow event**, naming the artifact ID, normative digest, record subject, actor, origin, source text, authority kind, verdict and kind-specific payload. It creates a content-addressed receipt and does not approve the artifact. `approve` separately checks the matching receipt and readiness.
+`capture-observation` persists a **host-supplied observed workflow event**, naming the artifact ID, normative digest, record subject, actor, origin, source text, authority kind, verdict and kind-specific payload. It validates the bound source, observation and current context before issuing a content-addressed receipt. With a valid ordinary bound event, the compatibility operation `capture` returns `OBSERVATION_REQUIRED`. `approve` separately checks the matching receipt and readiness.
 
 The test suite's synthetic user/reviewer events are test fixtures only. Production callers must not construct invented reviewer identities or successful results just to clear these gates. The existing codeArbiter cooperative-attestation threat model remains explicit; unrestricted same-user tampering is outside the claimed boundary.
 

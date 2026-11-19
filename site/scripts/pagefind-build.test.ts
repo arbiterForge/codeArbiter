@@ -2,6 +2,7 @@ import * as fs from 'node:fs';
 import { mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import { tmpdir } from 'node:os';
+import { pathToFileURL } from 'node:url';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as pagefind from 'pagefind';
 import { buildSearchIndex, completePagefind, validateSearchFiles, writeSearchFiles } from './pagefind-build';
@@ -178,6 +179,30 @@ describe('complete search bundle publication', () => {
     expect(text).toContain('search');
     expect((await import('node:child_process')).spawnSync(process.execPath, ['--check', '--input-type=module'], { input: text }).status).toBe(0);
   });
+  it('refuses pending Reference and Academy generation before Astro consumes generated pages', async () => {
+    const directory = fs.realpathSync(await fixture());
+    const source = join(directory, 'src');
+    await mkdir(source);
+    const handwritten = join(source, 'handwritten.md');
+    await writeFile(handwritten, 'owned handwritten fixture');
+    const gate = completePagefind().hooks['astro:config:done'];
+    if (!gate) throw new Error('Actual Astro configuration gate is unavailable');
+    const options = { config: { root: pathToFileURL(`${directory}/`) } } as Parameters<typeof gate>[0];
+    for (const namespace of ['reference', 'academy']) {
+      const marker = join(source, `.generated-${namespace}.lock`);
+      await writeFile(marker, 'owned interrupted publication fixture', { flag: 'wx' });
+      try {
+        expect(() => gate(options)).toThrow(`Incomplete or concurrent ${namespace} generation`);
+        expect(await readFile(handwritten, 'utf8')).toBe('owned handwritten fixture');
+        expect((await readdir(source)).sort()).toEqual([`.generated-${namespace}.lock`, 'handwritten.md'].sort());
+      } finally {
+        await rm(marker);
+      }
+    }
+    expect(() => gate(options)).not.toThrow();
+    expect(await readdir(source)).toEqual(['handwritten.md']);
+  });
+
   it('is wired to every Astro build instead of an optional postbuild command', async () => {
     expect(completePagefind().hooks['astro:build:done']).toBeTypeOf('function');
     const config = await readFile('astro.config.mjs', 'utf8');

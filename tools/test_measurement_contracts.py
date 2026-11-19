@@ -1,9 +1,12 @@
 """Measurement regressions; synthetic reports never claim a live provider run."""
 import contextlib
+import hashlib
 import importlib.util
 import io
 import json
 from pathlib import Path
+import subprocess
+import sys
 import tempfile
 from types import SimpleNamespace
 import unittest
@@ -20,6 +23,48 @@ def load(name):
 
 
 class MeasurementContracts(unittest.TestCase):
+    def test_dirty_workflow_cannot_bind_measurement_evidence(self):
+        # Both collectors must refuse before parsing YAML or contacting GitHub.
+        yaml_parser = mock.Mock(side_effect=AssertionError("parsed before binding workflow bytes"))
+        with mock.patch.dict(sys.modules, {"yaml": SimpleNamespace(safe_load=yaml_parser)}):
+            baseline = load("ci20_baseline")
+            inventory = load("ci20_inventory")
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            checkout = root / "checkout"
+            subprocess.run(["git", "init", "--quiet", str(checkout)], check=True)
+            path = ".github/workflows/ci.yml"
+            workflow = checkout / path
+            workflow.parent.mkdir(parents=True)
+            clean_bytes = b"jobs: {}\n"
+            workflow.write_bytes(clean_bytes)
+            subprocess.run(["git", "add", path], cwd=checkout, check=True)
+            subprocess.run(["git", "-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+                            "commit", "--quiet", "-m", "fixture"], cwd=checkout, check=True)
+            head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=checkout, text=True).strip()
+            self.assertEqual(baseline.bound_workflow_bytes(checkout, path, head), clean_bytes)
+            record, destination = root / "baseline.json", root / "inventory.json"
+            record.write_text(json.dumps({"source_commit": head,
+                "workflow_sha256": hashlib.sha256(clean_bytes).hexdigest()}), encoding="utf-8")
+            workflow.write_bytes(b"jobs: {changed: {}}\n")
+            with mock.patch.object(baseline, "api", side_effect=AssertionError("baseline fetched before binding")):
+                with self.assertRaisesRegex(ValueError, "workflow .* differs from its bound commit"):
+                    baseline.collect("fixture/repo", 1, checkout)
+
+            check_output = subprocess.check_output
+
+            def read_local_git(argv, **kwargs):
+                self.assertEqual(argv[0], "git", "inventory fetched before binding")
+                return check_output(argv, **kwargs)
+
+            with mock.patch.object(inventory, "ROOT", checkout), \
+                 mock.patch.object(inventory.sys, "argv", ["inventory", "--baseline", str(record), "--output", str(destination)]), \
+                 mock.patch.object(inventory.subprocess, "check_output", side_effect=read_local_git):
+                with self.assertRaisesRegex(ValueError, "workflow .* differs from its bound commit"):
+                    inventory.main()
+            self.assertFalse(destination.exists())
+        yaml_parser.assert_not_called()
+
     def test_nonempty_compatible_subset_compares_and_wrong_harness_refuses(self):
         bench = load('statusline-bench')
         phase = {'renders': 1, 'totals': dict.fromkeys(bench.GATED_COUNTERS, 0),

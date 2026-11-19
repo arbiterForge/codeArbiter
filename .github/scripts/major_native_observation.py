@@ -1099,6 +1099,8 @@ _WINDOWS_CONTEXT_ASSERTIONS = (
             "disposition:findings:N-F01",
             "disposition:transitions:N16:04",
             "disposition:transitions:N21:01",
+            "scenario:SEQ-03",
+            "task:NT-02",
         ),
         (
             "contextdocument:TestStoredPreviewContractRejectsMalformedRecords",
@@ -1239,6 +1241,7 @@ _WINDOWS_WORK_ASSERTIONS = (
         (
             "disposition:findings:N-F10",
             "disposition:transitions:N06:03",
+            "scenario:SEQ-06",
         ),
         (
             "operations:TestInterruptedRetirementRecoversExactly",
@@ -1527,6 +1530,12 @@ RECIPES.update({
 })
 
 
+RECIPES["scenario:SEQ-07"] = {
+    "windows/amd64": sorted(set(RECIPES["disposition:findings:N-F03"]["windows/amd64"]) |
+                            set(RECIPES["disposition:findings:N-F04"]["windows/amd64"]))
+}
+
+
 def selected_recipes(cells):
     import major_readiness as owner
     owner.require(isinstance(cells, list) and len(cells) <= len(RECIPES)
@@ -1540,6 +1549,14 @@ def launch_finding_selection(value):
     import major_readiness as owner
     owner.require(isinstance(value, list) and value == ['disposition:findings:HOOK-F04'],
                   'invalid launch binding finding selection')
+    return value
+
+
+def launch_scenario_selection(value):
+    """SEQ-05 uses the complete original Python/npm/native launch carrier."""
+    import major_readiness as owner
+    owner.require(isinstance(value, list) and value == ['scenario:SEQ-05'],
+                  'invalid launch binding scenario selection')
     return value
 
 
@@ -1576,10 +1593,20 @@ def runtime_requirements(req):
                       and not launch_findings.intersection(req.get('source_dispositions', {}))
                       and all(jobs[cell] == 'major qualification / native' for cell in launch_findings),
                       'launch finding requires the original HW04 source and native authority')
-    consumed = set(recipes) | launch_cells | launch_findings
+    launch_scenarios = set()
+    if 'launch_binding_scenarios' in req:
+        launch_scenarios = set(launch_scenario_selection(req['launch_binding_scenarios']))
+        owner.require('task:HW-04' in launch_cells
+                      and launch_scenarios < set(cells)
+                      and not launch_scenarios.intersection(recipes)
+                      and not launch_scenarios.intersection(req.get('source_dispositions', {}))
+                      and all(jobs[cell] == 'major qualification / native' for cell in launch_scenarios),
+                      'launch scenario requires the original HW04 source and native authority')
+    consumed = set(recipes) | launch_cells | launch_findings | launch_scenarios
     return {**{key: value for key, value in req.items()
                if key not in ('native_compositions', 'native_module_sha256',
-                              'launch_binding_tasks', 'launch_binding_inputs', 'launch_binding_findings')},
+                              'launch_binding_tasks', 'launch_binding_inputs', 'launch_binding_findings',
+                              'launch_binding_scenarios')},
             'cells': [cell for cell in cells if cell not in consumed],
             'cell_jobs': {cell: job for cell, job in jobs.items() if cell not in consumed}}
 
@@ -1681,7 +1708,7 @@ def admit(req, artifacts, jobs, *, run=None, producing=False):
             recipes['task:' + task] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
         # A finding reuses the same complete original native consumers and the
         # same mandatory sidecars below; it never adds another test execution.
-        for cell in req.get('launch_binding_findings', []):
+        for cell in req.get('launch_binding_findings', []) + req.get('launch_binding_scenarios', []):
             recipes[cell] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
     platforms = sorted({platform for recipe in recipes.values() for platform in recipe})
     components = {platform: _component(req, run, artifacts, jobs, platform) for platform in platforms}

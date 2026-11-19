@@ -132,4 +132,31 @@ class GeneratedOutputTests(unittest.TestCase):
             with self.assertRaisesRegex(module.SurfaceError,'late render'):module.write_all(str(self.root))
         self.assertEqual(target.read_bytes(),b'old')
 
+    def test_package_source_gate_refuses_pending_publication_before_git(self):
+        spec = importlib.util.spec_from_file_location(
+            'owned_package_generation_gate', ROOT / 'tools/build-host-packages.py')
+        package = importlib.util.module_from_spec(spec)
+        previous = sys.modules.get(spec.name)
+        sys.modules[spec.name] = package
+        self.addCleanup(lambda: sys.modules.pop(spec.name, None) if previous is None
+                        else sys.modules.__setitem__(spec.name, previous))
+        spec.loader.exec_module(package)
+        for namespace in ('core', 'surface', 'artifact-manifest-contract'):
+            marker = self.root / ('.generated-' + namespace + '.lock')
+            with marker.open('x', encoding='utf8') as stream:
+                stream.write('owned interrupted publication fixture')
+            before = {p.relative_to(self.root).as_posix(): p.read_bytes()
+                      for p in self.root.rglob('*') if p.is_file()}
+            try:
+                with self.subTest(namespace=namespace), \
+                     mock.patch.object(package, '_git_package_output',
+                                       side_effect=AssertionError('Git must not run for pending output')) as git:
+                    with self.assertRaisesRegex(OSError, 'incomplete'):
+                        package._source_identity(self.root, 'a' * 40)
+                    git.assert_not_called()
+                self.assertEqual(before, {p.relative_to(self.root).as_posix(): p.read_bytes()
+                                          for p in self.root.rglob('*') if p.is_file()})
+            finally:
+                marker.unlink()
+
 if __name__=='__main__':unittest.main()
