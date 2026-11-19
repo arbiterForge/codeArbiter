@@ -257,9 +257,10 @@ class WiringContracts(unittest.TestCase):
             self.assertEqual(report['results'][0]['payload_artifact_ids'],[71,72])
             self.assertEqual(len(report['payloads']),2)
             self.assertNotIn('documents',json.dumps(report))
-            for wrong in ('installed:claude:workflow','task:P-00'):
+            for wrong, refusal in (('installed:claude:workflow', 'cannot qualify'),
+                                   ('task:P-00', 'composed source findings require all original owners')):
                 req.update(cells=[wrong],cell_jobs={wrong:job});groups['groups'][0]['cells']=[wrong]
-                with self.subTest(wrong=wrong),self.assertRaisesRegex(ValueError,'cannot qualify'):
+                with self.subTest(wrong=wrong),self.assertRaisesRegex(ValueError,refusal):
                     reports.build_report(req,job_name=job,job_id=29,selections=groups,observations={'live':observed},payloads=payloads)
 
     def test_cohort_document_retention_reuses_verified_archive_member_bytes(self):
