@@ -1,0 +1,624 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ac9b184a662b24cef088db186eeef5defcc410ac",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound Pi structured role redaction source delta"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-pi/tools/src/audit-sink.ts": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+    "plugins/ca-pi/tools/src/contracts.ts": "ba8cb4ff16968f1f2eaf74309939d56a06c7d230b050058f9f3a35b0460444d0",
+    "plugins/ca-pi/tools/src/notices.ts": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+    "plugins/ca-pi/tools/src/policy.ts": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+  },
+  "disposition_ids": [
+    "disposition:machines:S02",
+    "disposition:transitions:S02:01",
+    "disposition:transitions:S02:02",
+    "disposition:transitions:S02:03",
+    "disposition:transitions:S02:04",
+    "disposition:transitions:S02:05",
+    "disposition:transitions:S02:06",
+    "disposition:transitions:S02:07",
+    "disposition:transitions:S02:08",
+    "disposition:transitions:S02:09",
+    "disposition:transitions:S02:10",
+    "disposition:transitions:S02:11",
+    "disposition:transitions:S02:12",
+    "disposition:transitions:S02:13",
+    "disposition:transitions:S02:14"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-role-redaction-source-ac9b184a/source-inspection.json",
+      "sha256": "e306160f0a90f27027c4b3bd313747ddab5d801debc8c78d3f81a2d045075596"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+      "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/clause-inspection.json",
+      "sha256": "82e104d384721262ba0fe814724babeb4e90b94f5955bcf9f2a36995cd4f280f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/source-bindings.json",
+      "sha256": "104c1235e3632122d6dfcb6b2f7bf75b1d4ccd8105b4f56d2c96bb7c108650aa"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S02",
+      "frozen_row_sha256": "ae910a0d741229e676c254de3d360dae3fc7895514f7b78c19be195c4c474c58",
+      "clause_ids": [
+        "disposition:transitions:S02:01",
+        "disposition:transitions:S02:02",
+        "disposition:transitions:S02:03",
+        "disposition:transitions:S02:04",
+        "disposition:transitions:S02:05",
+        "disposition:transitions:S02:06",
+        "disposition:transitions:S02:07",
+        "disposition:transitions:S02:08",
+        "disposition:transitions:S02:09",
+        "disposition:transitions:S02:10",
+        "disposition:transitions:S02:11",
+        "disposition:transitions:S02:12",
+        "disposition:transitions:S02:13",
+        "disposition:transitions:S02:14"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 510,
+          "end": 540,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 813,
+          "end": 820,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 899,
+          "end": 940,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 766,
+          "end": 807,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 809,
+          "end": 811,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 531,
+          "end": 545,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 204,
+          "end": 219,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 524,
+          "end": 540,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 608,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 788,
+          "end": 799,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 954,
+          "end": 974,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 145,
+          "end": 175,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 335,
+          "end": 410,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 541,
+          "end": 581,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/policy.ts",
+          "start": 145,
+          "end": 202,
+          "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/policy.ts",
+          "start": 280,
+          "end": 318,
+          "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 541,
+          "end": 575,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 601,
+          "end": 605,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 325,
+          "end": 327,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/policy.ts",
+          "start": 30,
+          "end": 63,
+          "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 607,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 659,
+          "end": 679,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 444,
+          "end": 455,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 622,
+          "end": 647,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 649,
+          "end": 657,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 250,
+          "end": 280,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 156,
+          "end": 198,
+          "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 653,
+          "end": 670,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 628,
+          "end": 657,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 977,
+          "end": 1014,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 531,
+          "end": 540,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 954,
+          "end": 965,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Every literal guard/effect/retry clause is separately mapped in the source inspection, including accepted task changes and residual limitations. Complete source-contract preservation only; no runtime/host/task qualification."
+    },
+    {
+      "cell": "disposition:transitions:S02:01",
+      "frozen_row_sha256": "514846ea61799bf9c726909296b9347fa32763b5a771bff43be31d3d6d0373f5",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 510,
+          "end": 540,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 813,
+          "end": 820,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 899,
+          "end": 940,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Inactive built-in wrapper selects nativeFactory at current execution cwd; READ can fall back during blocked/stale lifecycle. Custom tool uses allowNativeFallback=false and refuses if governance unavailable. Inactive known built-ins preserve native Pi ownership rather than minting synthetic adapter approval.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:02",
+      "frozen_row_sha256": "d37143ad7e44605693819c47eb61619ce5a05e7166e28c3f5d3c79d8b767b4bf",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 766,
+          "end": 807,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Install bootstrap hook once; active-but-not-ready generation permits descriptor READ only and blocks other tool calls. beginActivation/beginBootstrap make fresh generation, clear ready and trust revocation, and mint informational fallback sessionID. No mutator proceeds until readiness.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:03",
+      "frozen_row_sha256": "d45089b34e754dc72ec7b33cd7c981bee03befdc99e427f1832efc5477ff99ac",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 809,
+          "end": 811,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 531,
+          "end": 545,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "markReady is effective only while bootstrap active and no latched trust revocation. Wrappers still require their bound generation to match current generation, current trust and ready before bridge/policy evaluation; markReady alone cannot revive old wrapper authority.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:04",
+      "frozen_row_sha256": "c771c7d649d17d2b7a93065f0e2c85b8515cbd9c0d082de8f2ac3817d072af08",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 204,
+          "end": 219,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 524,
+          "end": 540,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 608,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 788,
+          "end": 799,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Nonaffirmative trust retires generation once and clears ready; mutators refuse and reads select untrusted native fallback where allowed. Later true trust does not reset trustRevoked or bind old wrappers to the replacement generation. New blocked generation is required for recovery.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:05",
+      "frozen_row_sha256": "6c32fbf5b29f9b04dd8eeea8ce04f07801d0cfe65a5ba7a5a9ef801002cbeb0c",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 954,
+          "end": 974,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 145,
+          "end": 175,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Active unknown/OTHER tool returns block, and known nonread tool also requires active owned wrapper source. Canonical classifier has no OTHER allowance; undeclared/unclassifiable effects deny. No unclassified sink becomes authorized through a same-looking name.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:06",
+      "frozen_row_sha256": "4847c231df2ba171d27ccd3d4261c4086021d2a19c539245541f47435a0cf2d7",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 335,
+          "end": 410,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 541,
+          "end": 581,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/policy.ts",
+          "start": 145,
+          "end": 202,
+          "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/policy.ts",
+          "start": 280,
+          "end": 318,
+          "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+        }
+      ],
+      "semantic_assessment": "Copy/freeze acyclic plain canonical JSON parameters, reject proxies/accessors/decorated arrays/unsafe keys/nonfinite values/depth>32, then call bridge hard blocks first; only known nonblock verdict reaches closed action/mode policy. Descriptor/action ownership and bounded labels constrain classification; no general semantic shell safety claim.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:07",
+      "frozen_row_sha256": "a271b4a238e88d7ea67c240d50307fb3aa1f2530660692a7645bf5eadc599450",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 541,
+          "end": 575,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 601,
+          "end": 605,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 325,
+          "end": 327,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Invalid parameters, bridge block/unknown verdict or deny/unknownmode/unclassified action throw refusal. Fixed closed denied/unclassified audits are best effort; bridge exception on same trusted current lifecycle propagates (mutator never executes), while read fallback is available only after trust/lifecycle retirement. Audit does not turn failure into authorization.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:08",
+      "frozen_row_sha256": "f4579bc56491b983c7cca87abe9aad74a5260b993ca51aa0b98db52432ae4fa6",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/policy.ts",
+          "start": 30,
+          "end": 63,
+          "file_sha256": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 607,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 659,
+          "end": 679,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Allowed read/inspection/eligible planning classes use best-effort allow audit, then revalidate raw parameters/mode/ownership/executor/abort/trust/generation before invoking exact captured native executor once. Stale READ may choose native fallback; mutators block. Returned warnings/notices cannot authorize another effect.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:09",
+      "frozen_row_sha256": "b8e2efa0c577cf04e4d921fa87791a76b3408884b37e2b70423f99a08a88c178",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 444,
+          "end": 455,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 622,
+          "end": 647,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Ask policy requires original trusted parent TUI context with actual confirm API; no UI/RPC refuses. Ownership checked before dialog; confirm receives configured60000ms timeout+AbortSignal and only literal true succeeds. Catch/cancel/refusal audits best effort then block. This is a real host-operation permission gate, not ADR0043 artifact bookkeeping.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:10",
+      "frozen_row_sha256": "22e9b02e4830a01f3f51ddf040138a4d3ba722f0042f631603688848e647ca03",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 608,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 649,
+          "end": 657,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 250,
+          "end": 280,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/audit-sink.ts",
+          "start": 156,
+          "end": 198,
+          "file_sha256": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27"
+        }
+      ],
+      "semantic_assessment": "True UI answer is insufficient: revalidate all current authority, then approved audit must resolve true; only append/sync/file+directory identity checks return durable sink success. Failure blocks before executor. Mapping asserts conditional source ordering, not that any user actually approved or disk persistence was observed.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:11",
+      "frozen_row_sha256": "bab3711166c737333eed89acf88feed9bf6b7b2354938da1f350a8d041910f21",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 607,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 653,
+          "end": 670,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "After approved audit succeeds perform second full revalidation and call captured originalExecute once with frozen canonical approved parameters. No catch auto-retries the mutator; execution errors propagate to caller. No approval receipt from the assistive state engine is demanded.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:12",
+      "frozen_row_sha256": "3c533ee8693a179521d126b0225fde8f51e3c70748ec53fbac62714bd8a08738",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 608,
+          "end": 620,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 628,
+          "end": 657,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Abort, request/mode/registry/executor drift, withdrawn trust or generation/readiness drift invalidates prior permission; no stale effect invocation. A fresh call can seek current permission rather than reusing this confirmation. New delegated gate reuses these checks, not a weaker synthetic context.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:13",
+      "frozen_row_sha256": "903be549fe79cc55022f41a3c33777b5508eafc5dc1313de05a1df0a2c25e6f7",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 977,
+          "end": 1014,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Result hook captures active generation, handles WRITE/EDIT only, sends correlation when present, then suppresses stale success or caught failure after await. A late result cannot notify/patch current lifecycle; missing correlation remains bridge-owned, never fabricated approval.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S02:14",
+      "frozen_row_sha256": "5aee30162e7b58a892969a05e364b0f0b5dcd6e0212cb173a64cba96d3d62e52",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 813,
+          "end": 820,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 531,
+          "end": 540,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/tool-guard.ts",
+          "start": 954,
+          "end": 965,
+          "file_sha256": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+        }
+      ],
+      "semantic_assessment": "Deactivate clears bootstrap/ready/trustrevocation/generation/delegated binding; global unknown-tool guard inactive, existing built-in wrappers use native inactive fallback; custom mutators remain unavailable. This changes supported ownership behavior without claiming removal of every registered callback.",
+      "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+    }
+  ],
+  "scope": "Source-only reasoned current S02 conformance under accepted task changes; no runtime/consent/provider/task outcome.",
+  "excluded_cells": [],
+  "limits": [
+    "Only4complete machines and25PLANNEDtransitions are proposed,29cells total; S03 machine/S03:03 stayPLANNED.",
+    "All24existingPRESERVEDtransition objects/evidence/history are retained exactly; no runtime proof refreshed.",
+    "PI-L01 persona retry and PI-L02 sidebar generation are named accepted task changes; historical defects are not represented as still current.",
+    "ADR0043 removes artifact authorization ceremony, not actual host operation permissions. PI-D02 explicitly reuses parent bridge/policy/confirmation/audit gate. No fabricated human consent or old artifact receipt is supplied.",
+    "ADR0049 changes external endpoint plain-HTTP allowance only; no provider transport/credential flow is tested or qualified here.",
+    "Conditional process-tree verified result/cached cleanup is source behavior, not evidence of actual OS process containment.",
+    "S03:03 is a bounded unproven durable-session-state join/ambiguous summary. Exact-symbol lookup is not a complete public-owner trace and does not establish a missing product feature.",
+    "Scope is source conformance. The changed Pi runner and the reviewed C36 observations require their own exact runtime evidence."
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S02-preserved.json",
+    "sha256": "2e1b1fd35304b922cb74ae8008fc661fb60777281ce5881480fbea465cbc4c91",
+    "original_code": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+    "stored_at": "24ee1333a11f6ed07873f926c3593f56e879b4bb"
+  },
+  "changed_paths": [
+    "plugins/ca-pi/tools/src/contracts.ts"
+  ]
+}
