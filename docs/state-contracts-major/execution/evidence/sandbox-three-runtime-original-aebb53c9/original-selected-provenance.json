@@ -1,0 +1,103 @@
+{
+  "schema": "codearbiter-original-direct-runtime-preflight/1",
+  "source_commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+  "source_tree": "9816342bfc56f7018b548906378515ef850f7ce8",
+  "run_id": 44425846015,
+  "run_attempt": 1,
+  "whole_core_conclusion": "success",
+  "terminal_receipt_sha256": "9f1b6355d79ae7495aad72a57d0db427360d6c6c96d29341ef0e19792e662328",
+  "mode": "current",
+  "verified_by_lane": {
+    "sandbox": 3
+  },
+  "requested_counts": {
+    "sandbox": 3
+  },
+  "held": {},
+  "owner_methods": {
+    "disposition:findings:SF08": "rebuilt from original named results and exact consumed input manifest",
+    "disposition:findings:SF09": "rebuilt from original named results and exact consumed input manifest",
+    "disposition:findings:SF10": "rebuilt from original named results and exact consumed input manifest"
+  },
+  "original_uploads": {
+    "disposition:findings:SF08": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14486346661,
+        "sha256": "fb08bb42e722d8d6400fcf9c0e10ac604514337a276a4fd9ffa653b0771a89d2"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14487085856,
+        "sha256": "4b7c0ebb58868863b8136c621cdac006b5ef23d4c68e348c9b44193ac139f725"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14486327301,
+        "sha256": "d5bb0f9cebc6e36e3f0d24aeaee41f89da0b7c7420b2c4af8bdbbca6bd58359a"
+      }
+    ],
+    "disposition:findings:SF09": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14486346661,
+        "sha256": "fb08bb42e722d8d6400fcf9c0e10ac604514337a276a4fd9ffa653b0771a89d2"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14487085856,
+        "sha256": "4b7c0ebb58868863b8136c621cdac006b5ef23d4c68e348c9b44193ac139f725"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14486327301,
+        "sha256": "d5bb0f9cebc6e36e3f0d24aeaee41f89da0b7c7420b2c4af8bdbbca6bd58359a"
+      }
+    ],
+    "disposition:findings:SF10": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14486346661,
+        "sha256": "fb08bb42e722d8d6400fcf9c0e10ac604514337a276a4fd9ffa653b0771a89d2"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14487085856,
+        "sha256": "4b7c0ebb58868863b8136c621cdac006b5ef23d4c68e348c9b44193ac139f725"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531867,
+        "artifact_id": 14486327301,
+        "sha256": "d5bb0f9cebc6e36e3f0d24aeaee41f89da0b7c7420b2c4af8bdbbca6bd58359a"
+      }
+    ]
+  },
+  "current_rows_changed": 0,
+  "already_current": [],
+  "active": [
+    "disposition:findings:SF08",
+    "disposition:findings:SF09",
+    "disposition:findings:SF10"
+  ],
+  "workflow_readback": true,
+  "source_only_reclassified": 0,
+  "status_changes": 0
+}
