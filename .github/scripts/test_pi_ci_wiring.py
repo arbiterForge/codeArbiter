@@ -23,7 +23,9 @@ from test_observe_pi_installed_rpc import fixture,TEST_ID
 ROOT=Path(__file__).resolve().parents[2]
 JOB='[CHECK] | [PI  ] | Installed retained package <pi: windows 1.5.0>'
 PI_PATHS=['.github/scripts/'+name for name in ('_pi_rpc_profile.py','observe_pi_installed_rpc.py',
-    'test_observe_pi_installed_rpc.py','coordinate_pi_host.py','pi_live_report_profile.py','test_pi_ci_wiring.py')]
+    'test_observe_pi_installed_rpc.py','coordinate_pi_host.py','pi_live_report_profile.py','test_pi_ci_wiring.py',
+    'pi_author_readiness.py','pi_original_author_observation.py',
+    'test_pi_author_readiness.py','test_pi_original_author_observation.py')]
 
 def job(text,name):
     match=re.search(r'^  '+re.escape(name)+r':\n(.*?)(?=^  [a-zA-Z][a-zA-Z0-9_-]*:|\Z)',text,re.S|re.M)
@@ -45,7 +47,10 @@ def assert_wiring(text,policy,selections):
     if 'pi_host_locks.py install' in installed or 'npm install' in installed or 'continue-on-error' in installed:
         raise AssertionError('coordinator producer must own the only acquisition')
     checks=job(text,'ca-pi-checks')
-    for command in ('python -B .github/scripts/test_observe_pi_installed_rpc.py','python -B .github/scripts/test_pi_ci_wiring.py'):
+    for command in ('python -B .github/scripts/test_observe_pi_installed_rpc.py',
+                    'python -B .github/scripts/test_pi_ci_wiring.py',
+                    'python -B .github/scripts/test_pi_author_readiness.py',
+                    'python -B .github/scripts/test_pi_original_author_observation.py'):
         if command not in checks:raise AssertionError('source unit not reached: '+command)
     if 'artifact-package-assembly' in checks:raise AssertionError('required source check depends on production assembly')
     for section in ('ca-pi','artifacts'):
@@ -76,7 +81,9 @@ class WiringTests(unittest.TestCase):
         policy=json.loads((ROOT/'.github/major-qualification-policy.json').read_text(encoding='utf-8'))
         selections=json.loads((ROOT/'.github/major-test-selections.json').read_text(encoding='utf-8'))
         for operand in ("github.event_name == 'push'",'artifact-host-payloads-${{ github.sha }}','timeout-minutes: 15',
-            'python -B .github/scripts/test_pi_ci_wiring.py','platform: darwin/arm64'):
+            'python -B .github/scripts/test_pi_ci_wiring.py',
+            'python -B .github/scripts/test_pi_author_readiness.py',
+            'python -B .github/scripts/test_pi_original_author_observation.py','platform: darwin/arm64'):
             with self.subTest(operand=operand),self.assertRaises(AssertionError):
                 # Mutate only the owning job for shared operands.
                 if operand.startswith('python -B'):changed=text.replace(operand,'omitted-command')

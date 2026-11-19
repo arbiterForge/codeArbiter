@@ -2,6 +2,10 @@ package operations
 
 import (
 	"fmt"
+	"sort"
+	"strings"
+	"unicode/utf8"
+
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
@@ -9,8 +13,6 @@ import (
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/store"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
-	"strings"
-	"unicode/utf8"
 )
 
 type migrationItem struct {
@@ -144,6 +146,9 @@ func (e *Engine) migration(r object) ([]migrationItem, object, error) {
 	return items, object{"preview_sha256": hash, "manifest": manifest, "all_targets_are_drafts": true, "semantic_mapping_verified": false, "old_approval_transferred": false}, nil
 }
 func (e *Engine) migrate(op string, r object) (any, error) {
+	if op == "migration-preview" && r["native_retirement"] != nil {
+		return e.nativeRetirementPreview(model.M(r["native_retirement"]))
+	}
 	items, preview, err := e.migration(r)
 	if err != nil {
 		return nil, err
@@ -181,4 +186,54 @@ func (e *Engine) migrate(op string, r object) (any, error) {
 		return nil, err
 	}
 	return mutationResult(outcome), nil
+}
+
+// nativeRetirementPreview inspects the exact canonical preimage through the
+// normal catalog. It has no write counterpart and does not resolve ownership.
+func (e *Engine) nativeRetirementPreview(r object) (any, error) {
+	entry, err := e.Catalog.Resolve(model.S(r["artifact_id"]))
+	if err != nil {
+		return nil, err
+	}
+	d := entry.Doc
+	if d.Kind() != "spec" && d.Kind() != "plan" {
+		return nil, fault.New("WRONG_KIND", "native retirement preview requires a specification or plan")
+	}
+	bytesHash := canonical.BytesHash(entry.Bytes)
+	if bytesHash != model.S(r["expected_bytes_sha256"]) {
+		return nil, fault.At("STALE_PREVIEW", d.ID(), entry.Path, "native retirement source bytes changed")
+	}
+	ids := []string{}
+	for id, record := range d.Symbols.ByID {
+		if record.IsUntypedRetirement() {
+			ids = append(ids, id)
+		}
+	}
+	if len(ids) == 0 {
+		return nil, fault.At("INVALID_LEGACY", d.ID(), entry.Path, "no unclassified retirement to preview")
+	}
+	sort.Strings(ids)
+	execution := model.M(d.Data["execution"])
+	checks := model.M(execution["task_check_observations"])
+	scopes := model.M(execution["scopes"])
+	history := make([]any, 0, len(ids))
+	for _, id := range ids {
+		_, baseline := scopes[id]
+		history = append(history, object{
+			"id": id, "reported_check_count": int64(len(model.A(checks[id]))), "scope_baseline_retained": baseline,
+		})
+	}
+	manifest := object{
+		"format": "codearbiter.native-retirement-preview/1",
+		"source": object{
+			"artifact_id": d.ID(), "path": entry.Path, "revision": d.Revision(), "bytes_sha256": bytesHash,
+			"schema_version": d.Data["schema_version"], "model_sha256": d.Hash(), "normative_sha256": d.NormHash(),
+		},
+		"unclassified_history": history,
+	}
+	hash, err := canonical.Hash(manifest)
+	if err != nil {
+		return nil, err
+	}
+	return object{"preview_sha256": hash, "manifest": manifest}, nil
 }

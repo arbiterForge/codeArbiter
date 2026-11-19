@@ -156,11 +156,14 @@
     "scenario:SEQ-01": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-03": "major qualification / native",
+    "scenario:SEQ-04": "major qualification / native",
     "scenario:SEQ-05": "major qualification / native",
     "scenario:SEQ-06": "major qualification / native",
     "scenario:SEQ-07": "major qualification / native",
+    "scenario:SEQ-08": "major qualification / native",
     "scenario:SEQ-09": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-10": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+    "scenario:SEQ-11": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
     "scenario:SEQ-15": "Coverage union (Pi)  <os: windows-latest>",
     "scenario:SEQ-17": "[CHECK] | [CA  ] | Farm dispatcher contract",
     "scenario:SEQ-18": "[CHECK] | [CA  ] | Farm dispatcher contract",
@@ -173,6 +176,11 @@
     "scenario:SEQ-26": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-27": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-28": "Site | [Build] - Astro Pages",
+    "task:BUILD-G01": "major qualification / generated-build",
+    "task:NT-03": "major qualification / native",
+    "task:NT-05": "major qualification / native",
+    "task:NT-06": "major qualification / native",
+    "task:NT-07": "major qualification / native",
     "task:P-01": "[CHECK] | [REPO] | Impact planner contract",
     "task:P-00": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
     "task:Q-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
@@ -344,6 +352,7 @@
     "scenario:SEQ-02",
     "scenario:SEQ-09",
     "scenario:SEQ-10",
+    "scenario:SEQ-11",
     "scenario:SEQ-21",
     "scenario:SEQ-22",
     "scenario:SEQ-23",
@@ -474,9 +483,15 @@
     "disposition:transitions:N38:04",
     "disposition:transitions:N38:05",
     "scenario:SEQ-03",
+    "scenario:SEQ-04",
     "scenario:SEQ-06",
     "scenario:SEQ-07",
-    "task:NT-02"
+    "scenario:SEQ-08",
+    "task:NT-02",
+    "task:NT-03",
+    "task:NT-05",
+    "task:NT-06",
+    "task:NT-07"
   ],
   "native_launch_binding_tasks": [
     "HW-04",
@@ -487,5 +502,11 @@
   ],
   "native_launch_binding_scenarios": [
     "scenario:SEQ-05"
+  ],
+  "build_generation_tasks": [
+    "BUILD-G01"
+  ],
+  "pi_author_scenarios": [
+    "scenario:SEQ-12"
   ]
 }

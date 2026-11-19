@@ -1341,6 +1341,7 @@ Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-pl
  '.github/scripts/_git_fixture_diagnostics.py',
  '.github/scripts/_immutable_git_blobs.py',
  '.github/scripts/_npm_publishlib.py',
+ '.github/scripts/_pi_rpc_profile.py',
  '.github/scripts/_releaselib.py',
  '.github/scripts/academy_promotion.py',
  '.github/scripts/build_release_targets_provenance.py',
@@ -1365,17 +1366,22 @@ Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-pl
  '.github/scripts/pages_readiness.py',
  '.github/scripts/payload_scope.py',
  '.github/scripts/payload_version_gate.py',
+ '.github/scripts/pi_author_readiness.py',
  '.github/scripts/pi_benchmark.py',
  '.github/scripts/pi_evidence.py',
  '.github/scripts/pi_host_locks.py',
+ '.github/scripts/pi_original_author_observation.py',
+ '.github/scripts/pi_parent_tui_observation.py',
  '.github/scripts/pi_promotion.py',
  '.github/scripts/prepare_adr_acceptance.py',
  '.github/scripts/reconcile_tag_receipt.py',
  '.github/scripts/release_source.py',
  '.github/scripts/release_target.py',
+ '.github/scripts/retained_archive_cli_observation.py',
  '.github/scripts/run_artifact_authority_shard.py',
  '.github/scripts/run_concurrent_suites.py',
  '.github/scripts/site_playwright_observation.py',
+ '.github/scripts/site_vitest_observation.py',
  '.github/scripts/tag_publication_receipt.py',
  '.github/scripts/test_check_skill_proof_fresh.py',
  '.github/scripts/test_generated_output.py',
@@ -3559,8 +3565,18 @@ def recovery_runtime_component(cases):
     )
 
 
-# Per-cell meanings come from the software48 Recovery tested.json semantic mapping.
-RECOVERY_TRANSITION_CASES = {
+# The transitions use the software48 Recovery semantic mapping. The scenario
+# additionally requires the original corruption, readback, and capacity cases.
+RECOVERY_RUNTIME_CASES = {
+    "scenario:SEQ-11": (
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_crash_after_record_cannot_look_empty_and_explicit_repair_recovers",
+        "test_missing_index_without_journal_preserves_records_for_explicit_recovery",
+        "test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_registration_capacity_preserves_unresolved_records_and_history",
+        "test_unavailable_target_readback_preserves_claim_and_never_repeats_effect",
+    ),
     "disposition:added_transitions:WR-01": (
         "test_process_crash_at_each_registration_commit_boundary",
         "test_scan_is_physically_readonly_and_registration_replay_is_exact",
@@ -3852,7 +3868,7 @@ SOURCE_FINDING_COMPOSITIONS = {
     )),),
     **{cell: (statusline_component(cases),) for cell, cases in _STATUSLINE_CASES.items()},
     **{cell: (program_integrity_component(cases),) for cell, cases in PROGRAM_INTEGRITY_CASES.items()},
-    **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
+    **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_RUNTIME_CASES.items()},
     DEBUG_RESUBMISSION_FINDING: (
         source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
             "Retain original locked debug reference observation", "debug-reference-observation.json", (
@@ -4283,7 +4299,11 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     statusline_cells = _STATUSLINE_CASES.keys() & set(cells)
     readiness.require(all(req["cell_jobs"].get(cell) == source_profile(STATUSLINE_PROFILE)["job"]
                           for cell in statusline_cells), "statusline isolation route owner differs")
-    shared_cells = ((RECOVERY_TRANSITION_CASES.keys() | PROGRAM_INTEGRITY_CASES.keys()) & set(cells)) | statusline_cells
+    recovery_cells = RECOVERY_RUNTIME_CASES.keys() & set(cells)
+    readiness.require("scenario:SEQ-11" not in recovery_cells
+                      or req["cell_jobs"].get("scenario:SEQ-11") == source_profile(RECOVERY_RUNTIME_PROFILE)["job"],
+                      "workflow recovery scenario route owner differs")
+    shared_cells = recovery_cells | (PROGRAM_INTEGRITY_CASES.keys() & set(cells)) | statusline_cells
     selectors_by_profile, shared_evidence = {}, {}
     for cell in shared_cells:
         component, = SOURCE_FINDING_COMPOSITIONS[cell]

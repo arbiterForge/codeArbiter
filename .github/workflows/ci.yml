@@ -260,6 +260,10 @@ jobs:
               - '.github/scripts/coordinate_pi_host.py'
               - '.github/scripts/pi_parent_tui_observation.py'
               - '.github/scripts/test_pi_parent_tui_observation.py'
+              - '.github/scripts/pi_author_readiness.py'
+              - '.github/scripts/pi_original_author_observation.py'
+              - '.github/scripts/test_pi_author_readiness.py'
+              - '.github/scripts/test_pi_original_author_observation.py'
               - '.github/scripts/pi_live_report_profile.py'
               - '.github/scripts/test_pi_ci_wiring.py'
               - '.github/scripts/coverage_union.py'
@@ -512,6 +516,10 @@ jobs:
               - '.github/scripts/coordinate_pi_host.py'
               - '.github/scripts/pi_parent_tui_observation.py'
               - '.github/scripts/test_pi_parent_tui_observation.py'
+              - '.github/scripts/pi_author_readiness.py'
+              - '.github/scripts/pi_original_author_observation.py'
+              - '.github/scripts/test_pi_author_readiness.py'
+              - '.github/scripts/test_pi_original_author_observation.py'
               - '.github/scripts/pi_live_report_profile.py'
               - '.github/scripts/test_pi_ci_wiring.py'
               - '.github/scripts/ci20_native_binding.py'
@@ -2965,6 +2973,8 @@ jobs:
           python -B .github/scripts/test_observe_pi_installed_rpc.py
           python -B .github/scripts/test_pi_ci_wiring.py
           python -B .github/scripts/test_pi_parent_tui_observation.py
+          python -B .github/scripts/test_pi_author_readiness.py
+          python -B .github/scripts/test_pi_original_author_observation.py
       - name: Test cross-host coverage identity and provenance
         working-directory: .
         run: python .github/scripts/test_coverage_union.py
@@ -5608,7 +5618,7 @@ jobs:
   # Keeping it after ci-passed avoids a cycle with the original owning jobs.
   major-readiness-producer:
     name: major readiness producer
-    needs: [changes, ci-passed]
+    needs: [changes, ci-passed, pi-installed-package]
     if: github.event_name == 'push' && github.ref == 'refs/heads/main' && needs.changes.outputs.artifacts == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15

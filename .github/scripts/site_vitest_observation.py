@@ -748,12 +748,199 @@ def validate_selection_map(document):
              and group['selectors'] == RECIPES[group['cells'][0]], 'Docs source finding composition differs')
 
 
+BUILD_G01_CELL = 'task:BUILD-G01'
+BUILD_G01_DOCS_SELECTORS = SF13_DOCS_SELECTORS + (
+    'vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication refuses pending Reference and Academy generation before Astro consumes generated pages',
+)
+
+
+def build_generation_core_components():
+    publisher, sync = copy.deepcopy(reports.SOURCE_FINDING_COMPOSITIONS[reports.SF13_CELL])
+    publisher['selectors'] = sorted([*publisher['selectors'],
+        'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_contract_generator_rename_failure_preserves_importable_canonical_helper',
+        'python:.github/scripts/test_generated_output.py:__main__.GeneratedOutputTests.test_package_source_gate_refuses_pending_publication_before_git'])
+    surface = reports.route_generator_component((
+        'DeterminismTest.test_two_renders_are_byte_identical',
+        'DeterminismTest.test_output_is_lf_only',
+        'WriteAndCheckTest.test_write_then_check_green_then_idempotent',
+    ))
+    return publisher, sync, surface
+
+
+def build_generation_fields(policy, required, cells, cell_jobs, source, load):
+    selected = policy.get('build_generation_tasks', [])
+    need(type(selected) is list, 'BUILD-G01 task policy selection differs')
+    if not selected:
+        return {}
+    need(selected == ['BUILD-G01'] and 'BUILD-G01' in required
+         and BUILD_G01_CELL in cells
+         and cell_jobs.get(BUILD_G01_CELL) == 'major qualification / generated-build',
+         'BUILD-G01 policy is outside its required task population')
+    return {'build_generation_tasks': selected.copy(), 'build_generation_inputs': {
+        profile: reports.source_profile_input_pin(profile, source, load)
+        for profile in sorted({c['profile'] for c in build_generation_core_components()})}}
+
+
+def build_generation_required(req):
+    selected = BUILD_G01_CELL in req['cells']
+    if 'build_generation_tasks' not in req:
+        need(req['cell_jobs'].get(BUILD_G01_CELL) != 'major qualification / generated-build',
+             'BUILD-G01 routed cell lacks its closed task selection')
+        return False
+    need(selected and req.get('build_generation_tasks') == ['BUILD-G01']
+         and 'BUILD-G01' in req.get('task_ids', [])
+         and req['cell_jobs'].get(BUILD_G01_CELL) == 'major qualification / generated-build',
+         'BUILD-G01 is outside its closed task composition')
+    pins = req.get('build_generation_inputs')
+    profiles = {c['profile'] for c in build_generation_core_components()}
+    need(type(pins) is dict and set(pins) == profiles
+         and all(type(v) is str and owner.DIGEST.fullmatch(v) for v in pins.values()),
+         'BUILD-G01 original Core source pins differ')
+    return True
+
+
+BUILD_ASSEMBLY_JOB = '[CHECK] | [CORE] | Structured artifact package assembly'
+BUILD_PACKAGE_ROLES = {
+    'promoted-stage': ('artifact-host-payloads-', 'Preserve the exact multi-host package overlay'),
+    'release-packages': ('artifact-release-packages-', 'Preserve the exact normal release package cohort'),
+}
+
+
+def _materialize(raw, destination, expected_members):
+    # Only a fresh owned temporary directory is written; uploaded code is never
+    # imported or executed. The existing reader enforces path/link/size/counts.
+    expected = {item['path']: item['sha256'] for item in expected_members}
+    destination.mkdir()
+    with zipfile.ZipFile(io.BytesIO(raw)) as zipped:
+        for name, digest in expected.items():
+            data = zipped.read(name)
+            owner.require(owner.digest(data) == digest, 'package member bytes differ')
+            target = destination.joinpath(*name.split('/'))
+            target.parent.mkdir(parents=True, exist_ok=True)
+            with target.open('xb') as stream:
+                stream.write(data)
+
+
+def authenticate_production_packages(req, run, artifacts, jobs, *, repo, job_log=None, producing=False):
+    """Authenticate both actual assembly uploads and rederive every package.
+
+    Metadata/archive acquisition remains with the existing bounded read-only
+    owner. No integration exception is added to final readiness here.
+    """
+    from retained_archive_cli_observation import _verify_production
+    owner.validate_run(run, req, producing=producing)
+    owner.require(type(run.get('run_attempt')) is int and run['run_attempt'] > 0,
+                  'build package run attempt missing')
+    matched = [job for job in jobs if job.get('name') == BUILD_ASSEMBLY_JOB]
+    owner.require(len(matched) == 1, 'build package assembly missing or repeated')
+    job = matched[0]
+    owner.require(type(job.get('id')) is int and job['id'] > 0
+                  and job.get('run_id') == run['id']
+                  and job.get('head_sha') == req['source_commit']
+                  and job.get('run_attempt') == run['run_attempt']
+                  and job.get('status') == 'completed' and job.get('conclusion') == 'success',
+                  'build package assembly source/run/attempt/success differs')
+    selected, raw_by_role = {}, {}
+    for role, (prefix, upload) in BUILD_PACKAGE_ROLES.items():
+        name = prefix + req['source_commit']
+        matches = [artifact for artifact in artifacts if artifact.get('name') == name]
+        owner.require(len(matches) == 1, 'build package artifact missing or repeated')
+        artifact = matches[0]
+        raw = owner.artifact_bytes(artifact, req)
+        owner.validate_artifact(artifact, req, owner.digest(raw))
+        owner.require(len(raw) == artifact['size_in_bytes'], 'build package archive length differs')
+        owner.validate_upload(job, artifact, upload, job_log=job_log)
+        members = owner.members(raw)
+        selected[role] = {'artifact_id': artifact['id'], 'archive_sha256': owner.digest(raw),
+                          'artifact_name': name, 'members': members}
+        raw_by_role[role] = raw
+    owner.require(len({item['artifact_id'] for item in selected.values()}) == 2,
+                  'build package artifact roles alias')
+    owner.require(sum(map(len, raw_by_role.values())) <= owner.MAX_ARCHIVE
+                  and sum(len(value['members']) for value in selected.values()) <= 4096,
+                  'build package pair exceeds aggregate bound')
+    total = 0
+    for raw in raw_by_role.values():
+        with zipfile.ZipFile(io.BytesIO(raw)) as zipped:
+            total += sum(item.file_size for item in zipped.infolist() if not item.is_dir())
+    owner.require(total <= owner.MAX_ARCHIVE, 'build package pair expansion exceeds aggregate bound')
+    with tempfile.TemporaryDirectory(prefix='ca-build-g01-package-readback-') as temporary:
+        root = Path(temporary).resolve(strict=True)
+        for role in BUILD_PACKAGE_ROLES:
+            _materialize(raw_by_role[role], root / role, selected[role]['members'])
+        stage, packages = root / 'promoted-stage', root / 'release-packages'
+        promotion = stage / 'artifact-promotion.json'
+        # This invokes the existing fixed require_production=True verifier,
+        # without npm_executable. It reads Git/archive bytes, never runs npm,
+        # a native payload, host CLI, browser, build, provider or installer.
+        promotion_sha = owner.digest(promotion.read_bytes())
+        cohort = _verify_production(Path(repo), packages, stage, req, promotion_sha)
+        cohort_sha = owner.digest((packages / 'artifact-package-cohort.json').read_bytes())
+        owner.require(set(cohort['packages']) == {'claude', 'codex', 'pi'},
+                      'build package host cohort differs')
+        packages_by_host = {
+            host: {key: value[key] for key in ('file', 'version', 'size', 'sha256')}
+            for host, value in sorted(cohort['packages'].items())
+        }
+    return {'format': 'codearbiter.build-generation-package-component/1',
+            'source_commit': req['source_commit'], 'source_tree': req['source_tree'],
+            'ci_run_id': run['id'], 'run_attempt': run['run_attempt'],
+            'assembly_job_id': job['id'], 'payloads': selected,
+            'cohort_sha256': cohort_sha, 'promotion_sha256': promotion_sha,
+            'packages': packages_by_host}
+
+
+def build_generation_components(req, artifacts, jobs, *, run=None, repo=ROOT, producing=False, docs_run_id=None):
+    """Complete finite component; outer task/envelope routing remains explicit."""
+    need(build_generation_required(req), 'BUILD-G01 task selection missing')
+    if run is None:
+        run = owner.api('actions/runs/' + str(req['ci_run_id']))
+    owner.validate_run(run, req, producing=producing)
+    need(type(run.get('run_attempt')) is int and run['run_attempt'] > 0,
+         'BUILD-G01 original Core run attempt missing')
+    docs_source = admit(req, run_id=docs_run_id, repo=repo)
+    need(docs_source.get('build_generation_selectors') == list(BUILD_G01_DOCS_SELECTORS),
+         'BUILD-G01 original Docs complement differs')
+    job = reports.source_component_job(reports.source_profile(reports.SOURCE_PROFILE), run, jobs)
+    log = owner.api(f"actions/jobs/{job['id']}/logs", binary=True)
+    request = {**req, 'source_finding_inputs': req['build_generation_inputs']}
+    components, payloads, profile_payloads, captures = [], {}, {}, set()
+    for component in build_generation_core_components():
+        original, payload = reports.source_component_evidence(component, request, run,
+            artifacts, jobs, job_log=log)
+        need(original.get('job_id') == job['id'] and original.get('run_attempt') == run['run_attempt']
+             and original.get('selectors') == component['selectors']
+             and original.get('source_artifact_id') == payload.get('artifact_id'),
+             'BUILD-G01 original Core component differs')
+        profile = component['profile']
+        if profile in profile_payloads:
+            need(profile_payloads[profile] == payload, 'BUILD-G01 shared source payload differs')
+        else:
+            need(payload['artifact_id'] not in payloads, 'BUILD-G01 source profiles alias')
+            profile_payloads[profile] = payload
+        payloads[payload['artifact_id']] = payload
+        captures.add(original['observation_artifact_id'])
+        components.append({'script': component['script'], 'profile': profile, **original})
+    need(len(captures) == 1 and captures.isdisjoint(payloads) and len(profile_payloads) == 2,
+         'BUILD-G01 original capture/source roles differ')
+    package = authenticate_production_packages(req, run, artifacts, jobs, repo=repo, producing=producing)
+    need(len({package['assembly_job_id'], job['id'], docs_source['job_id']}) == 3,
+         'BUILD-G01 package/Core/Docs jobs alias')
+    package_ids = {p['artifact_id'] for p in package['payloads'].values()}
+    need(package_ids.isdisjoint({*payloads, *captures, docs_source['source_artifact_id'],
+                                docs_source['report_artifact_id']}),
+         'BUILD-G01 package and observation/source artifact roles alias')
+    return {'cell': BUILD_G01_CELL, 'result': 'PASSED', 'core_components': components,
+            'core_source_payloads': [payloads[k] for k in sorted(payloads)],
+            'docs_source': docs_source, 'production_packages': package}
+
+
 def docs_required(req):
     selected = CELLS.intersection(req['cells'])
     need(all(req['cell_jobs'].get(cell) == JOB for cell in selected)
          and all(name != JOB or cell in CELLS for cell, name in req['cell_jobs'].items()),
          'Docs source job cannot qualify another scope')
-    return sf13_required(req) or bool(selected)
+    return build_generation_required(req) or sf13_required(req) or bool(selected)
 
 
 def sf13_required(req):
@@ -765,9 +952,15 @@ def sf13_required(req):
 
 def core_requirements(req):
     result = copy.deepcopy(req)
-    delegated = CELLS | ({reports.SF13_CELL} if sf13_required(req) else set())
+    generation = build_generation_required(req)
+    delegated = CELLS | ({reports.SF13_CELL} if sf13_required(req) else set()) | ({BUILD_G01_CELL} if generation else set())
     result['cells'] = [c for c in req['cells'] if c not in delegated]
     result['cell_jobs'] = {c: job for c, job in req['cell_jobs'].items() if c not in delegated}
+    if generation:
+        result.pop('build_generation_tasks')
+        result.pop('build_generation_inputs')
+        package_names = {prefix + req['source_commit'] for prefix, _ in BUILD_PACKAGE_ROLES.values()}
+        result['required_artifact_names'] = [name for name in req['required_artifact_names'] if name not in package_names]
     if reports.SF13_CELL in delegated:
         remaining = [cell for cell in req['source_finding_composite_cells'] if cell != reports.SF13_CELL]
         if remaining:
@@ -876,20 +1069,28 @@ def admit(req, *, run_id=None, repo=ROOT):
     report = _report_document(report_artifact, docs_req)
     need(type(report) is dict and 'observation' in report, 'Docs source-test report missing')
     sf13 = sf13_required(req)
+    generation = build_generation_required(req)
     expected = _report(report['observation'], docs_req, run, job, payload, archive, repo=repo, sf13=sf13)
     need(report == expected, 'Docs source-test report differs from original authenticated evidence')
     selected = set(req['cells']) & CELLS
-    need((selected or sf13) and all(row['result'] == 'PASSED' for row in expected['results'] if row['cell'] in selected),
+    need((selected or sf13 or generation) and all(row['result'] == 'PASSED' for row in expected['results'] if row['cell'] in selected),
          'Docs selected finding complement is missing, skipped or unsuccessful')
     if sf13:
         observed = {row['id']: row['result'] for row in expected['observation']['tests']}
         need(all(observed.get(selector) == 'passed' for selector in SF13_DOCS_SELECTORS),
              'SF13 original Docs owner cases are missing, skipped or unsuccessful')
+    if generation:
+        index = {}
+        for row in expected['observation']['tests']:
+            index.setdefault(row['id'], []).append(row['result'])
+        need(all(index.get(selector) == ['passed'] for selector in BUILD_G01_DOCS_SELECTORS),
+             'BUILD-G01 original Docs cases missing, repeated, skipped or unsuccessful')
     return {'run_id': run['id'], 'run_attempt': run['run_attempt'], 'job_id': job['id'],
         'source_artifact_id': payload['id'], 'source_archive_sha256': owner.digest(archive),
         'report_artifact_id': report_artifact['id'], 'report_archive_sha256': report_artifact['digest'][7:],
         'results': [row for row in expected['results'] if row['cell'] in selected],
-        **({'sf13_selectors': list(SF13_DOCS_SELECTORS)} if sf13 else {})}
+        **({'sf13_selectors': list(SF13_DOCS_SELECTORS)} if sf13 else {}),
+        **({'build_generation_selectors': list(BUILD_G01_DOCS_SELECTORS)} if generation else {})}
 
 
 def sf13_composition(req, docs_source, artifacts, jobs, *, run=None, producing=False):
@@ -927,16 +1128,18 @@ def produce(req, artifacts, jobs):
     core = owner.produce(core_requirements(req), artifacts, jobs)
     docs_source = admit(req)
     sf13 = {'sf13_source': sf13_composition(req, docs_source, artifacts, jobs, producing=True)} if sf13_required(req) else {}
+    generation = {'build_generation_source': build_generation_components(req, artifacts, jobs, producing=True)} if build_generation_required(req) else {}
     return {'schema': ENVELOPE, 'program_id': owner.PROGRAM, 'state': 'PREPUBLICATION_READY',
-        **req, 'core': core, 'docs_source': docs_source, **sf13}
+        **req, 'core': core, 'docs_source': docs_source, **sf13, **generation}
 
 
 def verify(*, record, requirements, **kwargs):
     req = requirements
     owner.validate_run(kwargs['run'], req)
     sf13_fields = {'sf13_source'} if sf13_required(req) else set()
+    generation_fields = {'build_generation_source'} if build_generation_required(req) else set()
     need(docs_required(req) and type(record) is dict
-         and set(record) == {'schema', 'program_id', 'state', 'core', 'docs_source', *req, *sf13_fields}
+         and set(record) == {'schema', 'program_id', 'state', 'core', 'docs_source', *req, *sf13_fields, *generation_fields}
          and record['schema'] == ENVELOPE and record['program_id'] == owner.PROGRAM
          and record['state'] == 'PREPUBLICATION_READY' and all(record.get(k) == v for k,v in req.items()),
          'Docs source readiness envelope differs from selected source/population')
@@ -946,6 +1149,10 @@ def verify(*, record, requirements, **kwargs):
     if sf13_fields:
         composition = sf13_composition(req, expected, kwargs['build_artifacts'], kwargs['jobs'], run=kwargs['run'])
         need(record['sf13_source'] == composition, 'SF13 final composition differs from both original owners')
+    if generation_fields:
+        composition = build_generation_components(req, kwargs['build_artifacts'], kwargs['jobs'],
+            run=kwargs['run'], docs_run_id=expected['run_id'])
+        need(record['build_generation_source'] == composition, 'BUILD-G01 final composition differs from original owners/packages')
     owner.verify(record=record['core'], requirements=core_requirements(req), **kwargs)
     return {'state':'PREPUBLICATION_READY','source':req['source_commit'],
         'ci_run_id':req['ci_run_id'],'docs_source_run_id':expected['run_id']}

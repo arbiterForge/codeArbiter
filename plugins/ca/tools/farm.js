@@ -191,11 +191,11 @@ function parseArtifactReleaseManifest(text) {
 }
 
 // farm.ts
-import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, unlink, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3 } from "node:fs/promises";
+import { readFile as readFile2, writeFile, appendFile, mkdir as mkdir3, mkdtemp, chmod, rm, rmdir, unlink, stat, lstat as lstat3, realpath as realpath3, rename as rename2, open as open3, access } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes as randomBytes2 } from "node:crypto";
 import { spawn as spawn3, spawnSync } from "node:child_process";
-import { realpathSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import path4 from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -1162,14 +1162,88 @@ async function windowsPinGuard(binary) {
   });
   return guard;
 }
+var GIT_CONFIG_READ_ENV = /* @__PURE__ */ new Set([
+  "SYSTEMROOT",
+  "SYSTEMDRIVE",
+  "WINDIR",
+  "HOME",
+  "USERPROFILE",
+  "HOMEDRIVE",
+  "HOMEPATH",
+  "APPDATA",
+  "LOCALAPPDATA",
+  "XDG_CONFIG_HOME",
+  "GIT_CONFIG_GLOBAL",
+  "GIT_CONFIG_SYSTEM",
+  "GIT_CONFIG_NOSYSTEM"
+]);
+async function artifactGitEnvironment(root) {
+  const physicalRoot = await realpath3(root);
+  const boundaries = [physicalRoot];
+  for (let directory = path4.dirname(physicalRoot); directory !== path4.dirname(directory); directory = path4.dirname(directory)) {
+    if (existsSync(path4.join(directory, ".git"))) boundaries.push(directory);
+  }
+  const outside = (file) => boundaries.every((boundary) => {
+    const relative = path4.relative(boundary, file);
+    return relative === ".." || relative.startsWith(".." + path4.sep) || path4.isAbsolute(relative);
+  });
+  const configured = process.env.CODEARBITER_GIT_EXECUTABLE;
+  const executable = process.platform === "win32" ? "git.exe" : "git";
+  const candidates = configured ? [configured] : (process.env.PATH ?? "").split(path4.delimiter).filter((directory) => path4.isAbsolute(directory)).map((directory) => path4.join(directory, executable));
+  for (const candidate of candidates) {
+    if (!path4.isAbsolute(candidate) || !outside(candidate)) continue;
+    let git2;
+    try {
+      git2 = await realpath3(candidate);
+      if (!outside(git2) || !(await stat(git2)).isFile()) continue;
+      await access(git2, fsConstants.X_OK);
+    } catch {
+      continue;
+    }
+    const environment = { CODEARBITER_GIT_EXECUTABLE: git2 };
+    const defaultIgnore = process.env.XDG_CONFIG_HOME ? path4.join(process.env.XDG_CONFIG_HOME, "git", "ignore") : "~/.config/git/ignore";
+    const configEnv = Object.fromEntries(Object.entries(process.env).filter(([name]) => GIT_CONFIG_READ_ENV.has(name.toUpperCase())));
+    const result = spawnSync(git2, [
+      "--no-lazy-fetch",
+      "--no-optional-locks",
+      "-C",
+      physicalRoot,
+      "-c",
+      "core.fsmonitor=false",
+      "-c",
+      "protocol.allow=never",
+      "config",
+      "--null",
+      "--path",
+      "--default",
+      defaultIgnore,
+      "--get",
+      "core.excludesFile"
+    ], { cwd: physicalRoot, env: configEnv, maxBuffer: 4096, timeout: 5e3 });
+    const raw = result.stdout;
+    if (result.status === 0 && raw && raw.length > 1 && raw.indexOf(0) === raw.length - 1) {
+      try {
+        const configuredIgnore = new TextDecoder("utf-8", { fatal: true }).decode(raw.subarray(0, -1));
+        const ignore = path4.resolve(physicalRoot, configuredIgnore);
+        environment.GIT_CONFIG_COUNT = "1";
+        environment.GIT_CONFIG_KEY_0 = "core.excludesFile";
+        environment.GIT_CONFIG_VALUE_0 = await realpath3(ignore).catch(() => ignore);
+      } catch {
+      }
+    }
+    return environment;
+  }
+  throw new Error("Farm artifact verification requires an absolute host Git executable outside the repository");
+}
 async function runPinnedArtifact(binary, root, request) {
+  const environment = await artifactGitEnvironment(root);
   if (process.platform === "win32") {
     const guard = await windowsPinGuard(binary);
     try {
       return spawnSync(binary.path, ["farm-verify", "--root", root, "--request", "-"], {
         input: request,
         encoding: "utf8",
-        env: {},
+        env: environment,
         timeout: 3e4,
         maxBuffer: ARTIFACT_MAX_RESPONSE
       });
@@ -1203,7 +1277,7 @@ async function runPinnedArtifact(binary, root, request) {
       return spawnSync(executable, ["farm-verify", "--root", root, "--request", "-"], {
         input: request,
         encoding: "utf8",
-        env: {},
+        env: environment,
         timeout: 3e4,
         maxBuffer: ARTIFACT_MAX_RESPONSE
       });
@@ -1217,7 +1291,7 @@ async function runPinnedArtifact(binary, root, request) {
   return spawnSync(descriptorPath, ["farm-verify", "--root", root, "--request", "-"], {
     input: request,
     encoding: "utf8",
-    env: {},
+    env: environment,
     timeout: 3e4,
     maxBuffer: ARTIFACT_MAX_RESPONSE,
     stdio: ["pipe", "pipe", "pipe", binary.handle.fd]
@@ -3540,6 +3614,7 @@ export {
   _resetAllowedWorktreeRoot,
   allowedWorktreeRoot,
   apiRetryDelay,
+  artifactGitEnvironment,
   assertContainedWorktree,
   assertSafeRunId,
   assertSecureBaseUrl,

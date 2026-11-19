@@ -5,12 +5,16 @@ package operations
 // N29:01-N29:07, N35:01.
 
 import (
+	"bytes"
 	"fmt"
+	"os"
+	"path/filepath"
 	"strings"
 	"testing"
 
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 )
 
@@ -66,5 +70,48 @@ func TestWorkLifecycleNeverManufacturesCheckStatus(t *testing.T) {
 	if row == nil || strings.Join(model.Strings(row["values"]), ",") != "passed,failed" ||
 		strings.Join(model.Strings(row["produced_values"]), ",") != "unknown" {
 		t.Fatalf("capabilities do not label schema-only check status values: %v", contract["schema_only_values"])
+	}
+}
+
+func TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence(t *testing.T) {
+	for _, status := range []string{"passed", "failed"} {
+		t.Run(status, func(t *testing.T) {
+			f := newAssistiveFixture(t)
+			created := f.call("work-create", object{"operation_id": f.next(), "title": "Historical work",
+				"intent": "Preserve the recorded value", "work_type": "fix"})
+			id := model.S(created["work_id"])
+			path := filepath.Join(f.root, filepath.FromSlash(model.S(created["path"])))
+			raw, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			work, err := render.Parse(raw)
+			if err != nil {
+				t.Fatal(err)
+			}
+			model.M(work.Data["execution"])["check_status"] = status
+			stored, err := render.Prepare(work.Data)
+			if err != nil {
+				t.Fatal(err)
+			}
+			before, err := render.Render(stored)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := os.WriteFile(path, before, 0600); err != nil {
+				t.Fatal(err)
+			}
+			read := f.call("work-get", object{"work_id": id})
+			view := f.call("work-view", object{"work_id": id})
+			if read["check_status"] != status || read["model_sha256"] != stored.Hash() ||
+				!strings.Contains(model.S(view["html"]), "No native codeArbiter operation sets this value") {
+				t.Fatalf("historical value %s lost its identity or source label", status)
+			}
+			after, err := os.ReadFile(path)
+			if err != nil || !bytes.Equal(before, after) {
+				t.Fatalf("reading the historical value changed the canonical record: %v", err)
+			}
+			f.assertNoAuthorityFiles()
+		})
 	}
 }

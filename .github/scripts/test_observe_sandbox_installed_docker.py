@@ -1,4 +1,4 @@
-"""Synthetic Sandbox observer controls. No Docker, npm or installed execution."""
+"""Sandbox observer controls and package-only usage checks without Docker or npm."""
 from __future__ import annotations
 
 import copy
@@ -7,6 +7,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -293,6 +294,39 @@ class SandboxObserverTests(unittest.TestCase):
             self.assertNotIn("GH_TOKEN", env)
             self.assertNotIn("OPENAI_API_KEY", env)
             self.assertNotIn("DOCKER_HOST", env)
+
+    def test_consumer_guidance_uses_shipped_ordinary_and_separate_claude_entry_points(self):
+        source = HERE.parents[1] / "plugins/ca-sandbox"
+        node = shutil.which("node")
+        self.assertIsNotNone(node, "package usage test requires the CI Node runtime")
+        with tempfile.TemporaryDirectory(prefix="sandbox-consumer-") as directory:
+            installed = Path(directory).resolve()
+            for member in ("README.md", "skills/sandbox-claude-inside/SKILL.md",
+                           "tools/package.json", "tools/sandbox.js", "tools/claude-inside.js"):
+                target = installed / member
+                target.parent.mkdir(parents=True, exist_ok=True)
+                shutil.copyfile(source / member, target)
+            env = {key: os.environ[key] for key in ("SystemRoot", "WINDIR") if key in os.environ}
+            env["PATH"] = str(installed)
+
+            def run(tool, *args):
+                return subprocess.run([node, tool, *args], cwd=installed, env=env,
+                                      capture_output=True, encoding="utf-8", timeout=10)
+
+            ordinary = run("tools/sandbox.js", "create", "https://example.invalid/repo", "--with-claude")
+            self.assertEqual(ordinary.returncode, 2, ordinary.stderr)
+            self.assertIn("unknown flag '--with-claude'", ordinary.stderr)
+            separate = run("tools/claude-inside.js")
+            self.assertEqual(separate.returncode, 2, separate.stderr)
+            self.assertIn("--image is required", separate.stderr)
+            self.assertIn("sandbox-claude-inside", separate.stderr)
+
+            instructions = (installed / "README.md").read_text(encoding="utf-8")
+            for verb in ("create", "shell", "exec", "cp", "destroy", "prune"):
+                self.assertIn(f'node "<plugin root>/tools/sandbox.js" {verb}', instructions)
+            self.assertIn("[sandbox-claude-inside](skills/sandbox-claude-inside/SKILL.md)", instructions)
+            self.assertIn("tools/claude-inside.js", instructions)
+            self.assertNotIn("--with-claude", instructions)
 
     def test_source_has_fixed_one_run_entry_and_three_real_bundle_cases(self):
         owner = self.subject()

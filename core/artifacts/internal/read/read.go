@@ -200,6 +200,9 @@ func Exact(d *model.Document, id string, budget int) (map[string]any, error) {
 		return nil, fault.New("SYMBOL_NOT_FOUND", "record does not exist")
 	}
 	out := map[string]any{"artifact_id": d.ID(), "revision": d.Revision(), "model_sha256": d.Hash(), "normative_sha256": d.NormHash(), "mode": "exact", "context_complete": false, "record": r.Value}
+	if r.IsUntypedRetirement() {
+		out["history_classification"] = "unclassified"
+	}
 	if r.Kind == "prerequisites" && !r.Retired {
 		out["prerequisite_assessment"] = model.PrerequisiteAssessment(d, r.Value)
 	}

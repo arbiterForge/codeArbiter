@@ -1,12 +1,13 @@
 import { it, expect } from "vitest";
 import { randomBytes } from "node:crypto";
-import { writeFile } from "node:fs/promises";
+import { readFile, writeFile } from "node:fs/promises";
 import path from "node:path";
 import { dockerGate } from "./docker-gate.ts";
 import { defaultDockerRun, makeDockerRun } from "./docker.ts";
 import { defaultBuildDeps, defaultEnsureNixpacks, CACHE_LABEL, type BuildContext, type BuildDeps } from "./build.ts";
 import { createSandbox, CLONE_IMAGE } from "./create.ts";
 import { destroySandbox, teardownIncomplete } from "./destroy.ts";
+import { makeDefaultHandlers } from "./cli.ts";
 
 /** Two actual cache misses rendezvous; no inspect/build result is fabricated. */
 function coldPair() {
@@ -254,4 +255,75 @@ d("SBX-C01 real two-create cache provenance", () => {
       }
     },300_000);
   }
+
+  it("SEQ-30 Python generated Dockerfile fallback imports the baked dependency in an owned offline sandbox when Nixpacks is unavailable", async () => {
+    const id = `python-fallback-${randomBytes(16).toString("hex")}`;
+    const signal = AbortSignal.timeout(240_000);
+    const [requirements, main] = await Promise.all([
+      readFile(new URL("./__fixtures__/py/requirements.txt", import.meta.url), "utf8"),
+      readFile(new URL("./__fixtures__/py/main.py", import.meta.url)),
+    ]);
+    // A unique manifest digest guarantees ownership of the new cache tag.
+    const manifest = Buffer.from(`${requirements.trimEnd()}\n# ${id}\n`).toString("base64");
+    const entryPoint = main.toString("base64");
+    const deps = defaultBuildDeps();
+    let builtImage: { tag: string; cacheKey: string } | undefined;
+    try {
+      const box = await createSandbox("https://example.invalid/python-fixture", {
+        id, signal, netPolicy: "offline",
+        cloneRepo: async (_url, volume) => {
+          // Seed the owned volume with the existing Python fixture without a remote clone.
+          const seed = [
+            `printf '%s' '${manifest}' | base64 -d > requirements.txt`,
+            `printf '%s' '${entryPoint}' | base64 -d > main.py`,
+            "chown -R 1000:1000 .",
+          ];
+          return defaultDockerRun(["run", "--rm", "--network", "none", "--entrypoint", "sh",
+            "--mount", `type=volume,source=${volume},target=/work/repo`, "-w", "/work/repo",
+            CLONE_IMAGE, "-ec", seed.join("\n")], { signal });
+        },
+        buildDeps: {
+          ...deps,
+          ensureNixpacks: () => defaultEnsureNixpacks(async () => ({ code: 127, out: "", stdout: "", stderr: "" })),
+          imageInspect: async tag => {
+            const status = await deps.imageInspect(tag);
+            expect(status, "the unique fixture tag must start absent").not.toBe(0);
+            return status;
+          },
+          runBuild: async (tag, context) => {
+            expect(context.builder).toBe("dockerfile-fallback");
+            expect(context.cacheKey).toMatch(/^[a-f0-9]{64}$/);
+            builtImage = { tag, cacheKey: context.cacheKey! };
+            return deps.runBuild(tag, context);
+          },
+        },
+      });
+      expect(builtImage?.tag).toBe(box.image);
+      expect(box.imageId).toMatch(/^sha256:[a-f0-9]{64}$/);
+      expect(box.notes.join(" ")).toContain("generated Dockerfile that mimics nixpacks (node/python only)");
+      const mode = await defaultDockerRun(["inspect", "--format", "{{.HostConfig.NetworkMode}}", box.containerId], { signal });
+      expect(mode.code, mode.stderr).toBe(0);
+      expect(mode.stdout.trim()).toBe("none");
+      const run = await makeDefaultHandlers({ signal }).exec(id, ["python3", "-c",
+        "import runpy, six; runpy.run_path('main.py'); print(six.__file__); print(six.__version__)"]);
+      expect(run.id).toBe(id);
+      expect(run.exitCode, run.stderr).toBe(0);
+      expect(run.stdout.trim().split(/\r?\n/)).toEqual([
+        "PY_FIXTURE SRC=original DEP_OK=True",
+        "/deps/site-packages/six.py",
+        "1.16.0",
+      ]);
+    } finally {
+      const cleanupRun = makeDockerRun({}, { timeoutMs: 8_000 });
+      const teardown = await destroySandbox(id, { dockerRun: cleanupRun });
+      expect(teardownIncomplete(teardown), JSON.stringify(teardown)).toBe(false);
+      if (builtImage && await deps.imageInspect(builtImage.tag) === 0) {
+        const identity = await deps.imageIdentity!(builtImage.tag);
+        expect(identity?.cacheKey).toBe(builtImage.cacheKey);
+        const removed = await cleanupRun(["image", "rm", builtImage.tag]);
+        expect(removed.code, removed.stderr).toBe(0);
+        expect(await deps.imageInspect(builtImage.tag)).not.toBe(0);
+      }
+    }
+  }, 300_000);
 });

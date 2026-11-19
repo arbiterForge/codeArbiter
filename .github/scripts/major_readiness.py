@@ -31,6 +31,7 @@ REPOSITORY = "arbiterForge/codeArbiter"
 PROGRAM = "codearbiter-major-state-contracts"
 SCHEMA = "codearbiter-major-readiness/1"
 SOURCE_SCHEMA = "codearbiter-major-readiness/3"
+PI_AUTHOR_SCHEMA = "codearbiter-major-pi-author-readiness/1"
 CORPUS = "docs/state-contracts-major/"
 COVERAGE_LEDGER = CORPUS + "execution/coverage-ledger.json"
 LEDGER_ROUTING_PROFILE = "qualification-ledger-routing-v1"
@@ -919,7 +920,10 @@ def source_runtime_requirements(req):
 
 
 def runtime_record(record):
-    """Unwrap only source3 -> components -> native4 -> Docs-source/Docs2/Core1."""
+    """Unwrap only Pi-author -> source3 -> components -> native4 -> Docs-source/Docs2/Core1."""
+    if isinstance(record, dict) and record.get('schema') == PI_AUTHOR_SCHEMA:
+        from pi_author_readiness import inner_record
+        record = inner_record(record)
     if isinstance(record, dict) and record.get('schema') == SOURCE_SCHEMA:
         inner = record.get('runtime')
         require(isinstance(inner, dict) and inner.get('schema') in
@@ -1185,7 +1189,14 @@ def _requirements(repo, source, run_id):
         if selected:
             source_finding_fields = {'source_finding_composite_cells': selected,
                 'source_finding_inputs': source_finding_input_pins(selected, source, load)}
-    return {**native_fields, **source_finding_fields, **({"source_dispositions": source_dispositions} if source_dispositions else {}),
+    from site_vitest_observation import build_generation_fields
+    generation_fields = build_generation_fields(policy, required, cells, cell_jobs, source, load)
+    pi_author_fields = {}
+    if 'pi_author_scenarios' in policy:
+        from pi_author_readiness import requirements as pi_author_requirements
+        pi_author_fields = pi_author_requirements(policy, cells, source, load)
+    return {**pi_author_fields, **native_fields, **source_finding_fields, **generation_fields,
+            **({"source_dispositions": source_dispositions} if source_dispositions else {}),
             "source_commit": source,
             "source_tree": command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip(),
             "ci_run_id": int(run_id), "task_ids": sorted(required),
@@ -1289,6 +1300,10 @@ def validate_upload(job, artifact, step_name, *, job_log=None):
 def verify(*, record, requirements, run, artifact, archive_digest, jobs, build_artifacts,
            payload_members=None):
     req = requirements
+    if 'pi_author_scenarios' in req or (isinstance(record, dict) and record.get('schema') == PI_AUTHOR_SCHEMA):
+        from pi_author_readiness import verify as verify_pi_author
+        return verify_pi_author(record=record, requirements=req, run=run, artifact=artifact,
+            archive_digest=archive_digest, jobs=jobs, build_artifacts=build_artifacts, payload_members=payload_members)
     if isinstance(record, dict) and record.get('schema') == 'codearbiter-major-component-source-readiness/1':
         from site_component_observation import verify as verify_components
         return verify_components(record=record, requirements=req, run=run, artifact=artifact,
@@ -1567,6 +1582,9 @@ def report_payloads(report, rows):
 
 
 def produce(req, artifacts, jobs):
+    if 'pi_author_scenarios' in req:
+        from pi_author_readiness import produce as produce_pi_author
+        return produce_pi_author(req, artifacts, jobs)
     """Build only from authenticated run artifacts emitted by successful test jobs.
 
     No project report file or caller-supplied pass flag is an input. Each job's
@@ -1712,7 +1730,15 @@ def load_verified_receipt(repo, source, run_id):
         observed_members[payload["artifact_id"]] = members(content)
     # Rebuild the record from the test jobs' original authenticated reports;
     # a readiness uploader cannot invent a passed cell after those jobs ran.
-    require(record == produce(req, artifacts, jobs), "readiness differs from original qualification evidence")
+    if 'pi_author_scenarios' in req:
+        from pi_author_readiness import inner_record, runtime_requirements
+        require(isinstance(record, dict) and record.get('schema') == PI_AUTHOR_SCHEMA,
+                "Pi author readiness envelope required")
+        # Outer verification independently reconstructs the two original cases.
+        reconstructed = produce(runtime_requirements(req), artifacts, jobs)
+        require(inner_record(record) == reconstructed, "runtime readiness differs from original qualification evidence")
+    else:
+        require(record == produce(req, artifacts, jobs), "readiness differs from original qualification evidence")
     result = verify(record=record, requirements=req, run=run, artifact=artifact,
         archive_digest=digest(archive), jobs=jobs, build_artifacts=artifacts, payload_members=observed_members)
     return record, result

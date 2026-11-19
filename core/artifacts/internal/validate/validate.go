@@ -238,12 +238,11 @@ func sortErrors(es []fault.Error) { // insertion sort; diagnostics are capped at
 	}
 }
 
-// retiredAs reports whether id is a tombstone that recorded original kind as
-// its typed owner. An untyped legacy tombstone owns no history: its kind is
-// unresolved, and an ID prefix is not evidence of kind.
-func retiredAs(d *model.Document, id, kind string) bool {
+// retainsRetiredHistory permits preservation of an existing historical row.
+// An untyped tombstone keeps the row without establishing an original kind.
+func retainsRetiredHistory(d *model.Document, id, kind string) bool {
 	record, known := d.Symbols.ByID[id]
-	return known && record.Retired && model.S(record.Value["original_kind"]) == kind
+	return known && record.Retired && (record.IsUntypedRetirement() || model.S(record.Value["original_kind"]) == kind)
 }
 
 func planStructure(d *model.Document) []fault.Error {
@@ -371,7 +370,7 @@ func planStructure(d *model.Document) []fault.Error {
 	}
 	ex := model.M(d.Data["execution"])
 	for id := range model.M(ex["scopes"]) {
-		if _, ok := cps[id]; !ok && !retiredAs(d, id, "checkpoints") {
+		if _, ok := cps[id]; !ok && !retainsRetiredHistory(d, id, "checkpoints") {
 			add(&es, "ORPHAN_STATE", id, "execution.scopes", "scope has no checkpoint definition")
 		}
 	}
@@ -387,11 +386,8 @@ func planStructure(d *model.Document) []fault.Error {
 		}
 	}
 	for id, observations := range model.M(ex["task_check_observations"]) {
-		if _, exists := tasks[id]; !exists {
-			record, known := d.Symbols.ByID[id]
-			if !known || !record.Retired || (record.Kind != "tasks" && !retiredAs(d, id, "tasks")) {
-				add(&es, "ORPHAN_STATE", id, "execution.task_check_observations", "unknown task command history")
-			}
+		if _, exists := tasks[id]; !exists && !retainsRetiredHistory(d, id, "tasks") {
+			add(&es, "ORPHAN_STATE", id, "execution.task_check_observations", "unknown task command history")
 		}
 		for _, value := range model.A(observations) {
 			check := model.M(value)

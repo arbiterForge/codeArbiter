@@ -1123,9 +1123,22 @@ Process-death tests exercise actual subprocess exits at stage/journal/replacemen
 
 ## Legacy conversion
 
-Legacy Markdown remains with the original workflow until explicit conversion. `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
+Legacy Markdown remains with the original workflow until explicit conversion. A Markdown `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
 
 `migration-apply` requires the same pair, the exact preview identity, and a recorded review. The new documents start as drafts. Old approval and acceptance prose is not transferred as authority. A pair cutover journals HTML creation and Markdown retirement together. Original bytes remain in history. `recover` handles an uncertain cutover; `migration-rollback` also accepts historical completed two-edit cutovers while canonical endpoints still match them. Intervening edits block rollback.
+
+For an existing native specification or plan, `migration-preview` accepts a
+separate `native_retirement` request with `artifact_id` and
+`expected_bytes_sha256`. It verifies the canonical HTML and binds the preview
+to the selected path, byte digest, revision and model identities. The manifest
+lists unclassified tombstones with counts of their retained check rows and
+the presence of a retained scope baseline. The preview creates no artifact,
+journal or receipt. The native request is exclusive to preview.
+
+An exact read of an untyped tombstone reports `history_classification:
+unclassified`. Its retained rows stay historical and preserve their original
+bytes and model values. Live task and checkpoint operations require the active
+records, so an unresolved kind stays out of scheduling and current proof.
 
 ## Derived farm projection
 

@@ -1438,10 +1438,10 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
                 files['native-observation.json']=json.dumps(reports.admit_go(raw,stamp,self.tree)).encode()
             self.rewrite(platform,extend)
 
-    def windows_recipes(self, cells, expected_digest):
+    def pinned_recipes(self, cells, expected_digest):
         import major_native_observation as native
 
-        self.assertTrue(set(cells) <= native.RECIPES.keys(), 'finite Windows route is missing')
+        self.assertTrue(set(cells) <= native.RECIPES.keys(), 'finite native route is missing')
         selected = native.selected_recipes(sorted(cells))
         encoded = json.dumps(selected, sort_keys=True, separators=(',', ':')).encode()
         self.assertEqual(readiness.digest(encoded), expected_digest)
@@ -1449,15 +1449,15 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
 
     def windows_context_recipes(self):
         # Original D482 per-cell vectors authenticated against retained Windows results.
-        return self.windows_recipes(
+        return self.pinned_recipes(
             WINDOWS_CONTEXT_CELLS, '86c0668e903fe26da79760ddcc099abbb21fce1424ff19fb4b6fb319e780d405')
 
     def windows_work_recipes(self):
-        return self.windows_recipes(
+        return self.pinned_recipes(
             WINDOWS_WORK_CELLS, '304e98cec21d2c01ae9e26d00b5e6c467078a9fd5b807c6d805080cd0bbbbdf1')
 
     def windows_store_and_project_recipes(self):
-        return self.windows_recipes(
+        return self.pinned_recipes(
             WINDOWS_STORE_AND_PROJECT_CELLS,
             '4b95fd890d68b442717799b14b8ff10469c43c5dbd4afb8453f312bec4e0da29')
 
@@ -1474,9 +1474,24 @@ class NativeCompositeAuthorityTests(unittest.TestCase):
         authority = ordinary["disposition:findings:N-F04"]["windows/amd64"]
         return {**EXPECTED_NATIVE_RECIPES, **ordinary,
                 "scenario:SEQ-03": ordinary["disposition:findings:N-F01"],
+                **self.pinned_recipes(["scenario:SEQ-04"],
+                                      "0d74bbdc8ba1e26a7d6f9c0a572996a32c657f2bf91133b595a3a45c658b08f1"),
                 "task:NT-02": ordinary["disposition:findings:N-F01"],
+                **self.pinned_recipes(["task:NT-03"],
+                                      "75b56c0dea52c0f28d897f7f811f5f1d19419d07f3c42fca5056f72b1a6d47c0"),
+                **self.pinned_recipes(["task:NT-05"],
+                                      "0977b160674cc32a68664daa2495ea7657f38faa1e440167c133020f99203495"),
+                **self.pinned_recipes(["task:NT-06"],
+                                      "6e8edb817d7dab9e4caed8d8b52796a5c0bc0df38f221988150710e7dbfa909a"),
+                **self.pinned_recipes(["task:NT-07"],
+                                      "a96d2c265fbe8e7f3842bf49dd2a6fb6add44bb072927aeece0b6e59fe3995e7"),
                 "scenario:SEQ-06": ordinary["disposition:findings:N-F10"],
-                "scenario:SEQ-07": {"windows/amd64": sorted(set(progress + authority))}}
+                "scenario:SEQ-07": {"windows/amd64": sorted(set(progress + authority))},
+                "scenario:SEQ-08": {platform: [
+                    "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:"
+                    "TestScopedConflictPreservesIndependentWorkAfterJournalRecovery"]
+                    for platform in ("darwin/amd64", "darwin/arm64", "linux/amd64", "linux/arm64",
+                                     "windows/amd64", "windows/arm64")}}
 
     def test_current_progress_recipes_keep_all_original_routes_and_complete_required_children(self):
         import major_native_observation as native

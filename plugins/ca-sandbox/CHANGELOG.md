@@ -29,6 +29,7 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 ### Fixed
 
 - Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
+- Give installed users the bundled Node invocation and direct Claude-inside requests to the separate packaged routine.
 
 - Refuse Claude sandbox readiness after late cancellation and retain exact container cleanup results.
 - Retain the observed container ID in creation errors when cancellation cleanup cannot discover resources.

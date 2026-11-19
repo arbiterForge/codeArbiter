@@ -93,6 +93,29 @@ class RecoveryRuntimeTest(unittest.TestCase):
         self.assertTrue(replay["durable"], replay)
         self.assertEqual(len(self.call("scan")["items"]), 1)
 
+    def test_missing_index_without_journal_preserves_records_for_explicit_recovery(self):
+        oid = self.registered()
+        index = self.store / "index.json"
+        saved_index = self.root / "retained-index.json"
+        index.rename(saved_index)
+        self.assertFalse((self.store / "transaction.json").exists())
+        before = self.snapshot()
+
+        for action, request in (("scan", {}), ("repair", {}), ("register", {"candidates": [self.request(1)]})):
+            with self.subTest(action=action):
+                result = self.call(action, request)
+                self.assertEqual(result["status"], "unavailable", result)
+                if action == "scan":
+                    self.assertEqual((result["items"], result["cursor"]), ([], None), result)
+                else:
+                    self.assertFalse(result["durable"], result)
+                self.assertEqual(self.snapshot(), before)
+
+        saved_index.rename(index)
+        observed = self.call("scan")
+        self.assertEqual(observed["status"], "complete", observed)
+        self.assertEqual([item["obligation_id"] for item in observed["items"]], [oid])
+
     def test_pages_and_stale_cursor_never_claim_a_complete_empty_scan(self):
         for start in (0, 24):
             result = self.call("register", {"candidates": [self.request(i) for i in range(start, min(start + 24, 37))]})

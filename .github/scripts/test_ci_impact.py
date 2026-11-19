@@ -5806,7 +5806,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         self.assertIn('name: major readiness producer', producer)
         self.assertIn("github.event_name == 'push'", producer)
         self.assertIn("github.ref == 'refs/heads/main'", producer)
-        self.assertIn('needs: [changes, ci-passed]', producer)
+        self.assertIn('needs: [changes, ci-passed, pi-installed-package]', producer)
         self.assertIn('actions: read', producer)
         self.assertIn('contents: read', producer)
         self.assertNotIn(': write', producer)

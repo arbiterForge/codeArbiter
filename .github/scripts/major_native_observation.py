@@ -1530,9 +1530,98 @@ RECIPES.update({
 })
 
 
+# The discovery suite is joined to terminal dispatch witnesses for all 80
+# operations. Standalone export is observed on the original Linux suite.
+RECIPES["scenario:SEQ-04"] = {
+    "linux/amd64": ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+                    for name in ("TestLegacyCaptureRefusalMatchesDiscoveryDescriptor",
+                                 "TestRebrandAndStandaloneExport")],
+    "windows/amd64": ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+                      for name in (
+                          "TestAllOperationSchemasClosed",
+                          "TestApprovalDescriptorsCoverActualEffects",
+                          "TestAuthorizedFarmEnrichment",
+                          "TestBrownfieldCandidatesAreNotPublished",
+                          "TestCapabilitiesAdvertiseVersionedOperationContract",
+                          "TestConcurrentReadersPreserveAdmission",
+                          "TestConcurrentReadersPreserveWriterRetry",
+                          "TestContextAuthorityExactPreviewFixture",
+                          "TestContextFinalizationReceiptOnlyApply",
+                          "TestContextWholeDocumentOnboardingFinalization",
+                          "TestCycleViewGroupsCanonicalWorkWithoutCopyingIt",
+                          "TestKnowledgeContextBoundsOmissionMetadata",
+                          "TestKnowledgeCutoverPagesLargeSectionInventory",
+                          "TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs",
+                          "TestMigrationPairAndRollback",
+                          "TestN01AdmissionHasNoRepositoryEffects",
+                          "TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+                          "TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+                          "TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+                          "TestNT01BaselineOrdinaryWorkKeepsReportedFailuresExplicit",
+                          "TestOperationDescriptorTraitsAreClosedAndHonest",
+                          "TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply",
+                          "TestOperationRegistryReverseClosure",
+                          "TestProjectViewPresentsBoundedCanonicalWork",
+                          "TestProtocolDocumentListsEveryOperation",
+                          "TestReadOnlyInitializedStoreObservations",
+                          "TestRepairIsDiscoverableAppliedAndReplayed",
+                          "TestTrackerCoordinationT01FiniteOptInMap",
+                          "TestTrackerCoordinationT04ProjectObservationAndMergeFence",
+                          "TestTypedRecordReorder",
+                          "TestWorkAdoptSharedOriginDistinctRows",
+                          "TestWorkOriginsFindsArchivedIdentityInOneBoundedRead",
+                          "TestWorkProjectEffectPreservesIssueAndScopesRetry",
+                          "TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict",
+                      )],
+}
+
+
 RECIPES["scenario:SEQ-07"] = {
     "windows/amd64": sorted(set(RECIPES["disposition:findings:N-F03"]["windows/amd64"]) |
                             set(RECIPES["disposition:findings:N-F04"]["windows/amd64"]))
+}
+RECIPES["scenario:SEQ-08"] = {
+    platform: ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:"
+               "TestScopedConflictPreservesIndependentWorkAfterJournalRecovery"]
+    for platform in _PROGRESS_PLATFORMS
+}
+RECIPES["task:NT-03"] = copy.deepcopy(RECIPES["scenario:SEQ-04"])
+RECIPES["task:NT-05"] = {
+    platform: ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+               for name in (
+                   "TestInterruptedRetirementRecoversExactly",
+                   "TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift",
+                   "TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift/old-tombstone",
+                   "TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift/retained-unclassified-history",
+                   "TestLegacyRetirementAmbiguityDoesNotBlockIndependentWork",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/complete",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/independent-edit",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/rollback",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/staging",
+                   "TestRetirementKindMustNameAnActualCollection",
+                   "TestRetiringCheckedTaskKeepsTypedHistory",
+                   "TestRetiringCheckpointKeepsScopeBaseline",
+                   "TestRetiringCriterionKeepsNestedCollectionKinds",
+               )]
+    for platform in _PROGRESS_PLATFORMS
+}
+RECIPES["task:NT-06"] = {
+    platform: sorted(set(RECIPES["disposition:findings:N-F05"][platform]) |
+                     set(RECIPES["disposition:findings:N-F07"][platform]))
+    for platform in _PROGRESS_PLATFORMS
+}
+RECIPES["task:NT-07"] = {
+    "windows/amd64": ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+                      for name in (
+                          "TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence",
+                          "TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence/failed",
+                          "TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence/passed",
+                          "TestNoOperationRequestCanSetWorkCheckStatus",
+                          "TestWorkAdoptJournalsBoardCutoverAndReplays",
+                          "TestWorkLifecycleNeverManufacturesCheckStatus",
+                          "TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue",
+                      )],
 }
 
 
