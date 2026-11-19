@@ -37,7 +37,7 @@ describe("native Farm Git environment", () => {
         CODEARBITER_GIT_EXECUTABLE: git,
         GIT_CONFIG_COUNT: "1",
         GIT_CONFIG_KEY_0: "core.excludesFile",
-        GIT_CONFIG_VALUE_0: realpathSync(ignore),
+        GIT_CONFIG_VALUE_0: realpathSync.native(ignore),
       });
     } finally {
       vi.unstubAllEnvs();

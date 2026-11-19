@@ -183,12 +183,29 @@
     },
     {
       "path": "core/artifacts/internal/operations/protocol.go",
-      "blob": "48faadf93c77f80d970698b279c011047404fa8d",
-      "summary": "The native operation inventory and journaled classification derive from the descriptor owner. Descriptors state backend availability and effects; they do not grant permission or certify installed behavior.",
+      "blob": "ffb93abd324aedd2ac7884ddf1a16e68aa6670f6",
+      "summary": "The native operation inventory and journaled classification derive from the descriptor owner. Descriptors state backend availability and effects; they do not grant permission or certify installed behavior. Migration preview accepts either the paired Markdown mappings or a native retirement request bound to the source bytes digest. The native request has no apply form.",
       "nodes": [
         "f-capability",
         "c-read",
         "k-doctor"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/operations/migration.go",
+      "blob": "be7eddba55c0dab89c28ec05f244c103d643b43f",
+      "summary": "Native retirement preview checks the exact source bytes and reports unclassified history, retained check counts and whether a scope baseline is recorded without changing the artifact. Changed source bytes are refused.",
+      "nodes": [
+        "c-read"
+      ]
+    },
+    {
+      "path": "core/artifacts/internal/read/read.go",
+      "blob": "b72fd768577eb313173eb90c7ae3320b86a82815",
+      "summary": "Exact symbol reads label untyped retirement history as unclassified. Reported check history remains available, and exact read still does not complete task context.",
+      "nodes": [
+        "c-read",
+        "f-selection"
       ]
     },
     {

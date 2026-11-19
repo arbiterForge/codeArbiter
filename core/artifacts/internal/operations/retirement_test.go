@@ -349,6 +349,10 @@ func TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift(t *testing.T)
 			if _, err := f.request("migration-apply", request); err == nil {
 				t.Fatal("read-only native preview request was admitted to apply")
 			}
+			mixed := object{"native_retirement": request["native_retirement"], "spec": object{}}
+			if _, err := f.request("migration-preview", mixed); fault.Code(err) != "INVALID_MODEL" || fault.Public(err).Field != "/spec" {
+				t.Fatalf("mixed preview lost the closed native shape diagnostic: %v", err)
+			}
 			if !maps.Equal(descriptorEffectSnapshot(t, f.root), treeBefore) {
 				t.Fatal("preview, exact read or refused apply changed the source store")
 			}

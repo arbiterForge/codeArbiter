@@ -447,6 +447,8 @@ function applyMajorRoutes(atlas:Atlas):void {
   set('k-task','Capture follow-ups at discovery\nPromote selected authorized items\nReport exact target readback');
   set('c-harvest','Register qualifying findings early\nReconcile uncertain effects before retry\nPromote only under existing authority',
     'Discovery capture retains exact extractor origin, stable workflow/work run and source fingerprint. Terminal harvest reconciles each selected operation and target. Unregistered text and durable:false reports are not recovered obligations; a new session does not inherit a revoked grant.');
+  const read=atlas.views.flatMap(view=>view.nodes).find(node=>node.id==='c-read')!;
+  read.detail='Exact symbol reads label untyped retirement history as unclassified. The native retirement preview checks the source bytes digest and reports retained check counts and whether a scope baseline is recorded. The preview leaves the artifact intact.';
   const recovery=atlas.views.flatMap(view=>view.nodes).find(node=>node.id==='f-recovery')!;
   recovery.detail='Inspect the durable operation outcome before retry. Registered follow-ups survive interruption in a Git-common journal; current authority and exact source/target binding are checked again. Partial or unavailable inventory remains explicit, and status never repairs or promotes work. Unknown effects hold only dependent resources. Only finite trusted reason codes supply bounded recovery guidance; status never replays effects or regrants authority. An uncertain decline stays claimed until exact audit readback, and changed facts use a new linked obligation without reopening settled history. Installed-cohort and real parent-host qualification remain separate.';
 }

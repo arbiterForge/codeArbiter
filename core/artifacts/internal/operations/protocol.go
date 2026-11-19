@@ -561,6 +561,16 @@ func CheckRequest(op string, r object) error {
 	if e != nil {
 		return e
 	}
+	if op == "migration-preview" {
+		// The alternative with native_retirement is disjoint from the Markdown
+		// pair. Select it before validation to retain field-level diagnostics.
+		alternatives := model.A(s["oneOf"])
+		if _, native := r["native_retirement"]; native {
+			s = model.M(alternatives[1])
+		} else {
+			s = model.M(alternatives[0])
+		}
+	}
 	if es := schema.ValidateWith(s, r); len(es) > 0 {
 		return &es[0]
 	}

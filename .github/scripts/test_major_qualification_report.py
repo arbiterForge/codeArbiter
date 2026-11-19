@@ -5093,6 +5093,13 @@ class SingleOwnerPythonFindingProfileTests(unittest.TestCase):
                 path=repo/'tools/test_measurement_contracts.py';path.unlink()
                 with self.subTest(profile=profile,mutation='missing'),self.assertRaises(ValueError):owner._finding_python_members(repo,profile)
 
+    def test_j_checked_in_profiles_bind_the_actual_complete_source_namespaces(self):
+        # A fixture synthesized only from the registry cannot expose omissions
+        # introduced by newly committed files in an owning closed namespace.
+        for profile in owner.PYTHON_FINDING_PROFILES:
+            with self.subTest(profile=profile):
+                owner._finding_python_members(owner.ROOT,profile)
+
     def test_emit_joins_both_python_finding_source_payloads_to_their_uploaders(self):
         for cell in ('disposition:findings:HOOK-F03', 'disposition:findings:C-F07'):
             profile = self.EXPECTED[cell]['profile']
