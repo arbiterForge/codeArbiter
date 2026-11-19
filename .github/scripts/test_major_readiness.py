@@ -920,7 +920,7 @@ if __name__ == "__main__":
                                                   'result': 'passed'}])
             self.assertEqual(observed['proof_kind'], 'source-test')
 
-    def test_recovery_transition_cells_use_one_original_runtime_upload_with_exact_selectors(self):
+    def test_recovery_transition_and_harvest_cells_use_one_original_runtime_upload_with_exact_selectors(self):
         import major_qualification_report as reports
 
         repo = Path(__file__).resolve().parents[2]
@@ -936,9 +936,20 @@ if __name__ == "__main__":
                     for row in contract['semantic_mapping']}
         cells = sorted(expected)
         self.assertEqual((len(cells), len({name for names in expected.values() for name in names})), (22, 27))
+        scenario = 'scenario:SEQ-11'
+        expected[scenario] = [prefix + 'RecoveryRuntimeTest.' + name for name in (
+            'test_compacted_terminal_record_preserves_exact_dedup_and_old_history',
+            'test_corrupt_record_and_future_store_are_unavailable_without_repair_write',
+            'test_crash_after_record_cannot_look_empty_and_explicit_repair_recovers',
+            'test_missing_index_without_journal_preserves_records_for_explicit_recovery',
+            'test_process_crash_after_target_and_during_settlement_never_duplicates',
+            'test_registration_capacity_preserves_unresolved_records_and_history',
+            'test_unavailable_target_readback_preserves_claim_and_never_repeats_effect',
+        )]
         policy = json.loads((repo / '.github/major-qualification-policy.json').read_bytes())
         self.assertEqual(sorted(set(policy['source_finding_composite_cells']) & set(cells)), cells)
-        self.assertEqual({cell: reports.SOURCE_FINDING_COMPOSITIONS[cell][0]['selectors'] for cell in cells}, expected)
+        self.assertEqual({cell: reports.SOURCE_FINDING_COMPOSITIONS[cell][0]['selectors']
+                          for cell in [*cells, scenario]}, expected)
 
         job = dict(self.jobs[0], name=spec['job'], steps=[])
         files = {path: b'owned fixture' for path in sorted(spec['paths'])}
@@ -958,6 +969,8 @@ if __name__ == "__main__":
         tests = [dict(id=prefix + row['id'].split('.', 1)[1], result='passed')
                  for row in contract['original_named_results']]
         self.assertEqual(len(tests), 29)
+        req['cells'] = req['source_finding_composite_cells'] = [*cells, scenario]
+        req['cell_jobs'][scenario] = spec['job']
         observed = dict(format=reports.OBSERVATION, source_commit=req['source_commit'],
             source_tree=req['source_tree'], ci_run_id=7, source_stable=True, clean=True,
             proof_kind='source-test', producer='python-test-result-observer', argv=['python', script], exit_code=0,
@@ -980,12 +993,25 @@ if __name__ == "__main__":
         job['steps'].pop()
         self.logs[log_key] = source_log
 
+        original_cases = {test['id'] for test in tests}
+        new_cases = set(expected[scenario]) - original_cases
+        self.assertTrue(new_cases)
+        upload(tests)
+        with self.assertRaisesRegex(owner.ReadinessError, 'selected named test missing'):
+            reports.source_finding_evidence(req, self.artifacts, [job], run=self.run)
+        self.artifacts.pop()
+        job['steps'].pop()
+        self.logs[log_key] = source_log
+        tests.extend(dict(id=selector, result='passed') for selector in sorted(new_cases))
         capture = upload(tests)
         jobs = [job, self.jobs[-1]]
+        wrong_owner = dict(req, cell_jobs={**req['cell_jobs'], scenario: 'another workflow'})
+        with self.assertRaisesRegex(owner.ReadinessError, 'workflow recovery scenario route owner differs'):
+            reports.source_finding_evidence(wrong_owner, self.artifacts, [job], run=self.run)
         with mock.patch.object(owner, 'artifact_bytes', wraps=owner.artifact_bytes) as download:
             record = owner.produce(req, self.artifacts, jobs)
         self.assertEqual([call.args[0]['id'] for call in download.call_args_list], [source['id'], capture['id']])
-        self.assertEqual([row['cell'] for row in record['results']], cells)
+        self.assertEqual([row['cell'] for row in record['results']], req['cells'])
         for row in record['results']:
             self.assertEqual(row['evidence_artifact_ids'], [source['id']])
             self.assertEqual(len(row['source_components']), 1)
@@ -1156,11 +1182,17 @@ if __name__ == "__main__":
     def test_recovery_finding_receipt_requires_native_archive_and_both_consumed_copies(self):
         import major_qualification_report as reports
 
-        cells = list(reports.RECOVERY_FINDING_CELLS)
-        req = dict(self.req, cells=cells, cell_jobs=dict.fromkeys(cells, 'major qualification / workflow-recovery'),
-                   source_finding_composite_cells=cells)
+        cells = [*reports.RECOVERY_FINDING_CELLS, 'scenario:SEQ-10']
         profile = reports.RECOVERY_RUNTIME_PROFILE
         spec = reports.source_profile(profile)
+        policy = json.loads((Path(__file__).resolve().parents[1] / 'major-qualification-policy.json').read_bytes())
+        self.assertTrue(set(cells) <= set(policy['source_finding_composite_cells']))
+        self.assertIn('scenario:SEQ-11', policy['source_finding_composite_cells'])
+        self.assertEqual(policy['cell_job_bindings']['scenario:SEQ-11'], spec['job'])
+        self.assertEqual(policy['cell_job_bindings']['scenario:SEQ-10'], spec['job'])
+        jobs_by_cell = dict.fromkeys(reports.RECOVERY_FINDING_CELLS, 'major qualification / workflow-recovery')
+        jobs_by_cell['scenario:SEQ-10'] = spec['job']
+        req = dict(self.req, cells=cells, cell_jobs=jobs_by_cell, source_finding_composite_cells=cells)
         source_bytes = b'owned immutable fixture'
         req['source_finding_inputs'] = reports.source_finding_input_pins(cells, req['source_commit'],
                                                                       lambda _source, _path: source_bytes)
@@ -1216,6 +1248,9 @@ if __name__ == "__main__":
             self.assertEqual([len(c['selectors']) for c in result['source_components']], [9, 7, 5])
             self.assertEqual(result['workflow_recovery_installation']['binary_sha256'], owner.digest(binary))
             self.assertEqual([c['consumed_native_installation'] for c in result['source_components'][1:]], [identity] * 2)
+        wrong_owner = dict(req, cell_jobs={**req['cell_jobs'], 'scenario:SEQ-10': 'another workflow'})
+        with self.assertRaisesRegex(owner.ReadinessError, 'workflow recovery scenario route owner differs'):
+            owner.produce(wrong_owner, self.artifacts, jobs)
         with self.assertRaisesRegex(owner.ReadinessError, 'native installation archive required'):
             owner.produce(req, self.artifacts[:-1], jobs)
         with self.assertRaisesRegex(owner.ReadinessError, 'exact original component artifact'):
@@ -1276,11 +1311,12 @@ class CompletedPopulationTest(unittest.TestCase):
                                                          'sha256': 'e' * 64, 'commit': 'f' * 40}])
 
     def setUp(self):
-        # Launch-binding task and finding archives have their own fixtures.
+        # Launch-binding archives have their own fixtures.
         # This fixture exercises the complete reviewed source population.
         policy = json.loads((self.repo / '.github/major-qualification-policy.json').read_bytes())
         policy['native_launch_binding_tasks'] = []
         policy['native_launch_binding_findings'] = []
+        policy['native_launch_binding_scenarios'] = []
         self.overrides = {
             owner.CORPUS + 'execution/progress.json': json.dumps(self.progress).encode(),
             owner.CORPUS + 'execution/coverage-ledger.json': json.dumps(self.ledger).encode(),

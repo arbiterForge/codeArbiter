@@ -105,7 +105,7 @@ per section, mapping every meaningful section to active record or note
 references in its matching knowledge document. `apply` also requires the
 preview's input identities and commits the cutover in one journaled transaction.
 
-`capture` **writes** immutable events and receipts even though it does not increment an artifact revision. Locks, journals and a contextual-pagination key are engine-managed metadata; “read operation” does not mean the filesystem can never acquire such metadata. Host permission classification must distinguish content writes and event writes from ordinary reads. No generic content mutation can set approval or task acceptance.
+`capture-observation` **writes** immutable events and receipts without incrementing an artifact revision. The compatibility operation `capture` refuses evidence writes. The engine manages lock metadata, journals and the contextual-pagination key. Hosts classify ordinary reads, content writes and event writes separately. Approval and task acceptance use their dedicated operations.
 
 ## Identity domains
 
@@ -988,7 +988,7 @@ legacy proof path; normal orchestration is being converted separately in T05.
 
 ## Cooperative approval and evidence
 
-`capture` persists a **host-supplied actual workflow event**, naming the artifact ID, normative digest, record subject, actor, origin, source text, authority kind, verdict and kind-specific payload. It creates a content-addressed receipt and does not approve the artifact. `approve` separately checks the matching receipt and readiness.
+`capture-observation` persists a **host-supplied observed workflow event**, naming the artifact ID, normative digest, record subject, actor, origin, source text, authority kind, verdict and kind-specific payload. It validates the bound source, observation and current context before issuing a content-addressed receipt. With a valid ordinary bound event, the compatibility operation `capture` returns `OBSERVATION_REQUIRED`. `approve` separately checks the matching receipt and readiness.
 
 The test suite's synthetic user/reviewer events are test fixtures only. Production callers must not construct invented reviewer identities or successful results just to clear these gates. The existing codeArbiter cooperative-attestation threat model remains explicit; unrestricted same-user tampering is outside the claimed boundary.
 
@@ -1123,9 +1123,22 @@ Process-death tests exercise actual subprocess exits at stage/journal/replacemen
 
 ## Legacy conversion
 
-Legacy Markdown remains with the original workflow until explicit conversion. `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
+Legacy Markdown remains with the original workflow until explicit conversion. A Markdown `migration-preview` requires both spec and plan mappings for the same slug in one request, with reviewed typed normative content and a complete nonoverlapping line mapping for each source. Every line is mapped, historical or explicitly out of scope; a disposition requires its reason and target. It does not ask a model to infer omitted obligations.
 
 `migration-apply` requires the same pair, the exact preview identity, and a recorded review. The new documents start as drafts. Old approval and acceptance prose is not transferred as authority. A pair cutover journals HTML creation and Markdown retirement together. Original bytes remain in history. `recover` handles an uncertain cutover; `migration-rollback` also accepts historical completed two-edit cutovers while canonical endpoints still match them. Intervening edits block rollback.
+
+For an existing native specification or plan, `migration-preview` accepts a
+separate `native_retirement` request with `artifact_id` and
+`expected_bytes_sha256`. It verifies the canonical HTML and binds the preview
+to the selected path, byte digest, revision and model identities. The manifest
+lists unclassified tombstones with counts of their retained check rows and
+the presence of a retained scope baseline. The preview creates no artifact,
+journal or receipt. The native request is exclusive to preview.
+
+An exact read of an untyped tombstone reports `history_classification:
+unclassified`. Its retained rows stay historical and preserve their original
+bytes and model values. Live task and checkpoint operations require the active
+records, so an unresolved kind stays out of scheduling and current proof.
 
 ## Derived farm projection
 

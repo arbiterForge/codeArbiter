@@ -104,7 +104,7 @@ class PromptProtocolTests(unittest.TestCase):
 
 class ProviderProtocolTests(unittest.TestCase):
     def body(self, parent, previous=None, content="owned result"):
-        return {"model":"gpt-fixture", "stream":True, "tools":[{"type":"function","function":{"name":name}} for name in (["codearbiter_dispatch"] if parent else ["write","edit","bash"])],
+        return {"model":"gpt-fixture", "stream":True, "tools":[{"type":"function","function":{"name":name}} for name in (["codearbiter_dispatch"] if parent else ["read","write","edit","bash"])],
                 "messages":[{"role":"user","content":"owned fixture"}] + ([] if previous is None else [{"role":"tool","tool_call_id":previous,"content":content}])}
 
     def original_author(self, state):
@@ -112,12 +112,20 @@ class ProviderProtocolTests(unittest.TestCase):
         self.assertEqual(first["tool_calls"][0]["function"]["name"], "codearbiter_dispatch")
         self.assertEqual(finish, "tool_calls")
         previous = None
-        for operation in [*owner.operations(NONCE), owner.declined_write(NONCE)]:
-            result, finish = state.response(self.body(False, previous))
+        content = None
+        write, edit, verify = owner.operations(NONCE)
+        read = {"tool": "read", "params": {"path": write["params"]["path"]}}
+        for operation in (write, read, edit, verify, owner.declined_write(NONCE)):
+            result, finish = state.response(self.body(False, previous, content))
             call = result["tool_calls"][0]
             self.assertEqual(call["function"]["name"], operation["tool"])
             self.assertEqual(json.loads(call["function"]["arguments"]), operation["params"])
             previous = call["id"]
+            content = "before-" + NONCE if operation["tool"] == "read" else "owned result"
+        self.assertEqual(state.author_read, {
+            "tool_call_id": "fixture-child-1-" + NONCE, "path": write["params"]["path"],
+            "content_sha256": owner.sha(("before-" + NONCE).encode()),
+        })
         refused = self.refused()
         for bad in ("owned result", "Parent delegation unavailable", json.dumps({**refused, "execution":"completed"}),
                     json.dumps({**refused, "reason":"no-parent-ui"}), json.dumps({**refused, "requestId":"invalid"})):
@@ -127,6 +135,20 @@ class ProviderProtocolTests(unittest.TestCase):
         self.assertEqual(json.loads(result["content"])["state"], "accepted")
         self.assertEqual(state.declined_result, refused)
         return state
+
+    def test_original_author_requires_its_own_exact_read_before_edit(self):
+        state = owner.ProviderProtocol(NONCE)
+        state.response(self.body(True))
+        written, _ = state.response(self.body(False))
+        read, _ = state.response(self.body(False, written["tool_calls"][0]["id"]))
+        call_id = read["tool_calls"][0]["id"]
+        with self.assertRaisesRegex(ValueError, "child-result"):
+            state.response(self.body(False, written["tool_calls"][0]["id"], "before-" + NONCE))
+        with self.assertRaisesRegex(ValueError, "author-read-result"):
+            state.response(self.body(False, call_id, "after-" + NONCE))
+        self.assertIsNone(state.author_read)
+        edit, _ = state.response(self.body(False, call_id, "before-" + NONCE))
+        self.assertEqual(edit["tool_calls"][0]["function"]["name"], "edit")
 
     def test_original_sse_routes_three_effects_and_exact_decline_before_one_review_chain(self):
         state = self.original_author(owner.ProviderProtocol(NONCE))

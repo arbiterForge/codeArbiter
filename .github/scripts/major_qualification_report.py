@@ -460,7 +460,10 @@ SOURCE_PATHS = frozenset(('.codearbiter/reports/agent-lane-proof.json',
  'tools/build-surface.py',
  'tools/command_compatibility.py',
  'tools/host_descriptors.py',
- 'tools/owned_output.py'))
+ 'tools/owned_output.py',
+ 'tools/build-host-packages.py',
+ '.github/scripts/_releaselib.py',
+ 'core/pysrc/_releaselib.py'))
 
 SOURCE_PROFILE = "hooks-proof-publisher-v1"
 SOURCE_MANIFEST = "source-test-inputs.json"
@@ -765,6 +768,13 @@ TS_FINDING_RECIPES = {
     ))},
 }
 
+TS_FINDING_RECIPES["scenario:SEQ-15"] = {
+    "profile": "pi-tools-v1",
+    "selectors": (TS_FINDING_RECIPES["disposition:findings:SF02"]["selectors"] |
+                  TS_FINDING_RECIPES["disposition:findings:SF03"]["selectors"]),
+}
+
+
 # Farm reuses the original unfiltered source-test observer; native manifest
 # declarations do not confer native runtime or installed-host qualification.
 TS_PROFILE_PATHS["farm-tools-v1"] = TS_COMMON_PATHS | frozenset(('.github/fixtures/artifact-release-manifest.json',
@@ -900,6 +910,25 @@ TS_FINDING_RECIPES.update({
         'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations',
     ))},
 })
+
+TS_FINDING_RECIPES["scenario:SEQ-18"] = {
+    "profile": "farm-tools-v1",
+    "selectors": (TS_FINDING_RECIPES["disposition:findings:SF06"]["selectors"] |
+                  TS_FINDING_RECIPES["disposition:findings:SF07"]["selectors"]),
+}
+
+
+TS_FINDING_RECIPES["scenario:SEQ-19"] = TS_FINDING_RECIPES["disposition:findings:SF08"]
+
+TS_FINDING_RECIPES["scenario:SEQ-20"] = {
+    "profile": "sandbox-tools-v1",
+    "selectors": frozenset((
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SEQ-20 overflow preserves failure and re-observes only the surviving target",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SEQ-20 abort preserves failure and re-observes only the surviving target",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 — a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box",
+    )),
+}
+
 
 TS_OUTPUT_NAMES = frozenset("windows-latest" + suffix for suffix in (".json", ".provenance.json", ".checked.json"))
 
@@ -1075,7 +1104,10 @@ RECOVERY_INSTALLATION_ENV = "WORKFLOW_RECOVERY_INSTALLATION_OBSERVATION"
 RECOVERY_NATIVE_PLATFORM = "windows/amd64"
 RECOVERY_NATIVE_BINARY = "ca-artifact-windows-amd64.exe"
 RECOVERY_FINDING_CELLS = ("disposition:findings:HOOK-B04", "disposition:findings:W-F04")
+RECOVERY_INTERRUPTION_SCENARIO = "scenario:SEQ-10"
+RECOVERY_COMPOSITION_CELLS = (*RECOVERY_FINDING_CELLS, RECOVERY_INTERRUPTION_SCENARIO)
 DEBUG_RESUBMISSION_FINDING = "disposition:findings:W-F02"
+DEBUG_RESUBMISSION_SCENARIO = "scenario:SEQ-09"
 DEBUG_LAUNCHER = ".github/scripts/test_ci_impact.py"
 DEBUG_WORKFLOW_SUITE = ".github/scripts/test_debug_workflow.py"
 DEBUG_HANDOFF_SUITE = ".github/scripts/test_debug_handoff.py"
@@ -1309,6 +1341,7 @@ Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-pl
  '.github/scripts/_git_fixture_diagnostics.py',
  '.github/scripts/_immutable_git_blobs.py',
  '.github/scripts/_npm_publishlib.py',
+ '.github/scripts/_pi_rpc_profile.py',
  '.github/scripts/_releaselib.py',
  '.github/scripts/academy_promotion.py',
  '.github/scripts/build_release_targets_provenance.py',
@@ -1333,17 +1366,22 @@ Q02_SOURCE_PATHS = frozenset(('.codearbiter/decisions/0030-orchestration-mode-pl
  '.github/scripts/pages_readiness.py',
  '.github/scripts/payload_scope.py',
  '.github/scripts/payload_version_gate.py',
+ '.github/scripts/pi_author_readiness.py',
  '.github/scripts/pi_benchmark.py',
  '.github/scripts/pi_evidence.py',
  '.github/scripts/pi_host_locks.py',
+ '.github/scripts/pi_original_author_observation.py',
+ '.github/scripts/pi_parent_tui_observation.py',
  '.github/scripts/pi_promotion.py',
  '.github/scripts/prepare_adr_acceptance.py',
  '.github/scripts/reconcile_tag_receipt.py',
  '.github/scripts/release_source.py',
  '.github/scripts/release_target.py',
+ '.github/scripts/retained_archive_cli_observation.py',
  '.github/scripts/run_artifact_authority_shard.py',
  '.github/scripts/run_concurrent_suites.py',
  '.github/scripts/site_playwright_observation.py',
+ '.github/scripts/site_vitest_observation.py',
  '.github/scripts/tag_publication_receipt.py',
  '.github/scripts/test_check_skill_proof_fresh.py',
  '.github/scripts/test_generated_output.py',
@@ -2099,11 +2137,13 @@ _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
  '.github/scripts/pages_readiness.py',
  '.github/scripts/payload_scope.py',
  '.github/scripts/payload_version_gate.py',
+ '.github/scripts/pi_author_readiness.py',
  '.github/scripts/pi_benchmark.py',
  '.github/scripts/pi_cli_resolver.py',
  '.github/scripts/pi_evidence.py',
  '.github/scripts/pi_host_locks.py',
  '.github/scripts/pi_live_report_profile.py',
+ '.github/scripts/pi_original_author_observation.py',
  '.github/scripts/pi_parent_tui_observation.py',
  '.github/scripts/pi_promotion.py',
  '.github/scripts/prepare_adr_acceptance.py',
@@ -2223,12 +2263,14 @@ _HOOK_SINGLE_OWNER_PATHS = SOURCE_PATHS | frozenset([
  '.github/scripts/test_payload_scope.py',
  '.github/scripts/test_payload_version_gate.py',
  '.github/scripts/test_persona_composition.py',
+ '.github/scripts/test_pi_author_readiness.py',
  '.github/scripts/test_pi_benchmark.py',
  '.github/scripts/test_pi_child_live.py',
  '.github/scripts/test_pi_ci_wiring.py',
  '.github/scripts/test_pi_compaction_surface.py',
  '.github/scripts/test_pi_doctor.py',
  '.github/scripts/test_pi_host_locks.py',
+ '.github/scripts/test_pi_original_author_observation.py',
  '.github/scripts/test_pi_package.py',
  '.github/scripts/test_pi_parent_tui_observation.py',
  '.github/scripts/test_pi_parity.py',
@@ -2626,6 +2668,7 @@ PYTHON_FINDING_PROFILES = {
  'core/artifacts/internal/store/fs_other_boundary_test.go',
  'core/artifacts/internal/store/hardening_unix_test.go',
  'core/artifacts/internal/store/io_fault.go',
+ 'core/artifacts/internal/store/io_fault_native.go',
  'core/artifacts/internal/store/io_linux_test.go',
  'core/artifacts/internal/store/io_windows_test.go',
  'core/artifacts/internal/store/journal_contract_boundary_test.go',
@@ -3527,8 +3570,18 @@ def recovery_runtime_component(cases):
     )
 
 
-# Per-cell meanings come from the software48 Recovery tested.json semantic mapping.
-RECOVERY_TRANSITION_CASES = {
+# The transitions use the software48 Recovery semantic mapping. The scenario
+# additionally requires the original corruption, readback, and capacity cases.
+RECOVERY_RUNTIME_CASES = {
+    "scenario:SEQ-11": (
+        "test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_crash_after_record_cannot_look_empty_and_explicit_repair_recovers",
+        "test_missing_index_without_journal_preserves_records_for_explicit_recovery",
+        "test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_registration_capacity_preserves_unresolved_records_and_history",
+        "test_unavailable_target_readback_preserves_claim_and_never_repeats_effect",
+    ),
     "disposition:added_transitions:WR-01": (
         "test_process_crash_at_each_registration_commit_boundary",
         "test_scan_is_physically_readonly_and_registration_replay_is_exact",
@@ -3798,10 +3851,29 @@ def statusline_component(cases):
             "selectors": sorted(_statusline_test_id(name) for name in cases)}
 
 
+MEASUREMENT_FIXTURE_CASE = "MeasurementContracts.test_dirty_workflow_cannot_bind_measurement_evidence"
+MEASUREMENT_SCENARIO = "scenario:SEQ-26"
+MEASUREMENT_IDENTITY_FINDING = "disposition:findings:T-F03"
+
+
+def measurement_component(cases):
+    return source_component("hooks-single-owner-findings-v1", "tools/test_measurement_contracts.py",
+        "python-source-observations-", "Retain original Python source-test observations",
+        "python-finite-tf02-observation.json", cases)
+
+
 SOURCE_FINDING_COMPOSITIONS = {
+    MEASUREMENT_IDENTITY_FINDING: (measurement_component((MEASUREMENT_FIXTURE_CASE,)),),
+    MEASUREMENT_SCENARIO: (measurement_component((
+        MEASUREMENT_FIXTURE_CASE,
+        "MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+        "MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+        "MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+        *_ILLUSTRATION_FAILURE_CASES,
+    )),),
     **{cell: (statusline_component(cases),) for cell, cases in _STATUSLINE_CASES.items()},
     **{cell: (program_integrity_component(cases),) for cell, cases in PROGRAM_INTEGRITY_CASES.items()},
-    **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_TRANSITION_CASES.items()},
+    **{cell: (recovery_runtime_component(cases),) for cell, cases in RECOVERY_RUNTIME_CASES.items()},
     DEBUG_RESUBMISSION_FINDING: (
         source_component(DEBUG_LOCKED_PROFILE, DEBUG_HANDOFF_SUITE, "debug-reference-observation-",
             "Retain original locked debug reference observation", "debug-reference-observation.json", (
@@ -3956,9 +4028,7 @@ SOURCE_FINDING_COMPOSITIONS = {
             )),
     ),
     "scenario:SEQ-25": (
-        source_component("hooks-single-owner-findings-v1", "tools/test_measurement_contracts.py",
-            "python-source-observations-", "Retain original Python source-test observations",
-            "python-finite-tf02-observation.json", (
+        measurement_component((
                 "MeasurementContracts.test_empty_statusline_reports_cannot_pass",
                 "MeasurementContracts.test_unknown_statusline_scenario_is_rejected_before_measurement",
             )),
@@ -4080,9 +4150,12 @@ SOURCE_FINDING_COMPOSITIONS = {
 }
 
 
+SOURCE_FINDING_COMPOSITIONS[DEBUG_RESUBMISSION_SCENARIO] = SOURCE_FINDING_COMPOSITIONS[DEBUG_RESUBMISSION_FINDING]
+
+
 def source_finding_profiles(cells):
     readiness.require(isinstance(cells, list) and all(type(cell) is str and (cell in SOURCE_FINDING_COMPOSITIONS
-                                                                            or cell in RECOVERY_FINDING_CELLS) for cell in cells)
+                                                                            or cell in RECOVERY_COMPOSITION_CELLS) for cell in cells)
                       and cells == sorted(set(cells)), "invalid original source finding composition selection")
     return sorted({component["profile"] for cell in cells
                    for component in SOURCE_FINDING_COMPOSITIONS.get(cell, RECOVERY_COMPONENTS)})
@@ -4231,13 +4304,20 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
     statusline_cells = _STATUSLINE_CASES.keys() & set(cells)
     readiness.require(all(req["cell_jobs"].get(cell) == source_profile(STATUSLINE_PROFILE)["job"]
                           for cell in statusline_cells), "statusline isolation route owner differs")
-    shared_cells = ((RECOVERY_TRANSITION_CASES.keys() | PROGRAM_INTEGRITY_CASES.keys()) & set(cells)) | statusline_cells
+    recovery_cells = RECOVERY_RUNTIME_CASES.keys() & set(cells)
+    readiness.require("scenario:SEQ-11" not in recovery_cells
+                      or req["cell_jobs"].get("scenario:SEQ-11") == source_profile(RECOVERY_RUNTIME_PROFILE)["job"],
+                      "workflow recovery scenario route owner differs")
+    shared_cells = recovery_cells | (PROGRAM_INTEGRITY_CASES.keys() & set(cells)) | statusline_cells
     selectors_by_profile, shared_evidence = {}, {}
     for cell in shared_cells:
         component, = SOURCE_FINDING_COMPOSITIONS[cell]
         selectors_by_profile.setdefault(component["profile"], set()).update(component["selectors"])
     for cell in cells:
-        if cell in RECOVERY_FINDING_CELLS:
+        if cell in RECOVERY_COMPOSITION_CELLS:
+            if cell == RECOVERY_INTERRUPTION_SCENARIO:
+                readiness.require(req["cell_jobs"].get(cell) == source_profile(RECOVERY_RUNTIME_PROFILE)["job"],
+                                  "workflow recovery scenario route owner differs")
             if recovery is None:
                 recovery, recovery_payloads = workflow_recovery_evidence(req, run, artifacts, jobs)
                 payloads.update(recovery_payloads)
@@ -4267,8 +4347,9 @@ def source_finding_evidence(req, artifacts, jobs, *, run=None, producing=False):
                               and capture_member not in capture_members,
                               "original shared observation archive member is ambiguous or repeated")
             capture_members.add(capture_member)
+        three_owner_cells = (CATALOG_FINDING_CELL, DEBUG_RESUBMISSION_FINDING, DEBUG_RESUBMISSION_SCENARIO)
         identities = readiness.bounded_payload_ids(sorted(artifact_id for _, artifact_id in owners.values()),
-                                                   limit=3 if cell in (CATALOG_FINDING_CELL, DEBUG_RESUBMISSION_FINDING) else 2)
+                                                   limit=3 if cell in three_owner_cells else 2)
         expected_jobs = {source_profile(profile)["job"] for profile in owners}
         readiness.require(len({job_id for job_id, _ in owners.values()}) == len(expected_jobs),
                           "original source profiles require their exact owning jobs")
@@ -4930,7 +5011,7 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
                 "a composed cell also has a direct report selection")
         expected.difference_update(composed)
     require(expected, "job has no required mapped cells")
-    require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_FINDING_CELLS}),
+    require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_COMPOSITION_CELLS}),
             "composed source findings require all original owners and components")
     selected_groups = [g for g in groups if g["job"] == job_name and expected.intersection(g["cells"])]
     require({cell for g in selected_groups for cell in g["cells"]} == expected,

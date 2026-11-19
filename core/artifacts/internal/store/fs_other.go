@@ -3,10 +3,12 @@
 package store
 
 import (
-	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
+	"errors"
 	"os"
 	"runtime"
 	"time"
+
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 )
 
 type FS struct {
@@ -26,6 +28,17 @@ var Backend = "unsupported-" + runtime.GOOS
 func unsupported() error {
 	return fault.New("UNSUPPORTED_PLATFORM", unsupportedPlatformMessage(runtime.GOOS))
 }
+
+func operationalIOKind(err error) string {
+	switch {
+	case errors.Is(err, os.ErrPermission):
+		return "EACCES"
+	case errors.Is(err, os.ErrClosed):
+		return "IO_FAILURE"
+	}
+	return ""
+}
+
 func Open(root string) (*FS, error)                    { return nil, unsupported() }
 func (f *FS) Close() error                             { return nil }
 func (f *FS) Lock(bool, time.Duration) (func(), error) { return nil, unsupported() }

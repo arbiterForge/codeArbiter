@@ -59,6 +59,41 @@ def identity(binary: Path, root: Path, artifact: str) -> dict:
     return ok(binary, root, "identity", {"artifact_id": artifact})
 
 
+def legacy_retirement_preview(old: Path, current: Path, root: Path) -> dict:
+    plan_file = root / ".codearbiter/plans/flow.html"
+    original = identity(old, root, "PLAN-FLOW")
+    retired = ok(old, root, "apply", {
+        "artifact_id": "PLAN-FLOW", "operation_id": "legacy-retirement-0001",
+        "expected": {key: original[key] for key in ("revision", "model_sha256")},
+        "changes": [
+            {"op": "record.update", "symbol": "CP-01", "fields": {"tasks": ["T-001"]}},
+            {"op": "record.retire", "symbol": "T-002", "reason": "Superseded using the historical client."},
+        ],
+    })
+    before = plan_file.read_bytes()
+    preimage = hashlib.sha256(before).hexdigest()
+    request = {"native_retirement": {"artifact_id": "PLAN-FLOW", "expected_bytes_sha256": preimage}}
+    preview = ok(current, root, "migration-preview", request)
+    assert preview["manifest"]["source"]["schema_version"] == "0.3.2"
+    assert preview["manifest"]["source"]["bytes_sha256"] == preimage
+    assert preview["manifest"]["unclassified_history"] == [
+        {"id": "T-002", "reported_check_count": 0, "scope_baseline_retained": False},
+    ]
+    assert plan_file.read_bytes() == before
+
+    ok(current, root, "apply", {
+        "artifact_id": "PLAN-FLOW", "operation_id": "independent-edit-0001",
+        "expected": {key: retired[key] for key in ("revision", "model_sha256")},
+        "changes": [{"op": "record.update", "symbol": "T-001", "fields": {"title": "Independent edit"}}],
+    })
+    after = plan_file.read_bytes()
+    assert after != before
+    refuse(current, root, "migration-preview", request, "STALE_PREVIEW")
+    assert plan_file.read_bytes() == after
+    return {"legacy_html_sha256": preimage, "preview_sha256": preview["preview_sha256"],
+            "independent_edit_sha256": hashlib.sha256(after).hexdigest()}
+
+
 def exercise(old: Path, current: Path, old_schema: str = "0.3.1",
              candidate_schema: str = "0.3.2", progress_upgrade: bool = False) -> dict:
     # The probe proves an *upgrade* boundary. Equal versions cannot exercise
@@ -294,6 +329,10 @@ def exercise(old: Path, current: Path, old_schema: str = "0.3.1",
                 assert (restored_root / ".codearbiter" / saved.relative_to(backup)).read_bytes() == saved.read_bytes()
         assert plan_file.read_bytes() == after_later_edit, "restore discarded newer work"
 
+        legacy_preview = None
+        if retirement_upgrade and old_schema == "0.3.2":
+            legacy_preview = legacy_retirement_preview(old, current, restored_root)
+
         return {
             "old_sha256": hashlib.sha256(old.read_bytes()).hexdigest(),
             "candidate_sha256": hashlib.sha256(current.read_bytes()).hexdigest(),
@@ -314,6 +353,7 @@ def exercise(old: Path, current: Path, old_schema: str = "0.3.1",
             "complete_store_restore_readable_by_old_client": True,
             "restore_retains_user_stop_and_all_saved_bytes": True,
             "latest_revision": newer["revision"],
+            **({"legacy_retirement_preview": legacy_preview} if legacy_preview is not None else {}),
         }
 
 

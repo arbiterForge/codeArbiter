@@ -4578,5 +4578,95 @@ class BreakingChangeRealHistoryClassificationTest(unittest.TestCase):
         self.assertTrue(headline["breaking"])
 
 
+
+class GeneratedOwnerArchiveJourneyTest(unittest.TestCase):
+    def test_edited_owner_facts_and_shared_hook_bytes_reach_all_three_archived_hosts(self):
+        """Regenerate actual copied owners, then read only committed install roots."""
+        import contextlib
+        root=Path(tempfile.mkdtemp(prefix='ca-owner-archive-')).resolve(strict=True)
+        self.addCleanup(_force_rmtree,str(root))
+        for relative in ('core/surface','core/pysrc'):
+            shutil.copytree(Path(REPO_ROOT)/relative,root/relative)
+        for relative in ('core/hosts.json','LICENSE','THIRD_PARTY_NOTICES.md'):
+            target=root/relative;target.parent.mkdir(parents=True,exist_ok=True)
+            target.write_bytes((Path(REPO_ROOT)/relative).read_bytes())
+        def load(name,relative):
+            spec=importlib.util.spec_from_file_location(name,Path(REPO_ROOT)/relative)
+            module=importlib.util.module_from_spec(spec);spec.loader.exec_module(module)
+            return module
+        surface=load('seq29_surface_owner','tools/build-surface.py')
+        sync=load('seq29_sync_owner','tools/sync-core.py')
+        sync.REPO=str(root);sync.CORE=str(root/'core/pysrc')
+        catalog_guard=load('seq29_catalog_guard','.github/scripts/check_command_catalog.py')
+        def sync_run(arguments):
+            with contextlib.redirect_stdout(io.StringIO()),contextlib.redirect_stderr(io.StringIO()):
+                return sync.main(arguments)
+        self.assertEqual(sync_run([]),0)
+        self.assertGreater(surface.write_all(str(root)),0)
+        self.assertEqual(surface.check_all(str(root)),[])
+        self.assertEqual(catalog_guard.check(root),[])
+        self.assertEqual(sync_run(['--check']),0)
+        _git(['init','-q'],str(root))
+        _git(['config','maintenance.autoDetach','false'],str(root))
+        _git(['config','core.autocrlf','false'],str(root))
+        _git(['add','--','core','plugins','LICENSE','THIRD_PARTY_NOTICES.md'],str(root))
+        _git(['commit','-qm','owned pre-edit generated baseline'],str(root))
+        owner=root/'core/surface/skills/release/SKILL.md'
+        original=owner.read_text(encoding='utf-8')
+        old_hint='[target] | --dry-run';new_hint='[seq29-target] | --dry-run'
+        self.assertIn('argument-hint: "'+old_hint+'"',original)
+        changed=original.replace('argument-hint: "'+old_hint+'"','argument-hint: "'+new_hint+'"')
+        changed+='\nSEQ-29 owned release instruction.\n'
+        _write_text(str(owner),changed)
+        old_catalog=(root/'plugins/ca/COMMANDS.md').read_bytes()
+        lenses=root/'core/surface/skills/tribunal/references/lenses'
+        old_lenses={p.name for p in lenses.glob('*.md')}
+        new_lens=lenses/'seq29-owned-fact.md'
+        self.assertFalse(new_lens.exists())
+        new_lens.write_bytes(b'# Owned sequence lens\n')
+        hook=root/'core/pysrc/_hooklib.py'
+        edited_hook=hook.read_bytes()+b'\n# SEQ-29 owned shared-hook byte fact.\n'
+        hook.write_bytes(edited_hook)
+        self.assertTrue(surface.check_all(str(root)),'owner edits were not detected before regeneration')
+        self.assertEqual(sync_run(['--check']),1,'shared hook edit was not detected before vendoring')
+        self.assertGreater(surface.write_all(str(root)),0)
+        self.assertEqual(sync_run([]),0)
+        self.assertEqual(surface.check_all(str(root)),[])
+        self.assertEqual(catalog_guard.check(root),[])
+        self.assertEqual(sync_run(['--check']),0)
+        regenerated=(root/'plugins/ca/COMMANDS.md').read_bytes()
+        self.assertTrue(old_catalog.replace(old_hint.replace('|',chr(92)+'|').encode(),
+                                              new_hint.replace('|',chr(92)+'|').encode())!=regenerated,
+                            'the independent lens owner edit was lost from the generated count')
+        _git(['add','--','core','plugins'],str(root))
+        _git(['commit','-qm','owned changed facts and regenerated outputs'],str(root))
+        # After commitment, a different mutable working-tree owner cannot become
+        # archive evidence for the committed generation.
+        _write_text(str(owner),'uncommitted owner must not leak into the archive\n')
+        for host,plugin,public,private in (
+            ('claude','plugins/ca','commands/release.md','skills/release/SKILL.md'),
+            ('codex','plugins/ca-codex','skills/ca-release/SKILL.md','routines/release/SKILL.md'),
+            ('pi','plugins/ca-pi','skills/ca-release/SKILL.md','routines/release/SKILL.md')):
+            with self.subTest(host=host):
+                installed=root/('archived-'+host)
+                materialize_plugin(str(root),str(installed),subpath=plugin)
+                for relative in (public,private):
+                    body=(installed/relative).read_text(encoding='utf-8')
+                    self.assertTrue('SEQ-29 owned release instruction.' in body,'archive public/private entry lost the changed owner instruction')
+                    self.assertTrue('argument-hint: "'+new_hint+'"' in body,'archive entry lost the changed owner argument hint')
+                    self.assertTrue('uncommitted owner' not in body,'archive read uncommitted owner bytes')
+                    self.assertTrue('{{FACT:' not in body,'archive contains an unresolved fact token')
+                self.assertTrue((installed/'hooks/_hooklib.py').read_bytes()==edited_hook,
+                                'archive shared helper differs from the changed owner bytes')
+                self.assertTrue((installed/'COMMANDS.md').read_bytes()==(root/plugin/'COMMANDS.md').read_bytes(),
+                                'archive catalog differs from the committed generated output')
+                self.assertNotIn('{{FACT:',(installed/'COMMANDS.md').read_text(encoding='utf-8'))
+                card_root=installed/('skills/tribunal/references/lenses' if host=='claude'
+                                    else 'routines/tribunal/references/lenses')
+                self.assertEqual({p.name for p in card_root.glob('*.md')},old_lenses|{new_lens.name})
+                self.assertEqual((card_root/new_lens.name).read_bytes(),b'# Owned sequence lens\n')
+                self.assertFalse((installed/'.git').exists())
+
+
 if __name__ == "__main__":
     unittest.main()

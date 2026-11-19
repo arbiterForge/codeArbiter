@@ -4,13 +4,18 @@ package operations
 // Transition rows: N06:03, N06:04, N04:02, N04:03, N13:01.
 
 import (
+	"bytes"
+	"maps"
 	"os"
 	"path/filepath"
 	"strings"
 	"testing"
 
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/canonical"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/fault"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/model"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/render"
+	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/testutil"
 	"github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate"
 )
 
@@ -147,8 +152,12 @@ func TestRetiringCheckpointKeepsScopeBaseline(t *testing.T) {
 	}
 	stone := model.M(model.A(norm["retired_symbols"])[len(model.A(norm["retired_symbols"]))-1])
 	delete(stone, "original_kind")
-	if es := validateStructural(next.Data); len(es) == 0 {
-		t.Fatal("an untyped legacy tombstone was trusted to own a scope baseline")
+	if es := validateStructural(next.Data); len(es) != 0 {
+		t.Fatalf("unclassified legacy scope history could not be preserved: %v", es)
+	}
+	stone["original_kind"] = "tasks"
+	if es := validateStructural(next.Data); len(es) == 0 || es[0].Code != "ORPHAN_STATE" {
+		t.Fatalf("a known task tombstone owned a checkpoint baseline: %v", es)
 	}
 }
 
@@ -166,8 +175,14 @@ func TestUntypedTombstoneDoesNotOwnHistory(t *testing.T) {
 	legacy, _ := d.Clone()
 	stone := tombstone(legacy, "T-002")
 	delete(stone, "original_kind")
-	if es := validateStructural(legacy.Data); len(es) == 0 || es[0].Code != "ORPHAN_STATE" {
-		t.Fatalf("task-looking ID prefix was trusted as typed ownership: %v", es)
+	if es := validateStructural(legacy.Data); len(es) != 0 {
+		t.Fatalf("unclassified command history could not be preserved: %v", es)
+	}
+	orphaned, _ := legacy.Clone()
+	checks := model.M(model.M(orphaned.Data["execution"])["task_check_observations"])
+	checks["T-MISSING"] = checks["T-002"]
+	if es := validateStructural(orphaned.Data); len(es) == 0 || es[0].Code != "ORPHAN_STATE" {
+		t.Fatalf("command history without a known tombstone was accepted: %v", es)
 	}
 	old, _ := d.Clone()
 	old.Data["schema_version"] = "0.3.2"
@@ -206,5 +221,174 @@ func TestRetirementKindMustNameAnActualCollection(t *testing.T) {
 	})
 	if es := validateStructural(d.Data); len(es) == 0 {
 		t.Fatal("a typed tombstone accepted an invented record collection")
+	}
+}
+
+func oldRetirementFixture(t *testing.T, attachedHistory bool) (*assistiveFixture, *model.Document, []byte) {
+	t.Helper()
+	seed := newAssistiveFixture(t)
+	seed.mutate("task-check", reportedCommand("pass", true))
+	if attachedHistory {
+		check := reportedCommand("fail", true)
+		check["task"] = "T-002"
+		seed.mutate("task-check", check)
+	}
+	if _, err := retireT002(seed); err != nil {
+		t.Fatal(err)
+	}
+	legacy := seed.doc("PLAN-EXAMPLE")
+	delete(tombstone(legacy, "T-002"), "original_kind")
+	legacy.Data["schema_version"] = model.SchemaVersion
+	if attachedHistory {
+		legacy.Norm()["retired_symbols"] = append(model.A(legacy.Norm()["retired_symbols"]), object{
+			"id": "CP-OLD", "retired_in_revision": legacy.Revision(), "reason": "Historical scope.",
+			"replacement_ref": nil,
+		})
+		model.M(model.M(legacy.Data["execution"])["scopes"])["CP-OLD"] = object{
+			"base_input_sha256": strings.Repeat("a", 64), "plan_sha256": legacy.NormHash(),
+		}
+	}
+	legacy, err := model.Seal(legacy.Data)
+	if err != nil {
+		t.Fatal(err)
+	}
+	planBytes, err := render.Render(legacy)
+	if err != nil {
+		t.Fatal(err)
+	}
+	specBytes, err := os.ReadFile(filepath.Join(seed.root, ".codearbiter", "specs", "example.html"))
+	if err != nil {
+		t.Fatal(err)
+	}
+
+	// Carry only the portable legacy documents into a fresh owned store.
+	// The typed seed's journal and before-images are deliberately absent.
+	f := &assistiveFixture{t: t, root: testutil.Root(t)}
+	planPath := filepath.Join(f.root, ".codearbiter", "plans", "example.html")
+	for p, data := range map[string][]byte{
+		planPath: planBytes, filepath.Join(f.root, ".codearbiter", "specs", "example.html"): specBytes,
+	} {
+		if err := os.MkdirAll(filepath.Dir(p), 0755); err != nil {
+			t.Fatal(err)
+		}
+		if err := os.WriteFile(p, data, 0644); err != nil {
+			t.Fatal(err)
+		}
+	}
+	f.call("init-store", object{})
+	return f, legacy, planBytes
+}
+
+func TestLegacyRetirementAmbiguityDoesNotBlockIndependentWork(t *testing.T) {
+	f, legacy, planBytes := oldRetirementFixture(t, false)
+	planPath := filepath.Join(f.root, ".codearbiter", "plans", "example.html")
+	current := f.call("read", object{"artifact_id": legacy.ID(), "mode": "exact", "symbol": "T-002"})
+	if _, typed := model.M(current["record"])["original_kind"]; typed || current["reported_checks"] != nil {
+		t.Fatal("old task-looking ID acquired live historical ownership")
+	}
+	if _, err := f.request("task-start", f.mutation(legacy.ID(), object{"task": "T-002"})); fault.Code(err) != "UNKNOWN_TASK" {
+		t.Fatalf("untyped tombstone acquired live task authority: %v", err)
+	}
+	before, err := os.ReadFile(planPath)
+	if err != nil || !bytes.Equal(before, planBytes) {
+		t.Fatalf("inspection or refused work changed the legacy plan: %v", err)
+	}
+	if _, err := f.request("task-start", f.mutation(legacy.ID(), object{"task": "T-001"})); err != nil {
+		t.Fatalf("unrelated current task could not start while the old history remains unclassified: %v", err)
+	}
+	next := f.doc(legacy.ID())
+	history := func(d *model.Document) any {
+		return model.M(model.M(d.Data["execution"])["task_check_observations"])["T-001"]
+	}
+	if _, typed := tombstone(next, "T-002")["original_kind"]; typed || !equalValue(history(legacy), history(next)) ||
+		state(next, "T-001")["state"] != "IN_PROGRESS" {
+		t.Fatal("independent work changed the old tombstone, existing check history or the live task outcome")
+	}
+}
+
+func TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift(t *testing.T) {
+	for _, tc := range []struct {
+		name    string
+		history bool
+	}{{"old-tombstone", false}, {"retained-unclassified-history", true}} {
+		t.Run(tc.name, func(t *testing.T) {
+			f, legacy, planBytes := oldRetirementFixture(t, tc.history)
+			preimage := canonical.BytesHash(planBytes)
+			request := object{"native_retirement": object{
+				"artifact_id": legacy.ID(), "expected_bytes_sha256": preimage,
+			}}
+			treeBefore := descriptorEffectSnapshot(t, f.root)
+			preview := f.call("migration-preview", request)
+			manifest := model.M(preview["manifest"])
+			source := model.M(manifest["source"])
+			if manifest["format"] != "codearbiter.native-retirement-preview/1" ||
+				source["artifact_id"] != legacy.ID() || source["path"] != ".codearbiter/plans/example.html" ||
+				source["bytes_sha256"] != preimage || source["model_sha256"] != legacy.Hash() ||
+				source["normative_sha256"] != legacy.NormHash() || source["schema_version"] != model.SchemaVersion {
+				t.Fatalf("preview lost the exact selected legacy source: %v", manifest)
+			}
+			wantHistory := []any{object{"id": "T-002", "reported_check_count": int64(0), "scope_baseline_retained": false}}
+			if tc.history {
+				wantHistory = []any{
+					object{"id": "CP-OLD", "reported_check_count": int64(0), "scope_baseline_retained": true},
+					object{"id": "T-002", "reported_check_count": int64(1), "scope_baseline_retained": false},
+				}
+			}
+			hash, err := canonical.Hash(manifest)
+			if err != nil || preview["preview_sha256"] != hash || !equalValue(manifest["unclassified_history"], wantHistory) {
+				t.Fatalf("preview did not bind the unresolved history as historical: %v", manifest)
+			}
+			current := f.call("read", object{"artifact_id": legacy.ID(), "mode": "exact", "symbol": "T-002"})
+			if current["history_classification"] != "unclassified" || current["reported_checks"] != nil ||
+				!equalValue(current["record"], tombstone(legacy, "T-002")) {
+				t.Fatalf("ordinary exact read classified retained history as task proof: %v", current)
+			}
+			if _, err := f.request("task-context", object{"artifact_id": legacy.ID(), "task": "T-002", "model_sha256": legacy.Hash()}); fault.Code(err) != "UNKNOWN_TASK" {
+				t.Fatalf("unclassified tombstone became current task proof: %v", err)
+			}
+			if _, err := f.request("migration-apply", request); err == nil {
+				t.Fatal("read-only native preview request was admitted to apply")
+			}
+			mixed := object{"native_retirement": request["native_retirement"], "spec": object{}}
+			if _, err := f.request("migration-preview", mixed); fault.Code(err) != "INVALID_MODEL" || fault.Public(err).Field != "/spec" {
+				t.Fatalf("mixed preview lost the closed native shape diagnostic: %v", err)
+			}
+			if !maps.Equal(descriptorEffectSnapshot(t, f.root), treeBefore) {
+				t.Fatal("preview, exact read or refused apply changed the source store")
+			}
+
+			f.mutate("task-start", object{"task": "T-001"})
+			after := f.doc(legacy.ID())
+			original := model.M(legacy.Data["execution"])
+			settled := model.M(after.Data["execution"])
+			if !equalValue(original["task_check_observations"], settled["task_check_observations"]) ||
+				!equalValue(original["scopes"], settled["scopes"]) ||
+				!equalValue(legacy.Norm()["retired_symbols"], after.Norm()["retired_symbols"]) {
+				t.Fatal("unrelated current work changed unclassified history")
+			}
+			treeAfter := descriptorEffectSnapshot(t, f.root)
+			if _, err := f.request("migration-preview", request); fault.Code(err) != "STALE_PREVIEW" ||
+				!maps.Equal(descriptorEffectSnapshot(t, f.root), treeAfter) {
+				t.Fatalf("preview accepted stale original bytes or modified the valid edit: %v", err)
+			}
+			path := filepath.Join(f.root, ".codearbiter", "plans", "example.html")
+			bytesAfter, err := os.ReadFile(path)
+			if err != nil {
+				t.Fatal(err)
+			}
+			viewDrift := bytes.Replace(bytesAfter, []byte("<main class="), []byte("<main data-unrelated=\"drift\" class="), 1)
+			if bytes.Equal(bytesAfter, viewDrift) {
+				t.Fatal("fixture did not introduce unrelated HTML drift")
+			}
+			if err := os.WriteFile(path, viewDrift, 0644); err != nil {
+				t.Fatal(err)
+			}
+			driftTree := descriptorEffectSnapshot(t, f.root)
+			model.M(request["native_retirement"])["expected_bytes_sha256"] = canonical.BytesHash(viewDrift)
+			if _, err := f.request("migration-preview", request); fault.Code(err) != "RENDER_DRIFT" ||
+				!maps.Equal(descriptorEffectSnapshot(t, f.root), driftTree) {
+				t.Fatalf("preview admitted or changed unrelated view drift: %v", err)
+			}
+		})
 	}
 }

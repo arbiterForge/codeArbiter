@@ -38,11 +38,11 @@
  */
 import { createRunDirectory, refIdentity, repositoryIdentity, writeEffect, recoverReceipt, type FarmEffect } from "./farm-recovery.ts";
 import { parseArtifactReleaseManifest } from './artifact-manifest.ts';
-import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, unlink, stat, lstat, realpath, rename, open, type FileHandle } from "node:fs/promises";
+import { readFile, writeFile, appendFile, mkdir, mkdtemp, chmod, rm, rmdir, unlink, stat, lstat, realpath, rename, open, access, type FileHandle } from "node:fs/promises";
 import { constants as fsConstants } from "node:fs";
 import { createHash, randomBytes } from "node:crypto";
 import { spawn, spawnSync, type ChildProcessWithoutNullStreams } from "node:child_process";
-import { realpathSync } from "node:fs";
+import { existsSync, realpathSync } from "node:fs";
 import path from "node:path";
 import { tmpdir } from "node:os";
 import { fileURLToPath } from "node:url";
@@ -394,12 +394,72 @@ async function windowsPinGuard(binary: InstalledArtifactBinary): Promise<ChildPr
   return guard;
 }
 
+const GIT_CONFIG_READ_ENV = new Set([
+  "SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH",
+  "APPDATA", "LOCALAPPDATA", "XDG_CONFIG_HOME", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_SYSTEM",
+  "GIT_CONFIG_NOSYSTEM",
+]);
+
+// Like the Python bridge, resolve Git outside the governed checkout and pass
+// its absolute identity and the effective ignore-file path to the pinned engine.
+export async function artifactGitEnvironment(root: string): Promise<Record<string, string>> {
+  const physicalRoot = await realpath(root);
+  const boundaries = [physicalRoot];
+  for (let directory = path.dirname(physicalRoot); directory !== path.dirname(directory); directory = path.dirname(directory)) {
+    if (existsSync(path.join(directory, ".git"))) boundaries.push(directory);
+  }
+  const outside = (file: string) => boundaries.every((boundary) => {
+    const relative = path.relative(boundary, file);
+    return relative === ".." || relative.startsWith(".." + path.sep) || path.isAbsolute(relative);
+  });
+  const configured = process.env.CODEARBITER_GIT_EXECUTABLE;
+  const executable = process.platform === "win32" ? "git.exe" : "git";
+  const candidates = configured ? [configured] : (process.env.PATH ?? "").split(path.delimiter)
+    .filter((directory) => path.isAbsolute(directory)).map((directory) => path.join(directory, executable));
+  for (const candidate of candidates) {
+    if (!path.isAbsolute(candidate) || !outside(candidate)) continue;
+    let git: string;
+    try {
+      git = await realpath(candidate);
+      if (!outside(git) || !(await stat(git)).isFile()) continue;
+      await access(git, fsConstants.X_OK);
+    } catch {
+      continue;
+    }
+    const environment: Record<string, string> = { CODEARBITER_GIT_EXECUTABLE: git };
+    const defaultIgnore = process.env.XDG_CONFIG_HOME
+      ? path.join(process.env.XDG_CONFIG_HOME, "git", "ignore") : "~/.config/git/ignore";
+    const configEnv = Object.fromEntries(Object.entries(process.env)
+      .filter(([name]) => GIT_CONFIG_READ_ENV.has(name.toUpperCase())));
+    const result = spawnSync(git, [
+      "--no-lazy-fetch", "--no-optional-locks", "-C", physicalRoot,
+      "-c", "core.fsmonitor=false", "-c", "protocol.allow=never",
+      "config", "--null", "--path", "--default", defaultIgnore, "--get", "core.excludesFile",
+    ], { cwd: physicalRoot, env: configEnv, maxBuffer: 4096, timeout: 5_000 });
+    const raw = result.stdout;
+    if (result.status === 0 && raw && raw.length > 1 && raw.indexOf(0) === raw.length - 1) {
+      try {
+        const configuredIgnore = new TextDecoder("utf-8", { fatal: true }).decode(raw.subarray(0, -1));
+        const ignore = path.resolve(physicalRoot, configuredIgnore);
+        environment.GIT_CONFIG_COUNT = "1";
+        environment.GIT_CONFIG_KEY_0 = "core.excludesFile";
+        environment.GIT_CONFIG_VALUE_0 = await realpath(ignore).catch(() => ignore);
+      } catch {
+        // Unreadable ignore metadata does not supply an authoritative override.
+      }
+    }
+    return environment;
+  }
+  throw new Error("Farm artifact verification requires an absolute host Git executable outside the repository");
+}
+
 async function runPinnedArtifact(binary: InstalledArtifactBinary, root: string, request: string) {
+  const environment = await artifactGitEnvironment(root);
   if (process.platform === "win32") {
     const guard = await windowsPinGuard(binary);
     try {
       return spawnSync(binary.path, ["farm-verify", "--root", root, "--request", "-"], {
-        input: request, encoding: "utf8", env: {}, timeout: 30_000, maxBuffer: ARTIFACT_MAX_RESPONSE,
+        input: request, encoding: "utf8", env: environment, timeout: 30_000, maxBuffer: ARTIFACT_MAX_RESPONSE,
       });
     } finally {
       await releaseWindowsPinGuard(guard);
@@ -434,7 +494,7 @@ async function runPinnedArtifact(binary: InstalledArtifactBinary, root: string, 
       staged = undefined;
       await chmod(directory, 0o500);
       return spawnSync(executable, ["farm-verify", "--root", root, "--request", "-"], {
-        input: request, encoding: "utf8", env: {}, timeout: 30_000, maxBuffer: ARTIFACT_MAX_RESPONSE,
+        input: request, encoding: "utf8", env: environment, timeout: 30_000, maxBuffer: ARTIFACT_MAX_RESPONSE,
       });
     } finally {
       await staged?.close().catch(() => undefined);
@@ -444,7 +504,7 @@ async function runPinnedArtifact(binary: InstalledArtifactBinary, root: string, 
   }
   const descriptorPath = "/proc/self/fd/3";
   return spawnSync(descriptorPath, ["farm-verify", "--root", root, "--request", "-"], {
-    input: request, encoding: "utf8", env: {}, timeout: 30_000,
+    input: request, encoding: "utf8", env: environment, timeout: 30_000,
     maxBuffer: ARTIFACT_MAX_RESPONSE, stdio: ["pipe", "pipe", "pipe", binary.handle.fd],
   });
 }

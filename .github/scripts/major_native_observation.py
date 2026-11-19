@@ -1099,6 +1099,8 @@ _WINDOWS_CONTEXT_ASSERTIONS = (
             "disposition:findings:N-F01",
             "disposition:transitions:N16:04",
             "disposition:transitions:N21:01",
+            "scenario:SEQ-03",
+            "task:NT-02",
         ),
         (
             "contextdocument:TestStoredPreviewContractRejectsMalformedRecords",
@@ -1239,6 +1241,7 @@ _WINDOWS_WORK_ASSERTIONS = (
         (
             "disposition:findings:N-F10",
             "disposition:transitions:N06:03",
+            "scenario:SEQ-06",
         ),
         (
             "operations:TestInterruptedRetirementRecoversExactly",
@@ -1527,6 +1530,101 @@ RECIPES.update({
 })
 
 
+# The discovery suite is joined to terminal dispatch witnesses for all 80
+# operations. Standalone export is observed on the original Linux suite.
+RECIPES["scenario:SEQ-04"] = {
+    "linux/amd64": ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+                    for name in ("TestLegacyCaptureRefusalMatchesDiscoveryDescriptor",
+                                 "TestRebrandAndStandaloneExport")],
+    "windows/amd64": ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+                      for name in (
+                          "TestAllOperationSchemasClosed",
+                          "TestApprovalDescriptorsCoverActualEffects",
+                          "TestAuthorizedFarmEnrichment",
+                          "TestBrownfieldCandidatesAreNotPublished",
+                          "TestCapabilitiesAdvertiseVersionedOperationContract",
+                          "TestConcurrentReadersPreserveAdmission",
+                          "TestConcurrentReadersPreserveWriterRetry",
+                          "TestContextAuthorityExactPreviewFixture",
+                          "TestContextFinalizationReceiptOnlyApply",
+                          "TestContextWholeDocumentOnboardingFinalization",
+                          "TestCycleViewGroupsCanonicalWorkWithoutCopyingIt",
+                          "TestKnowledgeContextBoundsOmissionMetadata",
+                          "TestKnowledgeCutoverPagesLargeSectionInventory",
+                          "TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs",
+                          "TestMigrationPairAndRollback",
+                          "TestN01AdmissionHasNoRepositoryEffects",
+                          "TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+                          "TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+                          "TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+                          "TestNT01BaselineOrdinaryWorkKeepsReportedFailuresExplicit",
+                          "TestOperationDescriptorTraitsAreClosedAndHonest",
+                          "TestOperationDescriptorsPreserveLegacySetsAndAdvertiseRepairApply",
+                          "TestOperationRegistryReverseClosure",
+                          "TestProjectViewPresentsBoundedCanonicalWork",
+                          "TestProtocolDocumentListsEveryOperation",
+                          "TestReadOnlyInitializedStoreObservations",
+                          "TestRepairIsDiscoverableAppliedAndReplayed",
+                          "TestTrackerCoordinationT01FiniteOptInMap",
+                          "TestTrackerCoordinationT04ProjectObservationAndMergeFence",
+                          "TestTypedRecordReorder",
+                          "TestWorkAdoptSharedOriginDistinctRows",
+                          "TestWorkOriginsFindsArchivedIdentityInOneBoundedRead",
+                          "TestWorkProjectEffectPreservesIssueAndScopesRetry",
+                          "TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict",
+                      )],
+}
+
+
+RECIPES["scenario:SEQ-07"] = {
+    "windows/amd64": sorted(set(RECIPES["disposition:findings:N-F03"]["windows/amd64"]) |
+                            set(RECIPES["disposition:findings:N-F04"]["windows/amd64"]))
+}
+RECIPES["scenario:SEQ-08"] = {
+    platform: ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:"
+               "TestScopedConflictPreservesIndependentWorkAfterJournalRecovery"]
+    for platform in _PROGRESS_PLATFORMS
+}
+RECIPES["task:NT-03"] = copy.deepcopy(RECIPES["scenario:SEQ-04"])
+RECIPES["task:NT-05"] = {
+    platform: ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+               for name in (
+                   "TestInterruptedRetirementRecoversExactly",
+                   "TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift",
+                   "TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift/old-tombstone",
+                   "TestLegacyNativeRetirementPreviewBindsPreimageAndRefusesDrift/retained-unclassified-history",
+                   "TestLegacyRetirementAmbiguityDoesNotBlockIndependentWork",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/complete",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/independent-edit",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/rollback",
+                   "TestReceiptedCheckpointRetirementRecoversWithoutLosingHistory/staging",
+                   "TestRetirementKindMustNameAnActualCollection",
+                   "TestRetiringCheckedTaskKeepsTypedHistory",
+                   "TestRetiringCheckpointKeepsScopeBaseline",
+                   "TestRetiringCriterionKeepsNestedCollectionKinds",
+               )]
+    for platform in _PROGRESS_PLATFORMS
+}
+RECIPES["task:NT-06"] = {
+    platform: sorted(set(RECIPES["disposition:findings:N-F05"][platform]) |
+                     set(RECIPES["disposition:findings:N-F07"][platform]))
+    for platform in _PROGRESS_PLATFORMS
+}
+RECIPES["task:NT-07"] = {
+    "windows/amd64": ["go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:" + name
+                      for name in (
+                          "TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence",
+                          "TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence/failed",
+                          "TestHistoricalWorkCheckStatusRemainsReadableWithoutEvidence/passed",
+                          "TestNoOperationRequestCanSetWorkCheckStatus",
+                          "TestWorkAdoptJournalsBoardCutoverAndReplays",
+                          "TestWorkLifecycleNeverManufacturesCheckStatus",
+                          "TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue",
+                      )],
+}
+
+
 def selected_recipes(cells):
     import major_readiness as owner
     owner.require(isinstance(cells, list) and len(cells) <= len(RECIPES)
@@ -1540,6 +1638,14 @@ def launch_finding_selection(value):
     import major_readiness as owner
     owner.require(isinstance(value, list) and value == ['disposition:findings:HOOK-F04'],
                   'invalid launch binding finding selection')
+    return value
+
+
+def launch_scenario_selection(value):
+    """SEQ-05 uses the complete original Python/npm/native launch carrier."""
+    import major_readiness as owner
+    owner.require(isinstance(value, list) and value == ['scenario:SEQ-05'],
+                  'invalid launch binding scenario selection')
     return value
 
 
@@ -1576,10 +1682,20 @@ def runtime_requirements(req):
                       and not launch_findings.intersection(req.get('source_dispositions', {}))
                       and all(jobs[cell] == 'major qualification / native' for cell in launch_findings),
                       'launch finding requires the original HW04 source and native authority')
-    consumed = set(recipes) | launch_cells | launch_findings
+    launch_scenarios = set()
+    if 'launch_binding_scenarios' in req:
+        launch_scenarios = set(launch_scenario_selection(req['launch_binding_scenarios']))
+        owner.require('task:HW-04' in launch_cells
+                      and launch_scenarios < set(cells)
+                      and not launch_scenarios.intersection(recipes)
+                      and not launch_scenarios.intersection(req.get('source_dispositions', {}))
+                      and all(jobs[cell] == 'major qualification / native' for cell in launch_scenarios),
+                      'launch scenario requires the original HW04 source and native authority')
+    consumed = set(recipes) | launch_cells | launch_findings | launch_scenarios
     return {**{key: value for key, value in req.items()
                if key not in ('native_compositions', 'native_module_sha256',
-                              'launch_binding_tasks', 'launch_binding_inputs', 'launch_binding_findings')},
+                              'launch_binding_tasks', 'launch_binding_inputs', 'launch_binding_findings',
+                              'launch_binding_scenarios')},
             'cells': [cell for cell in cells if cell not in consumed],
             'cell_jobs': {cell: job for cell, job in jobs.items() if cell not in consumed}}
 
@@ -1681,7 +1797,7 @@ def admit(req, artifacts, jobs, *, run=None, producing=False):
             recipes['task:' + task] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
         # A finding reuses the same complete original native consumers and the
         # same mandatory sidecars below; it never adds another test execution.
-        for cell in req.get('launch_binding_findings', []):
+        for cell in req.get('launch_binding_findings', []) + req.get('launch_binding_scenarios', []):
             recipes[cell] = {platform: launch.selectors(platform) for platform in sorted(binding_owner.PLATFORMS)}
     platforms = sorted({platform for recipe in recipes.values() for platform in recipe})
     components = {platform: _component(req, run, artifacts, jobs, platform) for platform in platforms}

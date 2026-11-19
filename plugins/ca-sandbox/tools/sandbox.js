@@ -1304,8 +1304,10 @@ function boundedRefs(label, refs) {
 }
 function formatTeardownDiagnostic(verb, r) {
   if (!teardownIncomplete(r)) return "";
+  const observationIncomplete = r.failureCount > r.failures.length || r.failures.some((f) => f.op === "list-containers" || f.op === "list-volumes");
+  const remaining = observationIncomplete ? "Resource observation was incomplete." : `${r.remainingContainers.length} container(s) and ${r.remainingVolumes.length} volume(s) still present.`;
   const lines = [
-    `sandbox ${verb}: teardown INCOMPLETE \u2014 ${r.failureCount} docker operation(s) failed; ${r.remainingContainers.length} container(s) and ${r.remainingVolumes.length} volume(s) still present.`
+    `sandbox ${verb}: teardown INCOMPLETE \u2014 ${r.failureCount} docker operation(s) failed; ${remaining}`
   ];
   for (const f of r.failures) lines.push(`  ${f.op} ${f.ref}: docker exit ${f.code}: ${f.message}`);
   if (r.failureCount > r.failures.length)

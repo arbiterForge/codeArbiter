@@ -16,8 +16,58 @@ import { removeWorktreeVerified, deleteBranchVerified, runExitCode, newRunArtifa
 import { projectPlanMetaForReport, noteArtifactError, noteUnavailableDiff, MAX_RECORDED_ARTIFACT_ERRORS } from "./farm.ts";
 import { scrubbedEnv, treeKill, taskkillPath } from "./exec.ts";
 import type { RunResult } from "./exec.ts";
-import { spawn } from "node:child_process";
+import { spawn, execFileSync } from "node:child_process";
 import { mutationCheck as realMutationCheck } from "./mutation.ts";
+
+describe("native Farm Git environment", () => {
+  it("passes only the selected host Git and the repository's effective ignore file", async () => {
+    const root = await mkdtemp(path.join(tmpdir(), "ca-farm-git-env-"));
+    try {
+      vi.stubEnv("CODEARBITER_GIT_EXECUTABLE", undefined);
+      const git = (await farmAPI.artifactGitEnvironment(root)).CODEARBITER_GIT_EXECUTABLE;
+      expect(path.isAbsolute(git)).toBe(true);
+      execFileSync(git, ["init", "-q"], { cwd: root, windowsHide: true });
+      const ignore = path.join(root, "owned-ignore");
+      await fsWriteFile(ignore, "ignored.txt\n");
+      execFileSync(git, ["config", "--local", "core.excludesFile", "owned-ignore"], { cwd: root, windowsHide: true });
+      vi.stubEnv("CODEARBITER_GIT_EXECUTABLE", git);
+      vi.stubEnv("GIT_DIR", path.join(root, "unavailable-external-context"));
+      vi.stubEnv("FARM_API_KEY", "synthetic-test-value");
+      expect(await farmAPI.artifactGitEnvironment(root)).toEqual({
+        CODEARBITER_GIT_EXECUTABLE: git,
+        GIT_CONFIG_COUNT: "1",
+        GIT_CONFIG_KEY_0: "core.excludesFile",
+        GIT_CONFIG_VALUE_0: realpathSync.native(ignore),
+      });
+    } finally {
+      vi.unstubAllEnvs();
+      await fsRm(root, { recursive: true, force: true });
+    }
+  });
+
+  it("refuses a relative override instead of selecting a different Git", async () => {
+    try {
+      vi.stubEnv("CODEARBITER_GIT_EXECUTABLE", "git");
+      await expect(farmAPI.artifactGitEnvironment(process.cwd())).rejects.toThrow(/outside the repository/);
+    } finally {
+      vi.unstubAllEnvs();
+    }
+  });
+
+  it("refuses a Git override inside an enclosing repository", async () => {
+    const parent = await mkdtemp(path.join(tmpdir(), "ca-farm-git-boundary-"));
+    const root = path.join(parent, "project");
+    try {
+      await fsMkdir(root);
+      await fsMkdir(path.join(parent, ".git"));
+      vi.stubEnv("CODEARBITER_GIT_EXECUTABLE", path.join(parent, "git"));
+      await expect(farmAPI.artifactGitEnvironment(root)).rejects.toThrow(/outside the repository/);
+    } finally {
+      vi.unstubAllEnvs();
+      await fsRm(parent, { recursive: true, force: true });
+    }
+  });
+});
 
 describe("Windows artifact executable pin guard", () => {
   it("allows a cold native PowerShell startup on slower Windows hosts", () => {

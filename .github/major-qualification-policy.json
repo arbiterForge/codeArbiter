@@ -155,13 +155,32 @@
     "installed:sandbox:docker": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
     "scenario:SEQ-01": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "scenario:SEQ-03": "major qualification / native",
+    "scenario:SEQ-04": "major qualification / native",
+    "scenario:SEQ-05": "major qualification / native",
+    "scenario:SEQ-06": "major qualification / native",
+    "scenario:SEQ-07": "major qualification / native",
+    "scenario:SEQ-08": "major qualification / native",
+    "scenario:SEQ-09": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "scenario:SEQ-10": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+    "scenario:SEQ-11": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+    "scenario:SEQ-15": "Coverage union (Pi)  <os: windows-latest>",
     "scenario:SEQ-17": "[CHECK] | [CA  ] | Farm dispatcher contract",
+    "scenario:SEQ-18": "[CHECK] | [CA  ] | Farm dispatcher contract",
+    "scenario:SEQ-19": "[CHECK] | [SBX ] | Sandbox driver contract",
+    "scenario:SEQ-20": "[CHECK] | [SBX ] | Sandbox driver contract",
     "scenario:SEQ-21": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: isolation>",
     "scenario:SEQ-22": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-23": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-25": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "scenario:SEQ-26": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-27": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "scenario:SEQ-28": "Site | [Build] - Astro Pages",
+    "task:BUILD-G01": "major qualification / generated-build",
+    "task:NT-03": "major qualification / native",
+    "task:NT-05": "major qualification / native",
+    "task:NT-06": "major qualification / native",
+    "task:NT-07": "major qualification / native",
     "task:P-01": "[CHECK] | [REPO] | Impact planner contract",
     "task:P-00": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
     "task:Q-02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
@@ -173,6 +192,7 @@
     "disposition:findings:C-F06": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:findings:C-F07": "[CHECK] | [REPO] | Impact planner contract",
     "disposition:findings:T-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+    "disposition:findings:T-F03": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:findings:HOOK-F02": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
     "disposition:machines:S65": "Site | [Test] - Generator",
     "disposition:transitions:S65:01": "Site | [Test] - Generator",
@@ -315,6 +335,7 @@
     "disposition:findings:HOOK-F05",
     "disposition:findings:SF13",
     "disposition:findings:SF14",
+    "disposition:findings:T-F03",
     "disposition:findings:W-F02",
     "disposition:findings:W-F04",
     "disposition:findings:W-F08",
@@ -329,10 +350,14 @@
     "disposition:transitions:hooks:statusline-wiring:07",
     "scenario:SEQ-01",
     "scenario:SEQ-02",
+    "scenario:SEQ-09",
+    "scenario:SEQ-10",
+    "scenario:SEQ-11",
     "scenario:SEQ-21",
     "scenario:SEQ-22",
     "scenario:SEQ-23",
     "scenario:SEQ-25",
+    "scenario:SEQ-26",
     "scenario:SEQ-27",
     "task:P-00",
     "task:P-01"
@@ -456,7 +481,17 @@
     "disposition:transitions:N37:01",
     "disposition:transitions:N38:01",
     "disposition:transitions:N38:04",
-    "disposition:transitions:N38:05"
+    "disposition:transitions:N38:05",
+    "scenario:SEQ-03",
+    "scenario:SEQ-04",
+    "scenario:SEQ-06",
+    "scenario:SEQ-07",
+    "scenario:SEQ-08",
+    "task:NT-02",
+    "task:NT-03",
+    "task:NT-05",
+    "task:NT-06",
+    "task:NT-07"
   ],
   "native_launch_binding_tasks": [
     "HW-04",
@@ -464,5 +499,14 @@
   ],
   "native_launch_binding_findings": [
     "disposition:findings:HOOK-F04"
+  ],
+  "native_launch_binding_scenarios": [
+    "scenario:SEQ-05"
+  ],
+  "build_generation_tasks": [
+    "BUILD-G01"
+  ],
+  "pi_author_scenarios": [
+    "scenario:SEQ-12"
   ]
 }

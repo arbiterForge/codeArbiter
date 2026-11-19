@@ -13,7 +13,7 @@ CAP = 4 * 1024 * 1024
 BODY_SECONDS = 90
 REQUEST_CAP = 1024 * 1024
 PROFILE = "trusted-host-exact-operation-v1"
-PROVIDER_RECORDS = 12
+PROVIDER_RECORDS = 13
 INSPECTION_ROLES = ("backend-author", "coverage-auditor")
 INSPECTION_REDACTION = "[REDACTED — secret-pattern match removed before transmission]"
 EFFECT_COUNTS = ("requested", "completed", "failed", "refused", "unknown", "unsettled", "containmentUnverified")
@@ -66,10 +66,13 @@ def sha(value):
 def operations(nonce):
     require(type(nonce) is str and re.fullmatch(r"[0-9a-f]{16}", nonce), "fixture-nonce")
     path = "effect-" + nonce + ".txt"
+    expected = "after-" + nonce
+    marker = "command-" + nonce
+    verify = f'test "$(<{path})" = "{expected}" && printf "{marker}\\n" >> {marker}.txt'
     return [
         {"tool": "write", "params": {"path": path, "content": "before-" + nonce}},
         {"tool": "edit", "params": {"path": path, "edits": [{"oldText": "before-" + nonce, "newText": "after-" + nonce}]}},
-        {"tool": "bash", "params": {"command": "printf 'command-" + nonce + "\\n' >> command-" + nonce + ".txt", "timeout": 15}},
+        {"tool": "bash", "params": {"command": verify, "timeout": 15}},
     ]
 
 def declined_write(nonce):
@@ -233,7 +236,10 @@ class InspectionChain:
 class ProviderProtocol:
     """One original author and a bounded inspection chain share the original fixture endpoint."""
     def __init__(self, nonce):
-        self.ops = [*operations(nonce), declined_write(nonce)]
+        write, edit, verify = operations(nonce)
+        read = {"tool": "read", "params": {"path": write["params"]["path"]}}
+        self.ops = [write, read, edit, verify, declined_write(nonce)]
+        self.author_read = None
         self.nonce = nonce
         self.parent_call_id = "fixture-parent-" + nonce
         self.parent_turns = 0
@@ -295,7 +301,14 @@ class ProviderProtocol:
             require(self.parent_turns == 1, "parent-before-child")
             require(self.child_turns <= len(self.ops), "child-turn-cap")
             if self.child_turns:
-                require(results and results[-1].get("tool_call_id") == "fixture-child-" + str(self.child_turns - 1) + "-" + self.nonce, "child-result")
+                previous = self.child_turns - 1
+                call_id = "fixture-child-" + str(previous) + "-" + self.nonce
+                require(results and results[-1].get("tool_call_id") == call_id, "child-result")
+                if self.ops[previous]["tool"] == "read":
+                    content = results[-1].get("content")
+                    require(content == "before-" + self.nonce, "author-read-result")
+                    self.author_read = {"tool_call_id": call_id, "path": self.ops[previous]["params"]["path"],
+                                        "content_sha256": sha(content.encode())}
             else:
                 require(not results, "child-start")
             if self.child_turns == len(self.ops):
@@ -724,7 +737,7 @@ def run(config, *, authenticated_payloads):
             after_payload = {role:cold.physical_members(Path(config[name]))["members"] for role,name in (("promoted-stage","stage"),("release-packages","packages"))}
             owner.save(output/"input-after.json",{"source":after_source,"runtime":after_runtime,"graph":after_graph,"installed":after_installed,"payloads":after_payload})
             outcome.update(actual_case="executed",process=actual,prompts=gate.events,provider=protocol.records,
-                           declined_result=protocol.declined_result,
+                           declined_result=protocol.declined_result, author_read=protocol.author_read,
                            inspection_turn=None if protocol.inspection is None else protocol.inspection.turn,
                            consumed_payloads=consumed,source_before=before_source,source_after=after_source,runtime_before=before_runtime,runtime_after=after_runtime,
                            admitted_graph_before=before_graph,admitted_graph_after=after_graph,installed_before=before_installed,installed_after=after_installed,
@@ -734,7 +747,8 @@ def run(config, *, authenticated_payloads):
             owner.save(output/"original-outcome.json",outcome)
             require(actual["returncode"] == 0 and actual["exit_key_sent"] and not actual["forced_cleanup"]
                     and len(gate.events) == len(gate.ops) and gate.events[-1].get("decision") == "declined"
-                    and protocol.complete and len(protocol.records) == PROVIDER_RECORDS and not protocol.failed,
+                    and protocol.complete and protocol.author_read is not None
+                    and len(protocol.records) == PROVIDER_RECORDS and not protocol.failed,
                     "parent-or-protocol-incomplete")
             require(before_source==after_source and before_runtime==after_runtime and before_graph==after_graph
                     and before_installed==after_installed and physical==after_payload,"input-drift")

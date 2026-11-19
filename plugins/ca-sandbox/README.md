@@ -13,9 +13,9 @@ It is independent of `ca`: CI is path-scoped and versions bump per-plugin.
 
 Docker with a reachable daemon (`docker info`) and Node 20.6+ are required. An already installed nixpacks (host or existing Windows WSL bridge) is preferred. The fallback supports Node/Python dependencies. The reviewed Nixpacks profile selects Node/Python plus Go (`go.mod`) and bounded non-workspace Rust (`Cargo.toml`) explicitly. Go/Rust use the existing digest-pinned build image as their runtime image and retain all source files; every generated external image reference is checked. Fixed Go/Rust manifests and optional config/toolchain files must be owned regular UTF-8 files, at most 1 MiB each, with safe ancestors. Rust `Cargo.toml` containing the literal `workspace` or any backslash is conservatively unsupported, including escaped/complex workspace spellings; this admission check is not a TOML parser. Go command metadata is bounded and checked. These controls do not claim a reproducible Nix/package dependency closure. It refuses project `nixpacks.toml`/`nixpacks.json`, an existing `.nixpacks` output tree or `.ca-sandbox.nixpacks.Dockerfile` before generation, preserving those paths. Custom Nixpacks configurations and other provider stacks are unsupported. Without nixpacks the packaged Dockerfile fallback supports Node/Python dependencies. The driver never installs host tooling. Consumer projects need no maintainer spike notes or ADR files.
 
-## Security model — the load-bearing invariant
+## Runtime isolation
 
-Untrusted code in the box **cannot reach the host filesystem**. Enforced structurally:
+The driver starts the box without host bind mounts or a Docker socket. Its runtime controls include:
 
 - No bind mounts (the mount builder rejects any bind spec); the repo lives on a **named volume** at
   `/work/repo`, deps out-of-tree at `/deps`.
@@ -27,13 +27,15 @@ pull). The container is never given any path back into the host.
 
 ## Commands
 
+Replace `<plugin root>` with the installed ca-sandbox plugin directory. Run the bundled driver with Node:
+
 ```
-sandbox create <url> [--net offline|clone-then-cut|allowlist]
-sandbox shell <id> [--shell sh|bash]
-sandbox exec <id> -- <cmd> [args...]
-sandbox cp <id>:<containerPath> <hostDest>
-sandbox destroy <id> [--keep-volume]
-sandbox prune
+node "<plugin root>/tools/sandbox.js" create <url> [--net offline|clone-then-cut|allowlist]
+node "<plugin root>/tools/sandbox.js" shell <id> [--shell sh|bash]
+node "<plugin root>/tools/sandbox.js" exec <id> -- <cmd> [args...]
+node "<plugin root>/tools/sandbox.js" cp <id>:<containerPath> <hostDest>
+node "<plugin root>/tools/sandbox.js" destroy <id> [--keep-volume]
+node "<plugin root>/tools/sandbox.js" prune
 ```
 
 State is label-only: the set of sandboxes IS the set of docker objects labeled `ca.sandbox=1`
@@ -53,12 +55,13 @@ The clone lives on a named volume. Build copies it into a temporary host build-c
 
 V2 cache tags are `ca-sbx:v2-<sha256>`, independent of the temporary checkout basename. The key includes manifest/lockfile content, effective builder/version, Docker target platform and build templates/options. Reuse verifies the cache-key label and immutable image ID. Old cache tags remain intact. Dependencies install at `/deps` with `NODE_PATH`/`PYTHONPATH` so the source volume at `/work/repo` does not shadow them.
 
-## `--with-claude` (Claude Code inside the box)
+## Claude inside a separate box
 
-Runs Claude Code inside the container, authenticated via an env-injected `CLAUDE_CODE_OAUTH_TOKEN`
-(no host bind of `~/.claude`; session persisted on a named volume). **Caveat:** a token inside a box
-running untrusted code is exfiltrable over any egress, so `--with-claude` defaults to offline /
-Anthropic-domains-only and never co-mounts the token volume with an untrusted-code run.
+For an explicitly requested Claude-inside session, follow the packaged
+[sandbox-claude-inside](skills/sandbox-claude-inside/SKILL.md) instructions.
+That routine uses `tools/claude-inside.js` with an environment-injected
+`CLAUDE_CODE_OAUTH_TOKEN` and a dedicated home volume. It defaults to offline
+and keeps the token volume separate from untrusted repository runs.
 
 ## Development
 

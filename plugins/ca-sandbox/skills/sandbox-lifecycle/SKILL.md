@@ -15,7 +15,9 @@ Docker and Node 20.6+ are prerequisites. Probe an already installed nixpacks on 
 
 Ordinary sandbox runtime is offline. `offline` is the default; requests named `clone-then-cut` or `allowlist` currently also resolve to offline runtime because the ordinary runner has no networked policy enabled. Report requested and effective policy separately. The experimental network-plan helper is not an integrated ordinary-create allowlist. Never claim that requesting an allowlist enables it, or expand network access to make a failed command work.
 
-`--with-claude` is a separate routine using `tools/claude-inside.js` and the sibling `sandbox-claude-inside` skill. Ordinary `sandbox create` has no such flag.
+For an explicitly requested Claude-inside session, use the packaged
+[sandbox-claude-inside](../sandbox-claude-inside/SKILL.md) skill and its separate
+`tools/claude-inside.js` entry point.
 
 ## Create
 

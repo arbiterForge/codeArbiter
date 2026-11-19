@@ -1,7 +1,11 @@
 import * as fs from 'node:fs';
-import { mkdtemp, mkdir, readFile, readdir, rm, symlink, writeFile } from 'node:fs/promises';
-import { join } from 'node:path';
+import { mkdtemp, mkdir, readFile, readdir, realpath, lstat, rm, symlink, writeFile } from 'node:fs/promises';
+import { join, relative, isAbsolute, sep } from 'node:path';
 import { tmpdir } from 'node:os';
+import { pathToFileURL, fileURLToPath } from 'node:url';
+import { createMarkdownProcessor } from '@astrojs/markdown-remark';
+import { extractHookGates } from './generator/extract-hook-gates';
+import { buildEventMap, renderHooksReference } from './generator/render-hooks-reference';
 import { afterEach, describe, expect, it, vi } from 'vitest';
 import * as pagefind from 'pagefind';
 import { buildSearchIndex, completePagefind, validateSearchFiles, writeSearchFiles } from './pagefind-build';
@@ -178,6 +182,96 @@ describe('complete search bundle publication', () => {
     expect(text).toContain('search');
     expect((await import('node:child_process')).spawnSync(process.execPath, ['--check', '--input-type=module'], { input: text }).status).toBe(0);
   });
+
+  it('carries an actual edited hook owner fact through generated Docs and the shipped search reader', async () => {
+    const directory = await realpath(await fixture());
+    const hooks = join(directory, 'hooks');
+    await mkdir(hooks);
+    const original = await readFile(new URL('../../core/pysrc/git-enforce.py', import.meta.url), 'utf8');
+    const events = JSON.parse(await readFile(new URL('../../plugins/ca/hooks/hooks.json', import.meta.url), 'utf8'));
+    const updated = original.replace('branch state could not be determined', 'sequenceorchid branch state could not be determined');
+    expect(updated).not.toBe(original);
+    const markdown = await createMarkdownProcessor({ syntaxHighlight: false });
+    const emitted = [];
+    for (const [name, source] of [['before', original], ['after', updated]]) {
+      await writeFile(join(hooks, 'git-enforce.py'), source);
+      const { callSites, skipped } = extractHookGates(hooks);
+      const document = renderHooksReference(callSites, buildEventMap(events), '0.0.0-fixture', 'main', skipped);
+      const html = await markdown.render(document);
+      const output = join(directory, name);
+      await mkdir(output);
+      await writeFile(join(output, 'hooks-gates.md'), document);
+      await writeFile(join(output, 'index.html'), `<html lang="en"><head><title>Hook Gates</title></head><body><main data-pagefind-body>${html.code}</main></body></html>`);
+      const report = await buildSearchIndex(output);
+      expect(report.pageCount).toBe(1);
+      emitted.push({ document, output, report });
+    }
+    expect(emitted[0].document).not.toContain('sequenceorchid');
+    expect(emitted[1].document).toContain('sequenceorchid branch state could not be determined');
+    expect(emitted[1].document).toContain('bounded static scan');
+    expect(emitted[1].report.files.filter(file => file.path.endsWith('.pf_fragment')).map(file => file.sha256))
+      .not.toEqual(emitted[0].report.files.filter(file => file.path.endsWith('.pf_fragment')).map(file => file.sha256));
+    const originalFetch = globalThis.fetch;
+    let reads = 0;
+    let bytesRead = 0;
+    // The real generated JS/WASM reader consumes only this owned published
+    // bundle. No server, network, DOM or browser fixture is involved.
+    globalThis.fetch = async input => {
+      const url = new URL(input instanceof URL ? input.href : typeof input === 'string' ? input : input.url);
+      if (url.protocol !== 'file:') throw new Error('non-file search fetch refused');
+      const file = fileURLToPath(url);
+      const canonical = await realpath(file);
+      const rel = relative(directory, canonical);
+      const stat = await lstat(file);
+      if (rel === '..' || rel.startsWith(`..${sep}`) || isAbsolute(rel) || !stat.isFile() || stat.isSymbolicLink()
+          || stat.size > 4 * 1024 * 1024 || ++reads > 64 || (bytesRead += stat.size) > 16 * 1024 * 1024) {
+        throw new Error('foreign or unbounded search payload refused');
+      }
+      return new Response(new Uint8Array(await readFile(file)), { headers: {
+        'Content-Type': file.endsWith('.json') ? 'application/json' : 'application/octet-stream',
+      } });
+    };
+    try {
+      for (const [index, entry] of emitted.entries()) {
+        const url = pathToFileURL(join(entry.output, 'pagefind/pagefind.js'));
+        const api = await import(/* @vite-ignore */ url.href);
+        try {
+          await api.options({ basePath: new URL('./', url).href });
+          const results = await api.search('sequenceorchid');
+          expect(results.results).toHaveLength(index);
+          if (index === 1) {
+            const found = await results.results[0].data();
+            expect(found.content).toContain('sequenceorchid branch state could not be determined');
+          }
+        } finally { await api.destroy(); }
+      }
+      expect(reads).toBeGreaterThan(0);
+    } finally { globalThis.fetch = originalFetch; }
+  }, 15_000);
+  it('refuses pending Reference and Academy generation before Astro consumes generated pages', async () => {
+    const directory = fs.realpathSync(await fixture());
+    const source = join(directory, 'src');
+    await mkdir(source);
+    const handwritten = join(source, 'handwritten.md');
+    await writeFile(handwritten, 'owned handwritten fixture');
+    const gate = completePagefind().hooks['astro:config:done'];
+    if (!gate) throw new Error('Actual Astro configuration gate is unavailable');
+    const options = { config: { root: pathToFileURL(`${directory}/`) } } as Parameters<typeof gate>[0];
+    for (const namespace of ['reference', 'academy']) {
+      const marker = join(source, `.generated-${namespace}.lock`);
+      await writeFile(marker, 'owned interrupted publication fixture', { flag: 'wx' });
+      try {
+        expect(() => gate(options)).toThrow(`Incomplete or concurrent ${namespace} generation`);
+        expect(await readFile(handwritten, 'utf8')).toBe('owned handwritten fixture');
+        expect((await readdir(source)).sort()).toEqual([`.generated-${namespace}.lock`, 'handwritten.md'].sort());
+      } finally {
+        await rm(marker);
+      }
+    }
+    expect(() => gate(options)).not.toThrow();
+    expect(await readdir(source)).toEqual(['handwritten.md']);
+  });
+
   it('is wired to every Astro build instead of an optional postbuild command', async () => {
     expect(completePagefind().hooks['astro:build:done']).toBeTypeOf('function');
     const config = await readFile('astro.config.mjs', 'utf8');

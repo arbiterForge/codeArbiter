@@ -7,7 +7,9 @@ cooperative authority contract and do not qualify a model or promote --farm.
 
 from __future__ import annotations
 
+import argparse
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -19,14 +21,16 @@ import time
 import unittest
 from unittest import mock
 
+from _boundedproc import run as run_bounded
+from retained_archive_cli_observation import physical_members
 from test_artifact_authoring import (
     ArtifactError,
+    FixtureDirectory,
     WorkflowHarness,
     build_installation,
     canonical_hash,
     physical_test_directory,
 )
-
 
 REPO = Path(__file__).resolve().parents[2]
 
@@ -39,6 +43,53 @@ def canonical_bytes(value: object) -> bytes:
         sort_keys=True,
         separators=(",", ":"),
     ).encode("utf-8")
+
+
+def _project_fixture(harness: WorkflowHarness, projection: dict) -> dict:
+    plan = harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
+    spec = harness.client.call("identity", {"artifact_id": "SPEC-FLOW"})
+    snapshot = harness.client.call("snapshot", {"artifact_id": "PLAN-FLOW"})
+    task = harness.client.call(
+        "read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"}
+    )["record"]
+    definition = task["verification"][0]
+    base_sha256 = hashlib.sha256(canonical_bytes(projection)).hexdigest()
+    authorization = harness.capture(
+        "PLAN-FLOW",
+        "CP-01",
+        "farm_authorization",
+        "user_workflow",
+        "approved",
+        {
+            "format": "codearbiter.farm-authorization/0.1.0",
+            "input_sha256": snapshot["sha256"],
+            "spec_sha256": spec["normative_sha256"],
+            "plan_sha256": plan["normative_sha256"],
+            "scope": "CP-01",
+            "base_sha256": base_sha256,
+            "red_evidence": [
+                {
+                    "source_task": "T-001",
+                    "farm_task": "t-001",
+                    "test_path": "src/config.py",
+                    "definition_sha256": canonical_hash(definition),
+                    "command": "python -m unittest -v tests.test_config",
+                    "exit": 1,
+                    "stdout_sha256": hashlib.sha256(b"synthetic RED").hexdigest(),
+                    "stderr_sha256": hashlib.sha256(b"").hexdigest(),
+                }
+            ],
+        },
+    )
+    return harness.mutate(
+        "farm-project",
+        "PLAN-FLOW",
+        scope="CP-01",
+        slice=["T-001"],
+        target=".codearbiter/plans/flow.plan.json",
+        projection=projection,
+        receipt=authorization,
+    )
 
 
 def cleanup_installation(owner: tempfile.TemporaryDirectory) -> None:
@@ -177,51 +228,7 @@ class ArtifactFarmTest(unittest.TestCase):
         }
 
     def project(self) -> dict:
-        projection = self.projection()
-        plan = self.harness.client.call("identity", {"artifact_id": "PLAN-FLOW"})
-        spec = self.harness.client.call("identity", {"artifact_id": "SPEC-FLOW"})
-        snapshot = self.harness.client.call("snapshot", {"artifact_id": "PLAN-FLOW"})
-        task = self.harness.client.call(
-            "read", {"artifact_id": "PLAN-FLOW", "symbol": "T-001", "mode": "exact"}
-        )["record"]
-        definition = task["verification"][0]
-        base_sha256 = hashlib.sha256(canonical_bytes(projection)).hexdigest()
-        authorization = self.harness.capture(
-            "PLAN-FLOW",
-            "CP-01",
-            "farm_authorization",
-            "user_workflow",
-            "approved",
-            {
-                "format": "codearbiter.farm-authorization/0.1.0",
-                "input_sha256": snapshot["sha256"],
-                "spec_sha256": spec["normative_sha256"],
-                "plan_sha256": plan["normative_sha256"],
-                "scope": "CP-01",
-                "base_sha256": base_sha256,
-                "red_evidence": [
-                    {
-                        "source_task": "T-001",
-                        "farm_task": "t-001",
-                        "test_path": "src/config.py",
-                        "definition_sha256": canonical_hash(definition),
-                        "command": "python -m unittest -v tests.test_config",
-                        "exit": 1,
-                        "stdout_sha256": hashlib.sha256(b"synthetic RED").hexdigest(),
-                        "stderr_sha256": hashlib.sha256(b"").hexdigest(),
-                    }
-                ],
-            },
-        )
-        return self.harness.mutate(
-            "farm-project",
-            "PLAN-FLOW",
-            scope="CP-01",
-            slice=["T-001"],
-            target=".codearbiter/plans/flow.plan.json",
-            projection=projection,
-            receipt=authorization,
-        )
+        return _project_fixture(self.harness, self.projection())
 
     def test_projection_binding_and_canary_preflight(self) -> None:
         projected = self.project()
@@ -428,5 +435,236 @@ import(process.argv[1])
         self.assertFalse((self.root / ".farm").exists())
 
 
+PACKAGE_MANIFEST = "helpers/artifacts/release.json"
+PACKAGE_FARM = "tools/farm.js"
+PACKAGE_BRIDGE = "hooks/_artifactlib.py"
+PACKAGE_DOCTOR = "hooks/doctor.py"
+
+_INSTALLED_BRIDGE_AND_DOCTOR = """
+import json
+from pathlib import Path
+import sys
+
+plugin, project = map(Path, sys.argv[1:])
+sys.path.insert(0, str(plugin / "hooks"))
+from _artifactlib import ArtifactClient, ArtifactError
+import doctor
+
+try:
+    capability = ArtifactClient(project, plugin / "helpers/artifacts").call("capabilities")
+    bridge = {"platform": capability.get("platform"),
+              "repository_operations_available": capability.get("repository_operations_available")}
+except ArtifactError as error:
+    bridge = {"error": error.code}
+doctor.check_artifact_capability(str(plugin), str(project))
+print(json.dumps({"bridge": bridge, "doctor": doctor.results}))
+"""
+
+_INSTALLED_FARM = """
+import { pathToFileURL } from "node:url";
+const [, , bundle, plan, digest] = process.argv;
+const farm = await import(pathToFileURL(bundle).href);
+try {
+  console.log(JSON.stringify(await farm.verifyFarmArtifactBoundary(plan, "canary", digest)));
+} catch (error) {
+  console.log(JSON.stringify({ error: error.message.slice(0, 512) }));
+}
+"""
+
+
+def _package_probe(argv, root, env, *, timeout=30):
+    completed = run_bounded(argv, timeout=timeout, cwd=root, env=env, stdin=subprocess.DEVNULL)
+    if completed.returncode != 0 or completed.timed_out or completed.containment != "exited" or completed.stderr:
+        raise AssertionError("installed package probe failed: " + (completed.stderr or completed.stdout)[-400:])
+    return completed.stdout
+
+
+def replay_installed_package_identity(plugin: Path, *, expected_members: dict[str, str],
+                                      platform: str, node: Path, git: Path) -> dict:
+    """Use one verified extracted Claude package and an owned synthetic typed plan.
+
+    The caller owns production cohort authentication and extraction. No runtime
+    installation, Farm dispatch, provider, or repository code is called.
+    """
+    for runtime in (node, git):
+        if not runtime.is_absolute() or runtime.resolve(strict=True) != runtime or not runtime.is_file():
+            raise AssertionError("installed package probe needs absolute physical runtimes")
+    before = physical_members(plugin)["members"]
+    if before != expected_members or not {PACKAGE_MANIFEST, PACKAGE_FARM, PACKAGE_BRIDGE, PACKAGE_DOCTOR} <= before.keys():
+        raise AssertionError("installed Claude package differs from the authenticated cohort")
+    installer_path = REPO / "tools/install-artifact-payload.py"
+    loader = importlib.util.spec_from_file_location("farm_fixture_artifact_installer", installer_path)
+    installer = importlib.util.module_from_spec(loader)
+    loader.loader.exec_module(installer)
+    manifest, _ = installer.load_payload(plugin / "helpers/artifacts")
+    release = json.loads(manifest)
+    if platform not in release.get("context_qualification", {}):
+        raise AssertionError("installed manifest lacks the qualified platform")
+    if hashlib.sha256(manifest).hexdigest() != before[PACKAGE_MANIFEST]:
+        raise AssertionError("installed manifest bytes changed after cohort admission")
+    binary_sha256 = release["binaries"][platform]["sha256"]
+
+    with FixtureDirectory(prefix="ca-farm-package-identity-") as temporary:
+        owned = physical_test_directory(temporary)
+        supported = plugin
+        if os.name != "nt":
+            supported = owned / "installed"
+            shutil.copytree(
+                plugin, supported,
+                ignore=lambda path, _names: {"artifacts"} if Path(path) == plugin / "helpers" else set(),
+            )
+            installer.install_payload(owned, "installed", plugin / "helpers/artifacts")
+            if physical_members(supported)["members"] != before:
+                raise AssertionError("installer changed the verified package member bytes")
+        home = owned / "home"
+        home.mkdir()
+        project = owned / "project"
+        project.mkdir()
+        env = {name: os.environ[name] for name in ("SYSTEMROOT", "WINDIR") if name in os.environ}
+        env.update({name: str(home) for name in ("HOME", "USERPROFILE", "APPDATA", "LOCALAPPDATA",
+                    "XDG_CONFIG_HOME", "TEMP", "TMP", "TMPDIR")})
+        env.update(PATH=str(git.parent), CODEARBITER_GIT_EXECUTABLE=str(git), GIT_CONFIG_NOSYSTEM="1",
+                   GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT="0")
+        _package_probe([str(git), "init", "-q", "-b", "feature/package-identity-fixture"], project, env)
+        _package_probe([str(git), "-c", "user.name=Owned fixture", "-c", "user.email=fixture@example.invalid",
+                        "-c", "commit.gpgsign=false", "commit", "--allow-empty", "-qm", "Owned fixture"], project, env)
+        with mock.patch.dict(os.environ, env, clear=True):
+            harness = WorkflowHarness(project, supported / "helpers/artifacts")
+            harness.create_pair()
+            harness.approve_pair()
+            projection = _project_fixture(harness, ArtifactFarmTest.projection())
+        plan = project / projection["path"]
+        projection_sha256 = hashlib.sha256(plan.read_bytes()).hexdigest()
+        project_before = physical_members(project)["members"]
+
+        release["binaries"][platform]["sha256"] = "invalid-digest"
+        malformed = canonical_bytes(release)
+        release["binaries"][platform]["sha256"] = binary_sha256
+        release["format"] = "codearbiter.artifact-release/99.0.0"
+        controls = {
+            "unsupported": (canonical_bytes(release), "unsupported payload manifest",
+                            "UNSUPPORTED_VERSION", "artifact release manifest identity is unsupported"),
+            "malformed": (malformed, "payload bytes mismatch or unexpected native executable",
+                          "INVALID_INSTALLATION", "artifact release manifest binary entry is invalid"),
+        }
+        installations = {"supported": supported}
+        snapshots = {"supported": before}
+        for name, (control_manifest, installer_error, _, _) in controls.items():
+            control = owned / name
+            shutil.copytree(supported, control)
+            (control / PACKAGE_MANIFEST).write_bytes(control_manifest)
+            expected = {**before, PACKAGE_MANIFEST: hashlib.sha256(control_manifest).hexdigest()}
+            if physical_members(control)["members"] != expected:
+                raise AssertionError("invalid control differs outside its manifest")
+            try:
+                installer.load_payload(control / "helpers/artifacts")
+            except ValueError as error:
+                if str(error) != installer_error:
+                    raise
+            else:
+                raise AssertionError("installer admitted the " + name + " manifest")
+            installations[name] = control
+            snapshots[name] = expected
+
+        entry = owned / "farm-admission.mjs"
+        entry.write_text(_INSTALLED_FARM, encoding="utf-8")
+        observations = {}
+        for name, installed in installations.items():
+            bridge_doctor = _package_probe([sys.executable, "-I", "-B", "-X", "utf8", "-c", _INSTALLED_BRIDGE_AND_DOCTOR,
+                                            str(installed), str(project)], project, env)
+            farm = _package_probe([str(node), str(entry), str(installed / PACKAGE_FARM), str(plan), projection_sha256],
+                                  project, env, timeout=40)
+            observations[name] = {**json.loads(bridge_doctor), "farm": json.loads(farm)}
+        supported_result = observations["supported"]
+        if (supported_result["bridge"] != {"platform": platform, "repository_operations_available": True}
+                or supported_result["farm"] != {"typed": True}
+                or len(supported_result["doctor"]) != 2
+                or supported_result["doctor"][0][0] != "OK"
+                or "digest verified against the pinned release manifest" not in supported_result["doctor"][0][1]
+                or supported_result["doctor"][1] != ["OK", "HTML artifact catalog validates: 2 artifacts"]):
+            raise AssertionError("installed package admission differs: " + json.dumps(supported_result))
+        for name, (_, _, bridge_code, farm_error) in controls.items():
+            refused = observations[name]
+            if (refused["bridge"] != {"error": bridge_code}
+                    or refused["farm"] != {"error": farm_error}
+                    or len(refused["doctor"]) != 1
+                    or refused["doctor"][0][0] != "FAIL"
+                    or f"({bridge_code})" not in refused["doctor"][0][1]):
+                raise AssertionError("installed " + name + " manifest refusal differs: " + json.dumps(refused))
+        if (any(physical_members(installed)["members"] != snapshots[name]
+                for name, installed in installations.items())
+                or before != physical_members(plugin)["members"]
+                or project_before != physical_members(project)["members"]):
+            raise AssertionError("installed package or owned project changed during consumer readback")
+
+
+    return {"format": "codearbiter.installed-package-identity/1", "platform": platform,
+            "manifest_sha256": before[PACKAGE_MANIFEST], "farm_bundle_sha256": before[PACKAGE_FARM],
+            "bridge_sha256": before[PACKAGE_BRIDGE], "doctor_sha256": before[PACKAGE_DOCTOR],
+            "binary_sha256": binary_sha256, "projection_sha256": projection_sha256,
+            "installer_copied_payload": supported != plugin,
+            "unsupported_manifest_sha256": snapshots["unsupported"][PACKAGE_MANIFEST],
+            "malformed_manifest_sha256": snapshots["malformed"][PACKAGE_MANIFEST], "observations": observations}
+
+
+
+def observe_assembly() -> None:
+    """Replay the final Claude archive after the package assembly verifier passes."""
+    parser = argparse.ArgumentParser(description=observe_assembly.__doc__)
+    parser.add_argument("--installed-package-cohort", type=Path, required=True)
+    parser.add_argument("--promotion-receipt-sha256", required=True)
+    parser.add_argument("--receipt", type=Path, required=True)
+    args = parser.parse_args()
+    package_root = args.installed_package_cohort.resolve(strict=True)
+    cohort_bytes = (package_root / "artifact-package-cohort.json").read_bytes()
+    cohort = json.loads(cohort_bytes)
+    if (cohort["source_commit"], cohort["workflow"], cohort["run_id"],
+            cohort["promotion_receipt_sha256"]) != (
+            os.environ["GITHUB_SHA"], ".github/workflows/ci.yml", os.environ["GITHUB_RUN_ID"],
+            args.promotion_receipt_sha256,
+    ):
+        raise ValueError("package cohort identity differs from this assembly")
+
+    package = cohort["packages"]["claude"]
+    archive = package_root / package["file"]
+    if archive.resolve(strict=True) != archive or archive.parent != package_root:
+        raise ValueError("Claude archive must be a physical member of the verified cohort")
+    with archive.open("rb") as contents:
+        if hashlib.file_digest(contents, "sha256").hexdigest() != package["sha256"]:
+            raise ValueError("Claude archive bytes differ from the verified cohort")
+    node = Path(shutil.which("node")).resolve(strict=True)
+    git = Path(shutil.which("git")).resolve(strict=True)
+    package_tools = REPO / "tools" / "build-host-packages.py"
+    spec = importlib.util.spec_from_file_location("farm_assembly_package_tools", package_tools)
+    tools = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(tools)
+    prefix = "plugins/ca/"
+    members = {name.removeprefix(prefix): entry["sha256"]
+               for name, entry in package["members"].items() if name.startswith(prefix)}
+    with FixtureDirectory(prefix="ca-farm-assembly-") as temporary:
+        extracted = physical_test_directory(temporary) / "archive"
+        tools.extract_artifact_release_package(archive, extracted, host="claude")
+        observed = replay_installed_package_identity(
+            extracted / "plugins" / "ca", expected_members=members,
+            platform="linux/amd64", node=node, git=git,
+        )
+    receipt = {
+        **observed,
+        "source_commit": cohort["source_commit"],
+        "source_tree": cohort["source_tree"],
+        "workflow": cohort["workflow"],
+        "run_id": cohort["run_id"],
+        "run_attempt": os.environ["GITHUB_RUN_ATTEMPT"],
+        "promotion_receipt_sha256": cohort["promotion_receipt_sha256"],
+        "cohort_sha256": hashlib.sha256(cohort_bytes).hexdigest(),
+        "archive_sha256": package["sha256"],
+    }
+    with args.receipt.open("x", encoding="utf-8") as stream:
+        stream.write(json.dumps(receipt, indent=2, sort_keys=True) + "\n")
+
+
 if __name__ == "__main__":
-    unittest.main(verbosity=2)
+    if "--installed-package-cohort" in sys.argv:
+        observe_assembly()
+    else:
+        unittest.main(verbosity=2)

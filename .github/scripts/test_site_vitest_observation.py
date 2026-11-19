@@ -568,5 +568,344 @@ class OriginalDocsSourceTests(unittest.TestCase):
         self.assertIn('Retain numeric site coverage summary',job)
 
 
+
+    def generation_fixture(self):
+        self.assertTrue(callable(getattr(docs, 'build_generation_components', None)),
+                        'BUILD-G01 has no complete original component reader')
+        req = {**self.req, 'cells':[docs.BUILD_G01_CELL], 'task_ids':['Q-02','BUILD-G01'],
+               'cell_jobs':{docs.BUILD_G01_CELL:'major qualification / generated-build'},
+               'build_generation_tasks':['BUILD-G01'], 'build_generation_inputs':{
+                   docs.reports.SOURCE_PROFILE:'1'*64, 'hooks-single-owner-findings-v1':'2'*64}}
+        old = {r['id'] for r in self.observed['tests']}
+        for selector in docs.BUILD_G01_DOCS_SELECTORS:
+            if selector not in old:
+                self.observed['tests'].append({'id':selector,'result':'passed'})
+            self.values.setdefault(selector.split(':',2)[1], b'fixture source\n')
+        self.inputs = {p:{'bytes':len(raw),'sha256':owner.digest(raw)} for p,raw in self.values.items()}
+        self.manifest['inputs'] = self.inputs
+        self.manifest_raw = json.dumps(self.manifest).encode()
+        self.observed['source_manifest_sha256'] = owner.digest(self.manifest_raw)
+        self.source = self.archive({**self.values,docs.MANIFEST:self.manifest_raw})
+        self.refresh_summary(); self.refresh()
+        return req
+
+    def package_fixture(self):
+        import retained_archive_cli_observation as retained
+        from types import SimpleNamespace
+        req, run = self.req, self.original_core_run()
+        cohort = {'packages':{h:{'file':h+'.tar','version':'1.0.0','size':1,
+                                  'sha256':owner.digest(b'x')} for h in ('claude','codex','pi')}}
+        blobs = {'promoted-stage':{'artifact-promotion.json':b'{}'},
+                 'release-packages':{'artifact-package-cohort.json':json.dumps(cohort).encode(),
+                                      **{h+'.tar':b'x' for h in cohort['packages']}}}
+        raws, artifacts = {}, []
+        for identity,(role,(prefix,_)) in enumerate(docs.BUILD_PACKAGE_ROLES.items(),100):
+            raw = self.archive(blobs[role]); raws[identity] = raw
+            artifact = self.metadata(identity,prefix+req['source_commit'],raw)
+            artifact['workflow_run']['id'] = 7
+            artifacts.append(artifact)
+        job = {'id':71,'name':docs.BUILD_ASSEMBLY_JOB,'run_id':7,'head_sha':'a'*40,
+               'run_attempt':3,'status':'completed','conclusion':'success','steps':[
+                   {'name':step,'status':'completed','conclusion':'success',
+                    'started_at':STAMP,'completed_at':END} for _,step in docs.BUILD_PACKAGE_ROLES.values()]}
+        log = [STAMP+' ##[group]Run '+owner.UPLOAD_ACTION]
+        for a in artifacts:
+            log += [STAMP+' SHA256 digest of uploaded artifact is '+a['digest'][7:],
+                    STAMP+f" Artifact {a['name']} successfully finalized. Artifact ID {a['id']}"]
+        log = ('\n'.join(log)+'\n').encode()
+        roots = []
+        def verify(**kw):
+            self.assertTrue(kw['require_production'])
+            self.assertNotIn('npm_executable',kw)
+            self.assertEqual(kw['source_commit'],'a'*40)
+            self.assertEqual(kw['run_id'],'7')
+            self.assertEqual(kw['promotion_receipt_sha256'],owner.digest(b'{}'))
+            for role,root in (('promoted-stage',kw['stage']),('release-packages',kw['package_root'])):
+                roots.append(root)
+                for name,raw in blobs[role].items(): self.assertEqual((root/name).read_bytes(),raw)
+            return cohort
+        def api(path,binary=False):
+            if path.startswith('actions/artifacts/') and binary and int(path.split('/')[2]) in raws:
+                return raws[int(path.split('/')[2])]
+            if path=='actions/jobs/71/logs': return log
+            return self.api(path,binary)
+        return run, artifacts, job, api, mock.patch.object(retained,'_load_packager',
+            return_value=SimpleNamespace(verify_artifact_release_packages=verify)), roots
+
+    def test_build_g01_requires_a_complete_original_component_reader(self):
+        self.generation_fixture()
+        self.assertEqual([len(c['selectors']) for c in docs.build_generation_core_components()],[11,3,3])
+        self.assertEqual(len(docs.BUILD_G01_DOCS_SELECTORS),14)
+
+    def test_build_g01_authenticates_packages_through_the_production_verifier(self):
+        self.generation_fixture()
+        run, artifacts, job, api, verifier, roots = self.package_fixture()
+        with mock.patch.object(owner,'api',side_effect=api), verifier:
+            got = docs.authenticate_production_packages(self.req,run,artifacts,[job],repo=Path('.'))
+        self.assertEqual(set(got['packages']),{'claude','codex','pi'})
+        self.assertEqual({p['artifact_id'] for p in got['payloads'].values()},{100,101})
+        self.assertTrue(roots and all(not p.exists() for p in roots))
+
+    def test_build_g01_refuses_mixed_package_authority_and_uploads(self):
+        self.generation_fixture()
+        run, artifacts, job, api, verifier, _ = self.package_fixture()
+        vectors = []
+        for key,value in (('head_sha','c'*40),('head_branch','major/state-contracts'),
+                          ('event','pull_request'),('conclusion','failure')):
+            bad=copy.deepcopy(run); bad[key]=value; vectors.append((bad,artifacts,[job]))
+        for key,value in (('name','other'),('head_sha','c'*40),('run_id',8),
+                          ('run_attempt',4),('conclusion','failure')):
+            bad=copy.deepcopy(job); bad[key]=value; vectors.append((run,artifacts,[bad]))
+        vectors.extend([(run,artifacts[:1],[job]),(run,artifacts+[artifacts[0]],[job]),
+                        (run,artifacts,[job,job])])
+        bad=copy.deepcopy(artifacts); bad[0]['workflow_run']['head_sha']='c'*40
+        vectors.append((run,bad,[job]))
+        for key,value in (('digest','sha256:'+'0'*64),('expired',True)):
+            bad=copy.deepcopy(artifacts); bad[0][key]=value; vectors.append((run,bad,[job]))
+        bad=copy.deepcopy(job); bad['steps'][0]['name']='unrelated upload'; vectors.append((run,artifacts,[bad]))
+        with mock.patch.object(owner,'api',side_effect=api), verifier:
+            for index,(r,a,j) in enumerate(vectors):
+                with self.subTest(vector=index), self.assertRaises(owner.ReadinessError):
+                    docs.authenticate_production_packages(self.req,r,a,j,repo=Path('.'))
+            with self.assertRaises(owner.ReadinessError):
+                docs.authenticate_production_packages(self.req,run,artifacts,[job],repo=Path('.'),job_log=b'')
+
+    def test_build_g01_requires_every_exact_original_docs_name(self):
+        req=self.generation_fixture()
+        with self.owned_transport(): got=docs.admit(req)
+        self.assertEqual(got['build_generation_selectors'],list(docs.BUILD_G01_DOCS_SELECTORS))
+        saved=copy.deepcopy(self.observed['tests'])
+        for selector in docs.BUILD_G01_DOCS_SELECTORS:
+            for effect in ('missing','skipped','repeated'):
+                self.observed['tests']=copy.deepcopy(saved)
+                row=next(r for r in self.observed['tests'] if r['id']==selector)
+                if effect=='missing': self.observed['tests'].remove(row)
+                elif effect=='repeated': self.observed['tests'].append(copy.deepcopy(row))
+                else: row['result']='skipped'
+                self.refresh_summary()
+                if effect=='repeated':
+                    with self.subTest(selector=selector,effect=effect), self.assertRaises(owner.ReadinessError):
+                        self.refresh()
+                    continue
+                self.refresh()
+                with self.subTest(selector=selector,effect=effect), self.owned_transport(), self.assertRaises(owner.ReadinessError):
+                    docs.admit(req)
+        self.observed['tests']=saved
+        path=docs.BUILD_G01_DOCS_SELECTORS[-1].split(':',2)[1]
+        self.values.pop(path)
+        self.inputs.pop(path)
+        self.manifest['inputs']=self.inputs
+        self.manifest_raw=json.dumps(self.manifest).encode()
+        self.observed['source_manifest_sha256']=owner.digest(self.manifest_raw)
+        self.source=self.archive({**self.values,docs.MANIFEST:self.manifest_raw})
+        self.refresh_summary(); self.refresh()
+        with self.owned_transport(), self.assertRaisesRegex(owner.ReadinessError,'Docs named test is outside original source closure'):
+            docs.admit(req)
+
+    def test_build_g01_composes_all_three_original_core_owners(self):
+        req=self.generation_fixture()
+        run, artifacts, assembly, api, verifier, _=self.package_fixture()
+        core={'id':51,'name':docs.reports.source_profile(docs.reports.SOURCE_PROFILE)['job'],
+              'run_id':7,'run_attempt':3,'status':'completed','conclusion':'success'}
+        def component(c,request,r,a,j,**kw):
+            self.assertEqual(request['source_finding_inputs'],req['build_generation_inputs'])
+            self.assertEqual(r,run)
+            identity=61 if c['profile']==docs.reports.SOURCE_PROFILE else 62
+            return ({'job_id':51,'run_attempt':3,'selectors':c['selectors'],
+                     'source_artifact_id':identity,'observation_artifact_id':64},
+                    {'artifact_id':identity,'profile':c['profile']})
+        def transport(path,binary=False):
+            if path=='actions/jobs/51/logs': return b'original source log'
+            return api(path,binary)
+        with self.owned_transport(), mock.patch.object(owner,'api',side_effect=transport), verifier, \
+             mock.patch.object(docs.reports,'source_component_evidence',side_effect=component) as reader:
+            got=docs.build_generation_components(req,artifacts,[core,assembly],run=run,repo=Path('.'))
+        self.assertEqual(reader.call_count,3)
+        self.assertEqual(sum(len(c['selectors']) for c in got['core_components']),17)
+        self.assertEqual(len(got['docs_source']['build_generation_selectors']),14)
+        self.assertEqual(got['cell'],docs.BUILD_G01_CELL)
+        def missing(c,*args,**kwargs):
+            original,payload=component(c,*args,**kwargs)
+            original['selectors']=original['selectors'][:-1]
+            return original,payload
+        with self.owned_transport(), mock.patch.object(owner,'api',side_effect=transport), verifier, \
+             mock.patch.object(docs.reports,'source_component_evidence',side_effect=missing), self.assertRaises(owner.ReadinessError):
+            docs.build_generation_components(req,artifacts,[core,assembly],run=run,repo=Path('.'))
+
+
+
+    def test_build_g01_outer_route_delegates_only_its_complete_selected_cell(self):
+        req=self.generation_fixture()
+        self.assertTrue(docs.docs_required(req), 'BUILD-G01 bypasses the owning Docs composition route')
+        original=copy.deepcopy(req)
+        core=docs.core_requirements(req)
+        self.assertEqual(core['cells'],[])
+        self.assertNotIn('build_generation_tasks',core)
+        self.assertNotIn('build_generation_inputs',core)
+        self.assertEqual(req,original)
+        self.assertFalse(docs.build_generation_required(self.req))
+        legacy=copy.deepcopy(self.req)
+        legacy['cells'].append(docs.BUILD_G01_CELL)
+        legacy['cell_jobs'][docs.BUILD_G01_CELL]='major qualification / packaging'
+        self.assertFalse(docs.build_generation_required(legacy))
+        self.assertIn(docs.BUILD_G01_CELL,docs.core_requirements(legacy)['cells'])
+        routed=copy.deepcopy(legacy)
+        routed['cell_jobs'][docs.BUILD_G01_CELL]='major qualification / generated-build'
+        with self.assertRaises(owner.ReadinessError):docs.build_generation_required(routed)
+
+
+
+    def test_build_g01_requirements_use_immutable_exact_source_pins_and_preserve_other_gates(self):
+        corpus=owner.CORPUS
+        policy={'program_id':owner.PROGRAM,'required_installed_cells':['installed:fixture'],
+                'cell_job_bindings':{docs.BUILD_G01_CELL:'major qualification / generated-build'},
+                'build_generation_tasks':['BUILD-G01']}
+        documents={
+            corpus+'contracts/program.json':{'id':owner.PROGRAM,'counts':{'tasks':82,'findings':70,
+                'machines':287,'transitions':1748,'composed_scenarios':31},'delivery_predicates':{
+                    'PREPUBLICATION_READY':{'required_task_ids':['BUILD-G01','Q-02']}}},
+            corpus+'contracts/tasks.json':{'tasks':[{'id':t,'owner':'fixture','required_before_publication':True}
+                                                   for t in ('BUILD-G01','Q-02')]},
+            corpus+'execution/progress.json':{'task_updates':[{'id':t,'status':'DONE'} for t in ('BUILD-G01','Q-02')]},
+            corpus+'execution/coverage-ledger.json':{k:{} for k in ('findings','machines','transitions','added_transitions')},
+            corpus+'contracts/finding-dispositions.json':{'records':[]},
+            corpus+'contracts/machine-coverage.json':{'machines':[]},
+            corpus+'contracts/transition-coverage.json':{'transitions':[]},
+            corpus+'contracts/scenarios.json':{'scenarios':[]},corpus+'MANIFEST.json':{'files':[]},
+            '.github/major-qualification-policy.json':policy,
+            '.github/integration-candidate.json':{'schema':'codearbiter-integration-candidate/1',
+                'branch':'major/state-contracts','baseline_main_commit':'a'*40,
+                'candidates':{'ca':'4.0.0','ca-codex':'0.30.0','ca-pi':'0.30.0','ca-sandbox':'0.2.0'}}}
+        reads=[]
+        def blob(repo,commit,path):
+            self.assertEqual(commit,'a'*40); reads.append(path)
+            if path in documents:return json.dumps(documents[path]).encode()
+            if path=='.codearbiter/open-questions.md':return b'# Open questions\n_None open._\n'
+            if path=='.codearbiter/decisions/adr-lifecycle.jsonl':return b''
+            return ('original source '+path).encode()
+        def command(argv,*args,**kwargs):
+            if kwargs.get('local_adr'):return b''
+            self.assertEqual(argv,['git','rev-parse','a'*40+'^{tree}'])
+            return ('b'*40).encode()
+        with mock.patch.object(owner,'blob',side_effect=blob),mock.patch.object(owner,'command',side_effect=command):
+            req=owner._requirements(Path('.'),'a'*40,7)
+            self.assertEqual(req['build_generation_tasks'],['BUILD-G01'])
+            self.assertTrue(docs.build_generation_required(req))
+            profiles={c['profile'] for c in docs.build_generation_core_components()}
+            self.assertEqual(set(req['build_generation_inputs']),profiles)
+            expected={p:docs.reports.source_profile_input_pin(p,'a'*40,lambda c,p:blob(Path('.'),c,p)) for p in profiles}
+            self.assertEqual(req['build_generation_inputs'],expected)
+            self.assertTrue(all(set(docs.reports.source_profile(p)['paths'])<=set(reads) for p in profiles))
+            documents[corpus+'execution/progress.json']['task_updates'][0]['status']='PLANNED'
+            with self.assertRaisesRegex(owner.ReadinessError,'unfinished required task'):
+                owner._requirements(Path('.'),'a'*40,7)
+        for bad in (['BUILD-G01','other'],['other'],'BUILD-G01'):
+            with self.subTest(selection=bad),self.assertRaises(owner.ReadinessError):
+                docs.build_generation_fields({**policy,'build_generation_tasks':bad},['BUILD-G01'],
+                    [docs.BUILD_G01_CELL],policy['cell_job_bindings'],'a'*40,lambda c,p:b'x')
+        self.assertEqual(docs.build_generation_fields({},[],[],{},'a'*40,lambda c,p:b'x'),{})
+        current=json.loads((Path(__file__).resolve().parents[1]/'major-qualification-policy.json').read_bytes())
+        self.assertEqual(current['build_generation_tasks'],['BUILD-G01'])
+        self.assertEqual(current['cell_job_bindings'][docs.BUILD_G01_CELL],'major qualification / generated-build')
+
+    @contextlib.contextmanager
+    def generation_outer_fixture(self):
+        req=self.generation_fixture()
+        run,artifacts,assembly,api,verifier,_=self.package_fixture()
+        cell='scenario:fixture-ordinary'
+        req['cells'].append(cell);req['cell_jobs'][cell]='ordinary fixture original owner'
+        req['required_artifact_names']=[a['name'] for a in artifacts]+['qualified-payload']
+        core={'id':51,'name':docs.reports.source_profile(docs.reports.SOURCE_PROFILE)['job'],
+              'run_id':7,'run_attempt':3,'status':'completed','conclusion':'success'}
+        payload_raw=self.archive({'owned.txt':b'fixture'})
+        payload=self.metadata(201,'qualified-payload',payload_raw);payload['workflow_run']['id']=7
+        raw_report={'schema':'codearbiter-major-qualification/1','source_commit':'a'*40,'source_tree':'b'*40,
+                    'ci_run_id':7,'job_id':88,'results':[{'cell':cell,'result':'PASSED',
+                    'commands':[{'argv':['inert-fixture-unit-owner'],'exit_code':0}],
+                    'selected_population':1,'executed_population':1,'payload_artifact_id':201,
+                    'payload_archive_sha256':owner.digest(payload_raw),'payload_members':owner.members(payload_raw)}]}
+        report_raw=self.archive({'qualification.json':json.dumps(raw_report).encode()})
+        report=self.metadata(202,'major-qualification-88',report_raw);report['workflow_run']['id']=7
+        readiness=self.metadata(299,'major-readiness-'+'a'*40,b'fixture envelope transport')
+        readiness['workflow_run']['id']=7
+        def step(name):return {'name':name,'status':'completed','conclusion':'success','started_at':STAMP,'completed_at':END}
+        ordinary={'id':88,'name':req['cell_jobs'][cell],'conclusion':'success',
+                  'steps':[step('Upload major qualification report')]}
+        producer={'id':99,'name':'major readiness producer','conclusion':'success',
+                  'steps':[step('Upload major readiness record')]}
+        artifacts=[*artifacts,payload,report,readiness];jobs=[core,assembly,ordinary,producer]
+        def component(c,request,r,a,j,**kw):
+            identity=61 if c['profile']==docs.reports.SOURCE_PROFILE else 62
+            return ({'job_id':51,'run_attempt':3,'selectors':c['selectors'],
+                     'source_artifact_id':identity,'observation_artifact_id':64},
+                    {'artifact_id':identity,'profile':c['profile']})
+        def upload_log(a):return ('\n'.join([STAMP+' ##[group]Run '+owner.UPLOAD_ACTION,
+                    STAMP+' SHA256 digest of uploaded artifact is '+a['digest'][7:],
+                    STAMP+f" Artifact {a['name']} successfully finalized. Artifact ID {a['id']}"])).encode()
+        def transport(path,binary=False):
+            if path=='actions/runs/7':return run
+            if path=='actions/jobs/51/logs':return b'original Core log'
+            if path=='actions/jobs/88/logs':return upload_log(report)
+            if path=='actions/jobs/99/logs':return upload_log(readiness)
+            if path=='actions/artifacts/201/zip':return payload_raw
+            if path=='actions/artifacts/202/zip':return report_raw
+            return api(path,binary)
+        with self.owned_transport(),mock.patch.object(owner,'api',side_effect=transport),verifier, \
+             mock.patch.object(docs.reports,'source_component_evidence',side_effect=component):
+            yield req,run,artifacts,jobs,readiness
+
+    def test_build_g01_selected_outer_envelope_produces_and_verifies_all_original_components(self):
+        with self.generation_outer_fixture() as (req,run,artifacts,jobs,readiness):
+            original=copy.deepcopy(req)
+            record=owner.produce(req,artifacts,jobs)
+            self.assertEqual(record['schema'],docs.ENVELOPE)
+            self.assertEqual(record['build_generation_source']['cell'],docs.BUILD_G01_CELL)
+            self.assertEqual(len(record['build_generation_source']['core_components']),3)
+            self.assertEqual([r['cell'] for r in record['core']['results']],['scenario:fixture-ordinary'])
+            result=owner.verify(record=record,requirements=req,run=run,artifact=readiness,
+                archive_digest=readiness['digest'][7:],jobs=jobs,build_artifacts=artifacts)
+            self.assertEqual(result['state'],'PREPUBLICATION_READY')
+            self.assertEqual(req,original)
+            raw=self.archive({'major-readiness.json':json.dumps(record).encode()})
+            readiness.update(self.metadata(299,'major-readiness-'+'a'*40,raw))
+            readiness['workflow_run']['id']=7
+            original_api=owner.api
+            def retained(path,binary=False):
+                if path=='actions/artifacts/299/zip':return raw
+                return original_api(path,binary=binary)
+            with mock.patch.object(owner,'api',side_effect=retained), \
+                 mock.patch.object(owner,'collect',return_value=(req,run,artifacts,jobs)):
+                actual,verified=owner.load_verified_receipt(None,'a'*40,7)
+                self.assertEqual(actual,record)
+                self.assertEqual(verified['state'],'PREPUBLICATION_READY')
+            run['conclusion']=None
+            produced=owner.produce(req,artifacts,jobs)
+            self.assertEqual(produced,record)
+            with self.assertRaises(owner.ReadinessError):
+                owner.verify(record=record,requirements=req,run=run,artifact=readiness,
+                    archive_digest=readiness['digest'][7:],jobs=jobs,build_artifacts=artifacts)
+
+    def test_build_g01_outer_reconstruction_refuses_omissions_forgery_and_release_scope_changes(self):
+        with self.generation_outer_fixture() as (req,run,artifacts,jobs,readiness):
+            record=owner.produce(req,artifacts,jobs)
+            args=dict(requirements=req,run=run,artifact=readiness,archive_digest=readiness['digest'][7:],jobs=jobs,build_artifacts=artifacts)
+            mutations=[]
+            bad=copy.deepcopy(record);bad.pop('build_generation_source');mutations.append(bad)
+            for field,value in (('production_packages',{}),('core_components',[]),('docs_source',{})):
+                bad=copy.deepcopy(record);bad['build_generation_source'][field]=value;mutations.append(bad)
+            for field,value in (('source_commit','c'*40),('ci_run_id',8),('build_generation_inputs',{})):
+                bad=copy.deepcopy(record);bad[field]=value;mutations.append(bad)
+            for bad in mutations:
+                with self.subTest(mutation=bad.get('source_commit')),self.assertRaises(owner.ReadinessError):
+                    owner.verify(record=bad,**args)
+            for field,value in (('head_branch','major/state-contracts'),('event','pull_request'),('head_sha','c'*40),('conclusion','failure')):
+                with self.subTest(run=field),self.assertRaises(owner.ReadinessError):
+                    owner.verify(record=record,**{**args,'run':{**run,field:value}})
+            bad=copy.deepcopy(req);bad['task_ids'].append('Q-03')
+            forged={**record,**bad,'core':{**record['core'],'task_ids':bad['task_ids']}}
+            with self.assertRaisesRegex(owner.ReadinessError,'Q-03'):
+                owner.verify(record=forged,**{**args,'requirements':bad})
+
+
 if __name__ == '__main__':
     unittest.main()

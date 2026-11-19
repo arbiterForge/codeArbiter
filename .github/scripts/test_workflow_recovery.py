@@ -93,6 +93,29 @@ class RecoveryRuntimeTest(unittest.TestCase):
         self.assertTrue(replay["durable"], replay)
         self.assertEqual(len(self.call("scan")["items"]), 1)
 
+    def test_missing_index_without_journal_preserves_records_for_explicit_recovery(self):
+        oid = self.registered()
+        index = self.store / "index.json"
+        saved_index = self.root / "retained-index.json"
+        index.rename(saved_index)
+        self.assertFalse((self.store / "transaction.json").exists())
+        before = self.snapshot()
+
+        for action, request in (("scan", {}), ("repair", {}), ("register", {"candidates": [self.request(1)]})):
+            with self.subTest(action=action):
+                result = self.call(action, request)
+                self.assertEqual(result["status"], "unavailable", result)
+                if action == "scan":
+                    self.assertEqual((result["items"], result["cursor"]), ([], None), result)
+                else:
+                    self.assertFalse(result["durable"], result)
+                self.assertEqual(self.snapshot(), before)
+
+        saved_index.rename(index)
+        observed = self.call("scan")
+        self.assertEqual(observed["status"], "complete", observed)
+        self.assertEqual([item["obligation_id"] for item in observed["items"]], [oid])
+
     def test_pages_and_stale_cursor_never_claim_a_complete_empty_scan(self):
         for start in (0, 24):
             result = self.call("register", {"candidates": [self.request(i) for i in range(start, min(start + 24, 37))]})
@@ -154,6 +177,68 @@ class RecoveryRuntimeTest(unittest.TestCase):
         self.assertEqual(result["status"], "settled", result)
         self.assertEqual(result["record"]["outcome"]["disposition"], "reused")
         self.assertEqual(before, (self.root / ".codearbiter/open-tasks.md").read_bytes())
+
+    def test_unavailable_target_readback_preserves_claim_and_never_repeats_effect(self):
+        import work
+
+        offer = self.request()
+        oid = self.registered(offer)
+
+        def response_loss(point):
+            if point == "after-target":
+                raise OSError("fixture lost response")
+
+        attempted = self.call("resume", {"obligation_id": oid, "expected_revision": 1}, fault=response_loss)
+        self.assertFalse(attempted["durable"], attempted)
+        board = self.root / ".codearbiter/open-tasks.md"
+        written = board.read_bytes()
+        self.assertEqual(written.count(b"(from spec:recovery#triage-0)"), 1)
+        claimed = self.call("get", {"obligation_id": oid})["record"]
+        self.assertEqual(claimed["state"], "claimed")
+        selected = work._selected_client(self.root)
+        self.assertTrue(selected.legacy)
+        real_call = selected.call
+        origin_request = {"origins": [offer["origin"]]}
+        matches = real_call("work-origins", origin_request)["matches"]
+        self.assertEqual(len(matches), 1)
+        readback_request = {"work_id": matches[0]["work_id"]}
+        reads = [mock.call("work-origins", origin_request), mock.call("work-get", readback_request)]
+
+        def unavailable_readback(operation, request):
+            if operation == "work-get":
+                raise OSError("fixture target readback unavailable")
+            return real_call(operation, request)
+
+        record = claimed
+        with (
+            mock.patch.object(work, "_selected_client", return_value=selected),
+            mock.patch.object(selected, "call", side_effect=unavailable_readback) as target_call,
+        ):
+            for action in ("reconcile", "resume"):
+                with self.subTest(action=action):
+                    target_call.reset_mock()
+                    held = self.call(action, {"obligation_id": oid, "expected_revision": record["record_revision"]})
+                    self.assertEqual((held["status"], held["reason"], held["durable"]),
+                                     ("unavailable", "target-unavailable", True), held)
+                    record = self.call("get", {"obligation_id": oid})["record"]
+                    self.assertEqual(record, held["record"])
+                    self.assertEqual(record["state"], "unavailable")
+                    self.assertEqual(record["claim"], claimed["claim"])
+                    self.assertEqual(record["effect"], claimed["effect"])
+                    self.assertNotIn("outcome", record)
+                    self.assertEqual(target_call.call_args_list, reads)
+                    self.assertEqual(board.read_bytes(), written)
+
+        with (
+            mock.patch.object(work, "_selected_client", return_value=selected),
+            mock.patch.object(selected, "call", wraps=real_call) as target_call,
+        ):
+            result = self.call("reconcile", {"obligation_id": oid, "expected_revision": record["record_revision"]})
+        self.assertEqual(result["status"], "settled", result)
+        self.assertEqual(result["record"]["outcome"]["disposition"], "reused")
+        self.assertEqual(result["record"]["outcome"]["target_id"], readback_request["work_id"])
+        self.assertEqual(target_call.call_args_list, reads)
+        self.assertEqual(board.read_bytes(), written)
 
     def test_deferred_decision_and_decline_commit_once_after_response_loss(self):
         for number, action in ((0, "resume"), (1, "decline")):
@@ -411,6 +496,48 @@ class RecoveryRuntimeTest(unittest.TestCase):
         self.assertTrue(replay["durable"], replay)
         self.assertEqual(replay["items"][0]["state"], "settled")
         self.assertEqual(board, (self.root / ".codearbiter/open-tasks.md").read_bytes())
+
+    def test_registration_capacity_preserves_unresolved_records_and_history(self):
+        offers = [self.request(number) for number in range(12)]
+        offers[2]["candidate"].update(kind="decision", blocking="blocking")
+        registered = self.call("register", {"candidates": offers})
+        self.assertTrue(registered["durable"], registered)
+        ids = [item["obligation_id"] for item in registered["items"]]
+        claimed = self.call("claim", {"obligation_id": ids[1], "expected_revision": 1})
+        self.assertEqual(claimed["status"], "claimed", claimed)
+        held = self.call("resume", {"obligation_id": ids[2], "expected_revision": 1})
+        self.assertEqual(held["status"], "unavailable", held)
+        before = self.call("scan")
+        self.assertEqual(before["status"], "complete", before)
+        self.assertEqual([item["state"] for item in before["items"][:3]],
+                         ["pending", "claimed", "unavailable"])
+
+        def durable_bytes():
+            return {name: data for name, data in self.snapshot().items()
+                    if Path(name).parts[0] in {"index.json", "transaction.json", "records", "slots", "pages", "history"}}
+
+        original = durable_bytes()
+        for item in before["items"][:3]:
+            with self.subTest(state=item["state"]):
+                refused = self.call("compact", {"obligation_id": item["obligation_id"],
+                                               "expected_revision": item["record_revision"]})
+                self.assertEqual((refused["status"], refused["reason"], refused["durable"]),
+                                 ("unavailable", "uncertain-effect", False), refused)
+
+        # Keep the existing page admissible and make its next append hit the
+        # writer's real payload limit with a small, otherwise valid offer.
+        page = self.store / "pages/000000000000.json"
+        next_offer = {"candidates": [self.request(12)]}
+        with mock.patch.dict(recovery.BOUNDS, {"registration_max_bytes": page.stat().st_size}):
+            refused = self.call("register", next_offer)
+        self.assertEqual((refused["status"], refused["reason"], refused["durable"]),
+                         ("unavailable", "capacity", False), refused)
+        self.assertEqual(refused["items"], [])
+        self.assertEqual(len(refused["remaining"]), 1)
+        self.assertNotIn(refused["remaining"][0], ids)
+        self.assertEqual(self.call("get", {"obligation_id": refused["remaining"][0]})["status"], "absent")
+        self.assertEqual(durable_bytes(), original)
+        self.assertEqual(self.call("scan"), before)
 
     def held(self, oid, reason):
         store = recovery.RecoveryStore(self.root).open()

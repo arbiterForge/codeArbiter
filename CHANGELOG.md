@@ -62,6 +62,9 @@ predate the plugin rewrite and are grouped by date.
 
 ### Fixed
 
+- Pass the selected host Git identity to Farm's pinned native verifier so typed workspace checks run during admission.
+- Preview untyped native retirement history against its exact original HTML bytes while preserving independent work.
+- Keep the unsupported storage diagnostic buildable on platforms without the native system error definitions.
 - Select installed native binaries and dispatch requests using interpreter OS identity, avoiding Windows version-discovery shell commands while retaining native architecture and process guards.
 - Preserve original temporary-filesystem capabilities under isolated observers, enforce complete UTF-8 test identities, and detect directory-scoped knowledge drift.
 

@@ -5233,6 +5233,21 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             'test "$("$resolved_cli" --version)" = "$NPM_CLI_VERSION"', assembly
         )
 
+        for observation_step in (
+            '--installed-package-cohort "${{ runner.temp }}/artifact-release-packages"',
+            '--receipt "${{ runner.temp }}/artifact-installed-package-identity.json"',
+            "name: artifact-installed-package-identity-${{ github.sha }}",
+        ):
+            self.assertIn(observation_step, assembly)
+        self.assertLess(
+            assembly.index("Build and verify the exact-head normal release packages"),
+            assembly.index("Replay installed Claude helper, doctor, and Farm from the verified cohort"),
+        )
+        self.assertLess(
+            assembly.index("Replay installed Claude helper, doctor, and Farm from the verified cohort"),
+            assembly.index("Preserve the installed package identity observation"),
+        )
+
         self.assertIn("artifact-package-cold", jobs)
         cold = jobs["artifact-package-cold"]
         self.assertIn("needs: [changes, artifact-package-assembly]", cold)
@@ -5806,7 +5821,7 @@ class NativeQualificationTimeBudgetTest(unittest.TestCase):
         self.assertIn('name: major readiness producer', producer)
         self.assertIn("github.event_name == 'push'", producer)
         self.assertIn("github.ref == 'refs/heads/main'", producer)
-        self.assertIn('needs: [changes, ci-passed]', producer)
+        self.assertIn('needs: [changes, ci-passed, pi-installed-package]', producer)
         self.assertIn('actions: read', producer)
         self.assertIn('contents: read', producer)
         self.assertNotIn(': write', producer)
