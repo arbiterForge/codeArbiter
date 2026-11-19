@@ -49,6 +49,10 @@ def readable(raw):
     text = re.sub(r"\x1b\[[0-?]*[ -/]*[@-~]", "", text)
     return text.replace("\r", "")
 
+def dialog_text(raw):
+    # Pi's full-screen renderer positions the cursor and clears each text row.
+    return readable(re.sub(rb"\x1b\[[1-9][0-9]*;1H\x1b\[2K", b"\n", raw))
+
 def require(value, code):
     if not value:
         raise ValueError(code)
@@ -91,7 +95,7 @@ class PromptGate:
             return None
         if self.pending_decline is not None:
             event = self.pending_decline
-            redraw = readable(bytes(self.raw[event["new_output_end"]:]))
+            redraw = dialog_text(bytes(self.raw[event["new_output_end"]:]))
             if not re.search(r"(?m)^ *→ No *$", redraw):
                 return None
             self.events.append({**event, "input_hex": "6a0d", "decision": "declined",
@@ -105,7 +109,7 @@ class PromptGate:
         digest = sha(exact.encode())
         # The consumed raw-byte boundary plus a different tool/exact digest for
         # each step prevents old dialog redraws from authorizing a later effect.
-        text = readable(bytes(self.raw[self.consumed:]))
+        text = dialog_text(bytes(self.raw[self.consumed:]))
         title = "Allow governed operation?"
         if title not in text:
             return None

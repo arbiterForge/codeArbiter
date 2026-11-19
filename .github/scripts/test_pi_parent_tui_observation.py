@@ -49,6 +49,28 @@ class PromptProtocolTests(unittest.TestCase):
         self.assertGreater(gate.events[-1]["no_selected_output_end"], gate.events[-1]["new_output_end"])
         self.assertIsNone(gate.consent(cwd))
 
+    def test_decline_recognizes_cursor_positioned_selector_rows(self):
+        cwd = "/private/project"
+        gate = owner.PromptGate(NONCE)
+        for operation in owner.operations(NONCE):
+            gate.feed(dialog(operation))
+            self.assertEqual(gate.consent(cwd), b"\r")
+
+        def repaint(*lines):
+            return "".join(
+                f"\x1b[{row};1H\x1b[2K{line:<72}"
+                for row, line in enumerate(lines, start=28)
+            ).encode()
+
+        rows = dialog(owner.declined_write(NONCE)).decode().splitlines()
+        gate.feed(repaint(*rows))
+        self.assertEqual(gate.consent(cwd), b"j")
+        gate.feed(repaint("  Yes", "  No"))
+        self.assertIsNone(gate.consent(cwd))
+        gate.feed(repaint("  Yes", " \x1b[38;5;5m→ No\x1b[39m"))
+        self.assertEqual(gate.consent(cwd), b"\r")
+        self.assertEqual(gate.events[-1]["decision"], "declined")
+
     def test_wrong_digest_nonce_tool_cwd_and_partial_prompt_never_consent(self):
         operation = owner.operations(NONCE)[0]
         good = dialog(operation)

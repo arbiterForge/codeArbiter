@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Recognize positioned Yes and No rows in the Pi TUI fixture  (from github:arbiterForge:codeArbiter:pull:1135:positioned-pi-confirmation)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1135:positioned-pi-confirmation
+  - Desc: The exact retained full-screen terminal capture lost cursor row boundaries before selection was checked. Preserve those boundaries so the distinct decline request waits for the actual No redraw before sending Enter.
+  - Work type: fix
+  - Work ID: WORK-B254EB75FEF02AB0A855E0FA51B0EC1E
+  - Work operation ID: work-cdb4ec59e66415b9ceb4bb14e4bc8f32b9abceda
 - [x] Verify reviewer inspection and a no-change author in the retained Pi TUI  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change)  (done 2026-11-18)
   - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change
   - Desc: Run one bounded inspection chain on the exact retained Pi package. Verify two real read results, a redacted reviewer handoff and zero recorded mutation requests while the earlier approve and decline evidence stays intact.
