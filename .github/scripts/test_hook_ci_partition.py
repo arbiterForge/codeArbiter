@@ -722,7 +722,7 @@ STATUSLINE_SOURCE_ROLES = {
         '      - name: Observe original statusline isolation children\n'
         '        id: statusline_isolation_observed\n'
         "        if: matrix.os == 'windows-latest' && matrix.partition == 'isolation' && github.event_name == 'push' && (github.ref == 'refs/heads/main' || github.ref == 'refs/heads/major/state-contracts') && hashFiles('.github/integration-candidate.json') != ''\n"
-        '        shell: bash\n'
+        '        shell: pwsh\n'
         '        run: >-\n'
         '          python -B .github/scripts/major_qualification_report.py observe-statusline --repo .\n'
         '          --source-profile hooks-isolation-statusline-v1\n'
@@ -1362,6 +1362,12 @@ class SourceQualificationRoleTests(unittest.TestCase):
             with self.subTest(changed=changed.splitlines()[0]), self.assertRaises(ValueError):
                 validate(text.replace(old, changed, 1))
 
+    def test_windows_statusline_observation_uses_native_powershell(self):
+        observe = statusline_source_roles(job_block(self.current(), 'hooks'), required=True)[
+            'Observe original statusline isolation children'
+        ]
+        self.assertIn('        shell: pwsh\n', observe)
+
     def test_statusline_observation_cannot_move_repeat_or_omit_original_isolation(self):
         text = self.current()
         block = job_block(text, 'hooks')
@@ -1372,8 +1378,9 @@ class SourceQualificationRoleTests(unittest.TestCase):
         for change in (text.replace(observe, '', 1),
                        text.replace(observe, observe + observe, 1),
                        text.replace(observe, observe.replace("'isolation'", "'contracts'"), 1),
-                       text.replace(observe, observe.replace("        shell: bash",
-                           "        env:\n          UNREVIEWED_TEST_ENV: value\n        shell: bash"), 1),
+                       text.replace(observe, observe.replace("        shell: pwsh", "        shell: bash"), 1),
+                       text.replace(observe, observe.replace("        shell: pwsh",
+                           "        env:\n          UNREVIEWED_TEST_ENV: value\n        shell: pwsh"), 1),
                        text.replace(STATUSLINE_FALLBACK, "matrix.partition == 'all' || matrix.partition == 'isolation'", 1)):
             with self.subTest(change=len(change)), self.assertRaises(ValueError):
                 validate(change)

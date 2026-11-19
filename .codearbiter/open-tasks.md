@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Align original Windows isolation launcher and retain append timeout state  (from github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher
+  - Desc: The original Windows isolation launcher uses Git Bash while the pull request isolation uses native PowerShell. Use native PowerShell for the recorder and retain the owned audit fixture state at each process timeout.
+  - Work type: fix
+  - Work ID: WORK-67519D23AB7DBBDEEDF65DAEC5CFBCC1
+  - Work operation ID: work-7a5308a6fdbe9b9ac54fa6615c202480af8c3d16
 - [x] Recognize live Docs producers while sibling jobs are queued  (from github:arbiterForge:codeArbiter:actions-job:135143111321:docs-live-run-state)  (done 2026-11-18)
   - Work origin: github:arbiterForge:codeArbiter:actions-job:135143111321:docs-live-run-state
   - Desc: The original component report failed at the aggregate Docs workflow status gate while its job was running. Accept documented nonterminal Actions states only for live authenticated producers and preserve the completed-success final gate.
