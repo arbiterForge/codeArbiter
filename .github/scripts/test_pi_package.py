@@ -2243,6 +2243,33 @@ try {
                 self.assertEqual(order, ["original-retained", "native-observed", "cleanup"])
                 self.assertNotIn("PrivateFixtureValue", str(raised.exception))
 
+    def test_rpc_native_shutdown_worker_deadline_leaves_time_to_observe_exit(self):
+        import _windows_rpc_timeout as native
+
+        now = [0.0]
+        process = mock.Mock(stdout=object(), returncode=1)
+        process.poll.return_value = None
+        chunks = [b"retained progress"]
+
+        def wait(timeout):
+            termination_latency = 0.02
+            if timeout < termination_latency:
+                raise subprocess.TimeoutExpired("owned debugger fixture", timeout)
+            now[0] += termination_latency
+            return 1
+
+        process.wait.side_effect = wait
+        status, raw = native._collect(
+            process, lambda _: len(chunks[0]) if chunks else 0,
+            deadline=5.0, _read=lambda *_: chunks.pop(),
+            _clock=lambda: now[0], _sleep=lambda duration: now.__setitem__(0, now[0] + duration),
+        )
+        self.assertEqual(status, "deadline")
+        self.assertEqual(raw, b"retained progress")
+        process.kill.assert_called_once_with()
+        process.wait.assert_called_once()
+        self.assertLessEqual(now[0], 5.0)
+
     @unittest.skipUnless(os.name == "nt", "Windows owned process HANDLE control")
     def test_rpc_native_shutdown_real_owned_node_handles_and_late_exit(self):
         import _windows_rpc_timeout as native
@@ -5649,7 +5676,7 @@ class DebuggerInboxTests(unittest.TestCase):
                     self.assertEqual(diagnostic["primaryStatus"], outcome)
                     self.assertEqual(diagnostic["failure"], failure)
                     self.assertEqual(diagnostic["cleanupFailure"], {"operation": "worker-wait",
-                        "exception": "os-error" if error_kind == "os-error" else "unexpected", "errno": 5 if error_kind == "os-error" else None,
+                        "exception": "os-error" if error_kind == "os-error" else "deadline", "errno": 5 if error_kind == "os-error" else None,
                         "winerror": 233 if error_kind == "os-error" else None})
                     self.assertEqual(diagnostic["collectedBytes"], native.MAX_OUTPUT if outcome == "output_limit" else 0)
                     self.assertEqual(actual["truncated"], outcome == "output_limit")

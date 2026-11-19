@@ -36,6 +36,7 @@ PUB = 'site/test/browser/publication.spec.ts'
 RECONNECT = 'site/test/browser/concepts-execution.spec.ts'
 BOOKMARK = 'site/test/browser/academy-wayfinding.spec.ts'
 DIRECTORY = 'site/test/browser/guide-discovery.spec.ts'
+SEARCH = 'site/test/browser/search-bundle.spec.ts'
 CASES = (
     (PUB, 'WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract'),
     (PUB, 'S62: backdrop restores heterogeneous saved background and scroll state'),
@@ -49,6 +50,12 @@ CASES = (
     (DIRECTORY, 'directory contains every guide and filters by both task and literal words'),
     (DIRECTORY, 'filtering makes no request or storage write and does not submit a query URL'),
     (DIRECTORY, 'filter controls and the review guide reconnect after client navigation and back'),
+    (SEARCH, 'a failed search module load retries the built UI with the retained query'),
+    (SEARCH, 'current query failure retains the query and retries the built search UI'),
+    (SEARCH, 'current data failure retains the query and retries the built search UI'),
+    (SEARCH, 'failed result expansion keeps existing results and can retry'),
+    (SEARCH, 'an older rejected query cannot replace newer successful results'),
+    (SEARCH, 'an older successful query cannot replace newer successful results'),
 )
 SELECTORS = tuple('playwright:' + path + ':chrome:' + title for path, title in CASES)
 DRAWER_CELL_SELECTORS = {
@@ -69,6 +76,7 @@ CELL_SELECTORS = {
     'disposition:transitions:S56:06': (5, 8, 7),
     'disposition:transitions:S58:01': (9, 10),
     'disposition:transitions:S58:02': (9, 11),
+    'scenario:SEQ-28': (12, 13, 14, 15, 16, 17, 4),
 }
 CELLS = frozenset(CELL_SELECTORS)
 need = owner.require

@@ -4,6 +4,33 @@ import { execFileSync } from 'node:child_process';
 import { mkdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join } from 'node:path';
 
+test('a failed search module load retries the built UI with the retained query', async ({ page }) => {
+  const attempts: string[] = [];
+  await page.route('**/pagefind/pagefind.js*', route => {
+    attempts.push(new URL(route.request().url()).search);
+    if (attempts.length === 1) return route.fulfill({ status: 503, body: '' });
+    return route.fulfill({ contentType: 'text/javascript', body: `
+      export async function options() {}
+      export async function search(query) {
+        return { results: [{ async data() { return { url: '/overview/', meta: { title: query }, excerpt: '' }; } }] };
+      }
+    ` });
+  });
+  await page.goto('/concepts/workflow-routes/');
+  const input = page.getByRole('combobox', { name: 'Search the docs', exact: true });
+  await input.fill('retained module query');
+  await expect(page.locator('.ca-search__status')).toContainText('temporarily unavailable');
+  await expect(input).toHaveValue('retained module query');
+  const results = page.getByRole('listbox', { name: 'Search results', exact: true });
+  await expect(results.getByRole('option')).toHaveCount(0);
+  const retry = page.getByRole('button', { name: 'Retry search', exact: true });
+  await expect(retry).toBeEnabled();
+  await retry.click();
+  await expect(results.getByRole('option')).toContainText('retained module query');
+  await expect(retry).toBeHidden();
+  expect(attempts).toEqual(['', '?retry=1']);
+});
+
 for (const failure of ['query', 'data'] as const) {
   test(`current ${failure} failure retains the query and retries the built search UI`, async ({ page }) => {
     await page.route('**/pagefind/pagefind.js*', route => route.fulfill({ contentType: 'text/javascript', body: `
@@ -52,24 +79,33 @@ test('failed result expansion keeps existing results and can retry', async ({ pa
   await expect(page.getByRole('listbox', { name: 'Search results', exact: true }).getByRole('option')).toHaveCount(10);
 });
 
-test('an older rejected query cannot replace newer successful results', async ({ page }) => {
-  await page.route('**/pagefind/pagefind.js*', route => route.fulfill({ contentType: 'text/javascript', body: `
-    export async function options() {}
-    export async function search(query) {
-      if (query === 'old') { await new Promise(r => setTimeout(r, 700)); throw new Error('old failure'); }
-      return { results: [{ async data() { return { url: '/overview/', meta: { title: query }, excerpt: '' }; }}] };
-    }
-  ` }));
-  await page.goto('/concepts/workflow-routes/');
-  const input = page.getByRole('combobox', { name: 'Search the docs', exact: true });
-  await input.fill('old');
-  await page.waitForTimeout(180);
-  await input.fill('new');
-  await expect(page.getByRole('listbox', { name: 'Search results', exact: true }).getByRole('option')).toContainText('new');
-  await page.waitForTimeout(750);
-  await expect(page.getByRole('listbox', { name: 'Search results', exact: true }).getByRole('option')).toContainText('new');
-  await expect(page.getByRole('button', { name: 'Retry search', exact: true })).toBeHidden();
-});
+for (const outcome of ['rejected', 'successful'] as const) {
+  test(`an older ${outcome} query cannot replace newer successful results`, async ({ page }) => {
+    await page.route('**/pagefind/pagefind.js*', route => route.fulfill({ contentType: 'text/javascript', body: `
+      export async function options() {}
+      export async function search(query) {
+        if (query === 'old') {
+          await new Promise(resolve => { window.settleOldSearch = resolve; });
+          if (${JSON.stringify(outcome)} === 'rejected') throw new Error('old failure');
+        }
+        return { results: [{ async data() { return { url: '/overview/', meta: { title: query }, excerpt: '' }; }}] };
+      }
+    ` }));
+    await page.goto('/concepts/workflow-routes/');
+    const input = page.getByRole('combobox', { name: 'Search the docs', exact: true });
+    await input.fill('old');
+    type DeferredSearchWindow = Window & { settleOldSearch?: () => void };
+    await expect.poll(() => page.evaluate(() => typeof (window as DeferredSearchWindow).settleOldSearch)).toBe('function');
+    await input.fill('new');
+    await expect(page.getByRole('listbox', { name: 'Search results', exact: true }).getByRole('option')).toContainText('new');
+    await page.evaluate(async () => {
+      (window as DeferredSearchWindow).settleOldSearch?.();
+      await new Promise<void>(resolve => requestAnimationFrame(() => resolve()));
+    });
+    await expect(page.getByRole('listbox', { name: 'Search results', exact: true }).getByRole('option')).toContainText('new');
+    await expect(page.getByRole('button', { name: 'Retry search', exact: true })).toBeHidden();
+  });
+}
 
 /** Check the actual emitted and served module, not a mocked search provider. */
 test('the served search entry matches complete build bytes and exposes the real query API', async ({ page }) => {

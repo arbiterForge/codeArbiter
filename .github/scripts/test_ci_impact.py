@@ -2373,6 +2373,8 @@ class WorkflowContractTest(unittest.TestCase):
             "tools/go_test_parallel.py",
             ".github/scripts/test_go_test_parallel.py",
             ".github/scripts/pages_readiness.py",
+            ".github/scripts/docs_release_publication.py",
+            ".github/scripts/test_docs_release_publication.py",
             ".github/scripts/_boundedproc.py",
             ".github/scripts/_contextverificationlib.py",
             ".github/scripts/_immutable_git_blobs.py",
@@ -4461,12 +4463,64 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
     _ORIGINAL_COMMANDS = ["npm ci", "npm run build", "npm run link-audit",
                           "google-chrome --version", "npm run test:components", "npm run test:browser"]
 
+    _RELEASE_READBACK_NAME = "Read the original release publication observation"
+    _RELEASE_READBACK = (
+        f"      - name: {_RELEASE_READBACK_NAME}\n"
+        "        if: github.event_name == 'workflow_run' && github.ref == 'refs/heads/main'\n"
+        "        env:\n"
+        "          GH_TOKEN: ${{ github.token }}\n"
+        "        run: >-\n"
+        "          python -B ../.github/scripts/docs_release_publication.py\n"
+        '          --event "$GITHUB_EVENT_PATH" --repo ..\n'
+        '          --output "$RUNNER_TEMP/route-publication-observation.json"'
+    )
+    _RELEASE_OBSERVATION_ENV = (
+        "          CODEARBITER_PUBLICATION_OBSERVATION: ${{ runner.temp }}/route-publication-observation.json"
+    )
+    _RELEASE_BUILD_COMMENT = " # prebuild regenerates the reference from plugins/ca/**"
+
+    def _assert_release_readback(self, job: str, consumer: str, run: str, prerequisite: str) -> None:
+        from test_hook_ci_partition import step_blocks
+
+        roles = SiteBrowserPublicationWorkflowTest
+        header = job.split("    steps:\n", 1)[0]
+        self.assertEqual(re.findall(r"(?m)^    defaults:\n(?:      [^\n]+\n|        [^\n]+\n)+", header),
+                         ["    defaults:\n      run:\n        working-directory: site\n"])
+        steps = step_blocks(job)
+        publications = [i for i, step in enumerate(steps)
+                        if step.startswith(f"      - name: {roles._RELEASE_READBACK_NAME}\n")]
+        consumers = [i for i, step in enumerate(steps) if step.startswith(f"      - name: {consumer}\n")]
+        self.assertEqual(len(publications), 1, "expected one original release observation reader")
+        self.assertEqual(len(consumers), 1, "expected one publication observation consumer")
+        read_index, consumer_index = publications[0], consumers[0]
+        self.assertGreater(read_index, 0, "readback must follow the existing prerequisite")
+        self.assertEqual(steps[read_index - 1].splitlines()[0], f"      - name: {prerequisite}")
+        self.assertEqual(consumer_index, read_index + 1, "only the immediately following command consumes the observation")
+        self.assertEqual(steps[read_index].rstrip(), roles._RELEASE_READBACK, "closed original release observation role differs")
+        expected_consumer = (
+            f"      - name: {consumer}\n"
+            f"        run: {run}\n"
+            "        env:\n"
+            f"{roles._RELEASE_OBSERVATION_ENV}"
+        )
+        consumer_step = steps[consumer_index].rstrip()
+        if consumer == "Build":
+            consumer_step = consumer_step.replace(roles._RELEASE_BUILD_COMMENT, "", 1)
+        self.assertEqual(consumer_step, expected_consumer,
+                         "publication data belongs to the original tokenless consumer")
+        self.assertEqual(re.findall(r"(?m)^[ \t]+CODEARBITER_PUBLICATION_OBSERVATION:.*$", job),
+                         [roles._RELEASE_OBSERVATION_ENV], "only the reviewed generator or build receives publication data")
+
     def _build_commands(self, build: str) -> list[str]:
         from test_hook_ci_partition import step_blocks, command
         commands = []
         for step in step_blocks(build):
             match = re.match(r"      - name: ([^\n]+)\n", step)
             name = match.group(1) if match else None
+            if name == self._RELEASE_READBACK_NAME:
+                self.assertEqual(step.rstrip(), self._RELEASE_READBACK,
+                                 "closed release observation role changed")
+                continue
             if name in self._PROGRAM_ROLES:
                 self.assertEqual(step.rstrip(), self._PROGRAM_ROLES[name],
                                  "closed Docs role changed")
@@ -4499,7 +4553,11 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             self.assertNotIn("secrets.", job)
         from test_hook_ci_partition import step_blocks
 
+        roles = SiteBrowserPublicationWorkflowTest
         site_check = jobs["site-check"]
+        roles._assert_release_readback(self, site_check, "Generate release applicability", "npm run gen",
+                                       "Audit (CVE gate - fail on HIGH)")
+        roles._assert_release_readback(self, jobs["build"], "Build", "npm run build", "Install deps")
         checkout, = [step for step in step_blocks(site_check) if "actions/checkout@" in step]
         self.assertEqual(re.findall(r"(?m)^          persist-credentials: (.+)$", checkout), ["false"])
         emit, = [step for step in step_blocks(site_check)
@@ -4507,7 +4565,9 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertIn("github.event_name == 'push'", emit)
         self.assertIn("success() && steps.docs-source-mode.outputs.active == 'true'", emit)
         self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", site_check),
-                         ["          GH_TOKEN: ${{ github.token }}"])
+                         ["          GH_TOKEN: ${{ github.token }}"] * 2,
+                         "only the original release reader and source-test emitter may receive a token")
+        self.assertEqual(len(re.findall(r"\$\{\{\s*github\.token\s*\}\}", site_check)), 2)
         self.assertIn("        env:\n          GH_TOKEN: ${{ github.token }}\n", emit)
         qualified = jobs["deploy-qualified"]
         self.assertRegex(qualified, r"(?m)^    needs: qualified-pages$")
@@ -4520,6 +4580,7 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
 
     def _assert_build_control_flow(self, build: str) -> None:
         """Permit only bounded diagnostic uploads to run after a failed browser gate."""
+        self._assert_release_readback(build, "Build", "npm run build", "Install deps")
         control = r"(?m)^\s+(?:- )?(?:if|continue-on-error):"
         self.assertNotRegex(build, r"(?m)^\s+(?:- )?continue-on-error:")
         parts = re.split(r"(?m)(?=^      - )", build)
@@ -4545,6 +4606,8 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             match = re.match(r"      - name: ([^\n]+)\n", step)
             name = match.group(1) if match else None
             names.append(name)
+            if name == self._RELEASE_READBACK_NAME:
+                continue  # The release-only role was matched in full above.
             if name in self._PROGRAM_ROLES:
                 self.assertEqual(step.rstrip(), self._PROGRAM_ROLES[name],
                                  "closed Docs role changed or gained executable authority")
@@ -4580,9 +4643,9 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertCountEqual(setup_seen, self._SETUP_ROLES,
                               "all reviewed setup actions must occur exactly once")
         self.assertEqual(re.findall(r"(?m)^\s+(?:GH_TOKEN|GITHUB_TOKEN):.*$", build),
-                         ["          GH_TOKEN: ${{ github.token }}"] * 2,
-                         "only the two exact metadata emitters may receive a token")
-        self.assertEqual(build.count("${{ github.token }}"), 2)
+                         ["          GH_TOKEN: ${{ github.token }}"] * 3,
+                         "only the exact release reader and two metadata emitters may receive a token")
+        self.assertEqual(len(re.findall(r"\$\{\{\s*github\.token\s*\}\}", build)), 3)
         self.assertNotIn("secrets.", build)
         self.assertEqual(self._build_commands(build), self._ORIGINAL_COMMANDS,
                          "new roles cannot add, remove, repeat or suppress an original command")
@@ -4772,10 +4835,46 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
         self.assertEqual(ignored.returncode, 0, ignored.stderr)
 
 
+    def test_release_readback_refuses_event_credential_command_and_consumer_drift(self):
+        jobs = workflow_jobs(DOCS_WORKFLOW.read_text(encoding="utf-8"))
+        self._assert_workflow_authority(jobs)
+        role = self._RELEASE_READBACK
+        for job_id, consumer, prerequisite in (
+            ("site-check", "Generate release applicability", "Audit (CVE gate - fail on HIGH)"),
+            ("build", "Build", "Install deps"),
+        ):
+            job = jobs[job_id]
+            self.assertIn(role + "\n", job)
+            mutations = {
+                "push event": job.replace(role, role.replace("'workflow_run'", "'push'"), 1),
+                "wrong branch": job.replace(role, role.replace("'refs/heads/main'", "'refs/heads/major/state-contracts'"), 1),
+                "extra credential": job.replace(role, role.replace("        run:", "          OTHER_TOKEN: ${{ github.token }}\n        run:"), 1),
+                "different event payload": job.replace(role, role.replace("$GITHUB_EVENT_PATH", "$RUNNER_TEMP/other.json"), 1),
+                "incorrect repository": job.replace(role, role.replace("--repo ..", "--repo ."), 1),
+                "wrong output": job.replace(role, role.replace("/route-publication-observation.json", "/publication.json"), 1),
+                "folded reader changed": job.replace(role, role.replace("run: >-", "run: |"), 1),
+                "reader tolerated failure": job.replace(role, role.replace("        env:", "        continue-on-error: true\n        env:"), 1),
+                "reader omitted": job.replace(role + "\n", "", 1),
+                "reader repeated": job.replace(role + "\n", (role + "\n") * 2, 1),
+                "consumer skipped": job.replace(f"      - name: {consumer}\n",
+                                                 f"      - name: {consumer}\n        if: false\n", 1),
+                "consumer wrong variable": job.replace("CODEARBITER_PUBLICATION_OBSERVATION:", "OBSERVATION:", 1),
+                "reader before prerequisite": job.replace(role + "\n", "", 1).replace(
+                    f"      - name: {prerequisite}\n", role + f"\n      - name: {prerequisite}\n", 1),
+                "different job working directory": job.replace("        working-directory: site\n",
+                                                                "        working-directory: .\n", 1),
+            }
+            for mutation, candidate in mutations.items():
+                with self.subTest(job=job_id, mutation=mutation):
+                    self.assertNotEqual(candidate, job)
+                    with self.assertRaises(AssertionError):
+                        self._assert_workflow_authority({**jobs, job_id: candidate})
+
     def test_program_roles_refuse_unknown_duplicate_token_and_qualified_header_changes(self):
         workflow = DOCS_WORKFLOW.read_text(encoding="utf-8")
         build = re.sub(r"(?m)\s+#.*$", "", workflow_jobs(workflow)["build"])
         role = self._PROGRAM_ROLES["Identify program qualification mode"]
+        emitter = self._PROGRAM_ROLES["Emit Docs qualification report"]
         mutations = {
             "widened qualified job skip": build.replace(self._QUALIFIED_BUILD_IF, "    if: true", 1),
             "second qualified job skip": build.replace(self._QUALIFIED_BUILD_IF,
@@ -4791,7 +4890,7 @@ class SiteBrowserPublicationWorkflowTest(unittest.TestCase):
             "token in source mode": build.replace('run: echo "active=', 'env:\n          GH_TOKEN: ${{ github.token }}\n        run: echo "active=', 1),
             "changed report upload": build.replace("if: steps.docs-report.outcome == 'success'", "if: always()", 1),
             "wrong report path": build.replace('path: ${{ runner.temp }}/docs-qualification.json', 'path: site/dist', 1),
-            "folded emitter changed": build.replace("        run: >-", "        run: |", 1),
+            "folded emitter changed": build.replace(emitter, emitter.replace("        run: >-", "        run: |", 1), 1),
             "extra setup action": build + "\n      - uses: unreviewed/browser@main\n",
         }
         for name, candidate in mutations.items():

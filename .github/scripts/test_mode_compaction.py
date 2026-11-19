@@ -46,6 +46,7 @@ import sys
 import tempfile
 import time
 import unittest
+from unittest import mock
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 PYSRC = ROOT / "core" / "pysrc"
@@ -54,6 +55,7 @@ sys.path.insert(0, str(PYSRC))
 sys.path.insert(0, str(HOOKS_TESTS))
 
 import _modelib  # noqa: E402
+import _githooks  # noqa: E402
 import hostapi  # noqa: E402
 from _helpers import durable_plugin_copy  # noqa: E402
 
@@ -227,7 +229,7 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         self.assertIn("mode plane unavailable", err)
         self.assertIn(ARBITER, err, "the breadcrumb must name the posture it fell back to")
 
-    def test_the_enforcer_is_actually_installed_in_an_enabled_repository(self):
+    def test_installed_enforcer_blocks_protected_commits_across_mode_revisits(self):
         """The claim in this class's name, proved where it can be false.
 
         The dormant fixture above exits at the activation gate, which sits
@@ -238,8 +240,10 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         writes into `.git/hooks/`.
         """
         root = _fresh_repo()
-        subprocess.run([_git(), "init", "-q", "-b", "feature/mode-guard"], cwd=root,
-                       check=True, capture_output=True)
+        self.addCleanup(shutil.rmtree, root)
+        git = _git()
+        subprocess.run([git, "init", "-q", "-b", "main"], cwd=root,
+                       check=True, capture_output=True, timeout=15)
         with open(os.path.join(root, ".codearbiter", "CONTEXT.md"), "w",
                   encoding="utf-8", newline="\n") as f:
             f.write("---\narbiter: enabled\nstage: 2\n---\n<!--INITIALIZED-->\n")
@@ -251,7 +255,11 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
         sys.stdin = io.StringIO(json.dumps({
             "hook_event_name": "SessionStart", "session_id": "enabled-guard", "cwd": root}))
         try:
-            with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
+            # The source module lives in this checkout. Use the durable copy
+            # for the registered adapter just as an installed host would.
+            enforcer = os.path.join(plugin_root, "hooks", "git-enforce.py")
+            with (mock.patch.object(_githooks, "_enforcer_path", return_value=enforcer),
+                  contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO())):
                 try:
                     ss.run(_RaisingModeRootHost(plugin_root))
                 except SystemExit as exc:
@@ -270,6 +278,19 @@ class TestModePlaneFailureNeverCostsTheEnforcer(unittest.TestCase):
                 os.path.isfile(os.path.join(hooks, name)),
                 "a raising mode plane cost the repository its {} enforcer; "
                 ".git/hooks holds {}".format(name, sorted(os.listdir(hooks))))
+
+        session = "enabled-guard"
+        for mode in (ARBITER, "dangerous", ARBITER):
+            with self.subTest(mode=mode):
+                _modelib.write_mode(session, mode, root=root)
+                self.assertEqual(_modelib.current_mode(session, root=root)[0], mode)
+                # Exercise the installed hook through Git without creating a
+                # commit or invoking a remote.
+                probe = subprocess.run([git, "hook", "run", "pre-commit"], cwd=root,
+                                       capture_output=True, text=True, encoding="utf-8",
+                                       stdin=subprocess.DEVNULL, timeout=15)
+                self.assertNotEqual(probe.returncode, 0, probe.stdout)
+                self.assertIn("Direct commit to main is prohibited", probe.stderr)
 
 
 class TestModeSurvivesCompaction(unittest.TestCase):

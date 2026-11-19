@@ -1077,18 +1077,47 @@ class AuthorityAdapterTest(unittest.TestCase):
 
     @unittest.skipIf(sys.platform == "win32", "POSIX process-group coverage")
     def test_posix_timeout_and_overflow_kill_the_process_group(self):
+        import signal
+        import time
+
         pid_file = self.root / "descendant.pid"
         script = (
-            "import pathlib,subprocess,sys,time; "
+            "import pathlib,subprocess,sys,time; time.sleep(0.7); "
             "p=subprocess.Popen([sys.executable,'-c','import time;time.sleep(30)']); "
-            f"pathlib.Path({str(pid_file)!r}).write_text(str(p.pid)); "
+            f"pathlib.Path({str(pid_file)!r}).write_text(str(p.pid) + '\\n'); "
             "time.sleep(30)"
         )
-        with self.assertRaisesRegex(RuntimeError, "timed out"):
-            self.adapter._run_contained(
-                [sys.executable, "-c", script], cwd=str(self.root), env=dict(os.environ),
-                timeout_seconds=0.5,
-            )
+        real_popen = subprocess.Popen
+
+        def start_ready_group(*args, **kwargs):
+            # Keep the production timeout short, but exercise it on a group
+            # that has definitely acquired a live descendant.
+            self.assertTrue(kwargs.get("start_new_session"))
+            process = real_popen(*args, **kwargs)
+            try:
+                deadline = time.monotonic() + 10
+                while process.poll() is None and time.monotonic() < deadline:
+                    try:
+                        if pid_file.read_text().endswith("\n"):
+                            return process
+                    except FileNotFoundError:
+                        pass
+                    time.sleep(0.02)
+                self.fail("owned fixture did not start its descendant before the startup deadline")
+            except BaseException:
+                try:
+                    os.killpg(process.pid, signal.SIGKILL)
+                except ProcessLookupError:
+                    pass
+                process.communicate(timeout=5)
+                raise
+
+        with mock.patch.object(self.adapter.subprocess, "Popen", side_effect=start_ready_group):
+            with self.assertRaisesRegex(RuntimeError, "timed out"):
+                self.adapter._run_contained(
+                    [sys.executable, "-c", script], cwd=str(self.root), env=dict(os.environ),
+                    timeout_seconds=0.5,
+                )
         pid = int(pid_file.read_text())
         for _ in range(50):
             try:

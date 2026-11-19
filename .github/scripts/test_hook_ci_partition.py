@@ -318,6 +318,17 @@ PYTHON_SOURCE_ROLES = {'Observe original sync-core tool unit tests': (
                                                         '          --output "${{ runner.temp '
                                                         '}}/python-q02-readiness-observation.json"\n'
                                                         '          -- .github/scripts/test_major_readiness.py\n',
+ 'Observe original mode revisit enforcement contract': (
+     '      - name: Observe original mode revisit enforcement contract\n'
+     "        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'\n"
+     '        shell: bash\n'
+     '        run: >-\n'
+     '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+     '          --repo . --source-profile hooks-single-owner-findings-v1\n'
+     '          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"\n'
+     '          --output "${{ runner.temp }}/python-mode-revisit-guard-observation.json"\n'
+     '          -- .github/scripts/test_mode_compaction.py\n'
+ ),
  'Observe original release library classifier tests': (
      '      - name: Observe original release library classifier tests\n'
      '        id: release_library_observed\n'
@@ -666,6 +677,7 @@ def python_source_roles(block: str) -> dict[str,str]:
                        ('Run release-skill hardening helper unit tests', 'test_release_lib.py'),
                        ('Run hosted release-workflow contract tests','test_release_workflow.py'),
                        ('Run mode-plane core contract (ADR-0030)', 'test_modelib.py'),
+                       ('Run mode compaction-seam contract (ADR-0030)', 'test_mode_compaction.py'),
                        ('Run prompt-seam interceptor contract (ADR-0030)', 'test_prompt_submit.py'),
                        ('Run typed qualification-outcome contract tests', 'test_verdictlib.py'),
                        ('Run bounded verifier-subprocess contract tests', 'test_boundedproc.py')
@@ -686,6 +698,12 @@ def python_source_roles(block: str) -> dict[str,str]:
             'Manifest observer must replace its original Windows command in place')
     require(sum('.github/scripts/test_boundedproc.py' in (command(step) or '') for step in steps) == 2,
             'bounded reader suite must run once in each original partition')
+    mode_fallback = next(step for step in steps if step.startswith(
+        '      - name: Run mode compaction-seam contract (ADR-0030)\n'))
+    require(steps.index(mode_fallback) + 1
+            == steps.index(PYTHON_SOURCE_ROLES['Observe original mode revisit enforcement contract'])
+            and sum('.github/scripts/test_mode_compaction.py' in (command(step) or '') for step in steps) == 2,
+            'Mode revisit observer must replace the original Windows command in place')
     release_library_fallback = next(step for step in steps if step.startswith(
         '      - name: Run release-skill hardening helper unit tests\n'))
     require(steps.index(release_library_fallback) + 1
@@ -840,6 +858,16 @@ IMPACT_SOURCE_ROLES = {'Prepare single-owner Impact source-test inputs': '      
                                                 '          --output "${{ runner.temp '
                                                 '}}/python-finite-cf07-observation.json"\n'
                                                 '          -- .github/scripts/test_payload_version_gate.py\n',
+ 'Observe original integration candidate-version rule tests': (
+     '      - name: Observe original integration candidate-version rule tests\n'
+     '        shell: bash\n'
+     '        run: >-\n'
+     '          python -B .github/scripts/major_qualification_report.py observe-python\n'
+     '          --repo . --source-profile impact-single-owner-findings-v1\n'
+     '          --source-payload "${{ runner.temp }}/single-owner-impact-source-inputs"\n'
+     '          --output "${{ runner.temp }}/python-p01-integration-observation.json"\n'
+     '          -- .github/scripts/test_integration_candidate.py\n'
+ ),
  'Upload single-owner Impact source-test inputs': '      - name: Upload single-owner Impact source-test inputs\n'
                                                   '        id: single_impact_upload\n'
                                                   '        if: ${{ !cancelled() && (success() || failure()) && '
@@ -864,8 +892,9 @@ IMPACT_SOURCE_ROLES = {'Prepare single-owner Impact source-test inputs': '      
                                                     '        with:\n'
                                                     '          name: impact-source-observations-${{ github.sha }}-${{ '
                                                     'github.run_id }}-${{ github.run_attempt }}\n'
-                                                    '          path: ${{ runner.temp '
-                                                    '}}/python-finite-cf0*-observation.json\n'
+                                                    '          path: |\n'
+                                                    '            ${{ runner.temp }}/python-finite-cf0*-observation.json\n'
+                                                    '            ${{ runner.temp }}/python-p01-integration-observation.json\n'
                                                     '          if-no-files-found: error\n'
                                                     '          retention-days: 14\n'
                                                     '          include-hidden-files: false\n'
@@ -931,7 +960,8 @@ def impact_source_roles(block: str) -> dict[str,str]:
     checkout=[s for s in steps if 'uses: actions/checkout@' in s]
     require(len(checkout)==1 and 'persist-credentials: false' in checkout[0],'Impact checkout retains credentials')
     require([steps.index(value) for value in IMPACT_SOURCE_ROLES.values()]==sorted(steps.index(value) for value in IMPACT_SOURCE_ROLES.values()),'Impact source role ordering changed')
-    for script in ('.github/scripts/test_ci_impact.py','.github/scripts/test_payload_version_gate.py'):
+    for script in ('.github/scripts/test_ci_impact.py', '.github/scripts/test_payload_version_gate.py',
+                   '.github/scripts/test_integration_candidate.py'):
         owners=[s for s in steps if command(s) and ('-- '+script) in command(s)]
         require(len(owners)==1 and owners[0] in IMPACT_SOURCE_ROLES.values(),'Impact original owner absent or repeated')
         require(not any(command(s)=='python '+script for s in steps),'Impact original suite repeated')
@@ -1022,6 +1052,7 @@ def validate(
                                                'python .github/scripts/test_boundedproc.py',
                                                'python .github/scripts/test_release_lib.py',
                                                'python .github/scripts/test_release_target.py\npython .github/scripts/test_marketplace_git_channels.py',
+                                               'python .github/scripts/test_mode_compaction.py',
                                                'python .github/scripts/test_modelib.py')
         if not observed_original and not (statusline_roles and cmd == ISOLATION):
             require(predicates==[want],f'Command has incorrect partition: {cmd[:100]}')

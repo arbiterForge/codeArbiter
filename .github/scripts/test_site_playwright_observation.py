@@ -16,7 +16,7 @@ import major_readiness as owner
 CELLS = ['disposition:findings:SF16', 'disposition:machines:S62',
          *['disposition:transitions:S62:%02d' % n for n in range(1, 6)],
          *['disposition:transitions:S56:%02d' % n for n in (1, 2, 4, 5, 6)],
-         'disposition:transitions:S58:01', 'disposition:transitions:S58:02']
+         'disposition:transitions:S58:01', 'disposition:transitions:S58:02', 'scenario:SEQ-28']
 JOB = 'Site | [Build] - Astro Pages'
 STAMP = '2026-11-15T12:00:00Z'
 END = '2026-11-15T12:00:10Z'

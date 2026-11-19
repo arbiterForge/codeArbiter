@@ -59,6 +59,8 @@ on:
       - "tools/go_test_parallel.py"
       - ".github/scripts/test_go_test_parallel.py"
       - ".github/scripts/pages_readiness.py"
+      - ".github/scripts/docs_release_publication.py"
+      - ".github/scripts/test_docs_release_publication.py"
       - ".github/scripts/_boundedproc.py"
       - ".github/scripts/_contextverificationlib.py"
       - ".github/scripts/_immutable_git_blobs.py"
@@ -107,6 +109,8 @@ on:
       - "tools/go_test_parallel.py"
       - ".github/scripts/test_go_test_parallel.py"
       - ".github/scripts/pages_readiness.py"
+      - ".github/scripts/docs_release_publication.py"
+      - ".github/scripts/test_docs_release_publication.py"
       - ".github/scripts/_boundedproc.py"
       - ".github/scripts/_contextverificationlib.py"
       - ".github/scripts/_immutable_git_blobs.py"
@@ -183,6 +187,8 @@ jobs:
         run: python -B ../.github/scripts/test_site_playwright_observation.py
       - name: Test original Docs source authority
         run: python -B ../.github/scripts/test_site_vitest_observation.py
+      - name: Test separate release publication readback
+        run: python -B ../.github/scripts/test_docs_release_publication.py
       - name: Identify source qualification mode
         id: docs-source-mode
         run: echo "active=${{ hashFiles('.github/integration-candidate.json') != '' }}" >> "$GITHUB_OUTPUT"
@@ -202,8 +208,18 @@ jobs:
         run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --scope production --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
+      - name: Read the original release publication observation
+        if: github.event_name == 'workflow_run' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B ../.github/scripts/docs_release_publication.py
+          --event "$GITHUB_EVENT_PATH" --repo ..
+          --output "$RUNNER_TEMP/route-publication-observation.json"
       - name: Generate release applicability
         run: npm run gen
+        env:
+          CODEARBITER_PUBLICATION_OBSERVATION: ${{ runner.temp }}/route-publication-observation.json
       - name: Typecheck
         run: npm run typecheck
       - name: Enforce site/VOICE.md punctuation (issue #338)
@@ -369,8 +385,18 @@ jobs:
         run: echo "active=${{ hashFiles('.github/integration-candidate.json') != '' }}" >> "$GITHUB_OUTPUT"
       - name: Install deps
         run: npm ci
+      - name: Read the original release publication observation
+        if: github.event_name == 'workflow_run' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B ../.github/scripts/docs_release_publication.py
+          --event "$GITHUB_EVENT_PATH" --repo ..
+          --output "$RUNNER_TEMP/route-publication-observation.json"
       - name: Build
         run: npm run build # prebuild regenerates the reference from plugins/ca/**
+        env:
+          CODEARBITER_PUBLICATION_OBSERVATION: ${{ runner.temp }}/route-publication-observation.json
       - name: Link audit
         run: npm run link-audit # post-build dangling-link gate (AC-2/AC-4)
       - name: Record runner Chrome version

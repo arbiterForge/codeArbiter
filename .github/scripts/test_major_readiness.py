@@ -561,12 +561,20 @@ class CrossJobSourceFindingTest(unittest.TestCase):
         self.assertEqual(positions, sorted(positions))
 
     def test_compatibility_observer_uses_the_outer_unittest_result(self):
+        import major_qualification_report as reports
+
+        self._assert_observer_records_only_outer_results(reports.ROUTE_COMPATIBILITY_SCRIPT,
+                                                        reports.ROUTE_RELEASE_SOURCE_PROFILE)
+
+    def test_readiness_observer_uses_the_outer_unittest_result(self):
+        import major_qualification_report as reports
+
+        self._assert_observer_records_only_outer_results(reports.Q02_READINESS_SCRIPT, reports.Q02_SOURCE_PROFILE)
+
+    def _assert_observer_records_only_outer_results(self, script, profile):
         import tempfile
         import major_qualification_report as reports
 
-        script = '.github/scripts/test_command_route_compatibility.py'
-        profile = reports.ROUTE_RELEASE_SOURCE_PROFILE
-        spec = reports.source_profile(profile)
         with tempfile.TemporaryDirectory(prefix='outer-unittest-fixture-') as temporary:
             parent = Path(temporary)
             repo = parent / 'repo'
@@ -592,9 +600,7 @@ if __name__ == "__main__":
             output = parent / 'compatibility.json'
             legacy_output = parent / 'legacy.json'
             with (mock.patch.object(reports, 'source_identity', return_value=identity),
-                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile}),
-                  mock.patch.dict(reports.PYTHON_COMPONENT_PROFILES,
-                                  {profile: dict(spec, scripts=tuple({*spec['scripts'], script}))})):
+                  mock.patch.object(reports, 'source_observation_binding', return_value={'profile': profile})):
                 self.assertEqual(reports.observe_python(repo, script, [], output, parent / 'source', profile), 0)
                 self.assertEqual(reports.observe_python(repo, script, [], legacy_output), 0)
             record = json.loads(output.read_bytes())

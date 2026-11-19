@@ -21,6 +21,7 @@ import time
 MAX_OUTPUT = 128 << 10
 MAX_JSON = 32 << 10
 SECONDS = 5.0
+WORKER_REAP_SECONDS = 0.125
 DEFAULT_CDB = Path("C:/Program Files (x86)/Windows Kits/10/Debuggers/x64/cdb.exe")
 CDB = DEFAULT_CDB
 TOOL_FILES = {"sdk-v1": ("cdb.exe", "dbgeng.dll", "dbghelp.dll"),
@@ -33,7 +34,7 @@ class IdentityDeadline(ValueError):
 
 
 def _failure_kind(error: Exception) -> str:
-    if isinstance(error, IdentityDeadline):
+    if isinstance(error, (IdentityDeadline, subprocess.TimeoutExpired)):
         return "deadline"
     if isinstance(error, FileNotFoundError):
         return "missing"
@@ -295,8 +296,12 @@ def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic,
     raw = bytearray()
     status = "transport_failed"
     operation = "pipe-peek"
+    # Windows signals worker exit after termination returns. Reserve part
+    # of the original deadline to observe that exit without extending it.
+    reap_budget = min(WORKER_REAP_SECONDS, max(0, deadline - _clock()) / 4)
+    collection_deadline = deadline - reap_budget
     try:
-        while _clock() < deadline:
+        while _clock() < collection_deadline:
             operation = "pipe-peek"
             count = available(process.stdout)
             if count:
@@ -316,7 +321,7 @@ def _collect(process, available, *, deadline, _read=None, _clock=time.monotonic,
                 if code is not None:
                     status = "captured" if process.returncode == 0 else "debugger_failed"
                     break
-                _sleep(min(0.01, max(0, deadline - _clock())))
+                _sleep(min(0.01, max(0, collection_deadline - _clock())))
         else:
             status = "deadline"
     except Exception as error:

@@ -39,6 +39,7 @@ TARGETS = {
     },
 }
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+STABLE_TAG_VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?")
 HTTP_STATUS = re.compile(r"^HTTP/\S+\s+(\d{3})(?:\s|$)")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
 
@@ -189,6 +190,7 @@ def classify_release_state(
     expected_tag: str,
     expected_version: str,
     evidence: object,
+    require_route_registry: bool = True,
 ) -> str:
     if not isinstance(evidence, dict):
         return "mismatch"
@@ -208,8 +210,9 @@ def classify_release_state(
     if (
         not isinstance(tag_commit, str)
         or COMMIT.fullmatch(tag_commit) is None
-        or evidence.get("tagContainsRegistry") is not True
-        or evidence.get("tagRegistryMatches") is not True
+        or (require_route_registry and (
+            evidence.get("tagContainsRegistry") is not True
+            or evidence.get("tagRegistryMatches") is not True))
         or evidence.get("tagManifestVersion") != expected_version
     ):
         return "mismatch"
@@ -291,6 +294,49 @@ def record_observations(repo: Path, declarations, exit_code: int, response: str,
     }
 
 
+def record_site_observations(repo: Path, exit_code: int, response: str, *, visibility: str) -> list[dict]:
+    """Observe each current stable Docs tag independently of the frozen route clock."""
+    rows = []
+    for target, config in TARGETS.items():
+        prefix = config["tagPrefix"]
+        result = _git(repo, "tag", "--list", "--sort=refname", prefix + "*", check=False)
+        stable = []
+        for tag in result.stdout.splitlines():
+            match = STABLE_TAG_VERSION.fullmatch(tag.removeprefix(prefix))
+            if tag.startswith(prefix) and match:
+                stable.append((tuple(map(int, match.groups())), tag))
+        if result.returncode or not stable:
+            continue
+        highest = max(version for version, _ in stable)
+        # Build metadata does not affect SemVer precedence. Resolve ties by
+        # the first Git refname, as the Docs tag selector also does.
+        tag = min(tag for version, tag in stable if version == highest)
+        version = tag.removeprefix(prefix)
+        ref = f"refs/tags/{tag}"
+        try:
+            commit = _git(repo, "rev-parse", "--verify", f"{ref}^{{commit}}").stdout.strip()
+        except subprocess.CalledProcessError:
+            continue
+        version_at_tag = None
+        try:
+            manifest = json.loads(_git(repo, "show", f"{commit}:{config['manifest'].as_posix()}").stdout)
+            if isinstance(manifest, dict):
+                version_at_tag = manifest.get("version")
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            pass
+        lookup, release = _release_for(tag, exit_code, response, visibility)
+        evidence = {"tagExists": True, "tagCommit": commit, "tagManifestVersion": version_at_tag,
+                    "lookup": lookup, "release": release}
+        state = classify_release_state(expected_tag=tag, expected_version=version, evidence=evidence,
+                                       require_route_registry=False)
+        rows.append({
+            "target": target, "tag": tag, "version": version, "tag_commit": commit, "state": state,
+            "release_id": release.get("id") if isinstance(release, dict) else None,
+            "release_draft": release.get("draft") if isinstance(release, dict) else None,
+        })
+    return rows
+
+
 def _git(repo: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
     return subprocess.run(
         ["git", *args],
@@ -368,6 +414,7 @@ def main(argv: list[str] | None = None) -> int:
                         default="public", help="record: visibility actually established by the reader")
     parser.add_argument("--source", help="record: the observing workflow's source commit")
     parser.add_argument("--run-id", default="", help="record: the observing workflow run")
+    parser.add_argument("--ci-run-id", help="record: selected original successful Core run ID")
     parser.add_argument("--output", type=Path, help="record: observation JSON to write")
     parser.add_argument("--summary", type=Path, help="record: Markdown summary to append")
     args = parser.parse_args(argv)
@@ -392,11 +439,24 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     repo = args.repo.resolve()
+    qualified_record = args.mode == "record" and args.ci_run_id is not None
+    if qualified_record:
+        if not re.fullmatch(r"[1-9][0-9]*", args.ci_run_id) or not re.fullmatch(r"[1-9][0-9]*", args.run_id):
+            parser.error("record requires positive release and selected Core run ids")
+        if args.source is None or COMMIT.fullmatch(args.source) is None:
+            parser.error("record requires --source as a full commit id")
+        if _git(repo, "rev-parse", "--verify", "HEAD").stdout.strip() != args.source:
+            parser.error("record checkout differs from the selected release source")
     try:
         declarations = load_declarations(repo)
     except ContractError as error:
-        print(f"command-route release contract: {error}", file=sys.stderr)
-        return 2
+        if not qualified_record:
+            print(f"command-route release contract: {error}", file=sys.stderr)
+            return 2
+        # A selected historical source may predate the clock declarations.
+        # Keep that role explicitly unknown while observing the Docs tags.
+        print("command-route publication declarations are unavailable for the selected source.", file=sys.stderr)
+        declarations = ()
 
     if args.mode == "plan":
         for declaration in declarations:
@@ -424,6 +484,11 @@ def main(argv: list[str] | None = None) -> int:
             repo, declarations, exit_code, response, source=args.source,
             run_id=args.run_id, visibility=args.releases_visibility,
             observed_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        if qualified_record:
+            document["ci_run_id"] = args.ci_run_id
+            document["route_clock_status"] = "observed" if declarations else "declarations-unavailable"
+            document["site_observations"] = record_site_observations(repo, exit_code, response,
+                                                                     visibility=args.releases_visibility)
         args.output.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n",
                                encoding="utf-8")
         lines = [f"{row['target']}: {row['tag']}: {row['state']}"

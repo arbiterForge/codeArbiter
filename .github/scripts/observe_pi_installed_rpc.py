@@ -360,7 +360,9 @@ def produce(config,*,authenticated_payloads):
     config={k:str(v) if isinstance(v,Path) else v for k,v in config.items()}
     selected=config.get('parent_author_fixture',False)
     require(type(selected) is bool,'closed parent author selection required')
-    if selected:require(actual_platform()=='linux/amd64','parent author requires installed Linux owner')
+    if selected:
+        require(actual_platform() in ('linux/amd64', 'darwin/arm64'),
+                'parent author requires a supported installed POSIX owner')
     repo=ordinary(config['repo']).resolve(strict=True);workspace=Path(config['workspace']).absolute();output=Path(config['output']).absolute()
     require(not workspace.is_relative_to(repo) and not repo.is_relative_to(workspace) and not output.is_relative_to(workspace),'Pi owned paths overlap source/retention')
     for path in [workspace,output]:

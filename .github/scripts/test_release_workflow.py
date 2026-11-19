@@ -289,6 +289,14 @@ class SourceSelectionTest(unittest.TestCase):
         self.assertIn("contents: read", job)
         self.assertNotIn("contents: write", job)
         self.assertIn("--releases-visibility public", job)
+        self.assertIn("ref: ${{ github.workflow_sha }}", job)
+        self.assertIn("path: release-observer", job)
+        self.assertIn("ref: ${{ needs.preflight.outputs.source }}", job)
+        self.assertIn("path: release-source", job)
+        self.assertIn("working-directory: release-observer", job)
+        self.assertIn('--repo "$GITHUB_WORKSPACE/release-source"', job)
+        self.assertIn("CI_RUN_ID: ${{ needs.preflight.outputs.ci-run-id }}", job)
+        self.assertIn('--ci-run-id "$CI_RUN_ID"', job)
 
     def test_no_successful_ci_is_refused(self):
         with self.assertRaisesRegex(self.rs.SelectionError, "no successful push CI run"):

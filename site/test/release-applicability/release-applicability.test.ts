@@ -80,6 +80,14 @@ function historicalGit(
 }
 
 describe("selectCurrentGovernanceReleases", () => {
+  it("selects the first Git refname for stable tags tied on SemVer precedence", () => {
+    const releases = tagRefs("v3.0.0+z.2", "v3.0.0+a.2", ...defaultTags);
+    const result = selectCurrentGovernanceReleases(targets(), ledger(), releases);
+    const reversed = selectCurrentGovernanceReleases(targets(), ledger(), [...releases].reverse());
+    expect(result[0].tag).toBe("v3.0.0+a.2");
+    expect(reversed).toEqual(result);
+  });
+
   it("selects the highest stable SemVer independently for every governance host (O-01)", () => {
     const selected = selectCurrentGovernanceReleases(
       targets(),
