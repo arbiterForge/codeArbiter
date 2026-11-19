@@ -45,7 +45,7 @@ const shortCommit = (commit: string) => commit.slice(0, 12);
                 <code>{shortCommit(host.publicationCommit)}</code>
               </a>
             </td>
-            <td>{host.publication?.state ?? "unknown"}{host.publication?.observedAt ? ` (observed ${host.publication.observedAt})` : ""}</td>
+            <td>{host.publication?.state ?? "unknown"}{host.publication?.uncertainty === "api-unavailable" ? " (release evidence unavailable)" : ""}{host.publication?.observedAt ? ` (observed ${host.publication.observedAt})` : ""}</td>
             <td>{host.originalPublicationReceipt === "recorded" ? "Recorded" : "Not yet reconciled"}</td>
           </tr>
         ))}

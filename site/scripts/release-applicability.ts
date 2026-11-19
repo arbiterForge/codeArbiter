@@ -7,6 +7,7 @@ import { dirname, isAbsolute, join, relative, resolve, sep } from "node:path";
 import ts from "typescript";
 
 const GOVERNANCE_TARGETS = ["ca", "ca-codex", "ca-pi"] as const;
+const PUBLICATION_TARGETS = { ca: "claude", "ca-codex": "codex", "ca-pi": "pi" } as const;
 const DECLARED_TARGETS = new Set([...GOVERNANCE_TARGETS, "ca-sandbox"]);
 const TARGET_BLOCK = /<!-- release-targets -->([\s\S]*?)<!-- \/release-targets -->/;
 const TARGET_HEADER = /^\[([^\]]+)]$/;
@@ -33,6 +34,7 @@ export interface PublicationObservation {
   workflowRun?: string;
   observationSource?: string;
   releaseId?: number;
+  uncertainty?: "api-unavailable";
 }
 
 export interface CurrentGovernanceRelease {
@@ -433,7 +435,8 @@ export function selectCurrentGovernanceReleases(
         throw new Error(`Release tag ${tag} must peel to a nonzero lowercase 40-hex commit`);
       }
       if (parsed.prerelease !== undefined) continue;
-      if (!selected || compareVersions(parsed, selected.parsed) > 0) {
+      const precedence = selected ? compareVersions(parsed, selected.parsed) : 1;
+      if (!selected || precedence > 0 || (precedence === 0 && tag < selected.tag)) {
         selected = { tag, version, parsed, commit };
       }
     }
@@ -600,12 +603,12 @@ export function observedPublication(release: CurrentGovernanceRelease, input: un
       || typeof record.workflow_run !== "string" || !/^[1-9][0-9]*$/.test(record.workflow_run)
       || typeof record.observed_at !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(record.observed_at)
       || !Number.isFinite(Date.parse(record.observed_at)) || Date.parse(record.observed_at) > Date.now() + 60000
-      || !Array.isArray(record.observations)) return unknown;
-  const matches = record.observations.filter((row: unknown) => row && typeof row === "object"
-    && (row as Record<string, unknown>).target === release.target && (row as Record<string, unknown>).tag === release.tag);
+      || !Array.isArray(record.site_observations)) return unknown;
+  const matches = record.site_observations.filter((row: unknown) => row && typeof row === "object"
+    && (row as Record<string, unknown>).target === PUBLICATION_TARGETS[release.target] && (row as Record<string, unknown>).tag === release.tag);
   if (matches.length !== 1) return unknown;
   const row = matches[0] as Record<string, unknown>;
-  if (row.tag_commit !== release.publicationCommit || row.first_containing_version !== release.version) return unknown;
+  if (row.tag_commit !== release.publicationCommit || row.version !== release.version) return unknown;
   const provenance = { observedAt: record.observed_at, workflowRun: record.workflow_run, observationSource: record.source_commit };
   if (row.state === "published" && row.release_draft === false && Number.isSafeInteger(row.release_id) && Number(row.release_id) > 0)
     return { state: "published", releaseId: Number(row.release_id), ...provenance };
@@ -614,6 +617,7 @@ export function observedPublication(release: CurrentGovernanceRelease, input: un
   if (row.state === "tag-only" && record.release_visibility === "draft-inclusive" && row.release_id === null && row.release_draft === null)
     return { state: "tag-only", ...provenance };
   if (row.state === "mismatch") return { state: "mismatch", ...provenance };
+  if (row.state === "api-unavailable") return { state: "unknown", uncertainty: "api-unavailable", ...provenance };
   return unknown;
 }
 

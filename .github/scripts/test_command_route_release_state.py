@@ -435,6 +435,73 @@ class RecordedObservationTest(ObserveIntegrationTest):
             evidence=evidence(release={"draft": False, "tag_name": EXPECTED_TAG,
                                        "target_commitish": "main"})), "published")
 
+    def test_site_observes_highest_stable_tag_without_moving_the_route_clock(self):
+        self._write("plugins/ca/.claude-plugin/plugin.json", {"version": "3.0.0"})
+        RELEASE_STATE._git(self.repo, "commit", "--quiet", "-am", "New current site release")
+        RELEASE_STATE._git(self.repo, "tag", "v3.0.0")
+        RELEASE_STATE._git(self.repo, "tag", "v4.0.0-rc.1")
+        selected = RELEASE_STATE._git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        releases = json.loads(self.releases())
+        releases[0].append({"id": 77, "tag_name": "v3.0.0", "draft": False, "target_commitish": selected})
+        listing = Path(self.temporary.name) / "site-releases.json"
+        listing.write_text(json.dumps(releases), encoding="utf-8")
+        output = Path(self.temporary.name) / "site-observation.json"
+        with redirect_stdout(io.StringIO()):
+            code = RELEASE_STATE.main([
+                "record", "--repo", str(self.repo), "--releases", str(listing), "--releases-exit", "0",
+                "--source", selected, "--run-id", "41", "--ci-run-id", "32", "--output", str(output)])
+        self.assertEqual(code, 0)
+        document = json.loads(output.read_bytes())
+        self.assertEqual(document["ci_run_id"], "32")
+        clock, site = document["observations"][0], document["site_observations"][0]
+        self.assertEqual((clock["target"], clock["tag"], clock["tag_commit"], clock["state"]),
+                         ("claude", "v2.17.0", self.commit, "published"))
+        self.assertEqual(site, {"target": "claude", "tag": "v3.0.0", "version": "3.0.0",
+                               "tag_commit": selected, "state": "published", "release_id": 77, "release_draft": False})
+        unavailable = RELEASE_STATE.record_site_observations(self.repo, 1, "", visibility="public")
+        self.assertTrue(all(row["state"] == "api-unavailable" for row in unavailable))
+
+    def test_control_plane_observes_historical_source_without_its_cli_or_route_policy(self):
+        RELEASE_STATE._git(self.repo, "rm", "--", "core/surface/command-routes.json")
+        legacy_cli = self.repo / ".github/scripts/check_command_route_release_state.py"
+        legacy_cli.parent.mkdir(parents=True)
+        legacy_cli.write_text('raise SystemExit("pre-transport CLI must not run")\n', encoding="utf8")
+        RELEASE_STATE._git(self.repo, "add", "--", ".github")
+        RELEASE_STATE._git(self.repo, "commit", "--quiet", "-m", "Historical source shape")
+        source = RELEASE_STATE._git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        self.assertNotEqual(legacy_cli, MODULE_PATH)
+        listing = Path(self.temporary.name) / "historical-releases.json"
+        listing.write_text(self.releases(), encoding="utf8")
+        output = Path(self.temporary.name) / "historical-observation.json"
+        args = [
+            "record", "--repo", str(self.repo), "--releases", str(listing), "--releases-exit", "0",
+            "--source", source, "--run-id", "41", "--ci-run-id", "32", "--output", str(output),
+        ]
+        with redirect_stdout(io.StringIO()):
+            self.assertEqual(RELEASE_STATE.main(args), 0)
+        document = json.loads(output.read_bytes())
+        self.assertEqual((document["source_commit"], document["ci_run_id"], document["route_clock_status"]),
+                         (source, "32", "declarations-unavailable"))
+        self.assertEqual(document["observations"], [])
+        self.assertEqual([(r["target"], r["tag_commit"], r["state"]) for r in document["site_observations"]],
+                         [(target, self.commit, "published") for target in ("claude", "codex", "pi")])
+        args[args.index(source)] = "d" * 40
+        with self.assertRaises(SystemExit):
+            RELEASE_STATE.main(args)
+        self.assertEqual(json.loads(output.read_bytes()), document)
+
+    def test_site_stable_metadata_tie_uses_first_git_refname(self):
+        for version in ("3.0.0+z.2", "3.0.0+a.2"):
+            self._write("plugins/ca/.claude-plugin/plugin.json", {"version": version})
+            RELEASE_STATE._git(self.repo, "commit", "--quiet", "-am", version)
+            RELEASE_STATE._git(self.repo, "tag", "v" + version)
+        selected = RELEASE_STATE._git(self.repo, "rev-parse", "HEAD").stdout.strip()
+        releases = json.dumps([[{"id": 99, "tag_name": "v3.0.0+a.2", "draft": False,
+                                 "target_commitish": selected}]])
+        rows = RELEASE_STATE.record_site_observations(self.repo, 0, releases, visibility="public")
+        self.assertEqual((rows[0]["tag"], rows[0]["version"], rows[0]["tag_commit"], rows[0]["state"]),
+                         ("v3.0.0+a.2", "3.0.0+a.2", selected, "published"))
+
     def test_repeat_observation_is_idempotent_and_grants_no_removal(self):
         first = self.record(self.releases())[1]
         second = self.record(self.releases())[1]

@@ -483,25 +483,38 @@ jobs:
       # cannot prove a hidden draft absent; omitted entries remain unknown.
       contents: read
     steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+      - name: Checkout the workflow's observation code
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
         with:
-          ref: refs/heads/main
+          ref: ${{ github.workflow_sha }}
+          path: release-observer
+          persist-credentials: false
+      - name: Checkout the selected release source and tag history
+        uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          ref: ${{ needs.preflight.outputs.source }}
+          path: release-source
           fetch-depth: 0
           fetch-tags: true
           persist-credentials: false
       - name: Observe declared first-containing Releases
+        working-directory: release-observer
         env:
           GH_TOKEN: ${{ github.token }}
+          OBSERVER_SHA: ${{ github.workflow_sha }}
           SOURCE: ${{ needs.preflight.outputs.source }}
+          CI_RUN_ID: ${{ needs.preflight.outputs.ci-run-id }}
         run: |
           set -uo pipefail
+          test "$(git rev-parse --verify HEAD)" = "$OBSERVER_SHA" || exit 1
           gh api --paginate --slurp "repos/$GITHUB_REPOSITORY/releases?per_page=100" \
             > "$RUNNER_TEMP/route-releases.json"
           LIST_EXIT=$?
           python3 .github/scripts/check_command_route_release_state.py record \
+            --repo "$GITHUB_WORKSPACE/release-source" \
             --releases "$RUNNER_TEMP/route-releases.json" --releases-exit "$LIST_EXIT" \
             --releases-visibility public \
-            --source "$SOURCE" --run-id "$GITHUB_RUN_ID" \
+            --source "$SOURCE" --run-id "$GITHUB_RUN_ID" --ci-run-id "$CI_RUN_ID" \
             --output "$RUNNER_TEMP/route-publication-observation.json" \
             --summary "$GITHUB_STEP_SUMMARY"
       - name: Retain the route publication observation

@@ -145,6 +145,9 @@ def _source_git(repo, *args, index=None):
     command = ["git", "--no-optional-locks", "--no-replace-objects", "--no-lazy-fetch"]
     if index is not None:
         env["GIT_INDEX_FILE"] = str(index)
+        # Read physical worktree state beyond MAX_PATH in deep Windows checkouts.
+        if os.name == "nt":
+            command += ["-c", "core.longpaths=true"]
         command += ["-c", "core.splitIndex=false", "-c", "core.fsmonitor=false",
                     "-c", "core.untrackedCache=false", "-c", "index.sparse=false",
                     "-c", "core.sparseCheckout=false"]
@@ -879,6 +882,11 @@ TS_FINDING_RECIPES.update({
         'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes',
         'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run',
     ))},
+    "scenario:SEQ-17": {"profile": "farm-tools-v1", "selectors": frozenset((
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)',
+    ))},
     'disposition:findings:SF06': {"profile": "farm-tools-v1", "selectors": frozenset((
         'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author',
         'vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure',
@@ -1014,7 +1022,8 @@ Q02_SOURCE_JOB = SOURCE_JOB
 Q02_SOURCE_PAYLOAD = "major-source-inputs-q02-implementation"
 Q02_SOURCE_UPLOAD = "Upload Q02 implementation source-test inputs"
 Q02_SOURCE_CELLS = frozenset(("task:Q-02",))
-Q02_SOURCE_SCRIPTS = frozenset((".github/scripts/test_major_readiness.py", ".github/scripts/test_release_workflow.py"))
+Q02_READINESS_SCRIPT = ".github/scripts/test_major_readiness.py"
+Q02_SOURCE_SCRIPTS = frozenset((Q02_READINESS_SCRIPT, ".github/scripts/test_release_workflow.py"))
 ROUTE_RELEASE_SOURCE_PROFILE = "route-release-state-component-v1"
 ROUTE_RELEASE_SOURCE_SCRIPT = ".github/scripts/test_command_route_release_state.py"
 ROUTE_COMPATIBILITY_SCRIPT = ".github/scripts/test_command_route_compatibility.py"
@@ -1022,6 +1031,10 @@ ROUTE_GENERATOR_SCRIPT = ".github/scripts/test_build_surface.py"
 SF13_CELL = "disposition:findings:SF13"
 SF13_SYNC_SCRIPT = ".github/scripts/test_sync_core.py"
 OUTER_UNITTEST_RESULT = "entrypoint-text-runner"
+OUTER_UNITTEST_ENTRYPOINTS = {
+    (ROUTE_RELEASE_SOURCE_PROFILE, ROUTE_COMPATIBILITY_SCRIPT),
+    (Q02_SOURCE_PROFILE, Q02_READINESS_SCRIPT),
+}
 ROUTE_RELEASE_SOURCE = {
     "job": "[CHECK] | [CORE] | Generated surface",
     "payload": "major-source-inputs-route-release-state",
@@ -3055,6 +3068,8 @@ HOOK_F02_COMPONENTS = {'finite-hookf02-modelib': {'script': '.github/scripts/tes
 
 def _finding_python_command(argv, profile, script=None):
     permitted = {row["script"] for row in PYTHON_FINDING_RECIPES.values() if row["profile"] == profile}
+    permitted.update(component["script"] for recipe in SOURCE_FINDING_COMPOSITIONS.values()
+                     for component in recipe if component["profile"] == profile)
     if profile == "hooks-single-owner-findings-v1":
         permitted |= {row["script"] for row in HOOK_F02_COMPONENTS.values()}
         permitted.update((ROUTE_GENERATOR_SCRIPT, SF13_SYNC_SCRIPT))
@@ -3804,6 +3819,174 @@ SOURCE_FINDING_COMPOSITIONS = {
                 "ReviewResubmissionTest.test_malformed_first_report_gets_fresh_linked_capture_without_mutating_original",
             )),
     ),
+    "scenario:SEQ-01": (
+        source_component("hooks-single-owner-findings-v1", ".github/scripts/test_prompt_submit.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-finite-hookf01-observation.json", (
+                "TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude",
+                "TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex",
+                "TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona",
+                "TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once",
+                "TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery",
+            )),
+        source_component("hooks-single-owner-findings-v1", ".github/scripts/test_mode_compaction.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-mode-revisit-guard-observation.json", (
+                "TestModePlaneFailureNeverCostsTheEnforcer.test_installed_enforcer_blocks_protected_commits_across_mode_revisits",
+            )),
+    ),
+    "scenario:SEQ-02": tuple(
+        source_component("hooks-single-owner-findings-v1", component["script"],
+            "python-source-observations-", "Retain original Python source-test observations",
+            f"python-{observation}-observation.json",
+            (selector.split(":__main__.", 1)[1] for selector in component["selectors"]))
+        for observation, component in HOOK_F02_COMPONENTS.items()
+    ),
+    "task:P-01": (
+        source_component("impact-single-owner-findings-v1", ".github/scripts/test_integration_candidate.py",
+            "impact-source-observations-", "Retain original Impact source-test observations",
+            "python-p01-integration-observation.json", (
+                "PayloadGateIntegration.test_baseline_not_in_head_fails_closed",
+                "PayloadGateIntegration.test_baseline_not_on_main_fails_closed",
+                "PayloadGateIntegration.test_candidate_already_tagged_fails",
+                "PayloadGateIntegration.test_main_reaching_the_candidate_fails",
+                "PayloadGateIntegration.test_no_payload_change_since_baseline_passes_without_candidate",
+                "PayloadGateIntegration.test_payload_on_a_version_other_than_the_candidate_fails",
+                "PayloadGateIntegration.test_payload_on_the_unchanged_main_version_fails",
+                "PayloadGateIntegration.test_strict_rule_is_unchanged_for_a_main_targeted_unchanged_version",
+                "PayloadGateIntegration.test_two_successive_children_on_the_same_candidate_pass_only_under_the_rule",
+                "PayloadGateIntegration.test_unresolvable_main_ref_fails_closed",
+                "PiIntegrationValidation.test_heading_already_on_baseline_fails",
+                "PiIntegrationValidation.test_main_heading_collision_fails",
+                "PiIntegrationValidation.test_main_reaching_candidate_fails",
+                "PiIntegrationValidation.test_missing_candidate_fails",
+                "PiIntegrationValidation.test_missing_changelog_heading_fails",
+                "PiIntegrationValidation.test_published_candidate_tag_fails",
+                "PiIntegrationValidation.test_root_not_regenerated_since_baseline_fails",
+                "PiIntegrationValidation.test_second_child_passes_when_heading_already_on_integration_base",
+                "PiIntegrationValidation.test_stale_root_metadata_fails",
+                "PiIntegrationValidation.test_the_guard_can_load_the_shared_rule_module_in_a_fresh_process_state",
+                "PiIntegrationValidation.test_the_guard_cli_runs_end_to_end_without_crashing",
+                "PiIntegrationValidation.test_wrong_candidate_fails",
+                "RecordParsing.test_absent_record_keeps_strict_rule",
+                "RecordParsing.test_empty_base_keeps_strict_rule",
+                "RecordParsing.test_integration_base_selects_the_record",
+                "RecordParsing.test_main_and_merge_group_main_never_select",
+                "RecordParsing.test_malformed_record_fails_closed",
+                "RecordParsing.test_other_branch_keeps_strict_rule",
+                "RecordParsing.test_prerelease_candidate_is_refused",
+                "RecordParsing.test_record_cannot_enrol_main",
+                "RecordParsing.test_refs_heads_prefix_is_normalized",
+                "RecordParsing.test_short_baseline_fails_closed",
+                "RecordParsing.test_the_committed_record_parses",
+                "RecordParsing.test_wrong_schema_fails_closed",
+                "WorkflowAdmission.test_all_three_version_gates_and_pi_guard_pass_the_ci_base_branch",
+                "WorkflowAdmission.test_ci_admits_integration_prs_and_pushes",
+                "WorkflowAdmission.test_ci_and_codeql_grant_no_write_permission",
+                "WorkflowAdmission.test_docs_deploy_stays_main_only",
+                "WorkflowAdmission.test_integration_push_selects_every_domain",
+                "WorkflowAdmission.test_release_admits_only_same_repo_main_push_or_main_dispatch",
+            )),
+        source_component(Q02_SOURCE_PROFILE, ".github/scripts/test_release_workflow.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-q02-release-observation.json", (
+                "TriggerTest.test_preflight_requires_a_successful_same_repo_main_push",
+                "TriggerTest.test_dispatch_is_refused_off_the_default_branch",
+                "ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit",
+                "SourceSelectionTest.test_workflow_run_event_binds_its_own_run",
+            )),
+    ),
+    "scenario:SEQ-22": (
+        source_component("hooks-single-owner-findings-v1", ".github/scripts/test_release_target.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-finite-release-receipt-observation.json", (
+                "FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects",
+                "FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt",
+                "FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on",
+                "FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed",
+                "FaultInjectionTests.test_wrong_package_bytes_on_rerun_are_refused",
+                "FaultInjectionTests.test_registry_mismatch_is_not_completed",
+                "FaultInjectionTests.test_public_pi_release_never_republishes_npm",
+            )),
+        source_component(Q02_SOURCE_PROFILE, ".github/scripts/test_release_workflow.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-q02-release-observation.json", (
+                "ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+                "ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+                "ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+                "ConsumerSafetyGateTest.test_release_goes_public_only_after_every_channel",
+                "ConsumerSafetyGateTest.test_receipt_is_written_after_the_release_is_public",
+            )),
+    ),
+    "scenario:SEQ-23": (
+        source_component(Q02_SOURCE_PROFILE, Q02_READINESS_SCRIPT,
+            "python-source-observations-", "Retain original Python source-test observations",
+            'python-q02-readiness-observation.json', (
+                'ReadinessTest.test_valid_receipt_is_non_circular',
+                'ReadinessTest.test_publication_task_cannot_enter_prepublication_population',
+                'ReadinessTest.test_wrong_source_tree_run_and_manifests_refuse',
+                'ReadinessTest.test_forged_untrusted_run_refuses',
+                'ReadinessTest.test_missing_expired_wrong_archive_refuses',
+                'ReadinessTest.test_unknown_skipped_missing_duplicate_cells_refuse',
+                'ReadinessTest.test_caller_pass_cannot_replace_successful_named_job',
+                'ReadinessTest.test_wrong_or_expired_payload_artifact_refuses',
+                'ReadinessTest.test_distributed_settlement_is_not_prepublication',
+                'ReadinessTest.test_exact_member_readback_is_required_by_live_verification',
+                'ReadinessTest.test_matching_candidate_without_required_readiness_remains_pending',
+                'ReadinessTest.test_producer_requires_original_executed_reports',
+                'ReadinessTest.test_interned_report_payloads_preserve_exact_archive_and_member_admission',
+                'ReadinessTest.test_first_effect_gate_precedes_tag_and_keeps_pi_provenance_check',
+            )),
+        source_component(Q02_SOURCE_PROFILE, '.github/scripts/test_release_workflow.py',
+            "python-source-observations-", "Retain original Python source-test observations",
+            'python-q02-release-observation.json', (
+                'SourceSelectionTest.test_newer_failed_head_selects_the_older_successful_source_and_says_so',
+                'SourceSelectionTest.test_no_successful_ci_is_refused',
+                'SourceSelectionTest.test_source_no_longer_on_main_is_refused',
+                'SourceSelectionTest.test_expired_or_missing_artifacts_are_reported_not_hidden',
+                'SourceSelectionTest.test_selection_that_differs_from_the_approved_candidate_is_refused',
+                'SourceSelectionTest.test_workflow_run_event_binds_its_own_run',
+                'TriggerTest.test_each_run_releases_its_own_commit_from_its_own_manifests',
+                'TriggerTest.test_preflight_requires_a_successful_same_repo_main_push',
+                'ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit',
+                'ConsumerSafetyGateTest.test_package_cohort_is_verified_before_anything_is_published',
+                'ConsumerSafetyGateTest.test_attached_package_reads_back_byte_identical',
+            )),
+    ),
+    "scenario:SEQ-25": (
+        source_component("hooks-single-owner-findings-v1", "tools/test_measurement_contracts.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-finite-tf02-observation.json", (
+                "MeasurementContracts.test_empty_statusline_reports_cannot_pass",
+                "MeasurementContracts.test_unknown_statusline_scenario_is_rejected_before_measurement",
+            )),
+        source_component("hooks-single-owner-findings-v1", ".github/scripts/test_verdictlib.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-finite-cf06-observation.json", (
+                "SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event",
+                "SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity",
+                "RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check",
+                "RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass",
+                "RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence",
+                "RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes",
+                "RequiredAggregationTest.test_malformed_observations_are_refused",
+                "CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified",
+                "CheckerObservationTest.test_branch_protection_without_token_is_skipped",
+                "CheckerObservationTest.test_branch_protection_violation_and_compliance",
+                "CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable",
+                "CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable",
+                "CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly",
+            )),
+        source_component("impact-single-owner-findings-v1", ".github/scripts/test_payload_version_gate.py",
+            "impact-source-observations-", "Retain original Impact source-test observations",
+            "python-finite-cf07-observation.json", (
+                "TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes",
+                "TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing",
+                "TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction",
+                "TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes",
+                "TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump",
+            )),
+    ),
     "scenario:SEQ-27": (
         source_component("hooks-single-owner-findings-v1", ".github/scripts/test_boundedproc.py",
             "python-source-observations-", "Retain original Python source-test observations",
@@ -3975,7 +4158,7 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
                       "original component source bytes differ from the immutable source")
     capture_archive = readiness.artifact_bytes(capture, req)
     observed, _ = source_component_archive(capture_archive, component["member"],
-                                           shared=component["artifact_prefix"] == "python-source-observations-")
+                                           shared=component["artifact_prefix"] in ("python-source-observations-", "impact-source-observations-"))
     argv = observed.get("argv") if isinstance(observed, dict) else None
     script = component["script"]
     if profile == STATUSLINE_PROFILE:
@@ -3998,9 +4181,9 @@ def source_component_evidence(component, req, run, artifacts, jobs, *, job_log=N
     admit_source_observation(observed, {"source_manifest_sha256": next(row["sha256"] for row in members
         if row["path"] == SOURCE_MANIFEST), "source_upload_job_id": job["id"], "members": members,
         "documents": {SOURCE_MANIFEST: manifest}}, req, job["name"], job["id"])
-    if component["script"] == ROUTE_COMPATIBILITY_SCRIPT:
+    if (profile, script) in OUTER_UNITTEST_ENTRYPOINTS:
         readiness.require(observed.get("test_result_scope") == OUTER_UNITTEST_RESULT,
-                          "route compatibility requires the original entrypoint runner results")
+                          "component requires the original entrypoint runner results")
     tests = observed.get("tests")
     readiness.require(isinstance(tests, list) and len(tests) <= MAX_TESTS
                       and all(isinstance(test, dict) and set(test) == {"id", "result"}
@@ -4259,7 +4442,7 @@ def observe_python(repo, script, arguments, output, source_payload=None, profile
     before = source_identity(repo, profile)
     source_binding = source_observation_binding(repo, source_payload, before, profile) if source_payload else None
     rows, active = [], {}
-    outer_only = debug_runner is not None or (profile == ROUTE_RELEASE_SOURCE_PROFILE and relative == ROUTE_COMPATIBILITY_SCRIPT)
+    outer_only = debug_runner is not None or (profile, relative) in OUTER_UNITTEST_ENTRYPOINTS
     outer_result = None
     original_argv, original_path = sys.argv[:], sys.path[:]
     original_cwd = Path.cwd()

@@ -555,25 +555,25 @@ class InstalledLinuxWiringTests(unittest.TestCase):
         self.assertNotIn('parent_author_args=()',body,
             'empty-array expansion under nounset failed on the original Darwin runner')
         expected=("          parent_author_arg=''\n"
-                  '          if [ "${{ matrix.system }}" = linux ]; then\n'
+                  '          if [ "${{ matrix.system }}" = linux ] || [ "${{ matrix.system }}" = darwin ]; then\n'
                   '            parent_author_arg=--parent-author-fixture\n'
                   '          fi\n')
-        self.assertEqual(body.count(expected),1,'one optional scalar must be empty outside Linux')
+        self.assertEqual(body.count(expected),1,'optional scalar must be empty outside the supported POSIX matrix')
         self.assertEqual(body.count('${parent_author_arg:+"$parent_author_arg"}'),1,
             'alternate scalar expansion must omit the argument entirely when empty')
         self.assertEqual(body.count('python -I -B .github/scripts/coordinate_pi_host.py'),1)
         self.assertIn('set -euo pipefail',body)
 
-    def test_actual_ci_selects_only_linux_and_retains_separate_original_outputs(self):
+    def test_actual_ci_selects_supported_posix_and_retains_separate_original_outputs(self):
         from test_pi_ci_wiring import job
         root=Path(__file__).resolve().parents[2]
         text=(root/'.github/workflows/ci.yml').read_text(encoding='utf8')
         block=job(text,'pi-installed-package')
         expected=("          parent_author_arg=''\n"
-                  '          if [ "${{ matrix.system }}" = linux ]; then\n'
+                  '          if [ "${{ matrix.system }}" = linux ] || [ "${{ matrix.system }}" = darwin ]; then\n'
                   '            parent_author_arg=--parent-author-fixture\n'
                   '          fi\n')
-        self.assertEqual(block.count(expected),1,'trusted installed Linux selection missing')
+        self.assertEqual(block.count(expected),1,'trusted installed POSIX selection missing')
         self.assertEqual(block.count('${parent_author_arg:+"$parent_author_arg"}'),1)
         self.assertIn("github.event_name == 'push'",block)
         self.assertIn("github.repository == 'arbiterForge/codeArbiter'",block)
@@ -588,7 +588,7 @@ class InstalledLinuxWiringTests(unittest.TestCase):
         self.test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin()
 
 
-    def test_public_selection_refuses_nonlinux_nonboolean_and_untrusted_context_before_effects(self):
+    def test_public_selection_refuses_unsupported_nonboolean_and_untrusted_context_before_effects(self):
         import observe_pi_installed_rpc as producer
         import coordinate_pi_host as coordinator
         import os,tempfile
@@ -608,12 +608,37 @@ class InstalledLinuxWiringTests(unittest.TestCase):
                 coordinator.main(argv)
             self.assertFalse((root/'output').exists())
 
+    def test_darwin_and_linux_reach_the_existing_observer_entry(self):
+        import os, tempfile
+        from unittest import mock
+        import coordinate_pi_host as coordinator
+        import observe_pi_installed_rpc as producer
+
+        with tempfile.TemporaryDirectory() as raw:
+            root = Path(raw).resolve()
+            for platform in ("linux/amd64", "darwin/arm64"):
+                with self.subTest(platform=platform):
+                    output = root / platform.partition("/")[0]
+                    argv = ["--repo", str(root), "--stage", str(root / "stage"), "--package-root", str(root / "packages"),
+                            "--workspace", str(root / "workspace"), "--output-root", str(output),
+                            "--expected-platform", platform, "--parent-author-fixture"]
+                    with (mock.patch.object(coordinator, "program_mode", return_value=True),
+                          mock.patch.dict(os.environ, {"GITHUB_SHA": "a" * 40}),
+                          mock.patch.object(coordinator, "selected_runtime", side_effect=RuntimeError("runtime-entry")),
+                          self.assertRaisesRegex(RuntimeError, "runtime-entry")):
+                        coordinator.main(argv)
+                    self.assertTrue(output.is_dir())
+                    with (mock.patch.object(producer, "actual_platform", return_value=platform),
+                          mock.patch.object(producer, "ordinary", side_effect=RuntimeError("source-entry")),
+                          self.assertRaisesRegex(RuntimeError, "source-entry")):
+                        producer.produce({"repo": str(root), "parent_author_fixture": True}, authenticated_payloads={})
+
     def test_wiring_mutations_cannot_select_other_platform_or_drop_supervision_or_retention(self):
         from unittest import mock
         root=Path(__file__).resolve().parents[2];workflow=root/'.github/workflows/ci.yml'
         original=Path.read_text;text=original(workflow,encoding='utf8')
         for before,after in (
-            ('if [ "${{ matrix.system }}" = linux ]; then','if [ "${{ matrix.system }}" = windows ]; then'),
+            ('if [ "${{ matrix.system }}" = linux ] || [ "${{ matrix.system }}" = darwin ]; then','if [ "${{ matrix.system }}" = windows ]; then'),
             ('parent_author_arg=--parent-author-fixture','parent_author_arg=--wrong-fixture'),
             ('${parent_author_arg:+"$parent_author_arg"}',''),
             ("parent_author_arg=''",'parent_author_arg=()'),
@@ -627,7 +652,7 @@ class InstalledLinuxWiringTests(unittest.TestCase):
             def read(path,*args,**kwargs):
                 return changed if path==workflow else original(path,*args,**kwargs)
             with self.subTest(boundary=before),mock.patch.object(Path,'read_text',read),self.assertRaises(AssertionError):
-                self.test_actual_ci_selects_only_linux_and_retains_separate_original_outputs()
+                self.test_actual_ci_selects_supported_posix_and_retains_separate_original_outputs()
 
 if __name__ == "__main__":
     unittest.main(verbosity=2)

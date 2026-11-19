@@ -404,6 +404,35 @@ class SourceIdentityFreshIndexTests(unittest.TestCase):
                 if kind == "conflict": self.assertIn(b"UU ", status)
                 self.assertEqual(self.tree_state(repo), before)
 
+    @unittest.skipUnless(os.name == "nt", "Git for Windows path policy")
+    def test_fresh_index_reads_clean_and_modified_long_paths(self):
+        from retained_archive_cli_observation import private_environment
+        from _gitexec import local_read_git_env
+
+        with self.fixture() as fixture, private_environment(fixture["repo"].parent / "control-home"):
+            repo = fixture["repo"]
+            name = Path("a" * 95, "b" * 95, "c" * 95, "candidate.txt")
+            self.assertGreater(len(str(repo / name)), 260)
+            physical = Path("\\\\?\\" + str(repo / name))
+            physical.parent.mkdir(parents=True)
+            physical.write_bytes(b"original owned bytes\n")
+            argv = ["git", "-C", str(repo), "-c", "core.longpaths=true", "-c", "commit.gpgsign=false",
+                    "-c", "user.name=Fixture", "-c", "user.email=fixture@example.invalid"]
+            env = local_read_git_env()
+            subprocess.run([*argv, "add", "--", name.as_posix()], env=env,
+                           check=True, capture_output=True, timeout=15)
+            subprocess.run([*argv, "commit", "-qm", "long path fixture"], env=env,
+                           check=True, capture_output=True, timeout=15)
+            subprocess.run([*argv, "config", "core.longpaths", "false"], env=env,
+                           check=True, capture_output=True, timeout=15)
+            before = (repo / ".git/index").read_bytes()
+            self.assertTrue(owner.source_checkout(repo)[0]["clean"])
+            physical.write_bytes(b"changed owned bytes\n")
+            identity, status = owner.source_checkout(repo)
+            self.assertFalse(identity["clean"])
+            self.assertIn(b" M " + name.as_posix().encode("ascii") + b"\0", status)
+            self.assertEqual((repo / ".git/index").read_bytes(), before)
+
     def test_source_read_is_credential_blind_and_only_private_index_commands_disable_caches(self):
         from retained_archive_cli_observation import private_environment
         with self.fixture() as f, private_environment(f["repo"].parent / "control-home"):
@@ -4000,6 +4029,12 @@ class FarmFiniteFindingObservationPrerequisiteTests(unittest.TestCase):
                                         'decisions; fixture observations do not qualify arbitrary '
                                         'repository/concurrency or installed host state.'}}
 
+    EXPECTED["scenario:SEQ-17"] = {"selectors": [
+        'vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)',
+        'vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)',
+    ], "scope": 'Real disposable Git and Farm source/bundle receipt-only recovery on exact same run identity after a post-merge report write failure or producer interruption. Recovery preserves a single author dispatch, refs and prior evidence. Local deterministic HTTP replies only.'}
+
     def test_original_unfiltered_farm_findings_have_closed_source_and_named_report_admission(self):
         # Existing public API must admit this finite original owner. The current
         # absence is an assertion failure, never a missing method/import seam.
@@ -4069,7 +4104,7 @@ class FarmFiniteFindingObservationPrerequisiteTests(unittest.TestCase):
 
     def test_farm_exact_selector_unions_and_source_identities_refuse_partial_or_forged_credit(self):
         with self.bound_farm() as (f, observed, payload, groups, req, build):
-            self.assertEqual(len(build()["results"]), 4)
+            self.assertEqual(len(build()["results"]), len(self.EXPECTED))
             for name in sorted({s for g in groups for s in g["selectors"]}):
                 for state in ("missing", "skipped", "failed", "duplicate"):
                     changed = copy.deepcopy(observed); row = next(t for t in changed["tests"] if t["id"] == name)

@@ -792,6 +792,26 @@
       "scope": "Original built Pages browser assertions for S58:02."
     },
     {
+      "id": "docs-built-seq28",
+      "job": "Site | [Build] - Astro Pages",
+      "payload_name": "github-pages",
+      "observation": "site-built-browser",
+      "proof_kind": "source-test",
+      "selectors": [
+        "playwright:site/test/browser/search-bundle.spec.ts:chrome:a failed search module load retries the built UI with the retained query",
+        "playwright:site/test/browser/search-bundle.spec.ts:chrome:current query failure retains the query and retries the built search UI",
+        "playwright:site/test/browser/search-bundle.spec.ts:chrome:current data failure retains the query and retries the built search UI",
+        "playwright:site/test/browser/search-bundle.spec.ts:chrome:failed result expansion keeps existing results and can retry",
+        "playwright:site/test/browser/search-bundle.spec.ts:chrome:an older rejected query cannot replace newer successful results",
+        "playwright:site/test/browser/search-bundle.spec.ts:chrome:an older successful query cannot replace newer successful results",
+        "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+      ],
+      "cells": [
+        "scenario:SEQ-28"
+      ],
+      "scope": "The built UI retains the current search generation through provider failure, retry and late results. The live drawer preserves one keyboard listener after reconnect."
+    },
+    {
       "id": "software-pi-disposable-home-01",
       "job": "Coverage union (Pi)  <os: windows-latest>",
       "payload_name": "major-source-inputs-pi-windows-coverage",
@@ -1382,6 +1402,22 @@
         "disposition:findings:SF05"
       ],
       "scope": "Finite JSON/Markdown/effect-journal receipt failure remains explicit, previous complete report survives and independently running tasks drain; receipt-only recovery through actual source/bundle interruptions never calls an author or changes recorded refs/registry/original evidence. Deterministic local HTTP replies substitute model/provider; no real provider, installed approval or global process-containment qualification."
+    },
+    {
+      "id": "finite-seq17",
+      "job": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "payload_name": "major-source-inputs-farm-dispatcher",
+      "observation": "farm-tools",
+      "proof_kind": "source-test",
+      "selectors": [
+        "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)",
+        "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)"
+      ],
+      "cells": [
+        "scenario:SEQ-17"
+      ],
+      "scope": "Real disposable Git and Farm source/bundle receipt-only recovery on exact same run identity after a post-merge report write failure or producer interruption. Recovery preserves a single author dispatch, refs and prior evidence. Local deterministic HTTP replies only."
     },
     {
       "id": "finite-sf06",

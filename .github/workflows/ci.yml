@@ -1950,11 +1950,14 @@ jobs:
           --source-payload "${{ runner.temp }}/single-owner-impact-source-inputs"
           --output "${{ runner.temp }}/python-finite-cf07-observation.json"
           -- .github/scripts/test_payload_version_gate.py
-      - name: Validate the integration candidate-version rule
-        # Program task P-01. Same-candidate evolution is admitted only for PRs
-        # whose CI base is major/state-contracts; main and merge_group keep
-        # the strict immediate-base rule above.
-        run: python .github/scripts/test_integration_candidate.py
+      - name: Observe original integration candidate-version rule tests
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile impact-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-impact-source-inputs"
+          --output "${{ runner.temp }}/python-p01-integration-observation.json"
+          -- .github/scripts/test_integration_candidate.py
       - name: Upload single-owner Impact source-test inputs
         id: single_impact_upload
         if: ${{ !cancelled() && (success() || failure()) && steps.single_impact_prepare.outcome == 'success' }}
@@ -1971,7 +1974,9 @@ jobs:
         uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
         with:
           name: impact-source-observations-${{ github.sha }}-${{ github.run_id }}-${{ github.run_attempt }}
-          path: ${{ runner.temp }}/python-finite-cf0*-observation.json
+          path: |
+            ${{ runner.temp }}/python-finite-cf0*-observation.json
+            ${{ runner.temp }}/python-p01-integration-observation.json
           if-no-files-found: error
           retention-days: 14
           include-hidden-files: false
@@ -3716,13 +3721,22 @@ jobs:
         # are pinned (warns for a stale non-arbiter mode, never for arbiter).
         run: python .github/scripts/test_mode_readers.py
       - name: Run mode compaction-seam contract (ADR-0030)
-        if: matrix.partition == 'all' || matrix.partition == 'contracts'
+        if: (matrix.partition == 'all' || matrix.partition == 'contracts') && !(matrix.os == 'windows-latest' && matrix.partition == 'contracts')
         # #437. SessionStart fires on compact and nothing reads the event's
         # source field, so a compaction could clear a live mode out from under
         # a session. Pins both directions: the mode survives a compaction, and
         # an unvouched or corrupt anchor clears to arbiter (gates ON) rather
         # than retaining a gates-off posture on state we cannot vouch for.
         run: python .github/scripts/test_mode_compaction.py
+      - name: Observe original mode revisit enforcement contract
+        if: matrix.os == 'windows-latest' && matrix.partition == 'contracts'
+        shell: bash
+        run: >-
+          python -B .github/scripts/major_qualification_report.py observe-python
+          --repo . --source-profile hooks-single-owner-findings-v1
+          --source-payload "${{ runner.temp }}/single-owner-hook-source-inputs"
+          --output "${{ runner.temp }}/python-mode-revisit-guard-observation.json"
+          -- .github/scripts/test_mode_compaction.py
       - name: Run mode-surface and docs-coverage contract (ADR-0030)
         if: matrix.partition == 'all' || matrix.partition == 'contracts'
         # #437. site/src/curated/ is hand-written and merged by the generator,
@@ -5024,7 +5038,7 @@ jobs:
           set -euo pipefail
           pi_workspace_parent="$(python -c 'import os; from pathlib import Path; print(Path(os.environ["GITHUB_WORKSPACE"]).resolve().parent)')"
           parent_author_arg=''
-          if [ "${{ matrix.system }}" = linux ]; then
+          if [ "${{ matrix.system }}" = linux ] || [ "${{ matrix.system }}" = darwin ]; then
             parent_author_arg=--parent-author-fixture
           fi
           python -I -B .github/scripts/coordinate_pi_host.py \

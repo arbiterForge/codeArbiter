@@ -4,7 +4,7 @@
 
 export interface ProofApplicabilityInput {
   applicable: boolean;
-  publication?: { state: string };
+  publication?: { state: string; uncertainty?: "api-unavailable" };
   publishedSource: { matchesReplay: boolean };
   currentSource: { matchesReplay: boolean };
 }
@@ -24,7 +24,10 @@ export function presentProofApplicability(
   }
 
   const publication = proof.publication?.state ?? "unknown";
-  const artifact = publication === "published" ? "exact observed published ca artifact" : `selected ca tag (publication ${publication})`;
+  const publicationDetail = proof.publication?.uncertainty === "api-unavailable" ? " (release evidence unavailable)" : "";
+  const artifact = publication === "published"
+    ? "exact observed published ca artifact"
+    : `selected ca tag (publication ${publication}${publicationDetail})`;
   if (proof.applicable) {
     return {
       isMismatch: false,

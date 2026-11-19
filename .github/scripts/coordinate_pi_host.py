@@ -84,7 +84,8 @@ def main(argv=None):
     parser.add_argument('--parent-author-fixture',action='store_true')
     a=parser.parse_args(argv);a.repo=a.repo.resolve(strict=True)
     require(program_mode(os.environ,(a.repo/'.github/integration-candidate.json').is_file()),'not a trusted explicit program push')
-    require(not a.parent_author_fixture or a.expected_platform=='linux/amd64','parent author requires installed Linux owner')
+    require(not a.parent_author_fixture or a.expected_platform in ('linux/amd64', 'darwin/arm64'),
+            'parent author requires a supported installed POSIX owner')
     require(not a.output_root.exists() and not a.output_root.is_symlink(),'new coordinator output required')
     a.output_root.mkdir();state={'phase':'bootstrap'}
     try:
