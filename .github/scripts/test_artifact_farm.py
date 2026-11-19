@@ -506,6 +506,16 @@ def replay_installed_package_identity(plugin: Path, *, expected_members: dict[st
 
     with FixtureDirectory(prefix="ca-farm-package-identity-") as temporary:
         owned = physical_test_directory(temporary)
+        supported = plugin
+        if os.name != "nt":
+            supported = owned / "installed"
+            shutil.copytree(
+                plugin, supported,
+                ignore=lambda path, _names: {"artifacts"} if Path(path) == plugin / "helpers" else set(),
+            )
+            installer.install_payload(owned, "installed", plugin / "helpers/artifacts")
+            if physical_members(supported)["members"] != before:
+                raise AssertionError("installer changed the verified package member bytes")
         home = owned / "home"
         home.mkdir()
         project = owned / "project"
@@ -519,7 +529,7 @@ def replay_installed_package_identity(plugin: Path, *, expected_members: dict[st
         _package_probe([str(git), "-c", "user.name=Owned fixture", "-c", "user.email=fixture@example.invalid",
                         "-c", "commit.gpgsign=false", "commit", "--allow-empty", "-qm", "Owned fixture"], project, env)
         with mock.patch.dict(os.environ, env, clear=True):
-            harness = WorkflowHarness(project, plugin / "helpers/artifacts")
+            harness = WorkflowHarness(project, supported / "helpers/artifacts")
             harness.create_pair()
             harness.approve_pair()
             projection = _project_fixture(harness, ArtifactFarmTest.projection())
@@ -527,32 +537,45 @@ def replay_installed_package_identity(plugin: Path, *, expected_members: dict[st
         projection_sha256 = hashlib.sha256(plan.read_bytes()).hexdigest()
         project_before = physical_members(project)["members"]
 
-        unsupported = owned / "unsupported"
-        shutil.copytree(plugin, unsupported)
+        release["binaries"][platform]["sha256"] = "invalid-digest"
+        malformed = canonical_bytes(release)
+        release["binaries"][platform]["sha256"] = binary_sha256
         release["format"] = "codearbiter.artifact-release/99.0.0"
-        (unsupported / PACKAGE_MANIFEST).write_bytes(canonical_bytes(release))
-        unsupported_before = physical_members(unsupported)["members"]
-        if {name: value for name, value in unsupported_before.items() if name != PACKAGE_MANIFEST} != {
-                name: value for name, value in before.items() if name != PACKAGE_MANIFEST}:
-            raise AssertionError("unsupported control differs outside its manifest")
-        try:
-            installer.load_payload(unsupported / "helpers/artifacts")
-        except ValueError as error:
-            if str(error) != "unsupported payload manifest":
-                raise
-        else:
-            raise AssertionError("installer admitted the unsupported manifest")
+        controls = {
+            "unsupported": (canonical_bytes(release), "unsupported payload manifest",
+                            "UNSUPPORTED_VERSION", "artifact release manifest identity is unsupported"),
+            "malformed": (malformed, "payload bytes mismatch or unexpected native executable",
+                          "INVALID_INSTALLATION", "artifact release manifest binary entry is invalid"),
+        }
+        installations = {"supported": supported}
+        snapshots = {"supported": before}
+        for name, (control_manifest, installer_error, _, _) in controls.items():
+            control = owned / name
+            shutil.copytree(supported, control)
+            (control / PACKAGE_MANIFEST).write_bytes(control_manifest)
+            expected = {**before, PACKAGE_MANIFEST: hashlib.sha256(control_manifest).hexdigest()}
+            if physical_members(control)["members"] != expected:
+                raise AssertionError("invalid control differs outside its manifest")
+            try:
+                installer.load_payload(control / "helpers/artifacts")
+            except ValueError as error:
+                if str(error) != installer_error:
+                    raise
+            else:
+                raise AssertionError("installer admitted the " + name + " manifest")
+            installations[name] = control
+            snapshots[name] = expected
 
         entry = owned / "farm-admission.mjs"
         entry.write_text(_INSTALLED_FARM, encoding="utf-8")
         observations = {}
-        for name, installed in (("supported", plugin), ("unsupported", unsupported)):
+        for name, installed in installations.items():
             bridge_doctor = _package_probe([sys.executable, "-I", "-B", "-X", "utf8", "-c", _INSTALLED_BRIDGE_AND_DOCTOR,
                                             str(installed), str(project)], project, env)
             farm = _package_probe([str(node), str(entry), str(installed / PACKAGE_FARM), str(plan), projection_sha256],
                                   project, env, timeout=40)
             observations[name] = {**json.loads(bridge_doctor), "farm": json.loads(farm)}
-        supported_result, unsupported_result = observations["supported"], observations["unsupported"]
+        supported_result = observations["supported"]
         if (supported_result["bridge"] != {"platform": platform, "repository_operations_available": True}
                 or supported_result["farm"] != {"typed": True}
                 or len(supported_result["doctor"]) != 2
@@ -560,22 +583,28 @@ def replay_installed_package_identity(plugin: Path, *, expected_members: dict[st
                 or "digest verified against the pinned release manifest" not in supported_result["doctor"][0][1]
                 or supported_result["doctor"][1] != ["OK", "HTML artifact catalog validates: 2 artifacts"]):
             raise AssertionError("installed package admission differs: " + json.dumps(supported_result))
-        if (unsupported_result["bridge"] != {"error": "UNSUPPORTED_VERSION"}
-                or unsupported_result["farm"] != {"error": "artifact release manifest identity is unsupported"}
-                or len(unsupported_result["doctor"]) != 1
-                or unsupported_result["doctor"][0][0] != "FAIL"
-                or "(UNSUPPORTED_VERSION)" not in unsupported_result["doctor"][0][1]):
-            raise AssertionError("installed unsupported-manifest refusal differs: " + json.dumps(unsupported_result))
-        if (before != physical_members(plugin)["members"]
-                or unsupported_before != physical_members(unsupported)["members"]
+        for name, (_, _, bridge_code, farm_error) in controls.items():
+            refused = observations[name]
+            if (refused["bridge"] != {"error": bridge_code}
+                    or refused["farm"] != {"error": farm_error}
+                    or len(refused["doctor"]) != 1
+                    or refused["doctor"][0][0] != "FAIL"
+                    or f"({bridge_code})" not in refused["doctor"][0][1]):
+                raise AssertionError("installed " + name + " manifest refusal differs: " + json.dumps(refused))
+        if (any(physical_members(installed)["members"] != snapshots[name]
+                for name, installed in installations.items())
+                or before != physical_members(plugin)["members"]
                 or project_before != physical_members(project)["members"]):
             raise AssertionError("installed package or owned project changed during consumer readback")
+
 
     return {"format": "codearbiter.installed-package-identity/1", "platform": platform,
             "manifest_sha256": before[PACKAGE_MANIFEST], "farm_bundle_sha256": before[PACKAGE_FARM],
             "bridge_sha256": before[PACKAGE_BRIDGE], "doctor_sha256": before[PACKAGE_DOCTOR],
             "binary_sha256": binary_sha256, "projection_sha256": projection_sha256,
-            "unsupported_manifest_sha256": unsupported_before[PACKAGE_MANIFEST], "observations": observations}
+            "installer_copied_payload": supported != plugin,
+            "unsupported_manifest_sha256": snapshots["unsupported"][PACKAGE_MANIFEST],
+            "malformed_manifest_sha256": snapshots["malformed"][PACKAGE_MANIFEST], "observations": observations}
 
 
 
