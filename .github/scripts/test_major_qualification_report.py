@@ -839,6 +839,97 @@ class CanonicalNativeWholeClauseMapTest(unittest.TestCase):
         self.assertFalse({cell for cell in prohibited if policy["cell_job_bindings"].get(cell) == job})
 
 
+class SourceTreeArgumentBudgetTests(unittest.TestCase):
+    def test_large_real_source_profile_never_exceeds_windows_launch_arguments(self):
+        with tempfile.TemporaryDirectory(prefix="ca-source-tree-argv-") as temporary:
+            base = Path(temporary).resolve(); repo = base / "repo"; repo.mkdir()
+            paths = frozenset("core/surface/%04d-\u00e9\U0001f600-%s.py" % (n, "x" * 24) for n in range(1132))
+            value = b"owned immutable source\n"
+            for relative in paths:
+                target = repo / relative; target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_bytes(value)
+            git = shutil.which("git")
+            self.assertIsNotNone(git)
+            env = {k:v for k,v in os.environ.items() if k.upper() in
+                   {"SYSTEMROOT", "WINDIR", "SYSTEMDRIVE", "COMSPEC", "PATHEXT", "TEMP", "TMP"}}
+            env.update(PATH=os.pathsep.join([str(Path(git).parent), str(Path(sys.executable).parent)]),
+                       HOME=str(base), USERPROFILE=str(base), GIT_CONFIG_GLOBAL=os.devnull,
+                       GIT_CONFIG_NOSYSTEM="1", GIT_TERMINAL_PROMPT="0")
+            original = subprocess.run
+            with mock.patch.dict(os.environ, env, clear=True):
+                for args in (("init", "-q"), ("config", "maintenance.autoDetach", "false"),
+                             ("add", "."), ("-c", "user.name=fixture", "-c", "user.email=fixture@example.invalid",
+                             "-c", "commit.gpgsign=false", "commit", "-qm", "owned source profile")):
+                    original([git, "-C", str(repo), *args], check=True, capture_output=True, timeout=30)
+                before = owner._source_indices(repo)
+                calls = []
+                def windows_launch(command, *args, **kwargs):
+                    if "ls-tree" in command:
+                        units = len(subprocess.list2cmdline(command).encode("utf-16-le")) // 2 + 1
+                        self.assertLessEqual(units, 32767,
+                                             "immutable source query exceeds Windows process argument capacity")
+                        calls.append(command[command.index("--") + 1:])
+                    return original(command, *args, **kwargs)
+                with mock.patch.object(owner, "SOURCE_PATHS", paths), \
+                     mock.patch.object(owner.subprocess, "run", side_effect=windows_launch):
+                    observed = owner.source_input_snapshot(repo)
+                self.assertGreater(len(calls), 1)
+                self.assertEqual([path for call in calls for path in call], sorted(paths))
+                self.assertEqual(observed["members"], [{"path": path, "sha256": owner.readiness.digest(value),
+                    "bytes": len(value), "git_mode": "100644"} for path in sorted(paths)])
+                self.assertTrue(observed["clean"])
+                self.assertEqual(owner._source_indices(repo), before)
+
+
+    def test_batches_share_one_deadline_and_output_budget(self):
+        paths = {"core/surface/%04d-%s.py" % (n, "x" * 80) for n in range(240)}
+        with mock.patch.object(owner.time, "monotonic", side_effect=range(100)), \
+             mock.patch.object(owner, "git", return_value=b"chunk") as query:
+            rows = owner._source_tree_rows(Path("owned"), "a" * 40, paths)
+        self.assertEqual(rows, b"chunk" * query.call_count)
+        self.assertGreater(query.call_count, 1)
+        timeouts = [call.kwargs["timeout"] for call in query.call_args_list]
+        self.assertTrue(all(0 < later < earlier <= 30 for earlier, later in zip(timeouts, timeouts[1:])))
+        with mock.patch.object(owner, "MAX_JSON", len(b"chunk")), \
+             mock.patch.object(owner, "git", return_value=b"chunk") as query, \
+             self.assertRaisesRegex(ValueError, "source tree output exceeds bound"):
+            owner._source_tree_rows(Path("owned"), "a" * 40, paths)
+        self.assertEqual(query.call_count, 2)
+
+    def test_expired_aggregate_deadline_stops_before_another_launch(self):
+        paths = {"core/surface/%04d-%s.py" % (n, "x" * 80) for n in range(240)}
+        with mock.patch.object(owner.time, "monotonic", side_effect=[0, 1, 31]), \
+             mock.patch.object(owner, "git", return_value=b"row") as query, \
+             self.assertRaisesRegex(ValueError, "source tree query deadline exceeded"):
+            owner._source_tree_rows(Path("owned"), "a" * 40, paths)
+        self.assertEqual(query.call_count, 1)
+        self.assertEqual(query.call_args.kwargs["timeout"], 29)
+
+    def test_one_unlaunchable_unicode_argument_is_refused_before_git(self):
+        with mock.patch.object(owner, "git") as query, \
+             self.assertRaisesRegex(ValueError, "source tree argument exceeds launch bound"):
+            owner._source_tree_rows(Path("owned"), "a" * 40, {"\U0001f600" * 9000})
+        query.assert_not_called()
+
+    def test_batched_query_still_refuses_missing_duplicate_and_wrong_mode_rows(self):
+        with source_payload_fixture() as fixture:
+            original = owner._source_tree_rows
+            for fault in ("missing", "duplicate", "wrong-mode"):
+                def changed(*args):
+                    rows = original(*args).split(b"\0")
+                    if fault == "missing":
+                        rows.pop(0)
+                    elif fault == "duplicate":
+                        rows.insert(0, rows[0])
+                    else:
+                        rows[0] = b"120000" + rows[0][6:]
+                    return b"\0".join(rows)
+                with self.subTest(fault=fault), \
+                     mock.patch.object(owner, "_source_tree_rows", side_effect=changed), \
+                     self.assertRaisesRegex(ValueError, "source payload immutable (membership differs|member invalid)"):
+                    owner.source_input_snapshot(fixture["repo"])
+
+
 class SourcePayloadAdmissionTest(unittest.TestCase):
     def test_source_test_cannot_qualify_from_unbound_native_archive(self):
         ReportTest.setUp(self)

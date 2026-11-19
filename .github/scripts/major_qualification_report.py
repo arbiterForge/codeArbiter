@@ -24,6 +24,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 import unittest
 from unittest import mock
@@ -73,11 +74,45 @@ def new_output(path, document):
         stream.write("\n")
 
 
-def git(repo, *args, raw=False, input=None):
+def _git_argv(repo, args):
+    return ["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo), *args]
+
+
+def git(repo, *args, raw=False, input=None, timeout=30):
     env = local_read_git_env()
-    result = subprocess.run(["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo), *args],
-                            env=env, input=input, capture_output=True, timeout=30, check=True)
+    result = subprocess.run(_git_argv(repo, args), env=env, input=input,
+                            capture_output=True, timeout=timeout, check=True)
     return result.stdout if raw else result.stdout.decode("utf-8").strip()
+
+
+def _source_tree_rows(repo, source, paths):
+    # Windows CreateProcess limits the complete quoted UTF-16 command, not
+    # individual paths. Keep deterministic disjoint batches below that limit
+    # on every host, sharing the original query's 30-second budget.
+    deadline = time.monotonic() + 30
+    prefix = ("ls-tree", "-rz", "--full-tree", source, "--")
+    def fits(batch):
+        command = subprocess.list2cmdline(_git_argv(repo, (*prefix, *batch)))
+        return len(command.encode("utf-16-le")) // 2 + 1 <= 16384
+    batches, current = [], []
+    for path in sorted(paths):
+        if not fits([*current, path]):
+            require(current and fits([path]), "source tree argument exceeds launch bound")
+            batches.append(current)
+            current = []
+        current.append(path)
+    if current:
+        batches.append(current)
+    chunks, total = [], 0
+    for batch in batches:
+        remaining = deadline - time.monotonic()
+        require(remaining > 0, "source tree query deadline exceeded")
+        rows = git(repo, *prefix, *batch, raw=True, timeout=remaining)
+        total += len(rows)
+        require(total <= MAX_JSON, "source tree output exceeds bound")
+        require(time.monotonic() <= deadline, "source tree query deadline exceeded")
+        chunks.append(rows)
+    return b"".join(chunks)
 
 
 def ordinary_native_read_lock(repo):
@@ -3250,7 +3285,7 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
         current = {path.relative_to(repo).as_posix() for path in (repo / "plugins/ca/commands").glob("*.md")
                    if path.stem.upper() != "INDEX"}
         require(current == CATALOG_COMMAND_PATHS, "command catalog source namespace differs")
-    rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
+    rows = _source_tree_rows(repo, identity["source_commit"], paths)
     entries = []
     for row in rows.split(b"\0"):
         if not row: continue
