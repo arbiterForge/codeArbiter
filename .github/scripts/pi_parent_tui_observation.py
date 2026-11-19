@@ -13,6 +13,10 @@ CAP = 4 * 1024 * 1024
 BODY_SECONDS = 90
 REQUEST_CAP = 1024 * 1024
 PROFILE = "trusted-host-exact-operation-v1"
+PROVIDER_RECORDS = 12
+INSPECTION_ROLES = ("backend-author", "coverage-auditor")
+INSPECTION_REDACTION = "[REDACTED — secret-pattern match removed before transmission]"
+EFFECT_COUNTS = ("requested", "completed", "failed", "refused", "unknown", "unsettled", "containmentUnverified")
 
 def decode(raw, limit=REQUEST_CAP):
     require(type(raw) is bytes and len(raw) <= limit, "json-cap")
@@ -131,8 +135,98 @@ def transport_length(method, path, headers, nonce):
     require(type(length) is str and re.fullmatch(r"[1-9][0-9]{0,6}", length) and int(length) <= REQUEST_CAP, "provider-framing")
     return int(length)
 
+def tool_call(name, params, call_id):
+    return {"role": "assistant", "tool_calls": [{"index": 0, "id": call_id, "type": "function",
+            "function": {"name": name, "arguments": compact(params)}}]}, "tool_calls"
+
+
+class InspectionChain:
+    """One inspection-only author, then one reviewer, through the installed dispatcher."""
+
+    def __init__(self, nonce, snapshot):
+        self.nonce = nonce
+        self.snapshot = snapshot
+        self.before = snapshot()
+        require(not self.before["declined_target_present"], "inspection-effect-drift")
+        self.call_id = "fixture-inspection-parent-" + nonce
+        self.task = "Inspect existing PI-D07 fixture results without changing them " + nonce
+        self.canary = "synthetic secret marker " + nonce
+        self.author_summary = "Observed prior command output.\n" + self.canary + "\nInspection only; no changes made."
+        self.reviewer_summary = "Read the prior author file. No changes made."
+        self.turn = 0
+        self.read_sha256 = {}
+        self.prior_sha256 = None
+        self.receipt = None
+
+    def dispatch(self):
+        return tool_call("codearbiter_dispatch", {"mode": "chain", "roles": list(INSPECTION_ROLES),
+                         "task": self.task, "limits": {"maxChildOutputBytes": 512, "maxAggregateOutputBytes": 1024}},
+                         self.call_id)
+
+    def child(self, names, messages, results):
+        require(self.turn < 4, "inspection-route")
+        reviewer = self.turn >= 2
+        role = INSPECTION_ROLES[1] if reviewer else INSPECTION_ROLES[0]
+        tools = {"read", "bash"} if reviewer else {"read", "bash", "write", "edit"}
+        require(len(names) == len(tools) and set(names) == tools, "inspection-role-tools")
+        users = [m.get("content") for m in messages if type(m) is dict and m.get("role") == "user"]
+        require(len(users) == 1, "inspection-task")
+        content = users[0]
+        if type(content) is list:
+            require(len(content) == 1 and type(content[0]) is dict and content[0].get("type") == "text", "inspection-task")
+            content = content[0].get("text")
+        require(type(content) is str, "inspection-task")
+        task = decode(content.encode(), 2048)
+        keys = {"protocol", "task", "response"}
+        require(type(task) is dict and set(task) == (keys | {"prior"} if reviewer else keys)
+                and task["protocol"] == "codearbiter-dispatch-v1" and task["task"] == self.task, "inspection-task")
+        if reviewer:
+            redacted = self.author_summary.replace(self.canary, INSPECTION_REDACTION)
+            require(task["prior"] == {"role": INSPECTION_ROLES[0], "state": "accepted", "summary": redacted},
+                    "inspection-redacted-prior")
+            self.prior_sha256 = sha(task["prior"]["summary"].encode())
+        call_id = "fixture-inspection-read-" + role + "-" + self.nonce
+        if self.turn % 2 == 0:
+            require(not results, "inspection-read-start")
+            path = ("effect-" if reviewer else "command-") + self.nonce + ".txt"
+            reply = tool_call("read", {"path": path}, call_id)
+        else:
+            expected = ("after-" + self.nonce) if reviewer else ("command-" + self.nonce + "\n")
+            require(len(results) == 1 and results[0].get("tool_call_id") == call_id
+                    and results[0].get("content") == expected, "inspection-read-result")
+            self.read_sha256[role] = sha(results[0]["content"].encode())
+            summary = self.reviewer_summary if reviewer else self.author_summary
+            reply = {"content": compact({"state": "accepted", "summary": summary})}, "stop"
+        self.turn += 1
+        return reply
+
+    def finish(self, results, original_call_id):
+        require(self.turn == 4 and [m.get("tool_call_id") for m in results] == [original_call_id, self.call_id],
+                "inspection-route")
+        raw = results[-1].get("content")
+        require(type(raw) is str, "inspection-parent-result")
+        result = decode(raw.encode(), 4096)
+        require(type(result) is dict and set(result) == {"state", "children"} and result["state"] == "accepted"
+                and type(result["children"]) is list and len(result["children"]) == 2, "inspection-parent-result")
+        for child, role, expected in zip(result["children"], INSPECTION_ROLES, (self.author_summary, self.reviewer_summary)):
+            require(type(child) is dict and child.get("role") == role and child.get("state") == "accepted"
+                    and child.get("summary") == expected, "inspection-role-result")
+        author, reviewer = result["children"]
+        effect = author.get("effects")
+        require(type(effect) is dict and set(effect) == {"profile", "observation", *EFFECT_COUNTS}
+                and effect["profile"] == PROFILE and effect["observation"] == "parent-recorded"
+                and all(type(effect[k]) is int and effect[k] == 0 for k in EFFECT_COUNTS)
+                and "effects" not in reviewer, "inspection-zero-effects")
+        after = self.snapshot()
+        require(self.before == after, "inspection-effect-drift")
+        self.receipt = {"roles": list(INSPECTION_ROLES), "read_sha256": dict(self.read_sha256),
+                        "prior_redacted_sha256": self.prior_sha256, "parent_result_sha256": sha(raw.encode()),
+                        "author_effects": effect, "before": self.before, "after": after}
+        self.turn += 1
+
+
 class ProviderProtocol:
-    """Two real conversations share one deterministic, declared fixture endpoint."""
+    """One original author and a bounded inspection chain share the original fixture endpoint."""
     def __init__(self, nonce):
         self.ops = [*operations(nonce), declined_write(nonce)]
         self.nonce = nonce
@@ -142,11 +236,13 @@ class ProviderProtocol:
         self.records = []
         self.complete = False
         self.declined_result = None
+        self.inspection_snapshot = None
+        self.inspection = None
         self.bytes = 0
         self.failed = False
 
     def record(self, value):
-        if len(self.records) < 8:
+        if len(self.records) < PROVIDER_RECORDS + 1:
             self.records.append(value)
         else:
             self.failed = True
@@ -165,8 +261,17 @@ class ProviderProtocol:
             names.append(tool["function"]["name"])
         results = [m for m in body["messages"] if type(m) is dict and m.get("role") == "tool"]
         parent = "codearbiter_dispatch" in names
+        require(not self.complete, "parent-turn-cap")
+        if self.inspection is not None:
+            if parent:
+                self.inspection.finish(results, self.parent_call_id)
+                self.complete = True
+                reply = {"content": "PI-D07 fixture completed " + self.nonce}, "stop"
+            else:
+                reply = self.inspection.child(names, body["messages"], results)
+            self.bytes += size
+            return reply
         if parent:
-            require(not self.complete and self.parent_turns < 2, "parent-turn-cap")
             if self.parent_turns == 0:
                 require(not results and self.child_turns == 0, "parent-start")
                 name = "codearbiter_dispatch"
@@ -174,11 +279,12 @@ class ProviderProtocol:
                 call_id = self.parent_call_id
             else:
                 require(self.child_turns == len(self.ops) + 1 and self.declined_result is not None
-                        and results and results[-1].get("tool_call_id") == self.parent_call_id, "parent-result")
+                        and [m.get("tool_call_id") for m in results] == [self.parent_call_id], "parent-result")
+                require(callable(self.inspection_snapshot), "inspection-snapshot-owner")
+                self.inspection = InspectionChain(self.nonce, self.inspection_snapshot)
                 self.parent_turns += 1
-                self.complete = True
                 self.bytes += size
-                return {"content": "PI-D07 fixture completed " + self.nonce}, "stop"
+                return self.inspection.dispatch()
             self.parent_turns += 1
         else:
             require(self.parent_turns == 1, "parent-before-child")
@@ -199,8 +305,7 @@ class ProviderProtocol:
             call_id = "fixture-child-" + str(self.child_turns) + "-" + self.nonce
             self.child_turns += 1
         self.bytes += size
-        return {"role": "assistant", "tool_calls": [{"index": 0, "id": call_id, "type": "function",
-                 "function": {"name": name, "arguments": compact(params)}}]}, "tool_calls"
+        return tool_call(name, params, call_id)
 
 def read_declined_result(content):
     expected = {"v": 1, "admission": "denied", "execution": "not-started", "containment": "not-applicable",
@@ -301,6 +406,20 @@ def check_decline(protocol, cwd, stored, audit):
             "declined-write-audit")
     return {"target": target, "target_present": False, "journal_claim_present": False, "operation_sha256": digest,
             "result": request, "permission_audit": rows[0].removesuffix("\n")}
+
+def effect_observation(nonce, work, read):
+    import os
+    journal_root = work/".git/codearbiter/pi-delegation/v1"
+    paths = sorted(journal_root.glob("*.json"))
+    require(len(paths) <= 16, "journal-file-cap")
+    journal = {path.name: read(path, 64*1024) for path in paths}
+    effects = {"file": read(work/operations(nonce)[0]["params"]["path"], 4096),
+               "command": read(work/("command-"+nonce+".txt"), 4096)}
+    canary = work/declined_write(nonce)["params"]["path"]
+    snapshot = {"journal": {name: sha(raw) for name, raw in journal.items()},
+                "effects": {name: sha(raw) for name, raw in effects.items()},
+                "declined_target_present": os.path.lexists(canary)}
+    return [decode(raw) for raw in journal.values()], effects, snapshot
 
 def bounded_process(argv, cwd, env, deadline, *, terminal=False, gate=None, protocol=None, budget=None):
     """Only the fixed setup commands/public parent use this POSIX process owner."""
@@ -551,6 +670,7 @@ def run(config, *, authenticated_payloads):
             setup = bounded_process([config["node"],str(cli),"install",str(package),"--no-approve"],work,install_env,min(deadline,time.monotonic()+20),budget=budget)
             (output/"package-install.output").write_bytes(setup.pop("output"));owner.save(output/"package-install.json",setup)
             require(setup["returncode"] == 0 and len(owner.load(agent/"settings.json").get("packages",[])) == 1,"actual-local-package-install")
+            protocol.inspection_snapshot = lambda: effect_observation(nonce, work, owner.raw)[2]
             class Handler(BaseHTTPRequestHandler):
                 def log_message(self, *_args): pass
                 def do_GET(self):
@@ -591,11 +711,7 @@ def run(config, *, authenticated_payloads):
             (output/"parent.ansi").write_bytes(terminal_raw)
             (output/"parent.readable.txt").write_text(readable(terminal_raw),encoding="utf-8")
             owner.save(output/"parent-process.json",actual)
-            journal_root = work/".git/codearbiter/pi-delegation/v1"
-            journal_paths = sorted(journal_root.glob("*.json"))
-            require(len(journal_paths) <= 16,"journal-file-cap")
-            stored = [owner.load(path) for path in journal_paths]
-            effects = {"file":owner.raw(work/gate.ops[0]["params"]["path"],4096),"command":owner.raw(work/("command-"+nonce+".txt"),4096)}
+            stored, effects, final_effects = effect_observation(nonce, work, owner.raw)
             owner.save(output/"journal.json",stored)
             owner.save(output/"effects.json",{key:{"bytes":len(value),"sha256":sha(value),"utf8":value.decode()} for key,value in effects.items()})
             after_source = owner.source_snapshot(cold,config);after_runtime = owner.runtime_snapshot(config);after_graph = owner.graph_snapshot(Path(acquisition["prefix"]))
@@ -604,6 +720,7 @@ def run(config, *, authenticated_payloads):
             owner.save(output/"input-after.json",{"source":after_source,"runtime":after_runtime,"graph":after_graph,"installed":after_installed,"payloads":after_payload})
             outcome.update(actual_case="executed",process=actual,prompts=gate.events,provider=protocol.records,
                            declined_result=protocol.declined_result,
+                           inspection_turn=None if protocol.inspection is None else protocol.inspection.turn,
                            consumed_payloads=consumed,source_before=before_source,source_after=after_source,runtime_before=before_runtime,runtime_after=after_runtime,
                            admitted_graph_before=before_graph,admitted_graph_after=after_graph,installed_before=before_installed,installed_after=after_installed,
                            payload_before=physical,payload_after=after_payload,
@@ -612,12 +729,15 @@ def run(config, *, authenticated_payloads):
             owner.save(output/"original-outcome.json",outcome)
             require(actual["returncode"] == 0 and actual["exit_key_sent"] and not actual["forced_cleanup"]
                     and len(gate.events) == len(gate.ops) and gate.events[-1].get("decision") == "declined"
-                    and protocol.complete and len(protocol.records) == 7 and not protocol.failed, "parent-or-protocol-incomplete")
+                    and protocol.complete and len(protocol.records) == PROVIDER_RECORDS and not protocol.failed,
+                    "parent-or-protocol-incomplete")
             require(before_source==after_source and before_runtime==after_runtime and before_graph==after_graph
                     and before_installed==after_installed and physical==after_payload,"input-drift")
             check_effects(nonce,stored,effects)
             audit = owner.raw(work/".codearbiter/gate-events.log", 64*1024)
             owner.save(output/"declined-write.json", check_decline(protocol, work, stored, audit))
+            require(protocol.inspection.receipt["after"] == final_effects, "inspection-effect-drift")
+            owner.save(output/"reviewer-chain.json", protocol.inspection.receipt)
             outcome["status"]="passed"
             owner.save(output/"verification.json",{"status":"passed","scope":"first POSIX scripted public-parent-TUI fixture only; not human/full PI-D07/major qualification"})
         return outcome
@@ -628,7 +748,9 @@ def run(config, *, authenticated_payloads):
             (output/(phase+".partial-output")).write_bytes(raw)
             owner.save(output/(phase+".failure.json"),process_observation)
         if not (output/"original-outcome.json").exists():
-            outcome.update(status="failed",phase=phase,prompts=gate.events,provider=protocol.records,error_type_sha256=sha(type(error).__name__.encode()))
+            outcome.update(status="failed",phase=phase,prompts=gate.events,provider=protocol.records,
+                           inspection_turn=None if protocol.inspection is None else protocol.inspection.turn,
+                           error_type_sha256=sha(type(error).__name__.encode()))
             owner.save(output/"original-outcome.json",outcome)
         if not (output/"verification.json").exists():
             owner.save(output/"verification.json",{"status":"failed","phase":phase,"error_type_sha256":sha(type(error).__name__.encode())})

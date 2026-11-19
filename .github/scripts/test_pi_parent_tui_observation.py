@@ -85,8 +85,7 @@ class ProviderProtocolTests(unittest.TestCase):
         return {"model":"gpt-fixture", "stream":True, "tools":[{"type":"function","function":{"name":name}} for name in (["codearbiter_dispatch"] if parent else ["write","edit","bash"])],
                 "messages":[{"role":"user","content":"owned fixture"}] + ([] if previous is None else [{"role":"tool","tool_call_id":previous,"content":content}])}
 
-    def test_original_sse_routes_three_child_effects_and_requires_exact_decline_result(self):
-        state = owner.ProviderProtocol(NONCE)
+    def original_author(self, state):
         first, finish = state.response(self.body(True))
         self.assertEqual(first["tool_calls"][0]["function"]["name"], "codearbiter_dispatch")
         self.assertEqual(finish, "tool_calls")
@@ -105,10 +104,93 @@ class ProviderProtocolTests(unittest.TestCase):
         result, finish = state.response(self.body(False, previous, json.dumps(refused)))
         self.assertEqual(json.loads(result["content"])["state"], "accepted")
         self.assertEqual(state.declined_result, refused)
+        return state
+
+    def test_original_sse_routes_three_effects_and_exact_decline_before_one_review_chain(self):
+        state = self.original_author(owner.ProviderProtocol(NONCE))
+        state.inspection_snapshot = lambda: {"declined_target_present": False, "journal": {}, "effects": {}}
         result, finish = state.response(self.body(True, state.parent_call_id))
-        self.assertEqual(finish, "stop"); self.assertIn(NONCE, result["content"])
+        self.assertEqual(finish, "tool_calls")
+        call = result["tool_calls"][0]
+        self.assertEqual(call["function"]["name"], "codearbiter_dispatch")
+        self.assertEqual(json.loads(call["function"]["arguments"])["roles"], ["backend-author", "coverage-auditor"])
+        self.assertFalse(state.complete)
+        self.run_inspection_children(state)
+        result, finish = state.response(self.inspection_parent(state))
+        self.assertEqual(finish, "stop")
+        self.assertIn(NONCE, result["content"])
         self.assertTrue(state.complete)
-        with self.assertRaises(ValueError): state.response(self.body(True, state.parent_call_id))
+        self.assertEqual(state.inspection.receipt["roles"], ["backend-author", "coverage-auditor"])
+        self.assertEqual(len(state.inspection.receipt["read_sha256"]), 2)
+        with self.assertRaises(ValueError):
+            state.response(self.inspection_parent(state))
+
+    def inspection_body(self, state, *, reviewer=False, previous=None, content=None, prior=None):
+        chain = state.inspection
+        task = {"protocol":"codearbiter-dispatch-v1", "task":chain.task, "response":{}}
+        if reviewer:
+            summary = chain.author_summary.replace(chain.canary, owner.INSPECTION_REDACTION) if prior is None else prior
+            task["prior"] = {"role":"backend-author", "state":"accepted", "summary":summary}
+        fixture = self.body(False, previous, content)
+        fixture["messages"][0]["content"] = [{"type":"text", "text":owner.compact(task)}]
+        fixture["tools"] = [{"function":{"name":name}} for name in
+                            (["read","bash"] if reviewer else ["read","bash","write","edit"])]
+        return fixture
+
+    def inspection_parent(self, state, *, counts=None):
+        chain = state.inspection
+        effects = {"profile":owner.PROFILE, "observation":"parent-recorded", **dict.fromkeys(owner.EFFECT_COUNTS, 0)}
+        if counts is not None:
+            effects.update(counts)
+        children = [{"role":"backend-author", "state":"accepted", "summary":chain.author_summary, "effects":effects},
+                    {"role":"coverage-auditor", "state":"accepted", "summary":chain.reviewer_summary}]
+        request = self.body(True, state.parent_call_id)
+        request["messages"].append({"role":"tool", "tool_call_id":chain.call_id,
+                                    "content": owner.compact({"state":"accepted","children":children})})
+        return request
+
+    def run_inspection_children(self, state):
+        for reviewer, path, content in ((False, "command-"+NONCE+".txt", "command-"+NONCE+"\n"),
+                                        (True, "effect-"+NONCE+".txt", "after-"+NONCE)):
+            delta, finish = state.response(self.inspection_body(state, reviewer=reviewer))
+            call = delta["tool_calls"][0]
+            self.assertEqual(finish, "tool_calls")
+            self.assertEqual(call["function"]["name"], "read")
+            self.assertEqual(json.loads(call["function"]["arguments"]), {"path":path})
+            result = self.inspection_body(state, reviewer=reviewer, previous=call["id"], content=content)
+            judgement, finish = state.response(result)
+            self.assertEqual(finish, "stop")
+            self.assertEqual(json.loads(judgement["content"])["state"], "accepted")
+
+    def test_inspection_refuses_out_of_order_turns_wrong_read_and_unredacted_prior(self):
+        state = self.original_author(owner.ProviderProtocol(NONCE))
+        state.inspection_snapshot = lambda: {"declined_target_present": False, "journal": {}, "effects": {}}
+        state.response(self.body(True, state.parent_call_id))
+        with self.assertRaisesRegex(ValueError, "inspection-route"):
+            state.response(self.inspection_parent(state))
+        with self.assertRaisesRegex(ValueError, "inspection-role-tools"):
+            state.response(self.inspection_body(state, reviewer=True))
+        delta, _ = state.response(self.inspection_body(state))
+        read_id = delta["tool_calls"][0]["id"]
+        with self.assertRaisesRegex(ValueError, "inspection-read-result"):
+            state.response(self.inspection_body(state, previous=read_id, content="fake accepted"))
+        state.response(self.inspection_body(state, previous=read_id, content="command-"+NONCE+"\n"))
+        with self.assertRaisesRegex(ValueError, "inspection-redacted-prior"):
+            state.response(self.inspection_body(state, reviewer=True, prior=state.inspection.author_summary))
+
+    def test_inspection_acceptance_refuses_nonzero_effects_and_changed_snapshot(self):
+        observed = {"declined_target_present":False,"journal":{},"effects":{}}
+        state = self.original_author(owner.ProviderProtocol(NONCE))
+        state.inspection_snapshot = lambda: dict(observed)
+        state.response(self.body(True, state.parent_call_id))
+        self.run_inspection_children(state)
+        for counts in ({"requested":1}, {"refused":1}, {"unknown":1}, {"completed":False}):
+            with self.assertRaisesRegex(ValueError, "inspection-zero-effects"):
+                state.response(self.inspection_parent(state, counts=counts))
+        observed["declined_target_present"] = True
+        with self.assertRaisesRegex(ValueError, "inspection-effect-drift"):
+            state.response(self.inspection_parent(state))
+        self.assertFalse(state.complete)
 
     @staticmethod
     def refused():
@@ -134,11 +216,35 @@ class ProviderProtocolTests(unittest.TestCase):
             with self.assertRaises(ValueError): owner.transport_length(method,path,headers,NONCE)
         self.assertEqual(owner.transport_length("POST","/v1/chat/completions",{"Authorization":"Bearer dummy-"+NONCE,"Content-Length":"4"},NONCE),4)
         state=owner.ProviderProtocol(NONCE)
-        for _ in range(10): state.record({"refused":True})
-        self.assertEqual(len(state.records),8)
+        for _ in range(15): state.record({"refused":True})
+        self.assertEqual(len(state.records),owner.PROVIDER_RECORDS+1)
         self.assertTrue(state.failed)
 
 class AdmissionAndReceiptTests(unittest.TestCase):
+    def test_inspection_snapshot_binds_owned_file_and_raw_journal_bytes(self):
+        import tempfile
+        from observe_pi_installed_rpc import raw
+        with tempfile.TemporaryDirectory() as folder:
+            cwd = Path(folder).resolve()
+            journal = cwd/".git/codearbiter/pi-delegation/v1"
+            journal.mkdir(parents=True)
+            claimed = journal/"test-claimed.json"
+            claimed.write_bytes(b'{"record":{}}\n')
+            original = cwd/("effect-"+NONCE+".txt")
+            original.write_bytes(("after-"+NONCE).encode())
+            command = cwd/("command-"+NONCE+".txt")
+            command.write_bytes(("command-"+NONCE+"\n").encode())
+            rows, effects, before = owner.effect_observation(NONCE, cwd, raw)
+            self.assertEqual(rows, [{"record":{}}])
+            self.assertEqual(effects["command"], ("command-"+NONCE+"\n").encode())
+            self.assertFalse(before["declined_target_present"])
+            claimed.write_bytes(b'{"record": {}}\n')
+            _, _, after = owner.effect_observation(NONCE, cwd, raw)
+            self.assertNotEqual(before["journal"], after["journal"])
+            self.assertEqual(before["effects"], after["effects"])
+            command.write_bytes(("command-"+NONCE).encode())
+            self.assertNotEqual(after["effects"], owner.effect_observation(NONCE, cwd, raw)[2]["effects"])
+
     def test_decline_requires_absent_canary_no_claim_and_exact_durable_audit(self):
         import tempfile
         protocol = owner.ProviderProtocol(NONCE)

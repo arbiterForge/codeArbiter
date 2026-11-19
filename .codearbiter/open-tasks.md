@@ -5,6 +5,12 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Verify reviewer inspection and a no-change author in the retained Pi TUI  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change
+  - Desc: Run one bounded inspection chain on the exact retained Pi package. Verify two real read results, a redacted reviewer handoff and zero recorded mutation requests while the earlier approve and decline evidence stays intact.
+  - Work type: feature
+  - Work ID: WORK-AF8EAFE6391DB3D77C85484AA1AE116B
+  - Work operation ID: work-80e95841f8ac9a32e442ff1c280513b027588803
 - [x] Qualify denial in the retained Pi parent TUI fixture  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline)  (done 2026-11-18)
   - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline
   - Desc: Exercise a genuinely rendered declined tool confirmation in the existing installed Linux Pi 1.5.0 fixture. Require an exact child refusal, durable cancel audit and no canary effect while preserving the approved write, edit and command.
