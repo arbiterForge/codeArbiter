@@ -1683,6 +1683,19 @@ jobs:
           retention-days: 14
           include-hidden-files: false
           overwrite: false
+      - name: Replay installed Claude helper, doctor, and Farm from the verified cohort
+        run: >-
+          python -B .github/scripts/test_artifact_farm.py
+          --installed-package-cohort "${{ runner.temp }}/artifact-release-packages"
+          --promotion-receipt-sha256 "${{ steps.assemble.outputs.promotion-receipt-sha256 }}"
+          --receipt "${{ runner.temp }}/artifact-installed-package-identity.json"
+      - name: Preserve the installed package identity observation
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: artifact-installed-package-identity-${{ github.sha }}
+          path: ${{ runner.temp }}/artifact-installed-package-identity.json
+          if-no-files-found: error
+          retention-days: 14
 
   artifact-package-cold:
     name: "[CHECK] | [CORE] | Structured artifact cold package  <${{ matrix.platform }}>"
