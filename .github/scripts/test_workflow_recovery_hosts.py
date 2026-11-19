@@ -1,14 +1,51 @@
 #!/usr/bin/env python3
 """Installed host event seams, bounded notices, and independent presentation."""
+from contextlib import nullcontext
 import json
 import os
 from pathlib import Path
 import subprocess
 import sys
+import tempfile
 import time
 import unittest
+from unittest import mock
 
 import test_workflow_recovery_cli as fixtures
+
+SCAN_TIMEOUT_NOTICE = (
+    "codeArbiter: workflow recovery inventory unavailable (scan-timeout). "
+    "Inspect it with the installed workflow-recovery.py scan; explicit repair may be needed. "
+    "Independent authorized work continues."
+)
+
+
+def require_changed_prompt_page(case, host, prompt, pending):
+    before = case.store_snapshot()
+
+    def observe():
+        result = case.script(host, "prompt-submit.py", prompt)
+        case.assertEqual(result.returncode, 0, result.stderr)
+        case.assertEqual(case.store_snapshot(), before)
+        context = result.stdout
+        if host == "codex":
+            envelope = json.loads(context)
+            case.assertIs(envelope.get("continue"), True)
+            case.assertNotIn("decision", envelope)
+            hook = envelope["hookSpecificOutput"]
+            case.assertEqual(hook["hookEventName"], "UserPromptSubmit")
+            context = hook["additionalContext"]
+        notices = [line for line in context.splitlines() if line.startswith("codeArbiter: workflow recovery ")]
+        case.assertEqual(len(notices), 1, context)
+        return notices[0]
+
+    notice = observe()
+    if notice == SCAN_TIMEOUT_NOTICE:
+        # A successful timeout notice permits one new, identical host event.
+        # That event still has to display the exact pending page.
+        notice = observe()
+    expected = f"codeArbiter: workflow recovery page: {pending} pending, 0 claimed, 0 unavailable. "
+    case.assertTrue(notice.startswith(expected), notice)
 
 
 class RecoveryHostTest(fixtures.InstalledRecoveryFixture, unittest.TestCase):
@@ -60,11 +97,7 @@ class RecoveryHostTest(fixtures.InstalledRecoveryFixture, unittest.TestCase):
                 self.assertEqual(first_prompt.returncode, 0, first_prompt.stderr)
                 self.assertNotIn("codeArbiter: workflow recovery page:", first_prompt.stdout)
                 self.register(1 if host == "claude" else 2)
-                changed = self.script(host, "prompt-submit.py", prompt)
-                self.assertEqual(changed.returncode, 0, changed.stderr)
-                self.assertIn("codeArbiter: workflow recovery page:", changed.stdout)
-                if host == "codex":
-                    self.assertIn("workflow recovery page:", json.loads(changed.stdout)["hookSpecificOutput"]["additionalContext"])
+                require_changed_prompt_page(self, host, prompt, index + 2)
                 compact = dict(prompt, hook_event_name="PreCompact")
                 self.assertEqual(self.script(host, "prompt-submit.py", compact).returncode, 0)
                 after_compact = self.script(host, "prompt-submit.py", prompt)
@@ -148,6 +181,58 @@ class RecoveryHostTest(fixtures.InstalledRecoveryFixture, unittest.TestCase):
         self.assertEqual(value["status"], "unavailable")
         self.assertIn("Independent authorized work continues", value["notice"])
         self.assertEqual(before, self.store_snapshot())
+
+
+class ChangedPromptBoundaryTest(unittest.TestCase):
+    def test_only_exact_successful_scan_timeout_allows_next_changed_prompt_event(self):
+        def completed(text="", code=0, stderr=""):
+            return subprocess.CompletedProcess([], code, text+"\n" if text else "", stderr)
+
+        def page(pending):
+            return f"codeArbiter: workflow recovery page: {pending} pending, 0 claimed, 0 unavailable. Inspect with the installed workflow-recovery.py scan."
+
+        timed_out = completed(SCAN_TIMEOUT_NOTICE)
+        pending = completed(page(2))
+        codex_pending = completed(json.dumps({"continue":True, "hookSpecificOutput":{
+            "hookEventName":"UserPromptSubmit", "additionalContext":page(3)}}))
+        cases = (
+            ("direct-page", (pending,), True, 1, None),
+            ("timeout-next-page", (timed_out, pending), True, 2, None),
+            ("timeout-twice", (timed_out, timed_out), False, 2, None),
+            ("next-nonzero", (timed_out, completed(page(2), code=1)), False, 2, None),
+            ("timeout-nonzero", (completed(SCAN_TIMEOUT_NOTICE, code=1), pending), False, 1, None),
+            ("timeout-with-mode-diagnostic", (completed(SCAN_TIMEOUT_NOTICE, stderr="codeArbiter: mode-marker-absent\n"), pending), True, 2, None),
+            ("other-recovery-error", (completed(SCAN_TIMEOUT_NOTICE.replace("scan-timeout", "busy")), pending), False, 1, None),
+            ("mixed-recovery-output", (completed(SCAN_TIMEOUT_NOTICE+"\n"+page(2)), pending), False, 1, None),
+            ("timeout-store-changed", (timed_out, pending), False, 1, 4),
+            ("next-store-changed", (timed_out, pending), False, 2, 5),
+        )
+        for name, changed, passes, attempts, drift_at in cases:
+            with self.subTest(name=name), tempfile.TemporaryDirectory() as tmp:
+                root = Path(tmp)
+                (root/".codearbiter").mkdir()
+                (root/".codearbiter/open-tasks.md").write_text("# Tasks\n\n## Backlog\n")
+                responses = (completed(page(1)), completed(), completed(), *changed,
+                             completed(), completed(), completed(page(2)), completed(), completed(),
+                             codex_pending, completed(), completed())
+                call = mock.Mock(side_effect=responses)
+                snapshot = mock.Mock(side_effect=lambda: {"index.json": b"changed" if call.call_count == drift_at else b"stable"})
+                with mock.patch.multiple(self, create=True, root=root, script=call, store_snapshot=snapshot,
+                                         register=mock.Mock(), cli=mock.Mock(return_value=(None, {"items":[{"state":"pending"}]})),
+                                         subTest=lambda **_context: nullcontext()):
+                    scenario = RecoveryHostTest.test_real_startup_prompt_and_compaction_keep_notice_separate_from_persona
+                    if passes:
+                        scenario(self)
+                        self.assertEqual(call.call_count, 11+attempts)
+                    else:
+                        with self.assertRaises(AssertionError):
+                            scenario(self)
+                        self.assertEqual(call.call_count, 3+attempts)
+                expected = mock.call("claude", "prompt-submit.py", {
+                    "hook_event_name":"UserPromptSubmit", "cwd":str(root),
+                    "session_id":"notice-session-claude", "prompt":"continue",
+                })
+                self.assertEqual(call.call_args_list[3:3+attempts], [expected]*attempts)
 
 
 if __name__ == "__main__":
