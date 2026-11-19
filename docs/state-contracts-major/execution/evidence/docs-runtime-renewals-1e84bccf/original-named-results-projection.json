@@ -1,0 +1,606 @@
+{
+  "schema": "codearbiter-original-docs-renewal-projection/1",
+  "source_commit": "1e84bccf58cc28f8b590a81b5783f9a0051fa80a",
+  "source_tree": "f89aed4b91f5ed757d72b1cb6cffdf7edacde471",
+  "run_id": 44437176108,
+  "run_attempt": 1,
+  "event": "push",
+  "branch": "major/state-contracts",
+  "original_docs_conclusion": "success",
+  "owner_readback_sha256": "bc4ae8bb05a39f51a30d47607c2c0d163bf7cfe541c2ddb9b8b04d570087d165",
+  "original_owner_log_sha256": {
+    "generator": "36b7840808984c6d8a4b27531839dcd100577755223ec0741ce75d04432a4d39",
+    "build": "e4a188f4c18d10cf741a6381a5f8bee29830590fa26510f91563a47a20b984b2"
+  },
+  "evidence": {
+    "generator": {
+      "artifacts": [
+        {
+          "run_id": 44437176108,
+          "job_id": 135268861829,
+          "run_attempt": 1,
+          "artifact_id": 14489074247,
+          "sha256": "47eed59bbbd9c210d6de534900d047520ac2d7e85ea94eed34be0d7b3d3f5673",
+          "bytes": 6432505,
+          "name": "major-source-inputs-site-vitest-findings",
+          "upload_step": "Upload original Docs source-test inputs",
+          "expires_at": "2026-12-03T01:28:36Z"
+        },
+        {
+          "run_id": 44437176108,
+          "job_id": 135268861829,
+          "run_attempt": 1,
+          "artifact_id": 14488438674,
+          "sha256": "6c1253e29ed70ec091cf96eaa23efc95948b3b40dee31bbce6cf32f6d87486f8",
+          "bytes": 40595,
+          "name": "major-docs-site-test-qualification-135268861829",
+          "upload_step": "Upload Docs source-test qualification report",
+          "expires_at": "2026-12-03T01:28:36Z"
+        },
+        {
+          "run_id": 44437176108,
+          "job_id": 135268861829,
+          "run_attempt": 1,
+          "artifact_id": 14489910352,
+          "sha256": "53b27b8ec2bbf9497a61edc7b76bb471f3b7d10d4a8c7dd06bb27be8d836da3c",
+          "bytes": 37643,
+          "name": "docs-site-source-observation",
+          "upload_step": "Retain original Docs source-test observation",
+          "expires_at": "2026-12-03T01:28:36Z"
+        }
+      ],
+      "results": [
+        {
+          "cell": "disposition:findings:GEN-B01",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs slugifies names with no collisions",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes colliding slugs in order of appearance",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes triple collisions deterministically",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs preserves input length and order",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs reserves every emitted slug, including suffixed forms (HW-24)",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs never emits a duplicate for names already ending in numeric suffixes"
+          ]
+        },
+        {
+          "cell": "disposition:findings:GEN-F01",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/generator/configuration-reference.test.ts:configuration reference describes the prune nudge threshold with the runtime predicate and default (HW-22)",
+            "vitest:site/test/generator/configuration-reference.test.ts:configuration reference is deterministic"
+          ]
+        },
+        {
+          "cell": "disposition:findings:GEN-F02",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture extracts a multi-line adjacent f-string call, concatenating placeholder text verbatim",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles nested parens inside a plain string literal without truncating the call",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles `+` concatenation, ignoring the non-literal trailing call but tracking its parens",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture finds two distinct tags in the same file",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a bare-assignment variable tag to its single literal tag",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a conditional-assignment variable tag to BOTH tags with the same message and line pin",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture counts an unresolvable variable-tag call (loop unpack) into `skipped`, not silently dropped",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture excludes the block()/remind() definition sites themselves",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture records 1-based line numbers and the source file basename",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) finds at least 60 attributed call sites in the real hooks",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) attributes at least one H-10b entry (the conditional-assignment split) with its real message",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the genuinely unresolvable loop-unpack call site in `skipped`",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts H-01's protected-branch commit message from _bashguardlib.py verbatim",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the same real-hook structural assertions after unrelated _bashguardlib.py line insertions",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts an H-09b message from _bashguardlib.py verbatim",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) excludes quoted, commented and docstring fake block calls",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) marks a dynamic recovery suffix instead of presenting a partial message as complete",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) leaves an assignment beyond the 30-line window as an explicit skipped gap",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script to its EventName (matcher) label",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script with no matcher to a bare EventName label",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor hand-maps git-enforce.py to the git backstop label, bypassing hooks.json",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor attributes extracted shared-library gates to their registered entry hook",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor returns an empty list for a script registered nowhere",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders frontmatter with title Hook Gates",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference orders sections in natural gate-ID order: H-09 before H-09b before H-10",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows the Blocking badge for a block-only tag",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows both badges when a tag has both a block and a remind call site",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders a line-pinned permalink in the expected format",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference wraps f-string placeholders in backticks",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) never claims runtime equivalence",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) names a dynamic recovery fragment instead of presenting a partial message as complete",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) lists skipped call sites with source links"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SX-F01",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/release-applicability/endpoint.test.ts:release applicability endpoint statically serves the canonical generated record as JSON",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation loads the exact supported direct-hook replay claim while allowing fixture detail (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing schema before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects unsupported schema before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects relabeled evidence kind before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects host discovery promoted to true before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing proof evidence before generation (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects invalid JSON proof evidence before generation (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ../outside.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins/ca/hooks/../pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins\\ca\\hooks\\pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path /plugins/ca/hooks/pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path C:/plugins/ca/hooks/pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ./plugins/ca/hooks/pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path whose parent symlink escapes the repository (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path that resolves to a directory (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation writes the strict deterministic record from the repository's real evidence (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation reports each host's highest stable release tag, not the lagging receipt ledger (R-01)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation fails closed without writing output when build identity evidence is inconsistent (O-10)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation generates and builds fresh fixtures before top-level test and coverage runners",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+          ]
+        },
+        {
+          "cell": "disposition:machines:S65",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication checks JavaScript syntax without executing emitted code",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ../escape",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path /absolute",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/../escape",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path C:/escape",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a\\b",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a//b",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/%2e%2e/b",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ..",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on create failure",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on index failure",
+            "vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+            "vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication is wired to every Astro build instead of an optional postbuild command"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:01",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:02",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:03",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication checks JavaScript syntax without executing emitted code",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path ../escape",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path /absolute",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/../escape",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path C:/escape",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a\\b",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a//b",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path a/%2e%2e/b",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects non-local output path .."
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:04",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:05",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:06",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication writes and reads back every byte, replacing only the previous generated search output"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:07",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on create failure",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on index failure",
+            "vitest:site/scripts/pagefind-build.test.ts:complete search bundle publication fails closed and closes the service on serialize failure"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S65:08",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/scripts/owned-output.test.ts:owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+            "vitest:site/scripts/owned-output.test.ts:owned generated publication retains an unusable marker if recovery also fails"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:SX03:01",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/release-applicability/release-applicability.test.ts:selectCurrentGovernanceReleases selects the highest stable SemVer independently for every governance host (O-01)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects missing governed provenance-manifest declaration (O-03)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects duplicate governed provenance-manifest declaration (O-03)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:release declaration provenance contract rejects divergent governed provenance-manifest declaration (O-03)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects unexpected top-level key (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects wrong namespaces (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects invalid date (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects malformed unselected governed tag (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects extra receipt key (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects zero identity (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects uppercase identity (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects invalid object type (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects commit identity mismatch (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects duplicate JSON keys instead of accepting the last value (O-02)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:original-publication ledger validation rejects a numeric prerelease identifier with leading zeroes even when a stable tag exists (O-02)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:SX03:02",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:SX03:03",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/release-applicability/release-applicability.test.ts:historical release applicability reads every declared manifest at its receipt commit and requires exact tag/version equality (O-03)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:historical release applicability rejects a historical manifest whose version does not exactly match its selected tag (O-04)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:published Pi support (#1071) records the Pi versions the selected ca-pi tag supports, read at that tag's commit"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:SX03:04",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity binds a GitHub Actions build to an exact 40-hex GITHUB_SHA equal to HEAD (O-06)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a missing GitHub Actions build identity (O-06)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a not 40-hex GitHub Actions build identity (O-06)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a different from HEAD GitHub Actions build identity (O-06)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity records the exact local HEAD and dirty state without using a branch name (O-06)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:documentation build identity rejects a moving or malformed local HEAD identity (O-06)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:SX03:05",
+          "result": "PASSED",
+          "selectors": [
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record requires the replay digest to match both current and latest-published ca source bytes (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record records an explicit current-source mismatch without throwing or calling it compatibility (O-08)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record records an explicit published-source mismatch without throwing or calling it compatibility (O-08)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: empty evidence kind (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: relabeled evidence kind (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: non-boolean discovery result (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: promoted host discovery result (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: non-canonical source (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects malformed direct-hook proof evidence: invalid replay digest (O-07)",
+            "vitest:site/test/release-applicability/release-applicability.test.ts:deterministic release applicability record rejects missing latest-published hook bytes (O-07)"
+          ]
+        }
+      ]
+    },
+    "components": {
+      "artifacts": [
+        {
+          "run_id": 44437176108,
+          "job_id": 135268862197,
+          "run_attempt": 1,
+          "artifact_id": 14489318308,
+          "sha256": "38f43ee77855aecba800d9b48655efbf2284c689c5189aaef1a5b0d387654d99",
+          "bytes": 6432981,
+          "name": "major-source-inputs-site-components",
+          "upload_step": "Upload original component source-test inputs",
+          "expires_at": "2026-12-03T01:28:36Z"
+        },
+        {
+          "run_id": 44437176108,
+          "job_id": 135268862197,
+          "run_attempt": 1,
+          "artifact_id": 14488794580,
+          "sha256": "41827bf91e90b5f58c3965fcb3f321d15a7a9879f811cf71d492b2edbcc88f42",
+          "bytes": 53198,
+          "name": "major-docs-component-qualification-135268862197",
+          "upload_step": "Upload component source-test qualification report",
+          "expires_at": "2026-12-03T01:28:36Z"
+        }
+      ],
+      "results": [
+        {
+          "cell": "disposition:findings:SF11",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers query",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers data",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers expansion",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers stale",
+            "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+            "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles",
+            "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state",
+            "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+          ]
+        },
+        {
+          "cell": "disposition:machines:S55",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers query",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers data",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers expansion",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers stale",
+            "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+            "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after clear",
+            "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after Escape",
+            "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after outside",
+            "playwright:site/test/components/search-boundaries.spec.ts::disconnect cancels pending render and releases shortcut until reconnect",
+            "playwright:site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization",
+            "playwright:site/test/components/search-interactions.spec.ts::normalized queries debounce for140ms and fetch only the first8 results",
+            "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles",
+            "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+            "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state",
+            "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:01",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:02",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-interactions.spec.ts::concurrent focus and submitted queries await one module initialization",
+            "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:03",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+            "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:04",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-boundaries.spec.ts::module failure retains query and retries a cache-busted import",
+            "playwright:site/test/components/search-interactions.spec.ts::options rejection remains handled and explicit retry initializes a fresh module"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:05",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-interactions.spec.ts::normalized queries debounce for140ms and fetch only the first8 results",
+            "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+            "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:06",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+            "playwright:site/test/components/search-interactions.spec.ts::late successful queries cannot replace newer results or empty state"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:07",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers query",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers data",
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers stale"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:08",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:09",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/lifecycle.spec.ts::search recovers expansion",
+            "playwright:site/test/components/search-interactions.spec.ts::pending expansion disables repeat activation until all data settles"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:10",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-interactions.spec.ts::empty results, arrow wrapping, submit and activation preserve combobox navigation",
+            "playwright:site/test/components/search-boundaries.spec.ts::disconnect cancels pending render and releases shortcut until reconnect"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S55:11",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after clear",
+            "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after Escape",
+            "playwright:site/test/components/search-boundaries.spec.ts::pending query cannot reopen search after outside",
+            "playwright:site/test/components/search-boundaries.spec.ts::disconnect cancels pending render and releases shortcut until reconnect"
+          ]
+        }
+      ]
+    },
+    "browser": {
+      "artifacts": [
+        {
+          "run_id": 44437176108,
+          "job_id": 135268862197,
+          "run_attempt": 1,
+          "artifact_id": 14489264344,
+          "sha256": "6f4374a4236eed29d31345e39b15ca87c712634b15b36c4e7565aa9809ec2a32",
+          "bytes": 6590278,
+          "name": "github-pages",
+          "upload_step": "Upload Pages artifact",
+          "expires_at": "2026-12-03T01:28:36Z"
+        },
+        {
+          "run_id": 44437176108,
+          "job_id": 135268862197,
+          "run_attempt": 1,
+          "artifact_id": 14489274286,
+          "sha256": "18e8b729a4e8f37862be2e862b64725de51670fa84daabbe4a939b977bfa3d3b",
+          "bytes": 55053,
+          "name": "major-docs-qualification-135268862197",
+          "upload_step": "Upload Docs qualification report",
+          "expires_at": "2026-12-03T01:28:36Z"
+        }
+      ],
+      "results": [
+        {
+          "cell": "disposition:findings:SF16",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener",
+            "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+          ]
+        },
+        {
+          "cell": "disposition:machines:S62",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener",
+            "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S62:01",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S62:02",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/publication.spec.ts:chrome:WEB-008 + WEB-030: mobile navigation preserves its accessible reflow contract",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: backdrop restores heterogeneous saved background and scroll state"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S62:03",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: Tab wraps at both ends of the built drawer"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S62:04",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S62:05",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/browser/concepts-execution.spec.ts:chrome:the same documentation drawer reconnects without duplicate local or Escape listeners",
+            "playwright:site/test/browser/publication.spec.ts:chrome:S62: disconnecting an open drawer releases its document listener"
+          ]
+        }
+      ]
+    },
+    "drawer-components": {
+      "artifacts": [
+        {
+          "run_id": 44437176108,
+          "job_id": 135268862197,
+          "run_attempt": 1,
+          "artifact_id": 14489318308,
+          "sha256": "38f43ee77855aecba800d9b48655efbf2284c689c5189aaef1a5b0d387654d99",
+          "bytes": 6432981,
+          "name": "major-source-inputs-site-components",
+          "upload_step": "Upload original component source-test inputs",
+          "expires_at": "2026-12-03T01:28:36Z"
+        },
+        {
+          "run_id": 44437176108,
+          "job_id": 135268862197,
+          "run_attempt": 1,
+          "artifact_id": 14488794580,
+          "sha256": "41827bf91e90b5f58c3965fcb3f321d15a7a9879f811cf71d492b2edbcc88f42",
+          "bytes": 53198,
+          "name": "major-docs-component-qualification-135268862197",
+          "upload_step": "Upload component source-test qualification report",
+          "expires_at": "2026-12-03T01:28:36Z"
+        }
+      ],
+      "results": [
+        {
+          "cell": "disposition:findings:SF16",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/lifecycle.spec.ts::drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S62:05",
+          "result": "PASSED",
+          "selectors": [
+            "playwright:site/test/components/lifecycle.spec.ts::drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+          ]
+        }
+      ]
+    }
+  },
+  "held": {}
+}

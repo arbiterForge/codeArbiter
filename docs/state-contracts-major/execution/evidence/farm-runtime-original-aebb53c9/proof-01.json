@@ -1,0 +1,134 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+  "kind": "hosted-run",
+  "result": "PASSED",
+  "producer": {
+    "class": "hosted",
+    "identity": "GitHub normal Core CI 44425846015 attempt 1, original [CHECK] | [CA  ] | Farm dispatcher contract"
+  },
+  "inputs": {
+    ".github/fixtures/artifact-release-manifest.json": "cd070ffff06083c25a79829ae71595199b0ffa907c45b1fb7188721a186b9927",
+    ".github/major-qualification-policy.json": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+    ".github/major-test-selections.json": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/_immutable_git_blobs.py": "847bb372cba7bc06247b6ab4deb7f8b7fde72ca723efdfbc539e6aa648416051",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/major_qualification_report.py": "8c2d13f5fd62b915bf158b9a9b4361a9a71cdb8d08564087c7506ca692cd994b",
+    ".github/scripts/major_readiness.py": "817bab9b2edef68076e1b287afee32f3f2f0e8f7d1b68f6c0daf7952e6cb8ae1",
+    ".github/workflows/ci.yml": "30d5cb480374a452b6664558b16c2a30c2aa6b39a23c10c3b2d3eba9d6813609",
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "plugins/ca/tools/.env.example": "753100c15653ae97e5971f72cce14be88ebdc56b62b5286998d748da26024d11",
+    "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+    "plugins/ca/tools/artifact-manifest.test.ts": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.test.ts": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": "a2a26811ea0b6890065a285772df8f92969ec12b7ec659ca285b9ec6ce86f164",
+    "plugins/ca/tools/farm-dist.test.ts": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+    "plugins/ca/tools/farm-interruption.test.ts": "e6b2346fd4bfdbadf58512421e455f65c35f7c1f7d0285cf820886da90dd56ef",
+    "plugins/ca/tools/farm-recovery.test.ts": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm-registry-lock.test.ts": "c8da7ba5ed87d0276869e7d61cd446c9ffe5e89a96e99e37e8c908d8eaabd9a8",
+    "plugins/ca/tools/farm-surface.test.ts": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+    "plugins/ca/tools/farm.js": "c91dc288df9efe5a2ccb29cc1f0a767a2962f33772150e727241cb3914866069",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/plan-contract.test.ts": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+    "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+    "plugins/ca/tools/redactor.test.ts": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/state-contracts.test.ts": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "--reporter=default",
+        "--reporter=json",
+        "--outputFile.json=/home/runner/work/_temp/farm-vitest.json"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-runtime-original-aebb53c9/original-selected-provenance.json",
+      "sha256": "4ab343bb9e001943b9b323859a665dde464892103c7d71c09cf95c06cfd2db4e"
+    },
+    {
+      "run_id": 44425846015,
+      "run_attempt": 1,
+      "job_id": 135230531777,
+      "artifact_id": 14484503012,
+      "sha256": "27be093c27664e55c1967203e2d216f38d2544e316172cf1a6566ecd49ee8b25"
+    },
+    {
+      "run_id": 44425846015,
+      "run_attempt": 1,
+      "job_id": 135230531777,
+      "artifact_id": 14484328290,
+      "sha256": "afad044bdc74a6cc7e0b703ab669031b4833dcf7525a722e0d56c6b7afba31c6"
+    },
+    {
+      "run_id": 44425846015,
+      "run_attempt": 1,
+      "job_id": 135230531777,
+      "artifact_id": 14484752283,
+      "sha256": "6936cb4c2f2eff5ecd3c257d304d246453b09fe574e808d3c054055f9baf454f"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:findings:SF04"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:findings:SF04",
+      "selectors": [
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations bounds UTF-8 bytes before parsing",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations malformed-context",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations qualified-declaration-six-fields",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations rejects duplicate and escaped-duplicate keys",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-field",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-platform",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-field",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-format",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unqualified-context",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-context-binary",
+        "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-platform-path"
+      ]
+    }
+  ],
+  "input_membership": [],
+  "absent_inputs": [],
+  "scope": "rebuilt from original named results and exact consumed input manifest",
+  "execution_context": {
+    "run_id": 44425846015,
+    "run_attempt": 1,
+    "source_tree": "9816342bfc56f7018b548906378515ef850f7ce8"
+  },
+  "limits": [
+    "Same existing finite row only; no task, new host, publication or other promotion."
+  ]
+}

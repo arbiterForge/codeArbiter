@@ -1,0 +1,128 @@
+{
+  "schema": "codearbiter-original-direct-runtime-preflight/1",
+  "source_commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+  "source_tree": "9816342bfc56f7018b548906378515ef850f7ce8",
+  "run_id": 44425846015,
+  "run_attempt": 1,
+  "whole_core_conclusion": "success",
+  "terminal_receipt_sha256": "9f1b6355d79ae7495aad72a57d0db427360d6c6c96d29341ef0e19792e662328",
+  "mode": "current",
+  "verified_by_lane": {
+    "farm": 4
+  },
+  "requested_counts": {
+    "farm": 4
+  },
+  "held": {},
+  "owner_methods": {
+    "disposition:findings:SF04": "rebuilt from original named results and exact consumed input manifest",
+    "disposition:findings:SF05": "rebuilt from original named results and exact consumed input manifest",
+    "disposition:findings:SF06": "rebuilt from original named results and exact consumed input manifest",
+    "disposition:findings:SF07": "rebuilt from original named results and exact consumed input manifest"
+  },
+  "original_uploads": {
+    "disposition:findings:SF04": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484503012,
+        "sha256": "27be093c27664e55c1967203e2d216f38d2544e316172cf1a6566ecd49ee8b25"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484328290,
+        "sha256": "afad044bdc74a6cc7e0b703ab669031b4833dcf7525a722e0d56c6b7afba31c6"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484752283,
+        "sha256": "6936cb4c2f2eff5ecd3c257d304d246453b09fe574e808d3c054055f9baf454f"
+      }
+    ],
+    "disposition:findings:SF05": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484503012,
+        "sha256": "27be093c27664e55c1967203e2d216f38d2544e316172cf1a6566ecd49ee8b25"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484328290,
+        "sha256": "afad044bdc74a6cc7e0b703ab669031b4833dcf7525a722e0d56c6b7afba31c6"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484752283,
+        "sha256": "6936cb4c2f2eff5ecd3c257d304d246453b09fe574e808d3c054055f9baf454f"
+      }
+    ],
+    "disposition:findings:SF06": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484503012,
+        "sha256": "27be093c27664e55c1967203e2d216f38d2544e316172cf1a6566ecd49ee8b25"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484328290,
+        "sha256": "afad044bdc74a6cc7e0b703ab669031b4833dcf7525a722e0d56c6b7afba31c6"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484752283,
+        "sha256": "6936cb4c2f2eff5ecd3c257d304d246453b09fe574e808d3c054055f9baf454f"
+      }
+    ],
+    "disposition:findings:SF07": [
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484503012,
+        "sha256": "27be093c27664e55c1967203e2d216f38d2544e316172cf1a6566ecd49ee8b25"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484328290,
+        "sha256": "afad044bdc74a6cc7e0b703ab669031b4833dcf7525a722e0d56c6b7afba31c6"
+      },
+      {
+        "run_id": 44425846015,
+        "run_attempt": 1,
+        "job_id": 135230531777,
+        "artifact_id": 14484752283,
+        "sha256": "6936cb4c2f2eff5ecd3c257d304d246453b09fe574e808d3c054055f9baf454f"
+      }
+    ]
+  },
+  "current_rows_changed": 0,
+  "already_current": [],
+  "active": [
+    "disposition:findings:SF04",
+    "disposition:findings:SF05",
+    "disposition:findings:SF06",
+    "disposition:findings:SF07"
+  ],
+  "workflow_readback": true,
+  "source_only_reclassified": 0,
+  "status_changes": 0
+}

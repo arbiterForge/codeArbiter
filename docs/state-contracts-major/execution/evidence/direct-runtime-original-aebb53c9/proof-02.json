@@ -1,0 +1,397 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+  "kind": "hosted-run",
+  "result": "PASSED",
+  "producer": {
+    "class": "hosted",
+    "identity": "GitHub normal Core CI 44425846015 attempt 1, original [CHECK] | [SBX ] | Sandbox driver contract"
+  },
+  "inputs": {
+    ".github/major-qualification-policy.json": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+    ".github/major-test-selections.json": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    ".github/scripts/_immutable_git_blobs.py": "847bb372cba7bc06247b6ab4deb7f8b7fde72ca723efdfbc539e6aa648416051",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/major_qualification_report.py": "8c2d13f5fd62b915bf158b9a9b4361a9a71cdb8d08564087c7506ca692cd994b",
+    ".github/scripts/major_readiness.py": "817bab9b2edef68076e1b287afee32f3f2f0e8f7d1b68f6c0daf7952e6cb8ae1",
+    ".github/workflows/ci.yml": "30d5cb480374a452b6664558b16c2a30c2aa6b39a23c10c3b2d3eba9d6813609",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "plugins/ca-sandbox/tools/__fixtures__/docker-required/gate.fixture.test.ts": "4cf0033b3da6df3438464689af05178853fb3859bf7a149923de2124800bcbd9",
+    "plugins/ca-sandbox/tools/__fixtures__/docker-required/vitest.config.ts": "a7bc8c00c55103fac582216624b98110c5908b3b3095bbc58faf8c61a1756ddd",
+    "plugins/ca-sandbox/tools/__fixtures__/go/go.mod": "89205c40d43fe63c6ad4f6d49d7e0a22611d4d84b7d9ada1177072f02bb8686f",
+    "plugins/ca-sandbox/tools/__fixtures__/go/main.go": "175120ca25f14c83ee511c7d8f38c9205956900361400b3204895e2c5a8a56b5",
+    "plugins/ca-sandbox/tools/__fixtures__/node/index.js": "7ec73f92d7e7b4c772c819bd9bc6d45761a3e5c4d811af38c3d09832e2300ce6",
+    "plugins/ca-sandbox/tools/__fixtures__/node/package.json": "30ddbb244a6b386905551a59ee2810a50ed0425c7e5ea6c9def691df786d06a7",
+    "plugins/ca-sandbox/tools/__fixtures__/py/main.py": "7d7da3725c977e53c5292847dca3a4a23fc08db10f2e2aab23104e165d9c261c",
+    "plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt": "0da178fba21a6debdac12539bf4943dc2cac92493381edfeeb9f5bbea8a14b7e",
+    "plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.lock": "802d1363d432cd2025281b7441fc4007e60b0ca74bb92093245063ec53b1ec64",
+    "plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.toml": "1ad928a5b10f7843b2181f44a4d8e6eae725376012b850184cd5110c6bab59c3",
+    "plugins/ca-sandbox/tools/__fixtures__/rust/src/main.rs": "22adc874792e724976d2cd6d6c867abd4787714f997d10cda85c7e5373c59199",
+    "plugins/ca-sandbox/tools/__tests__/isolation.test.ts": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+    "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+    "plugins/ca-sandbox/tools/build.test.ts": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+    "plugins/ca-sandbox/tools/build.ts": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+    "plugins/ca-sandbox/tools/builder-observation.test.ts": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+    "plugins/ca-sandbox/tools/claude-inside.js": "b5f962b4b435de3d5b4d86680b0939314ea1307780072d0e8c29f2a279876521",
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+    "plugins/ca-sandbox/tools/cli-resolve.test.ts": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+    "plugins/ca-sandbox/tools/cli.test.ts": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/cp.test.ts": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+    "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+    "plugins/ca-sandbox/tools/create.test.ts": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+    "plugins/ca-sandbox/tools/create.ts": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+    "plugins/ca-sandbox/tools/dephash.test.ts": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+    "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+    "plugins/ca-sandbox/tools/docker-gate.test.ts": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.test.ts": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/installed-bundle.test.ts": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+    "plugins/ca-sandbox/tools/layering.test.ts": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+    "plugins/ca-sandbox/tools/lifecycle.test.ts": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+    "plugins/ca-sandbox/tools/mounts.test.ts": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/multistack.test.ts": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+    "plugins/ca-sandbox/tools/native-build-inputs.test.ts": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+    "plugins/ca-sandbox/tools/network.test.ts": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+    "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+    "plugins/ca-sandbox/tools/run.test.ts": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/sandbox.js": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+    "plugins/ca-sandbox/tools/smoke.test.ts": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+    "plugins/ca-sandbox/tools/smoke.ts": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+    "plugins/ca-sandbox/tools/supply-chain.test.ts": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+    "plugins/ca-sandbox/tools/teardown.test.ts": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+  },
+  "commands": [
+    {
+      "argv": [
+        "npm",
+        "test",
+        "--",
+        "--reporter=default",
+        "--reporter=github-actions",
+        "--reporter=json",
+        "--outputFile.json=/home/runner/work/_temp/ca-sandbox-vitest.json"
+      ],
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/direct-runtime-original-aebb53c9/original-selected-provenance.json",
+      "sha256": "0164ef46b9cebf8684d1b4a74d27a1b34ff94af3401b68e2ca7fa722b40dffc5"
+    },
+    {
+      "run_id": 44425846015,
+      "run_attempt": 1,
+      "job_id": 135230531867,
+      "artifact_id": 14486346661,
+      "sha256": "fb08bb42e722d8d6400fcf9c0e10ac604514337a276a4fd9ffa653b0771a89d2"
+    },
+    {
+      "run_id": 44425846015,
+      "run_attempt": 1,
+      "job_id": 135230531867,
+      "artifact_id": 14487085856,
+      "sha256": "4b7c0ebb58868863b8136c621cdac006b5ef23d4c68e348c9b44193ac139f725"
+    },
+    {
+      "run_id": 44425846015,
+      "run_attempt": 1,
+      "job_id": 135230531867,
+      "artifact_id": 14486327301,
+      "sha256": "d5bb0f9cebc6e36e3f0d24aeaee41f89da0b7c7420b2c4af8bdbbca6bd58359a"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
+    "disposition:transitions:S47:02",
+    "disposition:transitions:S47:06",
+    "disposition:transitions:S47:07",
+    "disposition:transitions:S49:02",
+    "disposition:transitions:S49:03",
+    "disposition:transitions:S49:04",
+    "disposition:transitions:S49:05",
+    "disposition:transitions:S49:06",
+    "disposition:transitions:S49:07",
+    "disposition:transitions:S49:08",
+    "disposition:transitions:S49:09",
+    "disposition:transitions:S51:01",
+    "disposition:transitions:S51:02",
+    "disposition:transitions:S52:06",
+    "disposition:transitions:S54:01"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:01",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 legacy version resolver is freshly observed before the build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity"
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:02",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 legacy version resolver is freshly observed before the build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity"
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:SBX-BUILD-OBSERVATION:03",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 legacy version resolver is freshly observed before the build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S47:02",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S47:06",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable does not stop the container on an ordinary non-zero exec (AC-2)",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S47:07",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+        "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:02",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 a weaker profile2 provenance label is a non-destructive cache miss",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:03",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-C01 verified cache reuse needs no build-time capability after the initial observation",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:04",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 cancellation during reobservation admits no build",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL binary changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses WSL distro changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses builder disappeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses invocation changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses preferred builder appeared after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version became malformed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 refuses version changed after cache observation before a build effect",
+        "vitest:plugins/ca-sandbox/tools/builder-observation.test.ts:SBX-D01 stable reobservation admits one build under the observed identity",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:05",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: \"workspace\".members=[\"../../outside\"]",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: [\"work\\u0073pace\"]\nmembers=[\"../../outside\"]",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: [package]\ndescription=\"escaped\\nmanifest\"",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unsupported Rust workspace/escaped metadata before generation: [workspace]\nmembers=[\"../../outside\"]",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator restores bounded go with pinned runtime and all source files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator restores bounded rust with pinned runtime and all source files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated go runtime image",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated rust runtime image",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:06",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-D01 builder capability permits Node/Python fallback and refuses unsupported stacks"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:07",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses comment hiding mutable FROM before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses continued mutable FROM before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses deferred image source before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable COPY source before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable RUN mount before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable frontend before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable primary before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses mutable runImage before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses platform mutable runImage before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses quoted COPY flag before mutable source before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses quoted mutable RUN mount before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses second mutable RUN mount before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses unknown stage alias before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator refuses variable runImage before Docker build and cleans generated files",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated go runtime image",
+        "vitest:plugins/ca-sandbox/tools/build-pinned-base.test.ts:fixed Nixpacks image inputs through the default generator still refuses an unpinned generated rust runtime image",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:08",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics keeps the primary failure when helper absence is verified",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains build failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains cleanup-only failure without inventing a primary error",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains copy failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains helper failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S49:09",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics keeps the primary failure when helper absence is verified",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains build failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains cleanup-only failure without inventing a primary error",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains copy failure when independent staging cleanup is unknown",
+        "vitest:plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts:default build primary and staging cleanup diagnostics retains helper failure when independent staging cleanup is unknown"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S51:01",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --source-volume before a container can exist",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --token, because argv is world-readable",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses accepts the minimal invocation and defaults to the guaranteed posture",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses refuses an unknown flag rather than ignoring it",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses refuses any other egress posture, naming why",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses requires both the image and the home volume",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract exits with the usage code when the token is absent, and says where it comes from",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract passes the token from the ENVIRONMENT, not from argv",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) backs HOME with a NAMED VOLUME (no host bind of ~/.claude), so state persists",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) THROWS when the token volume would be co-mounted with an untrusted-code run",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) requires a non-empty image, token, and home volume",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] prepares a credential-blind owned home and retains its bytes across restart"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S51:02",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 parseClaudeCli \u2014 what the entry point refuses REFUSES --source-volume before a container can exist",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract exits with the usage code when the token is absent, and says where it comes from",
+        "vitest:plugins/ca-sandbox/tools/claude-inside-cli.test.ts:#377 runClaudeInsideCli \u2014 the process contract passes the token from the ENVIRONMENT, not from argv",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:#377 - a token-bearing box never runs NET_ADMIN without its firewall supplies the token only to the Docker run process environment",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) NEVER passes --privileged and NEVER mounts the docker socket",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) defaults egress to offline (the hard default \u2014 Spike B caveat)",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 env-token auth, no host bind (AC-12) passes only the token name in argv, never the reusable value",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardened posture is enforced, not optional (AC-12) REFUSES an arbitrary wide-open network policy (no escaping the hard default)",
+        "vitest:plugins/ca-sandbox/tools/claude-inside.test.ts:buildClaudeRunArgs \u2014 hardening parity with run.ts (architecture-002) carries every shared hardening flag the ordinary sandbox emits",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] prepares a credential-blind owned home and retains its bytes across restart",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] runs the real Claude builder offline with scoped dummy env and effective hardening"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S52:06",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind \u2014 host->container bind is impossible (AC-10) the rejection comes from mounts.ts (cp does not hand-roll its own check)",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind \u2014 host->container bind is impossible (AC-10) throws (via the mount chokepoint) on a -v host:container bind copy-in",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:assertNoCopyInBind \u2014 host->container bind is impossible (AC-10) throws on an explicit type=bind copy-in spec",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs \u2014 pull-only direction (AC-10) assembles `cp <id>:<containerPath> <hostDest>` in the pull direction",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs \u2014 pull-only direction (AC-10) never produces the reverse direction (host source before container dest)",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:buildCpOutArgs \u2014 pull-only direction (AC-10) refuses an empty container id, container path, or host dest",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:cpOut [docker] \u2014 pulls a file from /work to the host (AC-10) copies /work/<f> out to a host dest with identical bytes",
+        "vitest:plugins/ca-sandbox/tools/cp.test.ts:owned offline effect acceptance [docker] retains real partial docker cp bytes after cancellation without rollback metadata"
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S54:01",
+      "selectors": [
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:CLI direct-entry signal wiring installs SIGINT before one valid dispatch and forwards cancellation through the original entry",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches cp -> await handlers.cp(id, containerPath, hostDest) (AC-10)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches create -> await handlers.create(url, {netPolicy, keepVolume})",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches destroy -> await handlers.destroy(id, {keepVolume}) (AC-11)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches exec -> await handlers.exec(id, argv) and returns the inner exitCode (AC-09)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches prune -> await handlers.prune() (AC-11)",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) dispatches shell -> await handlers.shell(id, shell) and returns its code",
+        "vitest:plugins/ca-sandbox/tools/cli.test.ts:runCli \u2014 dispatch to modules (AC-01/09/10/11) returns a non-zero code and does NOT throw on an unknown flag"
+      ]
+    }
+  ],
+  "input_membership": [],
+  "absent_inputs": [],
+  "scope": "rebuilt from original named results and exact consumed input manifest",
+  "execution_context": {
+    "run_id": 44425846015,
+    "run_attempt": 1,
+    "source_tree": "9816342bfc56f7018b548906378515ef850f7ce8"
+  },
+  "limits": [
+    "Same existing finite row only; no task, new host, publication or other promotion."
+  ]
+}

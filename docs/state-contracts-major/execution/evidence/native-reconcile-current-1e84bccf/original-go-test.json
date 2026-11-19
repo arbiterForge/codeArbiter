@@ -1,0 +1,440 @@
+{
+  "source_commit": "1e84bccf58cc28f8b590a81b5783f9a0051fa80a",
+  "actual_command": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-json",
+    "-buildvcs=false",
+    "-count=1",
+    "-timeout=90s",
+    "-run",
+    "^(TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence|TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites)$",
+    "./internal/operations"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1e84-exact-pi-benchmark-ll08l9pl\\src\\core\\artifacts",
+  "elapsed_seconds": 12.341745999990962,
+  "exit_code": 0,
+  "go_version": "go version go1.27.1 windows/amd64",
+  "go_executable_sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+  "source_stable": true,
+  "module_snapshot_sha256": "507a27480b155f2b00708d0257c0df6f9d561d8661a043812db2c29044872f2d",
+  "tests": [
+    "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING",
+    "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED",
+    "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW",
+    "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence",
+    "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites"
+  ],
+  "original_stdout_sha256": "776822f6c2c655158ec1168268d43121995b78bf0c1e5bc730ff5c8cb0b6f91a",
+  "events": [
+    {
+      "Time": "2026-11-18T21:08:18.2453315-05:00",
+      "Action": "start",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations"
+    },
+    {
+      "Time": "2026-11-18T21:08:18.7518383-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence"
+    },
+    {
+      "Time": "2026-11-18T21:08:18.75287-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence",
+      "Output": "=== RUN   TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:18.7533994-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING"
+    },
+    {
+      "Time": "2026-11-18T21:08:18.7533994-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING",
+      "Output": "=== RUN   TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:20.0630473-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING",
+      "Output": "--- PASS: TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING (1.31s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:20.0630473-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/PENDING",
+      "Elapsed": 1.31
+    },
+    {
+      "Time": "2026-11-18T21:08:20.0651134-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED"
+    },
+    {
+      "Time": "2026-11-18T21:08:20.0651134-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED",
+      "Output": "=== RUN   TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:21.2063672-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED",
+      "Output": "--- PASS: TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED (1.14s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:21.2063672-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/BLOCKED",
+      "Elapsed": 1.14
+    },
+    {
+      "Time": "2026-11-18T21:08:21.2063672-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW"
+    },
+    {
+      "Time": "2026-11-18T21:08:21.2063672-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW",
+      "Output": "=== RUN   TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW",
+      "Output": "--- PASS: TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW (1.13s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence/REVIEW",
+      "Elapsed": 1.13
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence",
+      "Output": "--- PASS: TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence (3.58s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcilePreservesProgressAndSelectedEvidence",
+      "Elapsed": 3.58
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.3360169-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.9984969-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject (0.66s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.9990242-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/subject",
+      "Elapsed": 0.66
+    },
+    {
+      "Time": "2026-11-18T21:08:22.9990242-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input"
+    },
+    {
+      "Time": "2026-11-18T21:08:22.9990242-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:23.6783446-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input (0.68s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:23.6783446-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/input",
+      "Elapsed": 0.68
+    },
+    {
+      "Time": "2026-11-18T21:08:23.6783446-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition"
+    },
+    {
+      "Time": "2026-11-18T21:08:23.6783446-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:24.5079237-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition (0.83s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:24.5079237-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/definition",
+      "Elapsed": 0.83
+    },
+    {
+      "Time": "2026-11-18T21:08:24.5079237-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target"
+    },
+    {
+      "Time": "2026-11-18T21:08:24.5079237-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:25.2685112-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target (0.76s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:25.2685112-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/target",
+      "Elapsed": 0.76
+    },
+    {
+      "Time": "2026-11-18T21:08:25.2685112-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding"
+    },
+    {
+      "Time": "2026-11-18T21:08:25.2685112-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:25.8675942-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding (0.60s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:25.8675942-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-input-binding",
+      "Elapsed": 0.6
+    },
+    {
+      "Time": "2026-11-18T21:08:25.8675942-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding"
+    },
+    {
+      "Time": "2026-11-18T21:08:25.8675942-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:26.4521391-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding (0.58s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:26.4521391-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/capture-task-binding",
+      "Elapsed": 0.58
+    },
+    {
+      "Time": "2026-11-18T21:08:26.4521391-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence"
+    },
+    {
+      "Time": "2026-11-18T21:08:26.4521391-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:27.1033117-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence (0.65s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:27.1038698-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-without-evidence",
+      "Elapsed": 0.65
+    },
+    {
+      "Time": "2026-11-18T21:08:27.1038698-05:00",
+      "Action": "run",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence"
+    },
+    {
+      "Time": "2026-11-18T21:08:27.1038698-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence",
+      "Output": "=== RUN   TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0419917-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence (0.94s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0419917-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites/review-stale-evidence",
+      "Elapsed": 0.94
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0419917-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites",
+      "Output": "--- PASS: TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites (5.71s)\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0419917-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Test": "TestNT09ReceiptedReconcileRejectsWrongBindingsWithoutWrites",
+      "Elapsed": 5.71
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0419917-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Output": "PASS\n",
+      "OutputType": "frame"
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0485546-05:00",
+      "Action": "output",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Output": "ok  \tgithub.com/arbiterForge/codeArbiter/core/artifacts/internal/operations\t9.802s\n"
+    },
+    {
+      "Time": "2026-11-18T21:08:28.0485546-05:00",
+      "Action": "pass",
+      "Package": "github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations",
+      "Elapsed": 9.804
+    }
+  ]
+}
