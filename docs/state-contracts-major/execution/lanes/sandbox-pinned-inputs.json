@@ -1,0 +1,324 @@
+{
+  "schema": "codearbiter-lane-evidence/1",
+  "owner": "packaging_site_tools",
+  "program_work_id": "WORK-DD95EB9358E15A5A784F3EC6F2C18118",
+  "task_ids": [
+    "SBX-C01",
+    "SBX-C02"
+  ],
+  "status": "IMPLEMENTED_UNQUALIFIED",
+  "source_commit": null,
+  "change": "Close mutable Nixpacks generated-image inputs and missing V2 generator-profile cache identity.",
+  "source_hashes": [
+    {
+      "path": "plugins/ca-sandbox/tools/build.ts",
+      "sha256": "503a207db0918780f970ae774494abc570ae8ff3d0c9dff0718c4c6cd9d6cd9e"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+      "sha256": "425062ce43175b2fa39f742cc1be8f3e6413d958fbc30436004e008c43598b8a"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/sandbox.js",
+      "sha256": "08e4229fb6a2aa09bd74367e1cda3b4300fec58a0c4bca7f1f7acc32f1537bb8"
+    },
+    {
+      "path": "plugins/ca-sandbox/tools/claude-inside.js",
+      "sha256": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f"
+    }
+  ],
+  "author_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-review-repair-freeze.json",
+  "red_green": {
+    "ca-sandbox-pinned-base-red.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-red.json",
+      "sha256": "b17a8307688581ef310e6fbe6473e287aef24b9d3d8edf1fc407dd4c4cbca188",
+      "passed": 1,
+      "failed": 6,
+      "pending": 0
+    },
+    "ca-sandbox-pinned-base-green.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-green.json",
+      "sha256": "bf3f2db46672f5ade067efc0fd26603dc594ded43a8f5ca710689fa4980263ec",
+      "passed": 7,
+      "failed": 0,
+      "pending": 0
+    },
+    "ca-sandbox-pinned-base-focused.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-focused.json",
+      "sha256": "acf766b09664ccfd9ea38a4b785009c630ae09bba5b29c886f04febbdf21cefe",
+      "passed": 48,
+      "failed": 0,
+      "pending": 1
+    },
+    "ca-sandbox-pinned-base-final.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-final.json",
+      "sha256": "5fedf752f4aae7c811f0129f09bfb6301d5f8a9844c9f7bf97c2fca5003b4749",
+      "passed": 12,
+      "failed": 0,
+      "pending": 0
+    }
+  },
+  "asserted_boundary": "Actual default framework build/generate functions exercised through controlled spawn seam; generated Dockerfile data read from actual owned temp files. This is not an installed tool, real daemon, two-container, provider or TUI observation.",
+  "verified_properties": [
+    "Merge-last supported --json-plan buildImage pinned to reviewed GHCRindex; no unsupported build-image/env knob.",
+    "Every generated FROM, COPY image source and RUN mount image source is immutable or a supported prior stage; full comments are discarded before continuations; unsupported source/deferred/frontend grammar is refused before Docker build.",
+    "Both host and WSL generator-spawn paths use fixed flags and minimalOSenvironment without ambient Nixpacks/provider credential inputs.",
+    "Same immutable base/fixed flags/environment/all-image-reference-policy object included in Nixpacks V2 cache key; both unbound and previous FROM-only policy keys miss.",
+    "Image-label/immutable-ID admission unchanged; distinct staging names preserve the same cache/image identity.",
+    "Generation and validation rejection clean generated files; both owning bundles rebuilt."
+  ],
+  "checks": [
+    {
+      "command": "vitest run build-pinned-base.test.ts review repair",
+      "result": "PASS",
+      "named_cases": 22,
+      "red_failed": 8,
+      "raw": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-review-fix-green.json"
+    },
+    {
+      "command": "locked vitest build-pinned-base.test.ts final",
+      "result": "PASS",
+      "named_cases": 12,
+      "raw": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-final.json"
+    },
+    {
+      "command": "locked vitest build-pinned-base.test.ts build.test.ts state-contracts.test.ts",
+      "result": "PASS_WITH_PENDING_DOCKER",
+      "passed": 48,
+      "pending": 1,
+      "raw": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-focused.json"
+    },
+    {
+      "command": "tsc --noEmit",
+      "result": "PASS"
+    },
+    {
+      "command": "npm run build",
+      "result": "PASS",
+      "outputs": [
+        "plugins/ca-sandbox/tools/sandbox.js",
+        "plugins/ca-sandbox/tools/claude-inside.js"
+      ]
+    }
+  ],
+  "independent_review": {
+    "owner": "native_cohort_integration",
+    "status": "CLOSED_PASS_WITH_RUNTIME_LIMITS",
+    "source_freeze": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-review-repair-freeze.json",
+    "packet": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-base-narrow-review.json",
+    "sha256": "df9a9c934d91b667b0f0c8b7d9e982dd8810f86c2ad1546fd530fafa3819c3c3",
+    "unresolved_findings": 0
+  },
+  "limits": [
+    "No acquiredNixpacks binary or realDocker effect executed by author; parent supplied acquisitionclearance and may executeactualgenerator separately.",
+    "Docker local qualification unavailable: realtwo-create/two-container independent semantics remain required and are not replaced by controlled-spawn tests.",
+    "WindowsWSL seam is simulated; no actualWSLruntime qualification claimed.",
+    "PinnedFROM inputs prevent mutable image aliases; no claim arbitrary RUN/network/package-manager activity is reproducible.",
+    "No sourcecommit binding, staging, commits, pushes, sourceversions or publication changed by author."
+  ],
+  "acquisition": "No Nixpacks or image acquisition by this author. Root owns reviewed Linuxamd64 acquisition/runtime qualification; existing locked sandbox dev dependencies installed by npm ci --ignore-scripts without lock changes.",
+  "review_repair": {
+    "findings": [
+      "SBX-PIN-01",
+      "CON004 escaped-comment FROM hiding"
+    ],
+    "policy": "all-image-refs-sha256-no-frontend-v2",
+    "raw_results": {
+      "ca-sandbox-pinned-review-fix-red.json": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-review-fix-red.json",
+        "sha256": "68fc970fb5146bee73995b018b1ec92516f82db1a61a564f2e29ec698483817e",
+        "passed": 14,
+        "failed": 8,
+        "pending": 0,
+        "assertions": [
+          {
+            "name": "fixed Nixpacks image inputs through the default generator supplies supported merge-last JSON plan and excludes ambient credentials/configuration",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable primary before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable runImage before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses variable runImage before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses platform mutable runImage before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable frontend before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses unknown stage alias before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses continued mutable FROM before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses comment hiding mutable FROM before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable COPY source before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses quoted COPY flag before mutable source before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable RUN mount before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses quoted mutable RUN mount before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses second mutable RUN mount before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses deferred image source before Docker build and cleans generated files",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator accepts pinned multistage references, prior aliases and scratch",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator accepts the native runImage numeric0 and prior-stage bind sources",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator accepts immutable external COPY and bind image references",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator invalidates the earlier FROM-only policy cache identity",
+            "status": "failed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator uses the same pinned profile and minimal environment through the WSL default generator seam",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator reuses the same labeled immutable image across two independent staging names",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator does not reuse a V2 cache tag that omitted the effective pinned generator profile",
+            "status": "passed"
+          }
+        ]
+      },
+      "ca-sandbox-pinned-review-fix-green.json": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-pinned-review-fix-green.json",
+        "sha256": "e67cc3bb407baf93a52c098eb6f39981492729be4498c2e56e6059162eccc579",
+        "passed": 22,
+        "failed": 0,
+        "pending": 0,
+        "assertions": [
+          {
+            "name": "fixed Nixpacks image inputs through the default generator supplies supported merge-last JSON plan and excludes ambient credentials/configuration",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable primary before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable runImage before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses variable runImage before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses platform mutable runImage before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable frontend before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses unknown stage alias before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses continued mutable FROM before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses comment hiding mutable FROM before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable COPY source before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses quoted COPY flag before mutable source before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses mutable RUN mount before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses quoted mutable RUN mount before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses second mutable RUN mount before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator refuses deferred image source before Docker build and cleans generated files",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator accepts pinned multistage references, prior aliases and scratch",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator accepts the native runImage numeric0 and prior-stage bind sources",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator accepts immutable external COPY and bind image references",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator invalidates the earlier FROM-only policy cache identity",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator uses the same pinned profile and minimal environment through the WSL default generator seam",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator reuses the same labeled immutable image across two independent staging names",
+            "status": "passed"
+          },
+          {
+            "name": "fixed Nixpacks image inputs through the default generator does not reuse a V2 cache tag that omitted the effective pinned generator profile",
+            "status": "passed"
+          }
+        ]
+      }
+    },
+    "status": "INDEPENDENTLY_CLOSED"
+  }
+}

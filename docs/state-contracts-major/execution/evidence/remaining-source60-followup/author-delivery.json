@@ -1,0 +1,231 @@
+{
+ "schema": "codearbiter.private-source-proposal-delivery/1",
+ "state": "PROPOSAL_ONLY_NO_SELF_INDEPENDENT_APPROVAL",
+ "actor": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "previous_healthy_inspection_epoch": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "families": [
+  "hooks:prune-plan",
+  "hooks:prune-execute",
+  "hooks:pi-accounting",
+  "hooks:doctor",
+  "hooks:tribunal-inventory",
+  "hooks:tribunal-run",
+  "hooks:tribunal-lock-leads",
+  "hooks:pi-python-bridge",
+  "hooks:codex-pretool",
+  "S39",
+  "S40",
+  "S41"
+ ],
+ "literal_clauses": 76,
+ "remaining_literal_transitions": 48,
+ "CAS_rows": 60,
+ "retained_advanced_rows": 28,
+ "held": [],
+ "adoption_file_count": 22,
+ "adoption_filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\adoption-filemap.json",
+  "sha256": "8f77ade934b56d87db6ea38e072f1d41fcc4b4594a82e575e0e869aae823740d",
+  "bytes": 8368
+ },
+ "cas_proposal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\cas-proposal.json",
+  "sha256": "e984646bddc9181d06a2e1ce5b7bce0e2eea3834c73e0a9c4681ad9a540d9e2f",
+  "bytes": 124117
+ },
+ "source_bindings": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\source-bindings.json",
+  "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f",
+  "bytes": 25425
+ },
+ "clause_matrix": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\clause-inspection.json",
+  "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7",
+  "bytes": 421867
+ },
+ "baseline_current_joins": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\baseline-current-joins.json",
+  "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260",
+  "bytes": 19811
+ },
+ "inherited_inventory": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited-evidence-inventory.json",
+  "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7",
+  "bytes": 37856
+ },
+ "prune_repair_binding": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\prune-repair-binding.json",
+  "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b",
+  "bytes": 3054
+ },
+ "validation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\validation.json",
+  "sha256": "551d3da0ae47af9b97b769e1dad7b281e7c245327dd58c58cb5cf61ff73d55b5",
+  "bytes": 17085
+ },
+ "author_notes": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\authored-clause-data.json",
+  "sha256": "b9109489b587866eabf4c0138d61b37a5607638aaee3e5bb8e9b05286ec594e1",
+  "bytes": 35046
+ },
+ "context": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\remaining-hooks60-repaired-source-context.json",
+  "sha256": "fb04bc2d7d94cc2856734dc26ae61c44f85eb7d05d8f653ca9aa36ab973bc945",
+  "bytes": 15751
+ },
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "No private source corpus duplication, new user decision/ADR, task status, finding disposition or native proof obligation changed.",
+  "12machines and48remainingedges only;28advanced records plus all active/history references retain their bytes and real epochs; current applicability is measured by Root.",
+  "No canonical/index/ref/marker writes. Root alone integrates, reviews and runs unchanged strict admission."
+ ],
+ "private_inventory": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\adoption-filemap.json",
+   "sha256": "8f77ade934b56d87db6ea38e072f1d41fcc4b4594a82e575e0e869aae823740d",
+   "bytes": 8368
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\authored-clause-data.json",
+   "sha256": "b9109489b587866eabf4c0138d61b37a5607638aaee3e5bb8e9b05286ec594e1",
+   "bytes": 35046
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260",
+   "bytes": 19811
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\build-metadata.py",
+   "sha256": "4ff17cc1da48f729be3ce6fc09d3de4a48a538bc02e3b84e101ebde2cc2ac97e",
+   "bytes": 17321
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\cas-proposal.json",
+   "sha256": "e984646bddc9181d06a2e1ce5b7bce0e2eea3834c73e0a9c4681ad9a540d9e2f",
+   "bytes": 124117
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7",
+   "bytes": 421867
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7",
+   "bytes": 37856
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\predecessor-draft.json",
+   "sha256": "c4e8b240b345169c24e5b7fe438a91899afa74cace820ec3de2d7cea219f0ff0",
+   "bytes": 881
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b",
+   "bytes": 3054
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f",
+   "bytes": 25425
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\source-symbol-plan.json",
+   "sha256": "3487a35de81313611ed8be54e08a7db51aa45d6b8c0a3c23a640a72ac12cbc75",
+   "bytes": 27201
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\validation.json",
+   "sha256": "551d3da0ae47af9b97b769e1dad7b281e7c245327dd58c58cb5cf61ff73d55b5",
+   "bytes": 17085
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\01-predecessor.json",
+   "sha256": "32ee110f5af4353de4cbcf95f48a643f973a46832b5eaaded250b7933307b7f2",
+   "bytes": 3178
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\02-predecessor.json",
+   "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+   "bytes": 2622
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\03-predecessor.json",
+   "sha256": "6d23c0edf366510f74ef1247e5223bd5f259fba716f2b02dd564c85f74eee392",
+   "bytes": 1805
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\04-predecessor.json",
+   "sha256": "7cfdcea3c75474aac56009bd990439f05833ae0262893e957ef268d54317dfda",
+   "bytes": 2562
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\05-predecessor.json",
+   "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+   "bytes": 49859
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-codex-pretool-preserved.json",
+   "sha256": "e29e127cb6cbb1983da99013e9aa2c264df90ca83ca7f943fb5f68447570ff4a",
+   "bytes": 19265
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-doctor-preserved.json",
+   "sha256": "8ed7ee50b39617b1a426370cd8903375427a4a05175415b558c02f541a0ad94b",
+   "bytes": 24482
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-pi-accounting-preserved.json",
+   "sha256": "bc59d4cd9c4cc0cef0eb8f0d5313bc9223962a0ff05d059fbb1b1aed04b8ad0a",
+   "bytes": 15383
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-pi-python-bridge-preserved.json",
+   "sha256": "415e3771a57e3a213290be0c9e23e38eadc51b2fe77423dbffff04cdd5c13f0a",
+   "bytes": 29312
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-prune-execute-preserved.json",
+   "sha256": "c2cae997e3149f79b32bf387f32bcb9c69101e9139e7ff878c76968af3d81e28",
+   "bytes": 11659
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-prune-plan-preserved.json",
+   "sha256": "c811ee97b2e6f9d6b778bda765ba90db5febce889bffa9f8907d900a79df97ae",
+   "bytes": 15624
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-tribunal-inventory-preserved.json",
+   "sha256": "55c0e7e0c008cc51c97c442f4658d096d705ce456cf14d1418f973c484ee7c5f",
+   "bytes": 8200
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-tribunal-lock-leads-preserved.json",
+   "sha256": "453a67a086d1fc1daa237e5fc061cb19260215a9ecb4177e53f75a98506f02e4",
+   "bytes": 12480
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-tribunal-run-preserved.json",
+   "sha256": "e73cdd88108ea91e302e7c50851bf7e28f6ec41808f34ea1a03d37541b2fb26d",
+   "bytes": 10434
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\S39-preserved.json",
+   "sha256": "b0bf1e397790c5aaba6432923db76efa710aa70f942c3aa1d72b0729bf1363f3",
+   "bytes": 26137
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\S40-preserved.json",
+   "sha256": "b3fab6a690ce31e3d44ee3782a6e3181c662d3a5e25ae281b30b6b0dd5789752",
+   "bytes": 16742
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\S41-preserved.json",
+   "sha256": "d16ddf6b82b8020a58e2a793dfba518e475e5c84633a9d0ec7bb7dd0b078364d",
+   "bytes": 18807
+  }
+ ]
+}

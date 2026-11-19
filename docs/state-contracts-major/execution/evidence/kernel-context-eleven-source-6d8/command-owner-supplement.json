@@ -1,0 +1,545 @@
+{
+ "schema": "codearbiter.command-owner-source-supplement/1",
+ "state": "SOURCE_ONLY_AUTHOR_PROPOSAL",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "observed_HEAD_before": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "original_delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\delivery.json",
+  "sha256": "b5e22a7b7e90e62dee1deb59f05e188e3fc07ed7281da0c8c8cfed9c6fecfca8",
+  "bytes": 9079
+ },
+ "original_peer_sha256": "29639ae12300ff8ced46e0558536379758fffef46d2488abc634a57e4239c4af",
+ "original_owner_refusal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source205-original-owner-failures.json",
+  "sha256": "457b35e191c7416695d993c894837f8a51c05d91d729301155f9a935ff5bc4e6",
+  "bytes": 3180
+ },
+ "predecessor": {
+  "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/command-owner-predecessor.json",
+  "sha256": "8021191ebd9150d71ae6da434f75044e64fd54ee40e1f04e5d8bd897bd76d9bd"
+ },
+ "correction": "Add the required knowledge.py positive input and inspect its actual command owner/projection, without changing any frozen clause or original report/selection helper assessment. Original shared raw matrix remains byte-identical; this is an additive owner inspection supplement.",
+ "owner_binding": {
+  "path": "core/pysrc/knowledge.py",
+  "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+  "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841",
+  "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+  "bytes": 25169,
+  "already_acquired_in_original_source_bindings": true,
+  "observed_current_Git_equal": true
+ },
+ "witnesses": [
+  {
+   "path": "core/pysrc/knowledge.py",
+   "symbol": "_records",
+   "start": 86,
+   "end": 101,
+   "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "span_sha256": "9a9b1e3ee6323281c5ca148350cac3edaeda49dff9d16fda465b240508834c0b",
+   "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+  },
+  {
+   "path": "core/pysrc/knowledge.py",
+   "symbol": "current_records",
+   "start": 104,
+   "end": 117,
+   "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "span_sha256": "5787e8977f4334a3b6fcdd5a641108e182f195c7304972022095f5b02cb0753b",
+   "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+  },
+  {
+   "path": "core/pysrc/knowledge.py",
+   "symbol": "context_text",
+   "start": 120,
+   "end": 141,
+   "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "span_sha256": "20d11b0a162c9a5d4008ba155d8b96c284846c706593866597f6069063b5dec1",
+   "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+  },
+  {
+   "path": "core/pysrc/knowledge.py",
+   "symbol": "_dispatch commands branch",
+   "start": 241,
+   "end": 244,
+   "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "span_sha256": "d293376e57a7474ba257489b9b04963e2c96a5c933386a41afb95418b09b0819",
+   "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+  }
+ ],
+ "owner_trace": [
+  "_records obtains an identity-bound nonretired outline and paginated read-batch records; a changed enumeration identity refuses.",
+  "current_records routes HTML to the native reader and refuses an empty current collection; Markdown returns the legacy document route instead of typed record fabrication.",
+  "context_text formats current declarations/statements; npm non-root cwd becomes --prefix on a copied argv and shlex.join produces text, without command execution.",
+  "_dispatch commands reads current CTX-TECH-STACK command records, optional purpose equality, and an explicit reported-not-verified note."
+ ],
+ "edge_assessments": {
+  "01": "The commands front door lists only current command records, optionally filtered by purpose, and explicitly labels run_state as reported rather than verified. The existing validate_command_record witness, not this projection, owns record-shape validation.",
+  "02": "Stored run_state is not independently refreshed or certified by the commands listing or text projection. Current-evidence joins remain owned by the existing report resolver witnesses; the listing is not a second verifier.",
+  "03": "Neither shlex text projection nor commands listing executes a declaration or establishes a passing run. The original resolver assessment remains limited to its supplied authorized exact-bound observation.",
+  "04": "The owner returns declared/reporting data without executing it or erasing a reported failure. The existing resolver retains responsibility for exact-current failure versus unknown classification.",
+  "05": "The text projection copies argv and adds npm --prefix for a declared non-root cwd; shlex.join formats that copy. It does not select or authorize a run. Existing scoped selection witnesses retain ambiguity/source-ref/cwd guards.",
+  "06": "The commands and read-text projections do not establish constraint applicability or command authority. Constraint shape and task admission remain with the existing report/selection witnesses, with their stated limits."
+ },
+ "source_joins": [
+  {
+   "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_artifactlib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_gitexec.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "docs/state-contracts-major/PROGRAM.md",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/program.json",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/tasks.json",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_artifactauthoritylib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_contextreportlib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+   "bytes": 46687,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_contextselectlib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+   "bytes": 22879,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_contextsnapshotlib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+   "bytes": 47301,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_provenancelib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "bytes": 76910,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_scopelib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/knowledge.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "bytes": 25169,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/artifacts/internal/operations/context_assistive.go",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+   "bytes": 8196,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_contextwriterlib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+   "bytes": 6174,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_protectedstatelib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+   "bytes": 35433,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/init-codearbiter.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "bytes": 27811,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_knowledgelib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "bytes": 3073,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_worklib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/work.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/pysrc/_artifactmanifestlib.py",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/artifacts/internal/evidence/completion_workspace.go",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+   "bytes": 27533,
+   "same_literal_Git_bytes": true
+  },
+  {
+   "path": "core/artifacts/internal/observation/runner_contract.go",
+   "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+   "observed_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+   "sha256": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab",
+   "bytes": 6675,
+   "same_literal_Git_bytes": true
+  }
+ ],
+ "physical_before": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.codearbiter\\decisions\\0043-assistive-state-engine.md",
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365
+  },
+  "core/pysrc/_artifactlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactlib.py",
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924
+  },
+  "core/pysrc/_gitexec.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_gitexec.py",
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644
+  },
+  "docs/state-contracts-major/PROGRAM.md": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\PROGRAM.md",
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\machine-coverage.json",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\program.json",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\tasks.json",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\transition-coverage.json",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactauthoritylib.py",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805
+  },
+  "core/pysrc/_contextreportlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextreportlib.py",
+   "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+   "bytes": 46687
+  },
+  "core/pysrc/_contextselectlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextselectlib.py",
+   "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+   "bytes": 22879
+  },
+  "core/pysrc/_contextsnapshotlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextsnapshotlib.py",
+   "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+   "bytes": 47301
+  },
+  "core/pysrc/_provenancelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_provenancelib.py",
+   "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "bytes": 76910
+  },
+  "core/pysrc/_scopelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_scopelib.py",
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966
+  },
+  "core/pysrc/knowledge.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\knowledge.py",
+   "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "bytes": 25169
+  },
+  "core/artifacts/internal/operations/context_assistive.go": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts\\internal\\operations\\context_assistive.go",
+   "sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+   "bytes": 8196
+  },
+  "core/pysrc/_contextwriterlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextwriterlib.py",
+   "sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+   "bytes": 6174
+  },
+  "core/pysrc/_protectedstatelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_protectedstatelib.py",
+   "sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+   "bytes": 35433
+  },
+  "core/pysrc/init-codearbiter.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\init-codearbiter.py",
+   "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "bytes": 27811
+  },
+  "core/pysrc/_knowledgelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_knowledgelib.py",
+   "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "bytes": 3073
+  },
+  "core/pysrc/_worklib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_worklib.py",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760
+  },
+  "core/pysrc/work.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\work.py",
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactmanifestlib.py",
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249
+  },
+  "core/artifacts/internal/evidence/completion_workspace.go": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts\\internal\\evidence\\completion_workspace.go",
+   "sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+   "bytes": 27533
+  },
+  "core/artifacts/internal/observation/runner_contract.go": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts\\internal\\observation\\runner_contract.go",
+   "sha256": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab",
+   "bytes": 6675
+  }
+ },
+ "limits": [
+  "Source-only supplement; no tests, product imports, runtime, strict owner execution, API/network, native, probes, install or canonical/index/ref/marker/ledger mutation.",
+  "Historical proof subject remains literal 6d8; cfa8 is the observed inspection epoch, not a relabeled execution or runtime renewal.",
+  "No change to declaration, source freshness, authorized-observation, constraint or native-reader semantics. No independent self-review or qualification claim."
+ ],
+ "physical_after": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.codearbiter\\decisions\\0043-assistive-state-engine.md",
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365
+  },
+  "core/pysrc/_artifactlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactlib.py",
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924
+  },
+  "core/pysrc/_gitexec.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_gitexec.py",
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644
+  },
+  "docs/state-contracts-major/PROGRAM.md": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\PROGRAM.md",
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\machine-coverage.json",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\program.json",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\tasks.json",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\contracts\\transition-coverage.json",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278
+  },
+  "core/pysrc/_artifactauthoritylib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactauthoritylib.py",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805
+  },
+  "core/pysrc/_contextreportlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextreportlib.py",
+   "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+   "bytes": 46687
+  },
+  "core/pysrc/_contextselectlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextselectlib.py",
+   "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+   "bytes": 22879
+  },
+  "core/pysrc/_contextsnapshotlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextsnapshotlib.py",
+   "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+   "bytes": 47301
+  },
+  "core/pysrc/_provenancelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_provenancelib.py",
+   "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "bytes": 76910
+  },
+  "core/pysrc/_scopelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_scopelib.py",
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966
+  },
+  "core/pysrc/knowledge.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\knowledge.py",
+   "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "bytes": 25169
+  },
+  "core/artifacts/internal/operations/context_assistive.go": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts\\internal\\operations\\context_assistive.go",
+   "sha256": "d6ec9c0eeadda38283d66129a76e9f550b28dee91dc775b6dc8604faa4a6066a",
+   "bytes": 8196
+  },
+  "core/pysrc/_contextwriterlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_contextwriterlib.py",
+   "sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+   "bytes": 6174
+  },
+  "core/pysrc/_protectedstatelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_protectedstatelib.py",
+   "sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+   "bytes": 35433
+  },
+  "core/pysrc/init-codearbiter.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\init-codearbiter.py",
+   "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "bytes": 27811
+  },
+  "core/pysrc/_knowledgelib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_knowledgelib.py",
+   "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "bytes": 3073
+  },
+  "core/pysrc/_worklib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_worklib.py",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760
+  },
+  "core/pysrc/work.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\work.py",
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactmanifestlib.py",
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249
+  },
+  "core/artifacts/internal/evidence/completion_workspace.go": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts\\internal\\evidence\\completion_workspace.go",
+   "sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05",
+   "bytes": 27533
+  },
+  "core/artifacts/internal/observation/runner_contract.go": {
+   "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts\\internal\\observation\\runner_contract.go",
+   "sha256": "2d217493e171b5db5e2d064b39211c96f1fc8618f488ffaa1cb910e1e61510ab",
+   "bytes": 6675
+  }
+ },
+ "observed_HEAD_after": "cfa8effd8e3e856571052f94311f4f01c96b7f77"
+}

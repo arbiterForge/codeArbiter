@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\overlay\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "farm-registry-lock.test.ts",
+    "--coverage",
+    "--coverage.reporter=json",
+    "--coverage.reporter=text-summary",
+    "--coverage.reportsDirectory=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-controls\\coverage",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-controls\\seven.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\overlay\\plugins\\ca\\tools",
+  "exit_code": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "seconds": 3.805780699942261,
+  "stdout_sha256": "204d98c0d99563f5ddc4d36e1410fe77da291db50b8814bb5828f7882d48bed6",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

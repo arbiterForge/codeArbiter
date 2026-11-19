@@ -1,0 +1,237 @@
+{
+  "schema": "codearbiter.compact-source-clause-inspection/1",
+  "actor": "/root/packaging_site_tools",
+  "subject_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "current_git_checked": "9ab2be5e14cf8c2001d392dd3436d9ed3caf3efd",
+  "mode": "SOURCE_CLAUSE_ONLY_NO_EXECUTION",
+  "rows": [
+    {
+      "cell": "disposition:transitions:SX06:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-wayfinding.ts",
+          "start": 17,
+          "end": 47,
+          "file_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31"
+        },
+        {
+          "path": "site/scripts/guide-directory.ts",
+          "start": 34,
+          "end": 60,
+          "file_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717"
+        },
+        {
+          "path": "site/scripts/concept-directory.ts",
+          "start": 33,
+          "end": 43,
+          "file_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157"
+        },
+        {
+          "path": "site/scripts/reference-sidebar.ts",
+          "start": 45,
+          "end": 113,
+          "file_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9"
+        },
+        {
+          "path": "site/scripts/journey-navigation.ts",
+          "start": 35,
+          "end": 62,
+          "file_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a"
+        }
+      ],
+      "semantic_assessment": "Academy projector rejects duplicate lesson IDs, invalid IDs/tracks/self/unknown next lesson, preserves explicit nextLab and keeps missing prerequisites as external labels. Guide owner rejects unknown/duplicate/missing classified guides and incomplete metadata; concept owner rejects duplicate registered membership/missing metadata. Reference owner requires one Commands group, canonical nonempty ordered visibility tiers and consistent unique command membership; journey projects these owners without treating reading position as completion.",
+      "limits": "Conditional source-only projections on supplied typed/validated content/metadata. No actual content inventory/module-build availability, rendered routes, browser/reading/completion or Academy publication observed. Distinct owners validate their own membership; no universal arbitrary-input schema guard is asserted."
+    },
+    {
+      "cell": "disposition:transitions:SX06:02",
+      "witnesses": [
+        {
+          "path": "site/scripts/topic-map.ts",
+          "start": 35,
+          "end": 137,
+          "file_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1"
+        }
+      ],
+      "semantic_assessment": "Parser requires object-of-string-lists and uses null prototype. Validator aggregates unknown pages/lessons, empty/repeated lists and every unmapped lesson. Load scans real authored guide/concept page titles then validates before constructing per-lesson ordered page projection; explicit named errors prevent silently missing members.",
+      "limits": "Source-only topic membership/title join on supplied map, lesson IDs and authored pages. No current actual map corpus, generated Academy/content availability, build, browser or source semantic truth. JSON duplicate-key rejection/whole filesystem confinement is not asserted."
+    },
+    {
+      "cell": "disposition:transitions:SX06:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/rehype-base-links.ts",
+          "start": 27,
+          "end": 77,
+          "file_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b"
+        },
+        {
+          "path": "site/scripts/rehype-table-shell.ts",
+          "start": 27,
+          "end": 99,
+          "file_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7"
+        }
+      ],
+      "semantic_assessment": "Base-link transform touches only string href/src root-absolute unprefixed values, skipping empty/fragments/protocol-relative/relative and existing exact/directory base prefix, so repeated transform is stable on this admitted grammar. Table transform skips existing shells and stacks only top-level authored-guide simple one-header/regular-body tables without span/role/scope/header/nested ambiguity. Original cell content retained; mobile labels use ariaHidden and Pagefind-ignore.",
+      "limits": "Source-only typed HAST transforms with supplied configured base/source path. No actual generated HTML, CSS/mobile/AT/browser behavior or arbitrary untrusted input sanitization. Complex tables deliberately retain scrolling rather than inferred associations."
+    },
+    {
+      "cell": "disposition:transitions:SX06:04",
+      "witnesses": [
+        {
+          "path": "site/scripts/execution-maps/render.ts",
+          "start": 14,
+          "end": 111,
+          "file_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328"
+        },
+        {
+          "path": "site/scripts/execution-maps/model.ts",
+          "start": 501,
+          "end": 549,
+          "file_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b"
+        },
+        {
+          "path": "site/scripts/execution-maps/workflows.ts",
+          "start": 1755,
+          "end": 1759,
+          "file_sha256": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded"
+        },
+        {
+          "path": "site/scripts/generate-diagrams.ts",
+          "start": 495,
+          "end": 540,
+          "file_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8"
+        }
+      ],
+      "semantic_assessment": "Renderer escapes all authored text, validates SVG namespace, and refuses graph validation errors before rendering. Shared validator enforces roles/IDs/owners/links, ordered chapter handoffs/known endpoints/reachability. Fixed getWorkflow rejects unregistered ID; generator constructs declared asset strings then sequentially writes them. Interruption can leave mixed output; teaching/history graph never executes product transitions.",
+      "limits": "Conditional source-only validated teaching graph renderer and fixed sequential writer. Shared graph validator/getWorkflow body inspected; static editorial graph content is data, not runtime workflow execution, authority, semantic truth or actual generated geometry/media. No current build or complete output transaction."
+    },
+    {
+      "cell": "disposition:transitions:SX06:05",
+      "witnesses": [
+        {
+          "path": "site/scripts/diagram-audit.ts",
+          "start": 28,
+          "end": 146,
+          "file_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63"
+        }
+      ],
+      "semantic_assessment": "Audit requires marker/nonempty title/desc, forbids filters, checks declared font stacks/minimum font sizes/approved colors and data-max-width with conservative character/font/weight/spacing width estimator. Violations aggregate; CLI sets exit1 when present. It does not claim browser-measured glyph widths or nonempty asset population.",
+      "limits": "Source-only regex declared visual-grammar/conservative metric audit. Not actual browser/font shaping geometry, semantic workflow truth, required nonempty SVG inventory or rendered-artifact acceptance."
+    },
+    {
+      "cell": "disposition:transitions:SX06:07",
+      "witnesses": [
+        {
+          "path": "site/scripts/decision-evidence.ts",
+          "start": 149,
+          "end": 168,
+          "file_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550"
+        }
+      ],
+      "semantic_assessment": "Validator checks40hex source identity shape, valid unique per-case IDs, known source key, root-local non-protocol href and nonblank case fields. SMARTS reason length and prohibited hedge terms checked. Returns problems; source quotes and tests are drift alerts and never grant authority or prove implementation.",
+      "limits": "Source-only structural teaching-data validator, no source excerpt authenticity/currentness, user-choice authentication, product behavior or successful full site validation. Local href means syntactically root-local, not a checked destination."
+    }
+  ],
+  "holds": {
+    "SX06:06": "Complete contained-resolution clause not established: page-relative targets normalize before base check, but root-absolute targets retain dot segments then filesystem join. Frozen stronger containment claim is held; regex scan/current dist/browser behavior not executed. No automatic product-fix assertion."
+  },
+  "dependency_assessments": {
+    "navigation-projectors": "Concept runtime data import read; remaining sidebar imports type-only. Explicit supplied metadata precondition; no generated-content/build proof.",
+    "topic-closure": "Node built-ins only; map/page/lesson corpus supplied, not newly verified.",
+    "markdown-presentation": "No runtime imports; source-only typed tree transforms.",
+    "diagram-render": "Shared current model validator and registered workflow lookup inspected, bound despite evolving editorial data. Data semantic truth/execution explicitly excluded.",
+    "diagram-audit": "Node built-ins only; conservative metrics rather than browser shaping.",
+    "decision-teaching": "No runtime imports; source references remain teaching data rather than authenticated authority.",
+    "held-link-audit": "Read CLI/lib/base owner; root-absolute dot-segment containment stronger than body; held without running or editing source."
+  },
+  "input_joins": {
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "d594_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "d594_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "d594_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/academy-wayfinding.ts": {
+      "d594_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/concept-directory.ts": {
+      "d594_sha256": "74a907f138f9b85dbce1ff1c74551c8b829945b01ce0ec37f8e3f075e346d157",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/guide-directory.ts": {
+      "d594_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/journey-navigation.ts": {
+      "d594_sha256": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/reference-sidebar.ts": {
+      "d594_sha256": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/topic-map.ts": {
+      "d594_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/rehype-base-links.ts": {
+      "d594_sha256": "9f6972f620120165a28bf26704e47660385b4c938c7a7c108a9c7eff6233a16b",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/rehype-table-shell.ts": {
+      "d594_sha256": "54517f178289204710da8c84d97176dbb5961bc5fd85c14bde9b2ecabe64bdf7",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/generate-diagrams.ts": {
+      "d594_sha256": "c3a436e49b0e7ae45cb59ef1b3120f9dc66b26b6a1a5cfacb41b49526b2528e8",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/execution-maps/render.ts": {
+      "d594_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/execution-maps/model.ts": {
+      "d594_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/execution-maps/workflows.ts": {
+      "d594_sha256": "195ed9f83e548da723804b2b26f3531af0918687900facd79310f48793ca0ded",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/diagram-audit.ts": {
+      "d594_sha256": "b5d2616167eae7670da836f08cf2bd6acbe91cece92a8cab6605aedd669d7d63",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "site/scripts/decision-evidence.ts": {
+      "d594_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    }
+  },
+  "machines_promoted": [],
+  "tasks_promoted": []
+}

@@ -48,17 +48,20 @@ func changesType() object {
 	return array(object{"oneOf": []any{add, update, retire, reorder, header}}, 1)
 }
 
-var operations = []string{"capabilities", "schema", "create", "apply", "read", "read-batch", "plan-verification", "outline", "validate", "index", "identity", "snapshot", "evidence-context", "context-evidence-context", "context-finalize-evidence-context", "context-preview", "context-finalize-preview", "context-apply", "rebrand", "repair-preview", "approve", "plan-bind", "sprint-approval-context", "sprint-approve", "smarts-apply", "eligible", "task-context", "verification-status", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "farm-seal", "farm-verify", "recover", "diff", "capture", "capture-observation", "export", "migration-preview", "migration-apply", "migration-rollback", "init-store", "knowledge-context", "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-get", "work-update", "work-context", "work-view", "work-list", "work-origins", "project-view", "cycle-view", "work-provider-get", "work-provider-configure", "work-transition-map-get", "work-transition-map-configure", "work-coordinate-resume", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-get", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict"}
-
-func Names() []string { x := append([]string{}, operations...); sort.Strings(x); return x }
+// Names lists every implemented operation, derived from the descriptor table.
+func Names() []string {
+	x := make([]string, 0, len(descriptors))
+	for _, d := range descriptors {
+		x = append(x, d.Name)
+	}
+	sort.Strings(x)
+	return x
+}
 
 // JournaledMutation identifies CAS/recoverable artifact writes. It is NOT a permission classifier: capture also writes immutable events and receipts.
 func JournaledMutation(op string) bool {
-	switch op {
-	case "knowledge-initialize", "knowledge-cutover", "knowledge-merge", "work-create", "work-adopt", "work-update", "work-provider-configure", "work-transition-map-configure", "work-coordinate-resume", "work-effect-stage", "work-effect-claim", "work-effect-record", "work-effect-conflict", "work-effect-adopt", "work-project-configure", "work-project-stage", "work-project-stage-field", "work-project-claim", "work-project-record", "work-project-conflict", "migration-rollback", "export", "migration-apply", "create", "apply", "rebrand", "repair-apply", "approve", "plan-bind", "sprint-approve", "smarts-apply", "task-start", "task-check", "task-review", "task-block", "task-reconcile", "scope-reconcile", "accept-scope", "prerequisite", "farm-project", "recover":
-		return true
-	}
-	return false
+	d, ok := descriptorIndex[op]
+	return ok && d.Journaled
 }
 func RequestSchema(op string) (object, error) {
 	p := object{"protocol": enum(Protocol)}
@@ -128,11 +131,17 @@ func RequestSchema(op string) (object, error) {
 		item := closed(object{"source_path": text(), "artifact_id": idType(), "slug": object{"type": "string", "pattern": "^[a-z][a-z0-9-]*$", "maxLength": int64(100)}, "normative": object{"type": "object"}, "mappings": object{"type": "array", "items": mapping, "minItems": int64(1), "maxItems": int64(4096)}}, "source_path", "artifact_id", "slug", "normative", "mappings")
 		add("spec", item, true)
 		add("plan", item, true)
-		if op == "migration-apply" {
-			add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
-			add("preview_sha256", digestType(), true)
-			add("review", closed(object{"actor": text(), "origin": text(), "source_text": text()}, "actor", "origin", "source_text"), true)
+		if op == "migration-preview" {
+			markdown := closed(object{"protocol": p["protocol"], "spec": item, "plan": item}, required...)
+			native := closed(object{"artifact_id": idType(), "expected_bytes_sha256": digestType()}, "artifact_id", "expected_bytes_sha256")
+			add("native_retirement", native, false)
+			request := closed(p)
+			request["oneOf"] = []any{markdown, closed(object{"protocol": p["protocol"], "native_retirement": native}, "protocol", "native_retirement")}
+			return request, nil
 		}
+		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
+		add("preview_sha256", digestType(), true)
+		add("review", closed(object{"actor": text(), "origin": text(), "source_text": text()}, "actor", "origin", "source_text"), true)
 	case "export":
 		artifact()
 		add("operation_id", object{"type": "string", "pattern": "^[A-Za-z0-9][A-Za-z0-9_-]{7,79}$"}, true)
@@ -551,6 +560,16 @@ func CheckRequest(op string, r object) error {
 	s, e := RequestSchema(op)
 	if e != nil {
 		return e
+	}
+	if op == "migration-preview" {
+		// The alternative with native_retirement is disjoint from the Markdown
+		// pair. Select it before validation to retain field-level diagnostics.
+		alternatives := model.A(s["oneOf"])
+		if _, native := r["native_retirement"]; native {
+			s = model.M(alternatives[1])
+		} else {
+			s = model.M(alternatives[0])
+		}
 	}
 	if es := schema.ValidateWith(s, r); len(es) > 0 {
 		return &es[0]

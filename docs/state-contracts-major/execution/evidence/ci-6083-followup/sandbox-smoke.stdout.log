@@ -1,0 +1,11 @@
+
+ RUN  v4.1.12 C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-sandbox/tools
+
+ ✓ dephash.test.ts (13 tests | 12 skipped) 2ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed | 12 skipped (13)
+   Start at  23:16:08
+   Duration  132ms (transform 17ms, setup 0ms, import 42ms, tests 2ms, environment 0ms)
+
+JSON report written to C:/Users/brenn/AppData/Local/Temp/ca-sandbox-result-transport-90gqbg21/report path with spaces/original-unit.json

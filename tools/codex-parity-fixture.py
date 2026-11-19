@@ -171,7 +171,8 @@ def main(argv=None):
         print(f"Parity fixture created: {target}")
         print("Next:")
         print("  1. Open this directory in Codex CLI (ca-codex installed + trusted).")
-        print("  2. Confirm the codeArbiter persona is injected at session start.")
+        print("  2. Confirm persona delivery through prompt-submit when due;")
+        print("     check SessionStart startup state and any applicable daily briefing separately.")
         print("  3. Run the checklist in docs/codex-parity-testing.md.")
         print("  4. Repeat in Claude Code (ca installed) and compare each verdict.")
     return 0

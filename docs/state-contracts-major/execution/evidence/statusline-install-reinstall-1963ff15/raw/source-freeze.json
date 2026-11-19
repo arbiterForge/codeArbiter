@@ -1,0 +1,67 @@
+{
+  "format": "private-cohort-preparation/1",
+  "state": "PREPARED_NOT_EXECUTED_READY_FOR_SHORT_SOURCE_HOLD",
+  "source_commit": "1963ff150b28c163eac38537a001055c22edfbed",
+  "selection_sha256": "b8371052eaf0860a2d704046648d69d705f688fee819cfecf7d8980d6e3f830e",
+  "actor_input_sha256": "e339332b2f60ac3da736a74b5d0570c397162f5e921ebfbee366e110582628fe",
+  "actor_context_sha256": "bcf665bc4496f7e6142321937423ba51e982c5bdcce66819cb13db42244f9e87",
+  "files": {
+    "capture.py": {
+      "sha256": "703a36f0cdae35affb42f2da867dfcf7f27845e992b88c9c7579a18dbca07adf",
+      "bytes": 7547
+    },
+    "run-selected.py": {
+      "sha256": "6e2c18d212dc6c2e9faa49925940136f461a971e9a70d6a3e1a34ce2b8c24e07",
+      "bytes": 10118
+    },
+    "runtime-seed.json": {
+      "sha256": "9875a74e87d9be4a5c6f1ae42f1e092cb79400299be2e3588d3bdd8f98246043",
+      "bytes": 307705
+    },
+    "seed-proof.json": {
+      "sha256": "5bbb0585e1ec1d9b13cdc3cf0ef46d0731bff9c08e227d6fa6e779f7874e6d3e",
+      "bytes": 1608
+    },
+    "observer/sitecustomize.py": {
+      "sha256": "7df396586013f1e16a1c22865662787da894f48f3c7d66d5d53f99829debdc26",
+      "bytes": 3343
+    }
+  },
+  "positive_inputs": {
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+    "plugins/ca/hooks/wire-statusline.py": "216e3754cf0fb8f9c33d77a18c2ce26f85a1b0b025ef28675bfcd3785bfef1a4"
+  },
+  "method_ids": [
+    "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+    "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+    "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings"
+  ],
+  "static_AST_parse": "PASS driver/protocol only; no imports, tests or capture run",
+  "prospective_argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov\\capture.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-finish-prepared-p_vnnrov",
+  "guard": "Source exact1963 HEAD/index/input/runtime/physical+Git namespaces before/after; child private profile/no-user-site/private pycache established before project imports; actual exit/time persisted before assertions.",
+  "scope": "Remaining01/02 only; conditional software machine uses separate explicit7-edge joins to original proofs. No old03..07 test bodies selected.",
+  "limits": [
+    "Fixture Host and private settings only; no real installed Host/UI/ACL/CAS/task/provider/model qualification.",
+    "No source/permanent test/Gov/index/ref/marker writes.",
+    "No actual execution until Root dispatch; original1111 head remains unchanged."
+  ]
+}

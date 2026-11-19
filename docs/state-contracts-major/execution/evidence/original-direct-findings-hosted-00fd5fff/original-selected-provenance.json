@@ -1,0 +1,1325 @@
+{
+  "schema": "original-hosted-direct-findings-selectors/1",
+  "source_commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+  "source_tree": "0a8bd97f59d7baa4705b2985f8c4412fb2488dd2",
+  "terminal_receipt_sha256": "a59a95afaf9a95c96bf91010a0011720672343ee0365934a47448f92c7dd306c",
+  "original_direct_receipt_sha256": "311b3a12285d6c5d917f6d7588653889b64c1b847347793eb8d7b3dd90594c65",
+  "runs": {
+    "ci": {
+      "id": 44289274017,
+      "head_sha": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+      "head_branch": "major/state-contracts",
+      "event": "push",
+      "path": ".github/workflows/ci.yml",
+      "run_attempt": 1,
+      "run_started_at": "2026-11-18T10:51:14Z",
+      "status": "completed",
+      "conclusion": "success"
+    },
+    "docs": {
+      "id": 44289274136,
+      "head_sha": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+      "head_branch": "major/state-contracts",
+      "event": "push",
+      "path": ".github/workflows/docs.yml",
+      "run_attempt": 1,
+      "run_started_at": "2026-11-18T10:51:15Z",
+      "status": "completed",
+      "conclusion": "success"
+    }
+  },
+  "retained_profiles": {
+    "major-source-inputs-hooks-findings-windows-contracts": {
+      "scope": "ci",
+      "owner": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "job_id": 134750078427,
+      "job_log_sha256": "6e20d11815f1bad8b3ab90e3bbc2474687233879db9c9284f02eaaf9c8b4d026",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14422962490,
+          "sha256": "a6e4dd492fb06837596a0101f2dd753c3916098135c72efe5c90a74d6853aa1e"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14422573659,
+          "sha256": "fd55d07fc2f08475773fc5f093b1ae9d9acc4f8387641e4b8a092d768ea4208e"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14423271574,
+          "sha256": "5004024ea434924d11045133ad473e5c6725269e3223e1218f6f1e2b2263b3f2"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:W-F03",
+          "selectors": [
+            "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_dependency_owner_assigns_medium_to_maintenance_only",
+            "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_index_blocks_column_matches_owner_severities",
+            "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_no_reviewer_body_declares_a_non_blocking_high",
+            "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_security_highs_block_in_the_dependency_owner",
+            "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_shared_contract_states_one_rule_and_the_single_exception",
+            "python:.github/scripts/test_review_funnel.py:__main__.SeverityDispositionPolicyTest.test_triage_never_conditions_high_blocking"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 250,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/scripts/test_hook_ci_partition.py": {
+          "original_sha256": "dcd9a880b669f54027e4a929e41139f854e7ff65b6d47e8fd7d0bf0dc188b72e",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "9df8e37b6382e3110462ff4241cf5d84d57fa1ac2f6a94be24e1b0721144ba73",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ec7ea7f1ad1a5d11411d5a1eec6d5aba3ba13760e4312b5a2daffe5f43ca0357",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "969f7312f896364cc0f43ba331d610e412d0ebad9b8530a8ba2c3b9e4dc52ac4"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {}
+    },
+    "major-source-inputs-hooks-single-owner": {
+      "scope": "ci",
+      "owner": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "job_id": 134750078427,
+      "job_log_sha256": "6e20d11815f1bad8b3ab90e3bbc2474687233879db9c9284f02eaaf9c8b4d026",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14423132435,
+          "sha256": "de14a76f2c25c6e7190eaff32e804291f2c96a0861898fbd5bc5cca1622db27e"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14422573659,
+          "sha256": "fd55d07fc2f08475773fc5f093b1ae9d9acc4f8387641e4b8a092d768ea4208e"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14423271574,
+          "sha256": "5004024ea434924d11045133ad473e5c6725269e3223e1218f6f1e2b2263b3f2"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:C-F06",
+          "selectors": [
+            "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_forbidden_read_is_unavailable_not_verified",
+            "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_violation_and_compliance",
+            "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_branch_protection_without_token_is_skipped",
+            "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_optional_codex_host_absent_is_skipped_required_absent_is_unavailable",
+            "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_payload_gate_records_first_introduction_and_invalid_base_distinctly",
+            "python:.github/scripts/test_verdictlib.py:__main__.CheckerObservationTest.test_tag_audit_without_token_is_skipped_and_unavailable_api_is_unavailable",
+            "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_malformed_observations_are_refused",
+            "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_missing_duplicate_or_other_source_evidence_is_not_a_pass",
+            "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_not_applicable_needs_a_declaration_and_evidence",
+            "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_only_affirmative_evidence_satisfies_a_required_check",
+            "python:.github/scripts/test_verdictlib.py:__main__.RequiredAggregationTest.test_ordinary_consumers_declare_their_own_accepted_outcomes",
+            "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_recovery_checkout_is_distinct_from_later_workflow_event",
+            "python:.github/scripts/test_verdictlib.py:__main__.SourceIdentityTest.test_unavailable_checkout_is_not_replaced_by_event_identity"
+          ]
+        },
+        {
+          "cell": "disposition:findings:HOOK-F01",
+          "selectors": [
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_claude",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_arbiter_dangerous_arbiter_redelivers_arbiter_codex",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_compaction_redelivers_the_current_mode_once",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_double_denied_delivery_record_update_reports_remaining_limit",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_audit_then_recovery_delivers_the_eventual_effective_persona",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_legacy_modeinject_marker_does_not_suppress_delivery",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_new_session_gets_its_own_delivery",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_claude",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_ops_arbiter_ops_redelivers_ops_codex",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_round_trip_without_an_ordinary_prompt_between_is_not_a_transition",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unchanged_mode_and_repeated_same_mode_token_do_not_repeat_persona",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestPersonaFollowsRealTransitions.test_unreadable_delivery_record_fails_toward_redelivery"
+          ]
+        },
+        {
+          "cell": "disposition:findings:HOOK-F02",
+          "selectors": [
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_flip_whose_row_never_landed_reports_failure",
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_a_writable_trail_still_reports_a_flip_and_writes_exactly_one_row",
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_an_unwritable_trail_leaves_the_enter_row_owed_not_lost",
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_recovers_an_unsettled_enter_instead_of_reporting_noop",
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_when_only_an_older_session_settles",
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_repeat_request_stays_failed_while_the_enter_row_cannot_settle",
+            "python:.github/scripts/test_modelib.py:__main__.TestEnterRowIsLedgerBacked.test_the_owed_row_replays_on_the_next_settle",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_double_flip_to_the_same_mode_is_a_noop_with_byte_identical_log",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_existing_debt_does_not_prove_new_transition_was_recorded",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_explicitly_entered_arbiter_is_exited_on_its_next_transition",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_failed_queue_and_trail_do_not_claim_persisted_debt",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_fallback_arbiter_with_old_enter_has_no_invented_exit",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_first_flip_transitions_and_appends_one_enter_row",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_flip_to_the_default_arbiter_when_already_arbiter_is_also_a_noop",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_implicit_arbiter_and_unbacked_raw_modes_have_no_invented_exit",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_legacy_backed_dangerous_transition_keeps_history_and_records_exit",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_marker_failure_leaves_prior_audit_and_mode_unchanged",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_partial_pair_retries_even_with_old_requested_mode_backing",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_same_second_cycle_debt_is_not_satisfied_by_older_rows",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exit_is_attributed_only_to_its_session",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlip.test_transition_exits_prior_mode_exactly_once",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_clean_flip_outcome_is_fully_settled",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_before_marker_commit_reports_nothing_changed",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_failure_during_owed_row_replay_keeps_order_and_counts_all_debt",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_flip_wrapper_keeps_the_legacy_sentinels",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_marker_committed_audit_owed_is_raw_ops_effective_arbiter",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_owed_row_settles_at_restart_without_duplicate_history",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_retry_of_same_token_settles_owed_row_once",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_return_to_arbiter_with_owed_row_reports_effective_arbiter",
+            "python:.github/scripts/test_modelib.py:__main__.TestFlipOutcome.test_unbacked_raw_with_no_owed_row_can_still_be_settled",
+            "python:.github/scripts/test_modelib.py:__main__.TestSettleGenericModeExitRow.test_interrupted_mode_exit_row_is_owed_and_settles_exactly_once",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_bare_mode_reports_effective_and_the_unbacked_raw_marker",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_codex_envelope_carries_the_same_truthful_partial",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_write_failure_says_nothing_changed",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_marker_written_audit_owed_names_raw_effective_and_next_action",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_no_runtime_mode_message_claims_modes_switch_gates",
+            "python:.github/scripts/test_prompt_submit.py:__main__.TestFlipMessagesReportTheActualOutcome.test_return_to_arbiter_with_owed_row_does_not_claim_the_old_mode"
+          ]
+        },
+        {
+          "cell": "disposition:findings:HOOK-F03",
+          "selectors": [
+            "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_discovery_must_be_the_exact_single_extension_and_skills",
+            "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_malformed_manifest_refuses_and_missing_core_stays_independent",
+            "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_missing_bare_foreign_prefix_and_wrong_type_identity_refuse",
+            "python:.github/scripts/test_pi_payload_identity.py:__main__.PiPayloadIdentityTest.test_real_scoped_package_and_host_agree_without_a_probe"
+          ]
+        },
+        {
+          "cell": "disposition:findings:T-F02",
+          "selectors": [
+            "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+            "python:tools/test_measurement_contracts.py:__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 606,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/_pi_rpc_profile.py": {
+          "original_sha256": "3445e2c19c84fbd8a338d538dabf3b1e71610720e527dcd564c0a52156e57d60",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/scripts/site_playwright_observation.py": {
+          "original_sha256": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba"
+          }
+        },
+        ".github/scripts/test_ci_impact.py": {
+          "original_sha256": "fb43147b2548207265f630f976f83e2fe447a5491d88af2a193c9889bd3a4f19",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0b3e30951a7c907d8f4a764feee1c3d5ab8d9d5821b42c6a3aeeb3e32d3fe403",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38"
+          }
+        },
+        ".github/scripts/test_hook_ci_partition.py": {
+          "original_sha256": "dcd9a880b669f54027e4a929e41139f854e7ff65b6d47e8fd7d0bf0dc188b72e",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "9df8e37b6382e3110462ff4241cf5d84d57fa1ac2f6a94be24e1b0721144ba73",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ec7ea7f1ad1a5d11411d5a1eec6d5aba3ba13760e4312b5a2daffe5f43ca0357",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "969f7312f896364cc0f43ba331d610e412d0ebad9b8530a8ba2c3b9e4dc52ac4"
+          }
+        },
+        ".github/scripts/test_major_qualification_report.py": {
+          "original_sha256": "ae23ee7290e49a85453c1d55365fc47153d4ad95542dd61ee0d78e8c1d480a35",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "3ef5009423bf9887816b581dd85fefec13ea3c5ec32dd5dc25df6731989eb2c6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485"
+          }
+        },
+        ".github/scripts/test_major_readiness.py": {
+          "original_sha256": "6c87a2703d0691acd2242ef67d366a6b00f959170527eebcbb72030aaed9623a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980"
+          }
+        },
+        ".github/scripts/test_pi_ci_wiring.py": {
+          "original_sha256": "660ac9316fb59777ab13980e126bc523e661ddbf8f58793de81984d9159a9169",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef"
+          }
+        },
+        ".github/scripts/test_site_playwright_observation.py": {
+          "original_sha256": "1bfa760f2ee57e2543eaddaa24fc43dc73e953933955c45e9bd22c52dc82084d",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3"
+          }
+        },
+        ".github/scripts/test_state_contracts_integration.py": {
+          "original_sha256": "a8db13adb028acb4a3939cae7044792cb9f025837363c60b04c39d6f22df1608",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6"
+          }
+        },
+        ".github/scripts/test_suite_hermeticity.py": {
+          "original_sha256": "48056fbcac4f344f9bddde2882acb9557a1e00b21acb6d236807de7adc6410f3",
+          "candidate_sha256": {
+            "477083a3bfad24261b4f1b040091a94f8c047144": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        },
+        ".github/workflows/docs.yml": {
+          "original_sha256": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {}
+    },
+    "major-source-inputs-q02-implementation": {
+      "scope": "ci",
+      "owner": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "job_id": 134750078427,
+      "job_log_sha256": "6e20d11815f1bad8b3ab90e3bbc2474687233879db9c9284f02eaaf9c8b4d026",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14423162099,
+          "sha256": "3d239cb4624d7962bf6917feac9f65e0c281df7f3ae80d7fb083fbb4ff8c5c1c"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14422573659,
+          "sha256": "fd55d07fc2f08475773fc5f093b1ae9d9acc4f8387641e4b8a092d768ea4208e"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078427,
+          "artifact_id": 14423271574,
+          "sha256": "5004024ea434924d11045133ad473e5c6725269e3223e1218f6f1e2b2263b3f2"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:C-F02",
+          "selectors": [
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_expired_or_missing_artifacts_are_reported_not_hidden",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_newer_failed_head_selects_the_older_successful_source_and_says_so",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_no_successful_ci_is_refused",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_route_observer_uses_only_read_permission_and_declares_public_visibility",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_route_publication_is_observed_after_every_target_settles",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_selection_that_differs_from_the_approved_candidate_is_refused",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_source_no_longer_on_main_is_refused",
+            "python:.github/scripts/test_release_workflow.py:__main__.SourceSelectionTest.test_workflow_run_event_binds_its_own_run"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 599,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/scripts/site_playwright_observation.py": {
+          "original_sha256": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba"
+          }
+        },
+        ".github/scripts/test_major_readiness.py": {
+          "original_sha256": "6c87a2703d0691acd2242ef67d366a6b00f959170527eebcbb72030aaed9623a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980"
+          }
+        },
+        ".github/scripts/test_site_playwright_observation.py": {
+          "original_sha256": "1bfa760f2ee57e2543eaddaa24fc43dc73e953933955c45e9bd22c52dc82084d",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        },
+        ".github/workflows/docs.yml": {
+          "original_sha256": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {
+        "core/artifacts/go.mod": "2a297e7679c4149e206721d75d7eecff1171541a7a5517d6f7107aff0d560e77"
+      }
+    },
+    "major-source-inputs-pi-windows-coverage": {
+      "scope": "ci",
+      "owner": "Coverage union (Pi)  <os: windows-latest>",
+      "job_id": 134750078436,
+      "job_log_sha256": "041bcc4292d502c28eeef6f17b8d7031640cd758d1c3b06dcfdad72b6aee8684",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078436,
+          "artifact_id": 14422145225,
+          "sha256": "fe07d00225ddda3943e904434fd8ddf0c50732ef7de12209d4819b2242d787d9"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078436,
+          "artifact_id": 14422220490,
+          "sha256": "b4e67e2388555de41ae89899f7242dc4e6d2a946a5b43904a10017fd05012d80"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078436,
+          "artifact_id": 14421441522,
+          "sha256": "3ea121f7bf4787f690833a3e64ce1f2592f57a78fe70d61f9414c4fc8e31a15f"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:SF01",
+          "selectors": [
+            "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session authenticates and joins duplicate requests; changed request identity never repeats effects",
+            "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session bounds sequence and grant operation population",
+            "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session expiry, lifecycle loss, explicit revoke and forged authority never admit effects",
+            "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session lifecycle loss aborts active execution while its owned cleanup can settle",
+            "vitest:plugins/ca-pi/tools/test/delegation-session.test.ts:parent-owned delegation session real loopback client sends only exact tool data, serializes concurrent requests and revokes",
+            "vitest:plugins/ca-pi/tools/test/parent-delegation.test.ts:parent-authorized delegated file effects child proxy crosses real channel and parent final gate before durable file effect"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF02",
+          "selectors": [
+            "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a healthy start reports starting then governed, never persona unavailable",
+            "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a late persona from a retired session never populates the next session",
+            "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) a successful persona retry in the current lifecycle restores prompt and readiness once",
+            "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) an empty persona cannot mark the session governed",
+            "vitest:plugins/ca-pi/tools/test/activation.test.ts:Pi activation persona readiness is independent of bridge health (PI-L01) persona failure followed by bridge success alone stays persona-unavailable"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF03",
+          "selectors": [
+            "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) a metrics failure after dispose does not report the next session degraded",
+            "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) dispose while metrics are pending, then resolve: nothing installs",
+            "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off during pending metrics does not persist into a new session",
+            "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve",
+            "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve new-first: only the new session installs, once",
+            "vitest:plugins/ca-pi/tools/test/sidebar-manager.test.ts:sidebar manager disposal while installation is pending (PI-L02) old and new session metrics resolve old-first: only the new session installs, once"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF12",
+          "selectors": [
+            "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog does not normalize a wrong reply into an approval",
+            "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog passes only the exact native return with pending, session and fresh generation bindings",
+            "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog refuses RPC, missing trust and active tools before constructing a bridge",
+            "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog reports an uncertain outcome after a consume transport failure",
+            "vitest:plugins/ca-pi/tools/test/approval-dialog.test.ts:isolated Pi native approval dialog requires one exact closed CLI launch and rejects added commands, tools, extensions or preloads",
+            "vitest:plugins/ca-pi/tools/test/package.test.ts:ca-pi package private artifact approval stays unavailable on the admitted host and legacy evidence grants no ordinary support"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 124,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {
+        "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225"
+      }
+    },
+    "major-source-inputs-sandbox-driver": {
+      "scope": "ci",
+      "owner": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "job_id": 134750078582,
+      "job_log_sha256": "1078aa913cf664a98eb39c6f165f027d61d34c0caef4a7006b86d048015d0d1c",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078582,
+          "artifact_id": 14422324310,
+          "sha256": "3180e315c96f3f124cb93d7c0d39dead6dba85dc89a0a1ef2a399ec29ef503d3"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078582,
+          "artifact_id": 14422094660,
+          "sha256": "9ec972b96461259e71504e1fa4a28ae3b51998dd6262b57d76887d493b125620"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078582,
+          "artifact_id": 14423835520,
+          "sha256": "e276be772b1573e80b462fe877f3704d2967fb6837cb7e7fb0100481be7fea90"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:SF08",
+          "selectors": [
+            "vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance dockerfile-fallback: distinct staging names reuse the exact labeled image and preserve another box",
+            "vitest:plugins/ca-sandbox/tools/cache-provenance.test.ts:SBX-C01 real two-create cache provenance nixpacks: distinct staging names reuse the exact labeled image and preserve another box",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 create uses the observed immutable image despite a mutable cache tag",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 dangling declared configuration is unavailable rather than a missing input",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 equal inputs in different checkout basenames select a verified stable key",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 existence alone is a cache miss and toolchain identity changes the tag",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 malformed builder observation blocks reuse and invalid provenance forces rebuild",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 manifest observation distinguishes absent inputs, valid bytes and unreadable declared inputs",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C01 real probe output cannot launder malformed version prose into a cache identity"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF09",
+          "selectors": [
+            "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 a real hung command terminates within its deadline SBX-C02 real output overflow stops only its exact target and preserves another running box",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C02 treats overflow as lost observation and verifies target containment"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF10",
+          "selectors": [
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancellation cannot cancel compensation and unknown cleanup retains exact references",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 cancelled firewall setup keeps exact cleanup live and never invents destruction",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 partial failure stdout cannot authorize destruction of an unobserved target",
+            "vitest:plugins/ca-sandbox/tools/state-contracts.test.ts:SBX-C03 reports failed resource observations as unavailable, not empty"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 77,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {}
+    },
+    "major-source-inputs-farm-dispatcher": {
+      "scope": "ci",
+      "owner": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "job_id": 134750078603,
+      "job_log_sha256": "0a17d7857fe3cb5e8ce5c350908bc2d4ff9c34bbcd619526f8cbfe566e5f7859",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078603,
+          "artifact_id": 14421654313,
+          "sha256": "965d4c92edbde45c57a614b96ac8ab570fa8cbb08b3549d9a62ba0b86b03e627"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078603,
+          "artifact_id": 14423200314,
+          "sha256": "71a38b1ff7768e9eaaeabf12ab676e34196f3d0bb70c1e96216d15748516a8ee"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750078603,
+          "artifact_id": 14422646766,
+          "sha256": "fa4c6b6f5767f37c36bebd3e665c4d922a1b075eaa35b1e4bf7565120156562d"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:SF04",
+          "selectors": [
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations bounds UTF-8 bytes before parsing",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations candidate-five-fields",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations malformed-context",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations qualified-declaration-six-fields",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations rejects duplicate and escaped-duplicate keys",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-field",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-context-platform",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-field",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unknown-format",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations unqualified-context",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-context-binary",
+            "vitest:plugins/ca/tools/artifact-manifest.test.ts:shared native manifest declarations wrong-platform-path"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF05",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (bundle)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-commit process interruption retains unacknowledged candidate without recovered green (source)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (bundle)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real post-merge process interruption preserves unknown cleanup and concurrent receipt-only recovery (source)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (bundle)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real pre-merge interruption preserves pending merge resources through receipt-only recovery (source)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 unblocked real post-merge hook control publishes normal green receipt (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a failure to publish farm-report.md also fails the run",
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF06",
+          "selectors": [
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SF07",
+          "selectors": [
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 47,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {
+        "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+        "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985"
+      }
+    },
+    "major-source-inputs-impact-single-owner": {
+      "scope": "ci",
+      "owner": "[CHECK] | [REPO] | Impact planner contract",
+      "job_id": 134750077038,
+      "job_log_sha256": "c595a253c887681d9bd51790111782d03813a5c0c84946840c15b9b8bd14b3d6",
+      "artifacts": [
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750077038,
+          "artifact_id": 14420886676,
+          "sha256": "957c98b8b3cf1c8f515ea5fb3fb8be45c6e4f0fee44c312bb35846ba445f5a7f"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750077038,
+          "artifact_id": 14420363270,
+          "sha256": "a47251e16b9f2bcb8a8467fdf2015725ffc7d47322176e1fba762e4243c132a8"
+        },
+        {
+          "run_id": 44289274017,
+          "run_attempt": 1,
+          "job_id": 134750077038,
+          "artifact_id": 14421325605,
+          "sha256": "6dad56efb00c60c9152a616d4a01959418dea3e582e4223fb415c56dd35b7d16"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:C-F07",
+          "selectors": [
+            "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_invalid_BASE_manifest_is_not_first_introduction",
+            "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateRefusesTheOtherDirections.test_an_unresolvable_base_fails_rather_than_passing",
+            "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_a_first_introduction_passes",
+            "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_advancing_the_version_passes",
+            "python:.github/scripts/test_payload_version_gate.py:__main__.TestTheGateStillAllowsWhatItShould.test_no_payload_change_passes_without_a_bump"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 1121,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/_pi_rpc_profile.py": {
+          "original_sha256": "3445e2c19c84fbd8a338d538dabf3b1e71610720e527dcd564c0a52156e57d60",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/scripts/site_playwright_observation.py": {
+          "original_sha256": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba"
+          }
+        },
+        ".github/scripts/test_ci_impact.py": {
+          "original_sha256": "fb43147b2548207265f630f976f83e2fe447a5491d88af2a193c9889bd3a4f19",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0b3e30951a7c907d8f4a764feee1c3d5ab8d9d5821b42c6a3aeeb3e32d3fe403",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38"
+          }
+        },
+        ".github/scripts/test_hook_ci_partition.py": {
+          "original_sha256": "dcd9a880b669f54027e4a929e41139f854e7ff65b6d47e8fd7d0bf0dc188b72e",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "9df8e37b6382e3110462ff4241cf5d84d57fa1ac2f6a94be24e1b0721144ba73",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ec7ea7f1ad1a5d11411d5a1eec6d5aba3ba13760e4312b5a2daffe5f43ca0357",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "969f7312f896364cc0f43ba331d610e412d0ebad9b8530a8ba2c3b9e4dc52ac4"
+          }
+        },
+        ".github/scripts/test_major_qualification_report.py": {
+          "original_sha256": "ae23ee7290e49a85453c1d55365fc47153d4ad95542dd61ee0d78e8c1d480a35",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "3ef5009423bf9887816b581dd85fefec13ea3c5ec32dd5dc25df6731989eb2c6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485"
+          }
+        },
+        ".github/scripts/test_major_readiness.py": {
+          "original_sha256": "6c87a2703d0691acd2242ef67d366a6b00f959170527eebcbb72030aaed9623a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980"
+          }
+        },
+        ".github/scripts/test_pi_ci_wiring.py": {
+          "original_sha256": "660ac9316fb59777ab13980e126bc523e661ddbf8f58793de81984d9159a9169",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef"
+          }
+        },
+        ".github/scripts/test_site_playwright_observation.py": {
+          "original_sha256": "1bfa760f2ee57e2543eaddaa24fc43dc73e953933955c45e9bd22c52dc82084d",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3"
+          }
+        },
+        ".github/scripts/test_state_contracts_integration.py": {
+          "original_sha256": "a8db13adb028acb4a3939cae7044792cb9f025837363c60b04c39d6f22df1608",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6"
+          }
+        },
+        ".github/scripts/test_suite_hermeticity.py": {
+          "original_sha256": "48056fbcac4f344f9bddde2882acb9557a1e00b21acb6d236807de7adc6410f3",
+          "candidate_sha256": {
+            "477083a3bfad24261b4f1b040091a94f8c047144": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        },
+        ".github/workflows/docs.yml": {
+          "original_sha256": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {}
+    },
+    "major-source-inputs-site-vitest-findings": {
+      "scope": "docs",
+      "owner": "Site | [Test] - Generator",
+      "job_id": 134749939527,
+      "job_log_sha256": "d20c6195e761bdf2af5083553abf1f1f03fbaa86ae795ed8e7dae48685b29c7a",
+      "artifacts": [
+        {
+          "run_id": 44289274136,
+          "run_attempt": 1,
+          "job_id": 134749939527,
+          "artifact_id": 14419723829,
+          "sha256": "c642e34009cc099dd5d422b3325a65a28e8bc6434a738fcbb2e6b2162e667018"
+        },
+        {
+          "run_id": 44289274136,
+          "run_attempt": 1,
+          "job_id": 134749939527,
+          "artifact_id": 14419399664,
+          "sha256": "c9866110da68eca9ae7639df77db09d2d1004fe5640f6f181f13d962ce721efa"
+        },
+        {
+          "run_id": 44289274136,
+          "run_attempt": 1,
+          "job_id": 134749939527,
+          "artifact_id": 14420352859,
+          "sha256": "fc49c84ec77bae103897cf639ddd417bd2d1367291dee7e7d2ba3bb29ec2b380"
+        }
+      ],
+      "selectors": [
+        {
+          "cell": "disposition:findings:GEN-B01",
+          "selectors": [
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs never emits a duplicate for names already ending in numeric suffixes",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs preserves input length and order",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs reserves every emitted slug, including suffixed forms (HW-24)",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs slugifies names with no collisions",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes colliding slugs in order of appearance",
+            "vitest:site/test/generator/assign-slugs.test.ts:assignSlugs suffixes triple collisions deterministically"
+          ]
+        },
+        {
+          "cell": "disposition:findings:GEN-F01",
+          "selectors": [
+            "vitest:site/test/generator/configuration-reference.test.ts:configuration reference describes the prune nudge threshold with the runtime predicate and default (HW-22)",
+            "vitest:site/test/generator/configuration-reference.test.ts:configuration reference is deterministic"
+          ]
+        },
+        {
+          "cell": "disposition:findings:GEN-F02",
+          "selectors": [
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) excludes quoted, commented and docstring fake block calls",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) leaves an assignment beyond the 30-line window as an explicit skipped gap",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 bounded, masked, honest about dynamic text (HW-23) marks a dynamic recovery suffix instead of presenting a partial message as complete",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture counts an unresolvable variable-tag call (loop unpack) into `skipped`, not silently dropped",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture excludes the block()/remind() definition sites themselves",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture extracts a multi-line adjacent f-string call, concatenating placeholder text verbatim",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture finds two distinct tags in the same file",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles `+` concatenation, ignoring the non-literal trailing call but tracking its parens",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture handles nested parens inside a plain string literal without truncating the call",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture records 1-based line numbers and the source file basename",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a bare-assignment variable tag to its single literal tag",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 fixture resolves a conditional-assignment variable tag to BOTH tags with the same message and line pin",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) attributes at least one H-10b entry (the conditional-assignment split) with its real message",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts H-01's protected-branch commit message from _bashguardlib.py verbatim",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) extracts an H-09b message from _bashguardlib.py verbatim",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) finds at least 60 attributed call sites in the real hooks",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the genuinely unresolvable loop-unpack call site in `skipped`",
+            "vitest:site/test/generator/extract-hook-gates.test.ts:extractHookGates \u2014 real plugin hooks (count-floor snapshot) keeps the same real-hook structural assertions after unrelated _bashguardlib.py line insertions",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor attributes extracted shared-library gates to their registered entry hook",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor hand-maps git-enforce.py to the git backstop label, bypassing hooks.json",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script to its EventName (matcher) label",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor maps a script with no matcher to a bare EventName label",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:buildEventMap / eventsFor returns an empty list for a script registered nowhere",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference orders sections in natural gate-ID order: H-09 before H-09b before H-10",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders a line-pinned permalink in the expected format",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference renders frontmatter with title Hook Gates",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows both badges when a tag has both a block and a remind call site",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference shows the Blocking badge for a block-only tag",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference wraps f-string placeholders in backticks",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) lists skipped call sites with source links",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) names a dynamic recovery fragment instead of presenting a partial message as complete",
+            "vitest:site/test/generator/render-hooks-reference.test.ts:renderHooksReference \u2014 honest coverage (HW-23) never claims runtime equivalence"
+          ]
+        },
+        {
+          "cell": "disposition:findings:SX-F01",
+          "selectors": [
+            "vitest:site/test/release-applicability/endpoint.test.ts:release applicability endpoint statically serves the canonical generated record as JSON",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation fails closed without writing output when build identity evidence is inconsistent (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation loads the exact supported direct-hook replay claim while allowing fixture detail (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path that resolves to a directory (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a canonical hook path whose parent symlink escapes the repository (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ../outside.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path ./plugins/ca/hooks/pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path /plugins/ca/hooks/pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path C:/plugins/ca/hooks/pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins/ca/hooks/../pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects a non-canonical or unconfined hook evidence path plugins\\ca\\hooks\\pre-bash.py (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects host discovery promoted to true before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects invalid JSON proof evidence before generation (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing proof evidence before generation (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects missing schema before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects relabeled evidence kind before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation rejects unsupported schema before proof metadata enters the generated record (O-10)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation reports each host's highest stable release tag, not the lagging receipt ledger (R-01)",
+            "vitest:site/test/release-applicability/generation.test.ts:release applicability generation writes the strict deterministic record from the repository's real evidence (O-10)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation distinguishes a published-artifact mismatch from a current-source mismatch (O-13)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation generates and builds fresh fixtures before top-level test and coverage runners",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation presents the exact successful applicability claim (O-13)",
+            "vitest:site/test/release-applicability/presentation.test.ts:release applicability presentation rejects an internally inconsistent applicability claim (O-13)",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed draft state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed published state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains exact observed tag-only state",
+            "vitest:site/test/release-applicability/publication.test.ts:observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state"
+          ]
+        }
+      ],
+      "source_manifest_positive_members": 1039,
+      "original_only_archive_transport": {
+        ".github/major-qualification-policy.json": {
+          "original_sha256": "bb0e65b2e058a7f30968bc0820abcdb224091aac2577c0e393c76add07daec23",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+          }
+        },
+        ".github/major-test-selections.json": {
+          "original_sha256": "c8007764d35c0f99a9d0268409d744c261dc7d99ed1c73eb1d4484f06874a19f",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+          }
+        },
+        ".github/scripts/_pi_rpc_profile.py": {
+          "original_sha256": "3445e2c19c84fbd8a338d538dabf3b1e71610720e527dcd564c0a52156e57d60",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "68dc84cf6b9d32f29209a9763f0c34acce17f79c574e1d90c9e3d7b158d64632"
+          }
+        },
+        ".github/scripts/major_qualification_report.py": {
+          "original_sha256": "daf5e30f00c5c7e193ca272a14d6e13bf493abfd18cbcec1ee1f51385f958064",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+          }
+        },
+        ".github/scripts/major_readiness.py": {
+          "original_sha256": "c2bc6f211c864f2789eb913d1a1d0252db4ef8f7803156149ba126517d509bd6",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "ea6b143fe9ec9095c2c56c6729e2aeb3b11067e4f7c97dd715d0346b8a0263b6"
+          }
+        },
+        ".github/scripts/site_playwright_observation.py": {
+          "original_sha256": "f4deae3abb20f9f38c3ae8743ae37151cf74cf406aae81d8ebe111609a0d9b6a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba"
+          }
+        },
+        ".github/scripts/test_ci_impact.py": {
+          "original_sha256": "fb43147b2548207265f630f976f83e2fe447a5491d88af2a193c9889bd3a4f19",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0b3e30951a7c907d8f4a764feee1c3d5ab8d9d5821b42c6a3aeeb3e32d3fe403",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38"
+          }
+        },
+        ".github/scripts/test_hook_ci_partition.py": {
+          "original_sha256": "dcd9a880b669f54027e4a929e41139f854e7ff65b6d47e8fd7d0bf0dc188b72e",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "9df8e37b6382e3110462ff4241cf5d84d57fa1ac2f6a94be24e1b0721144ba73",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "ec7ea7f1ad1a5d11411d5a1eec6d5aba3ba13760e4312b5a2daffe5f43ca0357",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "969f7312f896364cc0f43ba331d610e412d0ebad9b8530a8ba2c3b9e4dc52ac4"
+          }
+        },
+        ".github/scripts/test_major_qualification_report.py": {
+          "original_sha256": "ae23ee7290e49a85453c1d55365fc47153d4ad95542dd61ee0d78e8c1d480a35",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "3ef5009423bf9887816b581dd85fefec13ea3c5ec32dd5dc25df6731989eb2c6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485"
+          }
+        },
+        ".github/scripts/test_major_readiness.py": {
+          "original_sha256": "6c87a2703d0691acd2242ef67d366a6b00f959170527eebcbb72030aaed9623a",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "182daf080eee54ee4d7983c8ca51b5b92a76203ee9d8735ff3b3d3928136f980"
+          }
+        },
+        ".github/scripts/test_pi_ci_wiring.py": {
+          "original_sha256": "660ac9316fb59777ab13980e126bc523e661ddbf8f58793de81984d9159a9169",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "902c74ed8cbdcc5306c17cfe18d8eaf9f03181502102884f252e2dd4c1efdbef"
+          }
+        },
+        ".github/scripts/test_site_playwright_observation.py": {
+          "original_sha256": "1bfa760f2ee57e2543eaddaa24fc43dc73e953933955c45e9bd22c52dc82084d",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0898a85323966351d9f9402337b374ddb36cc68ab96a46b7f9e37271c7e4b5f3"
+          }
+        },
+        ".github/scripts/test_state_contracts_integration.py": {
+          "original_sha256": "a8db13adb028acb4a3939cae7044792cb9f025837363c60b04c39d6f22df1608",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "3b481415c7ae1b69b8d697864482b455411196f7b141d9ee9c0fe215d396c9e6"
+          }
+        },
+        ".github/scripts/test_suite_hermeticity.py": {
+          "original_sha256": "48056fbcac4f344f9bddde2882acb9557a1e00b21acb6d236807de7adc6410f3",
+          "candidate_sha256": {
+            "477083a3bfad24261b4f1b040091a94f8c047144": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57"
+          }
+        },
+        ".github/workflows/ci.yml": {
+          "original_sha256": "58aced7ed04ab8be79052bd8740a7f5d315a2760926bb367f5657c75f4058189",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "80c5c8c5a9b44aac6b0af3e88d45ef9c27dc7ee4b4b1c5f67560b60cef776b78",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+          }
+        },
+        ".github/workflows/docs.yml": {
+          "original_sha256": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+          "candidate_sha256": {
+            "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "477083a3bfad24261b4f1b040091a94f8c047144": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "0c9649d2c510235d52938ebb833fcfbd43476ea86bda0dd24729c4b014b03172"
+          }
+        },
+        "plugins/ca/hooks/tests/test_durabilitylib.py": {
+          "original_sha256": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+          "candidate_sha256": {
+            "477083a3bfad24261b4f1b040091a94f8c047144": "abc0ef7eb90b42d090a187df0c3eacc9e960c8a8b96b5aab0e87f31765ebe61a",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "abc0ef7eb90b42d090a187df0c3eacc9e960c8a8b96b5aab0e87f31765ebe61a"
+          }
+        },
+        "plugins/ca/hooks/tests/test_wire_statusline.py": {
+          "original_sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+          "candidate_sha256": {
+            "477083a3bfad24261b4f1b040091a94f8c047144": "c3e2906fdc10e22a615ac15576a36ef484c71b3c8bdd89b34371ec2f80a05f24",
+            "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": "c3e2906fdc10e22a615ac15576a36ef484c71b3c8bdd89b34371ec2f80a05f24"
+          }
+        }
+      },
+      "additional_unchanged_frozen_git_sources": {
+        ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+        "core/artifacts/go.mod": "2a297e7679c4149e206721d75d7eecff1171541a7a5517d6f7107aff0d560e77"
+      }
+    }
+  },
+  "held": {
+    "cell": "disposition:findings:C-F05",
+    "exact_frozen_input_changes": {
+      "87dd5ce8f8944e9c8a1f2fb47883736ca0ec0c24": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/docs.yml"
+      ],
+      "477083a3bfad24261b4f1b040091a94f8c047144": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/docs.yml"
+      ],
+      "b06c8040ee4ff6f7c84dfe2fe1e7a27f16266df0": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/docs.yml"
+      ]
+    }
+  },
+  "limits": [
+    "The original archives retain complete transport context; current input checks bind the finite test subjects.",
+    "The additional immutable Git sources are contract inputs; the original routes do not claim they ran as commands.",
+    "GEN-F02 performs top-level hook discovery; the nested Hook fixture edits do not change the extractor.",
+    "This is a private source-test proof proposal for named findings."
+  ]
+}

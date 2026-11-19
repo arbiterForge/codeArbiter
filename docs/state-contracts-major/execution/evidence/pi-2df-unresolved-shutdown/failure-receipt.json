@@ -1,0 +1,192 @@
+{
+  "schema": "codearbiter-exact-head-ci-failure-watch/1",
+  "observed_utc": "2026-11-15T01:33:18.501995+00:00",
+  "pr": 1108,
+  "head": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "base": "major/state-contracts",
+  "PR_head_reverified_after_failure": true,
+  "watch_exit": 1,
+  "ci_run": 43662186921,
+  "run_status_at_verification": "in_progress",
+  "failed_job": {
+    "id": 132653838973,
+    "run_id": 43662186921,
+    "head_sha": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+    "status": "completed",
+    "conclusion": "failure",
+    "name": "[CHECK] | [PI  ] | Adapter contract  <os: windows-latest \u00b7 runtime: Pi 1.5.0>",
+    "started_at": "2026-11-15T01:19:24Z",
+    "completed_at": "2026-11-15T01:30:02Z"
+  },
+  "failures": [
+    {
+      "method": "PiPackageTests.test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture",
+      "effect": "Same original discovery/doctor workload; natural EOF exit wait refused after30s,21records, empty stderr tail.",
+      "source_stack_lines": [
+        3019,
+        2336,
+        1070
+      ],
+      "assertion_log_line": 517,
+      "original_disposition": "Preserved genuine wait failure; no later diagnostic success can convert to pass."
+    },
+    {
+      "method": "PiPackageTests.test_rpc_native_shutdown_real_owned_node_handles_and_late_exit",
+      "source_line": 1730,
+      "assertion_log_line": 528,
+      "actual": "unrecognized",
+      "expected": "captured",
+      "scope": "Separate strict SDK capability control; format change alone did not establish current hosted captured capability."
+    }
+  ],
+  "suite": {
+    "shutdown_methods": 22,
+    "failures": 2
+  },
+  "prior_partition_results": [
+    {
+      "step": 1,
+      "command": "test_host_descriptors.py",
+      "result": "passed",
+      "log_line": 537
+    },
+    {
+      "step": 2,
+      "command": "test_pi_package.py[package]",
+      "result": "passed",
+      "log_line": 538
+    },
+    {
+      "step": 3,
+      "command": "test_pi_package.py[rpc-observed]",
+      "result": "passed",
+      "log_line": 539
+    },
+    {
+      "step": 4,
+      "command": "test_pi_package.py[rpc]",
+      "result": "passed",
+      "log_line": 540
+    }
+  ],
+  "actual_failure_native_observation": {
+    "file": "rpc-native-exit-khrcb5m5.json",
+    "sha256": "20c85446d1d1d9a755b2bc402c2d0ca1fdb2983b8845873aafbbfb2f8b039a1b",
+    "schemaVersion": 1,
+    "outcome": "original-failure",
+    "identity": "matched",
+    "processId": 7572,
+    "creationTime": 134391797028944087,
+    "nodeSha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362",
+    "before": {
+      "state": "running",
+      "exitCode": null
+    },
+    "after": {
+      "state": "running",
+      "exitCode": null
+    },
+    "elapsedMs": 5237,
+    "debugger_status": "unavailable",
+    "thread_count": 0,
+    "tool_hashes_observed": null
+  },
+  "same_PID_trace": {
+    "file": "rpc-shutdown-lip_fhx4.json",
+    "sha256": "5b36146a0027f4c9648a85529419b019c2d83fefb811381ad8a4af7cce7493b6",
+    "schemaVersion": 1,
+    "pid": 7572,
+    "phase_labels": [
+      "started",
+      "stdin_end",
+      "session_shutdown_observer",
+      "process_exit"
+    ],
+    "phase_elapsedMs": [
+      4,
+      3029,
+      3029,
+      3031
+    ],
+    "process_exit_phase_code": [
+      0
+    ],
+    "reallyExitCallEntered": true,
+    "meaning": "JS exit callback and wrapper-entry markers; actual OS process remained running in independent owned-handle observation. Markers do not prove native call completion or OS exit."
+  },
+  "SDK_captured_marker_present": false,
+  "artifact_authentication": {
+    "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\diagnostic-artifact-authentication.json",
+    "sha256": "f760cb400d791c7f30805e63638e5f7a2ad5e8509648cffc9c1c0be324e8f000",
+    "artifact_id": 14140473144,
+    "archive_sha256": "46b965ffcc8a3c35594aa17dbebe62020120510080245a811e0c532ef4f24422",
+    "job_upload_digest_RESTdigest_download_equal": true,
+    "same_run_head_PID_join": true
+  },
+  "source_inputs": {
+    ".github/scripts/test_pi_package.py": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\source-test_pi_package.py",
+      "sha256": "69ff3bfe31a4f9f63dac0bed2fb8a5e6920efae997b9a59ed10b6549da7f8fa8"
+    },
+    ".github/scripts/_windows_rpc_timeout.py": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\source-_windows_rpc_timeout.py",
+      "sha256": "b7ea39d3bb448d7458080d9d94d9bf8f63ae4b6711dda065b327c3d02a073268"
+    }
+  },
+  "latest_watch_counts": {
+    "pass": 72,
+    "pending": 9,
+    "fail": 1,
+    "skipping": 3
+  },
+  "retained": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\watch.log",
+      "sha256": "45462833255bdfe128ed2cc02fb438193f8759491ed77e16034f23b8fed50888",
+      "bytes": 198772
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\watch-exit.txt",
+      "sha256": "f1b2f662800122bed0ff255693df89c4487fbdcf453d3524a42d4ec20c3d9c04",
+      "bytes": 3
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\windows-pi-job-132653838973.log",
+      "sha256": "ba774958206c839a68c57aa243260333902d1c2740ae2cde95f40c84ddfdf70b",
+      "bytes": 54691
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\job-132653838973.json",
+      "sha256": "5677a0b93f1d2bda398587f2bd89dd0b5951644ea3f9e9883017fe037b930cec",
+      "bytes": 4546
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\run-artifacts.json",
+      "sha256": "a70d9b24874985b959686285e1995bb3e9de233129b220135a274ff54bac645e",
+      "bytes": 23863
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\artifact-14140473144.zip",
+      "sha256": "46b965ffcc8a3c35594aa17dbebe62020120510080245a811e0c532ef4f24422",
+      "bytes": 5565
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\rpc-native-exit-khrcb5m5.json",
+      "sha256": "20c85446d1d1d9a755b2bc402c2d0ca1fdb2983b8845873aafbbfb2f8b039a1b",
+      "bytes": 485
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pr1108-2df782-watch\\rpc-shutdown-lip_fhx4.json",
+      "sha256": "5b36146a0027f4c9648a85529419b019c2d83fefb811381ad8a4af7cce7493b6",
+      "bytes": 1289
+    }
+  ],
+  "limits": [
+    "Firstred reported before additional work; foregroundwatch stopped fail-fast without waiting remaining jobs.",
+    "Separate actualPi native debugger unavailable and ownedNode SDK unrecognized statuses must not be conflated.",
+    "No retained raw CDB text; unknown full debugger format or actual native hang cause.",
+    "No assertion relaxation, forced captured, broader skip, CI rerun/cancel, runtime/test replay, code/Gov/Git/index writes, merge/deletion, or provider mutation.",
+    "Read-only completed-job log/metadata and named artifact obtained once each after failure; no state-poll loop.",
+    "Parent1098 remains unmerged to main; no release/publication."
+  ]
+}

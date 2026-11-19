@@ -1,0 +1,700 @@
+{
+  "schema": "codearbiter.compact-source-clause-inspection/1",
+  "actor": "/root/packaging_site_tools",
+  "subject_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "current_git_checked": "9ab2be5e14cf8c2001d392dd3436d9ed3caf3efd",
+  "mode": "SOURCE_CLAUSE_ONLY_NO_EXECUTION",
+  "rows": [
+    {
+      "cell": "disposition:transitions:S61:01",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 36,
+          "end": 73,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 261,
+          "end": 296,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 337,
+          "end": 350,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "start": 7,
+          "end": 10,
+          "file_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "start": 47,
+          "end": 49,
+          "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+        }
+      ],
+      "semantic_assessment": "Connect aborts old listeners/disconnects old observer, creates a new controller, collects required DOM/templates, resets route and clones the first selected pristine SVG; incomplete queried markup throws. Metadata/DOM availability is a precondition, not an executed build claim.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "2b4034b6b56fdc4c627e3a816c6e33a13ee3290c00172d5f992ae3b6012d213a",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:02",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 337,
+          "end": 350,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Known view+template required; unknown returns. Switching increments navigation revision, clears selected node, clones template, updates pressed/view state and attempts width fit then highlight/details while retaining current route. Printing suppresses fit separately.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "22e360e09399b60025277496031eade88921aeeb88fb048066574b1fe025ace9",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:03",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 353,
+          "end": 420,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "choose maps only declared commands to a route (unknown clears), clears node selection, reflects selector/highlight and cloned accessible inspector with related-view buttons/not-drawn notice; no external tool or stored approval is generated.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "ba2ae4a53da095ad9e9adcef976fc9de58b147422b9067edddb2f44edc2718b9",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:04",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 160,
+          "end": 178,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 365,
+          "end": 386,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 422,
+          "end": 430,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Click/Enter/Space on non-link data-node calls inspect only when ID exists in active view; selection increments revision and updates selected/dim classes, aria-pressed and inspector. Unknown node is ignored.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "3560146e9743225ab5d3cb897786f8c99ab80c7d5e2f3336fd05b2b747d7be09",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:05",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 111,
+          "end": 114,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 180,
+          "end": 223,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 261,
+          "end": 273,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 307,
+          "end": 324,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Finite scale clamps to0.1..2; admitted primary mouse blank-stage pointer captures drag and pointer end/cancel/lost capture clears it. Zoom/manual mode suppresses automatic fit; scaling uses SVG dimensions/scroll offsets rather than inventing a live CSS-transform result.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "b88f724a86720166139b17191116582ae1bc04e9b7dab9b1748942c0abd3b417",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:06",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 261,
+          "end": 275,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 327,
+          "end": 335,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Fit requires active view, nonzero stage width and no printOpen; computes width/all geometry scale then resets scroll. ResizeObserver coalesces one deferred recompute and rechecks manual/print mode at execution before fitting.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "cfa834ec173072919028c4902317d3710d13f08e60235dd25aca011e48410bb7",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:07",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 129,
+          "end": 158,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 445,
+          "end": 538,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Only ordinary noncancelled same-document/fragment links with bounded decodable known reading target, command, view alias or node are followed. Valid target selects relevant view/route/node and defers scrolling/focus under revision guard; no history write.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. Invalid hashes are remembered but are not a universal revision invalidation guarantee.",
+      "frozen_row_sha256": "e458227ce3a505f0ee31656758c3656943a0ed3d41ad2178496874d05c08b5e6",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:08",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 44,
+          "end": 53,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 224,
+          "end": 241,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 465,
+          "end": 475,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 522,
+          "end": 537,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Deferred work requires connected element/nonaborted captured controller and unchanged navigationRevision; native repeated matching pending/already-followed hashes are suppressed so they cannot redo older accepted route selection. Explicit clicks can intentionally follow the same fragment again.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. This is the actual revision predicate, not proof that every invalid hash advances a revision.",
+      "frozen_row_sha256": "bcdb1f7b29b4e7cf59e3e8c973d9c8cadfaa1ca00857fefae63d92389fd2509b",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:09",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 118,
+          "end": 123,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 256,
+          "end": 260,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "start": 49,
+          "end": 49,
+          "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+        }
+      ],
+      "semantic_assessment": "Sources action calls native dialog.showModal; explicit close and dialog-backdrop click call close. Renderer supplies actual dialog/close button. Focus behavior delegates to native modal dialog, not an independently tested custom focus trap.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "ee7cb89e9e1e9b3cd524b8c011dee23caa8e6b4931397abfdff5356ab5476326",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:12",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 541,
+          "end": 560,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Export serializes the pristine selected template SVG as XML, creates SVG Blob URL, clicks a download link and schedules owned URL revocation after1000ms; absent template SVG returns. Current live zoom/selection styles are not serialized.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "frozen_row_sha256": "b90a352ceb33a8ed875613dfe0be25c3957898d99503e093724ebd36ba62de9d",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S61:13",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 280,
+          "end": 305,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "semantic_assessment": "Disconnect restores only saved reading.open if present then aborts controller; abort clears pending links/hash, cancels owned frames, disconnects observer, releases held pointer capture, clears dragging/resize, revokes each download URL and closes dialog.",
+      "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. Print selection/viewport backups are not claimed; those frozen print clauses are held.",
+      "frozen_row_sha256": "33ff2779abfb50ffcf77781d24a712c43d221cc83e3af3f831f7d71f4e8db692",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S21:01",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/farm.ts",
+          "start": 70,
+          "end": 112,
+          "file_sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/farm.ts",
+          "start": 164,
+          "end": 212,
+          "file_sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/farm.ts",
+          "start": 247,
+          "end": 267,
+          "file_sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/path-boundary.ts",
+          "start": 42,
+          "end": 49,
+          "file_sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "start": 392,
+          "end": 393,
+          "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+        }
+      ],
+      "semantic_assessment": "Canonical package/backend/plan containment and bundle-vs-source mtime tolerance1000ms are checked before filtered environment and resolved Node launch; current lifecycle lease is rechecked after awaited Node realpath, and signal checked again before spawn. Unknown backend/plan/credential/lease degrades instead of inline promotion.",
+      "limits": "Caller/source guards only; no Farm API/provider/backend execution, actual filesystem freshness or installed isolated-package support claim. Managed launch effects delegated to unchanged process-tree API; no runtime containment acceptance.",
+      "frozen_row_sha256": "641a9ca87665363121450ebbad5d49b2b1474cc31211d53103b17227c0f4cb1d",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:S21:03",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/farm.ts",
+          "start": 115,
+          "end": 156,
+          "file_sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/farm.ts",
+          "start": 213,
+          "end": 224,
+          "file_sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "start": 250,
+          "end": 258,
+          "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+        }
+      ],
+      "semantic_assessment": "Abort, output overflow or terminal child event invokes one cleanup.terminate with reason, removes abort listener and awaits its verified outcome (rejection maps false). External deadline can arrive via AbortSignal; no independent Farm deadline clock exists here.",
+      "limits": "Only caller cleanup handoff/observation is preserved. No tree-kill/rundown/platform test or primary-cleanup-field repair is claimed; cancellation masking remains held.",
+      "frozen_row_sha256": "95b7ae5c0cb1407f5c6d2fc9817dd65d098fc93dc05c0d34b99dc31b11279cde",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C23:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/validate_codex_distribution_identity.py",
+          "start": 15,
+          "end": 39,
+          "file_sha256": "7aeef0279072186b3823d24b8021123b1e6987844f568898ab346793dbf23f6b"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 287,
+          "end": 303,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        }
+      ],
+      "semantic_assessment": "Validator checks canonical positive public App/installation IDs, rejects generic15368 and shared publisher/verifier App IDs; release workflow loads validator from its own workflow revision before token mint steps.",
+      "limits": "No real App configuration, token creation, key acquisition or privileged release execution. Installation IDs need not differ; only App IDs are required distinct.",
+      "frozen_row_sha256": "4f93986b3c21c15cf81d0dd2cc71c11176dcec02220a92f4d8c033ca93da5b3e",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C23:02",
+      "witnesses": [
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 304,
+          "end": 331,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        },
+        {
+          "path": ".github/scripts/create_codex_distribution_token.py",
+          "start": 17,
+          "end": 19,
+          "file_sha256": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba"
+        },
+        {
+          "path": ".github/scripts/create_codex_distribution_token.py",
+          "start": 26,
+          "end": 73,
+          "file_sha256": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba"
+        }
+      ],
+      "semantic_assessment": "Owning release shell uses umask077, fixed private RunnerTemp key paths and EXIT cleanup trap before invoking mint. Mint rejects invalid dedicated IDs, signs fixed RS256 JWT via openssl SHA256, POSTs only fixed HTTPS GitHub installation endpoint with no redirects/30s timeout, requires nonempty token, masks then appends GITHUB_OUTPUT.",
+      "limits": "Source protocol only, no actual key/RSA/TLS/API/token/permission result. Key lifecycle is composed workflow ownership (not a script-local write/delete). Output failure after mint does not revoke already-issued token, preserving explicit limit.",
+      "frozen_row_sha256": "c63c01f1f417098c27a71a1048d9485ee30e5644e1438a535f6a9da25501e9f3",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C27:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/pi_evidence.py",
+          "start": 50,
+          "end": 95,
+          "file_sha256": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652"
+        },
+        {
+          "path": ".github/scripts/pi_evidence.py",
+          "start": 102,
+          "end": 145,
+          "file_sha256": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652"
+        },
+        {
+          "path": ".github/scripts/verify_pi_support.py",
+          "start": 95,
+          "end": 198,
+          "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee"
+        },
+        {
+          "path": ".github/scripts/verify_pi_support.py",
+          "start": 201,
+          "end": 228,
+          "file_sha256": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee"
+        }
+      ],
+      "semantic_assessment": "Builder collects green matching hosted adapter rows and successful CodeQL durations, joins caller-supplied local/canary measurements and commit, then calls strict shape/exact-population validator before JSON and exact Markdown rendering. Current imported supported window1.5.0 is a parameter change; validators/render functions are unchanged.",
+      "limits": "No original job-source/commit authentication by builder, no real CI/API/local measurement or Pi promotion claim. Separate final verifier owns commit/job binding; writes are ordered, not atomic pair.",
+      "frozen_row_sha256": "9093251eab3dfcec0bcebce0a3ddda5d43dde255ac44923ebef0d410818b867d",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C34:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 60,
+          "end": 86,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 142,
+          "end": 145,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1395,
+          "end": 1437,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 235,
+          "end": 253,
+          "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 847,
+          "end": 892,
+          "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "semantic_assessment": "Declared target references are derived and deduplicated by maintained helper, batched through Git hash-object; missing/short/error hash mapping becomes explicit null instead of an invented digest. New record is passed to maintained provenance writer; loader/write errors propagate.",
+      "limits": "No actual current hashes/provenance write, declaration completeness or runtime module availability asserted. Imported hash-runner failure intentionally degrades to unknown/null, not successful evidence.",
+      "frozen_row_sha256": "1b50750cbb9fd2df4bd427278d1dd9aa04f440e7ec125debe148c808a1c13535",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C34:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 89,
+          "end": 122,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 131,
+          "end": 140,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 459,
+          "end": 507,
+          "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "semantic_assessment": "Check requires a readable known-shape provenance record then compares drift-trigger path set against current declared references only; matching path population returns success without comparing stored content hashes.",
+      "limits": "Source path-set contract only. This does not establish current provenance byte freshness, valid runtime record or successful actual check.",
+      "frozen_row_sha256": "e5fa516cf97f8554c81616039c5c18bb3b77db778596c935fea64340aa62693b",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C34:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 114,
+          "end": 138,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        }
+      ],
+      "semantic_assessment": "Both expected-minus-recorded and recorded-minus-expected produce errors; --check prints them and exits1 without write or automatic rebaseline.",
+      "limits": "No real source scope drift or heal execution performed; no current stale hashes are rebranded valid.",
+      "frozen_row_sha256": "d88631aee81e64b083eb38d4fdfb5260bb054af22ed04b0b57ee63b84ba71c4b",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:T05:02",
+      "witnesses": [
+        {
+          "path": "tools/codex-parity-fixture.py",
+          "start": 148,
+          "end": 161,
+          "file_sha256": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b"
+        }
+      ],
+      "semantic_assessment": "Each fixed Git init/add/fixture-authored commit is checked independently and any nonzero returns failure; generated files/earlier Git steps are not rolled back. Identity uses command-local fixture author settings.",
+      "limits": "No fixture or host was launched by this inspection; no actual Git parity/persona/gate behavior acceptance.",
+      "frozen_row_sha256": "3b34bd0c0ef8ddbdfcab80ce511f4e261927e2239c097df08451acb2281663fa",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:T06:01",
+      "witnesses": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "start": 16,
+          "end": 45,
+          "file_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+        }
+      ],
+      "semantic_assessment": "Output must be absent or empty; binary resolves strictly; fixed reviewed reference JSON supplies deterministic spec create operation/identity and normative data to subprocess. Command nonzero/not-ok throws, leaving earlier owned partial output.",
+      "limits": "Conditional native command-construction contract only. No binary execution, reference semantic equivalence or existing store overwrite journey.",
+      "frozen_row_sha256": "c7002f9fcdd0fc647e9bc9e1782e8ef03c3b7bb34cd5684b57442e5b347b908a",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:T06:02",
+      "witnesses": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "start": 46,
+          "end": 54,
+          "file_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+        }
+      ],
+      "semantic_assessment": "Successful identity result supplies exact normative_sha256 to plan.spec_ref and explicit draft_preview binding; plan create uses exact spec ID. No approval operation is issued.",
+      "limits": "No actual identity/hash/approval/native result or current runtime compatibility claim.",
+      "frozen_row_sha256": "0ea418b188f6bebe5de1fffd9e5c8744c989e86cce9ab7327adce5cfd6cc3fdf",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:T06:04",
+      "witnesses": [
+        {
+          "path": "tools/create-artifact-examples.py",
+          "start": 55,
+          "end": 65,
+          "file_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+        }
+      ],
+      "semantic_assessment": "Report stores identities, validation, all_ready derived from returned valid flags, approvals_issued0 and accepted count0, then writes scratch JSON/prints. Write failure leaves prior native outputs; no acceptance or authority receipt is minted.",
+      "limits": "No report/binary output was produced by this source inspection; not a native qualification or human approval.",
+      "frozen_row_sha256": "0c40bdd06f10273840826d41847603463d7db2108749751b8004da0d37fc913f",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "held_rows": [
+    {
+      "id": "S21:02",
+      "reason": "Frozen return claims sanitized bounded output. Farm source only drains/counts bytes; FarmResult contains label/terminal/backend/exitCode/message, and return branches do not expose captured output. Preserve no stronger returned-output assertion."
+    },
+    {
+      "id": "S21:04",
+      "reason": "Unknown cleanup becomes degraded/message except cancelled priority returns cancelled with no cleanup field. Literal full failure-details/separate containment representation is not established; frozen future-contract note is not implemented source behavior."
+    },
+    {
+      "id": "S47:05",
+      "reason": "Frozen no-distinct-overflow-bit statement contradicts actual byte-identical docker.ts: RunResult declares overflowed and overflow close branch sets overflowed:true. Existing old model wording is held, not treated as a new product defect."
+    },
+    {
+      "id": "S61:10",
+      "reason": "beforeprint only backs up reading.open and sets reading.open=true; fit explicitly refuses while printOpen exists. Full saved interactive view/viewport+fit-for-print statement is unsupported."
+    },
+    {
+      "id": "S61:11",
+      "reason": "afterprint/disconnect restore saved reading.open only. No selected view/route/node/viewport snapshot or restoration exists; print-selection/viewport claim is held rather than inferred from nearby lifecycle behavior."
+    },
+    {
+      "id": "C23:03",
+      "reason": "Verifier requires two named expected policies, required-rule subset and sole publisher bypass, but permits unrelated observed rulesets and extra rules. Frozen rejection of every extra policy/rule is stronger than actual code."
+    },
+    {
+      "id": "T06:03",
+      "reason": "Frozen ok=true strict admission is stronger than actual body.get(ok) truthiness (valid isFalse is strict). No current native runtime/result producer is executed here; do not qualify a stronger closed type guard from the unchanged wrapper."
+    },
+    {
+      "id": "SX04:01",
+      "reason": "Current Gov has the authorized version-facts owning-job parser fix beyond immutable9ab/d594. All four cells cite that whole file; leave for committed current-source owner evidence/targeted clause reassessment, not stale hash-only source promotion."
+    },
+    {
+      "id": "SX04:02",
+      "reason": "Current Gov has the authorized version-facts owning-job parser fix beyond immutable9ab/d594. All four cells cite that whole file; leave for committed current-source owner evidence/targeted clause reassessment, not stale hash-only source promotion."
+    },
+    {
+      "id": "SX04:03",
+      "reason": "Current Gov has the authorized version-facts owning-job parser fix beyond immutable9ab/d594. All four cells cite that whole file; leave for committed current-source owner evidence/targeted clause reassessment, not stale hash-only source promotion."
+    },
+    {
+      "id": "SX04:04",
+      "reason": "Current Gov has the authorized version-facts owning-job parser fix beyond immutable9ab/d594. All four cells cite that whole file; leave for committed current-source owner evidence/targeted clause reassessment, not stale hash-only source promotion."
+    }
+  ],
+  "cones": {
+    "atlas-client": {
+      "ids": [
+        "S61:01",
+        "S61:02",
+        "S61:03",
+        "S61:04",
+        "S61:05",
+        "S61:06",
+        "S61:07",
+        "S61:08",
+        "S61:09",
+        "S61:12",
+        "S61:13"
+      ],
+      "boundary": "Only valid-rendered Atlas client/markup control flow. Client import of Atlas model is type-only; renderer data selectors/templates/native dialog were inspected. Upstream loadAtlas source freshness, generation/data/source map, theme/CSS geometry and actual browser/print/download behavior are outside this guarded edge and are NOT qualified."
+    },
+    "farm-preview-caller": {
+      "ids": [
+        "S21:01",
+        "S21:03"
+      ],
+      "boundary": "Canonical path/environment/current-lease/prelaunch and cleanup API delegation only; imported path-boundary/process-tree sources unchanged from baseline and explicit terminate(reason)->verified result interface inspected. No underlying native supervisor/Job Object/provider/backend process or observed cleanup success."
+    },
+    "codex-app-identities": {
+      "ids": [
+        "C23:01"
+      ],
+      "boundary": "Public numeric identity guard and workflow-owned validator-before-mint ordering only. No actual GitHub App configuration or token/release effect."
+    },
+    "codex-token-protocol": {
+      "ids": [
+        "C23:02"
+      ],
+      "boundary": "Composed shell-owned key handling plus fixed signing/HTTPS command construction only. No cryptographic result, OpenSSL/runtime identity, real token/API/TLS/filesystem permission result or publish authorization."
+    },
+    "pi-evidence-builder": {
+      "ids": [
+        "C27:01"
+      ],
+      "boundary": "Strict builder shape/population and exact rendering only. Imported supported parameter changes1.1.0->1.5.0; strict_promotion/render function ASTs identical and actual bodies inspected. Supplied commit still not authenticated against fetched job heads by this builder; real host/provenance remains separate."
+    },
+    "release-provenance-scope": {
+      "ids": [
+        "C34:01",
+        "C34:02",
+        "C34:03"
+      ],
+      "boundary": "Derived referenced file-path set, unknown-null hashing and maintained writer contract only. Relevant parse_release_targets/load_targets/provenance_trigger_paths and write_text_atomic definitions are AST-identical to baseline; concrete current bodies/error branches read. Other changed shared helper functions do not establish actual module/runtime/data availability or successful generation/hash/write."
+    },
+    "parity-fixture-git": {
+      "ids": [
+        "T05:02"
+      ],
+      "boundary": "Only fixed init/add/fixture-commit failure propagation. No fixture creation, host discovery, enforcement parity or actual Git result."
+    },
+    "draft-example-driver": {
+      "ids": [
+        "T06:01",
+        "T06:02",
+        "T06:04"
+      ],
+      "boundary": "Only caller command construction/draft binding/report ordering. Current reference data are inputs and may evolve; no native schema compatibility, compiled binary effects, strict response type validation or actual approvals/task acceptance."
+    }
+  },
+  "input_hashes": {
+    ".codearbiter/release-targets.md": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+    ".github/scripts/build_release_targets_provenance.py": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+    ".github/scripts/create_codex_distribution_token.py": "5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba",
+    ".github/scripts/pi_evidence.py": "f6cac74021dea801c76482362d755dd89a8b4787a2a5198c0f0fc60af23d1652",
+    ".github/scripts/validate_codex_distribution_identity.py": "7aeef0279072186b3823d24b8021123b1e6987844f568898ab346793dbf23f6b",
+    ".github/scripts/verify_pi_support.py": "31138076affccbb4b9a9b8c1dedf2663eafe63840ae06b969ab68999ed0106ee",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    "core/artifacts/testdata/reference/plan.json": "7d1a2e86dde48210cdc7362ea3270746cd2b6caf4468c464eb3ae4f5becd5356",
+    "core/artifacts/testdata/reference/spec.json": "993ab984404fd92339bd42bd62d30a3db5f28a2311ad087740ee24d0c855cff3",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-pi/tools/src/farm.ts": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+    "site/scripts/execution-maps/atlas-model.ts": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+    "site/scripts/execution-maps/atlas-render.ts": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+    "site/scripts/execution-maps/atlas-theme.ts": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "site/src/components/WorkflowAtlas.astro": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+    "site/src/scripts/workflow-atlas.ts": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+    "tools/create-artifact-examples.py": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5"
+  },
+  "previous38_not_repeated": true,
+  "limits": "No equality-to-runtime inference; no test/build/API/browser/Docker/native/install/provider effects; no whole-machine/task/scenario/program claims."
+}

@@ -1,0 +1,20 @@
+{
+  "format": "finite-software-capture-manifest/1",
+  "source": "771604132801a0e67c971581fbbf76227af2f712",
+  "actual67_passed": true,
+  "positive_sources": 29,
+  "actual_imports": 25,
+  "runtime_records": 1905,
+  "full_namespaces": 2,
+  "source_hold_released": true,
+  "old9c61_unadmitted_history": {
+    "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-machine61-proof-9c1a-_plqq3uf\\delivery.json",
+    "sha256": "5efae0683528a5e3a998d37a9f98b66e954d764633e66b4cbeb5685ba342ea42",
+    "scope": "Historical original61 observation only; not current771 proof or prior admitted machine."
+  },
+  "limits": [
+    "Nine finite software rows only: one machine PLANNED->TESTED and eight existing TESTED successors; no other rows/tasks.",
+    "One capture only; original exit/time/output and aftersnapshot persisted before validation.",
+    "No source/test/Gov/index/ref/marker/provider/network/real-home/SDK/native/build/install effects."
+  ]
+}

@@ -1,0 +1,96 @@
+{
+  "exit_code": 0,
+  "duration_seconds": 7.266204300001846,
+  "outer_timeout": false,
+  "source_unchanged": true,
+  "Gov_module_unchanged": true,
+  "runtime_unchanged": true,
+  "terminal_outcomes": [
+    {
+      "Action": "pass",
+      "Test": "TestN01AdmissionHasNoRepositoryEffects/capabilities",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN01AdmissionHasNoRepositoryEffects/schema",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN01AdmissionHasNoRepositoryEffects/unknown-operation",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN01AdmissionHasNoRepositoryEffects/unknown-field",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN01AdmissionHasNoRepositoryEffects/wrong-protocol",
+      "Elapsed": 0
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN01AdmissionHasNoRepositoryEffects",
+      "Elapsed": 0.01
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13CallerReportBindsOperationTimeAndSubjects/pass",
+      "Elapsed": 0.12
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13CallerReportBindsOperationTimeAndSubjects/fail",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13CallerReportBindsOperationTimeAndSubjects/skip",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13CallerReportBindsOperationTimeAndSubjects/unknown",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13CallerReportBindsOperationTimeAndSubjects",
+      "Elapsed": 0.42
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13TrimRetainsActualJournalBeforeImage",
+      "Elapsed": 0.74
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13UnavailableScopesRemainReportableWithoutReadMutation/missing",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13UnavailableScopesRemainReportableWithoutReadMutation/oversized",
+      "Elapsed": 0.1
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13UnavailableScopesRemainReportableWithoutReadMutation/unsafe",
+      "Elapsed": 0.15
+    },
+    {
+      "Action": "pass",
+      "Test": "TestN13UnavailableScopesRemainReportableWithoutReadMutation",
+      "Elapsed": 0.35
+    }
+  ],
+  "expected_parents": [
+    "TestN01AdmissionHasNoRepositoryEffects",
+    "TestN13CallerReportBindsOperationTimeAndSubjects",
+    "TestN13TrimRetainsActualJournalBeforeImage",
+    "TestN13UnavailableScopesRemainReportableWithoutReadMutation"
+  ]
+}

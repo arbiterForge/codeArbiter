@@ -1,0 +1,787 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.test.ts": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "4f2c53b5fed25aa7d197d3cec9f1c97c552d4bb75a720b06984989b5749daafd",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "proposal_state": "PROPOSED_ROOT_CARRY_REVIEW_REQUIRED",
+  "tested_input_relation": "Current clause review plus literal scoped producer/owner dependency joins. Unchanged function/file hashes only corroborate the explicit per-row guard/effect review, not new runtime execution.",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "scope": "24 existing Farm source-conformance cells including S33 composition; explicitly excludes three changed/overbroad clauses.",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Actual bounded source-clause review by farm_sandbox_program with retained original and current-named corroboration; not an independent-review marker."
+  },
+  "disposition_ids": [
+    "disposition:transitions:S24:02",
+    "disposition:transitions:S24:03",
+    "disposition:transitions:S25:02",
+    "disposition:transitions:S25:03",
+    "disposition:transitions:S25:04",
+    "disposition:transitions:S25:05",
+    "disposition:transitions:S25:06",
+    "disposition:transitions:S25:08",
+    "disposition:transitions:S26:01",
+    "disposition:transitions:S26:05",
+    "disposition:transitions:S26:06",
+    "disposition:transitions:S26:07",
+    "disposition:transitions:S26:08",
+    "disposition:transitions:S26:09",
+    "disposition:transitions:S28:11",
+    "disposition:transitions:S29:04",
+    "disposition:transitions:S30:01",
+    "disposition:transitions:S30:06",
+    "disposition:transitions:S33:01",
+    "disposition:transitions:S33:02",
+    "disposition:transitions:S33:03",
+    "disposition:transitions:S33:04",
+    "disposition:transitions:S33:05",
+    "disposition:machines:S33"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-4cde-proposed/raw/preserved-source-conformance.json",
+      "sha256": "8e1eb8e2052c75263040cbb9e0818fb7919e09eb66e62891fe455b2b123cfb50"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-successors/raw/successor-scope-audit.json",
+      "sha256": "fad03e3faa54d631836a4ee48d84bcdd460028da8ada4707e64ac5d4f349d387"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/clause-review.json",
+      "sha256": "242c6be5e0bb4fe2974d908e5bc7025bb82d55ff7d7c1ac14f505f982b11c02e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/source-trace.json",
+      "sha256": "8fe7620054c407c8be3814aba57ab11dc9e1b432f6c4771db10a102c5e71b668"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json",
+      "sha256": "f20052903cb511ab27de1b830f970f70088d7c961a6c8334a1efeb191879865d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/execution-origin.json",
+      "sha256": "ac6722902480c95c6449b076c487a2bdfe2b545234695401ad9ab9d84b5bd616"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "ordinary-setup-cache-and-refusal",
+      "claim": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry.",
+      "transition_cells": [
+        "disposition:transitions:S24:02",
+        "disposition:transitions:S24:03"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook runs setup commands in the worktree BEFORE the worker",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook escalates immediately when a setup command fails \u2014 worker never runs",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook is a no-op when no setup is configured (worker runs, runGate only for the gate)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#92 per-worktree setup hook validate() rejects an empty or oversized setup command (meta and task)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns invokes a dependency-only `npm ci` setup ONCE across two worker retries",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns reruns `setupEachAttempt` before every attempt",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns still runs setup BEFORE the worker on the first attempt",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns escalates immediately when setupEachAttempt fails",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns reruns cached setup when a declared setupInput changes under the worktree",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns does NOT rerun setup when the declared setupInput is unchanged",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/plan-contract.test.ts:#391 setup runs once per worktree; setupEachAttempt reruns is a no-op when neither setup phase is configured",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "candidate-selection-and-fatal-safety",
+      "claim": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+      "transition_cells": [
+        "disposition:transitions:S25:02",
+        "disposition:transitions:S25:03",
+        "disposition:transitions:S25:04",
+        "disposition:transitions:S25:05",
+        "disposition:transitions:S25:06"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask survives a sample that THROWS \u2014 it resolves to a failure and a green sibling still wins (M1)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives uses the next retained candidate after high risk with no new worker round",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains an alternative until the materialized task gate passes",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives checks both candidates before spending the configured next retry",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 1 candidate(s)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 2 candidate(s)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives keeps a clean built-in timeout diagnostic without spending another model round",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains a low completed built-in result before interruption and tries its sibling",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the built-in containment refusal with 1 candidate(s)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains the built-in containment refusal with 2 candidate(s)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives records known tokens and cleans all sample resources when qualification throws",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not switch candidates across an unresolved task reset failure",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves evidence when retry reset fails after 1 rejected sampling rounds",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves evidence when retry reset fails after 2 rejected sampling rounds",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not replace a failed between-candidate setup with a green sibling",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives retains known sample usage when a later sample check throws",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "verified-merge-recovery",
+      "claim": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+      "transition_cells": [
+        "disposition:transitions:S26:01",
+        "disposition:transitions:S26:05",
+        "disposition:transitions:S26:06",
+        "disposition:transitions:S26:07",
+        "disposition:transitions:S26:08"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI source: single retains merge evidence and uses the verified baseline",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI source: samples retains merge evidence and uses the verified baseline",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI source: reset-refusal retains merge evidence and uses the verified baseline",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI bundle: single retains merge evidence and uses the verified baseline",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI bundle: samples retains merge evidence and uses the verified baseline",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.test.ts:verified merge recovery CLI bundle: reset-refusal retains merge evidence and uses the verified baseline",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) re-runs the worker after a conflict and ends green when the second merge succeeds",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) escalates with a merge-related note when every merge conflicts and retries are spent (no infinite loop)",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:Regenerate-on-conflict \u2014 merge conflict re-enters regeneration (AC-07) escalates instantly (no regeneration) on conflict when maxRetries is 0",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 1 samples, reversed arrival=false",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=false",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=true",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: abort",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: abort-throw",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: dirty-integration",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: unreadable-head",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: reset",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: reset-throw",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: clean",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: wrong-head",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retains evidence and dispatches no new author when recovery fails: missing-test",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery does not turn a refused staging operation into a partial commit",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retries 1 transient stages without another worker or authoring allowance",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery retries 2 transient stages without another worker or authoring allowance",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery still rejects worker edits to the newly bound protected test",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:verified merge recovery keeps the original retry budget at zero without rebasing",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "cleanup-axes-and-all-samples",
+      "claim": "Preserved only the listed controller/known-state cleanup clauses. Underlying lstat/unknown admission and containment-unknown sample retention are remapped separately, never called unchanged.",
+      "transition_cells": [
+        "disposition:transitions:S25:08",
+        "disposition:transitions:S26:09",
+        "disposition:transitions:S30:01",
+        "disposition:transitions:S30:06"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown retries a transient remove failure and confirms git no longer registers the worktree",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown returns ok:false with diagnostics when git still registers the worktree after every attempt",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent removals",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization serializes callers in the order they arrive",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent PREPARES",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization a rejecting caller does not wedge the lock, and does not let the queue reorder",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown deleteBranchVerified reports a branch git still lists",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown run exit code is non-zero when ownership could not be released, zero otherwise",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "clean-timeout-class",
+      "claim": "A verified-gone cleanup returns124/timedOut and no cleanupFailed, distinct from125 unknown. Mocked process verification tests establish result semantics; no POSIX descendant or nonroot execution claim.",
+      "transition_cells": [
+        "disposition:transitions:S29:04"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/exec.test.ts:run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/exec.test.ts:run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT_UNCLEAN and carries the reason when the tree is NOT verified gone",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "worktree-materialization-boundary",
+      "claim": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+      "transition_cells": [
+        "disposition:transitions:S33:01",
+        "disposition:transitions:S33:02",
+        "disposition:transitions:S33:03",
+        "disposition:transitions:S33:04",
+        "disposition:transitions:S33:05"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates single-worker directory-link writes with a bounded error and stages nothing",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates best-of-N winner materialization through a directory link and stages nothing",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates unsafe mutation write/finally-restore paths without touching or staging the external file",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/farm.unit.test.ts:farm worktree write containment escalates when the mutation command swaps an ancestor before immediate and final restore",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a multiply-linked existing destination",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    },
+    {
+      "id": "mutation-history-restoration",
+      "claim": "Original bytes are restored through in-loop and final paths after mutations; deadline-before-test does not invent a measured run. This narrow row is restoration only, not heuristic intent or verified kill coverage.",
+      "transition_cells": [
+        "disposition:transitions:S28:11"
+      ],
+      "scope_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":124,\"timedOut\":true} without scoring or another launch",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":125,\"timedOut\":true,\"cleanupFailed\":true} without scoring or another launch",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"timedOut\":true} without scoring or another launch",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence rejects incomplete trial {\"code\":0,\"cleanupFailed\":true} without scoring or another launch",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence accounts for writing a mutant before calculating the remaining launch allowance",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/mutation.test.ts:built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+          "original_result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+        }
+      ]
+    }
+  ],
+  "machine_compositions": {
+    "disposition:machines:S33": {
+      "transition_ids": [
+        "S33:01",
+        "S33:02",
+        "S33:03",
+        "S33:04",
+        "S33:05"
+      ],
+      "group_ids": [
+        "worktree-materialization-boundary"
+      ]
+    }
+  },
+  "nonclaims": [
+    "Specific source clauses only; no whole-file-changed input is relabelled as a current test run.",
+    "S25:07/S30:02/S30:04 are excluded and separately remapped, including safer behavior changes.",
+    "No provider/Docker/nonroot/installed-host or unexecuted platform outcome promotion."
+  ]
+}

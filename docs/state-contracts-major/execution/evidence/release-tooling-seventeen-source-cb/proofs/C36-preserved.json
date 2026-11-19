@@ -1,0 +1,215 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+  ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C36",
+  "disposition:transitions:C36:01",
+  "disposition:transitions:C36:04",
+  "disposition:transitions:C36:05",
+  "disposition:transitions:C36:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C36",
+   "frozen_row_sha256": "b3e2d71a0a2d58b17b1b807909b98c90bd0160fc0b1ecc6e1c69b83e287b2da7",
+   "clause_ids": [
+    "disposition:transitions:C36:01",
+    "disposition:transitions:C36:02",
+    "disposition:transitions:C36:03",
+    "disposition:transitions:C36:04",
+    "disposition:transitions:C36:05",
+    "disposition:transitions:C36:06"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 290,
+     "end": 291,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "8b187721d1a77bb3a33db56553e6303bd16a3186661c7a6107b436860b04ad11"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 148,
+     "end": 196,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "f7561436c3b8be48ad7707a262629ef5fa7f49b844ac99faef26b34f6f6f6b02"
+    },
+    {
+     "path": ".github/scripts/_boundedproc.py",
+     "start": 73,
+     "end": 141,
+     "file_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+     "span_sha256": "984ee11f220e8324725499f94bd42e45c129d40ac8ca4d73025913bf6e4381b6"
+    },
+    {
+     "path": ".github/scripts/_boundedproc.py",
+     "start": 302,
+     "end": 314,
+     "file_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+     "span_sha256": "a5edde764109bdc1f4a984ed59ef7a0dfe6736e36d5b3fec02597485bce9f60b"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 41,
+     "end": 43,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "29452d3772a471a333e89431a567a91a6cf09700221bd60d1a8ca02b1344dabe"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 46,
+     "end": 47,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "f88ecad7cf753365fb19483abc7f622309d759d7a504a6774ea74d8e4e59a25a"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 294,
+     "end": 307,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "2c21f5cfd3f7bc2da41942f0e8c83e6c4aac50521dc1ff9748a84e135fc10f80"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 310,
+     "end": 377,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "58880782dafe3ef382cc4a496319c60065f5aec140e27146824ef61cf6acfe82"
+    }
+   ],
+   "semantic_assessment": "All 6 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "Accepted R-07/C-F08 corrected the frozen unbounded-first-read defect. Cleanup may extend beyond a phase deadline; source does not prove all descendants quiescent.",
+    "Readiness and completion are separate bounded phases, not one thirty-second wall cap."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C36:01",
+   "frozen_row_sha256": "f56d77a8e54e6819e7a038d4ed3c77bf486a0b44f2361a27b9ec67567584ec97",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 290,
+     "end": 291,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "8b187721d1a77bb3a33db56553e6303bd16a3186661c7a6107b436860b04ad11"
+    }
+   ],
+   "semantic_assessment": "The ordinary benchmark requires exactly one hundred measured samples, creates an enabled temporary fixture, loads actual Claude/Codex adapters and core, and performs five warm events per host. Wrong count, missing toolchain or disabled fixture stops. This is a fixture workload, not a live host session.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C36:04",
+   "frozen_row_sha256": "b2fe511df1a2cb70f1b61c65a429c845be06707509d7ee8b0fb4a54abe661fbc",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 41,
+     "end": 43,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "29452d3772a471a333e89431a567a91a6cf09700221bd60d1a8ca02b1344dabe"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 46,
+     "end": 47,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "f88ecad7cf753365fb19483abc7f622309d759d7a504a6774ea74d8e4e59a25a"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 290,
+     "end": 291,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "8b187721d1a77bb3a33db56553e6303bd16a3186661c7a6107b436860b04ad11"
+    }
+   ],
+   "semantic_assessment": "The ordinary verdict compares Pi P95 with the slower Claude/Codex P95 plus max(25 percent,10ms). Its Pi path runs the production wrapper with a stub BridgePort. It does not establish Python process-spawn cost or installed-host performance.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C36:05",
+   "frozen_row_sha256": "d638ed9e96da3824f8f2d0c63b8490dbce7b0266355f6e82bd9b9e7f0ca1f493",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 294,
+     "end": 307,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "2c21f5cfd3f7bc2da41942f0e8c83e6c4aac50521dc1ff9748a84e135fc10f80"
+    },
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 310,
+     "end": 377,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "58880782dafe3ef382cc4a496319c60065f5aec140e27146824ef61cf6acfe82"
+    }
+   ],
+   "semantic_assessment": "Standalone Python resolution is PATH based. Absence reports REAL-SPAWN-SKIPPED, zero samples and null timings; ordinary relative benchmark verdict is independent. No interpreter or samples are invented.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C36:06",
+   "frozen_row_sha256": "4724beaff3a54f4f2af570d70456bae7d10d2e329ff75945c138be0458be3083",
+   "witnesses": [
+    {
+     "path": ".github/scripts/pi_benchmark.py",
+     "start": 310,
+     "end": 377,
+     "file_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+     "span_sha256": "58880782dafe3ef382cc4a496319c60065f5aec140e27146824ef61cf6acfe82"
+    }
+   ],
+   "semantic_assessment": "If an interpreter resolves, the separate real-spawn mode makes two warmups and eight measured pi-bridge read calls against the temporary fixture. Each call has ten seconds and must exit zero with an allow response; failure rejects that mode. No provider/credential route is exercised by these calls.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "C36 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

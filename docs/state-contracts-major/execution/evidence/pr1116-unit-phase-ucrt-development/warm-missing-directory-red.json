@@ -1,0 +1,23 @@
+{
+  "phase": "red",
+  "returncode": 1,
+  "seconds": 0.19222009999793954,
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,sys.argv[1]);s=unittest.defaultTestLoader.loadTestsFromName(sys.argv[2]);r=unittest.TextTestRunner(verbosity=2).run(s);raise SystemExit(not(r.wasSuccessful() and not r.skipped))",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "test_pi_package.DebuggerInboxTests.test_hash_only_warm_records_are_closed_not_authority_and_pid_associated"
+  ],
+  "stderr_sha256": "2095b455fa7e73655766d78a64c91fcfd26ecb0fc9f9dd701282714e70b7aa4e",
+  "subjects": {
+    ".github/scripts/_windows_rpc_timeout.py": "48811d5ef208b7371a67bacb9d193453235068db55081d030c9b1ed0caccca83",
+    ".github/scripts/test_pi_package.py": "68136d266bc4a8d32a738af8eae902f37b4b2fb3fbd67186cff9c24b2619f166"
+  },
+  "scope": "Inert warm provider/retention and existing bounded ownership controls; no actual protectedDLL/Pi execution."
+}

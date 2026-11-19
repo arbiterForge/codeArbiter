@@ -1,0 +1,52 @@
+{
+  "result": "PASSED",
+  "rows": [
+    {
+      "id": "pi-qualification:disposable-home:01",
+      "owning_paths": [
+        "plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      ],
+      "proof_input_count": 103,
+      "missing": []
+    },
+    {
+      "id": "pi-qualification:disposable-home:02",
+      "owning_paths": [
+        "plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      ],
+      "proof_input_count": 103,
+      "missing": []
+    },
+    {
+      "id": "pi-qualification:disposable-home:03",
+      "owning_paths": [
+        "plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      ],
+      "proof_input_count": 103,
+      "missing": []
+    },
+    {
+      "id": "S18:07",
+      "owning_paths": [
+        "plugins/ca-pi/tools/src/footer-state.ts",
+        "plugins/ca-pi/tools/src/footer.ts",
+        "plugins/ca-pi/tools/src/git-facts.ts",
+        "plugins/ca-pi/tools/src/status.ts"
+      ],
+      "proof_input_count": 103,
+      "missing": []
+    },
+    {
+      "id": "S20:06",
+      "owning_paths": [
+        "plugins/ca-pi/tools/src/command-ownership.ts",
+        "plugins/ca-pi/tools/src/commands.ts",
+        "plugins/ca-pi/tools/src/doctor.ts",
+        "plugins/ca-pi/tools/src/notices.ts"
+      ],
+      "proof_input_count": 103,
+      "missing": []
+    }
+  ],
+  "owner": "actual major_readiness.evidence_paths on frozen transition clauses; complete103 immutablephysical45a6 join"
+}

@@ -1,0 +1,311 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/crypto_evidence_review: exact39-clause release owner guard/effect/retry source inspection"
+  },
+  "inputs": {
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+  },
+  "disposition_ids": [
+    "disposition:machines:S45",
+    "disposition:transitions:S45:01",
+    "disposition:transitions:S45:02",
+    "disposition:transitions:S45:03",
+    "disposition:transitions:S45:04",
+    "disposition:transitions:S45:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-five-source-15c/clause-inspection.json",
+      "sha256": "0ecdc14ce756a5edc166ec4b0f2d37283f16a8375159a5560257798a99b14eca"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-five-source-15c/source-bindings.json",
+      "sha256": "ef947b61a0b3e23bb8b11dd01e3ebaa3efbcee304dbb143734612e6bd6662a99"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S45",
+      "frozen_row_sha256": "74233a771e7fde1eeb5ff32e53a3a6c1a708c24bb807f65034b7406311aa3a4e",
+      "clause_ids": [
+        "disposition:transitions:S45:01",
+        "disposition:transitions:S45:02",
+        "disposition:transitions:S45:03",
+        "disposition:transitions:S45:04",
+        "disposition:transitions:S45:05"
+      ],
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 924,
+          "end": 937,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 975,
+          "end": 1072,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 958,
+          "end": 972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3394,
+          "end": 3427,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 494,
+          "end": 535,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 465,
+          "end": 480,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 850,
+          "end": 870,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 873,
+          "end": 900,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3428,
+          "end": 3459,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 329,
+          "end": 336,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 339,
+          "end": 361,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 364,
+          "end": 404,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3394,
+          "end": 3459,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4111,
+          "end": 4126,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4128,
+          "end": 4154,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "All 5 literal frozen clauses independently mapped in the raw inspection, including guard, effect/refusal and retry limitations. Pure source PRESERVED claim only; machine runtime/task/release qualification remains unasserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:01",
+      "frozen_row_sha256": "5687ff0d569d9fbb843e7e62922dbb1fd5eb4b5d8de9e9f98a1e66ed34701ae9",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 924,
+          "end": 937,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 975,
+          "end": 1072,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 958,
+          "end": 972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3394,
+          "end": 3427,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Normalize a nonabsolute repository-relative path without empty/dotdot/drive/colon components; bind actual repository root. A full exact commit object or checked refs/tags name resolves to commit; exact-ID inputs must equal the resolved full commit. Exact single ls-tree regular blob mode100644/100755 at that path is read by object ID, strict UTF8; working-tree content is not used. All Git reads have30s timeout.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:02",
+      "frozen_row_sha256": "eacca05e026982db95049d605bca5fb4a821ab49a609da94dcfbb7f37fce85a4",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 494,
+          "end": 535,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 465,
+          "end": 480,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 850,
+          "end": 870,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 873,
+          "end": 900,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3428,
+          "end": 3459,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Selected version must satisfy declared policy; all H2 boundaries enforce supported release heading grammar, one matching section, and at most one leading Unreleased. Notes first section must be the selected release. Date assertion requires a real ISO date matching exactly one terminal Released-at tag footer. Invalid/duplicate/absent sections remain distinct refusals.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:03",
+      "frozen_row_sha256": "c3ccc068737b9f7a793c9186631316ad51bd47cf5a09759febbd03d09c8d60c3",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 329,
+          "end": 336,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 339,
+          "end": 361,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Only version/tag placeholders and portable literal characters render; resulting nonempty names must match safe basename grammar, avoid trailing dots/Windows reserved basenames and duplicate casefolded names. Each expected name is concretely bound to supplied version/tag before return.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:04",
+      "frozen_row_sha256": "1b67b28393b288171ab44f1b11ba926ca1ec846179cbb0ba05fe7516e666274b",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 364,
+          "end": 404,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Directory must exist and not be a symlink; scanned names must exactly equal the declared case-sensitive and casefolded inventory with no collision. Each entry must be a nonlinked regular file of positive size. No universal maximum asset size exists in this contract; bounded-as-required is not converted into an invented byte cap. Returned paths are caller publication inputs, not a published result.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S45:05",
+      "frozen_row_sha256": "d499fd1bb11f526d28dacb921b840c06340ae34b8d0830f4c6e0ed55d0d75426",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 975,
+          "end": 1072,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 494,
+          "end": 535,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 873,
+          "end": 900,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 339,
+          "end": 361,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 364,
+          "end": 404,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3394,
+          "end": 3459,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4111,
+          "end": 4126,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4128,
+          "end": 4154,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Missing/extra/colliding/linked/empty assets or unsafe names return refusal; invalid note/date/path/source checks do likewise before success. Helpers never guess an alternate filename or publish an asset. Filesystem/Git exceptions on the listed guarded reads are refused, not recast as matching evidence.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    }
+  ],
+  "scope": "Source-only reasoned preservation of S45 frozen contract, no execution or publication claim.",
+  "excluded_cells": [],
+  "limits": [
+    "No actual release, first-adoption backfill, tag mutation, pre-tag command or publication was performed.",
+    "S46 ordinary failure has no after-hash/rollback; command and shell-discovery execution have no explicit deadline.",
+    "S45 asset inventory enforces positive-size regular files; no maximum asset byte bound is invented.",
+    "Existing TESTED S44 edges remain unchanged; S44 machine proposal includes all nine clauses only as source context."
+  ]
+}

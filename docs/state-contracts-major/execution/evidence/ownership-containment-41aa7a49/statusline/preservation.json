@@ -1,0 +1,556 @@
+{
+ "subjects": {
+  "core/pysrc/wire-statusline.py": {
+   "changed_existing_functions": [
+    "cmd_uninstall"
+   ],
+   "added_functions": [],
+   "all_other_original_ASTs_equal": true,
+   "compile": "PASS"
+  },
+  "plugins/ca/hooks/tests/test_wire_statusline.py": {
+   "changed_existing_functions": [],
+   "added_functions": [
+    "TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline",
+    "TestUninstall.test_legacy_owned_statusline_without_stamp_still_restores_backup",
+    "TestUninstall.test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement"
+   ],
+   "all_other_original_ASTs_equal": true,
+   "compile": "PASS"
+  },
+  "plugins/ca/hooks/wire-statusline.py": {
+   "changed_existing_functions": [
+    "cmd_uninstall"
+   ],
+   "added_functions": [],
+   "all_other_original_ASTs_equal": true,
+   "compile": "PASS"
+  },
+  "plugins/ca-codex/hooks/wire-statusline.py": {
+   "changed_existing_functions": [
+    "cmd_uninstall"
+   ],
+   "added_functions": [],
+   "all_other_original_ASTs_equal": true,
+   "compile": "PASS"
+  },
+  "plugins/ca-pi/hooks/wire-statusline.py": {
+   "changed_existing_functions": [
+    "cmd_uninstall"
+   ],
+   "added_functions": [],
+   "all_other_original_ASTs_equal": true,
+   "compile": "PASS"
+  }
+ },
+ "unchanged_dependency_count": 99,
+ "dependencies": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_activationlib.py",
+   "sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+   "bytes": 13390
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_adrlifecycle.py",
+   "sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+   "bytes": 31496
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_adrlifecyclegit.py",
+   "sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "bytes": 9331
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_adrlifecyclewrite.py",
+   "sha256": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+   "bytes": 11339
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_appendonlyconflictlib.py",
+   "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+   "bytes": 19780
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_approvallib.py",
+   "sha256": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+   "bytes": 25093
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_arbiterstatelib.py",
+   "sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "bytes": 14372
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_artifactauthoritylib.py",
+   "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+   "bytes": 251805
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_artifactlib.py",
+   "sha256": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+   "bytes": 64924
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_artifactmanifestlib.py",
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_artifactpromptlib.py",
+   "sha256": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+   "bytes": 12221
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_babysitlib.py",
+   "sha256": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+   "bytes": 3172
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_bashguardlib.py",
+   "sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+   "bytes": 156897
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_boxlib.py",
+   "sha256": "b523b1e6ec6753c05224486a0bc2f5d7a553b6628c91939b8462f6a78fa7be0e",
+   "bytes": 4881
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_cleanuplib.py",
+   "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+   "bytes": 75586
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_colorlib.py",
+   "sha256": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+   "bytes": 11895
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_contextmergelib.py",
+   "sha256": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+   "bytes": 23111
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_contextreportlib.py",
+   "sha256": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+   "bytes": 46687
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_contextselectlib.py",
+   "sha256": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+   "bytes": 22879
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_contextsnapshotlib.py",
+   "sha256": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+   "bytes": 47301
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_contextwriterlib.py",
+   "sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+   "bytes": 6174
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_debughandofflib.py",
+   "sha256": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+   "bytes": 30345
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_durabilitylib.py",
+   "sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+   "bytes": 8561
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_entrylib.py",
+   "sha256": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+   "bytes": 2418
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_fmtlib.py",
+   "sha256": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+   "bytes": 5520
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_gitexec.py",
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_githooks.py",
+   "sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+   "bytes": 64758
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_gitlib.py",
+   "sha256": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+   "bytes": 4641
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_hooklib.py",
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "bytes": 49147
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_host.py",
+   "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "bytes": 1689
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_intentlib.py",
+   "sha256": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+   "bytes": 12928
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_knowledgelib.py",
+   "sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "bytes": 3073
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_ledgerlib.py",
+   "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+   "bytes": 65565
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_modelib.py",
+   "sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "bytes": 44894
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_overrideappendlib.py",
+   "sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+   "bytes": 6815
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_pathnorm.py",
+   "sha256": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+   "bytes": 3712
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_planfilelib.py",
+   "sha256": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+   "bytes": 28296
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_prerequisitelib.py",
+   "sha256": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+   "bytes": 40617
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_protectedlib.py",
+   "sha256": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+   "bytes": 18440
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_protectedstatelib.py",
+   "sha256": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+   "bytes": 35433
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_provenancelib.py",
+   "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "bytes": 76910
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_prunelib.py",
+   "sha256": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+   "bytes": 58271
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_prunepolicy.py",
+   "sha256": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+   "bytes": 10440
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_readinjectlib.py",
+   "sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+   "bytes": 62081
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_reconciliationlib.py",
+   "sha256": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+   "bytes": 36207
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_releaselib.py",
+   "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+   "bytes": 211540
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_replylib.py",
+   "sha256": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+   "bytes": 25320
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_scopelib.py",
+   "sha256": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+   "bytes": 10966
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_segmentslib.py",
+   "sha256": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+   "bytes": 14615
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_sensitivelib.py",
+   "sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+   "bytes": 35303
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_sessionlib.py",
+   "sha256": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+   "bytes": 3122
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_sloplib.py",
+   "sha256": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+   "bytes": 11969
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_sprintapprovallib.py",
+   "sha256": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+   "bytes": 21346
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_standuplib.py",
+   "sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "bytes": 9547
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_subagentslib.py",
+   "sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+   "bytes": 7795
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_taskboardlib.py",
+   "sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "bytes": 69125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_taskexcludelib.py",
+   "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "bytes": 10102
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_tribunalinventorylib.py",
+   "sha256": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+   "bytes": 33101
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_tribunalrunlib.py",
+   "sha256": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+   "bytes": 40445
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_updatelib.py",
+   "sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+   "bytes": 21120
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_usagelib.py",
+   "sha256": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+   "bytes": 18663
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_workadopt.py",
+   "sha256": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+   "bytes": 9946
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_workflowrecoverylib.py",
+   "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+   "bytes": 104162
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_workgithub.py",
+   "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+   "bytes": 83583
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\_worklib.py",
+   "sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+   "bytes": 18760
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\adr-acceptance.py",
+   "sha256": "0b04065fbb367c9da1e690dc622d478be59838949f80e583d730c55401db4f53",
+   "bytes": 192
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\adr-merge-method.py",
+   "sha256": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+   "bytes": 1140
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\append-override.py",
+   "sha256": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+   "bytes": 188
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\artifact-authority-hook.py",
+   "sha256": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+   "bytes": 6076
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\artifact-authority.py",
+   "sha256": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+   "bytes": 6960
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\artifact-reconcile.py",
+   "sha256": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+   "bytes": 3990
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\babysit.py",
+   "sha256": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+   "bytes": 1957
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\boardsync.py",
+   "sha256": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+   "bytes": 6077
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\debug-handoff.py",
+   "sha256": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+   "bytes": 2897
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\doctor.py",
+   "sha256": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+   "bytes": 28315
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\git-enforce.py",
+   "sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+   "bytes": 19608
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\hostapi.py",
+   "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "bytes": 38083
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\init-codearbiter.py",
+   "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "bytes": 27811
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\knowledge.py",
+   "sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+   "bytes": 25169
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\migration-pass.py",
+   "sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+   "bytes": 6375
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\post-write-edit.py",
+   "sha256": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+   "bytes": 11232
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\pre-bash.py",
+   "sha256": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+   "bytes": 4251
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\pre-edit.py",
+   "sha256": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+   "bytes": 17466
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\pre-read.py",
+   "sha256": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+   "bytes": 3640
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\pre-write.py",
+   "sha256": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+   "bytes": 13386
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\prompt-submit.py",
+   "sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+   "bytes": 29719
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\prune-transcript.py",
+   "sha256": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+   "bytes": 10814
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\releasehash.py",
+   "sha256": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+   "bytes": 11348
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\resolve-append-only-conflict.py",
+   "sha256": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+   "bytes": 200
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\resolve-context-conflict.py",
+   "sha256": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+   "bytes": 196
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\security-pass.py",
+   "sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+   "bytes": 9466
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\session-start.py",
+   "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+   "bytes": 71640
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\statusline.py",
+   "sha256": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+   "bytes": 33706
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\taskwrite.py",
+   "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "bytes": 22686
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\tribunal-usage.py",
+   "sha256": "2e06d50e8aa74b07afe4fa5b13f1505350aea9924718576b55c4e63dc72bf92d",
+   "bytes": 9474
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\tribunal.py",
+   "sha256": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+   "bytes": 6336
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\update-refresh.py",
+   "sha256": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+   "bytes": 2072
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\work.py",
+   "sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+   "bytes": 30378
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-legacy-backup-fix-r7iw6tot\\repo\\plugins\\ca\\hooks\\workflow-recovery.py",
+   "sha256": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+   "bytes": 5038
+  }
+ ],
+ "generated_mirrors": "Three maintained host mirror candidates byte-equal canonical core, matching inspected tools/sync-core.py byte-copy contract; full generator not executed by this author.",
+ "sync_owner": {
+  "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\tools\\sync-core.py",
+  "sha256": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+  "bytes": 5377
+ },
+ "canonical_hosts": {
+  "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\hosts.json",
+  "sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+  "bytes": 6084
+ },
+ "trailing_whitespace": "PASS"
+}

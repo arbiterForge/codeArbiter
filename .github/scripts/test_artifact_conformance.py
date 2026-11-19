@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+from contextlib import nullcontext
 import concurrent.futures
 import hashlib
 import os
@@ -45,6 +46,7 @@ CURRENT_GOLDEN = {
 SUITE_TIMEOUT_SECONDS = 1200.0
 EXPECTED_SUITES = {
     "test_artifact_bridge.py": {
+        "test_malformed_optional_context_qualification_is_not_ignored",
         "test_real_cli_draft_and_index", "test_tampered_view_is_not_readable",
         "test_unknown_request_fields", "test_changed_installed_binary",
         "test_symlink_binary_rejected", "test_linked_or_reparse_installation_directory_rejected",
@@ -90,6 +92,9 @@ EXPECTED_SUITES = {
         "test_outline_accepts_matching_continuation",
     },
     "test_artifact_authoring.py": {
+        "test_native_build_preserves_explicit_cache_and_platform_defaults",
+        "test_isolated_windows_build_uses_only_a_fixture_owned_private_go_cache",
+        "test_installed_bridge_preserves_progress_and_separate_dependency_readiness",
         "test_installed_intent_cli_accepts_native_empty_diagnostics",
         "test_installed_intent_cli_reports_incomplete_native_draft",
         "test_fixture_copy_excludes_stale_payload_before_using_supplied_artifacts",
@@ -195,6 +200,7 @@ EXPECTED_SUITES = {
         "test_worktree_planning_preserves_the_selected_pairs_exact_format",
     },
     "test_artifact_farm.py": {
+        "test_real_dispatcher_accepts_supported_optional_manifest_declaration",
         "test_cleanup_success_needs_no_retry",
         "test_cleanup_retries_a_transient_sharing_violation",
         "test_cleanup_preserves_error_at_deadline",
@@ -210,12 +216,34 @@ EXPECTED_SUITES = {
         "test_dispatcher_does_not_downgrade_after_html_and_binding_deleted",
     },
     "test_artifact_package.py": {
+        "test_installed_native_windows_selection_needs_no_version_shell",
+        "test_darwin_stage_keeps_exact_hash_and_mode_guards_with_inert_bytes",
+        "test_unknown_process_network_and_process_escape_still_refuse",
+        "test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload",
+        "test_valid_verifier_audit_never_runs_dynamic_platform_discovery",
+        "test_v2_arbitrary_and_forged_exception_names_remain_unclassified",
+        "test_v2_builtin_subtypes_and_families_keep_no_messages",
+        "test_v2_custom_context_failure_keeps_closed_cli_output",
+        "test_v2_decoder_rejects_unknown_duplicate_and_inconsistent_fields",
+        "test_v2_diagnostic_observer_failure_never_replaces_guard_failure",
+        "test_v2_keeps_exact_legacy_v1_decoder_and_nested_record",
+        "test_v2_nested_failure_survives_both_consumers_without_private_stderr",
+        "test_v2_real_audit_denial_reports_closed_outer_context",
+        "test_v2_real_guard_builtin_failure_has_safe_subtype_and_site",
+        "test_v2_real_nested_audit_retains_deepest_context",
+        "test_retained_recovery_requires_production_context_before_extraction",
+        "test_retained_recovery_uses_verified_cohort_before_real_extraction",
+        "test_cold_failure_diagnostic_uses_bounded_actual_entrypoint_details",
+        "test_cold_failure_diagnostic_survives_verifier_child_boundary",
+        "test_cold_failure_producer_keeps_known_native_cause_without_message",
+        "test_cold_failure_diagnostic_rejects_malformed_arbitrary_and_duplicate_fields",
         "test_t018_context_kind_package_admission_positive_controls",
         "test_t018_context_kind_package_admission_negative_controls",
         "test_t044_context_native_receipt_rejects_missing_failed_and_stale_cases",
         "test_package_notices_require_complete_canonical_bytes",
         "test_installed_host_plan_commands_are_preflight_qualified",
         "test_installed_bridge_offline_guard_has_negative_controls",
+        "test_manifest_decoder_offline_guard_has_negative_controls",
         "test_installed_host_runtime_guard_and_failure_redaction",
         "test_installed_host_runtime_guard_accepts_only_exact_darwin_stage",
         "test_native_cold_install_operates_without_source_tree",
@@ -308,6 +336,14 @@ EXPECTED_SUITES = {
         "test_archived_row_is_inventoried_and_cross_board_alias_collision_refused",
         "test_keyed_legacy_row_keeps_its_pre_adoption_work_id",
         "test_scaffold_instructions_and_fenced_example_are_not_adopted",
+        "test_nonregular_archive_and_replay_refuse_before_read",
+        "test_reader_closes_descriptor_on_acquisition_validation_or_read_error",
+        "test_reader_preserves_optional_size_utf8_and_regular_controls",
+        "test_reader_rejects_acquisition_identity_drift_without_read",
+        "test_reader_rejects_link_before_open",
+        "test_reader_rejects_reparse_metadata_before_open",
+        "test_reader_requests_safe_available_flags_and_bounded_read",
+        "test_replay_regular_snapshots_keep_exact_request_and_optional_absence",
     },
     "test_work_github.py": {
         "test_mapped_issue_create_staged_after_transition_keeps_its_intent",
@@ -378,6 +414,17 @@ EXPECTED_SUITES = {
         "test_remote_status_change_refuses_stale_update_before_claim",
         "test_transport_refuses_unlisted_token_destinations",
         "test_uncertain_status_mismatch_needs_explicit_remote_acceptance",
+        "test_actual_remote_parser_failures_are_sanitized_for_both_transports",
+        "test_mapped_postclaim_malformed_remote_json_stays_unknown_without_resend",
+        "test_mapped_preclaim_malformed_remote_json_keeps_pending_and_independent_target",
+        "test_mapped_preclaim_programmer_error_is_not_swallowed",
+        "test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target",
+        "test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target",
+        "test_mapped_target_local_native_claim_conflict_keeps_pending_and_continues_independent_target",
+        "test_mapped_target_local_remote_identity_failure_keeps_pending_and_continues_independent_target",
+        "test_parser_depth_failure_is_sanitized_without_hiding_other_types",
+        "test_programmer_type_error_at_parser_is_not_swallowed",
+        "test_valid_json_and_existing_shape_guards_remain",
     },
 }
 
@@ -631,11 +678,17 @@ class ArtifactConformanceTest(unittest.TestCase):
         def run(script: str) -> subprocess.CompletedProcess[str]:
             print(f"conformance suite start: {script}", flush=True)
             command = [sys.executable, str(REPO / ".github/scripts" / script)]
+            invocation = nullcontext((command, environment))
+            if script == "test_work_github.py" and ("MAJOR_MAPPED_WORK_SOURCE" in environment
+                    or "MAJOR_MAPPED_WORK_OBSERVATION" in environment):
+                from mapped_work_observation import conformance_invocation
+                invocation = conformance_invocation(REPO, script, sys.executable, environment)
             try:
-                return subprocess.run(
-                    command, cwd=REPO, env=environment, capture_output=True, text=True,
-                    encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS,
-                )
+                with invocation as (command, child_environment):
+                    return subprocess.run(
+                        command, cwd=REPO, env=child_environment, capture_output=True, text=True,
+                        encoding="utf-8", errors="replace", check=False, timeout=SUITE_TIMEOUT_SECONDS,
+                    )
             except subprocess.TimeoutExpired as expired:
                 # A hung suite fails on its own, with its partial output, below the job limit.
                 partial = [value.decode("utf-8", "replace") if isinstance(value, bytes) else (value or "")

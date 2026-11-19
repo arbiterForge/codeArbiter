@@ -1,0 +1,36 @@
+{
+  "runtime_generated_inputs": [
+    "plugins/ca/hooks/_activationlib.py",
+    "plugins/ca/hooks/_durabilitylib.py",
+    "plugins/ca/hooks/_gitexec.py",
+    "plugins/ca/hooks/_hooklib.py",
+    "plugins/ca/hooks/_pathnorm.py",
+    "plugins/ca/hooks/_protectedlib.py",
+    "plugins/ca/hooks/_scopelib.py",
+    "plugins/ca/hooks/_sensitivelib.py",
+    "plugins/ca/hooks/hostapi.py",
+    "plugins/ca/hooks/tests/test_wire_statusline.py",
+    "plugins/ca/hooks/wire-statusline.py"
+  ],
+  "canonical_owners": [
+    "core/pysrc/wire-statusline.py",
+    "core/pysrc/_durabilitylib.py"
+  ],
+  "actual_imports": {
+    "plugins/ca/hooks/tests/test_wire_statusline.py": "579fe364417021770a3c536c42bdc1664c6b1c2eebfc7820fd53a17a36cd0c88",
+    "plugins/ca/hooks/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/hooks/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "plugins/ca/hooks/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "plugins/ca/hooks/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "plugins/ca/hooks/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "plugins/ca/hooks/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895"
+  },
+  "importlib_owner": "wire-statusline.py is executed by spec.loader.exec_module(ws) without entering sys.modules; explicitly included",
+  "before_after_inventory": "102 files were physically and immutably captured before and after actual run, identical; proof selects actual loaded local modules plus importlib owner and byte-identical canonical owners",
+  "canonical_durability_capture": "Canonical durability owner was immutably joined after the run at3bd and physically compared afterward. It was not separately read in the original102 before/after inventory; its exact full bytes equal the generated durability copy that was captured before/after and executed. No invented canonical pre-run observation.",
+  "host_boundary": "Existing _WireStatuslineTest.run patches only _hooklib.get_host to the fixture adapter identity; no real _host.py/provider resolution or native engine. Production main/load/save/mutation and real settings filesystem remain executed.",
+  "future_scope": "Positive source identities only; no future arbitrary module-membership invalidation or general import-closure proof claimed."
+}

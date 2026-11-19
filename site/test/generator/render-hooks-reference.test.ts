@@ -27,10 +27,10 @@ const hooksJson: HooksJson = {
 };
 
 const callSites: HookCallSite[] = [
-  { tag: "H-09", kind: "block", file: "pre-bash.py", line: 10, message: "crypto detected" },
-  { tag: "H-09b", kind: "block", file: "pre-bash.py", line: 20, message: "sensitive line" },
-  { tag: "H-10", kind: "remind", file: "pre-bash.py", line: 30, message: "possible secret" },
-  { tag: "H-10", kind: "block", file: "pre-bash.py", line: 31, message: "possible secret, blocked" },
+  { tag: "H-09", kind: "block", file: "pre-bash.py", line: 10, message: "crypto detected", dynamic: [] },
+  { tag: "H-09b", kind: "block", file: "pre-bash.py", line: 20, message: "sensitive line", dynamic: [] },
+  { tag: "H-10", kind: "remind", file: "pre-bash.py", line: 30, message: "possible secret", dynamic: [] },
+  { tag: "H-10", kind: "block", file: "pre-bash.py", line: 31, message: "possible secret, blocked", dynamic: [] },
 ];
 
 describe("buildEventMap / eventsFor", () => {
@@ -102,9 +102,41 @@ describe("renderHooksReference", () => {
       file: "post-write-edit.py",
       line: 5,
       message: "{rel}: found an issue on line {line}.",
+      dynamic: [],
     };
     const out = renderHooksReference([site], eventMap, "2.8.11", "main");
     expect(out).toContain("`{rel}`");
     expect(out).toContain("`{line}`");
+  });
+});
+
+describe("renderHooksReference — honest coverage (HW-23)", () => {
+  const eventMap = buildEventMap(hooksJson);
+
+  it("never claims runtime equivalence", () => {
+    const md = renderHooksReference(callSites, eventMap, "2.8.11", "main");
+    expect(md).not.toContain("can never drift");
+    expect(md).not.toContain("Every gate ID");
+    expect(md).toContain("bounded static scan");
+    expect(md).toContain("not proof of every message");
+  });
+
+  it("names a dynamic recovery fragment instead of presenting a partial message as complete", () => {
+    const site: HookCallSite = {
+      tag: "H-09b", kind: "block", file: "_bashguardlib.py", line: 7,
+      message: "The staged candidate differs. ", dynamic: ["recovery"],
+    };
+    const md = renderHooksReference([site], eventMap, "2.8.11", "main");
+    expect(md).toContain("Static template only: run-time text from `recovery`");
+  });
+
+  it("lists skipped call sites with source links", () => {
+    const md = renderHooksReference(callSites, eventMap, "2.8.11", "main",
+      [{ file: "pre-edit.py", line: 42 }]);
+    expect(md).toContain("## Extraction coverage");
+    expect(md).toContain("1 `block()`/`remind()` call(s) could not be attributed");
+    expect(md).toContain("plugins/ca/hooks/pre-edit.py#L42");
+    const clean = renderHooksReference(callSites, eventMap, "2.8.11", "main", []);
+    expect(clean).toContain("was attributed to a gate ID");
   });
 });

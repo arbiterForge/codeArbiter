@@ -1,0 +1,16 @@
+tools/artifact-coverage.py
+tools/ci-impact.py
+tools/ci20_baseline.py
+tools/ci20_inventory.py
+tools/codex-parity-fixture.py
+tools/create-artifact-examples.py
+tools/farm-first-pass.py
+tools/generate-artifact-types.py
+tools/go_test_parallel.py
+tools/host_descriptors.py
+tools/live-smarts-exercise.py
+tools/measure-knowledge-retrieval.py
+tools/reviewer-yield.py
+tools/statusline-bench.py
+tools/statusline-screenshot.py
+tools/tribunal-eval.py

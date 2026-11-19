@@ -1,0 +1,427 @@
+{
+ "kind": "PRIVATE_FEATURE_PROPOSAL",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_head_at_seal": "b4d8fcf9ffd4078b57b7abfe700f09a5ce3ebaef",
+ "source_tree": "7a39c8d655159059ed6a2e266fe30caf6e7e1d77",
+ "historical_initial_read_and_red_epoch": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+ "source_epoch_join": "B4 changes only the exact separately admitted HookF04 command/inventory hunks. All other ten-subject preimages byte-identical; existing code hunks retained. No hosted qualification inferred.",
+ "subjects": [
+  {
+   "path": ".github/scripts/major_qualification_report.py",
+   "preimage": {
+    "sha256": "41a88ee6e4a7240781785c7f3bd20524c036c3995ae90d75213022558eb8cb1a",
+    "bytes": 165729,
+    "exists": true,
+    "git_blob_oid": "40df28b28e222f31f6f808dbb8d8ffbeeec44795"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "18b131adb5ae9ceb865068c9025d1688bde99f79b5fcb04ebc2290fdd72077a7",
+    "bytes": 213979
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_major_qualification_report.py",
+   "preimage": {
+    "sha256": "b8625bdf38273bb4743d4ca47c6897ded8e83fb8e13cc3ffc2bbedddc10088ea",
+    "bytes": 334774,
+    "exists": true,
+    "git_blob_oid": "a244912cb190d68e7a433f26b707a52553ceebf5"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "3796834fd57d47129d00e0736701bf21ec77439ad8f581231a5154c7765459a8",
+    "bytes": 361272
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/scripts/major_readiness.py",
+   "preimage": {
+    "sha256": "17cc1f9e4e77a878a19311b56cfde46de0ccc2c870bb9b8964ebd2f0d3ff079a",
+    "bytes": 84278,
+    "exists": true,
+    "git_blob_oid": "be759866995ba6d669915fd3c3ab1214b85017e3"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_readiness.py",
+    "sha256": "4af55785518d73407821033c6a7ec783ed19262d20ebeef398f9dfb2af003a86",
+    "bytes": 85066
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_pi_payload_identity.py",
+   "preimage": {
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "exists": false,
+    "git_blob_oid": null
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_pi_payload_identity.py",
+    "sha256": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+    "bytes": 4429
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/major-test-selections.json",
+   "preimage": {
+    "sha256": "cf66dfe524b6728e18620d4789562587f77de3fb88c345ed406b51de3b4e0fbd",
+    "bytes": 96047,
+    "exists": true,
+    "git_blob_oid": "c8d590a364786f26ce52c91431abe1f6b99e0694"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\major-test-selections.json",
+    "sha256": "8fffeaefe82a0f171f7948b45f0be308b0bda9140797ad09637151581dbdb6d1",
+    "bytes": 104865
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/major-qualification-policy.json",
+   "preimage": {
+    "sha256": "68b59d18f7343411806577879bd36771238526bfeab05468dadb81a2f62cf1c2",
+    "bytes": 9244,
+    "exists": true,
+    "git_blob_oid": "e866a888b2d9fbc8c077cc0388b7f47c8051afe8"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\major-qualification-policy.json",
+    "sha256": "07095a805827504e7a57c86455a03091859f27e63261dd15fed75458ed974ca6",
+    "bytes": 9890
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/workflows/ci.yml",
+   "preimage": {
+    "sha256": "f3ffb37a927c50b9b4a146cec4848f8d4d75f3582fec11fe15577d8fc057079f",
+    "bytes": 284373,
+    "exists": true,
+    "git_blob_oid": "adba0936f48482883f4dd213134500d6e1bd0bc0"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\workflows\\ci.yml",
+    "sha256": "f07270ea86925ed3eaab7890faadc6a7cb817a5f9b4af69b9f376b5758d1060a",
+    "bytes": 292897
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_hook_ci_partition.py",
+   "preimage": {
+    "sha256": "190eaa3f76ff99b5fce83ecf95a7c35faa0e3bef004f596bc9f3596d74c54592",
+    "bytes": 52221,
+    "exists": true,
+    "git_blob_oid": "7db9212ad026b78bd071231641bf7ed0df30eb65"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+    "sha256": "25866d82ef1f9e4ebe3179411b2ab15c5f31eb3d794ff1b9b28b45f9987a38aa",
+    "bytes": 90720
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_ci_impact.py",
+   "preimage": {
+    "sha256": "c2c3818cd55d1c9a9e1f60452e741c73023896114a6c22f46285686d43f344cc",
+    "bytes": 330504,
+    "exists": true,
+    "git_blob_oid": "9390328e9e0fb6a773d26fba218e0c158e87696f"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_ci_impact.py",
+    "sha256": "4a920a59d0359e6e1d791f148912df36b57ccd73dbbf9aa10cd0b39766cbafe7",
+    "bytes": 330875
+   },
+   "private_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_state_contracts_integration.py",
+   "preimage": {
+    "sha256": "95ca140b3c18bc296e39982ad0dc271c1f88db6033a0a715e47af8a2c7fd95a4",
+    "bytes": 53445,
+    "exists": true,
+    "git_blob_oid": "0a6f2473fdf1147f8e9dc5a60e11ce41dc79e830"
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_state_contracts_integration.py",
+    "sha256": "c4d122061e148713f82dd9e0279cb7d5cbec8a99237a9b82a78597b08aba7c55",
+    "bytes": 53754
+   },
+   "private_index_oid": null
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate.patch",
+  "sha256": "d3aaafc7fd1399b3104a74f49877a0143f1307b243b3ede476c8f851dade7a5f"
+ },
+ "findings": [
+  "C-F05",
+  "C-F06",
+  "C-F07",
+  "HOOK-F01",
+  "HOOK-F03",
+  "T-F02"
+ ],
+ "selector_count": 39,
+ "profiles": {
+  "hooks-single-owner-findings-v1": {
+   "members": 596,
+   "job": "Windows/contracts",
+   "original_scripts": 4,
+   "git_command_characters": 23896
+  },
+  "impact-single-owner-findings-v1": {
+   "members": 1111,
+   "job": "Ubuntu Impact planner contract",
+   "original_scripts": 2,
+   "git_command_characters": 48240
+  }
+ },
+ "source_closure": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-closure-bindings.json",
+  "sha256": "cd77c0cacbc15137dea1cf1ea6a2f7d4a9c0b9942a8810015e0b8c893cd0f19e",
+  "union_members": 1111,
+  "aggregate_bytes": 30239110,
+  "bounds_unchanged": "8MiB/member,64MiB/source total,1MiB manifest; physical namespace finite512dirs/2048files; report/native40/default schemas unchanged",
+  "text_policy": "Existing Hook pre-checkout COUNT2 core.autocrlf=false/core.eol=lf retained; Impact Ubuntu.63 inspected eol-unspecified paths are not waived byte comparisons."
+ },
+ "matrix": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\finite-selector-source-matrix.json",
+  "sha256": "a42731d59559ac8d46d9372165400da59ae676db5e13d304bf394b3ff3fc5dda"
+ },
+ "checks": [
+  {
+   "name": "six-profile-target-red",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-red.json",
+   "sha256": "f62edf24fe80a064ddc4eef04b892445c205ba254106b976f4ea386e45f63626",
+   "exit_code": 1,
+   "elapsed_seconds": 0.2731430999992881,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-red.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-red.stderr"
+  },
+  {
+   "name": "six-profile-target-green",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green.json",
+   "sha256": "2b86995deb65be6cfae8430dd0a145b168f4b3ede9695774205de9d7958316bc",
+   "exit_code": 1,
+   "elapsed_seconds": 0.2164545999839902,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green.stderr"
+  },
+  {
+   "name": "six-profile-target-green-refined",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green-refined.json",
+   "sha256": "fe600061ca11ee03ce53cc2f3f9b5a90575223eeb96b5ec297d328295ab783d3",
+   "exit_code": 0,
+   "elapsed_seconds": 0.22634439999819733,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green-refined.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green-refined.stderr"
+  },
+  {
+   "name": "six-profile-admission-green",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-admission-green.json",
+   "sha256": "e0cc8df179434e9f693eaab9e49eeb621693f74ebe1e1974af65fa0e50ffff48",
+   "exit_code": 0,
+   "elapsed_seconds": 0.4154018000117503,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-admission-green.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-admission-green.stderr"
+  },
+  {
+   "name": "six-profile-final-admission-green",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-final-admission-green.json",
+   "sha256": "afe7d2ca570b1acbeb9969b78bfbfbfec93a148933343fc746870d4a104761a4",
+   "exit_code": 0,
+   "elapsed_seconds": 0.4683089000172913,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-final-admission-green.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-final-admission-green.stderr"
+  },
+  {
+   "name": "pi-payload-predicate-owning",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\pi-payload-predicate-owning.json",
+   "sha256": "eb45226cb0e80d80b802a7995a86ae33dc51b34730a508f72a0afd98b5a4da5b",
+   "exit_code": 0,
+   "elapsed_seconds": 0.2939845999935642,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\pi-payload-predicate-owning.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\pi-payload-predicate-owning.stderr"
+  },
+  {
+   "name": "six-profile-real-source-green",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-green.json",
+   "sha256": "250bb6ee365e79facf79ac96942a199075a55223db6783048d54c8afd6e69e10",
+   "exit_code": 1,
+   "elapsed_seconds": 17.740565299987793,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-green.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-green.stderr"
+  },
+  {
+   "name": "six-profile-real-source-refined",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-refined.json",
+   "sha256": "238cbd8fa57305e661a8ff86538358f6d4e72ec040f88754960fb079425fa999",
+   "exit_code": 0,
+   "elapsed_seconds": 17.66523720000987,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-refined.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-refined.stderr"
+  },
+  {
+   "name": "source-namespace-controls",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-namespace-controls.json",
+   "sha256": "f93d8e5b3086c9d11752023cf05dcb43de78240e6ea45cbdac3091470996a802",
+   "exit_code": 1,
+   "elapsed_seconds": 1.0064923999889288,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-namespace-controls.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-namespace-controls.stderr"
+  },
+  {
+   "name": "legacy-source-controls-refined",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\legacy-source-controls-refined.json",
+   "sha256": "aa11a16f5192fed8f1483b23b2f0a815cba8c48f52762eede99e589b44e4e636",
+   "exit_code": 0,
+   "elapsed_seconds": 5.265408400009619,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\legacy-source-controls-refined.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\legacy-source-controls-refined.stderr"
+  },
+  {
+   "name": "affected-impact-readers",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-impact-readers.json",
+   "sha256": "a234a7085e1a1379e7d3c5a4233f64ed2192599178d03f249b2a224c8abb8187",
+   "exit_code": 1,
+   "elapsed_seconds": 0.23008159999153577,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-impact-readers.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-impact-readers.stderr"
+  },
+  {
+   "name": "affected-docs-policy-refined",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-docs-policy-refined.json",
+   "sha256": "5d597fe1469c12e5fbc1d0b26f200a86116db822ebb24af6faeb3b05d8af7385",
+   "exit_code": 0,
+   "elapsed_seconds": 0.19148509998922236,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-docs-policy-refined.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-docs-policy-refined.stderr"
+  },
+  {
+   "name": "affected-integration-reader",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-integration-reader.json",
+   "sha256": "1f1902090ce5bee12c0cb9772d424bef4dada8e1b5e7d5eeda6d372f6706a47c",
+   "exit_code": 0,
+   "elapsed_seconds": 0.18309350000345148,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-integration-reader.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-integration-reader.stderr"
+  },
+  {
+   "name": "strict-partition-owning",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\strict-partition-owning.json",
+   "sha256": "9619db93057ae939a68201751e912fc9b58dc34e4da183a56861db7a9c8f7cba",
+   "exit_code": 0,
+   "elapsed_seconds": 0.23560089999227785,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\strict-partition-owning.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\strict-partition-owning.stderr"
+  },
+  {
+   "name": "measurement-owner-selection-red",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-red.json",
+   "sha256": "55e94d4d8f3ba6298fd685c99654e82980795b484c174db24466cb22a554e419",
+   "exit_code": 1,
+   "elapsed_seconds": 0.08287959999870509,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-red.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-red.stderr"
+  },
+  {
+   "name": "measurement-owner-selection-green",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-green.json",
+   "sha256": "dbafc10d1a18108133a3606f17b3a270a23b51ab80941ebe074f21ee989d993b",
+   "exit_code": 0,
+   "elapsed_seconds": 0.07699249999132007,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-green.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-green.stderr"
+  },
+  {
+   "name": "final-profile-nine-controls",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-profile-nine-controls.json",
+   "sha256": "61d26b67b9dd508fc08891daaf912c98a88be7fb111ab7f1d29b9c2605ae3209",
+   "exit_code": 0,
+   "elapsed_seconds": 18.579669800004922,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-profile-nine-controls.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-profile-nine-controls.stderr"
+  },
+  {
+   "name": "impact-role-reuse-red",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-red.json",
+   "sha256": "b9aeadfabade888da8f74fa6896715a8b8ca73b7bb712859e6090a171f19b77a",
+   "exit_code": 1,
+   "elapsed_seconds": 0.08077840000623837,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-red.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-red.stderr"
+  },
+  {
+   "name": "impact-role-reuse-green",
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-green.json",
+   "sha256": "e626144f925c7f99765be9fda6b7950ba9430d268689ba2b4e9a6de9ba4a3eb5",
+   "exit_code": 0,
+   "elapsed_seconds": 0.0999578999762889,
+   "stdout": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-green.stdout",
+   "stderr": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-green.stderr"
+  }
+ ],
+ "actual_summary": [
+  "Proper original unknown-profile assertion RED(two subcases), then final9 profile/admission controls PASS18.376s/outer18.580s.",
+  "Safe actual check_payload/PiHost owner4PASS, and4PASS once under source observer in owned Git fixture; no doctor.main/native/probe.",
+  "Original54 partition/source-role/Npm/recovery controls PASS0.161s; new measurement-selection target RED\u2192GREEN; final3 source-wiring controls PASS0.026s after predicate-reuse RED.",
+  "Affected6 Impact readers:4PASS first run,2 missing scratch Docs-input errors; only2failed rerun after exact Docs copy,2PASS0.014s.",
+  "Existing token-scope integration reader PASS0.016s with original mutants.3 old source admission/phase controls PASS across retained runs;2 needed missing scratch source copy before rerun.",
+  "Controller setup failures preserved: initial descriptor self-reference; draft CI orientation used nonanchored job boundary with no source write; wrong tail helper name; incomplete scratch source/Docs copies. None is reported as product RED."
+ ],
+ "composition_required_after_docs_adoption": [
+  "Add .github/scripts/site_vitest_observation.py and .github/scripts/test_site_vitest_observation.py to both exact descriptors; these newly authored known names are intentionally absent from current B4 profile preimages. No namespace exemption. Root composes independent Docs fragments."
+ ],
+ "limits": [
+  "Finite finding source-test assertions only. No linked whole-task/model/installed/native/browser/provider/lifecycle qualification.",
+  "No original represented suites replayed locally except safe new Pi identity owner; original unfiltered CI commands run once via retained source observers.",
+  "No canonical/Git/index/ref/marker/proof/status/API/network/install writes.",
+  "Nested failing/skipped inert examples retained; only exact selected rows qualify, original owning command must succeed.",
+  "No whole-run producer-context bypass: emitter producer-time original upload completed/in-progress; final readiness requires original source+report upload authentication under whole trusted success."
+ ],
+ "files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\filemap.json",
+   "sha256": "19a48ad1d84b7ee970c022d1682c14430e84aaebdc4fb067c6264c58c0770c8f",
+   "bytes": 5928
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-preservation.json",
+   "sha256": "4cfce8853e56088466c14c8ba6096d75b7902edee594f61b8fc3b137937080c1",
+   "bytes": 3016
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-attribute-inventory.json",
+   "sha256": "f9c3603dbd9c826c00c45b8453286c15442de06bdb5a24ae3e5dd7443bdda5de",
+   "bytes": 6265
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-check-before.json",
+   "sha256": "c968cd5beb68b290ad830a2691e104c976806ad4ad4ce0a83b6b985d7e8dd136",
+   "bytes": 1426
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-check-after.json",
+   "sha256": "5c3e6cf8e84282404209c94cb00baea8e03342aff687916c553a04cf938eed4b",
+   "bytes": 1643
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\finite-selector-source-matrix.json",
+   "sha256": "a42731d59559ac8d46d9372165400da59ae676db5e13d304bf394b3ff3fc5dda",
+   "bytes": 23779
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-closure-bindings.json",
+   "sha256": "cd77c0cacbc15137dea1cf1ea6a2f7d4a9c0b9942a8810015e0b8c893cd0f19e",
+   "bytes": 243571
+  }
+ ]
+}

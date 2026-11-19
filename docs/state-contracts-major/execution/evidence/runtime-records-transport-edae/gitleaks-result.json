@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\AppData\\Local\\Microsoft\\WinGet\\Links\\gitleaks.exe",
+    "dir",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\new-files",
+    "--no-banner",
+    "--redact",
+    "--config",
+    "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/.gitleaks.toml",
+    "--report-format",
+    "json",
+    "--report-path",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\gitleaks-findings.json"
+  ],
+  "exit_code": 0,
+  "findings": 0,
+  "scanner_sha256": "17157e2ee8b76fc8b1d8bee607a250e34b8a8023c8bc81822d4b5ee4d78fcb7c",
+  "config_sha256": "6c46cdcd29168315ec17f1b14131dfb59c9b6d882eb695deeefced579bae9257"
+}

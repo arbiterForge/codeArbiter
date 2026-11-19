@@ -1,0 +1,268 @@
+{
+  "schema": "codearbiter.original-pages-origin-projection/1",
+  "projection_kind": "allowlisted public API/upload-attribution fields; not original acquisition bytes or a new execution",
+  "original_acquisition_sha256": "08b3aeb473c19219963ae1ef32e546f976a98ca3f07d17f76caf792fc3dfbeb9",
+  "captured_at": "2026-11-14T10:25:26.345588+00:00",
+  "source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "original_run": {
+    "id": 43582198099,
+    "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "head_branch": "major/state-contracts",
+    "path": ".github/workflows/docs.yml",
+    "event": "push",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "created_at": "2026-11-14T09:47:20Z",
+    "updated_at": "2026-11-14T09:58:52Z",
+    "run_started_at": "2026-11-14T09:47:20Z",
+    "html_url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43582198099"
+  },
+  "repository": "arbiterForge/codeArbiter",
+  "original_job": {
+    "id": 132409108684,
+    "run_id": 43582198099,
+    "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "head_branch": "major/state-contracts",
+    "name": "Site | [Build] - Astro Pages",
+    "status": "completed",
+    "conclusion": "success",
+    "run_attempt": 1,
+    "started_at": "2026-11-14T09:47:23Z",
+    "completed_at": "2026-11-14T09:58:51Z",
+    "html_url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43582198099/job/132409108684"
+  },
+  "steps": [
+    {
+      "name": "Set up job",
+      "number": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:47:24Z",
+      "completed_at": "2026-11-14T09:47:25Z"
+    },
+    {
+      "name": "Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "number": 2,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:47:25Z",
+      "completed_at": "2026-11-14T09:47:37Z"
+    },
+    {
+      "name": "Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "number": 3,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:47:37Z",
+      "completed_at": "2026-11-14T09:47:40Z"
+    },
+    {
+      "name": "Install deps",
+      "number": 4,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:47:40Z",
+      "completed_at": "2026-11-14T09:47:45Z"
+    },
+    {
+      "name": "Build",
+      "number": 5,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:47:45Z",
+      "completed_at": "2026-11-14T09:48:06Z"
+    },
+    {
+      "name": "Link audit",
+      "number": 6,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:48:06Z",
+      "completed_at": "2026-11-14T09:48:07Z"
+    },
+    {
+      "name": "Record runner Chrome version",
+      "number": 7,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:48:07Z",
+      "completed_at": "2026-11-14T09:48:09Z"
+    },
+    {
+      "name": "Browser component acceptance",
+      "number": 8,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:48:09Z",
+      "completed_at": "2026-11-14T09:48:29Z"
+    },
+    {
+      "name": "Browser publication gate",
+      "number": 9,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:48:29Z",
+      "completed_at": "2026-11-14T09:58:40Z"
+    },
+    {
+      "name": "Retain browser review evidence",
+      "number": 10,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:58:40Z",
+      "completed_at": "2026-11-14T09:58:45Z"
+    },
+    {
+      "name": "Retain browser failure diagnostics",
+      "number": 11,
+      "status": "completed",
+      "conclusion": "skipped",
+      "started_at": "2026-11-14T09:58:45Z",
+      "completed_at": "2026-11-14T09:58:45Z"
+    },
+    {
+      "name": "Upload Pages artifact",
+      "number": 12,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:58:45Z",
+      "completed_at": "2026-11-14T09:58:48Z"
+    },
+    {
+      "name": "Post Run actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1",
+      "number": 23,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:58:48Z",
+      "completed_at": "2026-11-14T09:58:48Z"
+    },
+    {
+      "name": "Post Run actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1",
+      "number": 24,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:58:48Z",
+      "completed_at": "2026-11-14T09:58:48Z"
+    },
+    {
+      "name": "Complete job",
+      "number": 25,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-11-14T09:58:48Z",
+      "completed_at": "2026-11-14T09:58:48Z"
+    }
+  ],
+  "pages_artifact": {
+    "id": 14108783544,
+    "name": "github-pages",
+    "size_in_bytes": 6554864,
+    "digest": "sha256:e33a9946ff312843ab713c208c46a7ee9964a495dcd3e21917ca3f8465da72aa",
+    "created_at": "2026-11-14T09:58:48Z",
+    "updated_at": "2026-11-14T09:58:48Z",
+    "expires_at": "2026-11-15T09:58:45Z",
+    "expired": false,
+    "workflow_run": {
+      "id": 43582198099,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "major/state-contracts",
+      "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+    }
+  },
+  "browser_artifact": {
+    "id": 14107944699,
+    "name": "site-browser-evidence",
+    "size_in_bytes": 97086098,
+    "digest": "sha256:cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d",
+    "created_at": "2026-11-14T09:58:45Z",
+    "updated_at": "2026-11-14T09:58:45Z",
+    "expires_at": "2026-11-17T09:47:21Z",
+    "expired": false,
+    "workflow_run": {
+      "id": 43582198099,
+      "repository_id": 1233366728,
+      "head_repository_id": 1233366728,
+      "head_branch": "major/state-contracts",
+      "head_sha": "46e29a796e89e0eaa3250cf171e4c9bea97ac437"
+    }
+  },
+  "pages_attribution": {
+    "kind": "original-static-pages-build",
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "run_id": 43582198099,
+    "run_attempt": 1,
+    "branch": "major/state-contracts",
+    "repository": "arbiterForge/codeArbiter",
+    "workflow": ".github/workflows/docs.yml",
+    "job_id": 132409108684,
+    "artifact_id": 14108783544,
+    "archive_sha256": "e33a9946ff312843ab713c208c46a7ee9964a495dcd3e21917ca3f8465da72aa",
+    "tar_sha256": "ca36baa30c6ee22d46108de585940038c315811ba6acc9e0c046dadb3d6fd699",
+    "job_log_sha256": "226e79b6b729ba51c812c0989c3e6d2e853bf7247138876b55f5c5bb87959801",
+    "outer_action": "actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9",
+    "nested_action": "actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f"
+  },
+  "browser_receipt": {
+    "commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+    "browser": "157.0.8103.50",
+    "path": "/pagefind/pagefind.js",
+    "bytes": 45555,
+    "sha256": "252d272bd34d483d19a752060f6a065114d15ab12c42d8f905ca565e2768a009",
+    "servedBytesMatchBuild": true,
+    "exports": [
+      "createInstance",
+      "debouncedSearch",
+      "destroy",
+      "filters",
+      "init",
+      "mergeIndex",
+      "options",
+      "preload",
+      "search"
+    ],
+    "paths": [
+      "/getting-started/quickstart/",
+      "/",
+      "/academy/",
+      "/overview/",
+      "/reference/commands/release/",
+      "/guides/plan-a-new-project/",
+      "/guides/return-to-a-project/",
+      "/faq/",
+      "/learn/",
+      "/academy/p01-feature-through-plan/",
+      "/academy/u07-capstone/",
+      "/academy/p03-record-an-adr/",
+      "/changelog/",
+      "/guides/review-and-ship/",
+      "/feature-forge/whats-in-the-forge/",
+      "/guides/opt-in-a-repo/",
+      "/guides/recording-adrs/",
+      "/academy/f04-fix-with-evidence/",
+      "/concepts/auditability/",
+      "/concepts/provenance-drift/",
+      "/guides/resume-and-recover/",
+      "/concepts/workflow-routes/"
+    ]
+  },
+  "browser_upload_authenticated_by_unchanged_owner": true,
+  "browser_upload_owner_sha256": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+  "private_originals_sha256": {
+    "run.json": "8a29c919d601e114169c2f519012f8dd34e123bd7964dd579e7173b05747457d",
+    "job.json": "75aa9e64b8c533653dd4e29183d63cbc5ef55d8204681e324de615d31f10d50f",
+    "pages-meta.json": "0b18f4eef989773fb323ebbfd2e0e8c6c1bcef60e845df56c8bc25dd1a000b83",
+    "browser-meta.json": "9c98098cb9703bb041e536960eafc00a84651e364fb2294c1605759250995d96",
+    "original-job.log": "226e79b6b729ba51c812c0989c3e6d2e853bf7247138876b55f5c5bb87959801",
+    "pages.zip": "e33a9946ff312843ab713c208c46a7ee9964a495dcd3e21917ca3f8465da72aa",
+    "browser.zip": "cf02b3ee3e04c09ba36f253506e4a9880cf19e28524651c56118c98dd558e76d"
+  },
+  "admitted_member_count": 465,
+  "admitted_member_manifest_sha256": "a08768a8fc54d6477062c0e567fd2241360dadb766079a1ad230c8a2b0920e1c",
+  "transport": "Original private GitHub API metadata, job log and archive bytes authenticated/read by reviewed Temp companion/controller; API fields here are projections of those original records.",
+  "privacy": "Original acquisition.json, full original job log and ZIP archives remain private at acquisition location; no arbitrary job-log line or credential is retained here.",
+  "retention_limit": "Original GitHub Pages upload expires after one day. These local observation records are not an API replay or a newly live-authenticated hosted proof after expiry."
+}

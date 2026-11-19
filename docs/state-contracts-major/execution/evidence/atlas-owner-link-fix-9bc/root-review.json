@@ -1,0 +1,71 @@
+{
+ "schema": "codearbiter.private-code-independent-review/1",
+ "reviewer": "/root",
+ "author": "/root/ci_repair_review",
+ "verdict": "PASS",
+ "findings": [],
+ "source_commit": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "author_delivery_sha256": "b031708f3e539b6c869258aa0ddba77b93a8b121c3083aabbebe9d5b8e1b7cea",
+ "reviewed_subjects": [
+  {
+   "path": "site/scripts/execution-maps/atlas-model.ts",
+   "preimage_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+   "preimage_bytes": 10617,
+   "preimage_git_oid": "9740530273a057f1f7163eea90f989c3d9a6f880",
+   "preimage_git_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-model.ts",
+    "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+    "bytes": 10780
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-render.ts",
+   "preimage_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+   "preimage_bytes": 14537,
+   "preimage_git_oid": "9c730c30a9b906b1565671a8bdc766bc9e747300",
+   "preimage_git_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-render.ts",
+    "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+    "bytes": 14581
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-model.test.ts",
+   "preimage_sha256": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+   "preimage_bytes": 6860,
+   "preimage_git_oid": "e1f6a428bfb1a24051ebc9abeb623cbb40f82d42",
+   "preimage_git_sha256": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-model.test.ts",
+    "sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada",
+    "bytes": 8791
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+   "preimage_sha256": "fdd954593068ff836ae8dc231f858e9d68dd771f88f0467185340eb5d587bf06",
+   "preimage_bytes": 21566,
+   "preimage_git_oid": "2bb5c23f265d2a2da436965191b869219b02d940",
+   "preimage_git_sha256": "fdd954593068ff836ae8dc231f858e9d68dd771f88f0467185340eb5d587bf06",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+    "sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+    "bytes": 21915
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "assessment": "Direct four-file diff and owner review: optional per-owner revision has exact lower-case40hex/string validation; renderer uses legacy global revision only when field absent and rejects malformed defined values through sourceHref. New owner blob/revision resolves in actual local immutable Git. Historical global base and all other rows/geometry remain unchanged; exact-byte loader checks are unchanged. The typed sourceHref non-string check prevents array coercion and is covered by the second regression. Original12test bodies remain, two new meaningful assertions fail on original and all14 pass on candidate. Existing source inspection and exact118request loader inventory are reused, not a new full-site/browser proof.",
+ "observed_results": "Two proper assertion REDs,14PASS/0SKIP, scoped strictTS PASS,118/118 source requests and actualRoot loader/render readback PASS. Scoped Windows V8 model98.59/84.61 and renderer100/87.87 lines/branches; fullUbuntu sitecoverage remains hosted.",
+ "evidence_epoch_limits": "No runtime/task/human/installed promotion. Changing Atlas owners makes eight old source-only observations stale; their historical bytes remain retained. Strict unaffected source512 and full owner are checked separately against the actual staged tree.",
+ "main_merge": "HELD_FOR_USER_TESTING"
+}

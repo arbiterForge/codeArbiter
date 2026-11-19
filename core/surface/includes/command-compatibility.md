@@ -10,10 +10,10 @@ an exact, non-draft Release for that candidate tag and the tag's commit contains
 registry declaration and matching payload version.
 A tag alone, a draft, unavailable API evidence, or any tag/Release/payload mismatch does not start a
 clock. Published releases ca 2.16.0, ca-codex 0.8.0, and ca-pi 0.9.0 predate this registry and do not
-contain the compatibility metadata. ca retains these routes through every 2.x release, with no removal
-before a separately approved 3.0.0. ca-codex and ca-pi retain them through every later 0.x release,
-with no removal before a separately approved 1.0.0. Passing a version floor never authorizes removal:
-removal needs a new governed decision and fresh compatibility evidence.
+contain the compatibility metadata.
+
+{{FACT:compatibility-removal-rule}}
+
 ## Explicitly retired capability: skill authoring
 
 The maintainer explicitly approved removal of `new-skill` and `skill-author` on

@@ -1,0 +1,21 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\two-diagnostics.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g",
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PATH": "C:\\Program Files\\Git\\cmd;C:\\Windows\\System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\diagnostic-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-authority-job-debug-yg0uiv0g\\diagnostic-home",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+  }
+}

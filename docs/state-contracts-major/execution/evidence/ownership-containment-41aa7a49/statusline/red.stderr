@@ -1,0 +1,220 @@
+test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) ... 
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement={'type': 'command', 'command': 'new-user-line', 'padding': 4}, spinner='none') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement={'type': 'command', 'command': 'new-user-line', 'padding': 4}, spinner='owned') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement={'type': 'command', 'command': 'new-user-line', 'padding': 4}, spinner='replaced') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement='new-user-string-line', spinner='none') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement='new-user-string-line', spinner='owned') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement='new-user-string-line', spinner='replaced') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=None, spinner='none') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=None, spinner='owned') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=None, spinner='replaced') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=<object object at 0x0000024A60960B80>, spinner='none') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=<object object at 0x0000024A60960B80>, spinner='owned') ... FAIL
+  test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=<object object at 0x0000024A60960B80>, spinner='replaced') ... FAIL
+test_legacy_owned_statusline_without_stamp_still_restores_backup (test_wire_statusline.TestUninstall.test_legacy_owned_statusline_without_stamp_still_restores_backup) ... ok
+test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement (test_wire_statusline.TestUninstall.test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement) ... ok
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement={'type': 'command', 'command': 'new-user-line', 'padding': 4}, spinner='none')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[69 chars] {'type': 'command', 'command': 'stale-old-line'}} != {'the[69 chars] {'type': 'command', 'command': 'new-user-line', 'padding': 4}}
+  {'nested': {'keep': [1, True, None]},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+?                              --- ^^^^
+
++  'statusLine': {'command': 'new-user-line', 'padding': 4, 'type': 'command'},
+?                             +++++  ^        ++++++++++++++
+
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement={'type': 'command', 'command': 'new-user-line', 'padding': 4}, spinner='owned')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[97 chars]d': 'stale-old-line'}, 'spinnerVerbs': {'mode'[38 chars]r']}} != {'the[97 chars]d': 'new-user-line', 'padding': 4}, 'spinnerVe[51 chars]r']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['old user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+?                              --- ^^^^
+
++  'statusLine': {'command': 'new-user-line', 'padding': 4, 'type': 'command'},
+?                             +++++  ^        ++++++++++++++
+
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement={'type': 'command', 'command': 'new-user-line', 'padding': 4}, spinner='replaced')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[97 chars]d': 'stale-old-line'}, 'spinnerVerbs': {'mode'[38 chars]r']}} != {'the[97 chars]d': 'new-user-line', 'padding': 4}, 'spinnerVe[51 chars]r']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['new user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+?                              --- ^^^^
+
++  'statusLine': {'command': 'new-user-line', 'padding': 4, 'type': 'command'},
+?                             +++++  ^        ++++++++++++++
+
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement='new-user-string-line', spinner='none')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[56 chars]'statusLine': {'type': 'command', 'command': 'stale-old-line'}} != {'the[56 chars]'statusLine': 'new-user-string-line'}
+  {'nested': {'keep': [1, True, None]},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
++  'statusLine': 'new-user-string-line',
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement='new-user-string-line', spinner='owned')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[65 chars]ne': {'type': 'command', 'command': 'stale-old[70 chars]r']}} != {'the[65 chars]ne': 'new-user-string-line', 'spinnerVerbs': {[44 chars]r']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['old user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
++  'statusLine': 'new-user-string-line',
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement='new-user-string-line', spinner='replaced')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[65 chars]ne': {'type': 'command', 'command': 'stale-old[70 chars]r']}} != {'the[65 chars]ne': 'new-user-string-line', 'spinnerVerbs': {[44 chars]r']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['new user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
++  'statusLine': 'new-user-string-line',
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=None, spinner='none')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[56 chars]'statusLine': {'type': 'command', 'command': 'stale-old-line'}} != {'the[56 chars]'statusLine': None}
++ {'nested': {'keep': [1, True, None]}, 'statusLine': None, 'theme': 'user-theme'}
+- {'nested': {'keep': [1, True, None]},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+-  'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=None, spinner='owned')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[65 chars]ne': {'type': 'command', 'command': 'stale-old[70 chars]r']}} != {'the[65 chars]ne': None, 'spinnerVerbs': {'mode': 'append', [26 chars]r']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['old user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
++  'statusLine': None,
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=None, spinner='replaced')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[65 chars]ne': {'type': 'command', 'command': 'stale-old[70 chars]r']}} != {'the[65 chars]ne': None, 'spinnerVerbs': {'mode': 'append', [26 chars]r']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['new user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
++  'statusLine': None,
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=<object object at 0x0000024A60960B80>, spinner='none')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[49 chars]one]}, 'statusLine': {'type': 'command', 'comm[19 chars]ne'}} != {'the[49 chars]one]}}
+- {'nested': {'keep': [1, True, None]},
++ {'nested': {'keep': [1, True, None]}, 'theme': 'user-theme'}
+?                                      +++++++++++++++++++++++
+
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+-  'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=<object object at 0x0000024A60960B80>, spinner='owned')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[116 chars]er']}, 'statusLine': {'type': 'command', 'comm[19 chars]ne'}} != {'the[116 chars]er']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['old user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+======================================================================
+FAIL: test_legacy_backup_without_owner_preserves_later_third_party_statusline (test_wire_statusline.TestUninstall.test_legacy_backup_without_owner_preserves_later_third_party_statusline) (replacement=<object object at 0x0000024A60960B80>, spinner='replaced')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-statusline-legacy-backup-fix-r7iw6tot\repo\plugins\ca\hooks\tests\test_wire_statusline.py", line 317, in test_legacy_backup_without_owner_preserves_later_third_party_statusline
+    self.assertEqual(actual, expected,
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^
+        "legacy backup is not evidence of ownership of a later user choice")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'the[116 chars]er']}, 'statusLine': {'type': 'command', 'comm[19 chars]ne'}} != {'the[116 chars]er']}}
+  {'nested': {'keep': [1, True, None]},
+   'spinnerVerbs': {'mode': 'append', 'verbs': ['new user spinner']},
+-  'statusLine': {'command': 'stale-old-line', 'type': 'command'},
+   'theme': 'user-theme'} : legacy backup is not evidence of ownership of a later user choice
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.117s
+
+FAILED (failures=12)

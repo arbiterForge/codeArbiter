@@ -1,0 +1,42 @@
+{
+  "schema": "bounded-ci-failure-disposition/1",
+  "recorded_at": "2026-11-16T13:06:52.196567+00:00",
+  "head": "a980c220ca4d66be552d06b84596dd56e8822eca",
+  "original_ci": 43852022192,
+  "original_attempt": 1,
+  "original_docs": 43852021926,
+  "checks": {
+    "SUCCESS": 88,
+    "FAILURE": 3,
+    "CANCELLED": 1,
+    "SKIPPED": 8
+  },
+  "failure": "WindowsPi adapter originalRPCpartition timedout180s. Safeartifact has actualOS-running states after30s wait and one companion reached JSexit/reallyExit promptly. Underlying nativeexit mechanism remainsUNKNOWN; no sourcepatch justified. Coverageunion andgatefail areconsequences; Windowsunioncancelled.",
+  "original_log": {
+    "job": 133246847693,
+    "sha256": "b28237619e6cb21173bee591fd74a62a6043ca0b5339b7c27e4702689be3f630"
+  },
+  "diagnostic_archive": {
+    "artifact": 14220806253,
+    "sha256": "9e9d0eb1f74c5a4c43345fed386ed49aa8d1e7e2aa940c351d51328dab092892",
+    "bytes": 4539
+  },
+  "local_replay": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-a980-pi-rpc-bounded-replay\\result.json",
+    "sha256": "c133dbe185350b3c788373bb9391ebedc016699e8b4004fe151ff1b5629e61f6",
+    "tests": 2,
+    "seconds": 3.876,
+    "scope": "Exactrawargv method and separatepassivecompanion once on sameNode995a/reviewedPi1.5.0 directCLIhashes, Python3.14 vs hosted3.15distinct; no originalnative-read workload equivalence claim."
+  },
+  "decision": "One deliberate failed-jobs-only retry of immutable source a980; preserve all attempt1 failures and local limits. No source edits, deadlineincrease, skip, forced-exit substitution or dependencychange. Stop unchanged retry ifrecurs; diagnose new failure. New success is qualification of thatattempt, not a rootcausefix.",
+  "next_command": [
+    "gh",
+    "run",
+    "rerun",
+    "43852022192",
+    "--repo",
+    "arbiterForge/codeArbiter",
+    "--failed"
+  ],
+  "authority": "Existing authorized fullprogram CI followthrough/childmerge; parent1098main/publication held."
+}

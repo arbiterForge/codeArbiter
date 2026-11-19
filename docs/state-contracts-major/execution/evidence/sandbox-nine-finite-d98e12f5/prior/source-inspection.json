@@ -1,0 +1,618 @@
+{
+  "schema": "codearbiter.sandbox-finite-clause-conformance/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "rows": [
+    {
+      "id": "S47:01",
+      "literal_frozen_clause": {
+        "event": "Docker call",
+        "guard": "signal already aborted",
+        "to": "closed code 130",
+        "effects": "Return cancellation without starting client.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "not spawned",
+        "transition_id": "S47:01"
+      },
+      "current_guard": "signal already aborted",
+      "current_effect": "returns130/aborted before spawn",
+      "current_failure_retry": "No created client/ordinary execution; caller owns reconciliation.",
+      "source_owners": [
+        "docker.ts:runDocker"
+      ],
+      "meaningful_observation_mapping": [
+        "original deadline16 pre-aborted no-spawn"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S47:02",
+      "literal_frozen_clause": {
+        "event": "Docker call",
+        "guard": "admitted args/environment",
+        "to": "running",
+        "effects": "Spawn Docker CLI; capture output under default 64MiB cap (exec supplies 256MiB).",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "not spawned",
+        "transition_id": "S47:02"
+      },
+      "current_guard": "admitted argv/environment and operation timeout",
+      "current_effect": "spawns Docker with closed environment, per-call override, cap and listeners",
+      "current_failure_retry": "Synchronous launch errors become ordinary result; bounded deadline/cancellation remain active.",
+      "source_owners": [
+        "docker.ts:runDocker"
+      ],
+      "meaningful_observation_mapping": [
+        "original per-call env and finite deadlines"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S47:03",
+      "literal_frozen_clause": {
+        "event": "deadline elapsed",
+        "guard": "first failure reason",
+        "to": "timeout latched",
+        "effects": "SIGKILL Docker client; report 124/timedOut.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S47:03"
+      },
+      "current_guard": "deadline is first latched reason",
+      "current_effect": "records timeout before SIGKILL; close returns124/timedOut",
+      "current_failure_retry": "later abort/close cannot overwrite timeout; exact-target exec containment independently observed.",
+      "source_owners": [
+        "docker.ts:kill/close",
+        "exec.ts:execInSandbox"
+      ],
+      "meaningful_observation_mapping": [
+        "original deadline16 timeout and failed escalation"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S47:04",
+      "literal_frozen_clause": {
+        "event": "abort signal",
+        "guard": "first failure reason",
+        "to": "abort latched",
+        "effects": "SIGKILL Docker client; report 130/aborted.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S47:04"
+      },
+      "current_guard": "abort first failure reason",
+      "current_effect": "latches abort before SIGKILL; close returns130/aborted",
+      "current_failure_retry": "fresh exact-target cleanup remains possible; timeout cannot relabel.",
+      "source_owners": [
+        "docker.ts:kill/close",
+        "exec.ts:execInSandbox"
+      ],
+      "meaningful_observation_mapping": [
+        "original deadline16 abort distinguishes timeout/ordinaryexit"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S47:05",
+      "literal_frozen_clause": {
+        "event": "output bound exceeded",
+        "guard": "first failure reason",
+        "to": "overflow latched",
+        "effects": "SIGKILL Docker client; report ordinary exit 1 with bounded error.",
+        "failure_retry": "No distinct overflow bit reaches exec cleanup policy; killing CLI does not prove container workload stopped.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S47:05"
+      },
+      "current_guard": "combined stream byte cap exceeded and no prior killer",
+      "current_effect": "latches overflow before SIGKILL, refuses overflowing chunk, returns1 plus overflowed:true and retained bounded output",
+      "current_failure_retry": "Accepted SBX-C02 correction replaces the frozen missing-overflow-bit defect: exec escalates only observation loss, exact stop+independent inspect; inability to prove stopped is unknown. No claim CLI kill alone stops workload.",
+      "source_owners": [
+        "docker.ts:collect/kill/close",
+        "exec.ts:execInSandbox"
+      ],
+      "meaningful_observation_mapping": [
+        "original142e SBX-C02 treats overflow as lost observation and verifies target containment"
+      ],
+      "limits": "Original real-Docker overflow case is SKIP in retained44/deadline16; source acceptance does not satisfy real containment task qualification.",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S47:06",
+      "literal_frozen_clause": {
+        "event": "spawn error/normal close",
+        "guard": "no prior failure",
+        "to": "closed",
+        "effects": "Return ordinary exit code/error; settle exactly once and remove timers/listeners.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S47:06"
+      },
+      "current_guard": "ordinary spawn error or normal close, no prior killer",
+      "current_effect": "returns ordinary result, settles once, clears timer and abort listener",
+      "current_failure_retry": "launch errors/nonzero normal exit remain ordinary, not overflow/timeout/abort.",
+      "source_owners": [
+        "docker.ts:settle/error/close"
+      ],
+      "meaningful_observation_mapping": [
+        "original deadline16 ordinary nonzero and late unrelated abort"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S47:07",
+      "literal_frozen_clause": {
+        "event": "close",
+        "guard": "reason already chosen",
+        "to": "closed",
+        "effects": "Preserve first reason rather than overwrite with close status; return retained bounded output.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "latched failure",
+        "transition_id": "S47:07"
+      },
+      "current_guard": "close after first failure latched",
+      "current_effect": "returns first reason with retained bounded output",
+      "current_failure_retry": "first killer wins; later close cannot create success/relabel cancellation.",
+      "source_owners": [
+        "docker.ts:kill/close"
+      ],
+      "meaningful_observation_mapping": [
+        "active source-client proof095bd66e and unchanged Docker bytes"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S50:01",
+      "literal_frozen_clause": {
+        "event": "ordinary run/create",
+        "guard": "current NETWORKED_POLICIES set empty",
+        "to": "offline plan",
+        "effects": "All ordinary sandbox runtime containers use --network none.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "runtime plan",
+        "transition_id": "S50:01"
+      },
+      "current_guard": "ordinary NETWORKED_POLICIES empty",
+      "current_effect": "buildRunArgs uses --network none regardless of requested ordinary networking",
+      "current_failure_retry": "unsupported ordinary allowlist remains unavailable; separate Claude helper policy does not widen ordinary runtime.",
+      "source_owners": [
+        "run.ts:buildRunArgs",
+        "network.ts:applyNetworkPolicy"
+      ],
+      "meaningful_observation_mapping": [
+        "original offline pure controls",
+        "active preserved37220fe9"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S50:02",
+      "literal_frozen_clause": {
+        "event": "clone phase",
+        "guard": "temporary source acquisition allowed",
+        "to": "clone bridge",
+        "effects": "Use temporary bridge network; disconnect after clone before handing off runtime state.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "clone helper",
+        "transition_id": "S50:02"
+      },
+      "current_guard": "explicit clone-then-cut helper plan for temporary acquisition",
+      "current_effect": "returns bridge runArgs plus exact network-disconnect postStart using supplied target or explicit placeholder",
+      "current_failure_retry": "Caller must substitute actual identity and execute the cut after fetch before handing off runtime; no automatic ordinary networking integration claimed.",
+      "source_owners": [
+        "network.ts:NetworkPlan/applyNetworkPolicy"
+      ],
+      "meaningful_observation_mapping": [
+        "original12 pure: clone bridge and scheduled target-bound detach"
+      ],
+      "limits": "Planner/caller contract, exactly as frozen owner. Ordinary create uses separate ephemeral networked clone helper and offline runtime, not this helper as applied allowlist.",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S50:03",
+      "literal_frozen_clause": {
+        "event": "egress-allowlist request",
+        "guard": "supported helper caller; NET_ADMIN; explicit hosts",
+        "to": "allowlist configuring",
+        "effects": "Resolve permitted names, configure DNS and iptables allow rules, set default-drop last.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "standalone network helper",
+        "transition_id": "S50:03"
+      },
+      "current_guard": "explicit nonempty hosts; supported helper caller with NET_ADMIN/NET_RAW",
+      "current_effect": "custom bridge + host resolver/iptables script; accepts loopback/established/DNS and resolved80/443; OUTPUT DROP last",
+      "current_failure_retry": "set -e and empty-resolution exit prevent successful script before all required setup. Pre-resolvedIP pure helper is distinct from host-resolution runtime script.",
+      "source_owners": [
+        "network.ts:applyNetworkPolicy/buildFirewallScriptForHosts",
+        "claude-inside.ts:resolveClaudeNetworkPlan/runClaudeInside"
+      ],
+      "meaningful_observation_mapping": [
+        "original pure host/cap/script controls",
+        "original Claude Anthropic policy controls"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S50:04",
+      "literal_frozen_clause": {
+        "event": "all commands succeed",
+        "guard": "required resolution and firewall setup complete",
+        "to": "allowlist enforced",
+        "effects": "Container may reach only admitted destinations according to helper policy.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "allowlist configuring",
+        "transition_id": "S50:04"
+      },
+      "current_guard": "all caller firewall commands zero and host setup complete",
+      "current_effect": "script finally sets OUTPUT DROP; supported Claude caller awaits exec success before ready",
+      "current_failure_retry": "IP snapshot only: CDN drift, openDNS and lack of SNI binding remain explicit experimental limits. Late cancellation ready seam separately held atS51:04.",
+      "source_owners": [
+        "network.ts:buildFirewallScriptForHosts",
+        "claude-inside.ts:runClaudeInside"
+      ],
+      "meaningful_observation_mapping": [
+        "original pure defaultDROP+ACCEPT/script controls"
+      ],
+      "limits": "Source firewall contract only; no real network enforcement, hostnameonly guarantee, or cancelled-session readiness claim.",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S50:05",
+      "literal_frozen_clause": {
+        "event": "resolution/firewall failure",
+        "guard": "before final default-drop may occur",
+        "to": "failed configuration",
+        "effects": "Return failure; caller must destroy or otherwise contain container.",
+        "failure_retry": "Helper existence does not mean ordinary CLI allowlist flag is wired to it; current run integration remains offline.",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "allowlist configuring",
+        "transition_id": "S50:05"
+      },
+      "current_guard": "host resolution or firewall command fails before complete",
+      "current_effect": "script exits nonzero; supported Claude caller removes exact created ID then independently observes it",
+      "current_failure_retry": "rm result retained; only successful empty ps means verified absent, otherwise unknown+exactCID. signal stripped for cleanup, token omitted/redacted. Ordinary runtime still offline; helper existence does not imply ordinary mode applied.",
+      "source_owners": [
+        "network.ts:buildFirewallScriptForHosts",
+        "claude-inside.ts:runClaudeInside/FirewallSetupFailure"
+      ],
+      "meaningful_observation_mapping": [
+        "original failed firewall/redaction control",
+        "original142e cancelled firewall verified/unknown control"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S50:06",
+      "literal_frozen_clause": {
+        "event": "disconnect",
+        "guard": "clone complete",
+        "to": "detached",
+        "effects": "Remove temporary connectivity; verify via command result where caller implements check.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "clone bridge",
+        "transition_id": "S50:06"
+      },
+      "current_guard": "fetch complete and caller invokes emitted network-disconnect action",
+      "current_effect": "plan specifies exact network and container identity; post-cut owner checks command result before accepting detached state",
+      "current_failure_retry": "Planner executes no Docker itself; no implicit retry/claim after failed cut. Its public NetworkPlan contract explicitly assigns action execution to caller.",
+      "source_owners": [
+        "network.ts:NetworkPlan/applyNetworkPolicy"
+      ],
+      "meaningful_observation_mapping": [
+        "original pure scheduled detach target control"
+      ],
+      "limits": "No actual disconnect execution observed here. Exact frozen source planner preserved; task/runtime and ordinary-capability boundaries unchanged.",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S51:03",
+      "literal_frozen_clause": {
+        "event": "networked policy",
+        "guard": "requires root firewall setup",
+        "to": "firewall pending",
+        "effects": "Install allowlist rules inside container.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+            "symbol": "createClaudeInside and cleanup",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+            "lines": "1-399"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "CLI workflow",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          }
+        ],
+        "from": "container running",
+        "transition_id": "S51:03"
+      },
+      "current_guard": "explicit Anthropic policy requiring firewall",
+      "current_effect": "awaits root exec of exact generated allowlist script inside exact created CID; scoped run token is removed from subsequent normalCall env",
+      "current_failure_retry": "nonzero enters existing independently bounded exact cleanup with observation and unknown diagnostic.",
+      "source_owners": [
+        "claude-inside.ts:runClaudeInside",
+        "network.ts:applyNetworkPolicy"
+      ],
+      "meaningful_observation_mapping": [
+        "original Claude anthropic policy and failed firewall controls"
+      ],
+      "limits": "",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S51:04",
+      "literal_frozen_clause": {
+        "event": "firewall succeeds",
+        "guard": "all expected commands zero",
+        "to": "ready",
+        "effects": "Return usable container identity.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+            "symbol": "createClaudeInside and cleanup",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+            "lines": "1-399"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "CLI workflow",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          }
+        ],
+        "from": "firewall pending",
+        "transition_id": "S51:04"
+      },
+      "current_guard": "all firewall commands zero, ordinary execution authority still valid",
+      "current_effect": "Current source returns CID after await without rechecking call.signal",
+      "current_failure_retry": "GAP: successful run or successful firewall observation may resolve while signal is already aborted; readiness can escape despite SBX-C03 cancellation ownership. Existing130 cancellation control does not cover code0+abortedSignal. Root author handoff required; no local test/effect performed.",
+      "source_owners": [
+        "claude-inside.ts:runClaudeInside389/405"
+      ],
+      "meaningful_observation_mapping": [
+        "existing cancelled firewall only130; no claimed late-success coverage"
+      ],
+      "limits": "HOLD; no source disposition promotion.",
+      "classification": "finite source conformance; no new execution"
+    },
+    {
+      "id": "S51:06",
+      "literal_frozen_clause": {
+        "event": "session finishes / caller destroy",
+        "guard": "caller-directed cleanup",
+        "to": "stopped or unknown",
+        "effects": "Stop/remove container; home-volume lifecycle belongs to caller, not implicit source checkout cleanup.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+            "symbol": "createClaudeInside and cleanup",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside.ts",
+            "lines": "1-399"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "CLI workflow",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "lines": "1-205"
+          }
+        ],
+        "from": "ready",
+        "transition_id": "S51:06"
+      },
+      "current_guard": "caller directs exact session teardown",
+      "current_effect": "packaged Phase5 directs exact rm -f and selected credential-home volume cleanup unless explicit keep; requires absence confirmation",
+      "current_failure_retry": "home lifecycle belongs to caller. No automatic source-checkout cleanup or broad prune; failure retains unknown/identity rather than inventing stopped.",
+      "source_owners": [
+        "skills/sandbox-claude-inside/SKILL.md:Phase5",
+        "claude-inside-cli.ts:entrypoint boundary"
+      ],
+      "meaningful_observation_mapping": [
+        "reasoned complete caller-contract inspection underSBX-D04 guidance/enforcement distinction"
+      ],
+      "limits": "No actual session/container/home removal or model compliance observed; this row is caller responsibility, not machine-enforced five-phase workflow.",
+      "classification": "finite source conformance; no new execution"
+    }
+  ],
+  "machine_decisions": {
+    "S47": "PRESERVED finite complete7 source clauses, acceptedC02 overflow replacement",
+    "S50": "PRESERVED finite complete6 planner/caller/enforcement source clauses with experimental and ordinary-offline boundary",
+    "S51": "HOLD exact late-success cancellation gap at04; existing01/02/05 history untouched"
+  },
+  "input_join": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/input-join.json",
+    "sha256": "5d2968b00dcffe547296bedf348e813333ee8d56e681f429ec11f07531c735b6"
+  },
+  "observations": {
+    "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-7eba2507/original-observations.json",
+    "sha256": "7a5eb462b65b92d1fbcba2b7ff81f2516a494350d24cf352cb3a98c0bf04b711"
+  },
+  "PROGRAM_basis": "5 analytical counts,13 preserve healthy boundaries through meaningful conformance,46 row-specific executed test/reasoned review mapping; not every interleaving or live publication proof."
+}

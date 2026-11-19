@@ -1,0 +1,26 @@
+[
+  {
+    "requested_mode": "arbiter",
+    "flip_result": "noop",
+    "effective_mode": "arbiter",
+    "persona_output_chars": 10990
+  },
+  {
+    "requested_mode": "dangerous",
+    "flip_result": "flipped",
+    "effective_mode": "dangerous",
+    "persona_output_chars": 7908
+  },
+  {
+    "requested_mode": "arbiter",
+    "flip_result": "flipped",
+    "effective_mode": "arbiter",
+    "persona_output_chars": 0
+  },
+  {
+    "failed_flip": "failed",
+    "raw_mode": "ops",
+    "effective_mode": "arbiter",
+    "user_message": "codeArbiter: mode flip to ops FAILED (marker write error) \u2014 the session remains in its current mode"
+  }
+]

@@ -1,0 +1,42 @@
+{
+  "schema": "unadmitted-causal-lookup-evidence/1",
+  "state": "HELD_NOT_ADMITTED",
+  "actual_source_commit": "ca4966745fa44f1baddd08613702db023d83fe60",
+  "actual_selected_tests": 14,
+  "actual_test_result": "PASSED",
+  "incoming_proof_sha256": "b2bb7ec2803f0906e25e0f7630ccb351b5d7a2d9fceaf9ac2b1272cd917201f0",
+  "owner_refusal": "absence lacks explicit owning host lookup",
+  "absent_inputs": [
+    {
+      "path": ".github/scripts/_artifactmanifestlib.py",
+      "path_style": "windows"
+    },
+    {
+      "path": ".github/scripts/_gitexec.py",
+      "path_style": "windows"
+    },
+    {
+      "path": "core/pysrc/_boundedproc.py",
+      "path_style": "windows"
+    },
+    {
+      "path": "core/pysrc/_contextverificationlib.py",
+      "path_style": "windows"
+    },
+    {
+      "path": "core/pysrc/_immutable_git_blobs.py",
+      "path_style": "windows"
+    },
+    {
+      "path": "core/pysrc/check_state_contracts_integration.py",
+      "path_style": "windows"
+    },
+    {
+      "path": "core/pysrc/major_readiness.py",
+      "path_style": "windows"
+    }
+  ],
+  "ledger_changes": 0,
+  "reason": "The current canonical absence profile supports owning hostapi/_host lookup only. At least core/pysrc/_immutable_git_blobs.py can alter resolution after _contextverificationlib prepends core/pysrc; moving facts to non-admission diagnostics would conceal a causal dependency.",
+  "next": "Add a bounded explicit Python import-lookup profile in the shared admission owner, regression-test original absence/current-shadow/refused-read behavior, then execute affected current-source P02 checks and admit only valid successors. Do not weaken the reader or discard absence facts."
+}

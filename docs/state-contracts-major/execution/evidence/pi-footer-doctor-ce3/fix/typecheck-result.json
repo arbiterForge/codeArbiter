@@ -1,0 +1,28 @@
+{
+  "schema": "codearbiter.original-command-result/1",
+  "actual_source_epoch": "ce3a4a91+Temp source/test fix overlay",
+  "command": {
+    "label": "typecheck",
+    "argv": [
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools",
+    "exit_code": 0,
+    "seconds": 2.23204400006216
+  },
+  "streams": {
+    "stdout": {
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\typecheck.stdout",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "stderr": {
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\typecheck.stderr",
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "limits": "Original empty stdout/stderr remain inTemp; exact original command result is also retained in commands.json. Not Root later combined typecheck."
+}

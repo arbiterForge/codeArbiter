@@ -81,6 +81,9 @@ func label(s string) string {
 type writer struct {
 	b bytes.Buffer
 	d *model.Document
+	// Parse alone can compare the exact pre-fix path-list grammar. New writes
+	// always use the corrected profile; no model or renderer identity changes.
+	legacyPaths bool
 }
 
 func (w *writer) text(s string) { w.b.WriteString(esc(s)) }
@@ -150,7 +153,16 @@ func (w *writer) value(v any, k string) {
 			w.raw(`</code></pre>`)
 			return
 		}
-		if len(x) > 0 && k == "paths" {
+		pathTable := len(x) > 0 && k == "paths"
+		if pathTable && !w.legacyPaths {
+			for _, item := range x {
+				if _, ok := item.(map[string]any); !ok {
+					pathTable = false
+					break
+				}
+			}
+		}
+		if pathTable {
 			w.raw(`<div class="table-wrap"><table><thead><tr><th scope="col">Action</th><th scope="col">Repository path</th></tr></thead><tbody>`)
 			for _, item := range x {
 				m := model.M(item)
@@ -257,6 +269,12 @@ func (w *writer) record(m map[string]any, k string) {
 		w.raw(`<span class="badge">`)
 		if state == "DONE" {
 			w.text("Implementation complete (checks not assessed)")
+		} else if state == "STALE" && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.text("Legacy unresolved (STALE)")
+		} else if state == "REVIEW" && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.text("Implementation ready (checks not assessed)")
+		} else if state == "ACCEPTED" && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.text("Historical ACCEPTED (evidence not assessed)")
 		} else {
 			w.text(state)
 		}
@@ -268,10 +286,13 @@ func (w *writer) record(m map[string]any, k string) {
 	w.raw(`</div>`)
 	w.fields(m, skip)
 	if r.Kind == "tasks" {
+		if model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.ProgressVersion) {
+			w.value(model.TaskProgress(w.d, id), "recorded_progress")
+		}
 		w.raw(`<details><summary>Execution record</summary>`)
 		w.value(model.M(model.M(w.d.Data["execution"])["tasks"])[id], "execution")
 		w.raw(`</details>`)
-		if model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
+		if model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.SchemaVersion) {
 			checks, bounded := model.TaskCheckAssessments(w.d, nil, id)
 			if len(checks) > 0 {
 				w.raw(`<details><summary>Reported command checks (not independently verified)</summary>`)
@@ -283,7 +304,16 @@ func (w *writer) record(m map[string]any, k string) {
 			}
 		}
 	}
-	if r.Kind == "prerequisites" && !r.Retired && model.S(w.d.Data["schema_version"]) == model.SchemaVersion {
+	if r.Retired && model.S(m["original_kind"]) == "tasks" {
+		// A typed retired task keeps its reported checks as history only; it
+		// has no live execution state and drives no scheduling.
+		if history := model.A(model.M(model.M(w.d.Data["execution"])["task_check_observations"])[id]); len(history) > 0 {
+			w.raw(`<details><summary>Retained command checks of this retired task (history, not independently verified)</summary>`)
+			w.value(history, "retained_task_checks")
+			w.raw(`</details>`)
+		}
+	}
+	if r.Kind == "prerequisites" && !r.Retired && model.VersionAtLeast(model.S(w.d.Data["schema_version"]), model.SchemaVersion) {
 		w.raw(`<details><summary>Recorded prerequisite assessment</summary>`)
 		assessment := model.PrerequisiteAssessment(w.d, m)
 		// Do not repeat the symbol's id as an HTML anchor in this projection.
@@ -339,6 +369,10 @@ func (w *writer) block(m map[string]any) {
 }
 func Render(d *model.Document) ([]byte, error) { return render(d, 0) }
 func render(d *model.Document, capacity int) ([]byte, error) {
+	return renderProfile(d, capacity, false)
+}
+
+func renderProfile(d *model.Document, capacity int, legacyPaths bool) ([]byte, error) {
 	if e := d.VerifyIntegrity(); e != nil {
 		return nil, e
 	}
@@ -357,7 +391,7 @@ func render(d *model.Document, capacity int) ([]byte, error) {
 	}
 	version := model.S(d.Data["schema_version"])
 	historical := version == "0.3.0" || version == "0.3.1"
-	w := writer{d: d}
+	w := writer{d: d, legacyPaths: legacyPaths}
 	if capacity > 0 {
 		w.b.Grow(capacity)
 	}
@@ -509,7 +543,17 @@ func Parse(b []byte) (*model.Document, error) {
 		return nil, e
 	}
 	if !bytes.Equal(expected, b) {
-		return nil, fault.New("RENDER_DRIFT", "HTML view differs from its validated model; use explicit repair preview, never an implicit rewrite")
+		// One finite historical profile, not an HTML/DOM or model-only fallback:
+		// compare the complete canonical document with only the old paths-list
+		// rendering. Container, stylesheet, markers and every other byte remain
+		// bound to the same validated model. Reading never rewrites the input.
+		legacy, err := renderProfile(d, len(b), true)
+		if err != nil {
+			return nil, err
+		}
+		if !bytes.Equal(legacy, b) {
+			return nil, fault.New("RENDER_DRIFT", "HTML view differs from its validated model; use explicit repair preview, never an implicit rewrite")
+		}
 	}
 	return d, nil
 }

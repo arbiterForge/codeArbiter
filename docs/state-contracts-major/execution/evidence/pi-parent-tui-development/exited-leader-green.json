@@ -1,0 +1,45 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-pi-d07-owned-group-successor-espo5h8v\\\\candidate\\\\.github\\\\scripts');suite=unittest.defaultTestLoader.loadTestsFromNames(['test_pi_parent_tui_observation.OwnedProcessCleanupTests']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate",
+  "exit_code": 0,
+  "duration_seconds": 0.1187637000111863,
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "before": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\pi_parent_tui_observation.py": "82d9d22e5106de2fdaace521c86fee8f2e592e8d79f7cb496e615e9d89e3e3c7",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py": "9c8002b92b6855660b9d5fe6e66d088989e72b2a87278297cf3589d673b11f03",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "after": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\pi_parent_tui_observation.py": "82d9d22e5106de2fdaace521c86fee8f2e592e8d79f7cb496e615e9d89e3e3c7",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py": "9c8002b92b6855660b9d5fe6e66d088989e72b2a87278297cf3589d673b11f03",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "source_tool_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "66b614974c2d235e8a52668370051594153684678a03f7e6011f616850203b29"
+}

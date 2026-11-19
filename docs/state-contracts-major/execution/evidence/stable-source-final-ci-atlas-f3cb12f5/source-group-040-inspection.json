@@ -1,0 +1,887 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-040",
+  "positive_input_join": {
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": {
+      "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "previous_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+      "bytes": 5797,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+        "bytes": 5797
+      }
+    },
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "previous_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": {
+      "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "previous_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+      "bytes": 3015,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+        "bytes": 3015
+      }
+    },
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+      "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "previous_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+      "bytes": 2450,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+        "bytes": 2450
+      }
+    },
+    ".github/scripts/_releaselib.py": {
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "previous_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "bytes": 22106,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+        "bytes": 22106
+      }
+    },
+    ".github/scripts/check_auto_release_candidate.py": {
+      "sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "previous_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "bytes": 11331,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+        "bytes": 11331
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    ".github/workflows/release.yml": {
+      "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "previous_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "bytes": 25073,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+        "bytes": 25073
+      }
+    },
+    "core/pysrc/_releaselib.py": {
+      "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "previous_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "bytes": 211540,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+        "bytes": 211540
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "previous_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "closed_namespace_review": {
+    "profile": {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows"
+    },
+    "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+    "current_source": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+    "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+    "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+    "entries_before": 281,
+    "entries_now": 284,
+    "added": [
+      {
+        "path": ".github/scripts/site_vitest_observation.py",
+        "sha256_at_review": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+        "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+      },
+      {
+        "path": ".github/scripts/test_pi_payload_identity.py",
+        "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+        "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+      },
+      {
+        "path": ".github/scripts/test_site_vitest_observation.py",
+        "sha256_at_review": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+        "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+      }
+    ],
+    "negative_scope": "No old namespace member, mode or object class changed. The three new named entry points are explicitly routed, while fixture/module lookup for the assessed predicates remains owned by its reviewed path. The digest binds names, object classes and modes."
+  },
+  "current_owner_delta_review": {
+    "scope": "Automatic per-target candidate validation and release gate jobs are byte-identical. Independently selected release workflows and helper predicates are unchanged.",
+    "workflow_callsite_join": {
+      "auto-release-candidate": {
+        "previous_sha256": "b6d116b3f2673ae729bcfcf09a9204e7b9dc9e45a347409fda53399f011c7a6c",
+        "current_sha256": "b6d116b3f2673ae729bcfcf09a9204e7b9dc9e45a347409fda53399f011c7a6c",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "ci-passed": {
+        "previous_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_sha256": "81001122248ea9a598041073e239f01f3f2f6d68e3c350db7a00f4fa88bc019b",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C15",
+      "frozen_record": {
+        "machine_id": "C15",
+        "name": "Automatic release candidate intent and pre-tag enforcement",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "R-01",
+          "R-02",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "R-01",
+          "R-02",
+          "R-03",
+          "R-04"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 5,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/workflows/release.yml"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-22",
+          "SEQ-23",
+          "SEQ-24"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "392ad8f4f16f798cc5be17b19f71dcb6d1ce16b71df466442e0f41cd9504301e",
+      "group": "source-group-040",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Automatic release candidate intent and pre-tag enforcement. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+          "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C15:01",
+      "frozen_record": {
+        "transition_id": "C15:01",
+        "machine_id": "C15",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "candidate",
+          "from": "candidate",
+          "event": "evaluate target declarations and versions",
+          "guard": "complete declarations, manifests agree at exact commit; no manifest behind latest stable tag",
+          "to": "already-current target or new target intent",
+          "effects": "Compute per-target eligibility from tag precedence.",
+          "failure_retry": "Missing surface, malformed declaration, inconsistent manifests or behind-tag version rejects entire check.",
+          "source": [
+            {
+              "path": ".github/scripts/check_auto_release_candidate.py",
+              "symbol": "evaluate_candidate",
+              "lines": [
+                122,
+                187
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+            }
+          ],
+          "transition_id": "C15:01"
+        },
+        "task_ids": [
+          "R-01",
+          "R-02",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-22",
+          "SEQ-23",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8d758a684aaa9687d907772f0013e8239cd6a94bf8883cd60f2dd50780fc8881",
+      "group": "source-group-040",
+      "assessment": "Exact target declaration/manifests/tag precedence remain complete.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+          "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C15:01",
+        "frozen_row_sha256": "8d758a684aaa9687d907772f0013e8239cd6a94bf8883cd60f2dd50780fc8881",
+        "literal": {
+          "event": "evaluate target declarations and versions",
+          "guard": "complete declarations, manifests agree at exact commit; no manifest behind latest stable tag",
+          "effects": "Compute per-target eligibility from tag precedence.",
+          "failure_retry": "Missing surface, malformed declaration, inconsistent manifests or behind-tag version rejects entire check."
+        },
+        "actual_current_interpretation": "Exact target declaration/manifests/tag precedence remain complete.",
+        "witness_ids": [
+          "w55"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C15:02",
+      "frozen_record": {
+        "transition_id": "C15:02",
+        "machine_id": "C15",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "already-current target",
+          "from": "already-current target",
+          "event": "evaluate intent",
+          "guard": "manifest not newer than latest target tag",
+          "to": "ineligible but accepted check",
+          "effects": "Skip new-intent checks for that target.",
+          "failure_retry": "No publication authorization is created by this row.",
+          "source": [
+            {
+              "path": ".github/scripts/check_auto_release_candidate.py",
+              "symbol": "evaluate_candidate",
+              "lines": [
+                122,
+                187
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+            }
+          ],
+          "transition_id": "C15:02"
+        },
+        "task_ids": [
+          "R-01",
+          "R-02",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-22",
+          "SEQ-23",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "cdc844114b8302b05c5a82681390984cd51f51f92331cd426e40ab0daa4d9611",
+      "group": "source-group-040",
+      "assessment": "Already-current targets skip new-intent checks without publication authorization.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+          "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C15:02",
+        "frozen_row_sha256": "cdc844114b8302b05c5a82681390984cd51f51f92331cd426e40ab0daa4d9611",
+        "literal": {
+          "event": "evaluate intent",
+          "guard": "manifest not newer than latest target tag",
+          "effects": "Skip new-intent checks for that target.",
+          "failure_retry": "No publication authorization is created by this row."
+        },
+        "actual_current_interpretation": "Already-current targets skip new-intent checks without publication authorization.",
+        "witness_ids": [
+          "w56"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C15:03",
+      "frozen_record": {
+        "transition_id": "C15:03",
+        "machine_id": "C15",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "new target intent",
+          "from": "new target intent",
+          "event": "bind changelog intent",
+          "guard": "latest first-parent changelog change carries same version and declared release surfaces unchanged through candidate",
+          "to": "eligible",
+          "effects": "Authorize candidate as bound release intent.",
+          "failure_retry": "Payload/artifact/manifest drift after intent rejects; need new committed intent.",
+          "source": [
+            {
+              "path": ".github/scripts/check_auto_release_candidate.py",
+              "symbol": "evaluate_candidate",
+              "lines": [
+                122,
+                187
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/check_auto_release_candidate.py"
+            }
+          ],
+          "transition_id": "C15:03"
+        },
+        "task_ids": [
+          "R-01",
+          "R-02",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-22",
+          "SEQ-23",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "29c6a2247ad773c01e83624d29001f4139e95ddce8b26728524b1d3a50541be7",
+      "group": "source-group-040",
+      "assessment": "New intent retains first-parent changelog and unchanged release-surface binding.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+          "sha256": "21022b51287eb96347cef7abb2dc014867944b64501e4f554383735122188df2",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C15:03",
+        "frozen_row_sha256": "29c6a2247ad773c01e83624d29001f4139e95ddce8b26728524b1d3a50541be7",
+        "literal": {
+          "event": "bind changelog intent",
+          "guard": "latest first-parent changelog change carries same version and declared release surfaces unchanged through candidate",
+          "effects": "Authorize candidate as bound release intent.",
+          "failure_retry": "Payload/artifact/manifest drift after intent rejects; need new committed intent."
+        },
+        "actual_current_interpretation": "New intent retains first-parent changelog and unchanged release-surface binding.",
+        "witness_ids": [
+          "w57",
+          "w58"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/release27-ci-callsite-revalidation/C15-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w13",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          472,
+          513
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w13",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          472,
+          513
+        ],
+        "current_spans": [
+          [
+            472,
+            513
+          ]
+        ],
+        "sha256_of_LF_span": "d878d7d44fa806c6a1ff07198c920bc9b8b0f162c21c0e9c0ef0c517ed72d851",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          472,
+          513
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w33",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          31,
+          63
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w33",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          31,
+          63
+        ],
+        "current_spans": [
+          [
+            31,
+            63
+          ]
+        ],
+        "sha256_of_LF_span": "5105f6969e75baad3743f95b19291e0a7e6fd594ae1cf11a6aa32aede72b4a60",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          31,
+          63
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w55",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          200,
+          237
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w55",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          200,
+          237
+        ],
+        "current_spans": [
+          [
+            200,
+            237
+          ]
+        ],
+        "sha256_of_LF_span": "967e8ff21047827a9b545587e376f70ddae905a8d1f5ce6fb963b04f3ef1f8be",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          200,
+          237
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    {
+      "witness_id": "w56",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          224,
+          239
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w56",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          224,
+          239
+        ],
+        "current_spans": [
+          [
+            224,
+            239
+          ]
+        ],
+        "sha256_of_LF_span": "eb4d1f561f58df848a668b9e13f7c8ce313da5042e18cba17039b01c47f58589",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          224,
+          239
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    {
+      "witness_id": "w57",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          89,
+          98
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w57",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          89,
+          98
+        ],
+        "current_spans": [
+          [
+            89,
+            98
+          ]
+        ],
+        "sha256_of_LF_span": "158d6baf5c359e8cb23c378b593b5a860008e1b2281f6247f2e406bf4752b5a5",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          89,
+          98
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    {
+      "witness_id": "w58",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          241,
+          265
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w58",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          241,
+          265
+        ],
+        "current_spans": [
+          [
+            241,
+            265
+          ]
+        ],
+        "sha256_of_LF_span": "f65f6fb8c9b6f5d0714a125c91bb49a971a71b7f6d0270550ee023f3fe4a2dde",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          241,
+          265
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    {
+      "witness_id": "w59",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          101,
+          197
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w59",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          101,
+          197
+        ],
+        "current_spans": [
+          [
+            101,
+            197
+          ]
+        ],
+        "sha256_of_LF_span": "e5507260c47b087ef4730dcb01f7d2720e2df6857aa92a02abb7b0382a5e683a",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          101,
+          197
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    {
+      "witness_id": "w60",
+      "path": ".github/workflows/release.yml",
+      "actual0ef_spans": [
+        [
+          178,
+          191
+        ]
+      ],
+      "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+      "prior": {
+        "id": "w60",
+        "path": ".github/workflows/release.yml",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          178,
+          191
+        ],
+        "current_spans": [
+          [
+            178,
+            191
+          ]
+        ],
+        "sha256_of_LF_span": "476cf91bb6bb8341e04ce2217aa983ec6750be1b69fbf2e8105e0ea98359afdb",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          178,
+          191
+        ]
+      ],
+      "current_f3_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+    },
+    {
+      "witness_id": "w61",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          101,
+          122
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w61",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          101,
+          122
+        ],
+        "current_spans": [
+          [
+            101,
+            122
+          ]
+        ],
+        "sha256_of_LF_span": "f75d3674cc8762d245161a9357ea267e55c53c9ff8a7bfaa771adf019e3333c4",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          101,
+          122
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    },
+    {
+      "witness_id": "w62",
+      "path": ".github/scripts/check_auto_release_candidate.py",
+      "actual0ef_spans": [
+        [
+          174,
+          197
+        ]
+      ],
+      "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+      "prior": {
+        "id": "w62",
+        "path": ".github/scripts/check_auto_release_candidate.py",
+        "old_source": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+        "old_span": [
+          174,
+          197
+        ],
+        "current_spans": [
+          [
+            174,
+            197
+          ]
+        ],
+        "sha256_of_LF_span": "1f368a27f371bf0973ca8c302a5ad15399da2cd069bca046afa5c6042e9ebe3c",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          174,
+          197
+        ]
+      ],
+      "current_f3_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

@@ -1,0 +1,1861 @@
+[
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "claude",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "claude",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "8f942d17bf349bff0ce5aacf4c5c2fe53634deb242143f88f0da0533a8c82755",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/claude/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "claude",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "883a4ed3fd29ca5e3778b898ea6b5d2d466d5b5388dc880d43278b18d98ed937",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/claude/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "claude",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "450e04991ec5a8eb879c5e9328b283fdb4c4585f24c53091419e4fbd5f796876",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/claude/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "codex",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "e5ebe994870cde7c94809dcebbe488036ae1e7d734ef760b734bc9ac54f76863",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "completed-effects.json": {
+        "sha256": "f75d933a6c4baba633c3f2b45fd943cf140ca2080c7e28e7f9989aed8b72f4a0",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "codex",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "e5ebe994870cde7c94809dcebbe488036ae1e7d734ef760b734bc9ac54f76863",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "a73408f55b4a714ceaa591c6f55872c14e7f64363a9a45f7ca3cc599a28b31d0",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/codex/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "369331b54845cc069db52a12c0c1efca24318358ae87d757b577bf3cb561c36c",
+        "text": "{\n  \"channel\": \"ca-codex-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"codex\",\n  \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-codex\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "369331b54845cc069db52a12c0c1efca24318358ae87d757b577bf3cb561c36c",
+        "text": "{\n  \"channel\": \"ca-codex-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"codex\",\n  \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-codex\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "f75d933a6c4baba633c3f2b45fd943cf140ca2080c7e28e7f9989aed8b72f4a0",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "codex",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "e5ebe994870cde7c94809dcebbe488036ae1e7d734ef760b734bc9ac54f76863",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "1e1ef5ea7eb383410dfb07ad88bbf726c825549f8330c8f1fc7718071ab90b3c",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/codex/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "369331b54845cc069db52a12c0c1efca24318358ae87d757b577bf3cb561c36c",
+        "text": "{\n  \"channel\": \"ca-codex-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"codex\",\n  \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-codex\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "369331b54845cc069db52a12c0c1efca24318358ae87d757b577bf3cb561c36c",
+        "text": "{\n  \"channel\": \"ca-codex-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"codex\",\n  \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-codex\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "f75d933a6c4baba633c3f2b45fd943cf140ca2080c7e28e7f9989aed8b72f4a0",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "codex",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "e5ebe994870cde7c94809dcebbe488036ae1e7d734ef760b734bc9ac54f76863",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "7af80c4334ab16477b72e32141d602940e7f6ebab3a56f0b41f223d4355bf6fb",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/codex/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "369331b54845cc069db52a12c0c1efca24318358ae87d757b577bf3cb561c36c",
+        "text": "{\n  \"channel\": \"ca-codex-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"codex\",\n  \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-codex\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "369331b54845cc069db52a12c0c1efca24318358ae87d757b577bf3cb561c36c",
+        "text": "{\n  \"channel\": \"ca-codex-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"codex\",\n  \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-codex\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "f75d933a6c4baba633c3f2b45fd943cf140ca2080c7e28e7f9989aed8b72f4a0",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "pi",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "b0331d43616a4aa6a973fe25ee994ae8ca4738818f007f1535a6c7036d1aaf54",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "completed-effects.json": {
+        "sha256": "ae1c14460cd91b70054cf42fb13fa8c610b2e8715c8dea51f5a80fb6c3d6f42c",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "pi",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "b0331d43616a4aa6a973fe25ee994ae8ca4738818f007f1535a6c7036d1aaf54",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "71f8663c5f829ac3e220835d982d5f326a297998ddbf612bc961eb2940f6a9ab",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/pi/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "e792bc16ffa4c0b377b3134b520a25e734e45f3ec0edcb078926d76758dc33f2",
+        "text": "{\n  \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"pi\",\n  \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-pi\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "e792bc16ffa4c0b377b3134b520a25e734e45f3ec0edcb078926d76758dc33f2",
+        "text": "{\n  \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"pi\",\n  \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-pi\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "ae1c14460cd91b70054cf42fb13fa8c610b2e8715c8dea51f5a80fb6c3d6f42c",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "pi",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "b0331d43616a4aa6a973fe25ee994ae8ca4738818f007f1535a6c7036d1aaf54",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "2343233ba1ea544db9a34521325b1c2784fbcd23a9dc0a39f673a4b2b2829390",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/pi/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "e792bc16ffa4c0b377b3134b520a25e734e45f3ec0edcb078926d76758dc33f2",
+        "text": "{\n  \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"pi\",\n  \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-pi\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "e792bc16ffa4c0b377b3134b520a25e734e45f3ec0edcb078926d76758dc33f2",
+        "text": "{\n  \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"pi\",\n  \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-pi\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "ae1c14460cd91b70054cf42fb13fa8c610b2e8715c8dea51f5a80fb6c3d6f42c",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "pi",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "b0331d43616a4aa6a973fe25ee994ae8ca4738818f007f1535a6c7036d1aaf54",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "b68d962a9833abc8fb221af6707b84581b093ac50140f5eade1e1b73158a4330",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/pi/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "e792bc16ffa4c0b377b3134b520a25e734e45f3ec0edcb078926d76758dc33f2",
+        "text": "{\n  \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"pi\",\n  \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-pi\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "e792bc16ffa4c0b377b3134b520a25e734e45f3ec0edcb078926d76758dc33f2",
+        "text": "{\n  \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"pi\",\n  \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-pi\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "ae1c14460cd91b70054cf42fb13fa8c610b2e8715c8dea51f5a80fb6c3d6f42c",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "none",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "6ad455bfce2dfc4aa96781315651ffa0562c13ee7d0bed4a5b2ff6073a5f99e7",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": []}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "completed-effects.json": {
+        "sha256": "8b24af5c710a48413ff8e059130884ccb4c76367901500d3893e0a73fd8828b6",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"none\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "none",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "6ad455bfce2dfc4aa96781315651ffa0562c13ee7d0bed4a5b2ff6073a5f99e7",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": []}}"
+      },
+      "calls.jsonl": {
+        "sha256": "5bdf9dbe762c2abc47c1c26ba4ccbb2341934324eb552aad8e7f8163d334c772",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/none/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "c67988202d7f59c5e9938414f877dc37ce2fec1e49aad1ce644ed5c1ac98ea16",
+        "text": "{\n  \"channel\": \"none\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"none\",\n  \"package_file\": \"none\",\n  \"package_sha256\": \"none\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-sandbox\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "c67988202d7f59c5e9938414f877dc37ce2fec1e49aad1ce644ed5c1ac98ea16",
+        "text": "{\n  \"channel\": \"none\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"none\",\n  \"package_file\": \"none\",\n  \"package_sha256\": \"none\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-sandbox\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "8b24af5c710a48413ff8e059130884ccb4c76367901500d3893e0a73fd8828b6",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"none\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "none",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "6ad455bfce2dfc4aa96781315651ffa0562c13ee7d0bed4a5b2ff6073a5f99e7",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": []}}"
+      },
+      "calls.jsonl": {
+        "sha256": "6e650d5743bf363d160b369bc53c2c9b8ee8d0598b4c892acf22c321b4081c48",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/none/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "c67988202d7f59c5e9938414f877dc37ce2fec1e49aad1ce644ed5c1ac98ea16",
+        "text": "{\n  \"channel\": \"none\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"none\",\n  \"package_file\": \"none\",\n  \"package_sha256\": \"none\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-sandbox\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "c67988202d7f59c5e9938414f877dc37ce2fec1e49aad1ce644ed5c1ac98ea16",
+        "text": "{\n  \"channel\": \"none\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"none\",\n  \"package_file\": \"none\",\n  \"package_sha256\": \"none\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-sandbox\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "8b24af5c710a48413ff8e059130884ccb4c76367901500d3893e0a73fd8828b6",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"none\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads",
+    "host": "none",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "6ad455bfce2dfc4aa96781315651ffa0562c13ee7d0bed4a5b2ff6073a5f99e7",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": []}}"
+      },
+      "calls.jsonl": {
+        "sha256": "70582a6ceac0a4452e6ec933291ab92c20b4168cd7c065d1315539678c9f1ff9",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpkfqvi9u_/none/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "c67988202d7f59c5e9938414f877dc37ce2fec1e49aad1ce644ed5c1ac98ea16",
+        "text": "{\n  \"channel\": \"none\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"none\",\n  \"package_file\": \"none\",\n  \"package_sha256\": \"none\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-sandbox\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "c67988202d7f59c5e9938414f877dc37ce2fec1e49aad1ce644ed5c1ac98ea16",
+        "text": "{\n  \"channel\": \"none\",\n  \"channel_ref\": \"none\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"none\",\n  \"package_file\": \"none\",\n  \"package_sha256\": \"none\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca-sandbox\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "8b24af5c710a48413ff8e059130884ccb4c76367901500d3893e0a73fd8828b6",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"none\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "claude",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "1fdc25845b75e0e8a2edce010caba27f2b612e3abae5edc49bbee971d30c7fea",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca\", \"host\": \"claude\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"ca-marketplace\", \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "claude",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "::error::attached publication receipt says source_commit='dddddddddddddddddddddddddddddddddddddddd', but this publication is 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'; a conflicting receipt is never replaced\n",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "380f9875fcba59175ba46e3e7092756e4ad032b7f9dd7ae50dc77c0dd6268323",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "1fdc25845b75e0e8a2edce010caba27f2b612e3abae5edc49bbee971d30c7fea",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca\", \"host\": \"claude\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"ca-marketplace\", \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\", \"release_state\": \"published\"}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "1fdc25845b75e0e8a2edce010caba27f2b612e3abae5edc49bbee971d30c7fea",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca\", \"host\": \"claude\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"ca-marketplace\", \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "codex",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "e5ebe994870cde7c94809dcebbe488036ae1e7d734ef760b734bc9ac54f76863",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "42f6a17f80e340706675cc38bffa65933efcabd0be41db8c2ee0ae7d6c5168e9",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-codex\", \"host\": \"codex\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"ca-codex-marketplace\", \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "f75d933a6c4baba633c3f2b45fd943cf140ca2080c7e28e7f9989aed8b72f4a0",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "codex",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "::error::attached publication receipt says source_commit='dddddddddddddddddddddddddddddddddddddddd', but this publication is 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'; a conflicting receipt is never replaced\n",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "e5ebe994870cde7c94809dcebbe488036ae1e7d734ef760b734bc9ac54f76863",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "380f9875fcba59175ba46e3e7092756e4ad032b7f9dd7ae50dc77c0dd6268323",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "42f6a17f80e340706675cc38bffa65933efcabd0be41db8c2ee0ae7d6c5168e9",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-codex\", \"host\": \"codex\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"ca-codex-marketplace\", \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\", \"release_state\": \"published\"}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "42f6a17f80e340706675cc38bffa65933efcabd0be41db8c2ee0ae7d6c5168e9",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-codex\", \"host\": \"codex\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"ca-codex-marketplace\", \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "f75d933a6c4baba633c3f2b45fd943cf140ca2080c7e28e7f9989aed8b72f4a0",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-codex-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "pi",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "b0331d43616a4aa6a973fe25ee994ae8ca4738818f007f1535a6c7036d1aaf54",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "0468fa7d7d7ba1cba50ce5671490650233b3f859a4ab16576f99e8dd05ce3bba",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-pi\", \"host\": \"pi\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\", \"channel_ref\": \"none\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "ae1c14460cd91b70054cf42fb13fa8c610b2e8715c8dea51f5a80fb6c3d6f42c",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "pi",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "::error::attached publication receipt says source_commit='dddddddddddddddddddddddddddddddddddddddd', but this publication is 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'; a conflicting receipt is never replaced\n",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "b0331d43616a4aa6a973fe25ee994ae8ca4738818f007f1535a6c7036d1aaf54",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "380f9875fcba59175ba46e3e7092756e4ad032b7f9dd7ae50dc77c0dd6268323",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "0468fa7d7d7ba1cba50ce5671490650233b3f859a4ab16576f99e8dd05ce3bba",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-pi\", \"host\": \"pi\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\", \"channel_ref\": \"none\", \"release_state\": \"published\"}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "0468fa7d7d7ba1cba50ce5671490650233b3f859a4ab16576f99e8dd05ce3bba",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-pi\", \"host\": \"pi\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\", \"channel\": \"npm:@arbiterforge/ca-pi@1.2.3\", \"channel_ref\": \"none\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "ae1c14460cd91b70054cf42fb13fa8c610b2e8715c8dea51f5a80fb6c3d6f42c",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"arbiterforge-ca-pi-1.2.3.tgz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "none",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "6ad455bfce2dfc4aa96781315651ffa0562c13ee7d0bed4a5b2ff6073a5f99e7",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": []}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "566eaf8ac40e81294f65536a7122e1dcccfa308307387195f8561abb836ec992",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-sandbox\", \"host\": \"none\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"none\", \"package_sha256\": \"none\", \"channel\": \"none\", \"channel_ref\": \"none\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "8b24af5c710a48413ff8e059130884ccb4c76367901500d3893e0a73fd8828b6",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"none\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite",
+    "host": "none",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 1,
+    "stdout": "",
+    "stderr": "::error::attached publication receipt says source_commit='dddddddddddddddddddddddddddddddddddddddd', but this publication is 'aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa'; a conflicting receipt is never replaced\n",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "6ad455bfce2dfc4aa96781315651ffa0562c13ee7d0bed4a5b2ff6073a5f99e7",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": []}}"
+      },
+      "calls.jsonl": {
+        "sha256": "380f9875fcba59175ba46e3e7092756e4ad032b7f9dd7ae50dc77c0dd6268323",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "566eaf8ac40e81294f65536a7122e1dcccfa308307387195f8561abb836ec992",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-sandbox\", \"host\": \"none\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"none\", \"package_sha256\": \"none\", \"channel\": \"none\", \"channel_ref\": \"none\", \"release_state\": \"published\"}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "566eaf8ac40e81294f65536a7122e1dcccfa308307387195f8561abb836ec992",
+        "text": "{\"format\": \"codearbiter.target-publication/0.1.0\", \"target\": \"ca-sandbox\", \"host\": \"none\", \"tag\": \"fixture-v1.2.3\", \"version\": \"1.2.3\", \"source_commit\": \"dddddddddddddddddddddddddddddddddddddddd\", \"package_file\": \"none\", \"package_sha256\": \"none\", \"channel\": \"none\", \"channel_ref\": \"none\", \"release_state\": \"published\"}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "8b24af5c710a48413ff8e059130884ccb4c76367901500d3893e0a73fd8828b6",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"none\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+    "host": "claude",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": null,
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "e5f2d753c95bbb3c3572e7ff1158d4525a6b1503945421b0ed002f575e9405e4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+    "host": "claude",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 57,
+    "stdout": "",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "ab527b871f8eab631dec06ec816756dd03e3e0ae7b4d8ec624ac685769a63f4e",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpst1xkdnd/claude/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "833dac51b8c6fcd95f033cc5513affd307c0cd97572230eef85fbd8d2436eb53",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=codearbiter-publication.json\ncomplete=false\neffects=receipt\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+    "host": "claude",
+    "step": "Observe remote state and plan",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "codearbiter-publication.json",
+    "script_sha256": "cfdfb5e89c8043a98e604066901d3d1fbadc956f6314a8284e52d5f444154473",
+    "returncode": 0,
+    "stdout": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "5eaaacdc4b211920d636cc6d02b8c098fc748f0c45d3796b87c5ab1eb1e3edb8",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpst1xkdnd/claude/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  },
+  {
+    "case": "receipt_shell_candidate.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry",
+    "host": "claude",
+    "step": "Attach the publication receipt",
+    "environment_keys": [
+      "ASSET",
+      "ASSET_SHA256",
+      "CHANNEL_REF",
+      "COMSPEC",
+      "GITHUB_OUTPUT",
+      "GITHUB_REPOSITORY",
+      "GIT_CONFIG_GLOBAL",
+      "GIT_CONFIG_NOSYSTEM",
+      "HOME",
+      "HOST",
+      "MISSING",
+      "PACKAGE_FILE",
+      "PACKAGE_SHA256",
+      "PATH",
+      "PATHEXT",
+      "PYTHONDONTWRITEBYTECODE",
+      "PYTHONUTF8",
+      "RECEIPT_BIN",
+      "RECEIPT_FIXTURE",
+      "RELEASE_ID",
+      "RUNNER_TEMP",
+      "SOURCE_COMMIT",
+      "SYSTEMDRIVE",
+      "SYSTEMROOT",
+      "TAG",
+      "TARGET",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "VERSION",
+      "WINDIR"
+    ],
+    "missing_from_real_plan": "",
+    "script_sha256": "8d4a44d18106faec70d941527404a0ca774d84d16c4a663ef1b1afedbdee9cc3",
+    "returncode": 0,
+    "stdout": "attached receipt names fixture-v1.2.3 at aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\n",
+    "stderr": "",
+    "fixture_files": {
+      "remote.json": {
+        "sha256": "f535ad38f6a3e8b9c5d7377db2f48390cb747b764f131ad614bad4f7ba5ff270",
+        "text": "{\"tag\": \"fixture-v1.2.3\", \"source\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"release\": {\"id\": 7, \"tag_name\": \"fixture-v1.2.3\", \"draft\": false, \"assets\": [{\"name\": \"codearbiter-ca-1.2.3.tar.gz\", \"state\": \"uploaded\", \"digest\": \"sha256:bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\"}]}}"
+      },
+      "calls.jsonl": {
+        "sha256": "6cca81bdc4c09fa1142ce58c4c981c34613c64dce14fdec41b99bd0d20fec9a4",
+        "text": "[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"--method\", \"POST\", \"-H\", \"Content-Type: application/json\", \"--input\", \"C:/Users/brenn/AppData/Local/Temp/ca-publication-receipt-shell-1chriouv/runtime-temp/tmpst1xkdnd/claude/codearbiter-publication.json\", \"https://uploads.github.com/repos/fixture/qualification/releases/7/assets?name=codearbiter-publication.json\"]\r\n[\"gh\", \"auth\", \"setup-git\"]\r\n[\"git\", \"ls-remote\", \"--tags\", \"origin\", \"refs/tags/fixture-v1.2.3\", \"refs/tags/fixture-v1.2.3^{}\"]\r\n[\"gh\", \"api\", \"--paginate\", \"--slurp\", \"repos/fixture/qualification/releases?per_page=100\"]\r\n[\"gh\", \"api\", \"repos/fixture/qualification/releases/7/assets\", \"--jq\", \".[] | select(.name == \\\"codearbiter-publication.json\\\") | .url\"]\r\n[\"gh\", \"api\", \"-H\", \"Accept: application/octet-stream\", \"https://fixture.invalid/assets/receipt\"]\r\n"
+      },
+      "stored-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "readback-receipt.json": {
+        "sha256": "f4f5553d9a193830c2250be90cf3fdbfde09ecf6756e566f6701264fdd478777",
+        "text": "{\n  \"channel\": \"ca-marketplace\",\n  \"channel_ref\": \"cccccccccccccccccccccccccccccccccccccccc\",\n  \"format\": \"codearbiter.target-publication/0.1.0\",\n  \"host\": \"claude\",\n  \"package_file\": \"codearbiter-ca-1.2.3.tar.gz\",\n  \"package_sha256\": \"bbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbbb\",\n  \"release_state\": \"published\",\n  \"source_commit\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\",\n  \"tag\": \"fixture-v1.2.3\",\n  \"target\": \"ca\",\n  \"version\": \"1.2.3\"\n}\n"
+      },
+      "completed-effects.json": {
+        "sha256": "851926f841b244126cae43058203567530d718ce4b519e43343bc74ef2ac42c3",
+        "text": "{\"tag\": \"aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa\", \"package\": \"codearbiter-ca-1.2.3.tar.gz\", \"channel\": \"already-published\", \"npm\": \"already-published\"}"
+      },
+      "output.txt": {
+        "sha256": "690a0c98e37a28eece2cedf1b33359f02aacb5d299392fbd5424818da713add8",
+        "text": "tag=present\nrelease=published\nrelease-id=7\nmissing-assets=\ncomplete=true\neffects=\n"
+      }
+    }
+  }
+]

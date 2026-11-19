@@ -1,0 +1,49 @@
+{
+  "format": "P02-six-python-current-delivery/1",
+  "state": "READY_FOR_ROOT_ADMISSION",
+  "source_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "actual_execution_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "proof": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-six-python-8d04\\integration-fixtures.json",
+    "sha256": "00e889f392c8ab32d69164b0d776341ab057c71f234a8a98c1e66fb4606e77f5",
+    "bytes": 32783
+  },
+  "proposal": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-six-python-8d04\\cas-proposal.json",
+    "sha256": "4c15eaad3cde9d290ca9df4c0fb6d64cafa496af0b2f9648f8b126c220105bce",
+    "bytes": 27159
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-six-python-8d04\\filemap.json",
+    "sha256": "3b02ae867bb910016a1a8c2a94c1fedcca99f6f92de1563dcf98a9c5acd91b7f",
+    "bytes": 5326
+  },
+  "owner_authentication": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-P02-six-python-8d04\\owner-authentication.json",
+    "sha256": "a6d935c19e891331ec0492c52533be8751a7162c4fc6ffb7f0e0344c79d509fa",
+    "bytes": 4689
+  },
+  "actual_checks": {
+    "named_PASS": 14,
+    "selected_SKIP": 0,
+    "seconds": 7.085806499999308,
+    "existing_TESTED_successors": 6,
+    "positive_inputs": 117,
+    "runtime_files": 1905,
+    "typed_python_namespace_profiles": 2,
+    "actual_raw_lookup_absences": 7,
+    "legacy_cache_entries_preserved": 73,
+    "causal_closure_HEAD_index_stable": true
+  },
+  "scope": "Renew exactly six existing TESTED P02 introduced states using the original fourteen actual named methods once. Full original software assertions and active-status semantics retained. No supplementary partition, new IDs, task or machine promotion.",
+  "limits": [
+    "Local Windows fourteen existing disposable Git/workflow software assertions only; no native build, installed host, provider/model, trusted hosted run, publication or whole-program/task/machine qualification.",
+    "Seven observed module-shadow absences remain literal in raw run-start.module_resolution. Their negative causality is represented by the two complete typed Python namespace memberships, not unsupported arbitrary absent_inputs or a hidden scope reduction.",
+    "Git and physical namespace names are not equal: scripts has271 tracked entries versus322 physical, core has98 versus120. All73 extra legacy-cache entries are inventoried, unchanged and preserved; no deletion or broad ignored-byte claim.",
+    "Private PYTHONPYCACHEPREFIX was set before imports, observed in child, and no direct/package untracked shadow was admitted. Actual eight repository module paths/hashes were captured and joined to before/after/Git source.",
+    "Namespace fingerprints cover names/modes/kinds and directories, excluding contents/sizes/object IDs by profile contract. Actual117 read source/frozen inputs remain separately content-pinned.",
+    "The old ca496 unsupported proof remains unadmitted historical raw, not relabeled, overwritten, or presented as a committed active predecessor. Existing admitted old proofs retain their genuine epochs/history.",
+    "Future new proof/raw bytes are prospective metadata only until Root copies/admission-checks/commits them. Fixture ledger/progress hashes are retained raw parameters rather than silently asserting future metadata bytes equal the tested fixture."
+  ],
+  "next": "Root-only canonical copy/full staged P02 admission/commit; no further tests or source changes by author."
+}

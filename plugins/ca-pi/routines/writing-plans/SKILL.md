@@ -119,6 +119,13 @@ requested provider/budget and actual credential boundaries. Do not read
 credential contents or trigger model spending during ordinary authoring.
 HTML farm is disabled; never silently change backends.
 
-Retain real out-of-scope follow-ups using `<plugin-root>/includes/harvest.md`
-when relevant. Do not turn routine drafting into an additional audit program,
+At the first qualifying planning triage finding, use
+`<plugin-root>/includes/harvest.md` to register the exact extractor origin and
+bounded sanitized candidate with `source.workflow: writing-plans:triage`, its
+stable workflow/work run and current source fingerprint. Capture at discovery,
+not only at terminal handoff. Report a failed capture as `durable:false` while
+independent authorized work continues. At existing terminal harvest, reconcile
+unknown effects and resume selected authorized obligations with per-item target
+readback; never claim an unregistered candidate recovered.
+Do not turn routine drafting into an additional audit program,
 mandatory reviewer chain, or repeated approval interview.

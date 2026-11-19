@@ -1,0 +1,109 @@
+{
+ "schema": "bounded-original-windows-pi-diagnostic-projection/1",
+ "source_head": "ebdc46c7bcea01d5c4cb35729ef4e47e5c56fef4",
+ "actual_checkout": "89b4c12d2f400db0df5a428443e7b612c68873bd",
+ "source_tree": "fd977a789573866f82ba29f38a4f5da790f4a956",
+ "run_id": 44092400578,
+ "attempt": 1,
+ "job_id": 134070934127,
+ "artifact_id": 14332724888,
+ "archive_sha256": "4b10398d291facdca15bb946bf0bde56ccdaf7e96fc123f67cbd481206e52e05",
+ "runtime": {
+  "node": "v22.19.0",
+  "platform": "win32",
+  "node_sha256": "995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362"
+ },
+ "native": {
+  "process_id": 1252,
+  "creation_time": 134393962547571943,
+  "identity": "matched",
+  "before": {
+   "state": "running",
+   "exitCode": null
+  },
+  "after": {
+   "state": "running",
+   "exitCode": null
+  },
+  "elapsed_ms": 5002,
+  "outcome": "original-failure"
+ },
+ "SDK_observer": {
+  "status": "cleanup_unknown",
+  "profile": "sdk-v1",
+  "thread_count": 0,
+  "worker_result_payload_present": false,
+  "truncated": false,
+  "diagnostic": {
+   "phase": "sdk-engine-create",
+   "failure": "deadline",
+   "elapsedMs": 4938,
+   "remainingMs": 4937,
+   "operation": null,
+   "exception": null,
+   "errno": null,
+   "winerror": null,
+   "workerSpawned": true,
+   "workerExited": true,
+   "workerReturnCode": 1,
+   "collectedBytes": 519,
+   "cleanupFailure": {
+    "operation": "worker-wait",
+    "exception": "unexpected",
+    "errno": null,
+    "winerror": null
+   },
+   "primaryStatus": "deadline"
+  },
+  "tool_hashes": {
+   "cdb.exe": "e8f7d1e2986e541c82eb7917460e8118e7a262c16e402a5b1333b01f147a0fc3",
+   "dbgeng.dll": "f70a0ae7ebd1c37da334d6b3c388aba107b54b4de869bdbd54a270251145e649",
+   "dbghelp.dll": "3ce12537291b46af6914ea6865f176d9528cd7707c752fca8be96ad2a7562220"
+  },
+  "tool_version": "not-observed",
+  "publisher_signature": "not-verified"
+ },
+ "JS_observer": {
+  "pid": 1252,
+  "reallyExitCallEntered": true,
+  "phases": [
+   {
+    "phase": "started",
+    "elapsed_ms": 0,
+    "stdin_ended": false,
+    "resource_count": 4,
+    "exit_code": null
+   },
+   {
+    "phase": "stdin_end",
+    "elapsed_ms": 1527,
+    "stdin_ended": true,
+    "resource_count": 3,
+    "exit_code": null
+   },
+   {
+    "phase": "session_shutdown_observer",
+    "elapsed_ms": 1528,
+    "stdin_ended": true,
+    "resource_count": 3,
+    "exit_code": null
+   },
+   {
+    "phase": "process_exit",
+    "elapsed_ms": 1529,
+    "stdin_ended": true,
+    "resource_count": 3,
+    "exit_code": 0
+   }
+  ]
+ },
+ "diagnostic_frontier": "Last announced SDK worker phase is sdk-engine-create; no returned engine/attach/thread stack or CDB command execution is proved by these records.",
+ "underlying_Pi_exit_cause": "UNKNOWN",
+ "boundaries": [
+  "JS process_exit/reallyExitCallEntered records do not prove entry into native implementation or OS process death.",
+  "Matched native handles observe targetRUNNING before/after5002ms; no native threads/stack captured.",
+  "SDK tool hashes are actual identities, not observed version or publisher-signature verification.",
+  "Four small warmup members remain unread; no warmup success borrowed for targetPID.",
+  "Original archive authenticated using unchanged validate_upload AST +pinnedjob/uploader/logdigest; onlytwoannouncedmembers read, no extract or execution."
+ ]
+}

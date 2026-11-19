@@ -1,0 +1,20 @@
+test_cleanup_refusal_preserves_original_output_overflow (test_artifact_authority_adapter.WindowsJobRundownTest.test_cleanup_refusal_preserves_original_output_overflow) ... ok
+test_cleanup_refusal_preserves_original_timeout (test_artifact_authority_adapter.WindowsJobRundownTest.test_cleanup_refusal_preserves_original_timeout) ... ok
+test_dropped_creation_message_refuses_despite_zero_accounting (test_artifact_authority_adapter.WindowsJobRundownTest.test_dropped_creation_message_refuses_despite_zero_accounting) ... ok
+test_fast_exit_output_error_survives_cleanup_unknown (test_artifact_authority_adapter.WindowsJobRundownTest.test_fast_exit_output_error_survives_cleanup_unknown) ... ok
+test_gone_member_requires_paired_private_exit_history (test_artifact_authority_adapter.WindowsJobRundownTest.test_gone_member_requires_paired_private_exit_history) ... ok
+test_invalid_completion_key_refuses (test_artifact_authority_adapter.WindowsJobRundownTest.test_invalid_completion_key_refuses) ... ok
+test_job_rundown_timeout_is_bounded_and_refuses (test_artifact_authority_adapter.WindowsJobRundownTest.test_job_rundown_timeout_is_bounded_and_refuses) ... ok
+test_nt_lookup_accepts_only_closed_invalid_cid_not_access_denial (test_artifact_authority_adapter.WindowsJobRundownTest.test_nt_lookup_accepts_only_closed_invalid_cid_not_access_denial) ... ok
+test_ordinary_short_lived_child_is_not_a_blanket_refusal (test_artifact_authority_adapter.WindowsJobRundownTest.test_ordinary_short_lived_child_is_not_a_blanket_refusal) ... ok
+test_pid_lookup_bound_to_another_job_is_refused_without_pid_mutation (test_artifact_authority_adapter.WindowsJobRundownTest.test_pid_lookup_bound_to_another_job_is_refused_without_pid_mutation) ... ok
+test_redirected_descendant_is_gone_before_first_cwd_cleanup (test_artifact_authority_adapter.WindowsJobRundownTest.test_redirected_descendant_is_gone_before_first_cwd_cleanup) ... ok
+test_rundown_queries_after_releasing_leader_and_waits_for_zero (test_artifact_authority_adapter.WindowsJobRundownTest.test_rundown_queries_after_releasing_leader_and_waits_for_zero) ... ok
+test_unavailable_job_rundown_query_refuses (test_artifact_authority_adapter.WindowsJobRundownTest.test_unavailable_job_rundown_query_refuses) ... ok
+test_windows_job_object_runs_child_with_bounded_native_supervisor (test_artifact_authority_adapter.AuthorityAdapterTest.test_windows_job_object_runs_child_with_bounded_native_supervisor) ... ok
+test_fast_exit_oversized_output_is_rejected_after_drain (test_artifact_authority_adapter.AuthorityAdapterTest.test_fast_exit_oversized_output_is_rejected_after_drain) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.668s
+
+OK

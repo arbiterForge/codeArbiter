@@ -1,0 +1,45 @@
+{
+ "result": "PASS_PRIVATE_SOURCE_PREVIEW",
+ "proposals": [
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\delivery.json",
+   "sha256": "52bb7c1c3860e50d3b22224e676a70b1099d99bd7559f078c8ac9314302fb9d6",
+   "cells": 67,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-lifecycle-current-source-0d73-okllzdpx\\delivery.json",
+   "sha256": "0101d4401cae893557db5d136831fdf2422a161e3a04aa92b287352153752475",
+   "cells": 94,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\delivery.json",
+   "sha256": "19811ba0180c650afb54933616d80dabb45a3405195af9ed3e301572885dd21c",
+   "cells": 22,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  },
+  {
+   "delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-generator-pi-final-source-cfa8-bi321e8t\\delivery.json",
+   "sha256": "2a00c327baed2d7172bd310a4476b0115355a3e09baf7537bf63c868aa536f40",
+   "cells": 22,
+   "skipped_old_epoch_cells": [],
+   "skip_reason": null
+  }
+ ],
+ "adoption_sha256": "bbb7172094aa986b2bf902b301a39eaf44ea0db8f1f85a916f812b4b6daab870",
+ "strict_projection_sha256": "e74d416eb40ec4443a79b268ce1d65966d3174a79347f78c96a7f50eb9f8b290",
+ "cells": 205,
+ "records": 717,
+ "planned": {
+  "findings": 49,
+  "machines": 12,
+  "transitions": 56,
+  "total": 117
+ },
+ "root_state_unchanged": true,
+ "full_owner_called": false
+}

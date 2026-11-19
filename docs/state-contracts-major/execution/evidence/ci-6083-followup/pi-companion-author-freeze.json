@@ -1,0 +1,46 @@
+{
+  "state": "FROZEN_DIAGNOSTIC_ONLY_LOCAL4PASS_HOSTED_OBSERVATION_PENDING",
+  "author": "/root/pi_program",
+  "source": {
+    ".github/scripts/test_pi_package.py": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9"
+  },
+  "source_diff_sha256": "53976e12e9bd2ef14a514931cf57349dbcf19da76f2727e6604a2baf15ec169c",
+  "base_commit": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+  "mini_spec": [
+    "Preserve exact original raw compatibility method, CLI argv,30s bound and qualification role.",
+    "Separate passive observed raw companion captures own EOF/shutdown/process-exit phases and exact admitted Node/CLI/direct-runtime hashes without requests/providers/trust/exit substitution.",
+    "Closed bounded diagnostic receipt is exclusive; unknown strings/private fields cannot escape, and recording never drives the runtime or settles a hanging process."
+  ],
+  "changes": [
+    "Two test-only helpers: bounded streaming SHA256 identity of Node binary/CLI/direct entry/actual imported RPC module; existing safe trace projection into separately labeled exclusive artifact. No complete imported-runtime-closure attestation claimed.",
+    "Two new test methods only: observed raw companion and identity/artifact bounded closed negative controls. Existing all66 methods and all pre-existing top-level helper function ASTs independently unchanged.",
+    "Failure observation is attempted in finally with observed-failure label; successful capture uses observed-pass, explicit passive-observed-raw-companion route. Existing original failure-only artifact owner unchanged."
+  ],
+  "new_selectors": [
+    "PiPackageTests.test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases",
+    "PiPackageTests.test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed"
+  ],
+  "actual_checks": {
+    "focused": "4PASS4.737s; outer4.969s. New2 + original raw once + existing EOF non-forced-exit passive test once. Exact argv/raw outputs retained.",
+    "runtime": "Windows Node22.19.0/Pi1.5.0/Python3.14.6, credential-blind children/private homes; no paid provider/network or package-source rebuild.",
+    "inputs": "HEAD,index,test/resolver SHA before-after identical; ResourceWarning enabled, no warnings.",
+    "phase_capture": "Actual observed companion: started2ms,stdin_end961ms,session_shutdown962ms,process_exit963ms; exit0, OS exit still required by unchanged10/30s owner. This trace is only this new local observed case.",
+    "negative_controls": "Owned synthetic non-executable identity files match exact bytes; unsafe relative runtime import and oversized entry refuse; arbitrary identity extras drop to null; private trace fields/resource names excluded/projected Other; exclusive receipt names differ; no diagnostics env returns none.",
+    "diffcheck": "PASS",
+    "preservation": "All66 existing methods and all existing module helpers AST-identical; no production extension/transport/bundle changes."
+  },
+  "limits": [
+    "Original6083 hosted raw failure remains UNRESOLVED; no product/runtime fix or upstream-flake diagnosis. New local observed pass cannot replace original raw qualification.",
+    "Actual new hosted Windows3.15 phase capture/timing remains pending replacementCI.",
+    "Existing original raw test was also executed earlier under old unchanged-source owner and passed12.299s; that historical run remains separate, not relabeled new code proof.",
+    "Only this test source and Temp evidence changed; no Git index/commit/push/root metadata/markers. Root owns exact new population/partition registration and independent review."
+  ],
+  "retained_sha256": {
+    "companion-source.diff": "53976e12e9bd2ef14a514931cf57349dbcf19da76f2727e6604a2baf15ec169c",
+    "companion-result.json": "9b446e119da7b1a2f94f76431f381afe1d78ccb4127d820862c5e88b30bf629b",
+    "companion.stderr": "b9168216432148f0b7cb465ad18de33df192f5ef44863df7b6de207ed201cadf",
+    "companion-inputs-before.json": "f4d29058a9abf01eef2abc8615bc50bd5d588a5df0333c69a024fdbb0665355e",
+    "companion-inputs-after.json": "f4d29058a9abf01eef2abc8615bc50bd5d588a5df0333c69a024fdbb0665355e",
+    "rpc-shutdown-observed-rknwqva1.json": "2e97378b64f8fdfcc629cbd50f1f3b7109f9a94aecc805b5ea72598d9af79213"
+  }
+}

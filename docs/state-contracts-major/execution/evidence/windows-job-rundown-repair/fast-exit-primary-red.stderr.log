@@ -1,0 +1,19 @@
+test_fast_exit_output_error_survives_cleanup_unknown (test_artifact_authority_adapter.WindowsJobRundownTest.test_fast_exit_output_error_survives_cleanup_unknown) ... FAIL
+
+======================================================================
+FAIL: test_fast_exit_output_error_survives_cleanup_unknown (test_artifact_authority_adapter.WindowsJobRundownTest.test_fast_exit_output_error_survives_cleanup_unknown)
+----------------------------------------------------------------------
+_artifactauthoritylib.AuthorityError: VERIFICATION_PROCESS_FAILED: Windows job rundown could not be confirmed
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-authority-job-debug-yg0uiv0g\immutable0830\.github\scripts\test_artifact_authority_adapter.py", line 6257, in test_fast_exit_output_error_survives_cleanup_unknown
+    with self.assertRaisesRegex(RuntimeError, "^PROCESS_OUTPUT_TOO_LARGE:") as caught:
+         ~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: "^PROCESS_OUTPUT_TOO_LARGE:" does not match "VERIFICATION_PROCESS_FAILED: Windows job rundown could not be confirmed"
+
+----------------------------------------------------------------------
+Ran 1 test in 0.027s
+
+FAILED (failures=1)

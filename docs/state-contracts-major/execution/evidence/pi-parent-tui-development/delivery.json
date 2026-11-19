@@ -1,0 +1,128 @@
+{
+  "format": "codearbiter.pi-d07-minted-group-successor/1",
+  "source_epoch": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "basis": "Immutable15c scripts plus observed current CI overlay; no claim of a clean or fully immutable checkout.",
+  "predecessor_delivery": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-linux-wiring-6i4vdz6d\\delivery.json",
+    "sha256": "8331c4bb0d435630197e4fb43001516cb22b02116f10a6298592473be45ecc10"
+  },
+  "subjects": [
+    {
+      "path": ".github/scripts/pi_parent_tui_observation.py",
+      "preimage_sha256": null,
+      "private_predecessor_sha256": "82d9d22e5106de2fdaace521c86fee8f2e592e8d79f7cb496e615e9d89e3e3c7",
+      "sha256": "49323466cbad2a56baf22ed45c90155a6ed8ea1b82cae8c3b333d416f7d8742a",
+      "bytes": 36440,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\pi_parent_tui_observation.py",
+      "canonical_current_sha256": null,
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/scripts/test_pi_parent_tui_observation.py",
+      "preimage_sha256": null,
+      "private_predecessor_sha256": "c1bc76c602e1c6a3ec1d4d5e475d8aa02b2c6a5802f63f4e66fb01c048a405c4",
+      "sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+      "bytes": 23571,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py",
+      "canonical_current_sha256": null,
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/scripts/observe_pi_installed_rpc.py",
+      "preimage_sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+      "private_predecessor_sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "bytes": 27952,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\observe_pi_installed_rpc.py",
+      "canonical_current_sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/scripts/coordinate_pi_host.py",
+      "preimage_sha256": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6",
+      "private_predecessor_sha256": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+      "sha256": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+      "bytes": 12234,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\coordinate_pi_host.py",
+      "canonical_current_sha256": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6",
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "preimage_sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+      "private_predecessor_sha256": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f",
+      "sha256": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f",
+      "bytes": 277057,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\workflows\\ci.yml",
+      "canonical_current_sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+      "canonical_still_original_preimage": true
+    }
+  ],
+  "changed_from_five_file_predecessor": [
+    ".github/scripts/pi_parent_tui_observation.py",
+    ".github/scripts/test_pi_parent_tui_observation.py"
+  ],
+  "unchanged_other_three_subjects": [
+    ".github/scripts/observe_pi_installed_rpc.py",
+    ".github/scripts/coordinate_pi_host.py",
+    ".github/workflows/ci.yml"
+  ],
+  "patches": {
+    "narrow-successor.patch": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\narrow-successor.patch",
+      "sha256": "c578f8ca6e357fd5962e2e6f02d1c9447e76f0ffc7b2a54eef182de643bcf596"
+    },
+    "whole-five-implementation.patch": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\whole-five-implementation.patch",
+      "sha256": "484b6cde1df99392b4d032ebeb4a310091e68a7881b34d07b0babc0dc454acb8"
+    }
+  },
+  "defect": "A reaped session leader can disappear before initial getpgid/getsid; previously owned_group remained None and only the dead direct child was targeted, leaking a same-group descendant.",
+  "fix": "Retain successful trusted Popen(start_new_session=True) minted group evidence after positive non-controller PID validation, before diagnostics. ProcessLookupError does not prove group absence; each available diagnostic must match or clear target and refuse. Existing owned-group final cleanup remains independent of poll.",
+  "checks": {
+    "proper_target_RED": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\minted-lookup-red.json",
+      "method": "OwnedProcessCleanupTests.test_leader_disappearing_before_initial_lookup_still_cleans_minted_group",
+      "parent_tests": 1,
+      "subcases": 2,
+      "assertion_failures": 2,
+      "unittest_seconds": 0.035,
+      "outer_seconds": 0.11021660000551492
+    },
+    "affected_GREEN": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\minted-cleanup-green.json",
+      "methods": 5,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_seconds": 0.036,
+      "outer_seconds": 0.10718439999618568
+    },
+    "same_regression_test_bytes_RED_GREEN": true,
+    "source_tool_before_after_stable": true,
+    "compile": {
+      "files": 4,
+      "mechanism": "compile(bytes,path,exec), no output/cache or runtime execution"
+    },
+    "unchanged_baseline_reuse": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-linux-wiring-6i4vdz6d\\final-inert-green.json",
+      "methods": 36,
+      "unittest_seconds": 0.648,
+      "scope": "Other unchanged harness protocol/authority/wiring/RPC/metadata controls; the changed five cleanup methods were run fresh."
+    }
+  },
+  "preserved_original_test_bodies": 19,
+  "only_existing_test_helper_changed": [
+    [
+      "OwnedProcessCleanupTests",
+      "exercise"
+    ]
+  ],
+  "limits": [
+    "All changed controls are an explicitly inert syscall/process model; no actual POSIX group/signal, Pi, Node, PTY, provider, native or network execution on Windows.",
+    "A missing initial leader lookup is not reported as absent/quiescent group. Successful signal is recorded only as signalled, not proof every descendant exited.",
+    "Foreign or controller group ownership still refuses with no killpg. Detached/reparented new-session descendants remain outside this cleanup guarantee.",
+    "Actual trusted-normal Linux TUI execution remains PENDING_HOSTED; no new RPC/profile/qualification claim.",
+    "No canonical/index/ref/marker/proof/status or remote writes; old packets remain immutable."
+  ]
+}

@@ -1,0 +1,74 @@
+{
+  "schema": "original-pi-diagnostic-archive-authentication/1",
+  "result": "PASS",
+  "diagnostic_only": true,
+  "source_api_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "run": 43992411061,
+  "attempt": 1,
+  "job": 133736258848,
+  "artifact_id": 14289490696,
+  "name": "pi-rpc-diagnostics-windows-latest-1.5.0",
+  "zip_sha256": "a3ab0fe225d92a8c4f758d163d2796ef4eae526b973c44db6f65f1d61c4e8708",
+  "zip_bytes": 6331,
+  "metadata_sha256": "85126f21280d206a31733a68b8869180ec73c5843c08521f686c017a9ff02835",
+  "job_metadata_sha256": "b5543364936850e42cacee17c10615ecb370f0293f7421d025988c79ae25563f",
+  "original_job_log_sha256": "263fe34d1644c942d7fb0bb07732c49828d3c7698fa73ff7227d5a25deed22e8",
+  "uploader": "actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9",
+  "original_finalization_log_line": 576,
+  "workflow_source_sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+  "members": [
+    {
+      "name": "rpc-native-exit-2dfnar7n.json",
+      "bytes": 615,
+      "sha256": "e5470be903e6cf27073251ee6d7b7d6375cf77a332eb4c7103c11c95b43416b7"
+    },
+    {
+      "name": "rpc-native-exit-nzyzbebs.json",
+      "bytes": 10345,
+      "sha256": "423453c62cc788e013c251fd318e93eea148687d49887b0404760fa16ad5aefa"
+    },
+    {
+      "name": "rpc-shutdown-11uxxi66.json",
+      "bytes": 409,
+      "sha256": "c25cd82040840f115752cedf0da67ec78bd10fd182ffcdcd99ccd3c79ee3a369"
+    },
+    {
+      "name": "rpc-shutdown-7lqtr3aj.json",
+      "bytes": 1120,
+      "sha256": "e0da76cc034914d31f7765ffacf506961f268f4a08effcca90269e427b951195"
+    },
+    {
+      "name": "rpc-shutdown-9nu_6zce.json",
+      "bytes": 579,
+      "sha256": "61ff011c8643ef47a39b9aff59a4633f8ba658f1f5a30faeb2e7abccf80bbee5"
+    },
+    {
+      "name": "rpc-shutdown-observed-45p65yaj.json",
+      "bytes": 971,
+      "sha256": "d31dfc00680a934eb2f2e8e7d424d1625e6b9daaa285b821af217776095d2b1f"
+    },
+    {
+      "name": "rpc-shutdown-observed-6ky1bz43.json",
+      "bytes": 971,
+      "sha256": "b885f44c42b261f2d8335827091001f68206a3f4e9e38d5890c59d9286b7a573"
+    },
+    {
+      "name": "rpc-shutdown-observed-wuusjsg1.json",
+      "bytes": 971,
+      "sha256": "c94ce6bc27216df2e5f161ecf1395cd52c1fb95e4be54c40c6a850358ccf3fb0"
+    },
+    {
+      "name": "rpc-shutdown-observed-x46df_6p.json",
+      "bytes": 971,
+      "sha256": "98f48b0579b4cd9914b655a2c1eb08dba27c03e546c8db8d1e63fd7260c73d10"
+    },
+    {
+      "name": "rpc-shutdown-ui0jya0k.json",
+      "bytes": 1122,
+      "sha256": "25a1cc3e71dd54d29ded789efb1bef5a1b31e6cf6913f84059c8fbd328fa1fa4"
+    }
+  ],
+  "total_member_bytes": 18074,
+  "no_extraction_or_execution": true,
+  "original_natural_discovery_case": "PASS; separate additional diagnostic has30s process-exit timeout"
+}

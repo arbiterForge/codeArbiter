@@ -1,0 +1,23 @@
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmpqjxi8b41\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmpvwl73e0s\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmpiacre3y6\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmpb0_7et7k\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp7421aexc\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+REFRESHED codeArbiter statusline path -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp7421aexc\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp1y3sg_m6\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp38if7lno\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp4a812w9s\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: my-custom-statusline
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp4a812w9s\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+backed up prior statusLine: "python" "/opt/acme/statusline.py" --label codearbiter/ca/2.0.1/hooks/statusline.py
+RESTORED prior statusLine: "python" "/opt/acme/statusline.py" --label codearbiter/ca/2.0.1/hooks/statusline.py
+WIRED codeArbiter statusline -> "python" "C:\Users\brenn\AppData\Local\Temp\ca-seq21-positive-host-7f741ba5-mm8wp0ik\fixtures\tmp5kbw6dx1\.claude\plugins\cache\codearbiter\ca\9.9.9\hooks\statusline.py"
+no prior statusLine existed; uninstall will simply remove ours.
+REMOVED codeArbiter statusline; no prior line to restore.

@@ -1216,5 +1216,31 @@ class DebugTerminalBoardTest(CollectorCompatibleTestCase):
                 self.assertEqual(board.main(), 2)
             self.assertIn("FATAL: missing file", output.getvalue())
 
+
+class CorrectedResubmissionSurfaceTest(unittest.TestCase):
+    """HW-07 (W-F02): every rendered debug owner and preparation guide allows
+    corrected resubmission with per-refusal remedies, without granting authority."""
+
+    def test_every_rendered_resource_allows_a_corrected_resubmission(self):
+        for host, (plugin, _entry, routine, _index, _prefix) in PROJECTIONS.items():
+            owner = " ".join((ROOT / plugin / routine).read_text(encoding="utf-8").split())
+            guide = " ".join((ROOT / plugin / Path(routine).parent / "references/preparation.md")
+                             .read_text(encoding="utf-8").split())
+            with self.subTest(host=host):
+                self.assertIn("Corrected resubmission is allowed", owner)
+                self.assertIn("same installed validator", owner)
+                self.assertIn("actual host or user denial stays denied", owner)
+                self.assertIn("never a relabel or a fabricated observation", owner)
+                self.assertNotIn("do not silently repair and resubmit", owner)
+                self.assertIn("## Corrected resubmission", guide)
+                for phrase in ("Input or shape defect", "Semantic-evidence refusal",
+                               "Stale binding", "identical packet bytes",
+                               "Actual denial", "grants no code-writing",
+                               "An unchanged resubmission with no changed condition is not progress",
+                               "Do not persist the rejected packet"):
+                    self.assertIn(phrase, guide)
+                self.assertNotIn("do not rewrite and resubmit", guide)
+                self.assertIn("never retry it through another interpreter", guide)
+
 if __name__ == "__main__":
     unittest.main()

@@ -1,0 +1,440 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "56241415ac897ca09799d709c1a4ec26bcd03eab",
+  "source_tree": "ecc19c9d1242f89412960439a91dd09a206a3881",
+  "prior_source_checkpoint": "8eb71f2ca8628676878ce506ad5b22b65312f218",
+  "preflight": false,
+  "delta": {
+    ".github/major-qualification-policy.json": {
+      "base_sha256": "c0b67104f6d499e996f27c9252848642bc35d84bab3c745accd6c4c412b5ad8b",
+      "current_sha256": "1e6fe22e463ede5f721853e1198cbee531298747d5e93afd85b2fdc8afeca4c3"
+    },
+    ".github/major-test-selections.json": {
+      "base_sha256": "1b08a03314b7ed13c9cf36a8bf5d0f95ba637945daecf927affc2f3c72bdaf83",
+      "current_sha256": "ef45c71094e40aa525cce4d766ab239b585e1c5caf175aa2d24201f7fb10a113"
+    },
+    ".github/scripts/major_qualification_report.py": {
+      "base_sha256": "bc535b7a96a2ca39f1e528385d427ad778cd27e2908c340e2e4b8574eda0bf97",
+      "current_sha256": "06b1e4f2addadd5bb47192f94352aa3f920ca800749a56ee2d82b851bde50b10"
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "base_sha256": "0b3e30951a7c907d8f4a764feee1c3d5ab8d9d5821b42c6a3aeeb3e32d3fe403",
+      "current_sha256": "d1e7894c3ade40f05e9812a8cc751c27a18a9882286b1be4edd430e4fae5ba38"
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "base_sha256": "9df8e37b6382e3110462ff4241cf5d84d57fa1ac2f6a94be24e1b0721144ba73",
+      "current_sha256": "969f7312f896364cc0f43ba331d610e412d0ebad9b8530a8ba2c3b9e4dc52ac4"
+    },
+    ".github/scripts/test_major_qualification_report.py": {
+      "base_sha256": "3ef5009423bf9887816b581dd85fefec13ea3c5ec32dd5dc25df6731989eb2c6",
+      "current_sha256": "daf7f71340860567c81ef072691287e4ef9dbfbfe3194c3e18a69f0991f2b485"
+    },
+    ".github/scripts/test_suite_hermeticity.py": {
+      "base_sha256": "48056fbcac4f344f9bddde2882acb9557a1e00b21acb6d236807de7adc6410f3",
+      "current_sha256": "a3bf064f22d54b3bd48bb0a1100cbf39abd7c0107b3712d67f1832dc7a470e57"
+    },
+    ".github/workflows/ci.yml": {
+      "base_sha256": "e9938a443233373f4c55abec1a873c4763d07878c91649e039bf0e3a71951b91",
+      "current_sha256": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c"
+    },
+    "CHANGELOG.md": {
+      "base_sha256": "03f8f9182d85e2efd196af9092eba6680ba904ecd98f13f4d7c38483782db34b",
+      "current_sha256": "bbd9b8825fe6fd6cc239888a93f0b0bce52bb2a4e1ee8b70d8974cf89187c72f"
+    },
+    "plugins/ca/hooks/tests/test_durabilitylib.py": {
+      "base_sha256": "7aa71ed4072209ab2a685c31559bd8afb51ffd9a336775cb66298e56821ffdb1",
+      "current_sha256": "abc0ef7eb90b42d090a187df0c3eacc9e960c8a8b96b5aab0e87f31765ebe61a"
+    },
+    "plugins/ca/hooks/tests/test_wire_statusline.py": {
+      "base_sha256": "942dd9546ebdf77b1a0352b6adac9eed7f6e1e99d87c5e648bc839835a1cc72b",
+      "current_sha256": "c3e2906fdc10e22a615ac15576a36ef484c71b3c8bdd89b34371ec2f80a05f24"
+    }
+  },
+  "reviewed_patch_sha256": "928462d3eb88461e3b37694ed962a04f33a76c1049cc7936abcfc15208471779",
+  "debug_workflow_patch_sha256": "8c859198bdb706328c6cec48ef233c07ca0c488abdb260a007cf9917ebebaea7",
+  "debug_delivery_sha256": "38b00145265fc1ae2f698321f66fca3d63558bd2a87d1b960bbbb4ac0e0e8e1e",
+  "strict_inventory_sha256": "e54ca9d3268559f8366f5efc75cebf7c4ab7aa60401e5e9b8914ae1e18de1903",
+  "finite_source_assessments": {
+    "unchanged_core_predicates": "Outside the existing Hook job all Core workflow blocks are literal. Required/advisory aggregate, push event, impact, cancellation, native authority and test sharding, coverage union, Docker, canary, Recovery, release candidate, pre-tag and all unchanged source owners preserve their existing finite predicates.",
+    "statusline": "On trusted Windows isolation only, four fixed steps stage source, run the original eight-guard suite once through its optional named capture, and upload two bound artifacts. All other events and matrix paths keep the original command. Existing read-only permissions, HOME snapshots, warning and timeout control, and original eight result identities are preserved. Incomplete capture or upload fails the selected owner; no fallback converts malformed evidence into success.",
+    "release": "Windows contracts runs the existing release planner once through the current source/profile observer before the existing channel suite. The explicit exit check propagates planner failure. Exact eleven selectors retain the finite pure planner/recovery scope. Other hosts still run both original direct commands in original order. The only changelog addition is a single Unreleased intent bullet.",
+    "debug_capture": "The existing debug workflow contract runs once after its owning source preparation and immediately before the shared observations upload. The original command, selection, output file, upload predicate and token scope remain literal.",
+    "reader": "Verified report and CI-impact definition differences are limited to current named capture, its source/attempt/role checks and additive wiring checks. Current source applicability owner, existing authority behaviors and nonselected profiles remain unchanged. The two evidence transports do not replace already stored results.",
+    "publication": "The runtime lane must observe the exact successor source on the normal trusted owner run. Earlier owner jobs are historical context and cannot establish these successor transport identities. This proposal authenticates and renews finite source conformance only."
+  },
+  "historical_test_results_with_widened_existing_source_drift": [
+    "disposition:findings:HOOK-F05",
+    "disposition:findings:N-F09",
+    "disposition:machines:N17",
+    "disposition:machines:hooks:statusline-wiring",
+    "disposition:transitions:N17:01",
+    "disposition:transitions:N17:02",
+    "disposition:transitions:N17:03",
+    "disposition:transitions:N17:04",
+    "disposition:transitions:N17:05",
+    "disposition:transitions:hooks:statusline-wiring:01",
+    "disposition:transitions:hooks:statusline-wiring:02",
+    "disposition:transitions:hooks:statusline-wiring:03",
+    "disposition:transitions:hooks:statusline-wiring:04",
+    "disposition:transitions:hooks:statusline-wiring:05",
+    "disposition:transitions:hooks:statusline-wiring:06",
+    "disposition:transitions:hooks:statusline-wiring:07",
+    "disposition:transitions:hooks:verifier:07"
+  ],
+  "groups": [
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-17.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:findings:C-F03",
+        "disposition:machines:S48",
+        "disposition:machines:S77",
+        "disposition:transitions:S48:01",
+        "disposition:transitions:S48:02",
+        "disposition:transitions:S48:03",
+        "disposition:transitions:S48:04",
+        "disposition:transitions:S48:05",
+        "disposition:transitions:S48:08",
+        "disposition:transitions:S77:01",
+        "disposition:transitions:S77:02",
+        "disposition:transitions:S77:03",
+        "disposition:transitions:S77:04",
+        "disposition:transitions:S77:05",
+        "disposition:transitions:S77:06",
+        "disposition:transitions:S77:07",
+        "disposition:transitions:S77:08",
+        "disposition:transitions:S77:09",
+        "disposition:transitions:C05:02",
+        "disposition:transitions:C05:03",
+        "disposition:transitions:C15:04",
+        "disposition:transitions:C16:03",
+        "disposition:transitions:C17:01",
+        "disposition:transitions:C17:02",
+        "disposition:transitions:C17:03",
+        "disposition:transitions:C17:04",
+        "disposition:transitions:C17:05",
+        "disposition:transitions:C17:06",
+        "disposition:transitions:C17:07",
+        "disposition:transitions:C17:08",
+        "disposition:transitions:C17:09",
+        "disposition:transitions:C17:11",
+        "disposition:transitions:T01:01",
+        "disposition:transitions:T01:02",
+        "disposition:transitions:T01:03",
+        "disposition:transitions:T01:04",
+        "disposition:transitions:T01:05",
+        "disposition:transitions:SW01:02",
+        "disposition:transitions:SW01:03",
+        "disposition:transitions:SW01:04",
+        "disposition:transitions:SW01:05",
+        "disposition:transitions:SW01:06",
+        "disposition:transitions:SW01:07",
+        "disposition:transitions:SW01:08",
+        "disposition:transitions:SW01:09",
+        "disposition:transitions:SW01:10",
+        "disposition:transitions:SW01:11",
+        "disposition:transitions:SW01:12",
+        "disposition:transitions:SW01:13",
+        "disposition:transitions:SW01:14",
+        "disposition:transitions:SW01:15",
+        "disposition:transitions:SW01:17",
+        "disposition:transitions:SW01:18",
+        "disposition:transitions:SW01:19",
+        "disposition:transitions:SW01:20",
+        "disposition:transitions:SW01:21",
+        "disposition:transitions:SW01:22",
+        "disposition:transitions:SW01:23",
+        "disposition:transitions:SW01:24"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-08.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C01",
+        "disposition:transitions:C01:01",
+        "disposition:transitions:C01:02",
+        "disposition:transitions:C01:03",
+        "disposition:transitions:C01:04",
+        "disposition:transitions:C01:05"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-09.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C02",
+        "disposition:transitions:C02:01",
+        "disposition:transitions:C02:02",
+        "disposition:transitions:C02:03",
+        "disposition:transitions:C02:04"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-10.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C04",
+        "disposition:transitions:C04:01",
+        "disposition:transitions:C04:02",
+        "disposition:transitions:C04:04",
+        "disposition:transitions:C04:05",
+        "disposition:transitions:C04:06",
+        "disposition:transitions:C04:07"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-14.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C05"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-05.json"
+      ],
+      "inputs": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/major_qualification_report.py",
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C06",
+        "disposition:transitions:C06:01",
+        "disposition:transitions:C06:02",
+        "disposition:transitions:C06:03",
+        "disposition:transitions:C06:04"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-15.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C09",
+        "disposition:transitions:C09:01",
+        "disposition:transitions:C09:02"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-16.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C10",
+        "disposition:transitions:C10:01",
+        "disposition:transitions:C10:02",
+        "disposition:transitions:C10:03"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-11.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C13",
+        "disposition:transitions:C13:01",
+        "disposition:transitions:C13:02",
+        "disposition:transitions:C13:03",
+        "disposition:transitions:C13:04"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-12.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C15",
+        "disposition:transitions:C15:01",
+        "disposition:transitions:C15:02",
+        "disposition:transitions:C15:03"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-07.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C32",
+        "disposition:transitions:C32:01",
+        "disposition:transitions:C32:02",
+        "disposition:transitions:C32:03",
+        "disposition:transitions:C32:04",
+        "disposition:transitions:C32:05",
+        "disposition:transitions:C32:06",
+        "disposition:transitions:C32:07"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-06.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:C35"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-13.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:SX04",
+        "disposition:transitions:SX04:01",
+        "disposition:transitions:SX04:02",
+        "disposition:transitions:SX04:03",
+        "disposition:transitions:SX04:04"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-20.json"
+      ],
+      "inputs": [
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:machines:T02",
+        "disposition:transitions:T02:02"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-18.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:transitions:C15:05"
+      ]
+    },
+    {
+      "locator": [
+        "7f54c23761205c83329aa9a21ed969bf6cd68e0c",
+        "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-19.json"
+      ],
+      "inputs": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "stale": [
+        ".github/scripts/test_ci_impact.py",
+        ".github/workflows/ci.yml"
+      ],
+      "affected_cells": [
+        "disposition:transitions:C35:01",
+        "disposition:transitions:C35:02",
+        "disposition:transitions:C35:03",
+        "disposition:transitions:C35:04"
+      ]
+    }
+  ]
+}

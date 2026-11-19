@@ -1,0 +1,543 @@
+{
+  "format": "finite-source-clause-inspection/1",
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "source_tree": "201c662dee158a880d74ebb574f3320a95548b15",
+  "producer": "/root/packaging_site_tools",
+  "authority": "Existing WORK-2A68 program, consumed packaging-next actor input; Temp-only source conformance. No user decision or runtime authority inferred.",
+  "accepted_scope": {
+    "S72:05": "Current M intentionally runs three named installed context cases for Claude/Codex/Pi under require_production and platform context_qualification. Pi scope is candidate-preflight/live_qualified=false with authority_evidence_mode none-required-or-created, superseding old unsupported prose only for this fixture preflight. Qualification is finite to the retained original M Windows AMD64 cohort; no full six-platform/machine/task promotion.",
+    "S73:07": "DIST-M02 explicitly requires unknown/unreadable/malformed channel refusal when monotonicity is required.",
+    "S75:02": "HW21/BUILD-G02 structured closed removal metadata; no actual removal decision is created.",
+    "S75:05/S75:07/S75:08/S76:04/S76:06": "BUILD-G01 explicitly replaces unsafe partial per-host/per-file publication with complete owned staging, rollback or unusable marker.",
+    "S77 normal vs integration": "Normal release validation functions remain baseline-AST identical. Existing selected integration record reuses candidate against recorded main baseline with ancestry/live-main/tag guards, never a blanket same-version waiver."
+  },
+  "families": {
+    "cohort": {
+      "machine": "S71",
+      "full_baseline_edges": [
+        "S71:01",
+        "S71:02",
+        "S71:03",
+        "S71:04",
+        "S71:05",
+        "S71:06",
+        "S71:07"
+      ],
+      "proposed_transition_updates": [
+        "S71:01",
+        "S71:02",
+        "S71:03",
+        "S71:04",
+        "S71:07"
+      ],
+      "assessments": {
+        "S71:01": {
+          "frozen_row_sha256": "e547021182cedc372c5dd72c4a21ba5b813b0a2b287070410e71d039079234df",
+          "assessment": "_source_identity demands a full exact commit/tree and complete generator markers. _git_archive_files reads that commit rather than working bytes; portable regular-file inventory refuses links/collisions. _promotion_snapshots verifies all3 trusted source/workflow/run/digest snapshots equal. Host-local catalogs are closed projections; preexisting native payloads refuse; identical promoted bytes and exact canonical notices are required.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S71:02": {
+          "frozen_row_sha256": "959724eab3cc82a1b4d4765de2ed007f6095f92bbc3f7e9152bbd0420356bafc",
+          "assessment": "_verified_npm_packer requires explicit real executable, exact reviewed11.19.1 version/integrity and records executableSHA; production Windows mode is refused. Both pack operations get fresh explicit home/config/cache, offline+ignore-scripts. Dry-run selection rejects malformed/duplicate/empty results; verifier re-derives against a nonempty known source set, so receipt-selected unknown membership cannot be admitted. This is the source procedure, not a new npm provenance/acquisition attestation.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S71:03": {
+          "frozen_row_sha256": "290b7b818c3c53e93bd189b87d507d636af42449c3329b71b69650c29165496e",
+          "assessment": "_archive_bytes sorts members and fixes gzip/tar time, uid/gid/name/mode metadata. Pi is built by exact npm pack from a preassembled member tree and read back for equal bytes/membership/modes; only explicitly local Windows portability repairs promoted executable bits. Cohort binds each host version, archive digest/size and per-member path/mode/size/origin/digest.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S71:04": {
+          "frozen_row_sha256": "8cf24c7dc4154fb3612bd401dd6aab93486c6346748bd86281b595509831a514",
+          "assessment": "All archives and receipt bytes are assembled before _pinned_artifact_stage. Existing output refuses; parent/root identity is pinned, writes use create-only handles/files. Three sorted host archives precede artifact-package-cohort.json. An interrupted owner may leave partial fresh staging; no whole-cohort atomicity or published-version overwrite is claimed.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S71:05": {
+          "frozen_row_sha256": "425ab97ae8be36a1b1c27b2e85c08b49c756afb5c3f1d8a38fead359a9d9c3b2",
+          "assessment": "Verifier requires exact cohort keyset/context/production packer qualification, re-derives source tree and promoted snapshots, reconstructs known Pi membership, verifies each archive digest and exact member inventory/modes/bytes, and refuses extra or nonregular cohort entries.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S71:06": {
+          "frozen_row_sha256": "d16241f0f0d77ce639980aefabe28e956f0ebfead364618de48166da9d7d9e44",
+          "assessment": "Only after all3 exact host inventories and Codex static resource/hook contract pass does verifier return cohort evidence. Success is never inferred from filenames or version strings alone. No actual current package construction/verification was executed for this source-only proposal.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S71:07": {
+          "frozen_row_sha256": "5d88c97ed6fdfc652bc6fc8b1c31c3e4f5dc4a6f7282a97b05843739d5ce0f93",
+          "assessment": "Every described missing/context/manifest/path/identity/inventory/mode/digest mismatch raises before verified evidence returns; fresh output refuses overwrite. Construction can leave partial staging and does not rewrite an existing output to hide drift. Distribution immutable-tag refusal remains a separate downstream owner; no published artifact is mutated by this source assessment.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        }
+      },
+      "reused_original_records": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/cold-installed.json",
+          "sha256": "08c674efe2e221fe4571dfda2538393fff7a63eef71c0610ed9a7a0f6b990228"
+        }
+      ],
+      "logic_scope": "Finite owner procedure and guarded interfaces. Family-cited paths are all bound even when a cited companion has no effect in one particular branch."
+    },
+    "cold": {
+      "machine": "S72",
+      "full_baseline_edges": [
+        "S72:01",
+        "S72:02",
+        "S72:03",
+        "S72:04",
+        "S72:05",
+        "S72:06",
+        "S72:07"
+      ],
+      "proposed_transition_updates": [
+        "S72:07"
+      ],
+      "assessments": {
+        "S72:01": {
+          "frozen_row_sha256": "5111c6233e66c477531ce9f4f160229fbb32e0e86fafc4f6242f330965fb0de6",
+          "assessment": "Native system/architecture must equal the requested admitted platform; production cohort is verified first. Exact archive is decoded through regular portable member admission into a fresh TemporaryDirectory. The executable is absolute, native env is empty, installed workflow PATH is an owned empty directory; no runtime downloader is invoked.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S72:02": {
+          "frozen_row_sha256": "6bded6bd648268be79ae62312d954cbc34f8f3a4db71a49d88a4f69a2dd596e8",
+          "assessment": "Manifest platform must be native_tested and exact payload digest. The absolute binary receives exact capabilities protocol request,30s timeout, and closed protocol/operation/ok/result response checks including matching platform, repository operations and runtime_downloads=false.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S72:03": {
+          "frozen_row_sha256": "c74f13c98a7822a3dd2ecd0e62c824283fc78f4694408097b791eeed2fde4064",
+          "assessment": "The installed bridge fixture receives isolated repository, exact host/plugin root/binary digest via -I/-B and bounded120s. Any nonzero/stderr refuses; exact response keyset/format/host/binary and interruption/re-dispatch/commit/finalization/currentness/no-shadow assertions precede success.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S72:04": {
+          "frozen_row_sha256": "27c2be6ad5208ad7b43f32dbdba1c5af3cc89484ff92825d799f52e8eb8e0ae6",
+          "assessment": "Pi requires synthetic-policy-event for approval AND prerequisite fields. These are declared fixture events, explicitly not a real interactive approval or parent UI claim.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S72:05": {
+          "frozen_row_sha256": "878b21e22adf0497f95fe974047bdf1fa8b3ff5c0abede21c7d00ecce862bb11",
+          "assessment": "Existing admitted row candidate_contract_note and original-M clause observation supersede the inherited unsupported wording only for candidate-preflight. Production requires platform context_qualification and exactly three named installed-context results. Current test asserts proof_kind=candidate-preflight, authority_evidence_mode=none-required-or-created, live_qualified=false. No historical installed row is renewed or generalized.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S72:06": {
+          "frozen_row_sha256": "43ef54bebf7be5191f00606b61be407a989c8f33e683c3757b39390ea4a98083",
+          "assessment": "Receipt is created exclusively after all applicable child/schema/qualification checks finish. It binds source/workflow/run/host/platform, promotion/package/manifest/binary/bridge/response digests and explicit evidence modes. No partial-success receipt path exists for refused child outcomes.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        },
+        "S72:07": {
+          "frozen_row_sha256": "30788480f69b551e785cc48cc41eaf282121336061c7afd915dfa0ea43f86abc",
+          "assessment": "Qualification/platform/hash, nonzero/stderr, malformed response or mismatched proof refuses before the receipt open. TemporaryDirectory surrounds all isolated execution/extraction; propagated errors dispose that owned extraction. Errors are not converted to success. Cleanup failure may propagate, never authorize a receipt.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py"
+          ]
+        }
+      },
+      "reused_original_records": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/cold-installed.json",
+          "sha256": "08c674efe2e221fe4571dfda2538393fff7a63eef71c0610ed9a7a0f6b990228"
+        }
+      ],
+      "logic_scope": "Finite owner procedure and guarded interfaces. Family-cited paths are all bound even when a cited companion has no effect in one particular branch."
+    },
+    "channels": {
+      "machine": "S73",
+      "full_baseline_edges": [
+        "S73:01",
+        "S73:02",
+        "S73:03",
+        "S73:04",
+        "S73:05",
+        "S73:06",
+        "S73:07",
+        "S73:08",
+        "S73:09",
+        "S73:10",
+        "S73:11"
+      ],
+      "proposed_transition_updates": [],
+      "assessments": {
+        "S73:01": {
+          "frozen_row_sha256": "ba4afcca08a1080c623ca0d36d3c1b7872e42186589d549d50cc0496f542699b",
+          "assessment": "Qualified archive/source/version and fresh work path guard deterministic distribution tree/commit. Fixed author/time plus source/cohort/archive message produce an immutable identity; version mismatch cannot enter promotion.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:02": {
+          "frozen_row_sha256": "ce089a754580a0f81c79d81a4276455269994d50880dcf8488c67bc68b4accd9",
+          "assessment": "An absent remote immutable tag is only planned for create; absence does not allow replacing an existing competing identity.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:03": {
+          "frozen_row_sha256": "1a725c56df61f09550b00d87ab0e297762bd37d5ce8f7982ad55a204dd0a41e6",
+          "assessment": "The same deterministic tag identity is reused without rewrite. Fresh observation, not assumed success, controls retry.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:04": {
+          "frozen_row_sha256": "e0d0a2f4d530f42e4a0440968fd0d428f7dd3963ea3245122a9f0f4f29e376d5",
+          "assessment": "A same-version tag naming any different commit refuses before channel mutation.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:05": {
+          "frozen_row_sha256": "1e8c6f3dc9be325ea87f35ac8ff5eb0c1d8c86d6b9f1ada7acb21c43585bbcb9",
+          "assessment": "Known newer current channel refuses rollback; current unknown/malformed is also refusal under explicit DIST-M02 accepted implementation. No version comparison is silently skipped.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:06": {
+          "frozen_row_sha256": "c1b1b1f82f5c374d86c6e7025707e84100cd8dab53aa02590a4e8f902aad9cf2",
+          "assessment": "Equal current distribution tree reuses the existing marketplace commit instead of adding duplicate promotion history.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:07": {
+          "frozen_row_sha256": "38e92fbbf58d23898d4f7b4886058ca33a2b533dbbcffeb5cc4a7ecef084e8e4",
+          "assessment": "Changed tree creates the promotion commit with prior channel and distribution parents. DIST-M02 explicitly supersedes the frozen unsafe current_version=None comparison skip: current code refuses unknown before planning an advance.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:08": {
+          "frozen_row_sha256": "88aa1d93724b49d9405f5a02138b7c6581a91de2a48b003aab5eb79d6f941c71",
+          "assessment": "Claude combined flow may create an absent immutable tag, then exact fresh readback must equal deterministic commit. Codex separate preexisting-tag prerequisite is retained; no forced common sequencing.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:09": {
+          "frozen_row_sha256": "5986b60856056f55779a33d02a07d2e21cbf3d1ff8de74cd3b0632813d1a0588",
+          "assessment": "Channel push occurs only for a different planned commit and carries an exact observed-head force-with-lease, followed by exact fresh readback.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:10": {
+          "frozen_row_sha256": "7898d4da2a0b078b6e0aa4f99120e6ac62ac123b2b5737e15cfa9be92064e4ce",
+          "assessment": "_push_observed makes one attempt and re-observes exact remote ref on uncertain response; conflicting/unknown remains error. New work path reconstructs deterministic identities on retry; tag+channel are not represented as a combined atomic transaction.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        },
+        "S73:11": {
+          "frozen_row_sha256": "84fbb4ab885f996de74b741427a902fe08632c9d3d1cb202ab570bf23d75b9e1",
+          "assessment": "push=false returns concrete staged refs/commits/hash result after read-only remote observations and local planning, with no remote push.",
+          "cited_owner_paths": [
+            "tools/promote-claude-marketplace.py",
+            "tools/promote-codex-marketplace.py"
+          ]
+        }
+      },
+      "reused_original_records": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/channel-current-891e99c0/channel-tested.json",
+          "sha256": "87a892bad2996dd0ceeaac09f44a47ee8c296582a4359c11ac93261a19869733"
+        }
+      ],
+      "logic_scope": "Finite owner procedure and guarded interfaces. Family-cited paths are all bound even when a cited companion has no effect in one particular branch."
+    },
+    "surface": {
+      "machine": "S75",
+      "full_baseline_edges": [
+        "S75:01",
+        "S75:02",
+        "S75:03",
+        "S75:04",
+        "S75:05",
+        "S75:06",
+        "S75:07",
+        "S75:08"
+      ],
+      "proposed_transition_updates": [
+        "S75:01"
+      ],
+      "assessments": {
+        "S75:01": {
+          "frozen_row_sha256": "641a2ceef02012317afa9bf9e12e9563d0bcae4508ac194d595ce11458f476c9",
+          "assessment": "render_all fully reads/composes canonical templates, validates registry aliases/modes and host descriptors, then resolves bounded IF/token/FACT/resource projections, command/skill frontmatter and strict role/host catalogs. Unknown/unresolved/nested/colliding definitions refuse; expected bytes are accumulated in memory before any publish. This proves the conditional rendering procedure, not a fresh all-template build or semantic review of every generated instruction.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:02": {
+          "frozen_row_sha256": "9cf6400d799fbfbffcd2e62f49e062cbd51cd42cc83462ad21f66698b02fb34d",
+          "assessment": "Accepted HW21/BUILD-G02 structured declaration replaces the historical loose literal: exact clock/targets/version floors plus separate named removal decision and fresh exact non-draft evidence. Shape rendering itself does not observe publication or authorize removal.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:03": {
+          "frozen_row_sha256": "d17398d0e3ee5e3db665afcc17e602687c4097d4b7f2a56234d0f768969048ad",
+          "assessment": "check_all reads expected and managed disk inventory, compares literal bytes and orphan sets, returning sync only when equal; no generation writes in check mode.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:04": {
+          "frozen_row_sha256": "a2387cf43b55d81e42195d5512bf3b04f577a84dc73a931195e4011a0a4f397d",
+          "assessment": "Missing/different/orphan entries are accumulated and reported as drift; canonical sources retain ownership.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:05": {
+          "frozen_row_sha256": "bc9ce3a3734024e5c6287639154c0a814edb438af9b6de2026ea44d4a01ab732",
+          "assessment": "Accepted BUILD-G01 replaces direct per-host writes: render every selected host and validate target map before publish_files. Equal files are skipped; only generated owned orphan paths are removed.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:06": {
+          "frozen_row_sha256": "ffb24330257cc73e2bbf7fddf671fe28f889504aaacdefd4fe249a0945f74400",
+          "assessment": "Successful owner publication returns changed count only after staged byte validation and all replacements/removals; normal success releases its owned journal/marker.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:07": {
+          "frozen_row_sha256": "3ccdd19ae038b0835426796b424cfb71550f652558951cced9cd65ac83e6b423",
+          "assessment": "Accepted BUILD-G01 supersedes historical earlier-host writes: invalid source/descriptor fails during complete rendering/target validation before publication; main reports invalid source rather than claiming completion.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        },
+        "S75:08": {
+          "frozen_row_sha256": "284994305e89a6ecfdcf0f2e176f93f6306e8b78a3d84d153551b74b8a6125a0",
+          "assessment": "Accepted BUILD-G01 replaces unsupported partial output with staged owner transaction and best-effort rollback; failed rollback retains marker/journal as unusable. assert_complete prevents downstream packaging from consuming a surviving generated-output marker. No crash-atomic global transaction is claimed.",
+          "cited_owner_paths": [
+            "tools/build-surface.py"
+          ]
+        }
+      },
+      "reused_original_records": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/surface/inspection.json",
+          "sha256": "f11bc55d8aca3a91671110e862d4ff96b03c3ee2dfaff82ee9b1d7d8ea8acd78"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/accepted-change-basis.json",
+          "sha256": "a8ac5e5ce33f33570a2d3c91926c9cf9370aff0de93648db2788719de1b25b35"
+        }
+      ],
+      "logic_scope": "Finite owner procedure and guarded interfaces. Family-cited paths are all bound even when a cited companion has no effect in one particular branch."
+    },
+    "sync": {
+      "machine": "S76",
+      "full_baseline_edges": [
+        "S76:01",
+        "S76:02",
+        "S76:03",
+        "S76:04",
+        "S76:05",
+        "S76:06",
+        "S76:07"
+      ],
+      "proposed_transition_updates": [],
+      "assessments": {
+        "S76:01": {
+          "frozen_row_sha256": "461dc97ff61b09bdcb5e7a7da99b79b5191a75fffc5eef772068bc0a642e4683",
+          "assessment": "core_files selects sorted canonical regular .py names excluding _host.py; nonempty inventory and strict descriptor targets required. Canonical nonempty LICENSE/THIRD_PARTY_NOTICES are included before publication.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "S76:02": {
+          "frozen_row_sha256": "28419083db5d709bd1757996bb87801baaece238bd991850cab094fad2403863",
+          "assessment": "--check compares exact source/copy bytes, including line endings, and does not call publish_files.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "S76:03": {
+          "frozen_row_sha256": "a5abace5e777aa591db1f1afe5209d3b69320aefbb6799179fc00190d0d073e7",
+          "assessment": "Every missing/different Python/notice path is listed as drift and returns1 without writing.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "S76:04": {
+          "frozen_row_sha256": "1b8722be71a3e672388485404bae355a0076b244d1dba349c4e808fab96c0731",
+          "assessment": "Accepted BUILD-G01 supersedes literal per-file .tmp-sync: all canonical source/notice bytes are read and every target validated before complete-set owned staging.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "S76:05": {
+          "frozen_row_sha256": "5463211ff6819edcdd976c9886e6d391c2adf95ed808cc6badd19cd20f603132",
+          "assessment": "publish_files stages/readbacks bytes then uses os.replace for changed files; equal files remain untouched. Source contract does not assert filesystem-crash atomicity.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "S76:06": {
+          "frozen_row_sha256": "1bc0b03ad36238a335c65dff6fef41cf9548947d60b97aba0a9d3051abaa4318",
+          "assessment": "Accepted BUILD-G01 replaces partial synchronization with owner rollback or retained unusable marker on failed recovery. It still implements no orphan deletion for removed canonical Python names and no global filesystem transaction.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        },
+        "S76:07": {
+          "frozen_row_sha256": "98d35a92f6df06bb38a0ed34feaba790c5c910d62faa7b99be9b1b199ef8aab9",
+          "assessment": "Unknown arguments, no sources or invalid host descriptors return2; no guessed host list or copied _host.py fallback.",
+          "cited_owner_paths": [
+            "tools/sync-core.py"
+          ]
+        }
+      },
+      "reused_original_records": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sync-owner-current-a0/sync-tested.json",
+          "sha256": "95d8441c72915eab12e3a8922f6c2135186c1f70d5ac6cee420041e945cee4fa"
+        }
+      ],
+      "logic_scope": "Finite owner procedure and guarded interfaces. Family-cited paths are all bound even when a cited companion has no effect in one particular branch."
+    },
+    "metadata": {
+      "machine": "S77",
+      "full_baseline_edges": [
+        "S77:01",
+        "S77:02",
+        "S77:03",
+        "S77:04",
+        "S77:05",
+        "S77:06",
+        "S77:07",
+        "S77:08",
+        "S77:09"
+      ],
+      "proposed_transition_updates": [
+        "S77:01",
+        "S77:02",
+        "S77:03",
+        "S77:04",
+        "S77:05",
+        "S77:06",
+        "S77:07",
+        "S77:08",
+        "S77:09"
+      ],
+      "assessments": {
+        "S77:01": {
+          "frozen_row_sha256": "8d606ffbecf90a44abe758dd86b1b7e122519e69017ec991d410e9ed06bae9f1",
+          "assessment": "Unchanged render_package/expected_package require the Pi descriptor and nonempty nested version/license, producing deterministic scoped root npm metadata, shipped whitelist excluding tools, Node floor and exact extension/skill entrypoints. Descriptor parsing remains strict.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:02": {
+          "frozen_row_sha256": "7f299878ad072898bd36c4270fcd7dbd3bf802469d5e168d09b95821ceb414a6",
+          "assessment": "Unchanged root metadata check compares expected bytes and returns drift without a write; write path regenerates only package.json from expected canonical values. No new atomic-write or whole-build guarantee is inferred.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:03": {
+          "frozen_row_sha256": "926f277d3a1b34172d9c685c27b4d1097ad924628b95c07747ac94c8d14b5bd3",
+          "assessment": "Unchanged normal release scope excludes plugins/ca-pi/tools but includes committed extensions and root metadata; no shipped change returns0 without demanding a bump.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:04": {
+          "frozen_row_sha256": "1901d3f2967a70dd1134da5700ba0a3b678ed63682635d212593c1d9ed3b0ed7",
+          "assessment": "Normal release guard verifies the base resolves to a commit before allowing first introduction; missing/bad base returns1 rather than pretending the old manifest was absent.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:05": {
+          "frozen_row_sha256": "ebe6f8aac8f385a94eb7e90531cc7746a364755906f0401cd63d1e86502f2373",
+          "assessment": "Only a valid base lacking Pi manifest takes first introduction; current root version and exact current-version changelog heading are required before consistency success.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:06": {
+          "frozen_row_sha256": "8b13f2ba25857d19ae9bb132506588cb3d04cbe712e126dfe06b5f7f8241529f",
+          "assessment": "Unchanged strict normal-release validation requires valid higher SemVer, matching root version, actual root/changelog changes, exact heading newly introduced relative to base. The existing declared integration branch separately judges the already-approved candidate against its recorded main baseline and checks live-main ancestry/version/tag constraints; no generic same-version exemption.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:07": {
+          "frozen_row_sha256": "4ad2a7ddd513af26742e80b430a4f51c1a11e8009f91e7abaa419cc826dc82d3",
+          "assessment": "After consistency checks, an already-existing ca-pi-vVERSION tag refuses; only absent tag yields consistency pass. This source guard creates no tag or release.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:08": {
+          "frozen_row_sha256": "30b39c197bc1f3964d90b18f47d69ded79ad8937c53f3ae1478aa7f218c801a2",
+          "assessment": "Listed missing advance/heading/root change or existing-tag conditions return1. No automatic version bump/tag/publish fallback is present. Accepted integration-candidate selection remains closed to its declared branch and validated baseline, not a weakened normal release guard.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        },
+        "S77:09": {
+          "frozen_row_sha256": "4a57b47b2304a7a539711d38834784a00547f761b2c6df31b5f290322aaecb7d",
+          "assessment": "build.mjs explicitly validates descriptor tool/policy/fingerprint and shared corpus inputs, then builds supervisor/private approval/child/parent entrypoints in order. Parent embeds actual just-built child SHA256; external runtime dependencies are declared. This is the build recipe contract only, not a new equality rebuild or installed bundle claim.",
+          "cited_owner_paths": [
+            "tools/build-host-packages.py",
+            "plugins/ca-pi/tools/build.mjs"
+          ]
+        }
+      },
+      "reused_original_records": [],
+      "logic_scope": "Finite owner procedure and guarded interfaces. Family-cited paths are all bound even when a cited companion has no effect in one particular branch."
+    }
+  },
+  "limits": [
+    "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+    "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+    "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+    "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+  ]
+}

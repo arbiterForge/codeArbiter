@@ -1,0 +1,10 @@
+{
+  "source": "a980c220ca4d66be552d06b84596dd56e8822eca",
+  "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\farm-cleanup-observation.test.ts",
+  "preimage_sha256": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+  "observed": "OriginalWindowscoverage job133317752766/CI43852022192attempt2, test refusesEACCESwithabsentGitregistration timedoutatVitest5000ms;966othersPASS3SKIP.",
+  "expected": "RealGitworktree setup/removal/readback completes within explicit boundedintegrationbudget; allfilesystemunknown/refusal/no-prune/retryassertionsremainmandatory.",
+  "cause": "Suite inheritsVitestdefault5seconds despiteupto9realGitprocesses andfilesystemI/O underV8instrumentation; observeddefaultbudgetexpiration. ExactslowinnerGitoperationnotretained, no productioncleanupdefectinferred.",
+  "regression": "SameoriginalfailingGitintegrationcase/full14owningtests. Originalhosted5sREDretained. CurrentowningV8suite14PASS6.886s(case0.422s), command7.642s; typecheckPASS1.328s. Numericwholecoverageunmeasureduntilnewhostedunion.",
+  "strategy": "Onlysuite30s integrationbudget plus15s boundon eachownedGitfixturechild. No productcleanupattempt/delay/refusalchange, no CI/RPCbudgetchange or retry."
+}

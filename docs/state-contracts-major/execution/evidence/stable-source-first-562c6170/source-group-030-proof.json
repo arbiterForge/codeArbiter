@@ -1,0 +1,48 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".github/fixtures/tribunal/cases.json": "6fee4415573e3fe63fc29a26c4d5132c76e08186bcc0e73acaa7b4bf909527e4",
+    "tools/codex-parity-fixture.py": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+    "tools/tribunal-eval.py": "45d227c3382ee279e3d0649837068b6b306c2daff208c30497f16d4bd9d50576"
+  },
+  "disposition_ids": [
+    "disposition:machines:T12"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-030-inspection.json",
+      "sha256": "32cc914bc8ffce86b4af482ad97edb500ed06b64f3f8ca161c55ad6867c02eac"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/tribunal-source-family.json",
+      "sha256": "5369fd1d185793bac5d29cc90a60472c3501c9dc0f5e6c8b740edf4903c976e1"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/tribunal-source-family.json",
+    "sha256": "5369fd1d185793bac5d29cc90a60472c3501c9dc0f5e6c8b740edf4903c976e1",
+    "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-030-inspection.json",
+  "scope": "Entire unchanged stdlib-only offline Tribunal source-contract machine/defaultcorpus preserved; all9baseline transition source contracts alreadyPRESERVED. Complete literal defaultcorpus and source verified, no imported repo implementation/host/normative-policy dependencies. External capturedreview/adjudication inputs remain caller data. No interpreter/Git execution equivalence, modelquality, provider call or publication acceptance.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ]
+}

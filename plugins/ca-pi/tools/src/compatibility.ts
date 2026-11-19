@@ -7,6 +7,15 @@ export interface HostCompatibility {
 }
 
 const SUPPORTED_PI_VERSIONS = new Set(["1.5.0"]);
+/** Historical private dialog qualification is not support for the ordinary admitted host. */
+export const PRIVATE_APPROVAL_LEGACY_PI_VERSION = "1.0.2";
+export function privateApprovalCapability(piVersion: string): Readonly<{
+  state: "unavailable" | "legacy-runtime-gated" | "unsupported-runtime";
+  evidenceMode: "runtime-gated";
+}> {
+  return Object.freeze({ state: SUPPORTED_PI_VERSIONS.has(piVersion) ? "unavailable"
+    : piVersion === PRIVATE_APPROVAL_LEGACY_PI_VERSION ? "legacy-runtime-gated" : "unsupported-runtime", evidenceMode: "runtime-gated" });
+}
 const MINIMUM_NODE = [22, 19, 0] as const;
 
 // Anchored so the three numeric groups must be followed by end-of-string or a

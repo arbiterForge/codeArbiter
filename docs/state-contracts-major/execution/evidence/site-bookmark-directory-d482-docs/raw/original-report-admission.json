@@ -1,0 +1,22 @@
+{
+ "result": "ORIGINAL_OWNER_ARTIFACT_UPLOAD_AND_OBSERVATION_ADMITTED",
+ "source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "source_tree": "2dfcf37c50ccc3dd7c5aac1c43cc321c6e7f3793",
+ "run_id": 44046125414,
+ "whole_success_attempt": 2,
+ "original_browser_job_id": 133912127642,
+ "original_browser_attempt": 1,
+ "artifact_id": 14311124383,
+ "archive_sha256": "8e2cf1a3cbf8e0069c7a2984e4ac630e355414ac11c9a2c3ade0bfd0b02d5c9e",
+ "sole_member_sha256": "0666931cd84c947ccaa594e4ffad0a79921b3c2e26e217e1397b9e075f8097bc",
+ "original_job_log_sha256": "30583d8204dc9764475532134cf5f0a6d9a08325a7ccb1d8a5227b45d74578dd",
+ "named_population": 203,
+ "checks": [
+  "unchanged validate_artifact",
+  "unchanged validate_upload(original job1/source report role/log)",
+  "unchanged _report_document over authenticated immutable byte cache; no duplicate download",
+  "unchanged validate_observation(all actual203 named outcomes)",
+  "no main-only final readiness or Pages-tar admission called"
+ ],
+ "runtime_effects": 0
+}

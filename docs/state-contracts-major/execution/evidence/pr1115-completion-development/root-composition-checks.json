@@ -1,0 +1,40 @@
+{
+  "recorded_at": "2026-11-16T13:38:54.515682+00:00",
+  "gofmt": {
+    "argv": [
+      "C:/Program Files/Go/bin/gofmt.exe",
+      "-d",
+      "core/artifacts/cmd/ca-artifact/cli_boundary_contract_test.go",
+      "core/artifacts/internal/store/fs_other_boundary_test.go"
+    ],
+    "exit_code": 0,
+    "stdout_bytes": 0,
+    "stderr_bytes": 0
+  },
+  "unsupported_format_correction": {
+    "initial": "Initialformatcheckreportedonlytwomap-valuealignmentspaces; no semanticGochange. CapturedWASMsource remainsoriginal28e3draft, retainedlosslessly; no finalbinarysourceclaim.",
+    "original_sha256": "28e3dbea39cd63209f21362011644c64abc4a8ce00c66456fde56f37c9053856",
+    "final_sha256": "6e7bbe1107b99514e0c19183dbf858026f958238357a0c9e92e6047a1e658390",
+    "gofmt_normalization_equal": true
+  },
+  "sandbox_typecheck": {
+    "argv": [
+      "approvedSafeNode24.22.1",
+      "node_modules/typescript/bin/tsc",
+      "--noEmit"
+    ],
+    "cwd": "plugins/ca-sandbox/tools",
+    "actual_tool_chunk": "05cd47",
+    "exit_code": 0,
+    "stdout_stderr_bytes": 0
+  },
+  "python_ast": "PASS2changedmodules",
+  "S75": {
+    "five_input_hashes_match_current": true,
+    "recorded_source_is_HEAD_ancestor": true,
+    "proof_sha256": "0830da403c8741ab9aa2ad2f846bec07dbffb07d2394c29aa73cd09783a521df",
+    "ledger_admission": false
+  },
+  "ledger_sha256": "5e881878a594c7a0961994f0313cdc083782b7493c19f714a428204d40a308e6",
+  "anti_slop": "NewREADME/CHANGELOG/help prose checked against core3A/3B+documents7A1; concretebrief technicalmaintainerprose, no addedseparator-em-dashes/filler/unsupportednumbers."
+}

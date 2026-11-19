@@ -1,0 +1,294 @@
+{
+ "schema": "codearbiter.literal-prose-successor-delta/1",
+ "scope": "Four narrative leaves only; dependent raw/proof/CAS/filemap digest graph refreshed.",
+ "finding": {
+  "id": "TOOLING-T10-06-PROSE-01",
+  "severity": "LOW",
+  "kind": "SOURCE_EVIDENCE_PROSE_MISMATCH",
+  "clause": "T10:06",
+  "packet_path": "clause-inspection.json",
+  "line": 6009,
+  "mirrors": [
+   {
+    "path": "authored-clause-data.json",
+    "line": 1908
+   },
+   {
+    "path": "clause-inspection.json",
+    "line": 6010
+   },
+   {
+    "path": "proofs/T10-preserved.json",
+    "line": 230
+   }
+  ],
+  "source_path": "tools/statusline-bench.py",
+  "source_lines": [
+   367,
+   381
+  ],
+  "observed_statement": "Current run mode rejects unknown or empty scenario selections before measurement",
+  "actual": "cmd_run converts omitted/empty args.scenario to an empty set, chooses all known scenarios via wanted or known, and runs that full population. It rejects unknown requested names. validate_comparison separately rejects empty measured scenario maps.",
+  "desired_statement": "Run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection and source/runtime metadata. Empty measured populations are rejected by comparison, not by that request-default branch.",
+  "required_change": "Correct only these four mirrored prose leaves plus dependent hashes/filemap/CAS seals in a fresh immutable successor. No production change or test replay needed. Preserve original sealed packet.",
+  "effect": "Evidence wording only; no source implementation finding. Existing63-cell CAS mappings and85 other clauses can be reused by exact joins."
+ },
+ "predecessor": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-tooling17-source-cb-y1yfkr7i\\delivery.json",
+  "sha256": "3bb27e3b6d8f1719ea7d4124dbfe786d5665cfae7a5888e652661bdcba3d9125"
+ },
+ "independent_review": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-tooling63-independent-review-45x_czd7\\review.json",
+  "sha256": "620924ca94be6b2faca67f69bdbc8121d218dbb65de820b2435cb0b14d5bfe94"
+ },
+ "source_commit_unchanged": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "observed_head_now": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "source_epoch_note": "Source observation remains immutablecb; current41aa HEAD is recorded separately. No runtime or source observation is restamped.",
+ "narrative_changes": {
+  "authored-clause-data.json": [
+   [
+    "/T10:06/semantic_assessment",
+    "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+    "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+   ]
+  ],
+  "clause-inspection.json": [
+   [
+    "/clauses/79/semantic_assessment",
+    "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+    "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+   ],
+   [
+    "/clauses/79/guard_effect_retry_assessment",
+    "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+    "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+   ]
+  ],
+  "proofs/T10-preserved.json": [
+   [
+    "/semantic_mapping/6/semantic_assessment",
+    "Current run mode rejects unknown or empty scenario selections before measurement and writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten.",
+    "Current run mode rejects unknown requested scenario names; an omitted or empty request selects all declared scenarios. It writes schema-v2 reports with explicit all/subset selection, harness SHA256, Python/platform and observed checkout revision. Requested output may be overwritten. Empty measured populations are rejected later by validate_comparison, not by the request-default branch."
+   ]
+  ]
+ },
+ "assertions": {
+  "four_narrative_leaves_only": true,
+  "other85_clause_data_exact": true,
+  "all63row_preimages_ids_statuses_frozen_hashes_exact": true,
+  "all39advanced_rows_full_history_exact": true,
+  "heldT05_row_exact": true,
+  "all_original_source_witnesses_inputs_raw_history_unchanged": true,
+  "all_declared_positive_inputs_current_equal": 34
+ },
+ "physical_source_readback": [
+  {
+   "path": ".github/scripts/_boundedproc.py",
+   "proof_source_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "physical_now_sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/_contextverificationlib.py",
+   "proof_source_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+   "physical_now_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/build_release_targets_provenance.py",
+   "proof_source_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+   "physical_now_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/check_adr_lifecycle.py",
+   "proof_source_sha256": "4da73f8b4143c5fed5f4986c78086b4dc5342b0bd4724c6e04072bae88b7e9ed",
+   "physical_now_sha256": "4da73f8b4143c5fed5f4986c78086b4dc5342b0bd4724c6e04072bae88b7e9ed",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/check_command_route_release_state.py",
+   "proof_source_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+   "physical_now_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/npm_audit_gate.py",
+   "proof_source_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea",
+   "physical_now_sha256": "44a0bde630451fe30b627ed7068d4857c09719ef04dd7665e8fa4fbeeab851ea",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/pi_benchmark.py",
+   "proof_source_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+   "physical_now_sha256": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/prepare_adr_acceptance.py",
+   "proof_source_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+   "physical_now_sha256": "880d19893792479359d3741838b5dab7efbaa04d2a86e099375a2b3c075ef688",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/scripts/test_artifact_authoring.py",
+   "proof_source_sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+   "physical_now_sha256": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/workflows/ci.yml",
+   "proof_source_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "physical_now_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": ".github/workflows/release.yml",
+   "proof_source_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+   "physical_now_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "core/pysrc/_adrlifecycle.py",
+   "proof_source_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+   "physical_now_sha256": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "core/pysrc/_adrlifecyclegit.py",
+   "proof_source_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "physical_now_sha256": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "core/pysrc/_provenancelib.py",
+   "proof_source_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "physical_now_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "core/pysrc/_releaselib.py",
+   "proof_source_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+   "physical_now_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "docs/state-contracts-major/PROGRAM.md",
+   "proof_source_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "physical_now_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+   "proof_source_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "physical_now_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/program.json",
+   "proof_source_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "physical_now_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/tasks.json",
+   "proof_source_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "physical_now_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+   "proof_source_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "physical_now_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/artifact-coverage.py",
+   "proof_source_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+   "physical_now_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/ci-impact.py",
+   "proof_source_sha256": "feedc9104f75d9034384bc41af1ee41e20892e7a57a35a2eb951e0fed2594a90",
+   "physical_now_sha256": "feedc9104f75d9034384bc41af1ee41e20892e7a57a35a2eb951e0fed2594a90",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/ci20_baseline.py",
+   "proof_source_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+   "physical_now_sha256": "b02da4a083ff2868b424d043b6d6f707006e5e4768167760cca1f1ce94e4dfb0",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/ci20_inventory.py",
+   "proof_source_sha256": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+   "physical_now_sha256": "60513d5f720f7ccdf1eb63fc92e63d8c3c3adb0dd2dc2dfa6a2773499b1c810a",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/command_compatibility.py",
+   "proof_source_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+   "physical_now_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/create-artifact-examples.py",
+   "proof_source_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5",
+   "physical_now_sha256": "33aab96f0956f720127d4040c5a4127fd9b22eeb3cc531a2e2566b6d268b01a5",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/generate-artifact-types.py",
+   "proof_source_sha256": "23a274ff421b9fa58fb645370fa8f76636319ffb3e73f4409b293d105ee5e8e5",
+   "physical_now_sha256": "23a274ff421b9fa58fb645370fa8f76636319ffb3e73f4409b293d105ee5e8e5",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/go_test_parallel.py",
+   "proof_source_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+   "physical_now_sha256": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/host_descriptors.py",
+   "proof_source_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+   "physical_now_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/live-smarts-exercise.py",
+   "proof_source_sha256": "c29f8b611d2675176ef77b5ca605ca2fc1684610db8bd3ca8f75815df7ba6bc1",
+   "physical_now_sha256": "c29f8b611d2675176ef77b5ca605ca2fc1684610db8bd3ca8f75815df7ba6bc1",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/measure-knowledge-retrieval.py",
+   "proof_source_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+   "physical_now_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/owned_output.py",
+   "proof_source_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+   "physical_now_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/statusline-bench.py",
+   "proof_source_sha256": "d65fb0d3d65a27b5b95960f183567ba581d00b4ea4e8b332abd9cc23d6e14697",
+   "physical_now_sha256": "d65fb0d3d65a27b5b95960f183567ba581d00b4ea4e8b332abd9cc23d6e14697",
+   "physical_bytes_equal": true
+  },
+  {
+   "path": "tools/statusline-screenshot.py",
+   "proof_source_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+   "physical_now_sha256": "b1c74dc6c9fecb616aa75ae16a8d30ea86617eb23b7c4d1c157ea5eb43393a8a",
+   "physical_bytes_equal": true
+  }
+ ],
+ "limits": [
+  "Author correction only; no independent self-PASS or source/owner/runtime/test/API/network replay.",
+  "No canonical/index/ref/marker/ledger writes. Old packet/review retained immutable; Root performs tiny-delta closure and actual original-owner admission."
+ ]
+}

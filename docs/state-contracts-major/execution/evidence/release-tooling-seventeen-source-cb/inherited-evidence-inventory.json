@@ -1,0 +1,1461 @@
+{
+ "schema": "codearbiter.retained-evidence-inventory/1",
+ "retained_advanced_rows": [
+  {
+   "section": "transitions",
+   "id": "C34:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Declared target references are derived and deduplicated by maintained helper, batched through Git hash-object; missing/short/error hash mapping becomes explicit null instead of an invented digest. New record is passed to maintained provenance writer; loader/write errors propagate. No actual current hashes/provenance write, declaration completeness or runtime module availability asserted. Imported hash-runner failure intentionally degrades to unknown/null, not successful evidence.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+      "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "e5a5cdf6f113192f61bd3d0657bd5c2bafdb77ab3602f5cb73e4aa6ca681e30e",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C34:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Check requires a readable known-shape provenance record then compares drift-trigger path set against current declared references only; matching path population returns success without comparing stored content hashes. Source path-set contract only. This does not establish current provenance byte freshness, valid runtime record or successful actual check.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+      "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "cae3031c79c6b9f104da5bd7478b97ae52e12f870e36e1f898c796dbf56dda69",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C34:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Both expected-minus-recorded and recorded-minus-expected produce errors; --check prints them and exits1 without write or automatic rebaseline. No real source scope drift or heal execution performed; no current stale hashes are rebranded valid.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+      "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "617aba69555a576ff52124fddff857ed117f3ff1744386cbd97b1dd0c8834b77",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C35:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+      "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575"
+     }
+    ],
+    "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Exact exception schema/fields, GHSA+package grammar, nonblank reason/approver, supported severity, approval<=today and approval<=backstop<=approval+30days/today<=backstop guard every entry; duplicate GHSA/package pair rejects. This is policy-row validation, not authentication of approver identity."
+   },
+   "row_sha256": "a37843c0dcc64de8afc7e7fe457740637a182ad7ba0cb337b0acbbc3b3bd40d8",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C35:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+      "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575"
+     }
+    ],
+    "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. JSON/root/error/vulnerability inventory and each via/advisory shape are checked; string via pointers add no independent finding; direct advisory URL tail, package and supported severity are collected. No network audit or transitive-pointer closure was executed."
+   },
+   "row_sha256": "bea0873c60e2f44df47dcc28726ebc3e130db8e9c684ca1cb17bcd0a3362f876",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C35:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+      "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575"
+     }
+    ],
+    "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. At-threshold direct finding blocks absent exact GHSA/package exception, or observed severity above accepted severity. CLI catches GateError and emits nonzero on malformed input/blockers; no unavailable registry report is relabelled clean."
+   },
+   "row_sha256": "47ad47b46cbd9d1b7cc964628713d93b6447b1eecedaaaaa80fc518f32d38f0d",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C35:04",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+      "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575"
+     }
+    ],
+    "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Valid but unused exception pairs only emit a removal note; load still rejects expired/future/overlong approval windows before evaluate. No runtime date/advisory inventory acceptance is claimed."
+   },
+   "row_sha256": "6c555c2017054c0fcb734f3ac685e5d199efbc8669553b4a88763b5c040b249c",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C36:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "task_ids": [
+     "R-07",
+     "Q-01"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/tested.json",
+      "sha256": "529fd6065616ceff9bf0e3209ef9f48f183460f5ccd4be77d2db843fb713ba41"
+     }
+    ],
+    "evidence_history": [
+     {
+      "kind": "test",
+      "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+      "ref_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc"
+     },
+     {
+      "kind": "test",
+      "commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+      "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+      "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "f3a28e1cbff61ba92bdfb8d9c164084ef4bdcba1ffbca14e1d4d2e62cea50e6d",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "C36:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "task_ids": [
+     "R-07",
+     "Q-01"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/tested.json",
+      "sha256": "529fd6065616ceff9bf0e3209ef9f48f183460f5ccd4be77d2db843fb713ba41"
+     }
+    ],
+    "evidence_history": [
+     {
+      "kind": "test",
+      "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+      "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+      "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+      "ref_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc"
+     },
+     {
+      "kind": "test",
+      "commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+      "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+      "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "f3a28e1cbff61ba92bdfb8d9c164084ef4bdcba1ffbca14e1d4d2e62cea50e6d",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T01:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+      "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Map parser requires schema1, known lane/scope, nonempty check text, unique IDs, broad-lane and nonempty valid unique edges. Canonical descriptor loader only accepts core/hosts.json and validates descriptor shape/host conditions; immutable mapping dataclasses are constructed. CLI catches the declared load errors and expands to broad validation rather than reducing scope. Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+      "ref_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+      "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "2edb1ef7403dcec7b3f7e5d66240d9b75832da33f32bae8a410e8352da4d3530",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T01:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+      "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Every supplied relative POSIX changed path is normalized then matched against explicit glob or descriptor edge. First matching descriptor surface rule wins and exact exclusions suppress that host. Known check IDs are deduplicated; an unmapped affected host/path returns broad fallback, never a silent empty selection. Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+      "ref_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+      "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "7e177c3570439eb13e698fa745d701d1f356ceaa73cc8078eb59c2b33c178101",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T01:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+      "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Empty changes or any invalid/unmapped path uses ImpactResult.broad_lane with only broad-lane selected. _predicted_not_selected returns empty for fallback rather than implying irrelevant checks. Successful mapping branch is reached only after all paths classify. Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+      "ref_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+      "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "36ab750d855564aa4c1d022c42ce27c346f14c26d51e17bea131819c0a798ce7",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T01:04",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+      "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; The declared ImpactMapError/OSError/ValueError handlers construct a built-in CHECK/REPO Broad validation receipt including failure reason; the subsequent filesystem writes remain outside that catch and may fail. Receipt is advisory and no job outcome is inferred. Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+      "ref_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+      "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "18866cb48a3588e313e111ce25153ac64dd4eb8bb579fc2c5aa0ae9f3f0b203d",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T01:05",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+      "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+      "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Requested output uses UTF-8 overwrite and requested summary uses append before return0. No workflow mutation or job execution/if rewriting exists in this planner main; write failures propagate. This is shadow receipt generation, not validation actually running. Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+    "evidence_history": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+      "ref_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca"
+     },
+     {
+      "kind": "conformance-check",
+      "commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+      "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+      "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+     }
+    ]
+   },
+   "row_sha256": "081f6cdeb3b667e2dd6c067acf6e9d0a78136ab580ba4ee470ff85340acb2ca6",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Collect checks target equals supported local Go/host platform and expected platform, refuses output inside module or an existing output, hashes bounded regular module bytes excluding .git and discovers package inventory before creating output. Offline Go environment and fixed atomic coverpkg command are constructed; no run is made by this inspection. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "d233e78594ca01326985e808d7b0c82f9f59b717f2d7150adbeb30c7c2259b98",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Successful unit output must validate atomic profile/source bounds. Optional integration profiles require exact sidecar shape, source/platform/toolchain/profile digest, and all source bytes are rehashed before exclusive metadata.json is written last. Foreign/malformed/stale data or source drift raises; earlier partial owned output can remain without completed metadata. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "16293a9bbe7752659c11531e33b2dfc010d84585d438d868e25b296aa5193a09",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:04",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Integration sidecar creation compares original source identity to current whole module, local native platform/toolchain and valid atomic profile, then returns bound profile SHA and identity. Digests are unkeyed consistency checks; actual prior binary exercise is caller responsibility. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "24d8773d1685f2482be04a7781df09421819b5af31eff50b5ee97b3ed599453d",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:05",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Summarize requires unique supported expected platforms, finite threshold, exact source/toolchain/packages/unit command, exact unit/integration file inventory and digest, valid bounded profiles and shared instrumentation layouts. Statement-count conflicts and final source drift refuse. Covered blocks are unioned by hit, not suite totals. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "c956ed6ffd6dcc08363dc43c584a9511d41225e94814ed3dbc545d48eacbb7c2",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:06",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; After profile/identity validation, missing expected platform yields PARTIAL with exact present/missing lists; CLI accepts only COLLECTED or COMPLETE and therefore returns nonzero. Absent platform contributes no claimed execution. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "f3911eb5dd03db7de35e58e4c8c74482e51ec2a36585f901b5c6a41c6e22da40",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:07",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; With platform population complete, require-integration checks each executable package has a covered integration block and emits MISSING_INTEGRATION plus missing platform details; unit-only data cannot satisfy this branch and CLI returns nonzero. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "106c95570afd70f1b5834f89de8b10ffa36429420156f1614f328a185ebacbc5",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:08",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Only after required populations complete, achieved statement percentage is compared to the caller finite minimum; lower value yields BELOW_MINIMUM and nonzero CLI. No built-in workflow threshold or execution is asserted. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "808ca4e8abd4bb1aa9df18ad1a89b67be9186564e642c9a55e42a72002838448",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T02:09",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+      "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Complete requested populations and absent/met threshold yield COMPLETE with statement totals/coverage and explicit lines/branches not_measured. CLI returns zero only this/collect success. Report format is a metric, not a native qualification receipt. Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+   },
+   "row_sha256": "b7e66db5e70fdb38998b115002f83b3466ac743d96928529bbfc21cda881870b",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T04:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "T-01",
+     "Q-01"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+      "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/ci20-replay.json",
+      "sha256": "e05fc8e55ba02067e780d430480a6878329735d32c7cc2c631149210dd5da860"
+     }
+    ]
+   },
+   "row_sha256": "0796fd4ea91c385cfba0f96936efdab38bbb51d485e6d863de70d5d34d69be5d",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T04:06",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "T-01",
+     "Q-01"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+      "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/ci20-workflow-identity.json",
+      "sha256": "d2b6ecb2e4cd7f71ba5f3eb9e72e7db947dcf9865ad28a6d0af28ae89071db3c"
+     }
+    ]
+   },
+   "row_sha256": "c58b4074e775f2719ac28f1dc41c67a0f8d20b70f4cb3a90e88b399c4e2e3d08",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T05:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+      "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+      "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+     }
+    ]
+   },
+   "row_sha256": "95b3e403107fca8300f33b95c5cca3467519f854b9c4959d3712e99561d218dd",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T05:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+      "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Each fixed Git init/add/fixture-authored commit is checked independently and any nonzero returns failure; generated files/earlier Git steps are not rolled back. Identity uses command-local fixture author settings. No fixture or host was launched by this inspection; no actual Git parity/persona/gate behavior acceptance."
+   },
+   "row_sha256": "e18c0c7a40c70363c840f7d8c6fd53c3d1906c6d659b8843d8c338e2858a2c59",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T05:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "0830b95752a05343563be027e513a2845a6c57df",
+      "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/parity-instruction-preserved.json",
+      "sha256": "1a8e3042be8718d6fffe637efd80ff7d436a7117bb81ea0b9e434d81d9922817"
+     }
+    ]
+   },
+   "row_sha256": "1e19ce0e07b89759f8989d25543e6179e44b3fd0db5306757fcdca66e2b40f2c",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T06:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/draft-example-driver-preserved.json",
+      "sha256": "c16f73329b372423a2769c2a1b922e47e3c59fd84673f6b5590747fa5900b59c"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Output must be absent or empty; binary resolves strictly; fixed reviewed reference JSON supplies deterministic spec create operation/identity and normative data to subprocess. Command nonzero/not-ok throws, leaving earlier owned partial output. Conditional native command-construction contract only. No binary execution, reference semantic equivalence or existing store overwrite journey."
+   },
+   "row_sha256": "6d9db2481e49c3ba4ddd19e69436c9e80da3bcd4d3b4c4d18b3d95f6bf805485",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T06:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/draft-example-driver-preserved.json",
+      "sha256": "c16f73329b372423a2769c2a1b922e47e3c59fd84673f6b5590747fa5900b59c"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Successful identity result supplies exact normative_sha256 to plan.spec_ref and explicit draft_preview binding; plan create uses exact spec ID. No approval operation is issued. No actual identity/hash/approval/native result or current runtime compatibility claim."
+   },
+   "row_sha256": "ab1504d02d69baf8f72405bba26b53f263bccce124206c9f41568a053b0e929e",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T06:04",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/draft-example-driver-preserved.json",
+      "sha256": "c16f73329b372423a2769c2a1b922e47e3c59fd84673f6b5590747fa5900b59c"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Report stores identities, validation, all_ready derived from returned valid flags, approvals_issued0 and accepted count0, then writes scratch JSON/prints. Write failure leaves prior native outputs; no acceptance or authority receipt is minted. No report/binary output was produced by this source inspection; not a native qualification or human approval."
+   },
+   "row_sha256": "767c9c397a51b7aa0edd2501f069168e618eb9c134ecd40f09ea8ff0d42ced55",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T07:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "NT-12",
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/schema-io-ordering-preserved.json",
+      "sha256": "be7b695e5643ba4066c4a5d89269c32bc277149eb8713fb581e0d5743eb1f92d"
+     }
+    ],
+    "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Check mode compares rendered target bytes then each of the seven source/embedded schema pairs; any mismatch raises stale diagnostic and check branch performs no writes. No gofmt execution or claim that current generated bytes already match is made."
+   },
+   "row_sha256": "7ed81da5a52027fe82979656f8fae211f28724a153edbd57a92e646164cb4fd9",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T07:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "NT-12",
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/schema-io-ordering-preserved.json",
+      "sha256": "be7b695e5643ba4066c4a5d89269c32bc277149eb8713fb581e0d5743eb1f92d"
+     }
+    ],
+    "candidate_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Generation branch writes target first and the seven embedded schema copies in sequence; there is no transaction/rollback. I/O failure can leave partial output; explicit later regenerate/check remains needed."
+   },
+   "row_sha256": "4894fa9147f40f23303bdf6f9be181202a4357996d001858a16c93e39ea616c6",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T08:05",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "T-01",
+     "Q-01"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+      "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+      "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+     }
+    ]
+   },
+   "row_sha256": "74ff8236eeae1137fd69c2f978a228277584607e4820e8c7d872e307661fbd58",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T09:01",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Main requires nonempty ARTIFACT_TEST_INSTALLATION before invoking builder. The inspected build_installation supplied branch requires directory and copies supplied native payload; driver then loads fixture-installed knowledge helper. The unsupplied builder branch is unreachable under stable environment through this main check; no actual native installation admission/result is claimed. Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+   },
+   "row_sha256": "debca4820ae39d62d2ab3a7706f296f1dada4fea7d7467e9211d338bc83c9c96",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T09:02",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Chosen fixed small/large size creates owned TemporaryDirectory resolved to physical root; fixed Git init checks success, helper init/create-missing must return0. Synthetic records use fixed kinds, scoped/global path data and batches20, with matching five legacy Markdown files; context cleanup covers failures. Actual helper effect is conditional on its success, not asserted here. Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+   },
+   "row_sha256": "31affcea36b941ea8a7412c5c206f62c979b5e1ce30ce246112eae039e5f3271",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T09:03",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Fixed helper subprocess has 300-second timeout and nonzero abort. Driver reads all five legacy documents, invokes same scoped relevant target twice, decodes actual warm JSON fields and reports returned/unmatched/omitted/unreadable counts. Cold/warm equality is an observed-output comparison boolean, not an assumed equality. No measured result is fabricated. Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+   },
+   "row_sha256": "8ec6622186254a01640c18b748665a497699cc8383493598d80b7c9dfb005132",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T09:04",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "task_ids": [
+     "Q-01"
+    ],
+    "status": "PRESERVED",
+    "evidence": [
+     {
+      "kind": "conformance-check",
+      "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+      "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd"
+     }
+    ],
+    "candidate_contract_note": "Source-clause-only; Only after requested size calls complete is the aggregate printed; finally cleans builder owner when provided. Main has no percentage acceptance threshold. Legacy byte/4 and new character/4 estimators remain explicitly estimates; no tokenizer accuracy or performance improvement is asserted. Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+   },
+   "row_sha256": "6a9ccd7b0c2b8792437001f0f0269d446a36f8dbd5aeca45ffd906718465d780",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T10:07",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "T-01",
+     "Q-01"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+      "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+      "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+     }
+    ]
+   },
+   "row_sha256": "74ff8236eeae1137fd69c2f978a228277584607e4820e8c7d872e307661fbd58",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  },
+  {
+   "section": "transitions",
+   "id": "T10:08",
+   "row": {
+    "owner": "release-and-tooling",
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "task_ids": [
+     "T-01",
+     "Q-01"
+    ],
+    "status": "TESTED",
+    "evidence": [
+     {
+      "kind": "test",
+      "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+      "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+      "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+     }
+    ]
+   },
+   "row_sha256": "74ff8236eeae1137fd69c2f978a228277584607e4820e8c7d872e307661fbd58",
+   "state": "RETAINED_UNMODIFIED_NO_RUNTIME_OR_EPOCH_RENEWAL"
+  }
+ ],
+ "raw_proof_copies": [
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+   "evidence": {
+    "kind": "test",
+    "commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+    "ref": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/C36-two-tested.json",
+    "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+    "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+   },
+   "retained_copy": "inherited/000-C36-two-tested.json",
+   "sha256": "92652823a2d9bd464c40d7cfcd75705179b12a23a53fb4cd1f53b4da0412afd5",
+   "bytes": 9932,
+   "read_epoch": "current-retained-path",
+   "kind": "test",
+   "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+   "result": "PASSED",
+   "scope": "Renew exactly two existing TESTED transition records using one actual current-source production-JS benchmark. Full owning success clauses observed; original stub-boundary scope preserved. No new cells/status promotion or whole machine/task closure.",
+   "limits": [
+    "Local Windows/amd64 ordinary adapter benchmark only; no installed Pi, actual parent consent/UI, provider/model, native executable, Go, Docker, network, publication or task/machine qualification.",
+    "The105 nativeCallCount increments are the original in-memory factory invocations;105 bridgeCallCount increments are the original stub BridgePort. Actual production wrapBuiltins is bundled and executed, not real105 Go calls.",
+    "Python read-only profiling adds overhead; recorded absolute/relative performance is instrumented, not an uninstrumented performance or improvement claim. Node boundary timings are the original child's values.",
+    "Existing Windows process-group/taskkill bounded reader semantics retained; no stronger Job Object/native-rundown claim.",
+    "No fresh negative workload, installation, --real-spawn, source modification, test additions or extra group executed. Existing reader failure controls/history remain separate.",
+    "Authenticated f797 native artifact was not consumed or needed; no native input attestation is borrowed."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/parity-instruction-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "0830b95752a05343563be027e513a2845a6c57df",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/parity-instruction-preserved.json",
+    "sha256": "1a8e3042be8718d6fffe637efd80ff7d436a7117bb81ea0b9e434d81d9922817"
+   },
+   "retained_copy": "inherited/001-parity-instruction-preserved.json",
+   "sha256": "1a8e3042be8718d6fffe637efd80ff7d436a7117bb81ea0b9e434d81d9922817",
+   "bytes": 2272,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+   "result": "PRESERVED",
+   "scope": "Referenced host/runtime implementations are not dependency-equivalence claims; only unchanged printed instructions + unchanged guide text are preserved.",
+   "limits": [
+    "Component boundary only; no production external ref/release/publication, installed qualified cohort, provider or parent UI acceptance.",
+    "No machine/task/whole-program promotion; unexecuted platform and unrelated branches remain pending."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-local-94b/preserved-source-contract.json",
+    "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1"
+   },
+   "retained_copy": "inherited/002-preserved-source-contract.json",
+   "sha256": "faab11f513fafe89f98fd11160ceecc5de2e925514b2518cd5137614bb1f54c1",
+   "bytes": 3251,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+   "result": "PRESERVED",
+   "scope": "Byte-identical fd7source and complete default corpus; stdlib-only repository dependency closure. File-construction source contract and offline Tribunal parser/scoring/output contract only. No Git/Python runtime equivalence, host enforcement, live provider or model judgement claim.",
+   "limits": [
+    "Original local evidence; no hosted PR evidence relabeled.",
+    "Retained proof/raw paths become Git-authenticatable only after parent commits these exact metadata bytes.",
+    "No current production archive/installed/cohort/browser/live provider qualification."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/ci20-replay.json",
+   "evidence": {
+    "kind": "test",
+    "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+    "ref": "docs/state-contracts-major/execution/evidence/packaging-remaining-40b9/ci20-replay.json",
+    "sha256": "e05fc8e55ba02067e780d430480a6878329735d32c7cc2c631149210dd5da860"
+   },
+   "retained_copy": "inherited/003-ci20-replay.json",
+   "sha256": "e05fc8e55ba02067e780d430480a6878329735d32c7cc2c631149210dd5da860",
+   "bytes": 2986,
+   "read_epoch": "current-retained-path",
+   "kind": "test",
+   "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+   "result": "PASSED",
+   "scope": "Fixture-based exact DAG critical-path replay75s/build70s, cycle/unknown/missinggroup refusal, and actual disposableGit dirtyworkflow/source binding refusal before API. No live pagination, hosted speedup or baseline/inventory publication claim.",
+   "limits": [
+    "No provider/model invocation or positive live screenshot/native/installed/cohort qualification.",
+    "T08:03material quality and T11normal positivePNG/normal-cleanup acceptance remain pending.",
+    "Source inputs committed; wholeworktree may contain unrelated active farm changes."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+   "evidence": {
+    "kind": "test",
+    "commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+    "ref": "docs/state-contracts-major/execution/evidence/reader-integrity-dde4/reader-fixtures.json",
+    "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+    "ref_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc"
+   },
+   "retained_copy": "inherited/004-reader-fixtures.json",
+   "sha256": "55a78c96c423cea3890321f04e6bef73e17d21f7776b72275821d60e7e06ff88",
+   "bytes": 2706,
+   "read_epoch": "current-retained-path",
+   "kind": "test",
+   "source_commit": "dde429b98eb16622cf4ed211386783342fc9d48a",
+   "result": "PASSED",
+   "scope": "C-F08 two wait sites exercised by actual hanging Codex command fixture and Pi readiness/completion children. C36:02/:03 only bounded readiness/completion contract. Actual100warm benchmark remains corroborating prior source evidence, not a claimed captured full runtime closure.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/draft-example-driver-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/draft-example-driver-preserved.json",
+    "sha256": "c16f73329b372423a2769c2a1b922e47e3c59fd84673f6b5590747fa5900b59c"
+   },
+   "retained_copy": "inherited/005-draft-example-driver-preserved.json",
+   "sha256": "c16f73329b372423a2769c2a1b922e47e3c59fd84673f6b5590747fa5900b59c",
+   "bytes": 4900,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Only caller command construction/draft binding/report ordering. Current reference data are inputs and may evolve; no native schema compatibility, compiled binary effects, strict response type validation or actual approvals/task acceptance.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+    "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5"
+   },
+   "retained_copy": "inherited/006-parity-fixture-git-preserved.json",
+   "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5",
+   "bytes": 2381,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Only fixed init/add/fixture-commit failure propagation. No fixture creation, host discovery, enforcement parity or actual Git result.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+    "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+    "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+   },
+   "retained_copy": "inherited/007-release-provenance-scope-preserved.json",
+   "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+   "bytes": 6688,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Derived referenced file-path set, unknown-null hashing and maintained writer contract only. Relevant parse_release_targets/load_targets/provenance_trigger_paths and write_text_atomic definitions are AST-identical to baseline; concrete current bodies/error branches read. Other changed shared helper functions do not establish actual module/runtime/data availability or successful generation/hash/write.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/tested.json",
+   "evidence": {
+    "kind": "test",
+    "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "ref": "docs/state-contracts-major/execution/evidence/software48-current-7ac01607/benchmark/tested.json",
+    "sha256": "529fd6065616ceff9bf0e3209ef9f48f183460f5ccd4be77d2db843fb713ba41"
+   },
+   "retained_copy": "inherited/008-tested.json",
+   "sha256": "529fd6065616ceff9bf0e3209ef9f48f183460f5ccd4be77d2db843fb713ba41",
+   "bytes": 48631,
+   "read_epoch": "current-retained-path",
+   "kind": "test",
+   "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+   "result": "PASSED",
+   "scope": "Same existing 2 TESTED software rows only; exact original owning assertions/current actual inputs and output observed at7ac. No new statuses, task/scenario/native/host/provider/model/publication qualification.",
+   "limits": [
+    "Original test/source/command assertions unchanged. Actual first result and full after-snapshot persisted before validation.",
+    "Full actual Python installation10795 files observed in structured records; no historical1905 count relabeled as current.",
+    "Complete physical namespace records preserve legacy caches/untracked noncausal entries; private bytecode prefix precedes project imports. No cache deletion or blanket physical==Git claim.",
+    "Transcripts retained losslessly with original decoded SHA256/bytes; private originals unchanged.",
+    "All current cells preserve old active/history references at real source/ref epochs; no overall staged/program readiness claimed.",
+    "Original --samples100 command only, no --real-spawn. Temporary production wrapBuiltins bundle+approved Node/esbuild run; bridge/factory105 counters are stubs, not105 Go/native effects.",
+    "Read-only profiling adds overhead; no uninstrumented performance, improvement or real-host/provider claim. CPU lane was quiet after ci actor inspection release."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-old60-preserved.json",
+    "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0"
+   },
+   "retained_copy": "inherited/009-source-old60-preserved.json",
+   "sha256": "a0c4d1a324988f3124c61297557db3a37164d357d981a54abb29dbb4fab7b5e0",
+   "bytes": 16810,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+   "result": "PRESERVED",
+   "scope": "Same finite original guard/effect/retry and accepted-remap source contracts only, with per-row predecessor scope/limits retained. A preserved machine is conditional source composition, never an executed platform/task/host observation.",
+   "limits": [
+    "No tests/import/product/runtime/native/Go/SDK/CLI/provider/model/network/build/install/publication execution.",
+    "Old actual test observations remain at their original epochs; none relabelled as current runtime proof.",
+    "Literal7ac Git source is the subject; two nonexecuted MD CRLF transports have separate stable physical hashes and exact LF equality only.",
+    "No changes to statuses, unselected rows, user/HTTP policy, human/physical/model/UI/platform/installed/native holds or readiness gate."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+    "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+    "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe"
+   },
+   "retained_copy": "inherited/010-source-packaging27.json",
+   "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+   "bytes": 8291,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+   "result": "PRESERVED",
+   "scope": "Same finite original guard/effect/retry and accepted-remap source contracts only, with per-row predecessor scope/limits retained. A preserved machine is conditional source composition, never an executed platform/task/host observation.",
+   "limits": [
+    "No tests/import/product/runtime/native/Go/SDK/CLI/provider/model/network/build/install/publication execution.",
+    "Old actual test observations remain at their original epochs; none relabelled as current runtime proof.",
+    "Literal7ac Git source is the subject; two nonexecuted MD CRLF transports have separate stable physical hashes and exact LF equality only.",
+    "No changes to statuses, unselected rows, user/HTTP policy, human/physical/model/UI/platform/installed/native holds or readiness gate."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+    "ref": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+    "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+    "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+   },
+   "retained_copy": "inherited/011-preserved.json",
+   "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+   "bytes": 18890,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+   "result": "PRESERVED",
+   "scope": "Exact59 existing PRESERVED source-only contracts and separate1 accepted retired contract, with every predecessor scope/limit/history retained; no task/status promotion or runtime qualification.",
+   "limits": [
+    "No tests, CLI/SDK/native/Pi/Codex/model/provider/network/build/install or release execution.",
+    "Literal e064 Git source is the proof subject. Two nonexecuted Markdown inputs have stable physical CRLF transport with exact LF-normalized equality and separate hashes; no executable/runtime normalization or raw byte-equality claim.",
+    "All original raw/proof evidence retains actual epochs; lossless flat predecessor proof containers preserve exact bytes including CRLF. Existing original42 raw refs remain immutable history.",
+    "No S10/S11 HTTP policy, user/model/UI/host/physical consent, installed/native cohort, whole-task/program/main/publication closure."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+    "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+    "ref_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca"
+   },
+   "retained_copy": "inherited/012-impact-planner-preserved.json",
+   "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+   "bytes": 6983,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Conditional source-only advisory planner contract on supplied map/descriptors. Canonical loader and changed shared descriptor field/rule validation inspected; surface-tag scan may refuse data not inspected as a complete tree here. No actual load/evaluation, full imported runtime availability, CI selection/execution/skip or publication result.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/knowledge-measurement-preserved.json",
+    "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd"
+   },
+   "retained_copy": "inherited/013-knowledge-measurement-preserved.json",
+   "sha256": "48177a98d7acbfce2b3985f37121dc2a0a8d14057f52e6a84b4977b16cda7fbd",
+   "bytes": 6018,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/tool-guards-source-d594/artifact-coverage-preserved.json",
+    "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd"
+   },
+   "retained_copy": "inherited/014-artifact-coverage-preserved.json",
+   "sha256": "fd96da0ba6c61facbb1e2e0bd6d8cb107b819af88115b1feb8360607893e2ffd",
+   "bytes": 9518,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/audit-exceptions-preserved.json",
+    "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575"
+   },
+   "retained_copy": "inherited/015-audit-exceptions-preserved.json",
+   "sha256": "9bbfed47e95dea19d9d3a97f1186a3b1cd1dddac12d19b02c3c45b40ee3d3575",
+   "bytes": 6203,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Original finite conditional source clauses only, narrowed to actual audit-exceptions control cone; no execution or broader task/machine claim.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/schema-io-ordering-preserved.json",
+   "evidence": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/schema-io-ordering-preserved.json",
+    "sha256": "be7b695e5643ba4066c4a5d89269c32bc277149eb8713fb581e0d5743eb1f92d"
+   },
+   "retained_copy": "inherited/016-schema-io-ordering-preserved.json",
+   "sha256": "be7b695e5643ba4066c4a5d89269c32bc277149eb8713fb581e0d5743eb1f92d",
+   "bytes": 5659,
+   "read_epoch": "current-retained-path",
+   "kind": "conformance-check",
+   "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+   "result": "PRESERVED",
+   "scope": "Original finite conditional source clauses only, narrowed to actual schema-io-ordering control cone; no execution or broader task/machine claim.",
+   "limits": null,
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/ci20-workflow-identity.json",
+   "evidence": {
+    "kind": "test",
+    "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+    "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/ci20-workflow-identity.json",
+    "sha256": "d2b6ecb2e4cd7f71ba5f3eb9e72e7db947dcf9865ad28a6d0af28ae89071db3c"
+   },
+   "retained_copy": "inherited/017-ci20-workflow-identity.json",
+   "sha256": "d2b6ecb2e4cd7f71ba5f3eb9e72e7db947dcf9865ad28a6d0af28ae89071db3c",
+   "bytes": 2331,
+   "read_epoch": "current-retained-path",
+   "kind": "test",
+   "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+   "result": "PASSED",
+   "scope": "Actual dirtyfixture workflow rejected before API; optimized inventory refuses stalecheckout. Not live workflow/runtime-duration qualification.",
+   "limits": [
+    "No provider/model invocation or positive live screenshot/native/installed/cohort qualification.",
+    "T08:03material quality and T11normal positivePNG/normal-cleanup acceptance remain pending.",
+    "Source inputs committed; wholeworktree may contain unrelated active farm changes."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  },
+  {
+   "original_ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+   "evidence": {
+    "kind": "test",
+    "commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+    "ref": "docs/state-contracts-major/execution/evidence/tools-local-af5f/measurement-verdict-controls.json",
+    "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8"
+   },
+   "retained_copy": "inherited/018-measurement-verdict-controls.json",
+   "sha256": "01ae6669c3c71d29893ccdd164b30d0abf7b08c7a0c4e99e9891647d1deaccd8",
+   "bytes": 3192,
+   "read_epoch": "current-retained-path",
+   "kind": "test",
+   "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+   "result": "PASSED",
+   "scope": "Single-case failed producer with plausible successful judge cannot pass; empty benchmark reports reject; compatible nonempty subset compares and harness mismatch refuses. Synthetic measurement reports; no performance improvement or material SMARTS quality claim.",
+   "limits": [
+    "No provider/model invocation or positive live screenshot/native/installed/cohort qualification.",
+    "T08:03material quality and T11normal positivePNG/normal-cleanup acceptance remain pending.",
+    "Source inputs committed; wholeworktree may contain unrelated active farm changes."
+   ],
+   "state": "HISTORICAL_ONLY_NO_FRESH_RUNTIME_OR_APPLICABILITY_CLAIM"
+  }
+ ],
+ "limits": [
+  "Original active/history refs and raw proof bytes retained losslessly. Original linked raw files remain at their existing Git paths/epochs; no historical observation is rerun or freshened."
+ ]
+}

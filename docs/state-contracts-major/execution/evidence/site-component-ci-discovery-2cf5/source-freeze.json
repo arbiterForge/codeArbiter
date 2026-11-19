@@ -1,0 +1,40 @@
+{
+  "source_commit": "2cf5fafac374791e6fc7c0c98d0a6f43c275c82c",
+  "files": {
+    "site/package.json": {
+      "local": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-discovery-2cf5\\candidate\\site\\package.json",
+      "before": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+      "after": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3"
+    },
+    ".github/workflows/docs.yml": {
+      "local": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-discovery-2cf5\\candidate\\.github\\workflows\\docs.yml",
+      "before": "f6efa02aacfc30f89965a64c4bda20b9e198809d5d7f2b5bcd540552abbb7843",
+      "after": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7"
+    },
+    ".github/scripts/test_ci_impact.py": {
+      "local": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-component-discovery-2cf5\\candidate\\.github\\scripts\\test_ci_impact.py",
+      "before": "0aef797e1aa8bd841c7dbf0721422514c4d861540254f4eab0da8fdb706164e8",
+      "after": "0b597611fc98becccce93c77580164931db6a9a5321a9b83492de21664203180"
+    }
+  },
+  "patch_sha256": "33c5fab8450a8365625a673570271b5e09cdf97211dc22ec9ac9f7da90c4d497",
+  "source_correction": "Declare component config explicitly and run it success-gated before Pages upload. No install/permission/deploy/production browser change.",
+  "observed_regression": "New cross-file owner contract fails missing test:components script; unchanged method now passes with source fix.",
+  "checks": {
+    "contract_named": 3,
+    "contract_log": "contract-green.stderr.log",
+    "mutations": "Renamed/absent component command, if:false and continue-on-error all rejected; existing publication diagnostic mutation coverage retained.",
+    "typecheck": {
+      "record": "typecheck.json",
+      "exit_code": 0,
+      "seconds": 10.24100136756897
+    },
+    "component_browser": "HOLD until Root commit: one actual10 run planned, no reuse as final-source execution."
+  },
+  "runtime_limit": "Local contract execution extracts exact candidate class into existing loaded owner module and redirects only REPO_ROOT/DOCS_WORKFLOW to Temp. No full native/artifact tests.",
+  "scope_limits": [
+    "No Gov/source/index writes.",
+    "No browser/OS dependency acquisition.",
+    "No production-page or real-index proof."
+  ]
+}

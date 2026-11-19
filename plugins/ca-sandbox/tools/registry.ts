@@ -88,7 +88,7 @@ export async function listContainersResult(
   dockerRun: DockerRun = defaultDockerRun,
 ): Promise<ListResult> {
   const r = await dockerRun(["ps", "-a", "-q", "--no-trunc", ...labelFilterArgs(labels)]);
-  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+  return { code: r.code, items: r.code === 0 ? splitLines(r.stdout) : [], stderr: r.stderr, scope: scopeOf(labels) };
 }
 
 /** `listVolumes` with docker's exit status retained — see `ListResult`. */
@@ -97,7 +97,7 @@ export async function listVolumesResult(
   dockerRun: DockerRun = defaultDockerRun,
 ): Promise<ListResult> {
   const r = await dockerRun(["volume", "ls", "-q", ...labelFilterArgs(labels)]);
-  return { code: r.code, items: splitLines(r.stdout), stderr: r.stderr, scope: scopeOf(labels) };
+  return { code: r.code, items: r.code === 0 ? splitLines(r.stdout) : [], stderr: r.stderr, scope: scopeOf(labels) };
 }
 
 /**
@@ -109,7 +109,9 @@ export async function listContainers(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
 ): Promise<string[]> {
-  return (await listContainersResult(labels, dockerRun)).items;
+  const result = await listContainersResult(labels, dockerRun);
+  if (result.code !== 0) throw new Error(`ca-sandbox: container observation unavailable (exit ${result.code})`);
+  return result.items;
 }
 
 /**
@@ -120,7 +122,9 @@ export async function listVolumes(
   labels: string | string[] = SANDBOX_LABEL,
   dockerRun: DockerRun = defaultDockerRun,
 ): Promise<string[]> {
-  return (await listVolumesResult(labels, dockerRun)).items;
+  const result = await listVolumesResult(labels, dockerRun);
+  if (result.code !== 0) throw new Error(`ca-sandbox: volume observation unavailable (exit ${result.code})`);
+  return result.items;
 }
 
 function splitLines(out: string): string[] {
@@ -169,7 +173,7 @@ async function labelValue(
       ? ["inspect", "-f", fmt, objectRef]
       : ["volume", "inspect", "-f", fmt, objectRef];
   const r = await dockerRun(args);
-  if (r.code !== 0) return "";
+  if (r.code !== 0) throw new Error(`ca-sandbox: resource label observation unavailable (exit ${r.code})`);
   // Go template prints "<no value>" when the label is absent on some engines.
   const v = r.stdout.trim();
   return v === "<no value>" ? "" : v;

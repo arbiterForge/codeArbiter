@@ -1,0 +1,16 @@
+{
+  "new_path": "core/artifacts/internal/operations/next_native_boundary_contract_test.go",
+  "preimage": null,
+  "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-four-offline-successor-q9bt4ao7\\candidate\\core\\artifacts\\internal\\operations\\next_native_boundary_contract_test.go",
+  "sha256": "a62da1b75a035010879b4b4e5e6b1e7846e8082b4825a0bad93f5efddfc2d17c",
+  "all_existing_247_module_files_unchanged": true,
+  "original_immutable_source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "original_failed_capture": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-four-offline-controls-7n4bkg2w\\delivery.json",
+    "sha256": "9c9c328fd0bec883e30522929d80e7b791745e3b5fdfcd894aa98112cbe7671b",
+    "classification": "Draft asserted fault.Code(nil)==empty; actual API returns INTERNAL_ERROR. Not product failure."
+  },
+  "only_corrected_assertion": "Explicit err==nil success branch; fault.Code evaluated only for nonempty expected failure codes. All effect, timing, subject, journal and scope assertions retained.",
+  "no_canonical_writes": true,
+  "no_production_change": true
+}

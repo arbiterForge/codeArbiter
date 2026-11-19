@@ -1,0 +1,35 @@
+test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona)
+Separate hook processes must not trust A after an emitted B cannot record. ... 
+  test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='claude')
+Separate hook processes must not trust A after an emitted B cannot record. ... FAIL
+  test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='codex')
+Separate hook processes must not trust A after an emitted B cannot record. ... FAIL
+
+======================================================================
+FAIL: test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='claude')
+Separate hook processes must not trust A after an emitted B cannot record.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-persona-record-failure-fix-rns65l7e\candidate\.github\scripts\test_prompt_submit.py", line 790, in test_failed_delivery_record_write_does_not_suppress_return_persona
+    self.assertIn(self.MARKS["arbiter"], turn(host_name, "return"),
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  "failed B record left stale A suppressing the return persona")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ARBITER-MODE-MARK' not found in '' : failed B record left stale A suppressing the return persona
+
+======================================================================
+FAIL: test_failed_delivery_record_write_does_not_suppress_return_persona (test_prompt_submit.TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona) (host='codex')
+Separate hook processes must not trust A after an emitted B cannot record.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-persona-record-failure-fix-rns65l7e\candidate\.github\scripts\test_prompt_submit.py", line 790, in test_failed_delivery_record_write_does_not_suppress_return_persona
+    self.assertIn(self.MARKS["arbiter"], turn(host_name, "return"),
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  "failed B record left stale A suppressing the return persona")
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'ARBITER-MODE-MARK' not found in '' : failed B record left stale A suppressing the return persona
+
+----------------------------------------------------------------------
+Ran 1 test in 1.490s
+
+FAILED (failures=2)

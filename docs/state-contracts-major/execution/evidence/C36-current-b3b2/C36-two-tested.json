@@ -1,0 +1,180 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+  "source_tree": "06b23be3094f309b372d8522798ae70a0411cc6c",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original pi_benchmark.py --samples100 once, observed unchanged production-wrapper boundary via read-only Python profiler"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "package.json": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+    "plugins/ca-codex/hooks/_host.py": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+    "plugins/ca-codex/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca-pi/package.json": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+    "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+    "plugins/ca-pi/tools/package.json": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+    "plugins/ca-pi/tools/src/audit-sink.ts": "505f118926fc741081de0dff584463d05d0378563d0df80f1d5db0dd64c4d1d0",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/notices.ts": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/policy.ts": "87950047f3d721b15a08bae83b1212d368367f3c332488611073050c0bc77676",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141",
+    "plugins/ca-pi/tools/test/benchmark-boundary.ts": "d4a8a0573a0710119f9e4ff1bc55bde7f0e2ce44c10dfcc44a63c5f259677aab",
+    "plugins/ca-pi/tools/tsconfig.json": "558973c3547ee0cca6872c5c13e9b0f1bbf29f8bdccd4bc96b8039b89c60f7c5",
+    "plugins/ca/hooks/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+    "plugins/ca/hooks/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e"
+  },
+  "absent_inputs": [
+    {
+      "path": "core/pysrc/_host.py",
+      "path_style": "windows"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        ".github/scripts/pi_benchmark.py",
+        "--samples",
+        "100"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "seconds": 4.92929279999953
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/source-capture.json",
+      "sha256": "31f176bb7bb8d82830a807359b49ab7157a333edb82783a02701344dabf0ca57"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/run-summary.json",
+      "sha256": "7ac9149eabd92ff0ceb22c90b2e285ee592e54be834996c46bd0ad76ab89f213"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/boundary-observation.json",
+      "sha256": "a033a96294baedfb2f58a23b28ad22cee3d5c4f98c640c92e1af87725835f8c7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/original.stdout.log",
+      "sha256": "14352d1967de2e4bd08cb5877c86aba04eae2d953f616ae16bec39a3010d935f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/execute.py",
+      "sha256": "ac9e9001dfee31c50a5aaf06a5fdd8914d8665bd1a9ec122b747db0464067ad1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/C36-current-b3b2/observer/sitecustomize.py",
+      "sha256": "ef68530196d13447b88cdae995bc832c3ddd2835fede23bf6afbd7c01ecd8341"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:C36:02",
+    "disposition:transitions:C36:03"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:C36:02",
+      "original_owner": "pi_benchmark._production_pi_samples + _boundary_session",
+      "observed_assertions": {
+        "cached_esbuild_version": "0.28.1",
+        "node_profile": "approved cached22.19",
+        "build_exit_code": 0,
+        "bundle_sha256": "1c97eb09139a2887899549d30b2b4b6de3c85d364d72d877140b603fa9a8ff15",
+        "temporary_bundle_bytes": 39932,
+        "first_message": {
+          "phase": "ready",
+          "wrapperCount": 4,
+          "registrationMs": 0.6188000000000002
+        },
+        "startup_ms": 38.8513
+      },
+      "full_clause": "Original temporary production wrapBuiltins bundle succeeded; original bounded readiness owner returned the actual first ready record with4 wrappers and measured startup. Existing accepted R07 readiness bound supersedes historical unbounded-readline defect; no criterion/guard changes."
+    },
+    {
+      "cell": "disposition:transitions:C36:03",
+      "original_owner": "pi_benchmark._production_pi_samples + _measure_host + main",
+      "observed_assertions": {
+        "phase": "complete",
+        "timings": 100,
+        "bridgeCallCount": 105,
+        "nativeCallCount": 105,
+        "child_exit_code": 0,
+        "public_rows": [
+          {
+            "platform": "windows",
+            "host": "claude",
+            "sampleCount": 100,
+            "startupMs": 2499.7867,
+            "coreP50Ms": 1.156,
+            "adapterP50Ms": 2.1979,
+            "adapterP95Ms": 2.5875
+          },
+          {
+            "platform": "windows",
+            "host": "codex",
+            "sampleCount": 100,
+            "startupMs": 27.8559,
+            "coreP50Ms": 1.1587,
+            "adapterP50Ms": 2.2511,
+            "adapterP95Ms": 3.3799
+          },
+          {
+            "platform": "windows",
+            "host": "pi",
+            "sampleCount": 100,
+            "startupMs": 38.8513,
+            "coreP50Ms": 1.102,
+            "adapterP50Ms": 0.014499999999998181,
+            "adapterP95Ms": 0.07929999999999993
+          }
+        ],
+        "original_cli_exit_code": 0
+      },
+      "full_clause": "Original parent validated exactly100 timings and105+105 fixture calls, phase complete and exit0; calculated P50/P95 and emitted only bounded public scalar rows. Failure/retry checks unchanged; existing malformed/timeout reader history remains at its original epoch."
+    }
+  ],
+  "execution_context": {
+    "actual_start_git_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+    "actual_end_git_commit": "b3b2b5a091c4f3d28366bb29d10ae3fb1b3e22bc",
+    "head_index_stable": true,
+    "declared_prior_input_epoch": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+    "all30_inputs_literally_equal_prior_and_execution_Git": true,
+    "private_profile_before_project_imports": true,
+    "source_observer": "read-only sys.setprofile; no target function/subprocess replacement"
+  },
+  "scope": "Renew exactly two existing TESTED transition records using one actual current-source production-JS benchmark. Full owning success clauses observed; original stub-boundary scope preserved. No new cells/status promotion or whole machine/task closure.",
+  "limits": [
+    "Local Windows/amd64 ordinary adapter benchmark only; no installed Pi, actual parent consent/UI, provider/model, native executable, Go, Docker, network, publication or task/machine qualification.",
+    "The105 nativeCallCount increments are the original in-memory factory invocations;105 bridgeCallCount increments are the original stub BridgePort. Actual production wrapBuiltins is bundled and executed, not real105 Go calls.",
+    "Python read-only profiling adds overhead; recorded absolute/relative performance is instrumented, not an uninstrumented performance or improvement claim. Node boundary timings are the original child's values.",
+    "Existing Windows process-group/taskkill bounded reader semantics retained; no stronger Job Object/native-rundown claim.",
+    "No fresh negative workload, installation, --real-spawn, source modification, test additions or extra group executed. Existing reader failure controls/history remain separate.",
+    "Authenticated f797 native artifact was not consumed or needed; no native input attestation is borrowed."
+  ]
+}

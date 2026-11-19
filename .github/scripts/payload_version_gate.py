@@ -54,6 +54,7 @@ from _releaselib import (  # noqa: E402
     ReleaseTargetsError, load_targets, semver_greater, semver_key,
 )
 import payload_scope  # noqa: E402
+import integration_candidate  # noqa: E402
 
 REPO = Path(__file__).resolve().parents[2]
 DECLARED_TARGETS = REPO / ".codearbiter" / "release-targets.md"
@@ -168,9 +169,10 @@ def head_version(plugin: str, root: Path = REPO) -> str | None:
 
 
 def base_version(base: str, plugin: str, root: Path = REPO) -> str | None:
-    """The manifest version at `base`, or None when the manifest is absent there.
+    """The manifest version at `base`, or None when absent OR invalid there.
 
-    None means FIRST INTRODUCTION and is a pass. `git cat-file -e` on the
+    Compatibility reader only: it cannot tell absence from corruption, so the
+    gate uses `base_manifest` (C-F07) and never treats this None as a pass. `git cat-file -e` on the
     `tree-ish:path` form exits 128 rather than 1 when the path is missing, so
     absence cannot be told from a bad ref by exit code — the caller resolves the
     ref first (see `gate`), and only then is a read failure genuine absence."""
@@ -178,6 +180,29 @@ def base_version(base: str, plugin: str, root: Path = REPO) -> str | None:
     if shown.returncode != 0:
         return None
     return _manifest_version(shown.stdout)
+
+
+def base_manifest(base: str, plugin: str, root: Path = REPO) -> tuple[str, str | None]:
+    """Read the base manifest as one of three states (C-F07).
+
+    ("absent", None)    the path is not in the base tree: first introduction;
+    ("valid", version)  a usable version string;
+    ("invalid", None)   the path exists but is unreadable, malformed or has no
+                        usable version. Corrupt evidence is never absence.
+
+    The caller resolves `base` first, so a failed tree listing is a real error.
+    """
+    path = GATED_MANIFESTS[plugin]
+    listed = _git(["ls-tree", "--name-only", f"{base}^{{commit}}", "--", path], root)
+    if listed.returncode != 0:
+        return "invalid", None
+    if path not in listed.stdout.splitlines():
+        return "absent", None
+    shown = _git(["show", f"{base}:{path}"], root)
+    if shown.returncode != 0:
+        return "invalid", None
+    version = _manifest_version(shown.stdout)
+    return ("valid", version) if version is not None else ("invalid", None)
 
 
 def tag_exists(tag: str, root: Path = REPO) -> bool:
@@ -213,11 +238,18 @@ def gate(base: str, plugin: str, root: Path = REPO) -> tuple[int, str]:
             f"so whether it advances cannot be decided. Fix the version string."
         )
 
-    previous = base_version(base, plugin, root)
-    if previous is None:
+    state, previous = base_manifest(base, plugin, root)
+    if state == "absent":
         # The plugin does not exist on the base at all. Nothing is published, so
         # no install can be holding a stale copy of this version. #530 AC-2.
         return PASS, f"{plugin} is new on the base - first introduction, version {current}"
+    if state == "invalid" or previous is None:
+        return FAIL, (
+            f"{annotate}{manifest} exists on {base} but is invalid there (unreadable, "
+            f"malformed, or without a usable version string), so whether {current} "
+            f"advances it cannot be decided. Corrupt base evidence never counts as a "
+            f"newly added plugin; repair the base manifest or compare against a valid base."
+        )
 
     if not semver_greater(current, previous):
         return FAIL, (
@@ -270,11 +302,88 @@ def gate(base: str, plugin: str, root: Path = REPO) -> tuple[int, str]:
     return PASS, f"shipped payload changed and version advanced: {previous} -> {current}"
 
 
+def gate_integration(
+    record: integration_candidate.Candidate, plugin: str, main_ref: str, root: Path = REPO,
+) -> tuple[int, str]:
+    """The integration-branch candidate rule (see integration_candidate.py).
+
+    Payload change is measured from the recorded main baseline; the head version
+    must equal the declared candidate, advance both baseline and live main, and
+    be untagged. Everything else about the strict gate's diagnostics is reused."""
+    manifest = GATED_MANIFESTS[plugin]
+    annotate = f"::error file={manifest}::"
+    target = Path(plugin).name
+    problem = integration_candidate.baseline_problem(record, main_ref, root)
+    if problem:
+        return FAIL, f"{annotate}{problem}"
+    if not payload_scope.payload_changed(record.baseline, plugin, root=root):
+        return PASS, (
+            f"no shipped payload change since integration baseline {record.baseline[:12]} - "
+            f"candidate version not required"
+        )
+    candidate = record.versions.get(target)
+    if candidate is None:
+        return FAIL, f"{annotate}{target} changed payload but declares no integration candidate version"
+    current = head_version(plugin, root)
+    if current != candidate:
+        return FAIL, (
+            f"{annotate}{plugin}/** changed payload on the integration branch; its manifest must "
+            f"carry the declared integration candidate {candidate} (got {current!r})."
+        )
+    for label, ref in (("integration baseline", record.baseline), (main_ref, main_ref)):
+        text = integration_candidate.show(root, ref, manifest)
+        previous = _manifest_version(text) if text is not None else None
+        if text is not None and previous is None:
+            # C-F07: present but unusable is not absence.
+            return FAIL, (
+                f"{annotate}{manifest} exists on {label} but has no usable version; "
+                f"the integration candidate cannot be compared against it."
+            )
+        if previous is not None and not semver_greater(current, previous):
+            return FAIL, (
+                f"{annotate}integration candidate {current} does not advance {previous} on {label}; "
+                f"main has reached or passed it - choose a higher candidate."
+            )
+    try:
+        namespaces = tag_prefixes()
+    except (BasenameCollisionError, ReleaseTargetsError) as exc:
+        return FAIL, f"{annotate}{exc}"
+    if target not in namespaces:
+        return FAIL, f"{annotate}{plugin}/** declares no release target namespace"
+    tag = f"{namespaces[target]}{current}"
+    if tag_exists(tag, root):
+        return FAIL, f"{annotate}integration candidate {current} is already released (tag {tag} exists)."
+    return PASS, (
+        f"integration candidate {current} carries payload changed since baseline "
+        f"{record.baseline[:12]}; untagged and ahead of {main_ref}"
+    )
+
+
 def main(argv=None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--plugin", required=True, help="e.g. plugins/ca-sandbox")
     parser.add_argument("--base", required=True, help="base ref, e.g. origin/main")
+    parser.add_argument(
+        "--integration-base-branch",
+        help="CI event base branch name; selects the integration candidate rule only when it "
+             "equals the branch declared in .github/integration-candidate.json",
+    )
+    parser.add_argument("--main-ref", default="origin/main", help="live main ref for the integration rule")
+    parser.add_argument("--verdict-output",
+                        help="append one typed qualification observation (JSON line) here")
     arguments = parser.parse_args(argv)
+    code, message = _decide(arguments)
+    if arguments.verdict_output and code in (PASS, FAIL):
+        import _verdictlib
+        _verdictlib.write(_verdictlib.observation(
+            "payload-version", "verified" if code == PASS else "rejected", message,
+            scope=f"{arguments.plugin} against {arguments.base}",
+            source=_verdictlib.source_identity(root=REPO), exit_code=code),
+            arguments.verdict_output)
+    return code
+
+
+def _decide(arguments) -> tuple[int, str]:
     if arguments.plugin not in GATED_MANIFESTS:
         print(
             f"unknown plugin {arguments.plugin!r}; declare its manifest in "
@@ -282,10 +391,18 @@ def main(argv=None) -> int:
             f"tools/build-host-packages.py instead - see this file's docstring)",
             file=sys.stderr,
         )
-        return USAGE
-    code, message = gate(arguments.base, arguments.plugin)
+        return USAGE, "unknown plugin"
+    try:
+        record = integration_candidate.select(arguments.integration_base_branch)
+    except integration_candidate.IntegrationRecordError as exc:
+        print(f"::error::integration candidate record: {exc}", file=sys.stderr)
+        return FAIL, f"integration candidate record: {exc}"
+    if record is not None:
+        code, message = gate_integration(record, arguments.plugin, arguments.main_ref)
+    else:
+        code, message = gate(arguments.base, arguments.plugin)
     print(message, file=sys.stderr if code else sys.stdout)
-    return code
+    return code, message
 
 
 if __name__ == "__main__":

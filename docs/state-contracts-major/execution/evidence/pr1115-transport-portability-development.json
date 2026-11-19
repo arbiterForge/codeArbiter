@@ -1,0 +1,565 @@
+{
+  "schema": "state-contract-development-observations/1",
+  "source_epoch": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+  "purpose": "Scoped development and prior failed-run facts, not runtime proof admission.",
+  "observations": [
+    {
+      "kind": "prior_whole_run",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-d218-watch-i_9oqs7d\\terminal-disposition.json",
+      "sha256": "abaff66c93b1fa91005b39569ead18d08525a2c658da667ac38fbd9066005436",
+      "bytes": 8959,
+      "observed": {
+        "verdict": "BLOCK",
+        "expected_head": "d218c5cc9e4628a04a9b91569d1185315309e71c",
+        "observed_head": "d218c5cc9e4628a04a9b91569d1185315309e71c",
+        "ci": {
+          "id": 43895115379,
+          "head_sha": "d218c5cc9e4628a04a9b91569d1185315309e71c",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "failure",
+          "path": ".github/workflows/ci.yml",
+          "head_branch": "codex/state-contracts-remaining-qualification"
+        },
+        "docs": {
+          "id": 43895115603,
+          "head_sha": "d218c5cc9e4628a04a9b91569d1185315309e71c",
+          "event": "pull_request",
+          "run_attempt": 1,
+          "status": "completed",
+          "conclusion": "success",
+          "path": ".github/workflows/docs.yml",
+          "head_branch": "codex/state-contracts-remaining-qualification"
+        },
+        "all_checks_terminal": true,
+        "counts": {
+          "SKIPPED": 11,
+          "FAILURE": 2,
+          "SUCCESS": 80,
+          "CANCELLED": 2
+        },
+        "required_gate": "FAILURE",
+        "primary": [
+          {
+            "job": 133396651836,
+            "actual_conclusion": "cancelled",
+            "reason": "Configured25-minute Windows/contracts allowance exhausted at25m06s; incomplete ADR lifecycle step. No failed named test in retained original log. Original named-report step24 passed."
+          },
+          {
+            "job": 133405730137,
+            "actual_conclusion": "cancelled",
+            "reason": "Original provider annotations: hosted runner not acquired; macOS arm64 capacity constraints. runner_id0, steps empty; no running test or child-timeout claim.",
+            "original_log_transport_http_status": 404,
+            "log_transport_not_retried": true
+          }
+        ],
+        "downstream": [
+          {
+            "job": 133415555417,
+            "actual_conclusion": "failure",
+            "step": "Require every native verification stage to have passed"
+          },
+          {
+            "job": 133415687928,
+            "actual_conclusion": "failure",
+            "step": "Require every required job to have succeeded or been skipped"
+          }
+        ]
+      }
+    },
+    {
+      "kind": "transport_target",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-target-fe3\\delivery.json",
+      "sha256": "6f06894109fe425a21af720fbbdb55f273e59dec7257bc3622bd9b1feea459d7",
+      "bytes": 2924,
+      "observed": {
+        "format": "private-pi-https-policy-target/1",
+        "state": "FEATURE_TARGET_RED",
+        "source_epoch": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+        "actual_result": {
+          "exit_code": 1,
+          "elapsed_seconds": 1.0975169999874197,
+          "timed_out": false,
+          "cap_exceeded": false,
+          "stream_bytes": {
+            "stdout.log": 10121,
+            "stderr.log": 3516
+          }
+        },
+        "selected": 6,
+        "failed": 4,
+        "passed": 2,
+        "unselected_old": 59,
+        "production_unchanged": true,
+        "canonical_writes": false,
+        "attempts": 1
+      }
+    },
+    {
+      "kind": "transport_green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-green-fe3\\delivery.json",
+      "sha256": "b2a0cf9bfd90418ae88fe2d2d3035435db96a8ef69632f184f49387158f2f81e",
+      "bytes": 11225,
+      "observed": {
+        "format": "private-pi-https-tested-feature/1",
+        "state": "LOCAL_TARGET_OWNERS_TSC_GREEN",
+        "base_source_epoch": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+        "apply_files": [
+          {
+            "path": "plugins/ca-pi/tools/src/inference-broker.ts",
+            "preimage_sha256": "3faa085f28963dc150c49a8755d4d0b21970e7f410f18ff3d480963e0aed45af",
+            "candidate_sha256": "9d10532e0b6af73cd7f641ce066151860e6c3213387b17222a01333137c271f4",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-green-fe3\\apply_files\\plugins\\ca-pi\\tools\\src\\inference-broker.ts"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/child-env.ts",
+            "preimage_sha256": "dd7610801c67b363ba22b62e0c1b69a9bbc7d3506af56e4289b784fb8a033b86",
+            "candidate_sha256": "a3a42fe6c0f2555b47901e2282c8ad619dfd034683f565e8e5752b19ddb4f0f7",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-green-fe3\\apply_files\\plugins\\ca-pi\\tools\\src\\child-env.ts"
+          },
+          {
+            "path": "plugins/ca-pi/tools/test/child-env.test.ts",
+            "preimage_sha256": "a804d23de882627858aede6802b834fff5de06444c5c2f210471c8b98a9ac2ef",
+            "candidate_sha256": "7f32b5a1779ed63e952910fd1ac0039a70f51ee2923585c8037bff22f35b0cee",
+            "source_head_blob_equal": true,
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-green-fe3\\apply_files\\plugins\\ca-pi\\tools\\test\\child-env.test.ts"
+          },
+          {
+            "path": "plugins/ca-pi/tools/test/inference-broker.test.ts",
+            "preimage_sha256": "69742040aa5e301797b3ad38d9dd80e9d05e9dff0bf2ec4d4ec8c6da45b4874f",
+            "candidate_sha256": "1a1664a7c27175a3251b4b500ed480feb9a79d9cb9e84ccac3876959c9c76725",
+            "source_head_blob_equal": true,
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-green-fe3\\apply_files\\plugins\\ca-pi\\tools\\test\\inference-broker.test.ts"
+          },
+          {
+            "path": "plugins/ca-pi/tools/test/runner-broker-lifecycle.test.ts",
+            "preimage_sha256": "69c05c96180b86e6bdec4f723518619a8d11406beb210e329c621185594780d6",
+            "candidate_sha256": "bd4e3e66c2e455b55df89a9f812f2b8bd7140d383cfcec487712d61a27ea5371",
+            "source_head_blob_equal": true,
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-https-green-fe3\\apply_files\\plugins\\ca-pi\\tools\\test\\runner-broker-lifecycle.test.ts"
+          }
+        ],
+        "checks": [
+          {
+            "command": "target",
+            "exit_code": 0,
+            "elapsed_seconds": 1.1553431000211276,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "stream_bytes": {
+              "stderr.log": 0,
+              "stdout.log": 9841
+            },
+            "passed_tests": 6,
+            "excluded_tests": 59,
+            "source_and_runtime_stable": true,
+            "private_changed_paths": [
+              "plugins/ca-pi/tools/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json"
+            ],
+            "private_added_paths": []
+          },
+          {
+            "command": "owners",
+            "exit_code": 0,
+            "elapsed_seconds": 2.16586360000656,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "stream_bytes": {
+              "stderr.log": 0,
+              "stdout.log": 10092
+            },
+            "passed_tests": 65,
+            "excluded_tests": 0,
+            "source_and_runtime_stable": true,
+            "private_changed_paths": [
+              "plugins/ca-pi/tools/node_modules/.vite/vitest/da39a3ee5e6b4b0d3255bfef95601890afd80709/results.json"
+            ],
+            "private_added_paths": []
+          },
+          {
+            "command": "tsc",
+            "exit_code": 0,
+            "elapsed_seconds": 2.179365999996662,
+            "timed_out": false,
+            "cap_exceeded": false,
+            "stream_bytes": {
+              "stderr.log": 0,
+              "stdout.log": 0
+            },
+            "passed_tests": null,
+            "excluded_tests": 0,
+            "source_and_runtime_stable": true,
+            "private_changed_paths": [],
+            "private_added_paths": []
+          }
+        ],
+        "source_freeze_sha256": "4dc31b2280b331bca2242fe8f9a34c78a03754e1244c4b08d4c303c5f8ddbe1d",
+        "canonical_writes": false,
+        "publication_or_task_qualification": false
+      }
+    },
+    {
+      "kind": "native_route_controls",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-focused-pair-pjal_hjp\\delivery.json",
+      "sha256": "c1f8bc36cfbae8e4512f0d34dd31f02a7e648623dc663eb63e19ca16ab0e1a0c",
+      "bytes": 2905,
+      "observed": {
+        "kind": "ACTUAL_NATIVE29_PURE_RED_GREEN_PAIR",
+        "source_epoch": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+        "draft_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-four-route-draft-e1_816la\\delivery.json",
+        "draft_delivery_sha256": "54090ec399fcbfaaa4f4383ccadd1d85a9abcf305fe3ed697da46ee94b3e994c",
+        "actual_red": {
+          "exit_code": 1,
+          "duration_seconds": 0.25792530001490377,
+          "tests": 1,
+          "failures": 1,
+          "errors": 0
+        },
+        "actual_green": {
+          "exit_code": 0,
+          "duration_seconds": 6.874493500014069,
+          "tests": 9,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "subtests": 332
+        },
+        "source_runtime_private_stable": true,
+        "forbidden_effect_attempts": [],
+        "synthetic_fixture_only": true,
+        "qualification": false,
+        "canonical_writes": false
+      }
+    },
+    {
+      "kind": "unsafe_journal_characterization",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n03-private-characterization-i2hnlr80\\delivery.json",
+      "sha256": "b3bc5e7f4b268a8a24496a989108b0c4c20ece1d8e86c701daf55925b024b29d",
+      "bytes": 3382,
+      "observed": {
+        "kind": "ACTUAL_N03_TWO_PARENT_PRIVATE_CHARACTERIZATION",
+        "source_epoch": "d218c5cc9e4628a04a9b91569d1185315309e71c",
+        "draft_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n03-embedded-path-draft-4xskqdwg\\delivery.json",
+        "subject": {
+          "path": "core/artifacts/internal/store/journal_contract_boundary_test.go",
+          "preimage_sha256": "ce4e049057c729a209375e19596fbfa18d33960e4b00683d2fc50bff39ba7b30",
+          "candidate_sha256": "252441fead181da0dcdd0c5c2a66de2c8c2c3f3620fc9c2087a8ea272cdd2e19",
+          "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n03-private-characterization-i2hnlr80\\candidate\\core\\artifacts\\internal\\store\\journal_contract_boundary_test.go"
+        },
+        "invocations": 1,
+        "actual": {
+          "argv": [
+            "C:/Program Files/Go/bin/go.exe",
+            "test",
+            "-json",
+            "-x",
+            "./internal/store",
+            "-run=^TestN03(UnsafeEmbeddedJournalPathsRefuseEveryAdmission|LegacyAncestorOverlapJournalRefusesEveryAdmission)$",
+            "-count=1",
+            "-timeout=75s",
+            "-failfast"
+          ],
+          "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n03-private-characterization-i2hnlr80\\candidate\\core\\artifacts",
+          "pid": 7980,
+          "returncode": 0,
+          "duration_seconds": 3.3785797000164166,
+          "timed_out": false,
+          "output_limit_exceeded": false,
+          "containment": "exited",
+          "spawn_error_type": null,
+          "reader_errors": [],
+          "stdout_sha256": "12444e0b2009c7b5910e294576d4435eb847fdc42338a9b96f1f95c6c44e1602",
+          "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+          "stdout_bytes": 217739,
+          "stderr_bytes": 0,
+          "qualification": false
+        },
+        "outcome_count": 26,
+        "source_runtime_cache_stable": true,
+        "scope": "Private WindowsAMD64 in-process store unit characterization only; not d218 hosted CI, Unix privilege proof, whole N03:05 or installed qualification. N03:04 remains held.",
+        "canonical_writes": false,
+        "qualification": false
+      }
+    },
+    {
+      "kind": "sandbox_typecheck",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-cache-tsc-d218\\delivery.json",
+      "sha256": "31906a5c3bf54401a01abf289a503f64b5a7004f8c179db76756c41b83974db3",
+      "bytes": 3316,
+      "observed": {
+        "format": "private-sandbox-cache-typecheck/1",
+        "source_epoch": "d218c5cc9e4628a04a9b91569d1185315309e71c",
+        "state": "OWNING_NOEMIT_PASS",
+        "result": {
+          "exit_code": 0,
+          "elapsed_seconds": 1.0021046999900136,
+          "timed_out": false,
+          "output_cap_exceeded": false,
+          "stream_bytes": {
+            "stderr.log": 0,
+            "stdout.log": 0
+          }
+        },
+        "validation": {
+          "source_runtime_graph_stable": true,
+          "owning_noemit_pass": true,
+          "source_files": 62,
+          "dependency_files": 1474,
+          "installed_lock_matching_packages": 69,
+          "scope": "Existing owning compiler only; no imports/test collection/Docker/build execution; actual builder acceptance remains pending."
+        },
+        "candidate": {
+          "path": "C:/Users/brenn/AppData/Local/Temp/ca-sandbox-real-cache-d218-draft/candidate/plugins/ca-sandbox/tools/cache-provenance.test.ts",
+          "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+          "unchanged_from_reviewed_draft": true
+        },
+        "compiler": {
+          "version": "5.9.3",
+          "entry_sha256": "8d5fa5bd883fec0979fc2004f1fe1d99aef40570155d550eadc0b03b55513bf0",
+          "driver_sha256": "e8f349eabd48486bdb2bf9dc1a00c89d58297270c54b745838879e2859194419"
+        },
+        "scope": "One existing owning tsc --noEmit command using its unchanged project configuration, exclusive byte-equal cached dependency copy and private profile. No test imports, collection, Docker, builder, WSL, network, install or canonical writes. Real two-builder Ubuntu acceptance remains unexecuted.",
+        "attempts": 1,
+        "corrections": 0
+      }
+    },
+    {
+      "kind": "original_software_routing_count",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software-original-count-lu24ix5a\\software-original-count.json",
+      "sha256": "f93b4fe529137fee3de857fa67397bac70f816c618abeb9aaa913dee8eeacc28",
+      "bytes": 7170,
+      "observed": {
+        "verdict": "PASS",
+        "scope": "Finite original-software19 routing inventory only",
+        "source_commit": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+        "field": "progress.live_checkpoint.remaining_software_original_unmapped",
+        "recorded_value": 1,
+        "derived_value": 0,
+        "derivation": {
+          "original_finite_cells": 19,
+          "ordinary_mapped_cells": 18,
+          "strict_source_only_not_applicable_cells": 1,
+          "unresolved_cells": 0
+        },
+        "original_matrix": {
+          "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software19-semantic-routing-plan-_t7gswfj\\semantic-producer-matrix.json",
+          "sha256": "a0a64db643ed27a4c9046b6451733558e57c8df060f833f6d9192a012832ea1e",
+          "basis_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining26-ci-plan-e064-_ux5d9gx\\qualification-plan.json",
+          "basis_sha256": "0d09da79e234e908cb4aa9eb11ba4e997e4a9d6ce708b57bebec0706a1a54a78",
+          "basis_declared_finite_software_records": 19
+        },
+        "ordinary_routes": {
+          "disposition:added_transitions:S75:added-rolled-back": {
+            "groups": [
+              "software-added_transitions-S75-added-rolled-back"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:added_transitions:S75:added-stage-failed": {
+            "groups": [
+              "software-added_transitions-S75-added-stage-failed"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:added_transitions:S75:added-unusable": {
+            "groups": [
+              "software-added_transitions-S75-added-unusable"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:added_transitions:S75:added-writer-refused": {
+            "groups": [
+              "software-added_transitions-S75-added-writer-refused"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:machines:C33": {
+            "groups": [
+              "software-machines-C33"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:transitions:C33:01": {
+            "groups": [
+              "software-transitions-C33-01"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:transitions:C33:02": {
+            "groups": [
+              "software-transitions-C33-02"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:transitions:C33:03": {
+            "groups": [
+              "software-transitions-C33-03"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:transitions:S18:07": {
+            "groups": [
+              "pi-sdk-footer-owner"
+            ],
+            "job": "[CHECK] | [PI  ] | Host-independent adapter contract"
+          },
+          "disposition:transitions:S38:04": {
+            "groups": [
+              "mapped-work-native-consumer"
+            ],
+            "job": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>"
+          },
+          "disposition:transitions:S51:01": {
+            "groups": [
+              "software-sandbox-s51-01"
+            ],
+            "job": "[CHECK] | [SBX ] | Sandbox driver contract"
+          },
+          "disposition:transitions:S51:02": {
+            "groups": [
+              "software-sandbox-s51-02"
+            ],
+            "job": "[CHECK] | [SBX ] | Sandbox driver contract"
+          },
+          "disposition:transitions:S52:06": {
+            "groups": [
+              "software-sandbox-s52-06"
+            ],
+            "job": "[CHECK] | [SBX ] | Sandbox driver contract"
+          },
+          "disposition:transitions:S54:01": {
+            "groups": [
+              "software-sandbox-valid-dispatch-and-interrupt"
+            ],
+            "job": "[CHECK] | [SBX ] | Sandbox driver contract"
+          },
+          "disposition:transitions:S75:05": {
+            "groups": [
+              "software-transitions-S75-05"
+            ],
+            "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>"
+          },
+          "disposition:transitions:pi-qualification:disposable-home:01": {
+            "groups": [
+              "software-pi-disposable-home-01"
+            ],
+            "job": "Coverage union (Pi)  <os: windows-latest>"
+          },
+          "disposition:transitions:pi-qualification:disposable-home:02": {
+            "groups": [
+              "software-pi-disposable-home-02"
+            ],
+            "job": "Coverage union (Pi)  <os: windows-latest>"
+          },
+          "disposition:transitions:pi-qualification:disposable-home:03": {
+            "groups": [
+              "software-pi-disposable-home-03"
+            ],
+            "job": "Coverage union (Pi)  <os: windows-latest>"
+          }
+        },
+        "source_only": {
+          "cell": "disposition:transitions:S75:08",
+          "proof_path": "docs/state-contracts-major/execution/evidence/S75-current-contract/proof.json",
+          "sha256": "0830da403c8741ab9aa2ad2f846bec07dbffb07d2394c29aa73cd09783a521df",
+          "five_current_positive_inputs_equal": {
+            "docs/state-contracts-major/PROGRAM.md": true,
+            "docs/state-contracts-major/contracts/tasks.json": true,
+            "docs/state-contracts-major/contracts/transition-coverage.json": true,
+            "tools/build-surface.py": true,
+            "tools/owned_output.py": true
+          },
+          "prior_strict_authentication": {
+            "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\S75-journal-staged-strict-authentication.json",
+            "sha256": "a277f985eab37a56f49b9eb2b5786dd90b89b146d6807c51c7434e3616b391ed"
+          },
+          "contract": "docs/state-contracts-major/contracts/transition-coverage.json#S75:08.baseline/direct-writes-may-be-partial/no-cross-file-transaction-or-rollback",
+          "rationale": "Only the historical direct-write/no-transaction/no-rollback guarded tuple is obsolete. The I/O failure event, possible partial projection and four introduced failure/recovery runtime obligations remain applicable. Accepted BUILD-G01 requires restoration or an explicitly unusable projection; frozen historical intake and previous runtime evidence remain retained."
+        },
+        "input_sha256": {
+          ".github/major-test-selections.json": "fff83f896cf1e6a12e5d2fe0f71506f7e298a11ab78e3d524c1846ffcfcd7585",
+          ".github/major-qualification-policy.json": "2edadf1f1ceb41f25df5e2abd8bf2b0ebcd836aa558eba35dc3dcdb1d5258568",
+          "docs/state-contracts-major/execution/coverage-ledger.json": "ebfbafaa8d7e4166b16bcb30362600ad8ba223d287fde96b9949f662744f3d55",
+          "docs/state-contracts-major/execution/progress.json": "1969ffdfae2458df744b82138b52c13626046f9066e008bbfff0c178201f8868"
+        },
+        "limits": [
+          "No runtime test, proof epoch, ledger status or qualification renewal.",
+          "Zero means no remaining unmapped cells within this finite original-software19 set; stale software proofs, held runtime obligations and native counts are separate.",
+          "Four introduced S75 runtime/recovery obligations retain ordinary executable mappings.",
+          "Read only immutable fe3 committed inputs despite later uncommitted future-batch edits."
+        ]
+      }
+    },
+    {
+      "kind": "portable_native_tests",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-validation-726d8b84\\delivery.json",
+      "sha256": "01d6ebe2bd12eddfbcd6671d66ee68692cd2d29055c9cb67a937c81da20130a0",
+      "bytes": 5478,
+      "observed": {
+        "kind": "ACTUAL_NATIVE29_PORTABILITY_SOURCE_AND_WINDOWS_BEHAVIOR_VALIDATION",
+        "source_epoch": "fe3c6b7b191f4a56d99505c477ad1c059d33ce88",
+        "draft_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-repair-9bsimgc7\\delivery.json",
+        "subjects": [
+          {
+            "path": "core/artifacts/internal/operations/engine_test.go",
+            "preimage_sha256": "63b8891b508920884cdaac697e923f1cc71e9dcf18f46332c2579f213b09e98f",
+            "candidate_sha256": "830fc786c046ce5991a46f1b20cbd26c66b704cc0bfef9390fc74de841571f81",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-validation-726d8b84\\green\\core\\artifacts\\internal\\operations\\engine_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/operations/migration_test.go",
+            "preimage_sha256": "8424b182ad70fa0c657f3b6fb0656d1fac0806432ae683c344d3597608d084ab",
+            "candidate_sha256": "499df8011adee79bdbe6e0f6f1cb74e8b998d0878207cca61c5a5b92b77578de",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-validation-726d8b84\\green\\core\\artifacts\\internal\\operations\\migration_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/operations/review_regression_test.go",
+            "preimage_sha256": "e799c36032fcd43302d27e2f892b1bc0e8192b324074b4e91cd72c9c9976c3c3",
+            "candidate_sha256": "fde5609936dd24e475726ffdd30cab5ceff9628f610b6adf2a0f465b2e8bfc28",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-validation-726d8b84\\green\\core\\artifacts\\internal\\operations\\review_regression_test.go"
+          },
+          {
+            "path": "core/artifacts/internal/operations/native_recipe_portable_contract_test.go",
+            "preimage_sha256": null,
+            "candidate_sha256": "09cb7230704085f7733b9f8d4cdce822547a90886ff3a50785da1f10c798bc6e",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-validation-726d8b84\\green\\core\\artifacts\\internal\\operations\\native_recipe_portable_contract_test.go"
+          },
+          {
+            "path": ".github/scripts/test_major_native_observation.py",
+            "preimage_sha256": "24bebb22ac94fa11feac6743528ca7be0edbf9bb73ae9462926e2ac06e2057b4",
+            "candidate_sha256": "a8563276a43f3e84adb0fafef65aa7ba310f537e0942c7d72fb60cba9cf2b876",
+            "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native29-portability-validation-726d8b84\\green\\.github\\scripts\\test_major_native_observation.py"
+          }
+        ],
+        "actual_source_control": "Proper20bindings missing-parent assertion RED1FAIL, then exact2 source methods GREEN0skip. No admission/route drops.",
+        "actual_go": {
+          "tests": 4,
+          "exit_code": 0,
+          "duration_seconds": 11.62331350002205,
+          "all_original_bodies_unchanged": true,
+          "platform": "windows/amd64"
+        },
+        "controller_corrections": 1,
+        "repeated_test_invocations": 0,
+        "runtime_source_cache_stable": true,
+        "further_platform_builds_and_runs_required": true,
+        "canonical_writes": false,
+        "qualification": false
+      }
+    }
+  ],
+  "interpretation": {
+    "transport": "User-decided HTTPS outside literal127.0.0.1: four proper policy assertion failures/two positive baselines, then unchanged six targets and all65 owning tests passed; owning TypeScript passed. No provider/TLS/installed qualification.",
+    "native": "Four additional all-six recipes; missing/skipped/identity controls passed. A later real source inspection found four Linux-only required parent tests across four routes. Preserve that discovery and repair; synthetic unit PASS never proved platform availability.",
+    "journal": "Two additive Windows characterization parents/24 children passed against unchanged product, including legacy ancestor-overlap and unsafe embedded path refusal without workspace/sibling changes. Other-platform execution remains required.",
+    "sandbox": "Real builders and concurrent cold misses are implemented as acceptance tests in the existing Ubuntu Docker owner. Only full owning TypeScript noEmit ran locally; actual Docker/Nixpacks effects await original CI.",
+    "prior_ci": "d218 whole CI failed; Docs passed. Windows/contracts exhausted25min, macOSARM did not acquire a hosted runner. Only Windows/contracts outer allowance changes to45min; assertion/command bounds and macOS runner unchanged."
+  },
+  "limits": [
+    "Raw private capture/source/tool closures remain at the referenced finite Temp locations; this record retains compact result packets, not a portable full execution environment.",
+    "Parent-only Vitest preload did not audit worker effects. Caught shell discovery was refused; owned manual-redirect fixtures bounded the authorized loopback effects.",
+    "No runtime evidence epoch or task verification state is renewed here. Full exact-head CI, Docs, trusted integration, installed and human/model acceptance remain separate.",
+    "Parent1098 stays draft and held from main; no publication."
+  ]
+}

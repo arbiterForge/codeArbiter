@@ -124,7 +124,7 @@ func (e *Engine) recordTaskCheck(r object, entry repository.Entry) (any, error) 
 		}
 	}
 	all[id] = append(history, recorded)
-	next.Data["schema_version"] = model.SchemaVersion
+	next.Data["schema_version"] = model.AtLeast(next.Data, model.SchemaVersion)
 	next.Data["revision"] = d.Revision() + 1
 	next, err = render.Prepare(next.Data)
 	if err != nil {

@@ -1,0 +1,1999 @@
+{
+  "schema": "codearbiter-major-development-observation/1",
+  "recorded_at": "2026-11-16T07:15:29.775156+00:00",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "controller_anchor": "2f65fda443816d84b0ee4283f9fc237df728b663",
+  "original_runs": {
+    "ci": 43819766055,
+    "docs": 43819766067,
+    "state": "Original failures retained; whole workflow terminal counts recorded separately by exact-head watcher."
+  },
+  "changes": {
+    "audit": "Shared production Pi sink requests bigint device/inode IDs for both pathname and opened handle; injected numeric IDs must be exact safe nonnegative integers. Original race tests use the same real exact-identity ports. Generated parent, child and approval bundles rebuilt through original owner.",
+    "workflow": "Read actual once-only command/environment/context flow and exact named trusted producer roles, retaining original suite execution and negative guards.",
+    "atlas": "Keep exact current source-base pin, current owner byte checks, historical snapshot and geometry guards.",
+    "mapped_fixture": "Supported inert runtime snapshot and one canonical owned Temp base; production interpreter/alias/outside-source guards remain closed."
+  },
+  "causality": {
+    "audit_original_host": "Original Windows stat identities were not captured. Its precise causal subpredicate remains UNKNOWN.",
+    "confirmed_independent_audit_defect": "Adjacent exact 64-bit inode IDs collapse to one JS Number; actual production-layer regression returned true and appended before the fix. Unsafe directory identity also reached open.",
+    "local_original_audit": "Original hosted-failing selector passed once locally before changes; not mislabelled RED despite historical receipt filename.",
+    "target_red": "Three genuine precision/real-port failures before production change; first six-method GREEN, then expanded ten precision controls plus57 old security/audit methods PASS67. Invalid nonfinite/negative IDs remain rejected."
+  },
+  "observations": {
+    "audit-2f65-original-red": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-2f65-original-red.json",
+      "sha256": "5b428bfec358a8b10f1faa9d974194ae724b3d3618d76c86d0cfd50b37d85983",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "test/security.test.ts",
+          "--config",
+          "vitest.config.ts",
+          "--configLoader",
+          "runner",
+          "--testNamePattern",
+          "permission audit rejects validation-open path swaps and opened-handle mismatches",
+          "--maxWorkers",
+          "1",
+          "--retry",
+          "0",
+          "--reporter",
+          "verbose",
+          "--reporter",
+          "json",
+          "--outputFile",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-2f65-original-red-results.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 2.561502099997597,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-d6v35apb",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      },
+      "named_results": {
+        "numPassedTests": 1,
+        "numFailedTests": 0,
+        "numPendingTests": 21,
+        "files": [
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/security.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit is append-only and rejects attacker-controlled row fields",
+                "status": "skipped",
+                "title": "permission audit is append-only and rejects attacker-controlled row fields",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit rejects hardlinks and nonregular sinks",
+                "status": "skipped",
+                "title": "permission audit rejects hardlinks and nonregular sinks",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit rejects validation-open path swaps and opened-handle mismatches",
+                "status": "passed",
+                "title": "permission audit rejects validation-open path swaps and opened-handle mismatches",
+                "duration": 11.574200000000019,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit creates exclusively and rejects a hardlink raced into an absent target",
+                "status": "skipped",
+                "title": "permission audit creates exclusively and rejects a hardlink raced into an absent target",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool project_write_anywhere without echoing attacker input",
+                "status": "skipped",
+                "title": "blocks undeclared potentially mutating tool project_write_anywhere without echoing attacker input",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool __proto__ without echoing attacker input",
+                "status": "skipped",
+                "title": "blocks undeclared potentially mutating tool __proto__ without echoing attacker input",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool constructor without echoing attacker input",
+                "status": "skipped",
+                "title": "blocks undeclared potentially mutating tool constructor without echoing attacker input",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool prototype without echoing attacker input",
+                "status": "skipped",
+                "title": "blocks undeclared potentially mutating tool prototype without echoing attacker input",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract admits no provider credential at all and excludes farm/auth bleed",
+                "status": "skipped",
+                "title": "admits no provider credential at all and excludes farm/auth bleed",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract an obsolete session_start cannot mint readiness after shutdown and reactivation",
+                "status": "skipped",
+                "title": "an obsolete session_start cannot mint readiness after shutdown and reactivation",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract farm authorization rejects a lease replaced while enabled-state proof is pending",
+                "status": "skipped",
+                "title": "farm authorization rejects a lease replaced while enabled-state proof is pending",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract farm runner rechecks the identical lifecycle lease after filesystem awaits and before spawn",
+                "status": "skipped",
+                "title": "farm runner rechecks the identical lifecycle lease after filesystem awaits and before spawn",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract pins CodeQL and scans both TypeScript sources and shipped JavaScript",
+                "status": "skipped",
+                "title": "pins CodeQL and scans both TypeScript sources and shipped JavaScript",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract security evidence output is result-code-only even with secret-bearing ambient values",
+                "status": "skipped",
+                "title": "security evidence output is result-code-only even with secret-bearing ambient values",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract SARIF high gate reports only a fixed code and count",
+                "status": "skipped",
+                "title": "SARIF high gate reports only a fixed code and count",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+                "status": "skipped",
+                "title": "the setup file ran and repointed every home variable",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+                "status": "skipped",
+                "title": "os.homedir() resolves inside the disposable root, not the real profile",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+                "status": "skipped",
+                "title": "the seeded auth store is an obvious dummy, and is the one a child would read",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home",
+                "status": "skipped",
+                "title": "a spread of process.env therefore carries the disposable home",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "disposable-home setup failure and exit boundaries"
+                ],
+                "fullName": "disposable-home setup failure and exit boundaries creation failure propagates before auth, redirection and exit registration",
+                "status": "skipped",
+                "title": "creation failure propagates before auth, redirection and exit registration",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "disposable-home setup failure and exit boundaries"
+                ],
+                "fullName": "disposable-home setup failure and exit boundaries dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+                "status": "skipped",
+                "title": "dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "disposable-home setup failure and exit boundaries"
+                ],
+                "fullName": "disposable-home setup failure and exit boundaries successful setup registers owned exit cleanup and never restores the test-process environment",
+                "status": "skipped",
+                "title": "successful setup registers owned exit cleanup and never restores the test-process environment",
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "audit-identity-target-red": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-target-red.json",
+      "sha256": "d28bf5e450c33de13de9ac77a3bcbd6ae34bb7c6f8d60c52c19cd49515defdef",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "test/audit-identity.test.ts",
+          "--config",
+          "vitest.config.ts",
+          "--configLoader",
+          "runner",
+          "--maxWorkers",
+          "1",
+          "--retry",
+          "0",
+          "--reporter",
+          "verbose",
+          "--reporter",
+          "json",
+          "--outputFile",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-target-red-results.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 1,
+        "seconds": 0.4247637999942526,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-gt_cv4er",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      },
+      "named_results": {
+        "numPassedTests": 3,
+        "numFailedTests": 3,
+        "numPendingTests": 0,
+        "files": [
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-identity.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses rounded numeric IDs before writing even when two distinct IDs compare equal",
+                "status": "failed",
+                "title": "refuses rounded numeric IDs before writing even when two distinct IDs compare equal",
+                "duration": 4.532699999999991,
+                "failureMessages": [
+                  "Error: expected true to be false // Object.is equality\n    at _Assertion.__VITEST_RESOLVES__ (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/expect/dist/index.js:1710:17)\n    at _Assertion.propertyGetter (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/chai/index.js:1607:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/chai/index.js:1696:22)\n    at C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-identity.test.ts:34:62\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+                ],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses unsafe directory identities before opening a sink",
+                "status": "failed",
+                "title": "refuses unsafe directory identities before opening a sink",
+                "duration": 0.5726999999999975,
+                "failureMessages": [
+                  "Error: expected true to be false // Object.is equality\n    at _Assertion.__VITEST_RESOLVES__ (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/expect/dist/index.js:1710:17)\n    at _Assertion.propertyGetter (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/chai/index.js:1607:27)\n    at Reflect.get (<anonymous>)\n    at Object.proxyGetter [as get] (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/chai/index.js:1696:22)\n    at C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-identity.test.ts:41:62\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)"
+                ],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities rejects adjacent exact bigint file IDs and closes the mismatched handle",
+                "status": "passed",
+                "title": "rejects adjacent exact bigint file IDs and closes the mismatched handle",
+                "duration": 0.3253999999999735,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities accepts the same precise identity 2 and still appends and closes",
+                "status": "passed",
+                "title": "accepts the same precise identity 2 and still appends and closes",
+                "duration": 0.1926000000000272,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities accepts the same precise identity 9007199254740992n and still appends and closes",
+                "status": "passed",
+                "title": "accepts the same precise identity 9007199254740992n and still appends and closes",
+                "duration": 0.16429999999999723,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities the real filesystem port returns exact bigint device and inode values",
+                "status": "failed",
+                "title": "the real filesystem port returns exact bigint device and inode values",
+                "duration": 1.277799999999985,
+                "failureMessages": [
+                  "AssertionError: expected 'number' to be 'bigint' // Object.is equality\n    at C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-identity.test.ts:61:33\n    at async file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+                ],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "audit-identity-green": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-green.json",
+      "sha256": "0d52f68d36ca184772eb536b3adbd1a28f41202c698083e5866072cd2e8340d6",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "test/audit-identity.test.ts",
+          "--config",
+          "vitest.config.ts",
+          "--configLoader",
+          "runner",
+          "--maxWorkers",
+          "1",
+          "--retry",
+          "0",
+          "--reporter",
+          "verbose",
+          "--reporter",
+          "json",
+          "--outputFile",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-green-results.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 0.42093610001029447,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-2c8cee1e",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      },
+      "named_results": {
+        "numPassedTests": 6,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "files": [
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-identity.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses rounded numeric IDs before writing even when two distinct IDs compare equal",
+                "status": "passed",
+                "title": "refuses rounded numeric IDs before writing even when two distinct IDs compare equal",
+                "duration": 1.869100000000003,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses unsafe directory identities before opening a sink",
+                "status": "passed",
+                "title": "refuses unsafe directory identities before opening a sink",
+                "duration": 0.34499999999999886,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities rejects adjacent exact bigint file IDs and closes the mismatched handle",
+                "status": "passed",
+                "title": "rejects adjacent exact bigint file IDs and closes the mismatched handle",
+                "duration": 0.2172999999999945,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities accepts the same precise identity 2 and still appends and closes",
+                "status": "passed",
+                "title": "accepts the same precise identity 2 and still appends and closes",
+                "duration": 0.20230000000000814,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities accepts the same precise identity 9007199254740992n and still appends and closes",
+                "status": "passed",
+                "title": "accepts the same precise identity 9007199254740992n and still appends and closes",
+                "duration": 0.15749999999999886,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities the real filesystem port returns exact bigint device and inode values",
+                "status": "passed",
+                "title": "the real filesystem port returns exact bigint device and inode values",
+                "duration": 0.6800000000000068,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "audit-identity-source-union-green": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-source-union-green.json",
+      "sha256": "26274bbcc81a5630dc655b128ed74dae0b879687ae30ba2874b1b425b5cb32f7",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "test/audit-identity.test.ts",
+          "test/audit-sink.test.ts",
+          "test/security.test.ts",
+          "--config",
+          "vitest.config.ts",
+          "--configLoader",
+          "runner",
+          "--maxWorkers",
+          "1",
+          "--retry",
+          "0",
+          "--reporter",
+          "verbose",
+          "--reporter",
+          "json",
+          "--outputFile",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-source-union-green-results.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 1.6263475000014296,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-mwh52p8p",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      },
+      "named_results": {
+        "numPassedTests": 67,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "files": [
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-identity.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses rounded numeric IDs before writing even when two distinct IDs compare equal",
+                "status": "passed",
+                "title": "refuses rounded numeric IDs before writing even when two distinct IDs compare equal",
+                "duration": 1.7561000000000035,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses unsafe directory identities before opening a sink",
+                "status": "passed",
+                "title": "refuses unsafe directory identities before opening a sink",
+                "duration": 0.3499000000000052,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities rejects adjacent exact bigint file IDs and closes the mismatched handle",
+                "status": "passed",
+                "title": "rejects adjacent exact bigint file IDs and closes the mismatched handle",
+                "duration": 0.23910000000000764,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities accepts the same precise identity 2 and still appends and closes",
+                "status": "passed",
+                "title": "accepts the same precise identity 2 and still appends and closes",
+                "duration": 0.21289999999999054,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities accepts the same precise identity 9007199254740992n and still appends and closes",
+                "status": "passed",
+                "title": "accepts the same precise identity 9007199254740992n and still appends and closes",
+                "duration": 0.16150000000000375,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities the real filesystem port returns exact bigint device and inode values",
+                "status": "passed",
+                "title": "the real filesystem port returns exact bigint device and inode values",
+                "duration": 0.6650999999999954,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses invalid injected identity NaN before writing",
+                "status": "passed",
+                "title": "refuses invalid injected identity NaN before writing",
+                "duration": 0.2014999999999958,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses invalid injected identity Infinity before writing",
+                "status": "passed",
+                "title": "refuses invalid injected identity Infinity before writing",
+                "duration": 0.12950000000000728,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses invalid injected identity -1 before writing",
+                "status": "passed",
+                "title": "refuses invalid injected identity -1 before writing",
+                "duration": 0.12140000000000839,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "exact audit file identities"
+                ],
+                "fullName": "exact audit file identities refuses invalid injected identity -1n before writing",
+                "status": "passed",
+                "title": "refuses invalid injected identity -1n before writing",
+                "duration": 0.1379000000000019,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          },
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/audit-sink.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'permission' writes its row into the project's own state directory",
+                "status": "passed",
+                "title": "'permission' writes its row into the project's own state directory",
+                "duration": 11.960099999999983,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'background-job' writes its row into the project's own state directory",
+                "status": "passed",
+                "title": "'background-job' writes its row into the project's own state directory",
+                "duration": 8.516600000000011,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'bridge-failure' writes its row into the project's own state directory",
+                "status": "passed",
+                "title": "'bridge-failure' writes its row into the project's own state directory",
+                "duration": 8.39179999999999,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'dispatch' writes its row into the project's own state directory",
+                "status": "passed",
+                "title": "'dispatch' writes its row into the project's own state directory",
+                "duration": 7.640599999999978,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'compaction' writes its row into the project's own state directory",
+                "status": "passed",
+                "title": "'compaction' writes its row into the project's own state directory",
+                "duration": 7.5297999999999945,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'permission' refuses a gate-events.log symlinked at an external sentinel",
+                "status": "passed",
+                "title": "'permission' refuses a gate-events.log symlinked at an external sentinel",
+                "duration": 3.206099999999992,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'background-job' refuses a gate-events.log symlinked at an external sentinel",
+                "status": "passed",
+                "title": "'background-job' refuses a gate-events.log symlinked at an external sentinel",
+                "duration": 2.989200000000011,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'bridge-failure' refuses a gate-events.log symlinked at an external sentinel",
+                "status": "passed",
+                "title": "'bridge-failure' refuses a gate-events.log symlinked at an external sentinel",
+                "duration": 2.8810000000000002,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'dispatch' refuses a gate-events.log symlinked at an external sentinel",
+                "status": "passed",
+                "title": "'dispatch' refuses a gate-events.log symlinked at an external sentinel",
+                "duration": 2.967399999999998,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'compaction' refuses a gate-events.log symlinked at an external sentinel",
+                "status": "passed",
+                "title": "'compaction' refuses a gate-events.log symlinked at an external sentinel",
+                "duration": 3.3153000000000077,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'permission' refuses a .codearbiter directory linked at an external sentinel",
+                "status": "passed",
+                "title": "'permission' refuses a .codearbiter directory linked at an external sentinel",
+                "duration": 2.3045999999999935,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'background-job' refuses a .codearbiter directory linked at an external sentinel",
+                "status": "passed",
+                "title": "'background-job' refuses a .codearbiter directory linked at an external sentinel",
+                "duration": 2.2156000000000233,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'bridge-failure' refuses a .codearbiter directory linked at an external sentinel",
+                "status": "passed",
+                "title": "'bridge-failure' refuses a .codearbiter directory linked at an external sentinel",
+                "duration": 2.3611999999999966,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'dispatch' refuses a .codearbiter directory linked at an external sentinel",
+                "status": "passed",
+                "title": "'dispatch' refuses a .codearbiter directory linked at an external sentinel",
+                "duration": 2.133499999999998,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'compaction' refuses a .codearbiter directory linked at an external sentinel",
+                "status": "passed",
+                "title": "'compaction' refuses a .codearbiter directory linked at an external sentinel",
+                "duration": 1.9682999999999993,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'permission' refuses a gate-events.log hardlinked at an external sentinel",
+                "status": "passed",
+                "title": "'permission' refuses a gate-events.log hardlinked at an external sentinel",
+                "duration": 2.4984999999999786,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'background-job' refuses a gate-events.log hardlinked at an external sentinel",
+                "status": "passed",
+                "title": "'background-job' refuses a gate-events.log hardlinked at an external sentinel",
+                "duration": 2.476300000000009,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'bridge-failure' refuses a gate-events.log hardlinked at an external sentinel",
+                "status": "passed",
+                "title": "'bridge-failure' refuses a gate-events.log hardlinked at an external sentinel",
+                "duration": 2.7659000000000162,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'dispatch' refuses a gate-events.log hardlinked at an external sentinel",
+                "status": "passed",
+                "title": "'dispatch' refuses a gate-events.log hardlinked at an external sentinel",
+                "duration": 2.6384000000000185,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'compaction' refuses a gate-events.log hardlinked at an external sentinel",
+                "status": "passed",
+                "title": "'compaction' refuses a gate-events.log hardlinked at an external sentinel",
+                "duration": 2.563199999999995,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'permission' keeps its fail-open result when the sink is not a regular file",
+                "status": "passed",
+                "title": "'permission' keeps its fail-open result when the sink is not a regular file",
+                "duration": 2.4285999999999888,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'background-job' keeps its fail-open result when the sink is not a regular file",
+                "status": "passed",
+                "title": "'background-job' keeps its fail-open result when the sink is not a regular file",
+                "duration": 2.342000000000013,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'bridge-failure' keeps its fail-open result when the sink is not a regular file",
+                "status": "passed",
+                "title": "'bridge-failure' keeps its fail-open result when the sink is not a regular file",
+                "duration": 1.8374000000000024,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'dispatch' keeps its fail-open result when the sink is not a regular file",
+                "status": "passed",
+                "title": "'dispatch' keeps its fail-open result when the sink is not a regular file",
+                "duration": 2.1876000000000033,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'compaction' keeps its fail-open result when the sink is not a regular file",
+                "status": "passed",
+                "title": "'compaction' keeps its fail-open result when the sink is not a regular file",
+                "duration": 2.014700000000005,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'permission' never creates a state directory the project does not have",
+                "status": "passed",
+                "title": "'permission' never creates a state directory the project does not have",
+                "duration": 1.436300000000017,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'background-job' never creates a state directory the project does not have",
+                "status": "passed",
+                "title": "'background-job' never creates a state directory the project does not have",
+                "duration": 0.8280999999999779,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'bridge-failure' never creates a state directory the project does not have",
+                "status": "passed",
+                "title": "'bridge-failure' never creates a state directory the project does not have",
+                "duration": 0.8573999999999842,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'dispatch' never creates a state directory the project does not have",
+                "status": "passed",
+                "title": "'dispatch' never creates a state directory the project does not have",
+                "duration": 0.8734000000000037,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink hardening"
+                ],
+                "fullName": "Pi audit sink hardening 'compaction' never creates a state directory the project does not have",
+                "status": "passed",
+                "title": "'compaction' never creates a state directory the project does not have",
+                "duration": 0.8070999999999913,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink race cases"
+                ],
+                "fullName": "Pi audit sink race cases rejects a target swapped between validation and open",
+                "status": "passed",
+                "title": "rejects a target swapped between validation and open",
+                "duration": 3.1063000000000045,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink race cases"
+                ],
+                "fullName": "Pi audit sink race cases rejects an opened handle whose identity is not the validated path",
+                "status": "passed",
+                "title": "rejects an opened handle whose identity is not the validated path",
+                "duration": 2.78479999999999,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink race cases"
+                ],
+                "fullName": "Pi audit sink race cases rejects a target swapped after the append",
+                "status": "passed",
+                "title": "rejects a target swapped after the append",
+                "duration": 4.910899999999998,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink race cases"
+                ],
+                "fullName": "Pi audit sink race cases rejects a hardlink raced into an absent target",
+                "status": "passed",
+                "title": "rejects a hardlink raced into an absent target",
+                "duration": 2.690100000000001,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "Pi audit sink race cases"
+                ],
+                "fullName": "Pi audit sink race cases rejects a line that is unbounded, unterminated, or carries an embedded newline",
+                "status": "passed",
+                "title": "rejects a line that is unbounded, unterminated, or carries an embedded newline",
+                "duration": 1.2117000000000075,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          },
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/test/security.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit is append-only and rejects attacker-controlled row fields",
+                "status": "passed",
+                "title": "permission audit is append-only and rejects attacker-controlled row fields",
+                "duration": 14.291799999999967,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit rejects hardlinks and nonregular sinks",
+                "status": "passed",
+                "title": "permission audit rejects hardlinks and nonregular sinks",
+                "duration": 6.4202999999999975,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit rejects validation-open path swaps and opened-handle mismatches",
+                "status": "passed",
+                "title": "permission audit rejects validation-open path swaps and opened-handle mismatches",
+                "duration": 6.0282000000000835,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract permission audit creates exclusively and rejects a hardlink raced into an absent target",
+                "status": "passed",
+                "title": "permission audit creates exclusively and rejects a hardlink raced into an absent target",
+                "duration": 6.443399999999997,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool project_write_anywhere without echoing attacker input",
+                "status": "passed",
+                "title": "blocks undeclared potentially mutating tool project_write_anywhere without echoing attacker input",
+                "duration": 0.9863000000000284,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool __proto__ without echoing attacker input",
+                "status": "passed",
+                "title": "blocks undeclared potentially mutating tool __proto__ without echoing attacker input",
+                "duration": 0.4878999999999678,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool constructor without echoing attacker input",
+                "status": "passed",
+                "title": "blocks undeclared potentially mutating tool constructor without echoing attacker input",
+                "duration": 0.4087000000000671,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract blocks undeclared potentially mutating tool prototype without echoing attacker input",
+                "status": "passed",
+                "title": "blocks undeclared potentially mutating tool prototype without echoing attacker input",
+                "duration": 0.32589999999993324,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract admits no provider credential at all and excludes farm/auth bleed",
+                "status": "passed",
+                "title": "admits no provider credential at all and excludes farm/auth bleed",
+                "duration": 0.4522999999999229,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract an obsolete session_start cannot mint readiness after shutdown and reactivation",
+                "status": "passed",
+                "title": "an obsolete session_start cannot mint readiness after shutdown and reactivation",
+                "duration": 7.334899999999948,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract farm authorization rejects a lease replaced while enabled-state proof is pending",
+                "status": "passed",
+                "title": "farm authorization rejects a lease replaced while enabled-state proof is pending",
+                "duration": 2.252899999999954,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract farm runner rechecks the identical lifecycle lease after filesystem awaits and before spawn",
+                "status": "passed",
+                "title": "farm runner rechecks the identical lifecycle lease after filesystem awaits and before spawn",
+                "duration": 5.95010000000002,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract pins CodeQL and scans both TypeScript sources and shipped JavaScript",
+                "status": "passed",
+                "title": "pins CodeQL and scans both TypeScript sources and shipped JavaScript",
+                "duration": 3.701999999999998,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract security evidence output is result-code-only even with secret-bearing ambient values",
+                "status": "passed",
+                "title": "security evidence output is result-code-only even with secret-bearing ambient values",
+                "duration": 83.27269999999999,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "ADR-0014 adversarial promotion contract"
+                ],
+                "fullName": "ADR-0014 adversarial promotion contract SARIF high gate reports only a fixed code and count",
+                "status": "passed",
+                "title": "SARIF high gate reports only a fixed code and count",
+                "duration": 77.06640000000004,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home the setup file ran and repointed every home variable",
+                "status": "passed",
+                "title": "the setup file ran and repointed every home variable",
+                "duration": 0.17970000000002528,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home os.homedir() resolves inside the disposable root, not the real profile",
+                "status": "passed",
+                "title": "os.homedir() resolves inside the disposable root, not the real profile",
+                "duration": 0.21420000000000528,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home the seeded auth store is an obvious dummy, and is the one a child would read",
+                "status": "passed",
+                "title": "the seeded auth store is an obvious dummy, and is the one a child would read",
+                "duration": 0.3649000000000342,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "#464 - the suite runs against a disposable operator home"
+                ],
+                "fullName": "#464 - the suite runs against a disposable operator home a spread of process.env therefore carries the disposable home",
+                "status": "passed",
+                "title": "a spread of process.env therefore carries the disposable home",
+                "duration": 0.11320000000000618,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "disposable-home setup failure and exit boundaries"
+                ],
+                "fullName": "disposable-home setup failure and exit boundaries creation failure propagates before auth, redirection and exit registration",
+                "status": "passed",
+                "title": "creation failure propagates before auth, redirection and exit registration",
+                "duration": 6.727300000000014,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "disposable-home setup failure and exit boundaries"
+                ],
+                "fullName": "disposable-home setup failure and exit boundaries dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+                "status": "passed",
+                "title": "dummy-auth write failure retains the partial root without redirecting or reading operator auth",
+                "duration": 2.322300000000041,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "disposable-home setup failure and exit boundaries"
+                ],
+                "fullName": "disposable-home setup failure and exit boundaries successful setup registers owned exit cleanup and never restores the test-process environment",
+                "status": "passed",
+                "title": "successful setup registers owned exit cleanup and never restores the test-process environment",
+                "duration": 2.5685999999999467,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "audit-identity-typecheck": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-identity-typecheck.json",
+      "sha256": "9c7a5c7845e8de1015044eef5d7206a40fa7dfcf0452929c5f367c367a42ddb1",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools\\node_modules\\typescript\\bin\\tsc",
+          "--noEmit"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 2.9177641999995103,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-rh0jhme7",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      }
+    },
+    "audit-exact-identity-generated-build": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-exact-identity-generated-build.json",
+      "sha256": "1acc3e7fe69798d33bc23627f4b38402c0af4c8489fc412d200b23e1b0a4da93",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "build.mjs"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 0.1895102999988012,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-11zuzh5i",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      }
+    },
+    "audit-bundle-fingerprint": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\audit-bundle-fingerprint.json",
+      "sha256": "c394de2dfbd4476bd2667abdc26317e89e79eb3b00f66296ec27a1e307100b24",
+      "observed": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_pi_package.PiPackageTests.test_parent_embeds_exact_generated_hardened_child_fingerprint"
+        ],
+        "exit_code": 0,
+        "seconds": 0.1563730000052601,
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "223e06d17dfb6c32bd67ca7c62b915cb03e0a1189bad193f723662e346b75b55"
+      }
+    },
+    "atlas-2f65-original-red": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-2f65-original-red.json",
+      "sha256": "94e5dfce32a1682ce7ac7afd6d71626abad029dafb3684f4ad1c201cb0c75d13",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "scripts/execution-maps/atlas-assistive.test.ts",
+          "--maxWorkers",
+          "1",
+          "--retry",
+          "0",
+          "--reporter",
+          "verbose",
+          "--reporter",
+          "json",
+          "--outputFile",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-2f65-original-red-results.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+        "exit_code": 1,
+        "seconds": 0.9386407999991206,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-e2d24ndm",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      },
+      "named_results": {
+        "numPassedTests": 6,
+        "numFailedTests": 1,
+        "numPendingTests": 0,
+        "files": [
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/execution-maps/atlas-assistive.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes binds each current explanation to real tracked owner bytes, not a new release claim",
+                "status": "failed",
+                "title": "binds each current explanation to real tracked owner bytes, not a new release claim",
+                "duration": 4.694899999999961,
+                "failureMessages": [
+                  "AssertionError: expected 'f65f1e7543f2934a274909cb0d157b94ee909\u2026' to be '74057c377ae7934fe7074443b7ab71f378798\u2026' // Object.is equality\n    at C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/execution-maps/atlas-assistive.test.ts:20:29\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:302:11\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:26\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:2326:20\n    at new Promise (<anonymous>)\n    at runWithCancel (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:2323:10)\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:2305:20\n    at new Promise (<anonymous>)\n    at runWithTimeout (file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:2272:10)\n    at file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/@vitest/runner/dist/chunk-artifact.js:2956:64"
+                ],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes retains original geometry and immutable source links while exposing the current difference",
+                "status": "passed",
+                "title": "retains original geometry and immutable source links while exposing the current difference",
+                "duration": 10.840100000000007,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes shows the distinction before the canvas, in affected node details, and in standalone exports",
+                "status": "passed",
+                "title": "shows the distinction before the canvas, in affected node details, and in standalone exports",
+                "duration": 15.863200000000006,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes shows trusted recovery guidance without replay, regrant or uncertain-decline settlement",
+                "status": "passed",
+                "title": "shows trusted recovery guidance without replay, regrant or uncertain-decline settlement",
+                "duration": 8.829399999999964,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes exposes current context callers and native writers at the historical permission and recovery nodes",
+                "status": "passed",
+                "title": "exposes current context callers and native writers at the historical permission and recovery nodes",
+                "duration": 5.204600000000028,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes binds greenfield finalization and advisory context to their current owners",
+                "status": "passed",
+                "title": "binds greenfield finalization and advisory context to their current owners",
+                "duration": 0.20109999999999673,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes rejects invalid source references or affected nodes and escapes explanatory text",
+                "status": "passed",
+                "title": "rejects invalid source references or affected nodes and escapes explanatory text",
+                "duration": 17.32929999999999,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "atlas-2f65-current-green": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-2f65-current-green.json",
+      "sha256": "a6cb9a51174ebede1d098e3c4d03ab1706eef896174f315ddc4427a8a1611f56",
+      "observed": {
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+          "run",
+          "scripts/execution-maps/atlas-assistive.test.ts",
+          "--maxWorkers",
+          "1",
+          "--retry",
+          "0",
+          "--reporter",
+          "verbose",
+          "--reporter",
+          "json",
+          "--outputFile",
+          "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\atlas-2f65-current-green-results.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+        "exit_code": 0,
+        "seconds": 2.4593387999921106,
+        "source_unchanged": true,
+        "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+        "private_env_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-2f65-repair-private-f8lavmlw",
+        "scope": "One exact owning file/selector with approved cached runtime and credential-blind home. No install/provider/native/host replay."
+      },
+      "named_results": {
+        "numPassedTests": 7,
+        "numFailedTests": 0,
+        "numPendingTests": 0,
+        "files": [
+          {
+            "name": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/execution-maps/atlas-assistive.test.ts",
+            "assertionResults": [
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes binds each current explanation to real tracked owner bytes, not a new release claim",
+                "status": "passed",
+                "title": "binds each current explanation to real tracked owner bytes, not a new release claim",
+                "duration": 1519.3767,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes retains original geometry and immutable source links while exposing the current difference",
+                "status": "passed",
+                "title": "retains original geometry and immutable source links while exposing the current difference",
+                "duration": 9.605200000000423,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes shows the distinction before the canvas, in affected node details, and in standalone exports",
+                "status": "passed",
+                "title": "shows the distinction before the canvas, in affected node details, and in standalone exports",
+                "duration": 15.082899999999881,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes shows trusted recovery guidance without replay, regrant or uncertain-decline settlement",
+                "status": "passed",
+                "title": "shows trusted recovery guidance without replay, regrant or uncertain-decline settlement",
+                "duration": 9.453999999999724,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes exposes current context callers and native writers at the historical permission and recovery nodes",
+                "status": "passed",
+                "title": "exposes current context callers and native writers at the historical permission and recovery nodes",
+                "duration": 3.644999999999982,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes binds greenfield finalization and advisory context to their current owners",
+                "status": "passed",
+                "title": "binds greenfield finalization and advisory context to their current owners",
+                "duration": 0.17079999999987194,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              },
+              {
+                "ancestorTitles": [
+                  "assistive candidate versus retained historical routes"
+                ],
+                "fullName": "assistive candidate versus retained historical routes rejects invalid source references or affected nodes and escapes explanatory text",
+                "status": "passed",
+                "title": "rejects invalid source references or affected nodes and escapes explanatory text",
+                "duration": 17.42789999999968,
+                "failureMessages": [],
+                "meta": {},
+                "tags": []
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "ci-contract-precision-reader-union": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ci-contract-precision-reader-union.json",
+      "sha256": "98c3f3384671d1f3209a671f880d8bf1a3ace1837c15919e15917af744f626a1",
+      "observed": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution",
+          "test_ci_impact.WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group",
+          "test_ci_impact.MappedConformanceReaderControls",
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input"
+        ],
+        "exit_code": 0,
+        "seconds": 0.24298300000373274,
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "7e33de1125c5e8eee5c7a7e786b0cf227c6556dd9b00dcd285ea876591a68dc3"
+      }
+    },
+    "ci-contract-precision-final-union": {
+      "receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\ci-contract-precision-final-union.json",
+      "sha256": "3738511333d3c62b9062433cb047aba8161066ad9403df9d90105e6a2c71cbed",
+      "observed": {
+        "argv": [
+          "C:\\Python314\\python.exe",
+          "-B",
+          "-X",
+          "utf8",
+          "-m",
+          "unittest",
+          "test_ci_impact.ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution",
+          "test_ci_impact.WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group",
+          "test_ci_impact.MappedConformanceReaderControls",
+          "test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input",
+          "test_major_qualification_report.MappedNativeConsumerProfileTests",
+          "test_major_qualification_report.ReportTest"
+        ],
+        "exit_code": 0,
+        "seconds": 10.882375700006378,
+        "source_and_index_stable": true,
+        "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+        "stderr_sha256": "6174d0a704f9357dccecb166085715f1a0f3c43dee5a8ce3c3162e6fee27245c"
+      }
+    }
+  },
+  "author_packets": {
+    "workflow_reader": {
+      "schema": "private-ci-contract-reader-repair/1",
+      "state": "FROZEN_READY_FOR_ROOT",
+      "route": "ca-fix / scoped test_change",
+      "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+      "source_epoch": "2f65fda443816d84b0ee4283f9fc237df728b663",
+      "subject": {
+        "path": ".github/scripts/test_ci_impact.py",
+        "preimage_sha256": "df002d2996581866ced8e8cc3af20de6949d08f345fb1db76c8d07279f9a8a8a",
+        "candidate_sha256": "cf0fbe79077d817c12da0c768ca232ffb58e8d5405a370be2c8ec4c0b19b7532",
+        "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ci-2f65-reader-fix-nobo3y18\\candidate\\.github\\scripts\\test_ci_impact.py"
+      },
+      "patch": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ci-2f65-reader-fix-nobo3y18\\proposal.patch",
+        "sha256": "cd24da59a18209bf32f7abf4086033370fda72118be4c4349199f2bc0a8aa898"
+      },
+      "confirmed_cause": {
+        "original_job": 133140014777,
+        "original_log_sha256": "2b821ecde4eb635340d22f2dfb3a60fe0a586092dcc7c1d7c767e705c7dee16f",
+        "candidate_suites": "Reader required literal env=environment, but the guarded mapped observer deliberately forwards the selected private child_environment from an invocation context. Original unobserved suites use nullcontext(command, environment); original command runs once.",
+        "merge_group": "Three exact trusted push-only mapped producer prepare/upload/emit steps were scanned as if they were enforced test predicates. The original conformance suite remains unconditional under merge_group."
+      },
+      "repair": [
+        "AST checks the actual original candidate installation environment, default original argv/environment, exact single-script opt-in observer slot, context command/child_environment forwarding, one subprocess.run and unchanged failure/deadline/timeout result contract. No literal env substring waiver.",
+        "Closed exact owner/step/predicate match permits only the three mapped source/report roles. It rejects copied/reused/changed predicates, gating/suppressing/duplicating the original required command, and changed suite argv. Unknown jobs and all other event/base scans unchanged."
+      ],
+      "checks": {
+        "genuine_red": {
+          "record": "target-red.json",
+          "raw": "target-red.log",
+          "tests": 2,
+          "failures": 2,
+          "errors": 0,
+          "duration_seconds": 0.023371499992208555
+        },
+        "final_green": {
+          "record": "final-green.json",
+          "raw": "final-green.log",
+          "tests": 4,
+          "failures": 0,
+          "errors": 0,
+          "skips": 0,
+          "duration_seconds": 0.05952009999600705,
+          "meaningful_negative_cases": 21
+        },
+        "intermediate_refinement": "affected-green retained1FAIL2ERROR: binding target AST Store versus expression Load comparison corrected by explicit bound-name tuple check; wrong-platform mutant initially touched an earlier unrelated condition, corrected to actual prepare predicate. Initial candidate retained. Neither is a product failure.",
+        "preservation": {
+          "original_methods": 170,
+          "unchanged_original_methods": 168,
+          "changed_original_methods": [
+            "WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group",
+            "ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution"
+          ],
+          "new_control_methods": [
+            "MappedConformanceReaderControls.test_candidate_child_reader_preserves_environment_slot_deadline_and_refusal",
+            "MappedConformanceReaderControls.test_mapped_producer_roles_cannot_gate_or_change_the_original_suite"
+          ]
+        },
+        "syntax": true,
+        "private_patch_check": 0,
+        "gitleaks": {
+          "exit_code": 0,
+          "findings": 0,
+          "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+          "bytes_scanned": 304771
+        }
+      },
+      "concurrent_source_fact": {
+        "Root_current_ci_sha256": "59b3411b951d433b29bb37d10838079cc67fdedb47d8f3c75564714cd98b6b95",
+        "tested_original_ci_sha256": "da1598577f0f3dbab2b79421447364d976359bb0e0c919914bb0cfbf4c571fb4",
+        "only_change": "Pi adapter run argv adds test/audit-identity.test.ts; not part of this private patch.",
+        "mapped_bridges_job_exact_equal": true,
+        "all_workflow_if_predicates_exact_equal": true,
+        "owned_test_and_conformance_preimages_exact_equal": true,
+        "claim": "No whole-checkout-clean or current-whole-workflow reexecution claim; focused GREEN uses retained2f65 workflow. Root final integration checks cover combined current source."
+      },
+      "limits": [
+        "Only test_ci_impact.py changes; actual conformance producer/workflow/permissions/timeouts/API/runtime code untouched. No native/Go/Node/SDK/provider/model/network/CI retry/install/qualification renewal or Gov/index/ref/marker/progress/ledger writes.",
+        "Only four focused pure Python methods ran; no full Impact suite. Test guard negative cases are inert source/YAML mutations, never executed child commands.",
+        "Full32 current security policy unchanged and previously consumed; task context/safe original log retained. Coverage is meaningful scoped tests/negative cases; no invented line or branch percentage.",
+        "Parent1098 main/publication hold remains. Future N09 routing draft paused and not included."
+      ]
+    },
+    "inert_mapped_fixture": {
+      "schema": "private-mapped-runtime-canonical-fixture-repair/1",
+      "state": "FROZEN_READY_FOR_ROOT",
+      "route": "ca-fix / test_change",
+      "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+      "source_epoch": "2f65fda443816d84b0ee4283f9fc237df728b663",
+      "subject": {
+        "path": ".github/scripts/test_major_qualification_report.py",
+        "preimage_sha256": "2defa289b77f711cf1150744c4d65cf57cb9946dca7e50957176a40678529c5d",
+        "candidate_sha256": "ef3ff82183e0e4915bf32eed37b7e2663c841ceeac18e0aa20340c41e8b7e008",
+        "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mapped-runtime-fixture-fix-cjb7onzq\\candidate\\.github\\scripts\\test_major_qualification_report.py"
+      },
+      "patch_sha256": "a26f4e327ee635fbaea951279ee74498aa8166e5aa171941f61ca9d1d03b4ac5",
+      "original_failures": {
+        "133140015810": {
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-2f65fd-watch-q2y2d18z\\failed-job-133140015810.log",
+          "sha256": "5355edb7a9f0d8c4f61c001dea53ec0075476d1d8a39084dd9e4c4aa8a75aec7"
+        },
+        "133140015870": {
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-2f65fd-watch-q2y2d18z\\failed-job-133140015870.log",
+          "sha256": "0d80f1d89ade382daa5bd5eafcaaf973a3490cfa198bcd89721e16a26d027d78"
+        },
+        "133140015837": {
+          "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1114-2f65fd-watch-q2y2d18z\\failed-job-133140015837.log",
+          "sha256": "892a3fbe7d954b2e61d839bcb37cfec78a15586235920b25db7275d2abe9e878"
+        }
+      },
+      "causes": [
+        "Inert public route control fed ambient CPython3.15.2 snapshot into deliberately closed3.14 consumer. No production compatibility defect established.",
+        "Class repeatedly used raw temporary-owner paths for fresh external outputs; these can differ from resolved physical directory. Owned child/.. spelling reproduces both exact canonical-parent refusals. Original hosted exact alias/subpredicate remains unretained/UNKNOWN."
+      ],
+      "minimal_fix": [
+        "Only MappedNativeConsumerProfileTests resolves self.base once; all10 class-local raw owner path uses become that base. TemporaryDirectory original cleanup owner stays untouched.",
+        "Only inert public file/client/observer route control supplies explicit supported synthetic3.14 snapshot, checks two calls and exact retained synthetic value; no real runtime observation relabelled.",
+        "One additive test supplies internally consistent3.13/3.15/4.x before/after records and asserts unchanged production runtime refusal."
+      ],
+      "checks": {
+        "runtime_red": {
+          "record": "target-red.json",
+          "errors": 1,
+          "duration_seconds": 2.3957575999957044,
+          "closed_cause": "mapped original reference interpreter changed or is unsupported",
+          "actual_interpreter": [
+            3,
+            14,
+            6
+          ],
+          "forced_snapshot": [
+            3,
+            15,
+            2
+          ]
+        },
+        "owned_alias_red": {
+          "record": "alias-red.json",
+          "errors": 2,
+          "duration_seconds": 0.8390788999968208,
+          "causes": [
+            "new external mapped source directory required",
+            "mapped private output must be outside source"
+          ]
+        },
+        "owned_alias_green": {
+          "record": "alias-green.json",
+          "tests": 2,
+          "exit_code": 0,
+          "duration_seconds": 3.368635600010748
+        },
+        "owning_and_legacy_green": {
+          "record": "owning-green.json",
+          "tests": 25,
+          "exit_code": 0,
+          "skips": 0,
+          "duration_seconds": 10.756868399999803,
+          "scope": "All10 mapped profile fixture methods and15 legacy ReportTest controls, including895 capacity, without native execution."
+        },
+        "retained_author_errors": "A preparation guard counted8 source lines instead of10 actual references and failed before applying canonicalization. Shell continued into an unchanged alias run and a25-method run with24PASS/one missing fixture-asset error. Both invalid author attempts retained; no product/GREEN claim. Corrected setup then final2+25 captures above.",
+        "AST": {
+          "changed_old_methods": [
+            "MappedNativeConsumerProfileTests.setUp",
+            "MappedNativeConsumerProfileTests.test_consumed_native_archive_bytes_are_checked_without_another_download",
+            "MappedNativeConsumerProfileTests.test_public_original_entrypoint_runs_once_restores_modules_and_dispatches_closed_report",
+            "MappedNativeConsumerProfileTests.test_owned_child_profile_is_private_and_never_passes_parent_credentials",
+            "MappedNativeConsumerProfileTests.test_public_observer_refuses_unbound_source_before_original_child_execution"
+          ],
+          "unchanged_old_methods": 101,
+          "new_methods": [
+            "MappedNativeConsumerProfileTests.test_inert_supported_runtime_fixture_keeps_unsupported_reference_interpreters_refused"
+          ],
+          "all_original_assertions_preserved": true
+        },
+        "syntax": true,
+        "patch_check_exit": 0,
+        "gitleaks": {
+          "exit_code": 0,
+          "findings": 0,
+          "sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570"
+        }
+      },
+      "production_preservation": {
+        ".github/scripts/major_qualification_report.py": {
+          "sha256": "af4b1ffd4a5c5c644625f0558aa68fffa7f5a0d071b091c6fcc56215acf4c4bd",
+          "unchanged": true
+        },
+        ".github/scripts/mapped_work_observation.py": {
+          "sha256": "abb8d861202dcd7c6a3796face0c7a6695891f423afa2c2f6cc16338a0a168b5",
+          "unchanged": true
+        }
+      },
+      "limits": [
+        "Pure Python/Git/file unit fixtures only. Inert ArtifactClient opens fake file bytes; no native binary/helper/Go/Node/SDK/installed/Pi/provider/model/network/build/release execution or evidence renewal.",
+        "Actual local Python3.14.6 was used;315 is a controlled runtime_snapshot seam reproducing hosted failure, not actual315 execution. All final controls ran with outer315 seam; repaired inert control replaces only its own synthetic runtime.",
+        "Alias is a real existing owned child/.. path spelling, not asserted to be the exact historical Windows/macOS alias. Strict canonical/external output and production3.14 guards remain byte-exact.",
+        "No full91/92-method source-report module suite. All original assertions preserved; new test increases module by1. Root combined current source/hosted CI remains separate.",
+        "No Gov/index/ref/marker/progress/ledger/proof writes. Parent1098 main/publication hold remains."
+      ]
+    }
+  },
+  "combined_control_limit": "Root final30PASS includes five workflow reader/trigger methods, all ten inert mapped-profile fixtures and15 legacy report controls. Seven nested same-name work_github cases are inert mechanics, not actual native product execution.",
+  "coverage": {
+    "Pi": "PARTIAL local affected behavioral controls and typecheck; exact-head supported Ubuntu+Windows source-bound lines/branches union remains required. No invented full-tree percentage.",
+    "Python_exemption": "CTX-TECH-STACK#FACT-005: There is no coverage tooling for the Python hooks or build tools (core/pysrc/*.py, plugins/*/hooks/*.py, .github/scripts/*.py, tools/*.py). Those surfaces use direct unittest and behavioral checks."
+  },
+  "limits": [
+    "Local tests, generated build, review, hosted CI, trusted integration qualification, installed acceptance and publication are separate.",
+    "No task/status/proof epoch renewed; stale evidence remains stale.",
+    "Parent1098 OPEN/DRAFT held from main for user testing; no publication.",
+    "Private Docker two-effect PASS and failed copy are retained separately; no copy/task qualification promotion."
+  ],
+  "integrity_observation": {
+    "actual_branch_head": "2f65fda443816d84b0ee4283f9fc237df728b663",
+    "verification_fixture_commit": "5a4b96bf537e4bdc5c08ed225a2060f624bfb943",
+    "candidate": "candidate-v1:412111cd25b1b8bc831daf1e12d5b04bff2e75586217aba5b8bbc483e29e8ef9",
+    "result": "PASSED",
+    "frozen": 105,
+    "records": 1318,
+    "applicability": {
+      "APPLICABLE": 566,
+      "STALE": 752
+    },
+    "seconds": 39.93,
+    "source_ref_moved": false
+  },
+  "integrity_scope": "Actual original owner measured the staged16-file tree; only these reporting fields were appended afterward. Final-head hosted owner remains required. Counts are applicability, not passing checks."
+}

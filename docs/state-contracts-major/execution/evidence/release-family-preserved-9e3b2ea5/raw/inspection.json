@@ -1,0 +1,1189 @@
+{
+  "schema": "codearbiter-release-family-source-conformance/1",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "producer": "ci_repair_review bounded meaningful whole-row source review; no test/network/publisher rerun",
+  "rule": [
+    {
+      "path": "docs/state-contracts-major/PROGRAM.md",
+      "lines": [
+        13,
+        13
+      ],
+      "claim": "Preserve healthy identified boundaries through meaningful conformance; changedbehavior gets rows/tests."
+    },
+    {
+      "path": "docs/state-contracts-major/PROGRAM.md",
+      "lines": [
+        46,
+        56
+      ],
+      "claim": "Everybaseline row meaningful test/review mapping; Q03 final publication/publicreadback are subsequent, not circular prepromotion prerequisites."
+    }
+  ],
+  "primary_basis": "Current complete guard/effect/retry source review and fd7/current per-step+definition comparison. Existing runtime evidence corroborates named current behaviors; no source equality over unrelatedsteps and no count-onlypromotion.",
+  "proposed_preserved_count": 11,
+  "specific_holds": [],
+  "findings": [],
+  "qualification_scope": "Source-conformance PRESERVED only. Does not pass actual publication/platform/installed/readiness/runtimeavailability cells or wholeR01/SEQ22/program states. Original buggy C16:04/C17:10 clauses remain separatelyN/A and are not restored.",
+  "inputs": {
+    ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    ".github/scripts/release_target.py": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    ".github/scripts/tag_publication_receipt.py": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+    ".github/scripts/_npm_publishlib.py": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/scripts/test_release_target.py": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+    ".github/scripts/test_release_workflow.py": "a583c039057e33945e9d268409c2757ed83cad8a709334e2385998b2553fd4ae",
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    ".github/scripts/test_codex_marketplace_distribution.py": "067d6d867a34542ccd07b60ac44850776515c32f226ca2dc98cb40e6f0aa576e",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+    ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+    ".github/scripts/test_ci_impact.py": "d24fe9bbda5694b5aaaf18f79c9b4eb1f6290d77dca876b88d306a37ca3f2886",
+    "tools/ci-impact.py": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79",
+    ".github/scripts/release_source.py": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+    ".github/workflows/ci.yml": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473"
+  },
+  "rows": [
+    {
+      "id": "C16:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "eligible",
+          "start": 250,
+          "end": 278,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "observe",
+          "start": 186,
+          "end": 238,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 138,
+          "end": 201,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 209,
+          "end": 263,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 335,
+          "end": 468,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        }
+      ],
+      "guard": "Strict next-version selection and own-tag incomplete recovery use one typed observation. Full tag/source identity is supplied at outer per-target planning and all four rechecks; malformed/unreadable/foreign unfinished observations error rather than becoming absent. Current retained-artifact and required pre-tag gates are additional explicit prerequisites.",
+      "effect": "Each target output is independently set from its own ELIGIBLE; optional dispatch filter applies only to matching target. Required pretag runs only for eligible new tags. The separate eligibility-errors job reports failures without becoming a dependency of the four publisher jobs.",
+      "retry": "Parsing/observation/pretag/artifact failure sets only that target false and appends FAILED. Exact-source original-run recovery uses fresh observations; siblings with valid eligibility continue.",
+      "intentional_changes": "R01 replaces public-means-complete with tag+package+receipt completion and source ownership. R03 pretag becomes required; R02 requires retained exact build artifacts. These are explicit candidate guards, not falsely called byte-identical old logic.",
+      "corroboration": [
+        "actual24 direct CompletionModelTests agreement/refusal cases",
+        "actual50 retained IndependenceTest/TriggerTest assertions"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C16:03",
+      "frozen_row_sha256": "278ede2e3414e545c39fbf53e600938c4fd556904246c0f32bf35607028de7e9",
+      "current_frozen_row": {
+        "transition_id": "C16:03",
+        "machine_id": "C16",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "bound CI source",
+          "from": "bound CI source",
+          "event": "per-target eligible()",
+          "guard": "no previous stable tag, or version is newer, or own tag exists with unpublished release",
+          "to": "target eligible",
+          "effects": "Set target output true; filter optional manual target; siblings remain independent.",
+          "failure_retry": "Observation/parse error marks target false and contributes separate failure job while eligible siblings continue.",
+          "source": [
+            {
+              "path": ".github/scripts/release_target.py",
+              "symbol": "eligible",
+              "lines": [
+                71,
+                78
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+            }
+          ],
+          "transition_id": "C16:03"
+        },
+        "task_ids": [
+          "R-01",
+          "R-02",
+          "R-03",
+          "R-04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-22",
+          "SEQ-23",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:01",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Download promoted host payloads",
+          "start": 72,
+          "end": 79,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Download release package cohort",
+          "start": 80,
+          "end": 87,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Download cold-install receipt matrix",
+          "start": 88,
+          "end": 97,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Verify the CI package cohort (payload digests + cold-install receipts)",
+          "start": 135,
+          "end": 155,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Resolve version from the manifest",
+          "start": 156,
+          "end": 174,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Extract the CHANGELOG section as release notes",
+          "start": 175,
+          "end": 202,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Observe remote state and plan",
+          "start": 203,
+          "end": 223,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Require exact major-program readiness before publication effects",
+          "start": 257,
+          "end": 275,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "plan",
+          "start": 281,
+          "end": 299,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "observe",
+          "start": 186,
+          "end": 238,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/_npm_publishlib.py",
+          "symbol": "verify_release_cohort",
+          "start": 221,
+          "end": 334,
+          "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+        }
+      ],
+      "guard": "Same selected run/source IDs feed immutable artifact names and same-run downloads. Manifest/companion equality and one dated matching changelog remain; cohort verifier requires exact source/run/workflow, package/member/promotion digests and complete cold matrix. Remote tag must name selected source and duplicate releases/conflicting asset states/digests refuse. Q02 current readiness is an explicit additional pre-effect guard.",
+      "effect": "Produce finite create/present release and tag states plus exact missing assets and ordered remaining effects. All first publication effects follow package, provenance and current readiness admission.",
+      "retry": "set-euo guards abort prior to additional publication on bad identity/cohort/notes/duplicate release. Plan rereads remote list/tag rather than treating missing responses as no effect.",
+      "intentional_changes": "Planner target/version/digest inputs replace hand-built asset list; manifest decode now uses typed strict owner instead of json.loads while retaining all prior cohort comparisons. This strengthens invalid-input refusal; no cohort/live artifact availability claimed from source conformance.",
+      "corroboration": [
+        "actual24 real planner asset/source/refusal cases",
+        "actual50 verbatim Observe block across4 metadata hosts"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:01",
+      "frozen_row_sha256": "bc323d16ba3a5f2b3646e835e7c5cee5ee99cbcca1593d9e9d81914528e3c2b7",
+      "current_frozen_row": {
+        "transition_id": "C17:01",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "publisher admitted",
+          "from": "publisher admitted",
+          "event": "verify inputs and observe remote plan",
+          "guard": "manifest/companion/changelog versions agree; CI cohort and source match; existing tag, if any, peels to exact source",
+          "to": "absent/tag-only/draft/public plan",
+          "effects": "Download same-run artifacts; verify hashes/cold matrix; select missing assets and create/present states.",
+          "failure_retry": "Duplicate release, spent tag or bad package rejects before additional publishing.",
+          "source": [
+            {
+              "path": ".github/scripts/release_target.py",
+              "symbol": "plan",
+              "lines": [
+                81,
+                98
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+            }
+          ],
+          "transition_id": "C17:01"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:02",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Create and push the annotated tag",
+          "start": 288,
+          "end": 303,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Read back the tag",
+          "start": 304,
+          "end": 316,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "plan",
+          "start": 281,
+          "end": 299,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        }
+      ],
+      "guard": "Exact unchanged step condition permits creation only for plan tag=create. Bound source, manifest-derived tag and changelog-derived RELEASED_AT feed annotated tag creation. No force/update/delete option is introduced.",
+      "effect": "Same git tag -a -F tagmsg.txt --cleanup=verbatim selectedSource, then explicit refs/tags/TAG push.",
+      "retry": "Push ambiguity aborts current attempt; next original-run plan freshly reads remote tag and forbids different source, while exact existing tag is present and not recreated. Independent readback follows any creation.",
+      "intentional_changes": "Tag step metadata/body unchangedfd7; surrounding planner is stricter source-aware owner.",
+      "corroboration": [
+        "actual24 moved-tag/refusal and phase model cases only secondary",
+        "actual50 ConsumerSafetyGateTest.test_tag_is_created_only_when_the_plan_says_so"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:02",
+      "frozen_row_sha256": "51a8f2141d42abc4928f139b55f0b59d40d618a4c4d1ab6f6ee7d8af9a249283",
+      "current_frozen_row": {
+        "transition_id": "C17:02",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "absent tag",
+          "from": "absent tag",
+          "event": "create annotated tag",
+          "guard": "plan says create and exact source is bound",
+          "to": "tag-only",
+          "effects": "Create annotated version tag with changelog-derived release date and push.",
+          "failure_retry": "Push error may be indeterminate remote state; next attempt observes first. Never move an existing tag.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Create and push the annotated tag",
+              "lines": [
+                261,
+                261
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:02"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:03",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Read back the tag",
+          "start": 304,
+          "end": 316,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Capture published tag identity receipt",
+          "start": 317,
+          "end": 332,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Retain published tag identity receipt",
+          "start": 333,
+          "end": 341,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "symbol": "parse_remote_refs",
+          "start": 49,
+          "end": 76,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "symbol": "_write_exclusive",
+          "start": 94,
+          "end": 110,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "symbol": "main",
+          "start": 137,
+          "end": 170,
+          "file_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6"
+        }
+      ],
+      "guard": "Unconditional unchanged fresh ls-remote peel must equal selectedSource. Capture validates exact tag/repo/source/workflow/run identities, strict one/two exact refs and a private nonexistent output.",
+      "effect": "Capture writes an exclusively linked complete JSON current-observation receipt, not an original-publication claim; always-conditioned upload retains it even after later failure.",
+      "retry": "Mismatch/unreadable/duplicate refs or output conflict returns failure without accepted observation. No tag mutation or ledger rewrite exists in capturer; temporary-link cleanup does not negate an already published local receipt.",
+      "intentional_changes": "All three action steps and full capture helper unchangedfd7. Shared release helper changes elsewhere do not alter peel-tag owner behavior.",
+      "corroboration": [
+        "actual50 ConsumerSafetyGateTest.test_tag_is_read_back_against_the_release_commit"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:03",
+      "frozen_row_sha256": "fb3d9cf19ba32b125958d8d286bcfae66ecf18563c17b220edc6e8ced4a0fb1b",
+      "current_frozen_row": {
+        "transition_id": "C17:03",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "present tag",
+          "from": "present tag",
+          "event": "read back and capture tag identity",
+          "guard": "remote peel equals exact intended source",
+          "to": "tag verified",
+          "effects": "Read tag and attempt exclusive identity receipt; retain artifact even on later failure.",
+          "failure_retry": "Mismatch fails; receipt is current observation, not automatically original-publication history.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Read back the tag",
+              "lines": [
+                277,
+                277
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:03"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:04",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Create the draft Release",
+          "start": 342,
+          "end": 362,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "release_state",
+          "start": 143,
+          "end": 152,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "plan",
+          "start": 281,
+          "end": 299,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        }
+      ],
+      "guard": "Unchanged create-draft body POSTs only when plan release=create; existing draft/public release ID is reused. Duplicate claiming Releases reject in planner before this step.",
+      "effect": "Exact unchanged POST sets tag/name/extracted notes, draft=true and prerelease=false, then exports release-id.",
+      "retry": "Failed/unknown POST stops current target. Next plan includes drafts and reuses any created ID rather than blindly recreating; no tag rollback.",
+      "intentional_changes": "Draft metadata/body unchangedfd7. New release_state rejects nonboolean draft and duplicate releases, preserving supported-state branches.",
+      "corroboration": [
+        "actual24 plan/model interruption tests only secondary"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:04",
+      "frozen_row_sha256": "02871aacdd2aeb5c4a9b458d09da79da7d14d3dc33c1342c875ea2f8a189f3be",
+      "current_frozen_row": {
+        "transition_id": "C17:04",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "tag-only",
+          "from": "tag-only",
+          "event": "create draft release",
+          "guard": "no release exists for target tag",
+          "to": "draft",
+          "effects": "POST draft=true non-prerelease with extracted notes; existing draft/public release ID is reused.",
+          "failure_retry": "API failure leaves tag; rerun observes whether draft was created.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Create the draft Release",
+              "lines": [
+                315,
+                315
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:04"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:05",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Upload and read back the package asset",
+          "start": 363,
+          "end": 387,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "_asset_observations",
+          "start": 155,
+          "end": 183,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        }
+      ],
+      "guard": "Unchanged host condition includesClaude/Codex/Pi. Exact padded missing-name case alone permits upload; planner refuses present digest/upload conflicts and duplicate names.",
+      "effect": "Same assetPOST uses qualified file path, then mandatory assetURL lookup, octet-stream download and strict expectedSHA256 check whether uploaded or already present.",
+      "retry": "Missing URL/wrong bytes/API failure aborts. No overwrite/delete/clobber flag exists; next fresh planner separates present/missing and invalid-upload conflicts.",
+      "intentional_changes": "Package action metadata/body unchangedfd7; expected package name/digest is now explicit planner input, never a relaxation.",
+      "corroboration": [
+        "actual24 conflicting/interrupted assets and wrong-package cases",
+        "actual50 ConsumerSafetyGateTest.test_attached_package_reads_back_byte_identical"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:05",
+      "frozen_row_sha256": "d41dae675165f2b5b5d34691df3832e9f0266e3c10001bdf9dc2914e08260d1e",
+      "current_frozen_row": {
+        "transition_id": "C17:05",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "draft or existing release",
+          "from": "draft or existing release",
+          "event": "upload package asset / read back",
+          "guard": "required package asset missing or already present",
+          "to": "asset verified",
+          "effects": "Upload only missing asset; download remote asset and verify exact SHA-256.",
+          "failure_retry": "Existing wrong bytes fail; no overwrite. Partial network failure resolved by fresh observation.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Upload and read back the package asset",
+              "lines": [
+                336,
+                336
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:05"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:06",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish the Claude marketplace channel",
+          "start": 388,
+          "end": 408,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish the Codex marketplace channel",
+          "start": 422,
+          "end": 454,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": "tools/promote-claude-marketplace.py",
+          "symbol": "promote",
+          "start": 32,
+          "end": 107,
+          "file_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda"
+        },
+        {
+          "path": "tools/promote-codex-marketplace.py",
+          "symbol": "promote",
+          "start": 121,
+          "end": 237,
+          "file_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9"
+        },
+        {
+          "path": "tools/promote-codex-marketplace.py",
+          "symbol": "_push_observed",
+          "start": 61,
+          "end": 71,
+          "file_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9"
+        },
+        {
+          "path": "tools/promote-codex-marketplace.py",
+          "symbol": "channel_commit_carrying",
+          "start": 88,
+          "end": 99,
+          "file_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9"
+        }
+      ],
+      "guard": "Host conditions unchanged. Fresh publication channel effect still requires exact qualified archive/source/version and immutable distribution identity; Codex requires exact source catalog and distribution before advancing. Channel writes run only when effects contains channel.",
+      "effect": "Fresh path retains immutable distribution then marketplace promotion order, exact readback, no same-version byte substitution and no older-version rollback. Receipt-only path chooses --readback, verifies qualified distribution and channel ancestry, returns original promotion commit even after a newer channel head, and cannot push.",
+      "retry": "Uncertain push makes one attempt, then fresh exact readback; unknown/different ref raises. Lease collision and malformed/unknown channel version refuse. Readback never manufactures a prior promotion or re-promotes an older release.",
+      "intentional_changes": "Dispatch now selects push/readback from finite planner effects; shared observed-push wrapper and channel ancestry reader are new. Their concrete bodies and actual preexisting disposable-Git controls were inspected; not labeled unchanged or live hosted behavior.",
+      "corroboration": [
+        "source-joined original6fe19-case marketplace fixture run; actual local Git pushes/readback/unknown-ref controls, not live provider",
+        "actual24 composition strings and PublicationRun channel-moved model only secondary"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:06",
+      "frozen_row_sha256": "639437a9bb6d51f5a2dd4c2e62160f6a6d6ffba7afe7de8e80eb148b079aa1c8",
+      "current_frozen_row": {
+        "transition_id": "C17:06",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "asset verified for Claude/Codex",
+          "from": "asset verified for Claude/Codex",
+          "event": "publish distribution channel",
+          "guard": "qualified package and immutable distribution identity pass host publisher checks",
+          "to": "channel verified",
+          "effects": "Claude pushes immutable distribution and marketplace channel; Codex publishes immutable distribution then advances marketplace separately.",
+          "failure_retry": "Partial remote refs remain and are observed by subsequent helper invocation; host helper ledger details are separate.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Publish the Claude marketplace channel",
+              "lines": [
+                358,
+                358
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:06"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:07",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Select the exact Pi npm tarball",
+          "start": 224,
+          "end": 256,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Require matching Pi npm provenance commit",
+          "start": 276,
+          "end": 287,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish @arbiterforge/ca-pi to npm",
+          "start": 455,
+          "end": 470,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Read back the npm publication",
+          "start": 471,
+          "end": 506,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/scripts/_npm_publishlib.py",
+          "symbol": "load_prebuilt_pi_package",
+          "start": 760,
+          "end": 796,
+          "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+        },
+        {
+          "path": ".github/scripts/_npm_publishlib.py",
+          "symbol": "classify_registry_lookup",
+          "start": 379,
+          "end": 450,
+          "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+        },
+        {
+          "path": ".github/scripts/_npm_publishlib.py",
+          "symbol": "validate_publication_attestation",
+          "start": 540,
+          "end": 562,
+          "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a"
+        }
+      ],
+      "guard": "Exact selected CI tarball/integrity and trusted source remain. New publication still requires matching workflow/source commit, absent matching version and planned channel effect. Version/integrity/signature/repo/workflow/source attestation readback remains mandatory for all Pi runs.",
+      "effect": "Unchanged npm publish command uses exact tarball, ignore-scripts, provenance/access and fixedregistry. Existing exact version skips publish. Public receipt-only plan lacks channel, so even an externally missing npm version cannot be republished; readback must instead fail.",
+      "retry": "Only bounded registry reads retry until present or deadline; mismatched integrity/version/attestation refuses. No new npm publishing retry or continuation grant is added.",
+      "intentional_changes": "npm body/readback/provenance bodies unchangedfd7; only publish stepif gains contains(effects,channel), a narrowing guard. Strict manifest parser change applies cohort admission, not registry verifier bodies.",
+      "corroboration": [
+        "actual24 direct registry mismatch classifier and modeled no-republish tests only secondary",
+        "actual50 ConsumerSafetyGateTest npm integrity/provenance wiring assertions"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:07",
+      "frozen_row_sha256": "c452c4921fdd19553c4225249d47197f9a8532aeb965ddfa0aba52b8c8aa66db",
+      "current_frozen_row": {
+        "transition_id": "C17:07",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "asset verified for Pi",
+          "from": "asset verified for Pi",
+          "event": "publish/read back npm",
+          "guard": "exact package and trusted source commit; integrity, signature and repository/workflow/source provenance verified",
+          "to": "channel verified",
+          "effects": "Publish exact tarball if absent; otherwise reuse exact version; verify public registry identity.",
+          "failure_retry": "An accepted npm version can remain while GitHub release is draft; no republish of different bytes.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Read back the npm publication",
+              "lines": [
+                430,
+                430
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:07"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:08",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish the Release",
+          "start": 507,
+          "end": 527,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Read back the npm publication",
+          "start": 471,
+          "end": 506,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Attach the publication receipt",
+          "start": 528,
+          "end": 573,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": false
+        }
+      ],
+      "guard": "Same normal step success dependency requires preceding package/channel/provenance guards. Tag and releaseID are selected target identities; cancelled/failed prior mutation steps do not grant completion.",
+      "effect": "Exact unchanged body reads draft, PATCHes false only if currentlydraft, then reads public state plusmatchingtag and exports release-state=published only after both comparisons.",
+      "retry": "Any unknown/mismatched readback fails. Public state may already exist before finalreceipt; no automatic rollback or second public transition when alreadyfalse.",
+      "intentional_changes": "Publish body/metadata unchangedfd7; receipt failure now stays recoverable by corrected eligibility.",
+      "corroboration": [
+        "actual50 ConsumerSafetyGateTest.test_release_goes_public_only_after_every_channel",
+        "actual24 model public-transition interruption only secondary"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:08",
+      "frozen_row_sha256": "d43a037a9d9c77d72a487d3541f704e0d4a76befde2fd4769cb7a15ea334efb3",
+      "current_frozen_row": {
+        "transition_id": "C17:08",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "channel verified or sandbox no channel",
+          "from": "channel verified or sandbox no channel",
+          "event": "finish release",
+          "guard": "all preceding required target steps pass",
+          "to": "public without receipt",
+          "effects": "PATCH draft=false when needed; read back public state and matching tag; output release-state=published.",
+          "failure_retry": "Public state is externally visible before final receipt upload. Readback failure may be indeterminate and requires observation.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Publish the Release",
+              "lines": [
+                466,
+                466
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:08"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:09",
+      "witnesses": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Attach the publication receipt",
+          "start": 528,
+          "end": 573,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "verify_receipt",
+          "start": 302,
+          "end": 311,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "main",
+          "start": 328,
+          "end": 427,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "eligible",
+          "start": 250,
+          "end": 278,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        }
+      ],
+      "guard": "Exact missingreceipt name still alone permits POST; published target identity and channel ref come from priorreadbacks. Already-present receipt is always downloaded and content-verified instead ofaccepted byname.",
+      "effect": "Generate canonical metadatareceipt via real ownerCLI, upload only missingJSON, locate/download it and verify all expected target/host/tag/version/source/package digest/channel identity fields.",
+      "retry": "Lost upload response preserves public state; reobserve sees stored receipt and verifies without secondPOST. Public missingreceipt remains eligible and only receipt effect is selected; wrong same-namecontent refuses without replacing.",
+      "intentional_changes": "Old outer-skip failure_retry note is intentionally retired with C16:04/C-F01. Current corrected retry and verification do not preserve that known bug. Actualchanged shell tail executed across4 metadata hosts plus afterstore response loss.",
+      "corroboration": [
+        "actual24 real eligible/plan and verify_receipt controls",
+        "actual50 four new ReceiptShellBoundaryTest methods,28 actualscriptinvocations and2 discriminating mutants"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:09",
+      "frozen_row_sha256": "df4c452c87e17a43c844ac7371f2e8cc1663560c2e36050f30d5449e88c1934c",
+      "current_frozen_row": {
+        "transition_id": "C17:09",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "public without receipt",
+          "from": "public without receipt",
+          "event": "attach publication receipt",
+          "guard": "planner listed codearbiter-publication.json missing",
+          "to": "public with receipt",
+          "effects": "Build metadata receipt and POST final JSON asset.",
+          "failure_retry": "Upload failure leaves a public incomplete release. Outer eligibility and per-job recheck then skip it, despite plan() seeing the missing asset.",
+          "source": [
+            {
+              "path": ".github/actions/publish-target/action.yml",
+              "symbol": "Attach the publication receipt",
+              "lines": [
+                487,
+                487
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/actions/publish-target/action.yml"
+            }
+          ],
+          "transition_id": "C17:09"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    },
+    {
+      "id": "C17:11",
+      "witnesses": [
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "eligible",
+          "start": 250,
+          "end": 278,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "observe",
+          "start": 186,
+          "end": 238,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "symbol": "plan",
+          "start": 281,
+          "end": 299,
+          "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 209,
+          "end": 468,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Observe remote state and plan",
+          "start": 203,
+          "end": 223,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish the Claude marketplace channel",
+          "start": 388,
+          "end": 408,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish the Codex marketplace channel",
+          "start": 422,
+          "end": 454,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Publish @arbiterforge/ca-pi to npm",
+          "start": 455,
+          "end": 470,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": false,
+          "body_equal_fd7": true
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "symbol": "Attach the publication receipt",
+          "start": 528,
+          "end": 573,
+          "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "metadata_equal_fd7": true,
+          "body_equal_fd7": false
+        }
+      ],
+      "guard": "Original source/build is reselected by original failed-job run while exact retainedartifacts and current readiness remain required; manual newer-source run cannot complete a foreign unfinished version. Per-target concurrency and rechecks retain isolation.",
+      "effect": "Single remote-first completion projection feeds tagcreate, draftreuse, missingasset-only, channelwrite/readback choice, Pi publish guard, idempotent public transition and receipt-only completion. Correctly finished effects are observed, not inferred absent from failedresponse.",
+      "retry": "Fresh immutabletag/source/digest conflict or unobservable channel/registry identity refuses rather than republishing. Unknown completed writes use exact readback. Retentionexpiry holds thattarget; no automatic rollback of published effects. Independent siblings remain admitted by own plans.",
+      "intentional_changes": "Old C16 public-incomplete skip is retired; all remaining corrected guarded recovery paths are explicitly composed from current callers/callees. Sourceconformance proves wiring/invariants, not hosted API availability or an original GitHubjob rerun execution.",
+      "corroboration": [
+        "actual24 real planner + modeled six-phase failures, secondary only",
+        "actual50 observed receipt-only Bash tail and replay",
+        "source-joined original6fe marketplace19 Git fixture controls"
+      ],
+      "scope": "CURRENT_COMPLETE_SOURCE_GUARD_EFFECT_RETRY_CONFORMANCE; no live delivery claim",
+      "proposed_status": "PRESERVED",
+      "cell": "disposition:transitions:C17:11",
+      "frozen_row_sha256": "fa56b1e442c5175fed604e8618918c7b09f60caaaa6940b54d606bd91f682673",
+      "current_frozen_row": {
+        "transition_id": "C17:11",
+        "machine_id": "C17",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "any partial state",
+          "from": "any partial state",
+          "event": "rerun original failed job",
+          "guard": "target remains eligible and exact original source/artifacts retained",
+          "to": "resume missing steps",
+          "effects": "Remote-first planner avoids duplicate tag/asset/channel writes.",
+          "failure_retry": "Recovery is blocked for already-public incomplete state by C16; no automatic rollback of published effects exists.",
+          "source": [
+            {
+              "path": ".github/scripts/release_target.py",
+              "symbol": "plan",
+              "lines": [
+                81,
+                98
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/release_target.py"
+            }
+          ],
+          "transition_id": "C17:11"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "R-01",
+          "R-04",
+          "R-08",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-22",
+          "SEQ-24"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      }
+    }
+  ]
+}

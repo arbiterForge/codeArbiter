@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "C:\\Program Files\\Go\\bin\\go.exe",
+    "test",
+    "-c",
+    "-mod=readonly",
+    "-p=2",
+    "-x",
+    "-work",
+    "-o",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\output\\store-fallback.test.wasm",
+    "./internal/store"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\candidate\\core\\artifacts",
+  "exit_code": 0,
+  "elapsed_seconds": 6.320302100008121,
+  "timeout_seconds": 90,
+  "timed_out": false,
+  "overflowed": false,
+  "containment": "exited",
+  "setup_error": null,
+  "streams": {
+    "stdout": {
+      "observed_bytes": 0,
+      "retained_bytes": 0,
+      "observed_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "reader_error": null
+    },
+    "stderr": {
+      "observed_bytes": 793615,
+      "retained_bytes": 793615,
+      "observed_sha256": "c6350e6ab519e3d892d9f12b3fdb44630191387982a263a5620ce591ef600d07",
+      "reader_error": null
+    }
+  }
+}

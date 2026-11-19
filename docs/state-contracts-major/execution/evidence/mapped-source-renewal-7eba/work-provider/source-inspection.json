@@ -1,0 +1,1736 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "prior_source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "control_cone": "work-provider",
+  "method": "Read original complete clause/mapping and current fixed transport/caller paths. Authenticate original proofs/inputs and current physical bytes through independently recovered immutable Git objects. Normalize only the three explicitly reviewed provider AST changes to prove remaining full-module identity. No tests executed.",
+  "rows": [
+    {
+      "id": "S34:01",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "403d9768b26a2445f2c49a04738e4ed31b48dd0bb84166b86913e1256b184887",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "sync",
+        "guard": "origin/config/binding generations exact; owning credential available; endpoint allowed",
+        "to": "validated",
+        "effects": "Re-read current config and effect; require exact mapped desired state.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "pending create/status",
+        "transition_id": "S34:01"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 185,
+            "end": 250,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Origin/config/repository/generation and exact mapped desired state are re-read before effect; owning credential is validated. Fixed transport105\u2013182 rejects unsupported endpoints; no arbitrary provider template."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S34:02",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "ef735f1cb2b74970fe768b990973b2e985bf92528003fff2f62af5d72f372602",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "baseline observation",
+        "guard": "remote issue differs from staged expected baseline",
+        "to": "conflict",
+        "effects": "Record conflict before claiming/sending; do not overwrite external change.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "pending status",
+        "transition_id": "S34:02"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 491,
+            "end": 501,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "A staged baseline mismatch calls work-effect-conflict then refuses before claim/send, preserving competing external state."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S34:03",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "22a09429159ef4f87c345649d42e8c1a1d46c1b857b90c378966834c360c5c19",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "after_merge effect",
+        "guard": "verified merged PR/default path/intent/current binding and local ancestry",
+        "to": "eligible",
+        "effects": "Require actual merge evidence, not a prose assertion or closed PR alone.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "validated",
+        "transition_id": "S34:03"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 279,
+            "end": 467,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "after_merge verifies actual merged PR/default branch/work path/exact intent and local merge ancestry; prose/closed PR alone cannot satisfy it."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S34:04",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "aef4b98943c4875786d2b49b4572d4f1c0bcbec7bbd2299c40ec4b2a98329580",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "claim external effect",
+        "guard": "native revision/operation claim succeeds",
+        "to": "outcome_unknown",
+        "effects": "Persist attempt claim as outcome_unknown before POST/PATCH; recheck binding afterward.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "eligible or validated",
+        "transition_id": "S34:04"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 502,
+            "end": 523,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Exact revision/model-bound work-effect-claim precedes sends; rechecks provider/origin/mapped intent after claim. Uncertain state remains delegated to owning native record."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S34:05",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "32cee91907688b738a4f89f388d7c3e51db10e0da580448b7bca601c873dd682",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "send create/status",
+        "guard": "claim still current",
+        "to": "remote applied or unknown",
+        "effects": "POST issue with stable work marker, or PATCH desired state only if needed.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "outcome_unknown",
+        "transition_id": "S34:05"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 524,
+            "end": 538,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Current claim sends one create carrying stable work marker, or only PATCHes when desired state differs; no generic resend route."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S34:06",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "2c8bf8e2e621c32f7c2e54f1a0dfa81c4285ece2f51130774c5c0175e3bfa8f0",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "GET readback",
+        "guard": "exact repository/issue identity, single work marker, desired state",
+        "to": "synced",
+        "effects": "Record observation against claim revision/attempt ID.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "remote applied or unknown",
+        "transition_id": "S34:06"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 539,
+            "end": 548,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Exact repository/issue URL/number/work marker and desired state are read back, then bound attempt ID and claimed revision are recorded."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S34:07",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S34",
+      "baseline_clause_sha256": "b8c2af881f245be44e1fa18e0dc212e4766d58222f766d60247233dce409354d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "sync, verified bindings/merge/issue helpers",
+          "lines": "185-550"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "network/error/lost response/binding drift",
+        "guard": "effect may have happened",
+        "to": "outcome_unknown or binding changed",
+        "effects": "Preserve uncertainty; fail explicit operation.",
+        "failure_retry": "Never blind-repeat create/PATCH just because response failed; use target-specific reconciliation.",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "sync, verified bindings/merge/issue helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "185-550"
+          }
+        ],
+        "from": "outcome_unknown",
+        "transition_id": "S34:07"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 470,
+            "end": 548,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Pending-only sender refuses outcome_unknown and retains post-claim send/readback errors as OUTCOME_UNKNOWN. Recovery is separate target-specific observation; failed response is not automatic repeat authority."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S35:01",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "fd2088b0c604e238767c87d490e183a55e0a5e6912c499c53aa055c62f5c90e6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile supplied issue number",
+        "guard": "exact identity/single work marker",
+        "to": "observed then synced",
+        "effects": "GET only, verify issue, record result under outstanding attempt.",
+        "failure_retry": "No replacement POST is issued.",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "551-615"
+          }
+        ],
+        "from": "create unknown",
+        "transition_id": "S35:01"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 551,
+            "end": 566,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Only uncertain matching create can reconcile; supplied issue identity/unique marker checked by GET and record uses original attempt. No POST."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S35:02",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "d7bf8de2fe102c89ec3bf585cbe50f9e5e97681e4285c7b165d652ea843483b9",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "adopt issue",
+        "guard": "adoption allowed; issue marker/identity verified",
+        "to": "synced",
+        "effects": "Bind existing issue without create; native state validates adoption preconditions.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "551-615"
+          }
+        ],
+        "from": "unbound or pending create",
+        "transition_id": "S35:02"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 569,
+            "end": 584,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Adoption permits only unsent create/no effect, validates existing issue and invokes native adoption with expected identities; no create request or inferred merge."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S35:03",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "ab3b0723b259fc66d74dfcd7116fdf149c1eca21d015b76a0bc8ba5aada1087b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile status",
+        "guard": "remote desired state",
+        "to": "synced",
+        "effects": "GET and record acknowledgment; no PATCH.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "551-615"
+          }
+        ],
+        "from": "status unknown",
+        "transition_id": "S35:03"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 587,
+            "end": 613,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Uncertain matching status update uses only GET; exact desired state records acknowledgment under saved attempt and expected revision."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S35:04",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "e1f5b2644f77858a1599fd2462eb1cc726b03a7e0f1a06fb4746e56fd307c237",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile status",
+        "guard": "remote differs and accept_remote=false",
+        "to": "refused/unknown",
+        "effects": "Return mismatch; preserve intended effect for explicit decision.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "551-615"
+          }
+        ],
+        "from": "status unknown",
+        "transition_id": "S35:04"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 601,
+            "end": 603,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Remote mismatch with accept_remote false raises OUTCOME_UNKNOWN; intent is not treated delivered or automatically resent."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S35:05",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S35",
+      "baseline_clause_sha256": "ae7c7278dc5674bfe2b7fd1d67a1dbe88fa91a7baca2b5298cb2a5a0be088dde",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+          "lines": "551-615"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile status with accept_remote",
+        "guard": "verified differing remote state",
+        "to": "conflict",
+        "effects": "Record external observation as conflict; do not silently accept intended status as delivered.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "reconcile_issue, adopt_issue, reconcile_status",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "551-615"
+          }
+        ],
+        "from": "status unknown",
+        "transition_id": "S35:05"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 601,
+            "end": 608,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Explicit accept_remote records verified competing state as native conflict with original attempt; it does not pretend desired state was delivered."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:01",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "c171ecc40f09e4e668b74a431775f9d6ce5f25ad69d251e0a354d4c05c834dbe",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "discover/search",
+        "guard": "verified project and issue configuration",
+        "to": "item absent or item present",
+        "effects": "Read paginated project items, bounded to 3,000; verify selected issue identity.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "pending project add",
+        "transition_id": "S36:01"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 616,
+            "end": 714,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Selected issue/project repository, credential and generation must agree. Project membership scans at most30\u00d7100 nodes with exact identity and progressing cursor; incomplete scan cannot prove absence."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:02",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "cffeffa79ce332cfa48394a8476dcc10c152e4eaae49de53c0709a437ac1b7bb",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "claim",
+        "guard": "native coordination ready",
+        "to": "claim unknown",
+        "effects": "Persist outcome_unknown before GraphQL mutation; recheck configuration/binding.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "pending project add",
+        "transition_id": "S36:02"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 831,
+            "end": 852,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Bound pending project effect claims exact revision/attempt before mutation, then rechecks project generation/origin; state transition persistence is delegated, not runtime-certified."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:03",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "b5732bc550debae661db91925645d1001c9466f53b6984de96eae62450ce60f7",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "item absent",
+        "guard": "same current claim",
+        "to": "item present or unknown",
+        "effects": "Add item idempotently using exact issue/project IDs.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "claim unknown",
+        "transition_id": "S36:03"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 853,
+            "end": 865,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Only proven absence invokes fixed addProjectV2ItemById with exact project/issue IDs and validates returned/readback identity; declared idempotent service contract is an external assumption, not newly qualified."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:04",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "ed3967b0067519942a8898043334806f14b8db8cbfbc86ada2ab1d1f0426630e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "item already present",
+        "guard": "identity verified",
+        "to": "item present",
+        "effects": "Skip duplicate add mutation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "claim unknown",
+        "transition_id": "S36:04"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 843,
+            "end": 867,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Existing exact item skips add mutation and is recorded under claim; duplicate item identities raise conflict during scan."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:05",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "a2ac5b7072f5d2264f1cf218a54768d4cbb4a3c6e9c0632a6a5899a3c072c29c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "readback",
+        "guard": "remote item matches issue/project",
+        "to": "synced",
+        "effects": "Record item ID and acknowledgment against attempt.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "item present",
+        "transition_id": "S36:05"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 863,
+            "end": 870,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Readback must find returned item ID for selected issue/project; record binds attempt and claimed revision/model."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:06",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "0c2754f82ca654b5b23aa8f7f35059954ba65a7d7a85347a48a01d15b5255e62",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile",
+        "guard": "remote membership can be observed",
+        "to": "synced or claim unknown",
+        "effects": "Search first; if absent, replay idempotent add then re-observe.",
+        "failure_retry": "This retry policy differs deliberately from non-idempotent issue creation.",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "claim unknown",
+        "transition_id": "S36:06"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 873,
+            "end": 902,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Uncertain add first searches existing membership, replays only fixed declared-idempotent add if absent under current binding and then re-observes. It differs from non-idempotent issue-create policy."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S36:07",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S36",
+      "baseline_clause_sha256": "441a0d1fe978594da0d18e6642e5b524aea9765171eb5c717eb4401ac5175465",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+          "lines": "616-904"
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "pagination/identity/API failure",
+        "guard": "observation incomplete",
+        "to": "conflict/unknown",
+        "effects": "Stop without calling incomplete search proof of absence.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project discovery, _find_project_item, sync_project, reconcile_project",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py",
+            "lines": "616-904"
+          }
+        ],
+        "from": "any",
+        "transition_id": "S36:07"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 678,
+            "end": 714,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Malformed nodes/cursors, duplicate item identity, API failure or exhausted3000 bound raises; no incomplete search is interpreted as absent."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:01",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "6495a52541431f44cb09c0b3a3ee651941db40c06d7c2c94a20fb765c9f4cf15",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "stage field intent",
+        "guard": "allowed native work state; exact field/option IDs and current baseline",
+        "to": "pending field",
+        "effects": "Resolve remote field/option and read baseline; stage native effect with operation ID.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "unstaged or synchronized/conflicted",
+        "transition_id": "S37:01"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 728,
+            "end": 828,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Native ready/synchronized/conflict or unsent-mapped state and exact field/option/item identities precede remote baseline read; stage request binds expected baseline and operation/revision."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:02",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "61a66c2eb46b19acfa4abee04c1b01c25489e95975ff9be3a8e3b6601979bb51",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "sync",
+        "guard": "remote observed equals baseline or desired",
+        "to": "eligible",
+        "effects": "Compare against baseline before writing; validate after_merge and mapped binding where required.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "pending field",
+        "transition_id": "S37:02"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 979,
+            "end": 1006,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Before writing, observed option must equal expected baseline or desired; mapped after_merge independently binds actual merge/default intent."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:03",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "4b9a5c8c9dace7a42939123aac9e9b0a6d9145aa88400c83548bb4508ea291d1",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "remote differs from baseline and desired",
+        "guard": "external edit detected",
+        "to": "conflict",
+        "effects": "Record external value and refuse overwrite.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "pending field",
+        "transition_id": "S37:03"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 1004,
+            "end": 1006,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Competing option is recorded via conflict helper then refused before claim/mutation; external edit is not overwritten."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:04",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "f8f4590d62d3a6becc39fdf8b6d8e9b1217d43054436c6e4598456d7eafb9dfb",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "claim effect",
+        "guard": "native revision succeeds",
+        "to": "outcome_unknown",
+        "effects": "Persist unknown attempt, recheck current bindings, write desired option only when not already desired.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "eligible",
+        "transition_id": "S37:04"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 1007,
+            "end": 1036,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Revision-bound project claim precedes field update and generation/origin/mapped-intent rechecks; update occurs only if not already desired."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:05",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "f86bd0cdc8a7077e41012a6715129628e95f48dd3754e916c5ebba5c0da89414",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "readback desired",
+        "guard": "same item/field identity",
+        "to": "synced",
+        "effects": "Record observed option and attempt acknowledgment.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "outcome_unknown",
+        "transition_id": "S37:05"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 1037,
+            "end": 1043,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Exact item/field readback must equal desired; only then record acknowledgment with original attempt and claimed revision."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:06",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "4218c7b12b435c7172ee91d29ec0f2e392b859124e2462b30fd975dbb2bb443f",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile desired",
+        "guard": "GET proves desired",
+        "to": "synced",
+        "effects": "Record without mutation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "outcome_unknown",
+        "transition_id": "S37:06"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 1157,
+            "end": 1173,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Uncertain field request first observes exact current option; desired result bypasses update and records saved attempt."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:07",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "b538fe784aaeee629a9d6b50ee3ac9bdde04ea6dab819ed09068546f8a9dc36a",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile baseline",
+        "guard": "baseline still matches and mapping still valid",
+        "to": "outcome_unknown then synced",
+        "effects": "Replay desired idempotent field value, re-read and record.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "outcome_unknown",
+        "transition_id": "S37:07"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 1173,
+            "end": 1202,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Only unchanged baseline with current mapping/origin/generation and valid stored merge proof permits fixed idempotent field replay; re-observation must equal desired."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:08",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "ab3e4b2fb562979e105c2d338a8c11a57fd3f22c09504abb2402dbb62bd0a610",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "reconcile other value",
+        "guard": "neither expected nor desired",
+        "to": "conflict",
+        "effects": "Record competing remote edit; do not overwrite.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "outcome_unknown",
+        "transition_id": "S37:08"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 1203,
+            "end": 1207,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Value neither baseline nor desired records competing edit and refuses overwrite; uncertainty remains for explicit restaging."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    },
+    {
+      "id": "S37:09",
+      "decision": "PRESERVED",
+      "conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "dependency_boundary": "Outgoing native effect/CAS interfaces and fixed HTTP/GraphQL requests only. No native durability, remote/API/credential/provider permission or live effect is qualified.",
+      "machine_id": "S37",
+      "baseline_clause_sha256": "c9a939b8a3fc8882054bbc04f2169352cd354cd46b9b3eabb746af8362565ddd",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+          "lines": null
+        }
+      ],
+      "baseline_complete_clause": {
+        "event": "transport/identity/binding error",
+        "guard": "incomplete observation",
+        "to": "outcome_unknown or refused",
+        "effects": "Retain unknown claim; no fabricated synchronization.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "symbol": "project_fields, stage_project_field, sync_project_field, reconcile_project_field:728-830;905-1045;1157-1209",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+          }
+        ],
+        "from": "any send/readback",
+        "transition_id": "S37:09"
+      },
+      "prior_source_mapping": {
+        "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+        "witnesses": [
+          {
+            "path": "core/pysrc/_workgithub.py",
+            "start": 979,
+            "end": 1043,
+            "sha256": "15bcc28b81e7cb87df912bedfc3688d0ec69866a2171aa2db80ba6fc3a3e2930"
+          }
+        ],
+        "conformance": "Binding/identity/transport/readback errors cannot return a fabricated success. Post-claim errors become OUTCOME_UNKNOWN, preserving owning claim for reconciliation."
+      },
+      "witnesses": [
+        {
+          "path": "core/pysrc/_workgithub.py",
+          "start": 1,
+          "end": 1293,
+          "sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f"
+        }
+      ],
+      "current_source_conformance": "The complete prior guard/effect/retry clause and all cited owner/dependency bytes are retained except the exact reviewed provider error-handling delta. Entire provider module matches prior AST after only the two parser call substitutions, new fixed parser helper and one preclaim per-target catch are reversed. All provider claim, identity, merged-work/default-branch, readback, bounded cursor, reconcile and no-blind-retry definitions remain AST-identical. These error changes add sanitized refusal/independent-target continuation without relaxing this clause. The original full row mapping remains below; no runtime promotion.",
+      "current_delta_mapping_ref": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json"
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "S34",
+      "constituents": [
+        "S34:01",
+        "S34:02",
+        "S34:03",
+        "S34:04",
+        "S34:05",
+        "S34:06",
+        "S34:07"
+      ],
+      "maintained_machine": {
+        "machine_id": "S34",
+        "name": "GitHub work issue creation and issue-state delivery",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "basis": "Every exact maintained constituent has a complete current source guard/effect/retry mapping in this successor. Source preservation only; no machine runtime/host/provider/task completion claim."
+    },
+    {
+      "id": "S35",
+      "constituents": [
+        "S35:01",
+        "S35:02",
+        "S35:03",
+        "S35:04",
+        "S35:05"
+      ],
+      "maintained_machine": {
+        "machine_id": "S35",
+        "name": "GitHub issue adoption and reconciliation",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 5,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "basis": "Every exact maintained constituent has a complete current source guard/effect/retry mapping in this successor. Source preservation only; no machine runtime/host/provider/task completion claim."
+    },
+    {
+      "id": "S36",
+      "constituents": [
+        "S36:01",
+        "S36:02",
+        "S36:03",
+        "S36:04",
+        "S36:05",
+        "S36:06",
+        "S36:07"
+      ],
+      "maintained_machine": {
+        "machine_id": "S36",
+        "name": "GitHub project item membership delivery",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "basis": "Every exact maintained constituent has a complete current source guard/effect/retry mapping in this successor. Source preservation only; no machine runtime/host/provider/task completion claim."
+    },
+    {
+      "id": "S37",
+      "constituents": [
+        "S37:01",
+        "S37:02",
+        "S37:03",
+        "S37:04",
+        "S37:05",
+        "S37:06",
+        "S37:07",
+        "S37:08",
+        "S37:09"
+      ],
+      "maintained_machine": {
+        "machine_id": "S37",
+        "name": "GitHub project single-select field staging, CAS and recovery",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 9,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_workgithub.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "basis": "Every exact maintained constituent has a complete current source guard/effect/retry mapping in this successor. Source preservation only; no machine runtime/host/provider/task completion claim."
+    }
+  ],
+  "prior_proof": {
+    "kind": "conformance-check",
+    "commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/preserved.json",
+    "sha256": "2d6cb60c849178f9b6a0511806e308f737c7fa18526eb271b579d1129aaa7286"
+  },
+  "prior_inspection": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/work-provider/source-inspection.json",
+    "sha256": "64161ad13771fa44f4e03baa179b8666debc920cc6b621af558e0c56977877cd"
+  },
+  "delta": {
+    "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json",
+    "sha256": "ff773795181f6b92909c418f0eb1b32cea1bcd3049c34f34376df4d7edaba0be"
+  },
+  "original_observations": [
+    {
+      "label": "preclaim-seven",
+      "original_source_sha256": "c3a3e6307cf2cbbaba3fcfd034274e19c14db08d068c061c9aed28915ba28ebf",
+      "original_test_sha256": "a63d395bde66c59e3c0195285fc4b68de2c28c9575ea7f504efa60b5d9c96269",
+      "original_count": 7,
+      "original_seconds": 67.1418964000186,
+      "raw": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.json",
+          "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.log",
+          "sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38"
+        }
+      ],
+      "all_original_test_helper_and_method_ASTs_unchanged_at_current": 86,
+      "source_scope": "Seven original observations at c3, not a new run on79. Tested sender/resume/identity paths remain AST-identical; endpoint-denial precedes changed JSON parsing.",
+      "qualification_limit": "Original ordinary source/fake-provider fixtures only. No live provider, installed host, complete module membership/absence, platform, task, finding or program promotion."
+    },
+    {
+      "label": "parser-six",
+      "original_source_sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+      "original_test_sha256": "9365e6ab869b9eb1131940da1851769f3cc4f804bb9b168512420b5d9add7752",
+      "original_count": 6,
+      "original_seconds": 59.046184799983166,
+      "raw": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.json",
+          "sha256": "25af662244ccdc0d8797cc0d2080d9aecde6f9a77047a0a605eac659585d5e45"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.log",
+          "sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a"
+        }
+      ],
+      "all_original_test_helper_and_method_ASTs_unchanged_at_current": 94,
+      "source_scope": "Actual original observation on identical79a1 production source; no new7eba execution.",
+      "qualification_limit": "Original ordinary source/fake-provider fixtures only. No live provider, installed host, complete module membership/absence, platform, task, finding or program promotion."
+    },
+    {
+      "label": "native-identity-three",
+      "original_source_sha256": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+      "original_test_sha256": "226946f1d44825845d94fd0223d953d21346cc1afdaf8959455eac2fec5d1008",
+      "original_count": 3,
+      "original_seconds": 84.99003869993612,
+      "raw": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.json",
+          "sha256": "99f21f37dc77cee3d1116ced4e5067ad6f6a79e54fd558329d2bf08de8e6ba17"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.log",
+          "sha256": "716d9d550a93a10171669807010fd18c499818aca4232cbb458f196914cc97ea"
+        }
+      ],
+      "all_original_test_helper_and_method_ASTs_unchanged_at_current": 96,
+      "source_scope": "Actual original observation on identical79a1 production source; no new7eba execution.",
+      "qualification_limit": "Original ordinary source/fake-provider fixtures only. No live provider, installed host, complete module membership/absence, platform, task, finding or program promotion."
+    }
+  ],
+  "limits": "Finite whole-clause source preservation only. Original observations have the exact source/path scopes recorded separately, not fresh7eba runtime evidence. No blanket equivalence of changed provider behavior; no S38 runtime closure or endpoint-policy/credential/live-host/provider/publication/task/program qualification."
+}

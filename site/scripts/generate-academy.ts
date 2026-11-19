@@ -1,7 +1,7 @@
+import { commonOwner, publishOwnedFiles } from "./owned-output";
 import type { AcademySource } from "./academy-source";
 import { academyTracks, buildAcademyWayfinding } from "./academy-wayfinding";
 import type { TopicPage } from "./topic-map";
-import { mkdirSync, rmSync, writeFileSync } from "node:fs";
 import { join } from "node:path";
 
 type AcademyTrack = "foundations" | "practitioner" | "power-user";
@@ -281,19 +281,14 @@ export function generateAcademy(
     }
   }
   const academyRoot = join(docsRoot, "academy");
-  rmSync(academyRoot, { force: true, recursive: true });
-  mkdirSync(academyRoot, { recursive: true });
-  mkdirSync(generatedRoot, { recursive: true });
-
-  writeFileSync(join(academyRoot, "index.mdx"), renderIndex(source));
+  const output = new Map<string, string>();
+  output.set(join(academyRoot, "index.mdx"), renderIndex(source));
   for (const [index, guide] of guides.entries()) {
-    writeFileSync(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions, guides, topics?.get(guide.id)));
+    output.set(join(academyRoot, `${guide.id}.mdx`), renderLesson(source, guide, source.lessons[index].actions, guides, topics?.get(guide.id)));
   }
-
   const trackRoot = join(academyRoot, "tracks");
-  mkdirSync(trackRoot, { recursive: true });
   for (const track of academyTracks) {
-    writeFileSync(join(trackRoot, `${track.id}.mdx`), [
+    output.set(join(trackRoot, `${track.id}.mdx`), [
       "---", `title: ${yamlString(`${track.label} track`)}`, `description: ${yamlString(track.description)}`,
       "prev: false", "next: false", "journey:", '  level: "Academy"', '  time: "Self-paced"',
       `  outcome: ${yamlString(track.description)}`, academySourceMetadata(source), "---", "",
@@ -317,8 +312,9 @@ export function generateAcademy(
         slug: `academy/${guide.id.toLowerCase()}`,
       }))],
   })) satisfies AcademySidebarGroup[];
-  writeFileSync(join(generatedRoot, "academy-content.ts"), renderTypedContent(source, guides));
-  writeFileSync(join(generatedRoot, "academy-sidebar.json"), `${JSON.stringify(sidebarGroups, null, 2)}\n`);
+  output.set(join(generatedRoot, "academy-content.ts"), renderTypedContent(source, guides));
+  output.set(join(generatedRoot, "academy-sidebar.json"), `${JSON.stringify(sidebarGroups, null, 2)}\n`);
+  publishOwnedFiles(commonOwner([docsRoot, generatedRoot]), "academy", output, [academyRoot]);
 
   return { sidebarItems };
 }

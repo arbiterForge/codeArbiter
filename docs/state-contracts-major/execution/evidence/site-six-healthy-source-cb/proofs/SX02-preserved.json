@@ -1,0 +1,184 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "site/scripts/capture-context-examples.py": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+  "site/scripts/capture-statusline-themes.py": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+  "site/scripts/capture/label.ts": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+  "site/scripts/capture/render.ts": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+  "site/scripts/capture/targets.ts": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+  "site/scripts/generate-product-example.py": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+  "site/scripts/product-example.ts": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX02",
+  "disposition:transitions:SX02:01"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX02",
+   "frozen_row_sha256": "b261f9a816eaf93a80f504f768ca05d828f55ac841ca6b0d1160b69474f5def9",
+   "clause_ids": [
+    "disposition:transitions:SX02:01",
+    "disposition:transitions:SX02:02",
+    "disposition:transitions:SX02:03",
+    "disposition:transitions:SX02:04",
+    "disposition:transitions:SX02:05",
+    "disposition:transitions:SX02:06",
+    "disposition:transitions:SX02:07",
+    "disposition:transitions:SX02:08"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/capture-context-examples.py",
+     "start": 1,
+     "end": 109,
+     "file_sha256": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+     "span_sha256": "ac191cd4e59d6dda9b8bc9ab965e188b2b884af0f30c1417882f5f2cd0fe7a08"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 1303,
+     "end": 1350,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "072697eb63821c0830a3e80322b579e485cc27f49ee18389ad14de9dc42a16c1"
+    },
+    {
+     "path": "site/scripts/capture-context-examples.py",
+     "start": 110,
+     "end": 132,
+     "file_sha256": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+     "span_sha256": "18900f51c4ac0a87826232bcb97aa3a438fcc8b6855790a506dffd7b3ca0efb1"
+    },
+    {
+     "path": "site/scripts/capture-statusline-themes.py",
+     "start": 1,
+     "end": 49,
+     "file_sha256": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+     "span_sha256": "f701efb262423217271da38a98172f3f833233affe10f2bb00625b7d06641f51"
+    },
+    {
+     "path": "site/scripts/capture-statusline-themes.py",
+     "start": 59,
+     "end": 80,
+     "file_sha256": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+     "span_sha256": "41ce7f025e3d7a8ad7c47c9e924e5716b09fc95b856213affc2778253980cd73"
+    },
+    {
+     "path": "site/scripts/capture-statusline-themes.py",
+     "start": 18,
+     "end": 80,
+     "file_sha256": "302249c95cb75b20ab45a1304b01b3599efbbfb261bf654bda287c1b602e1798",
+     "span_sha256": "410878e543ea793aa6ec614525f330bfeace09bd7556e9e8ceb4387ff4ff10e5"
+    },
+    {
+     "path": "site/scripts/generate-product-example.py",
+     "start": 17,
+     "end": 80,
+     "file_sha256": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+     "span_sha256": "ff93ffd6c88a948b4664f31b83488b63ce52a37448f27a9ce5a7ed8015f7bf20"
+    },
+    {
+     "path": "site/scripts/generate-product-example.py",
+     "start": 82,
+     "end": 121,
+     "file_sha256": "28d5010289283a22ddfe7a4804216f961407e54e21c09be3ea4f8381129af67b",
+     "span_sha256": "e06f5b8f3985768bd35e62e772822f60336dea2a457dbd0d67d2a5b1cd1a9c2a"
+    },
+    {
+     "path": "site/scripts/product-example.ts",
+     "start": 33,
+     "end": 98,
+     "file_sha256": "e99c1ff0284581ece5ed867bdd5b1dca709d02f1e4c76c7d09da13dd6628dc22",
+     "span_sha256": "367325af458e752a588973e3913107fb195c36699dc383e390d9b2772bf27efc"
+    },
+    {
+     "path": "site/scripts/capture/render.ts",
+     "start": 1,
+     "end": 76,
+     "file_sha256": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763",
+     "span_sha256": "8770d8a855efe0f9526bde1861f67faaa51c60163ad52edccf29e176e9d41763"
+    },
+    {
+     "path": "site/scripts/capture/label.ts",
+     "start": 1,
+     "end": 25,
+     "file_sha256": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60",
+     "span_sha256": "27ee69624f1ba616984d660985c18546bd09e1f8d709a7a181fb872f9ae2ff60"
+    },
+    {
+     "path": "site/scripts/capture/targets.ts",
+     "start": 1,
+     "end": 67,
+     "file_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+     "span_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1"
+    }
+   ],
+   "semantic_assessment": "All literal source clauses inspected, including retained advanced edges. Named accepted changes and narrow controller/fixture/runtime limits remain explicit in the clause matrix; this machine proposal is source-only.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX02:01",
+   "frozen_row_sha256": "e81382f2fd2849f13e49ca54f09f113d795d306533b4ea9095538c870590ca60",
+   "witnesses": [
+    {
+     "path": "site/scripts/capture-context-examples.py",
+     "start": 1,
+     "end": 109,
+     "file_sha256": "790975a0e377049cebae7d7edb6562f6adc76d35927b6f325f58f351eb438ce6",
+     "span_sha256": "ac191cd4e59d6dda9b8bc9ab965e188b2b884af0f30c1417882f5f2cd0fe7a08"
+    },
+    {
+     "path": "core/pysrc/_readinjectlib.py",
+     "start": 1303,
+     "end": 1350,
+     "file_sha256": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+     "span_sha256": "072697eb63821c0830a3e80322b579e485cc27f49ee18389ad14de9dc42a16c1"
+    }
+   ],
+   "semantic_assessment": "capture() invokes actual imported helpers and bounded Git hashing in owned temp fixtures for repeat, changed, unmapped, self-read and character-proxy budget cases. Historical source_revision is separate from current source SHA/blob inventory. Current no-HTML fixture selects legacy injection. Source controller conformance does not establish current output, stored capture equality or actual execution.",
+   "intake_variances": [
+    "Prior proof held fresh helper observations. This proposal covers the procedure conditional on capture() succeeding, not new observed dedup values or saved JSON equality."
+   ],
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  }
+ ],
+ "scope": "Only named PLANNED source-conformance cells; all advanced evidence retained. SX06 machine/edge excluded for containment finding.",
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

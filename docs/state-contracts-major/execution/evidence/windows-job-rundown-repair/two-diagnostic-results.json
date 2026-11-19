@@ -1,0 +1,52 @@
+{
+  "actual_source": "immutable0830 exact6module copy",
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "observations": [
+    {
+      "variant": "inherited-pipes",
+      "parent_returncode": 0,
+      "returned_after_ms": 46.8695,
+      "owned_descendant_pid": 57480,
+      "OpenProcess_BOOL": true,
+      "OpenProcess_last_error": 0,
+      "at_return_observation_delay_ms": 0.0182,
+      "typed_GetExitCodeProcess_BOOL": true,
+      "typed_last_error": 0,
+      "typed_exit_code": 0,
+      "typed_WaitForSingleObject_zero_ms": 0,
+      "original_style_GetExitCodeProcess_BOOL": true,
+      "original_style_last_error": 0,
+      "original_style_exit_code": 0,
+      "first_cwd_probe_delay_ms": 0.2858,
+      "first_cwd_rmdir": "SUCCEEDED",
+      "cleanup_wait_ms": 0,
+      "owned_cwd_remains": false,
+      "CloseHandle_BOOL": true
+    },
+    {
+      "variant": "devnull-grandchild-output",
+      "parent_returncode": 0,
+      "returned_after_ms": 44.8351,
+      "owned_descendant_pid": 22128,
+      "OpenProcess_BOOL": true,
+      "OpenProcess_last_error": 0,
+      "at_return_observation_delay_ms": 0.0151,
+      "typed_GetExitCodeProcess_BOOL": true,
+      "typed_last_error": 0,
+      "typed_exit_code": 0,
+      "typed_WaitForSingleObject_zero_ms": 258,
+      "original_style_GetExitCodeProcess_BOOL": true,
+      "original_style_last_error": 0,
+      "original_style_exit_code": 0,
+      "first_cwd_probe_delay_ms": 0.0299,
+      "first_cwd_rmdir": "FAILED",
+      "first_cwd_winerror": 32,
+      "first_cwd_errno": 13,
+      "cleanup_wait_ms": 0,
+      "after_observed_termination_cleanup": "SUCCEEDED",
+      "owned_cwd_remains": false,
+      "CloseHandle_BOOL": true
+    }
+  ],
+  "scope": "Exactly one inherited-pipe and oneDEVNULL-output inert grandchild; initial facts retained independently of later process-handle wait and owned cleanup. No product/test changes, no stress or test population replay."
+}

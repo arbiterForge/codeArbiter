@@ -28,12 +28,12 @@ describe('source-owned Academy wayfinding', () => {
     expect(result[1].prerequisites).toEqual([{ label: 'F01 · First', lessonId: 'F01-first' }]);
   });
   it.each([
-    [[lessons[0], lessons[0]], /duplicate/i],
-    [[{ ...lessons[0], nextLab: 'F99-missing' }], /next/i],
-    [[{ ...lessons[0], nextLab: 'F01-first' }], /itself/i],
-    [[{ ...lessons[0], id: '../../outside', nextLab: null }], /lesson ID/i],
-    [[{ ...lessons[0], track: 'unpublished', nextLab: null }], /track/i],
-  ])('rejects inconsistent navigation inputs before publishing links', (input, message) => {
+    { kind: 'a duplicate lesson', input: [lessons[0], lessons[0]], message: /duplicate/i },
+    { kind: 'a missing successor', input: [{ ...lessons[0], nextLab: 'F99-missing' }], message: /next/i },
+    { kind: 'a self-referencing successor', input: [{ ...lessons[0], nextLab: 'F01-first' }], message: /itself/i },
+    { kind: 'an invalid lesson ID', input: [{ ...lessons[0], id: '../../outside', nextLab: null }], message: /lesson ID/i },
+    { kind: 'an unpublished track', input: [{ ...lessons[0], track: 'unpublished', nextLab: null }], message: /track/i },
+  ])('rejects $kind before publishing links', ({ input, message }) => {
     expect(() => buildAcademyWayfinding(input)).toThrow(message);
   });
 });
@@ -57,11 +57,22 @@ describe('opt-in Academy bookmark, not verifier progress', () => {
     expect(storage.getItem('academy-os')).toBe('linux');
     expect(readBookmark(() => storage, { ...context, base: '/' })).toEqual({ state: 'ready', lessonId: 'U01-last' });
   });
-  it.each([{ release: 'preview-0.33' }, { commit: 'b'.repeat(40) }])('rejects a different curriculum identity even with the same lesson ID', (delta) => {
+  it.each([
+    { field: 'release', delta: { release: 'preview-0.33' } },
+    { field: 'commit', delta: { commit: 'b'.repeat(40) } },
+  ])('rejects a different curriculum $field even with the same lesson ID', ({ delta }) => {
     const storage = memory(); saveBookmark(() => storage, context, 'P01-second');
     expect(readBookmark(() => storage, { ...context, ...delta })).toEqual({ state: 'stale' });
   });
-  it.each(['null', '[]', '{}', '{', 'x'.repeat(2048), JSON.stringify({ schemaVersion: 1, release: context.release, commit: context.commit, lessonId: 'https://evil.invalid/' }), JSON.stringify({ schemaVersion: 1, release: context.release, commit: context.commit, lessonId: 'F01-first', completed: true })])('rejects corrupt, oversized, URL or completion-bearing records', (raw) => {
+  it.each([
+    { kind: 'a null value', raw: 'null' },
+    { kind: 'an array', raw: '[]' },
+    { kind: 'an incomplete object', raw: '{}' },
+    { kind: 'malformed JSON', raw: '{' },
+    { kind: 'an oversized record', raw: 'x'.repeat(2048) },
+    { kind: 'a URL in the lesson field', raw: JSON.stringify({ schemaVersion: 1, release: context.release, commit: context.commit, lessonId: 'https://evil.invalid/' }) },
+    { kind: 'a completion field', raw: JSON.stringify({ schemaVersion: 1, release: context.release, commit: context.commit, lessonId: 'F01-first', completed: true }) },
+  ])('rejects $kind in a bookmark record', ({ raw }) => {
     const storage = memory();storage.setItem(bookmarkKey(context.base), raw);
     expect(readBookmark(() => storage, context)).toEqual({ state: 'invalid' });
   });

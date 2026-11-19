@@ -1,0 +1,36 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest,shutil,pathlib;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\.codex\\\\worktrees\\\\program-governance-prep\\\\codeArbiter\\\\.github\\\\scripts');print(\"actual_git=\"+str(shutil.which(\"git\")));print(\"expected_bash_exists=\"+str(pathlib.Path('C:\\\\Program Files\\\\Git\\\\bin\\\\bash.exe').is_file()));r=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit', 'test_release_workflow.ReceiptShellBoundaryTest', 'test_release_workflow.BashDiscoveryTest']));sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "environment_keys": [
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "HOME",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "controlled_existing_git_dir": "C:\\Program Files\\Git\\mingw64\\bin",
+  "actual_bash_exists": "C:\\Program Files\\Git\\bin\\bash.exe",
+  "exit_code": 0,
+  "seconds": 10.748,
+  "source_sha256": "6ab07368324e26edf7a9bd6a274fb65ecbc14caee2e2da9f73958686ee343dbf",
+  "stdout_sha256": "0e148d49e6f7fc13628e4736d44df6c33e52b7e142f23755a2921d54d3ab637e",
+  "stderr_sha256": "de04a5d561620d3d6c3e59b143daacc5cc487c6985b3e4ef2adcf2074bb2da91",
+  "scope": "Five original methods under existing real Git mingw64 PATH, no source orlookup mocks.",
+  "observed_scope": "5 original Bash/receipt methods plus2discoverycontrols; same actual mingw64Git PATH and actualinstallationBash, dummyproviders only.",
+  "red_result_sha256": "b1f8a68a5cfbda23fe342b053ba8bfd38d2e75025634e04b3aab97a801f54fb8"
+}

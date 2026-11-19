@@ -1,0 +1,49 @@
+{
+  "receipt_present": true,
+  "receipt_sha256": "6de480b94510cf315f75446a0cbf2d607d738bb9cabcdb97a07200795f57975e",
+  "receipt": {
+    "format": "codearbiter.artifact-cold-execution/0.3.0",
+    "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "workflow": ".github/workflows/ci.yml",
+    "run_id": "43582198115",
+    "job": "artifact-package-cold",
+    "host": "codex",
+    "platform": "windows/amd64",
+    "promotion_receipt_sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084",
+    "package_sha256": "eefdaa4b3c34471dae446d84019b5533d09370cf60d945713e1060898ac437ca",
+    "manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "response_sha256": "00163f607841c57fde4bb160917b600bff78e9b6ef60fbeaf77f5d07ea041180",
+    "operation": "capabilities",
+    "repository_operations_available": true,
+    "runtime_downloads": false,
+    "installed_workflow_response_sha256": "9711722b819967409ae292c8e8693fdb5dee3ccf95446937736864969e733b94",
+    "installed_bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "installed_workflow_format": "codearbiter.installed-host-workflow/0.2.0",
+    "approval_evidence_mode": "host-observed-prompt",
+    "prerequisite_evidence_mode": "host-observed-prompt",
+    "interruption_reconciled": true,
+    "redispatched": true,
+    "commit_proof": true,
+    "finalization_proof": true,
+    "all_accepted_and_current": true,
+    "markdown_shadow_count": 0,
+    "context_workflow_scope": "candidate-preflight",
+    "context_installed_tests": [
+      {
+        "name": "test_t044_installed_context_kind",
+        "status": "pass"
+      },
+      {
+        "name": "test_t044_rejects_missing_candidate_identity",
+        "status": "pass"
+      },
+      {
+        "name": "test_t044_rejects_nonisolated_environment",
+        "status": "pass"
+      }
+    ],
+    "context_installed_output_sha256": "1ba74a2fa75bc785fb1d01b7b3a1e55c2f8cef895733632456a90fd5fcde4836"
+  },
+  "input_bytes_stable": true
+}

@@ -1,0 +1,118 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-only immutable source-clause guard/effect/retry inspection after9ab"
+  },
+  "inputs": {
+    ".codearbiter/release-targets.md": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+    ".github/scripts/build_release_targets_provenance.py": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C34:01",
+    "disposition:transitions:C34:02",
+    "disposition:transitions:C34:03"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+      "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+    }
+  ],
+  "scope": "Derived referenced file-path set, unknown-null hashing and maintained writer contract only. Relevant parse_release_targets/load_targets/provenance_trigger_paths and write_text_atomic definitions are AST-identical to baseline; concrete current bodies/error branches read. Other changed shared helper functions do not establish actual module/runtime/data availability or successful generation/hash/write.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C34:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 60,
+          "end": 86,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 142,
+          "end": 145,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1395,
+          "end": 1437,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 235,
+          "end": 253,
+          "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 847,
+          "end": 892,
+          "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "semantic_assessment": "Declared target references are derived and deduplicated by maintained helper, batched through Git hash-object; missing/short/error hash mapping becomes explicit null instead of an invented digest. New record is passed to maintained provenance writer; loader/write errors propagate.",
+      "limits": "No actual current hashes/provenance write, declaration completeness or runtime module availability asserted. Imported hash-runner failure intentionally degrades to unknown/null, not successful evidence.",
+      "frozen_row_sha256": "1b50750cbb9fd2df4bd427278d1dd9aa04f440e7ec125debe148c808a1c13535",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C34:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 89,
+          "end": 122,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 131,
+          "end": 140,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        },
+        {
+          "path": "core/pysrc/_provenancelib.py",
+          "start": 459,
+          "end": 507,
+          "file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4"
+        }
+      ],
+      "semantic_assessment": "Check requires a readable known-shape provenance record then compares drift-trigger path set against current declared references only; matching path population returns success without comparing stored content hashes.",
+      "limits": "Source path-set contract only. This does not establish current provenance byte freshness, valid runtime record or successful actual check.",
+      "frozen_row_sha256": "e5fa516cf97f8554c81616039c5c18bb3b77db778596c935fea64340aa62693b",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:C34:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/build_release_targets_provenance.py",
+          "start": 114,
+          "end": 138,
+          "file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f"
+        }
+      ],
+      "semantic_assessment": "Both expected-minus-recorded and recorded-minus-expected produce errors; --check prints them and exits1 without write or automatic rebaseline.",
+      "limits": "No real source scope drift or heal execution performed; no current stale hashes are rebranded valid.",
+      "frozen_row_sha256": "d88631aee81e64b083eb38d4fdfb5260bb054af22ed04b0b57ee63b84ba71c4b",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "dependency_boundary": "Derived referenced file-path set, unknown-null hashing and maintained writer contract only. Relevant parse_release_targets/load_targets/provenance_trigger_paths and write_text_atomic definitions are AST-identical to baseline; concrete current bodies/error branches read. Other changed shared helper functions do not establish actual module/runtime/data availability or successful generation/hash/write.",
+  "excluded_cells": []
+}

@@ -1,0 +1,77 @@
+{
+  "schema": "private-n11-history-unit-pass/1",
+  "state": "FROZEN_LOCAL_CHARACTERIZATION_PASS",
+  "qualification": false,
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "source_epoch": "25b6747e52f5591d55901ace71706200d646461d",
+  "subject": {
+    "path": "core/artifacts/internal/operations/dependent_progress_history_test.go",
+    "preimage_sha256": null,
+    "candidate_sha256": "6d3c0535668c580375a00ce5e65811007982849791c0053555b782ef488f89d5",
+    "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n11-history-successor-zik7ki2s\\candidate\\core\\artifacts\\internal\\operations\\dependent_progress_history_test.go"
+  },
+  "patch_sha256": "54ecd79ed890e6b0d2879471dec4c32c573e8d5e21447f1769bebf1b436725b5",
+  "original_draft_sha256": "a06990bef1207ab2b08cd64a99284bf14b0b9bf278ff2084280eeb3cdc7f4343",
+  "first_failed_formatted_sha256": "314a84ea9df9222640165d8bac2faeb25293c38e08d956604ef174f02002d4ec",
+  "prior_attempt": {
+    "directory": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n11-history-unit-cw0i4y7s",
+    "record_sha256": "5c5405eb8f0b9b4ca797b03561e77cdcb7802966dba12470ef0932431d02df7a",
+    "result": "3 setup FAIL, AUTHORITY_UNVERIFIED before ancestor mutation assertions; not product failure"
+  },
+  "source_cause": "First dependent nonREVIEW reconciliation advances schema0.3.2 to0.3.4; schema_version belongs to normative projection. The original plan approval no longer matches current NormHash before the next reconciliation context. This is not a missing per-task criterion grant. Raw first failure did not log loop ID; causal iteration follows source flow.",
+  "authentic_fixture_correction": "Real task-block primes ProgressVersion; assert actual version, use existing synthetic h.approve to capture current whole-plan approval, and ordinary explicit reconciliation restores primed label before dependent receipt capture. No receipt/stamp edit or guard weakening.",
+  "actual_capture": {
+    "record": "focused.json",
+    "raw": "focused.stdout.jsonl",
+    "stderr": "focused.stderr",
+    "argv": [
+      "C:/Program Files/Go/bin/go.exe",
+      "test",
+      "-json",
+      "./internal/operations",
+      "-run",
+      "^TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops$",
+      "-count=1",
+      "-timeout=75s"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n11-history-successor-zik7ki2s\\candidate\\core\\artifacts",
+    "exit_code": 0,
+    "duration_seconds": 14.124899300004472,
+    "children": [
+      {
+        "Action": "pass",
+        "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/ancestor-block",
+        "Elapsed": 2.03
+      },
+      {
+        "Action": "pass",
+        "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/receipted-pending",
+        "Elapsed": 2.34
+      },
+      {
+        "Action": "pass",
+        "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops/receipted-blocked",
+        "Elapsed": 2.33
+      },
+      {
+        "Action": "pass",
+        "Test": "TestN11AncestorChangesPreserveDependentHistoryAndIndependentStops",
+        "Elapsed": 6.7
+      }
+    ],
+    "source_runtime_Gov_module_unchanged": true
+  },
+  "future_recipe": {
+    "path": "future-n11-recipe-fragment.json",
+    "sha256": "60dcf584d351dfcb95c51f92cf7781a330a251e98cc692167be9db3e4cb728b5",
+    "required_names_per_platform": 31,
+    "interpretation": "Current accepted ADR0046/D-PROGRESS=B replacement effect only; no old STALE parity and no N/A. New parent/3children complement existing complete seven-label/receipt/refusal/independent-stop assertions.",
+    "eligibility": "No native4 policy/recipe integrated here. All six same-source original builder artifacts and whole trusted normal success remain future requirements."
+  },
+  "limits": [
+    "One original exact offline Go invocation failed setup; one explicitly authorized corrected same-selector invocation passed. No other Go suite or native CLI/helper/provider/model/SDK/Node/install/network execution.",
+    "Receipt sources are explicitly synthetic fixture observations admitted by actual in-process native owners; no real user approval or current installed qualification claimed.",
+    "The local Windows Go unit closes the nonempty dependent-history assertion gap only; no task/machine/finding/scenario/ledger/status promotion or proof renewal.",
+    "Root owns canonical source/index/ref/markers/progress/ADR; none mutated by author. Parent1098 main/publication remains held."
+  ]
+}

@@ -1,0 +1,26 @@
+{
+  "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+  "scope": "pagefind-publication",
+  "inputs_before": {
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/scripts/owned-output.test.ts": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/pagefind-build.test.ts": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+    "site/scripts/pagefind-build.ts": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59"
+  },
+  "inputs_after": {
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/scripts/owned-output.test.ts": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/pagefind-build.test.ts": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+    "site/scripts/pagefind-build.ts": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59"
+  },
+  "stable": true,
+  "boundary": "Executed unit import closure; all canonical templates read by descriptor validation; additional contract-mandated owning source files for bounded source-conformance. Full Astro build/endpoints and native binaries are not executed."
+}

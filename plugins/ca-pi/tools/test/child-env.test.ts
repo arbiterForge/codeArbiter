@@ -1,6 +1,6 @@
 /** child-env.test.ts - Task 6 minimal environment and help-contract obligations,
  * as amended by #455: the child holds an ephemeral broker token, never the operator credential. */
-import { mkdir, mkdtemp, readFile, readdir, rm, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, open, readFile, readdir, rm, stat, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { describe, expect, test } from "vitest";
@@ -870,4 +870,196 @@ describe("Task 6 child environment", () => {
       await rm(operatorHome, { recursive: true, force: true });
     }
   });
+
+  test("ADR-0049 refuses HTTP outside the existing literal loopback at provider and model admission", async () => {
+    const { ChildConfigProjectionError } = await loadImplementation();
+    // No endpoint here is contacted: these are configuration-admission inputs.
+    for (const baseUrl of [
+      "http://gateway.example/v1",
+      "http://10.0.0.1/v1",
+      "http://192.168.1.20/v1",
+      "http://169.254.1.1/v1",
+      "http://0.0.0.0/v1",
+      "http://localhost:8931/v1",
+      "http://127.0.0.1.example:8931/v1",
+      "http://127.1:8931/v1",
+      "http://2130706433:8931/v1",
+      "http://0x7f000001:8931/v1",
+      "http://127%2e0%2e0%2e1:8931/v1",
+      "http://127.0.0.2:8931/v1",
+    ]) {
+      for (const record of [
+        { baseUrl },
+        { baseUrl: "https://gateway.example/v1", models: [{ id: "gpt-test", baseUrl }] },
+      ]) {
+        const actual = await projectedModels({ providers: { openai: record } });
+        try {
+          expect(actual.document).toBeUndefined();
+          expect(actual.upstream).toBeUndefined(); // No built-in/provider fallback.
+          expect(actual.error).toBeInstanceOf(ChildConfigProjectionError);
+          expect((actual.error as Error).message).toBe("Pi child configuration projection refused.");
+          expect(String(actual.error)).not.toContain(baseUrl);
+        } finally {
+          await actual.cleanup();
+        }
+      }
+    }
+  });
+
+
+  async function ownedPreparedEnvironmentInput() {
+    const root = await mkdtemp(join(tmpdir(), "ca-pi-cleanup-oracle-"));
+    const operatorAgent = join(root, "operator-agent");
+    await mkdir(operatorAgent);
+    await writeFile(join(operatorAgent, "models.json"), JSON.stringify(OPERATOR_MODELS), "utf8");
+    return {
+      root, operatorAgent,
+      input: {
+        platform: process.platform, provider: "openai",
+        parent: {
+          ...process.env, HOME: join(root, "operator-home"), USERPROFILE: join(root, "operator-home"),
+          PI_CODING_AGENT_DIR: operatorAgent, OPENAI_API_KEY: PLANTED_UPSTREAM_LITERAL,
+          CA_PI_GATEWAY_VALUE: PLANTED_HEADER_LITERAL,
+        },
+      },
+    };
+  }
+
+  test("exclusive models creation refuses a real preexisting file without clobbering its bytes", async () => {
+    const { prepareChildEnvironment } = await loadImplementation();
+    const fixture = await ownedPreparedEnvironmentInput();
+    const temp = join(fixture.root, "owned-child-temp");
+    await mkdir(temp);
+    const tempNames = ["TEMP", "TMP", "TMPDIR"] as const;
+    const saved = Object.fromEntries(tempNames.map(name => [name, process.env[name]]));
+    const existingBytes = "owned-existing-models-must-not-be-clobbered\n";
+    let collisionPath: string | undefined, childRoot: string | undefined;
+    let beforeRemoval: string | undefined, rejected: unknown;
+    let discoveredRoots: string[] = [];
+    let unexpectedPrepared: Awaited<ReturnType<typeof prepareChildEnvironment>> | undefined;
+    try {
+      for (const name of tempNames) process.env[name] = temp;
+      try {
+        unexpectedPrepared = await prepareChildEnvironment(fixture.input, BROKER, {
+          remove: async (target, options) => {
+            if (target === collisionPath) beforeRemoval = await readFile(target, "utf8");
+            await rm(target, options);
+          },
+        }, undefined, {
+          // The existing read port is transparent: the actual operator file
+          // is opened/read. It only schedules a real owned-file collision
+          // after the production root exists and before its exclusive open.
+          open: async (target, flags) => {
+            const handle = await open(target, flags);
+            try {
+              discoveredRoots = (await readdir(temp, { withFileTypes: true }))
+                .filter(entry => entry.isDirectory() && entry.name.startsWith("codearbiter-pi-child-"))
+                .map(entry => entry.name);
+              if (discoveredRoots.length !== 1) throw new Error("owned collision fixture root unavailable");
+              childRoot = join(temp, discoveredRoots[0]!);
+              collisionPath = join(childRoot, "agent", "models.json");
+              await writeFile(collisionPath, existingBytes, { flag: "wx", mode: 0o600 });
+              return handle;
+            } catch (error) {
+              await handle.close();
+              throw error;
+            }
+          },
+        });
+      } catch (error) { rejected = error; }
+      expect(discoveredRoots).toHaveLength(1);
+      expect(unexpectedPrepared).toBeUndefined();
+      expect(rejected).toMatchObject({ code: "EEXIST", syscall: "open", path: collisionPath });
+      expect(beforeRemoval).toBe(existingBytes);
+      await expect(stat(childRoot!)).rejects.toMatchObject({ code: "ENOENT" });
+      expect(JSON.parse(await readFile(join(fixture.operatorAgent, "models.json"), "utf8"))).toEqual(OPERATOR_MODELS);
+    } finally {
+      for (const name of tempNames) {
+        const value = saved[name];
+        if (value === undefined) delete process.env[name]; else process.env[name] = value;
+      }
+      await unexpectedPrepared?.cleanup().catch(() => undefined);
+      await rm(fixture.root, { recursive: true, force: true });
+    }
+  });
+
+  test("cleanup passes bounded retry options to real removals and removes the complete private root", async () => {
+    const { prepareChildEnvironment } = await loadImplementation();
+    const fixture = await ownedPreparedEnvironmentInput();
+    const calls: { target: string; options: unknown }[] = [];
+    let prepared: Awaited<ReturnType<typeof prepareChildEnvironment>> | undefined;
+    try {
+      prepared = await prepareChildEnvironment(fixture.input, BROKER, {
+        remove: async (target, options) => {
+          calls.push({ target, options: { ...options } });
+          await rm(target, options);
+        },
+      });
+      const root = dirname(prepared.env.HOME!);
+      const models = join(prepared.env.PI_CODING_AGENT_DIR!, "models.json");
+      expect(JSON.parse(await readFile(models, "utf8")).providers.openai.baseUrl).toBe(BROKER_BASE_URL);
+      const childState = join(prepared.env.PI_CODING_AGENT_SESSION_DIR!, "owned-child-state.txt");
+      await writeFile(childState, "owned child state\n", "utf8");
+      await prepared.cleanup();
+      expect(calls).toEqual([
+        { target: models, options: { force: true, maxRetries: 5, retryDelay: 50 } },
+        { target: root, options: { recursive: true, force: true, maxRetries: 5, retryDelay: 50 } },
+      ]);
+      await expect(stat(models)).rejects.toMatchObject({ code: "ENOENT" });
+      await expect(stat(childState)).rejects.toMatchObject({ code: "ENOENT" });
+      await expect(stat(root)).rejects.toMatchObject({ code: "ENOENT" });
+      expect(JSON.parse(await readFile(join(fixture.operatorAgent, "models.json"), "utf8"))).toEqual(OPERATOR_MODELS);
+    } finally {
+      await prepared?.cleanup().catch(() => undefined);
+      await rm(fixture.root, { recursive: true, force: true });
+    }
+  });
+
+  test("cleanup reports root refusal after real file removal and retains observable child state", async () => {
+    const { prepareChildEnvironment } = await loadImplementation();
+    const fixture = await ownedPreparedEnvironmentInput();
+    const calls: { target: string; options: unknown }[] = [];
+    let root: string | undefined;
+    let refuseRootRemoval = true;
+    let prepared: Awaited<ReturnType<typeof prepareChildEnvironment>> | undefined;
+    try {
+      prepared = await prepareChildEnvironment(fixture.input, BROKER, {
+        remove: async (target, options) => {
+          calls.push({ target, options: { ...options } });
+          // Controlled failure at the existing I/O boundary, never a fake
+          // successful removal. The file deletion below is real.
+          if (refuseRootRemoval && target === root) throw Object.assign(new Error("owned root removal refusal"), { code: "EBUSY" });
+          await rm(target, options);
+        },
+      });
+      root = dirname(prepared.env.HOME!);
+      const models = join(prepared.env.PI_CODING_AGENT_DIR!, "models.json");
+      const childState = join(prepared.env.PI_CODING_AGENT_SESSION_DIR!, "owned-child-state.txt");
+      await writeFile(childState, "retained owned state\n", "utf8");
+      let error: unknown;
+      try { await prepared.cleanup(); } catch (actual) { error = actual; }
+      expect(error).toBeInstanceOf(Error);
+      expect((error as Error).message).toBe("Pi child credential cleanup failed safely.");
+      for (const value of [root, PLANTED_UPSTREAM_LITERAL, PLANTED_HEADER_LITERAL, "owned root removal refusal"]) {
+        expect(String(error)).not.toContain(value);
+      }
+      expect(calls).toEqual([
+        { target: models, options: { force: true, maxRetries: 5, retryDelay: 50 } },
+        { target: root, options: { recursive: true, force: true, maxRetries: 5, retryDelay: 50 } },
+      ]);
+      await expect(stat(models)).rejects.toMatchObject({ code: "ENOENT" });
+      expect((await stat(root)).isDirectory()).toBe(true);
+      expect(await readFile(childState, "utf8")).toBe("retained owned state\n");
+      expect(JSON.parse(await readFile(join(fixture.operatorAgent, "models.json"), "utf8"))).toEqual(OPERATOR_MODELS);
+    } finally {
+      refuseRootRemoval = false;
+      try {
+        await prepared?.cleanup();
+      } finally {
+        await rm(fixture.root, { recursive: true, force: true });
+      }
+    }
+    await expect(stat(root!)).rejects.toMatchObject({ code: "ENOENT" });
+  });
+
 });

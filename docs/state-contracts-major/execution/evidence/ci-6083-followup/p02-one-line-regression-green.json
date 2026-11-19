@@ -1,0 +1,55 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-m",
+    "unittest",
+    "-v",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "seconds": 0.15427389997057617,
+  "source_head": "338ed6a17a783d233a24edd10cd565777655e934",
+  "started_utc": "2026-11-14T04:46:56.397944+00:00",
+  "inputs_before": {
+    ".github/scripts/check_state_contracts_integration.py": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+    ".github/scripts/test_state_contracts_integration.py": "e6fb0c62c04e130fff267a1afc6bada8f4f52612002fff24db6776aacf885a02",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/workflows/ci.yml": "e2dd496b8d10d368a1f879597b0796b94d3c1ca7eff785dab09549fe9f0cac99",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    ".github/scripts/test_hook_ci_partition.py": "c1e7ad0051bb5509b158ea5c2f8c439b1e574f951daa18e2b24a76566001ca15"
+  },
+  "inputs_after": {
+    ".github/scripts/check_state_contracts_integration.py": "877ade0d1ca42163484e86b1db54249953d785159b07c5c2b1494f193f63dd3f",
+    ".github/scripts/test_state_contracts_integration.py": "e6fb0c62c04e130fff267a1afc6bada8f4f52612002fff24db6776aacf885a02",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/workflows/ci.yml": "e2dd496b8d10d368a1f879597b0796b94d3c1ca7eff785dab09549fe9f0cac99",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    ".github/scripts/test_hook_ci_partition.py": "c1e7ad0051bb5509b158ea5c2f8c439b1e574f951daa18e2b24a76566001ca15"
+  },
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PATH": "C:\\Program Files\\Git\\cmd;C:\\Windows\\System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-final338-cqzt0_ph\\single-disposable-home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-p02-final338-cqzt0_ph\\single-disposable-home",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8"
+  },
+  "actual_epoch": "338ed source + staged one-line expectation update; not a committed-source run"
+}

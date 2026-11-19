@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\registry-selection-green.stderr",
+ "original_sha256": "e48fcac3d71a12aea5d21ab03494bf742f3ca84b71f8eb9c34f88def4e607ff7",
+ "original_bytes": 314,
+ "utf8_text": "test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard (test_ci_impact.ArtifactEngineCIContractTest.test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.022s\r\n\r\nOK\r\n"
+}

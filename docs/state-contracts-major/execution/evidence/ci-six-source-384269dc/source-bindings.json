@@ -1,0 +1,504 @@
+{
+ "schema": "codearbiter.ci-six-source-bindings/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "context_packet_sha256": "bff10023eabea47bd5ab395c39a08fdd5faaf0a75c8c05b2c51c51cd02db4eac",
+ "frozen_hash_method": "SHA256(sorted compact JSON, ensure_ascii=True)",
+ "files": {
+  ".github/scripts/_context_fixturelib.py": {
+   "index_oid": "ad18be938985d1ddd7b1c90ce519bb0f47b93ebf",
+   "sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+   "bytes": 14748,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/_contextverificationlib.py": {
+   "index_oid": "1e99a2395fab11115d95108b6766d88fdf30eed8",
+   "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+   "bytes": 23733,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/check_sandbox_docker_layers.py": {
+   "index_oid": "141a354b72bcd6cc053fe7cc999c001b728bccac",
+   "sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+   "bytes": 6440,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/ci20_native_binding.py": {
+   "index_oid": "0507a59e8087f92265191d3d33f783d41ea8325d",
+   "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+   "bytes": 15795,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/coverage_union.py": {
+   "index_oid": "3ef91db5d9041e61c912632c9c9f7cf9055cb926",
+   "sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+   "bytes": 15839,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/major_qualification_report.py": {
+   "index_oid": "72add648394a7d383d804241fe76934198a59f94",
+   "sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+   "bytes": 139525,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/run_artifact_authority_shard.py": {
+   "index_oid": "c88cdd555b086c0be956024f639b34fc095c7763",
+   "sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+   "bytes": 23941,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/run_concurrent_suites.py": {
+   "index_oid": "86ad928e7d3081805095bfb08a70bc0b07eca552",
+   "sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+   "bytes": 5039,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/test_artifact_installed_host.py": {
+   "index_oid": "6b3b5b000bb42e55d23ba788a05341d30d11c891",
+   "sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04",
+   "bytes": 92423,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/test_context_evaluation.py": {
+   "index_oid": "dffac05cd8704d015f1ec8c4760f84da759c7734",
+   "sha256": "2419cb4d6dcb1fd0096f00aa6f90fc3a9b7bcef69434ab3227150fc934ee2c12",
+   "bytes": 148209,
+   "immutable_git_blob_join": true
+  },
+  ".github/scripts/test_context_installed.py": {
+   "index_oid": "d2b8f7a65ede0cedbbe517973b1442b92163bb62",
+   "sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+   "bytes": 6007,
+   "immutable_git_blob_join": true
+  },
+  ".github/workflows/ci.yml": {
+   "index_oid": "3a5b64d44e0cfd7896f896a4b4414cea5ee29db2",
+   "sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+   "bytes": 277135,
+   "immutable_git_blob_join": true
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "index_oid": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "index_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "index_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "index_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "index_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "immutable_git_blob_join": true
+  },
+  "docs/state-contracts-major/execution/coverage-ledger.json": {
+   "index_oid": "a6ec1902e78d6b5c298e13d158c2c05e9c0c47d7",
+   "sha256": "b6f37b0feae6ba43128474107c6462388792ad7ff84a06209b0d1eb83e8da6c2",
+   "bytes": 1794039,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/__tests__/isolation.test.ts": {
+   "index_oid": "7b080d20cca471041daaf4fdcabd71bf470a5651",
+   "sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa",
+   "bytes": 8242,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/build-pinned-base.test.ts": {
+   "index_oid": "b1afffdf470dffd0956707712bf71646027dce52",
+   "sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+   "bytes": 16274,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/build.test.ts": {
+   "index_oid": "df1fd9649761abd099e1a783fbe8d6c59fc722dd",
+   "sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+   "bytes": 24171,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/builder-observation.test.ts": {
+   "index_oid": "1d6c5926af81e9c516e40d9c490e8087c986ebe5",
+   "sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+   "bytes": 5292,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/cache-provenance.test.ts": {
+   "index_oid": "93b8da882474dfccf1f69175c83acba280c210a6",
+   "sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c",
+   "bytes": 14542,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": {
+   "index_oid": "024d483db7fc84c3fcf6056315eeb06ec60e730a",
+   "sha256": "c1f72c336cec531b0543cf958939751d3c9732c8aab5903c8146d9676c9657bf",
+   "bytes": 7576,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/claude-inside.test.ts": {
+   "index_oid": "fc9e6c77ba07e31ae0d5cb70b82611f88fe1e3cc",
+   "sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+   "bytes": 25522,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/cli-resolve.test.ts": {
+   "index_oid": "b8da0672c3be135ca7ee49806517ed23c1152b50",
+   "sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+   "bytes": 5038,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/cli.test.ts": {
+   "index_oid": "d5852485b86e15b66dfa4521199a2588a48d9dad",
+   "sha256": "5a48799a8543e0454cd3f85b8982f2454b59c2ccd75610fa02e535ab0f18ee27",
+   "bytes": 15035,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/cp.test.ts": {
+   "index_oid": "4a2c4668956357fb83a25d33bf2fc01a54ce63ba",
+   "sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180",
+   "bytes": 30095,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": {
+   "index_oid": "f32ef01cd78b75a4a00954bd8906ba76e9416667",
+   "sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+   "bytes": 4077,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/create-partial-compensation.test.ts": {
+   "index_oid": "0aa7c9fe6ec94d2d503fec027e06fcc74462f7ea",
+   "sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+   "bytes": 9777,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/create.test.ts": {
+   "index_oid": "a593d29e374c53ae38d9e39a77d3c77651fc2c52",
+   "sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+   "bytes": 23146,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/deadline.test.ts": {
+   "index_oid": "97b312061c39322bfd5abad8df04d17ce710c79a",
+   "sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+   "bytes": 18656,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/dephash.test.ts": {
+   "index_oid": "5dc8d71502f4cfda32c9d14d22a9eb75d669e19d",
+   "sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+   "bytes": 4693,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/docker-gate.ts": {
+   "index_oid": "c31647d22813240304ccb6eba11d0dec80906e0d",
+   "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+   "bytes": 6847,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/exec.test.ts": {
+   "index_oid": "555e0f1f6c47ee48ae3afef4a0d16f3adff2319f",
+   "sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+   "bytes": 8337,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/installed-bundle.test.ts": {
+   "index_oid": "a90829dfb7f9d201c870b408a8ff958d296b2b3a",
+   "sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+   "bytes": 11483,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/layering.test.ts": {
+   "index_oid": "961929a5fbc239e30e4563429dda64adfb19468f",
+   "sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+   "bytes": 10041,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/lifecycle.test.ts": {
+   "index_oid": "91a287dfeefb0e74445d99928136f444c468ca09",
+   "sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+   "bytes": 21824,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/mounts.test.ts": {
+   "index_oid": "88caf0e7cea49529ade6a531c2a4532ef8cbad21",
+   "sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+   "bytes": 3609,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/multistack.test.ts": {
+   "index_oid": "0a5b703e47013ce40e39691068c60c6c4cde03bb",
+   "sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+   "bytes": 8968,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/native-build-inputs.test.ts": {
+   "index_oid": "188f1fc8b1b5e8c3b207bf8e78ea63a06593c699",
+   "sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+   "bytes": 5667,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/network.test.ts": {
+   "index_oid": "52fe02756885a7b8c8f102dd8a7ed78d82f2d1da",
+   "sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+   "bytes": 18983,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/run.test.ts": {
+   "index_oid": "43f4764d9470c6677f40d1b5bdd00b8028e52a03",
+   "sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+   "bytes": 8614,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/smoke.test.ts": {
+   "index_oid": "b6f8d9a8f5a3568852fc98f215c58f4ba4e743a6",
+   "sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+   "bytes": 484,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/state-contracts.test.ts": {
+   "index_oid": "efbe5523f25c33438f99a96641523f5f3b70ceed",
+   "sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+   "bytes": 10611,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/supply-chain.test.ts": {
+   "index_oid": "9f6a7ed438eb06822091c27718385865fd2d2ee4",
+   "sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+   "bytes": 18739,
+   "immutable_git_blob_join": true
+  },
+  "plugins/ca-sandbox/tools/teardown.test.ts": {
+   "index_oid": "24243470c7961a486185b9c599b805defd622f08",
+   "sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+   "bytes": 24360,
+   "immutable_git_blob_join": true
+  }
+ },
+ "baseline_files": {
+  ".github/scripts/run_concurrent_suites.py": {
+   "index_oid": "c9317ea15c163eb5bda0fed9d4c2d20103988827",
+   "sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+   "bytes": 3977,
+   "current_equal": false
+  },
+  ".github/scripts/run_artifact_authority_shard.py": {
+   "index_oid": "e1d25d2def60a683daeebecfe95b7f2e3f4d8d77",
+   "sha256": "fa8b319faca2548e1580a46848626941c06c6dd60bbae03734cac8c83f906b18",
+   "bytes": 14273,
+   "current_equal": false
+  },
+  ".github/scripts/_contextverificationlib.py": {
+   "index_oid": "39659a2f01511cef975cfeb6de3038e94564a969",
+   "sha256": "77a3aee73f8e6ae333158133d2045c6bd653c40d08914d8ed5578001f3bb4dc5",
+   "bytes": 22509,
+   "current_equal": false
+  },
+  ".github/scripts/_context_fixturelib.py": {
+   "index_oid": "ad18be938985d1ddd7b1c90ce519bb0f47b93ebf",
+   "sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+   "bytes": 14748,
+   "current_equal": true
+  },
+  ".github/scripts/coverage_union.py": {
+   "index_oid": "3ef91db5d9041e61c912632c9c9f7cf9055cb926",
+   "sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+   "bytes": 15839,
+   "current_equal": true
+  },
+  ".github/scripts/check_sandbox_docker_layers.py": {
+   "index_oid": "141a354b72bcd6cc053fe7cc999c001b728bccac",
+   "sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+   "bytes": 6440,
+   "current_equal": true
+  },
+  ".github/workflows/ci.yml": {
+   "index_oid": "053be9b3f8e0cd053eb658e3913757cbd5c591a9",
+   "sha256": "d876a4c5f6fcbe6ce9aba6ec5fe3d2c68a120f7e7fb4a3b9c5b92cff62cd6132",
+   "bytes": 203391,
+   "current_equal": false
+  },
+  "plugins/ca-sandbox/tools/docker-gate.ts": {
+   "index_oid": "c31647d22813240304ccb6eba11d0dec80906e0d",
+   "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+   "bytes": 6847,
+   "current_equal": true
+  }
+ },
+ "raw_owner_copies": {
+  "raw/C05-baseline.py": {
+   "sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+   "bytes": 3977
+  },
+  "raw/C05-current.py": {
+   "sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+   "bytes": 5039
+  },
+  "raw/C06-baseline.py": {
+   "sha256": "fa8b319faca2548e1580a46848626941c06c6dd60bbae03734cac8c83f906b18",
+   "bytes": 14273
+  },
+  "raw/C06-current.py": {
+   "sha256": "40ac4be90a8142b623f2ccbdb22a3b5feab5f22015032e30b870d03870a60afa",
+   "bytes": 23941
+  },
+  "raw/C07-baseline.py": {
+   "sha256": "77a3aee73f8e6ae333158133d2045c6bd653c40d08914d8ed5578001f3bb4dc5",
+   "bytes": 22509
+  },
+  "raw/C07-current.py": {
+   "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+   "bytes": 23733
+  },
+  "raw/C08-baseline.py": {
+   "sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+   "bytes": 14748
+  },
+  "raw/C08-current.py": {
+   "sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+   "bytes": 14748
+  },
+  "raw/C09-baseline.py": {
+   "sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+   "bytes": 15839
+  },
+  "raw/C09-current.py": {
+   "sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+   "bytes": 15839
+  },
+  "raw/C10-baseline.py": {
+   "sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+   "bytes": 6440
+  },
+  "raw/C10-current.py": {
+   "sha256": "f7b16e22cfba12d841ac62a7db9b7b3145426e66d0638d4b02c84abfb5f0025a",
+   "bytes": 6440
+  }
+ },
+ "raw_diff": {
+  "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/owner-baseline-current.diff",
+  "sha256": "ebb8d8870a2a601f4ad08ae4298d1aa9f76667e82022c68c45d60aaa9f90a47b",
+  "bytes": 19784
+ },
+ "docker_declaration_inventory": {
+  "method": "Static source inspection only; supported double-quoted dockerGate literal scanner grammar; no owner function or test execution.",
+  "scanned_file_count": 28,
+  "recognized_unique_layers": 16,
+  "declarations": [
+   {
+    "path": "plugins/ca-sandbox/tools/__tests__/isolation.test.ts",
+    "line": 43,
+    "layer": "isolation",
+    "file_sha256": "2a9b5e84ee2da640d062d1e762b61d11c50bb062237535abc2d2d08b60f60ffa"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/build.test.ts",
+    "line": 264,
+    "layer": "build",
+    "file_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+    "line": 38,
+    "layer": "cache-provenance",
+    "file_sha256": "a588314dbe097cf9a89908630b3accf1119df85f9c79ac365609c33881881a3c"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+    "line": 212,
+    "layer": "claude-inside",
+    "file_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/cli-resolve.test.ts",
+    "line": 48,
+    "layer": "cli-resolve",
+    "file_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/cp.test.ts",
+    "line": 85,
+    "layer": "cp",
+    "file_sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+    "line": 11,
+    "layer": "create-partial-compensation",
+    "file_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/create.test.ts",
+    "line": 298,
+    "layer": "create",
+    "file_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+    "line": 215,
+    "layer": "deadline",
+    "file_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/exec.test.ts",
+    "line": 130,
+    "layer": "exec",
+    "file_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+    "line": 16,
+    "layer": "installed-bundle",
+    "file_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/layering.test.ts",
+    "line": 74,
+    "layer": "layering",
+    "file_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/lifecycle.test.ts",
+    "line": 249,
+    "layer": "lifecycle",
+    "file_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/multistack.test.ts",
+    "line": 128,
+    "layer": "multistack",
+    "file_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/network.test.ts",
+    "line": 208,
+    "layer": "network",
+    "file_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529"
+   },
+   {
+    "path": "plugins/ca-sandbox/tools/run.test.ts",
+    "line": 124,
+    "layer": "run",
+    "file_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355"
+   }
+  ]
+ },
+ "limits": [
+  "Git IDs name immutable source objects; SHA256 binds actual raw bytes. Neither is a signature or executed qualification.",
+  "Ledger is a private CAS preimage only and is excluded from proof positive inputs because adoption changes it.",
+  "Caller files are bounded source bindings; no claim that all caller code was executed or every unrelated symbol reviewed."
+ ]
+}

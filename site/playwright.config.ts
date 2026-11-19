@@ -17,7 +17,9 @@ export default defineConfig({
   forbidOnly: hostedCI,
   retries: 0,
   timeout: 30_000,
-  reporter: "list",
+  reporter: process.env.CA_DOCS_PLAYWRIGHT_JSON
+    ? [["list"], ["json", { outputFile: process.env.CA_DOCS_PLAYWRIGHT_JSON }]]
+    : "list",
   preserveOutput: artifactOnly ? "always" : "failures-only",
   testMatch: artifactOnly ? "artifact-review.spec.ts" : undefined,
   testIgnore: artifactOnly ? undefined : "artifact-review.spec.ts",

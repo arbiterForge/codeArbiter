@@ -1,0 +1,110 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/acceptance_security_review: finite accepted normative text and actual owner assessment; private author proposal"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "plugins/ca-sandbox/COMMANDS.md": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+    "plugins/ca-sandbox/README.md": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+    "plugins/ca-sandbox/commands/sandbox.md": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+    "plugins/ca-sandbox/tools/build.ts": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39"
+  },
+  "disposition_ids": [
+    "disposition:findings:SW-F01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-clause-assessment.json",
+      "sha256": "c893cd7fc0de73642e06fe2b3c7e9d8ce610cef875372bfbbf420068f41f3d01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/source-bindings.json",
+      "sha256": "7d5438daf15ececf16de433cdfa69a7ce00b310d4940b6a085f4966e23f54a41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-baseline-current-joins.json",
+      "sha256": "cb225ccdf9601fa6599f05889add061750b06de9739f6488d10bf69e7792b235"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:SW-F01",
+      "frozen_row_sha256": "879dc4a1a0f427ea5ce8c7140dad75c7585399164498bb80dbf9742fc9e1cb8c",
+      "clause_ids": [
+        "SW-F01:1",
+        "SW-F01:2",
+        "SW-F01:3"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "start": 1,
+          "end": 14,
+          "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+          "span_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "start": 1,
+          "end": 25,
+          "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+          "span_sha256": "2852ad582f733d7417cd7a79b238783183740ea05bf04fce1d8c1f080a851918"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "start": 12,
+          "end": 16,
+          "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+          "span_sha256": "b5cb38bc7d0d6cdb80898257d045d8d1190162c9c6d58bd7fd06c6207ad071a4"
+        },
+        {
+          "path": "plugins/ca-sandbox/COMMANDS.md",
+          "start": 13,
+          "end": 19,
+          "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+          "span_sha256": "7c798a03c66d910be7e54e502f75ab360a4cf8f5cc6a97a528d603580c5bcd9d"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "start": 241,
+          "end": 325,
+          "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+          "span_sha256": "deb49656664ef2027e791bd358e00bf98e236cbc011d54311df21f7a8109847d"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "start": 386,
+          "end": 467,
+          "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+          "span_sha256": "82ec5dc461d0d36031f239681b73a3bc7e47adb7a9d94283eca78e511475fcbb"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "start": 803,
+          "end": 865,
+          "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+          "span_sha256": "d221609375171719d4b7f5f589dc5fdb81a7a069a5a7ed940b805016e238591a"
+        }
+      ],
+      "semantic_assessment": "Packaged prerequisites permit an already available Nixpacks path or the supported Node/Python fallback; they do not install host tooling or require Nixpacks universally."
+    }
+  ],
+  "scope": "Only this finite normative finding at actual source; the frozen diagnosis is corrected by the explicitly narrowed accepted contract.",
+  "accepted_contract_note": "Packaged prerequisites permit an already available Nixpacks path or the supported Node/Python fallback; they do not install host tooling or require Nixpacks universally.",
+  "limits": [
+    "Reasoned source guard/effect/retry or finite normative-text conformance only, not observed execution.",
+    "No tests, native/SDK/Pi/Docker/browser/provider/API/network/install or original-owner replay was performed.",
+    "No TESTED/runtime epoch, whole linked task, installed package, model behavior, human acceptance, final-main or publication qualification.",
+    "Existing storage denial, cooperative concurrency, per-resource acquisition, unsupported grammar and platform limits remain; no global atomicity, durability or adversarial attestation.",
+    "Private proposal only. Root owns adoption, original strict authentication, independent review and canonical/index/ref/marker writes."
+  ]
+}

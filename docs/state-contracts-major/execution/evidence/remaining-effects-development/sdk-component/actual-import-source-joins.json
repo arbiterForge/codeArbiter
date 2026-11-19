@@ -1,0 +1,17 @@
+{
+  "source_commit": "25b6747e52f5591d55901ace71706200d646461d",
+  "source_files": {
+    "plugins/ca-pi/tools/src/audit-sink.ts": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+    "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+    "plugins/ca-pi/tools/src/footer-state.ts": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+    "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+    "plugins/ca-pi/tools/src/path-boundary.ts": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+    "plugins/ca-pi/tools/src/redaction.ts": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+    "plugins/ca-pi/tools/src/status.ts": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03"
+  },
+  "private_generated_files": {},
+  "unclassified": [],
+  "mismatches": [],
+  "scope": "Actual Node resolve/load hooks plus CommonJS/Jiti caches and captured source-read hashes; SDK files join full literal before/after inventory. Additional first-party imports join captured read hashes plus immutable Git25b and current physical bytes after the capture; not retroactively inserted into the original before.json source_readset."
+}

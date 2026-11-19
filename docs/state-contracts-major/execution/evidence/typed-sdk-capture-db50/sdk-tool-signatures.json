@@ -1,0 +1,30 @@
+[
+    {
+        "File":  "cdb.exe",
+        "Version":  "10.0.26100.9457 (WinBuild.160101.0800)",
+        "Status":  "Valid",
+        "Sha256":  "e8f7d1e2986e541c82eb7917460e8118e7a262c16e402a5b1333b01f147a0fc3",
+        "Signer":  "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    },
+    {
+        "File":  "dbgeng.dll",
+        "Version":  "10.0.26100.9457 (WinBuild.160101.0800)",
+        "Status":  "Valid",
+        "Sha256":  "f70a0ae7ebd1c37da334d6b3c388aba107b54b4de869bdbd54a270251145e649",
+        "Signer":  "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    },
+    {
+        "File":  "dbghelp.dll",
+        "Version":  "10.0.26100.9457 (WinBuild.160101.0800)",
+        "Status":  "Valid",
+        "Sha256":  "3ce12537291b46af6914ea6865f176d9528cd7707c752fca8be96ad2a7562220",
+        "Signer":  "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    },
+    {
+        "File":  "DbgModel.dll",
+        "Version":  "10.0.26100.9457 (WinBuild.160101.0800)",
+        "Status":  "Valid",
+        "Sha256":  "23a14172620e79b8507d5d2169bf814494ee17aebe48a7d35f75617fe5b8858d",
+        "Signer":  "CN=Microsoft Corporation, O=Microsoft Corporation, L=Redmond, S=Washington, C=US"
+    }
+]

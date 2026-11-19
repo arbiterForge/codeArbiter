@@ -1,0 +1,58 @@
+{
+  "source_api_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "run_id": 43992411061,
+  "job_id": 133736258848,
+  "log_sha256": "263fe34d1644c942d7fb0bb07732c49828d3c7698fa73ff7227d5a25deed22e8",
+  "original_trace": {
+    "log_line": 532,
+    "schemaVersion": 1,
+    "pid": 7040,
+    "node": "v22.19.0",
+    "platform": "win32",
+    "phases": [
+      {
+        "phase": "started",
+        "elapsedMs": 4,
+        "stdinEnded": false,
+        "resources": [
+          "PipeWrap"
+        ]
+      },
+      {
+        "phase": "stdin_end",
+        "elapsedMs": 1918,
+        "stdinEnded": true,
+        "resources": [
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ]
+      },
+      {
+        "phase": "session_shutdown_observer",
+        "elapsedMs": 1919,
+        "stdinEnded": true,
+        "resources": [
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ]
+      },
+      {
+        "phase": "process_exit",
+        "elapsedMs": 1922,
+        "stdinEnded": true,
+        "resources": [
+          "PipeWrap",
+          "PipeWrap",
+          "PipeWrap"
+        ],
+        "exitCode": 0
+      }
+    ],
+    "reallyExitCallEntered": true
+  },
+  "original_natural_discovery_case": "PASS at log372; additional observed derivative fails",
+  "outcome": "Original Node process kernel exit was not observed within30s after stdin EOF despite successful JS exit-entry phase.",
+  "underlying_native_or_kernel_cause": "UNKNOWN; no debugger/native sidecar is inferred from this JS trace alone."
+}

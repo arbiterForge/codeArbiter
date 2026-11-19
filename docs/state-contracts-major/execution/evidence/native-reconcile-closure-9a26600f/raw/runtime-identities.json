@@ -1,0 +1,14 @@
+{
+  "python": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "go": {
+    "executable": "C:\\Program Files\\Go\\bin\\go.exe",
+    "sha256": "d3ccdb604eafa6031133aefe1a3db24f0bb7362b857bc2125ac4e4c178b4b490",
+    "version": "go version go1.27.1 windows/amd64"
+  },
+  "platform": "Windows-11-10.0.26200-SP0",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+}

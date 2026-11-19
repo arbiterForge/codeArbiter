@@ -1,0 +1,20 @@
+{
+  "core/artifacts/internal/operations/completion_fixture_test.go": {
+    "physical_sha256": "d66fca2f772314af0a214c648543f1efc356b7674669408f963888c9bf4205b1",
+    "committed_sha256": "d66fca2f772314af0a214c648543f1efc356b7674669408f963888c9bf4205b1",
+    "literal_equal": true,
+    "only_CRLF_to_LF": true
+  },
+  "core/artifacts/internal/operations/completion_git_diagnostics_test.go": {
+    "physical_sha256": "8a2ed4fa471d69d26fd16aadc482af9b7d658a4d5bee25c502191823c67f85e5",
+    "committed_sha256": "8a2ed4fa471d69d26fd16aadc482af9b7d658a4d5bee25c502191823c67f85e5",
+    "literal_equal": true,
+    "only_CRLF_to_LF": true
+  },
+  ".github/scripts/test_pi_package.py": {
+    "physical_sha256": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+    "committed_sha256": "f02ceadd8b1bfd4a08b7c3585e3a37ba6c0a23eabfe3127e56db11a30eabd9d9",
+    "literal_equal": true,
+    "only_CRLF_to_LF": true
+  }
+}

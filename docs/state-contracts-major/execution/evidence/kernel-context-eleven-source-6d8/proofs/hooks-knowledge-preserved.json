@@ -1,0 +1,569 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+  "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+  "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+  "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+  "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:knowledge",
+  "disposition:transitions:hooks:knowledge:01",
+  "disposition:transitions:hooks:knowledge:02",
+  "disposition:transitions:hooks:knowledge:03",
+  "disposition:transitions:hooks:knowledge:04",
+  "disposition:transitions:hooks:knowledge:05",
+  "disposition:transitions:hooks:knowledge:06",
+  "disposition:transitions:hooks:knowledge:07",
+  "disposition:transitions:hooks:knowledge:08",
+  "disposition:transitions:hooks:knowledge:09",
+  "disposition:transitions:hooks:knowledge:10"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/source-bindings.json",
+   "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/clause-inspection.json",
+   "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/inherited-evidence-inventory.json",
+   "sha256": "0bd4a253ed17166d5e44ef669c14437b7b43e8382d96d7130cf828f7101440bc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/kernel-context-eleven-source-6d8/baseline-current-joins.json",
+   "sha256": "8f9a26c8b80983c73fd27867ebf7510633af5565ebe4d4811b1c64a0cca02b5f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:knowledge",
+   "frozen_row_sha256": "9cec7e2d9ae298dc06da3d94c7bee24657def4ef81b6e47ddff487ec32eca07d",
+   "clause_ids": [
+    "disposition:transitions:hooks:knowledge:01",
+    "disposition:transitions:hooks:knowledge:02",
+    "disposition:transitions:hooks:knowledge:03",
+    "disposition:transitions:hooks:knowledge:04",
+    "disposition:transitions:hooks:knowledge:05",
+    "disposition:transitions:hooks:knowledge:06",
+    "disposition:transitions:hooks:knowledge:07",
+    "disposition:transitions:hooks:knowledge:08",
+    "disposition:transitions:hooks:knowledge:09",
+    "disposition:transitions:hooks:knowledge:10"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "symbol": "frontmatter_selects_html",
+     "start": 40,
+     "end": 51,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "146b4b095332d5d542e7e187181b58b1fc303f721366d015989afc81d33ec752",
+     "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "symbol": "context_format",
+     "start": 54,
+     "end": 66,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "eb56a7198739dcec2655d5a8db177bc7bc849fc627dc3b4339bfd400458c09cb",
+     "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "symbol": "narrative_paths",
+     "start": 76,
+     "end": 79,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "88ab742794d97b8b99bcc31e3380d69de5d48a776e3eba37c02bd65aa762e61f",
+     "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_dispatch",
+     "start": 224,
+     "end": 311,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "48493053fc388a3a463ed89a7d596f89d52bbf6d1fcf9cb8eaf9539c3e530288",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_create",
+     "start": 153,
+     "end": 159,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "cc09c2fe503e52f53bcab25c2d4919aa2b453054284d31f7ef20de6af7bedaf0",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_context_digest",
+     "start": 162,
+     "end": 164,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "97ad791077d8938464db5ac27900394c2122822053f636f07ee22c1bcbcd86ca",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_records",
+     "start": 86,
+     "end": 101,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "9a9b1e3ee6323281c5ca148350cac3edaeda49dff9d16fda465b240508834c0b",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_apply",
+     "start": 144,
+     "end": 150,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "e683dd7f7f092ba355b2ad89662e2878658f52b37e681d59af9aacfa8913bc24",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_convert",
+     "start": 318,
+     "end": 359,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4c041f4ceacce4afe80b168c5b616643d9b6b5ade381f4c51def02f7f88f9cd8",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_source_token",
+     "start": 314,
+     "end": 315,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "a828c91f5c6331ab5f72deed6fac94372a0116cd74a8c36636b96f3b2ac12ada",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_promote",
+     "start": 362,
+     "end": 394,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "55e9817e39ca68ae71b63430e40c562b3a3dab401f955737c165aea71b2055fe",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "symbol": "_selected_client",
+     "start": 30,
+     "end": 48,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "7beadf8bd7535d58953e72029368815b2a72c2a1a4d7dc3f6a55dbd7c4066f87",
+     "git_oid": "fce39a305e86c19675af0e1f664b886949a86c53"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "symbol": "dispatch",
+     "start": 190,
+     "end": 366,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "728fa499b67fc751fc5a95f3ae07459c2484b3882ff423d99720f6c52449ad9d",
+     "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_stale",
+     "start": 411,
+     "end": 452,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "1a84d87341cb4eeb42eebff505eff76797af0c35bb3549d957e8b969056672c4",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_rebaseline",
+     "start": 460,
+     "end": 466,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "49b357966504f3f686f76bca9f65d0cf220f0bf0fd2bcc23fe41aabc02e2e611",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_baseline",
+     "start": 455,
+     "end": 457,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "dbb4eb67d925659f6bfc2d5b5331390f2b2e1c5dc04a115668c7482d6768cd96",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_merge_conflict",
+     "start": 479,
+     "end": 488,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "6a5d0696568500baa99e9a869d66f00fb67d1d3a4072ef83829055455871097f",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_stage",
+     "start": 469,
+     "end": 476,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "3b29d07adb55dbd79a258f871b433089cb923340b7da1c6289a4e031cf165702",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "All 10 frozen clauses inspected as a finite source contract with the per-clause current/pinned witnesses and explicit analytical limits in clause-inspection. Existing advanced observations remain historical, not renewed.",
+   "intake_variances": [
+    "The create operation ID derives from stable document identity; the separate initialization operation binds CONTEXT bytes. The wrapper does not pretend the six creates are one atomic transaction.",
+    "The native owner owns result/ID ordering and semantics. Count validation is not an independent assertion of arbitrary concurrent ID-to-content mapping beyond that owner contract.",
+    "The Python inventory loop requires forward progress but has no separate global page-count cap. Native bounded page/schema handling and current source tokens own its finite input contract; no universal wall-time limit is claimed.",
+    "Work title/intent can contribute to operation identity, but origin remains the portable retry key; no user approval or remote issue mutation is inferred.",
+    "No terminal harvest-residue scanner is implemented in this helper; later workflow recovery has its own registered owner and is not silently inferred here. Advisory unlisted records mean only no declared matching changed path."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:01",
+   "frozen_row_sha256": "e15d714c334c489e520060debeb8a1294c0d5bccea8bce7eb27d59f5e27587e3",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "symbol": "frontmatter_selects_html",
+     "start": 40,
+     "end": 51,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "146b4b095332d5d542e7e187181b58b1fc303f721366d015989afc81d33ec752",
+     "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "symbol": "context_format",
+     "start": 54,
+     "end": 66,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "eb56a7198739dcec2655d5a8db177bc7bc849fc627dc3b4339bfd400458c09cb",
+     "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c"
+    },
+    {
+     "path": "core/pysrc/_knowledgelib.py",
+     "symbol": "narrative_paths",
+     "start": 76,
+     "end": 79,
+     "file_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+     "span_sha256": "88ab742794d97b8b99bcc31e3380d69de5d48a776e3eba37c02bd65aa762e61f",
+     "git_oid": "5248c4c87fdf47d9587a82abab876b60a10f011c"
+    }
+   ],
+   "semantic_assessment": "Only properly closed leading frontmatter with the exact context-format: html line selects the five narrative HTML paths and decomposition. The bounded frontmatter reader falls back to legacy Markdown for absent/unreadable/malformed/nonmatching activation; filename alone does not select ownership.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:02",
+   "frozen_row_sha256": "c37b56aaac6afc5a048b3e3357564725241d26756f6b936b3af97919e0643783",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_dispatch",
+     "start": 224,
+     "end": 311,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "48493053fc388a3a463ed89a7d596f89d52bbf6d1fcf9cb8eaf9539c3e530288",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_create",
+     "start": 153,
+     "end": 159,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "cc09c2fe503e52f53bcab25c2d4919aa2b453054284d31f7ef20de6af7bedaf0",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_context_digest",
+     "start": 162,
+     "end": 164,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "97ad791077d8938464db5ac27900394c2122822053f636f07ee22c1bcbcd86ca",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "create-missing sequentially checks native indexes and creates absent knowledge/decomposition documents with deterministic operation IDs; already-present identities are not replaced. initialize separately binds the activation digest to native structural initialization. Partial earlier creates persist and retry uses the same IDs.",
+   "intake_variances": [
+    "The create operation ID derives from stable document identity; the separate initialization operation binds CONTEXT bytes. The wrapper does not pretend the six creates are one atomic transaction."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:03",
+   "frozen_row_sha256": "055ae5649a308c6461f93213714b292d799582efcd89ac25cbd9245535a71c34",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_dispatch",
+     "start": 224,
+     "end": 311,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "48493053fc388a3a463ed89a7d596f89d52bbf6d1fcf9cb8eaf9539c3e530288",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_records",
+     "start": 86,
+     "end": 101,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "9a9b1e3ee6323281c5ca148350cac3edaeda49dff9d16fda465b240508834c0b",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_apply",
+     "start": 144,
+     "end": 150,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "e683dd7f7f092ba355b2ad89662e2878658f52b37e681d59af9aacfa8913bc24",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "add accepts one or 1-32 records, deduplicates exact content against existing and pending records, and uses current revision/model CAS for pending mutation. Returned new ID count must cover every pending record before projection. Current HTML records are read through the actual native owner, not stale notes or Markdown fallback.",
+   "intake_variances": [
+    "The native owner owns result/ID ordering and semantics. Count validation is not an independent assertion of arbitrary concurrent ID-to-content mapping beyond that owner contract."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:04",
+   "frozen_row_sha256": "2e74eb3c4fe24561002f618994070f9f89f23ad8b3005fcae4a3061c3f252991",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_dispatch",
+     "start": 224,
+     "end": 311,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "48493053fc388a3a463ed89a7d596f89d52bbf6d1fcf9cb8eaf9539c3e530288",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_apply",
+     "start": 144,
+     "end": 150,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "e683dd7f7f092ba355b2ad89662e2878658f52b37e681d59af9aacfa8913bc24",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "update/retire select the exact native record and apply current revision/model preconditions with deterministic operation ID. A changed native model is refused by CAS rather than blindly overwritten; no host approval is inferred from that technical freshness.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:05",
+   "frozen_row_sha256": "9f8523be2cac9c75683743fd3f78fb6191f3e6a9ee14f0b14e245b73225894f0",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_convert",
+     "start": 318,
+     "end": 359,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4c041f4ceacce4afe80b168c5b616643d9b6b5ade381f4c51def02f7f88f9cd8",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_source_token",
+     "start": 314,
+     "end": 315,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "a828c91f5c6331ab5f72deed6fac94372a0116cd74a8c36636b96f3b2ac12ada",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "Conversion refuses an already-HTML route, creates only missing documents, inventories Markdown sections through forward cursor pages and requires stable source map across them. The returned token and checklist request are preparation guidance; actual meaningful-content coverage is checked by native cutover preview.",
+   "intake_variances": [
+    "The Python inventory loop requires forward progress but has no separate global page-count cap. Native bounded page/schema handling and current source tokens own its finite input contract; no universal wall-time limit is claimed."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:06",
+   "frozen_row_sha256": "7088b17fa7e52c903fba5c4892a206683faf0391f7830f77ae4db79ba4883614",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_convert",
+     "start": 318,
+     "end": 359,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4c041f4ceacce4afe80b168c5b616643d9b6b5ade381f4c51def02f7f88f9cd8",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "finish requires an explicit coverage checklist, compares its source token to current native preview sources and applies exactly the preview expected map. Changed Markdown token refuses and requires fresh conversion evidence; the native owner validates the cutover semantics.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:07",
+   "frozen_row_sha256": "c7c5bef2333314e9cc9bec5081863edb09e5f35be991342419564321b35c5c59",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_promote",
+     "start": 362,
+     "end": 394,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "55e9817e39ca68ae71b63430e40c562b3a3dab401f955737c165aea71b2055fe",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "symbol": "_selected_client",
+     "start": 30,
+     "end": 48,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "7beadf8bd7535d58953e72029368815b2a72c2a1a4d7dc3f6a55dbd7c4066f87",
+     "git_oid": "fce39a305e86c19675af0e1f664b886949a86c53"
+    },
+    {
+     "path": "core/pysrc/_worklib.py",
+     "symbol": "dispatch",
+     "start": 190,
+     "end": 366,
+     "file_sha256": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+     "span_sha256": "728fa499b67fc751fc5a95f3ae07459c2484b3882ff423d99720f6c52449ad9d",
+     "git_oid": "7f118b7ae057b89017e1c1ec7c779c7687740330"
+    }
+   ],
+   "semantic_assessment": "Promotion requires a decomposition work_item, derives the exact DECOMP-PROJECT#record origin, selects the real legacy/native work owner and validates prior origin/work binding. Work creation uses the stable origin and deterministic operation ID, so response-loss retry reuses that source rather than a new unrelated item.",
+   "intake_variances": [
+    "Work title/intent can contribute to operation identity, but origin remains the portable retry key; no user approval or remote issue mutation is inferred."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:08",
+   "frozen_row_sha256": "988b852109643bffc48524d772f1a1f10d4423589e0780bfd476d78b55f363be",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_promote",
+     "start": 362,
+     "end": 394,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "55e9817e39ca68ae71b63430e40c562b3a3dab401f955737c165aea71b2055fe",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_apply",
+     "start": 144,
+     "end": 150,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "e683dd7f7f092ba355b2ad89662e2878658f52b37e681d59af9aacfa8913bc24",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "After verifying the returned work ID and any prior binding, the helper separately CAS-updates the decomposition promotion reference. If that later step fails, created work is not rolled back; retry reconciles using the retained origin/work identity. It does not mark the work complete.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:09",
+   "frozen_row_sha256": "cd66ac2b15a9275cb8bc54bf09718f3109939f377c34ccbfb7efc662e02f353f",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_stale",
+     "start": 411,
+     "end": 452,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "1a84d87341cb4eeb42eebff505eff76797af0c35bb3549d957e8b969056672c4",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_rebaseline",
+     "start": 460,
+     "end": 466,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "49b357966504f3f686f76bca9f65d0cf220f0bf0fd2bcc23fe41aabc02e2e611",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_baseline",
+     "start": 455,
+     "end": 457,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "dbb4eb67d925659f6bfc2d5b5331390f2b2e1c5dc04a115668c7482d6768cd96",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "stale gathers committed baseline-to-HEAD plus index/worktree/untracked changed paths, intersects declared glob/literal-directory scopes and cited locators, and reports at most twenty hit paths per record as advisory. Rebaseline is a selected native header update with current HEAD/date; no baseline asks explicit checking/rebaseline.",
+   "intake_variances": [
+    "No terminal harvest-residue scanner is implemented in this helper; later workflow recovery has its own registered owner and is not silently inferred here. Advisory unlisted records mean only no declared matching changed path."
+   ],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  },
+  {
+   "cell": "disposition:transitions:hooks:knowledge:10",
+   "frozen_row_sha256": "26bfd3ed8cc0d1f8589fb53a8062c0fcb6131cba6c3af9f253e141e245409a67",
+   "witnesses": [
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_merge_conflict",
+     "start": 479,
+     "end": 488,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "6a5d0696568500baa99e9a869d66f00fb67d1d3a4072ef83829055455871097f",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "symbol": "_stage",
+     "start": 469,
+     "end": 476,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "3b29d07adb55dbd79a258f871b433089cb923340b7da1c6289a4e031cf165702",
+     "git_oid": "cf4649c0d5a3b00f3fb7bf5ec78308827d911841"
+    }
+   ],
+   "semantic_assessment": "merge-conflict permits only registered knowledge/decomposition HTML paths, reads actual current SHA and Git conflict stages, and delegates exact base/ours/theirs/current identity to native knowledge-merge. Unsupported path or missing required stages refuses before native mutation.",
+   "intake_variances": [],
+   "limits": "Source conformance only. No product/test/native/host/model/command execution, no action authority, semantic truth or task/scenario completion claim."
+  }
+ ],
+ "scope": "hooks:knowledge finite current source guard/effect/retry clauses, with named analytical distinctions; not runtime acceptance.",
+ "limits": [
+  "No tests, full owner, API, runtime, provider/model, native/Go/SDK/Docker, installs, network or canonical/index/ref/marker/ledger/status writes.",
+  "PROGRAM and current accepted requirements govern named changes. No actual failing test is relabeled N/A, no task/scenario or whole-platform completion.",
+  "Root alone owns independent review, unchanged strict prospective admission, canonical integration and later hosted qualification.",
+  "18 advanced rows retain exact original objects, proof bytes, history and epochs; no cache/negative absence/semantic freshness invented."
+ ]
+}

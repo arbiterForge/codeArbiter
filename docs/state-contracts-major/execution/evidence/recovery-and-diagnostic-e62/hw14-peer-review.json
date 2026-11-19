@@ -1,0 +1,97 @@
+{
+  "schema": "bounded-independent-HW14-notice-review/1",
+  "verdict": "PASS",
+  "reviewer": "packaging_site_tools",
+  "independent_of": [
+    "root production author",
+    "crypto_evidence_review test author"
+  ],
+  "candidate": "candidate-v1:a1122b50f01a2c050d3bb888ec93ec5194c911aadcbcbdff12c7b0cb189a86da",
+  "HEAD": "7105daba6e07ef96bc4c259709fa3af3ea674d74",
+  "patch_sha256": "c51760bbc9c0f820763369c7db4c5d09395faebd3b47f7de2493a2a9817e2f25",
+  "subjects": {
+    ".github/scripts/test_workflow_recovery.py": "02969342b40c2f2e17ee68b8623aeb7cce5479deb012e0266450402772da77c7",
+    "CHANGELOG.md": "d31bed272a874df2ae07b1923aa02ef9038a75cf68f850cb9b13637f708c56c2",
+    "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca-codex/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca-pi/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+  },
+  "actual_input_consumed": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\hw14-notice-peer-context.json",
+    "sha256": "08762f83fcfaf8f2b98c169518d121827f3cbb8b6b1834dc356c7fe0f37261f5",
+    "delivery": "deliver; required references complete"
+  },
+  "installed_canonical_candidate_owner": {
+    "actual_observed_return_type": "SecurityScan",
+    "candidate": "candidate-v1:a1122b50f01a2c050d3bb888ec93ec5194c911aadcbcbdff12c7b0cb189a86da",
+    "crypto": false,
+    "digests": [],
+    "read_only": true,
+    "marker_written": false
+  },
+  "policy": {
+    "artifact_id": "CTX-SECURITY-CONTROLS",
+    "full_constraints_read": 16,
+    "matching_notes_verified": 16,
+    "source_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "cached_owner_records": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\current-complete-security-policy.json",
+    "charters_read": [
+      "agents/security-reviewer.md",
+      "includes/reviewer-contract.md"
+    ],
+    "controls": [
+      "CON-001",
+      "CON-002",
+      "CON-003",
+      "CON-007",
+      "CON-009",
+      "CON-010",
+      "CON-011",
+      "CON-016"
+    ],
+    "coverage_basis": "Unchanged FACT005 Python direct-behavior/no-tooling exemption; no numeric coverage claim"
+  },
+  "findings": [],
+  "severity_counts": {
+    "CRITICAL": 0,
+    "HIGH": 0,
+    "MEDIUM": 0,
+    "LOW": 0
+  },
+  "source_assessment": [
+    "One canonical except branch changes only early return to trusted fixed notice/fingerprint observation, then reuses existing selection/dedup code. Three generated host helpers are exact canonical bytes.",
+    "Selecting fallback notice remains read-only; absent/invalid marker or storage read failure preserves visible fallback. Marker exact-format/fingerprint match suppresses only an already-recorded same-session presentation.",
+    "Session key remains bounded and hashed; marker paths retain no-follow/owned directory and bounded regular-read checks. Explicit emission writer remains atomic; fallback exception data is never echoed.",
+    "Inspected actual SessionStart and prompt delivery callers: emission record follows print/flush/envelope result. No recovery obligation, task board, persona, grant, target execution or authority lifecycle mutation added."
+  ],
+  "coverage_assessment": [
+    "Actual targeted RED reached final duplicate assertion only after7 positive controls and real marker publication/readback; prior nonblocking/corruption control passed.",
+    "New regression preserves before-emission visibility, new-session visibility, changed fingerprint visibility, ledger/target bytes and inspection-only marker bytes, then asserts suppression after recorded emission.",
+    "Retained complete39 tests GREEN20.964s0skip; Root static guards retain46 old method ASTs, Python syntax5 and sync98x3 parity. Evidence reused without new test runs."
+  ],
+  "raw_refs": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW14-dedup-test-31n6p4s6\\delivery.json",
+      "sha256": "53286f91236e46816dfd24192a088eed1030ad1aaaed50468cbaec060e042d31"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\hw14-green.log",
+      "sha256": "1d830164d31a16176a7ac56c02afa8a52a2096b88b7d821c5f19ab9cd75bf7b6"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\hw14-source-guards.json",
+      "sha256": "96a4cd954c5aedafe6a7a35c043ee44847c345186da32fff15f180bb509f71b4"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW14-dedup-test-31n6p4s6\\original-red.stderr.log",
+      "sha256": "79fde908cbee2f5e2f557eec4bbcdb7fa12592a3eab08327c41b353435a0d9f7"
+    }
+  ],
+  "limits": [
+    "Bounded helper/marker and regression/source review only; no whole HW14 or installed host/event/model/UI acceptance.",
+    "No claim of race-free concurrent notice delivery or authority from a forged local presentation marker.",
+    "No tests/builds/provider/native/network/API/source/Gov/index/ref/cache/marker writes by reviewer. Verdict receipt is own Temp only."
+  ],
+  "utc": "2026-11-15T16:15:10.931629+00:00"
+}

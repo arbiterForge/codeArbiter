@@ -1,0 +1,510 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_modelib.py": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+  "core/pysrc/session-start.py": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:mode-audit",
+  "disposition:transitions:hooks:mode-audit:01",
+  "disposition:transitions:hooks:mode-audit:02",
+  "disposition:transitions:hooks:mode-audit:03",
+  "disposition:transitions:hooks:mode-audit:04",
+  "disposition:transitions:hooks:mode-audit:05",
+  "disposition:transitions:hooks:mode-audit:06",
+  "disposition:transitions:hooks:mode-audit:07",
+  "disposition:transitions:hooks:mode-audit:08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:mode-audit",
+   "frozen_row_sha256": "f34df3cb5f55ac1e0cff06544b6478c98f79bc7535cea74f6e450ae349c4a711",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:01",
+    "disposition:transitions:hooks:mode-audit:02",
+    "disposition:transitions:hooks:mode-audit:03",
+    "disposition:transitions:hooks:mode-audit:04",
+    "disposition:transitions:hooks:mode-audit:05",
+    "disposition:transitions:hooks:mode-audit:06",
+    "disposition:transitions:hooks:mode-audit:07",
+    "disposition:transitions:hooks:mode-audit:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 681,
+     "end": 717,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "00bd20fb677aa7d94f56bba8851b0a37ff6a1e3e60fe46ee8dd8137a55c7b1e4",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_read_dev_pending_close;_write_dev_pending_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 752,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "18b60c4f2ac59adca3bcf9188f3d8705cfbb7ad8e865f1f709b0cbd783bd33a6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_append_override_line;_dev_dropped_close_note;_settle_dev_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_settle_dev_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 708,
+     "end": 717,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "43470daf66568ab143950192030c2631c550b7ee0b50e4e2199ad4f888e80ac7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_write_dev_pending_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_mode_audit_line"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 727,
+     "end": 749,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "f83fd60a65f22e03c9174d6c20e4bb63bd78efdfad2ca483ed56c9e41b41a8d2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_overrides_has_line"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 533,
+     "end": 650,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "34894f646c220236fa85ca4efb8e1d801005ce52c3b9dc3058beb2d25208204d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 673,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "c30ee9bef637c64e8751d886f2a7983bfc1de97f758152350a4b4d1f91786ed6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "effective_mode"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 560,
+     "end": 612,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "4a33f285364b5e5bae5e303ecc50841581f853617156ae361cd41bbe112e83da",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "ledger_backs"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 620,
+     "end": 650,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "25d410ff5bf5d180f8ded05e9ecf2fdcf1bff9cf4a17a35a218c95309ae8ec68",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_write_mode_session_seen"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 718,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "7fd3f9da29c1477677519877b603f2a82bf41e94aab73805467b240fca26e9b6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "clear_mode_marker"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 288,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "720e836a0fd4237bb3b9393dc451c6c0e7f6daccfb0c99046fc15d8f402f9bd0",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "write_mode"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 179,
+     "end": 285,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "79e10ca8387b2dc8fdb4b165637683f96d22390edf90944e23b595f9a2ea86cf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "session_has_entry;_read_mode_state;current_mode"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 526,
+     "end": 559,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "607a24b263d0a803472944c3e8e58a26bef40b3cde78fdc47c9addc83c07de38",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 1172,
+     "end": 1211,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "fd3fe2f50b4a4e8afff816549212e58235ba110e0d43c9f593362881d6e6fb5c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:01",
+   "frozen_row_sha256": "9e1db9ff48273bacd26edff88dcb964a36f3b96e3f57b057330213da1f993add",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:01"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 681,
+     "end": 717,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "00bd20fb677aa7d94f56bba8851b0a37ff6a1e3e60fe46ee8dd8137a55c7b1e4",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_read_dev_pending_close;_write_dev_pending_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 752,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "18b60c4f2ac59adca3bcf9188f3d8705cfbb7ad8e865f1f709b0cbd783bd33a6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_append_override_line;_dev_dropped_close_note;_settle_dev_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_settle_dev_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 708,
+     "end": 717,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "43470daf66568ab143950192030c2631c550b7ee0b50e4e2199ad4f888e80ac7",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_write_dev_pending_close"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 333,
+     "end": 354,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "cd6c2884f06787a2934726dbafc412fa89045ed107bb8069fc3f4166cdb1b778",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_mode_audit_line"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:02",
+   "frozen_row_sha256": "8d162e2fb3ffc17f769e21b1ce10e37a507322694f3eed4584b873e1e83bb102",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 727,
+     "end": 749,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "f83fd60a65f22e03c9174d6c20e4bb63bd78efdfad2ca483ed56c9e41b41a8d2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_overrides_has_line"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_settle_dev_close"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:03",
+   "frozen_row_sha256": "1ce4f5ec1b4cb5bf4f34865c54b85fb5350e1a8c7a8889bf600224defc34e7d8",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 752,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "18b60c4f2ac59adca3bcf9188f3d8705cfbb7ad8e865f1f709b0cbd783bd33a6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_append_override_line;_dev_dropped_close_note;_settle_dev_close"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:04",
+   "frozen_row_sha256": "ba5fc013c6eb187714cc908290c577753011792f9bc04c07d446061c467656f2",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 533,
+     "end": 650,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "34894f646c220236fa85ca4efb8e1d801005ce52c3b9dc3058beb2d25208204d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 673,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "c30ee9bef637c64e8751d886f2a7983bfc1de97f758152350a4b4d1f91786ed6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 357,
+     "end": 367,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "d9479d9133221730c5e8b6a07bb138a56225e4a74b65bac61a364b6dbac64685",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "effective_mode"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 560,
+     "end": 612,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "4a33f285364b5e5bae5e303ecc50841581f853617156ae361cd41bbe112e83da",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "ledger_backs"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 620,
+     "end": 650,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "25d410ff5bf5d180f8ded05e9ecf2fdcf1bff9cf4a17a35a218c95309ae8ec68",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_write_mode_session_seen"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 718,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "7fd3f9da29c1477677519877b603f2a82bf41e94aab73805467b240fca26e9b6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "clear_mode_marker"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:05",
+   "frozen_row_sha256": "aec7809e91ce4c1431501547494065b12c659a6f0db83b7226ab2632d1d53bca",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 718,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "7fd3f9da29c1477677519877b603f2a82bf41e94aab73805467b240fca26e9b6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 288,
+     "end": 319,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "720e836a0fd4237bb3b9393dc451c6c0e7f6daccfb0c99046fc15d8f402f9bd0",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "write_mode"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:06",
+   "frozen_row_sha256": "c92c0975bd01c89f7083c47ee551b1d9271b42278a27ae2b61ddc2223cc5ed95",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 673,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "c30ee9bef637c64e8751d886f2a7983bfc1de97f758152350a4b4d1f91786ed6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 179,
+     "end": 285,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "79e10ca8387b2dc8fdb4b165637683f96d22390edf90944e23b595f9a2ea86cf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "session_has_entry;_read_mode_state;current_mode"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:07",
+   "frozen_row_sha256": "26e8b154e9742938d75d2c969724953a96902eba9e861ddae79309b053d78ee0",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 526,
+     "end": 559,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "607a24b263d0a803472944c3e8e58a26bef40b3cde78fdc47c9addc83c07de38",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 718,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "7fd3f9da29c1477677519877b603f2a82bf41e94aab73805467b240fca26e9b6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:mode-audit:08",
+   "frozen_row_sha256": "8332f7af7c682508bccdd0e11151634bf87f1aa2aaf0435b7424919bf7a13977",
+   "clause_ids": [
+    "disposition:transitions:hooks:mode-audit:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 718,
+     "end": 856,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "7fd3f9da29c1477677519877b603f2a82bf41e94aab73805467b240fca26e9b6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/session-start.py",
+     "start": 1172,
+     "end": 1211,
+     "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+     "span_sha256": "fd3fe2f50b4a4e8afff816549212e58235ba110e0d43c9f593362881d6e6fb5c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_modelib.py",
+     "start": 785,
+     "end": 888,
+     "file_sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+     "span_sha256": "c812e7a1798700d3472d3fafc32a9166f86b13393c74c20b50c8a6324c991850",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+     "symbol": "_settle_dev_close"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

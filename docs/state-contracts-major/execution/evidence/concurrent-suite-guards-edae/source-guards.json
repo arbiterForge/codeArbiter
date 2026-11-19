@@ -1,0 +1,13 @@
+{
+  "format": "C05-final-source-guards/1",
+  "HEAD": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "old_classmethod_ASTs_unchanged": 13,
+  "final_preflight_authored_test_exact": true,
+  "changed_python_syntax": "PASS2",
+  "staged_candidate": "candidate-v1:5a0d9e6edb306821709401f8cbb5e7c6859205218eb91f1e17c9e50d58bb3648",
+  "source_sha256": {
+    ".github/scripts/run_concurrent_suites.py": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+    ".github/scripts/test_run_concurrent_suites.py": "6b58d5b2ed97e3daae9ebf33c36176b989ff84b7f0eb3bebe65ec87b21b638be",
+    "CHANGELOG.md": "4948022c70933a801a774b0c6b7742b000ebe3ac8aad18399e8061ffc0c6972c"
+  }
+}

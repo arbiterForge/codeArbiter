@@ -1,0 +1,887 @@
+{
+  "note": "All declared old source-proof inputs rechecked; original source epochs/results retained. This is not a runtime proof renewal.",
+  "proofs": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/capture-source-d594/capture-pipeline-preserved.json",
+      "sha256": "7944aca26c8069e395348ed933e06a786b7b90c6aadc41f4a0b5e756728cfa44",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture-hook-proof.ts",
+          "recorded_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+          "actual_sha256": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/fixture.ts",
+          "recorded_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+          "actual_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "recorded_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+          "actual_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/normalize.ts",
+          "recorded_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "actual_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/py-runner.py",
+          "recorded_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+          "actual_sha256": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/run.ts",
+          "recorded_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+          "actual_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/targets.ts",
+          "recorded_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+          "actual_sha256": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "recorded_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "actual_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-model.ts",
+          "recorded_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+          "actual_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "recorded_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+          "actual_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-theme.ts",
+          "recorded_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+          "actual_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "recorded_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "actual_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "recorded_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "actual_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/source-clauses-preserved.json",
+      "sha256": "ee3594d17a7a758a56d7fd791d5f59f2b7885a221dfe61ee7d00be46f6898171",
+      "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "recorded_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "actual_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "recorded_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "actual_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/academy-wayfinding.css",
+          "recorded_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+          "actual_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/GuideDirectory.astro",
+          "recorded_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+          "actual_sha256": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/guide-filter.ts",
+          "recorded_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+          "actual_sha256": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/guide-directory.ts",
+          "recorded_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+          "actual_sha256": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S59-01-not-applicable.json",
+      "sha256": "6c1943297978c8bac83c1a6c29eeaf0b7fdc3d9369b97f322329dc216194c611",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "recorded_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "actual_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "recorded_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "actual_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "recorded_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "actual_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "recorded_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "actual_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S59-03-not-applicable.json",
+      "sha256": "9d5f306b9c1796a5b255f46bb0815e45e9a2b1ba7bec5fb92b29cb0b9bbf8a7d",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "recorded_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "actual_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "recorded_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "actual_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "recorded_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "actual_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "recorded_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "actual_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-10-not-applicable.json",
+      "sha256": "5e0632ac6fa5f47dd09190e5cb97364b6fd5e68215dc9d9a7b9e65e7058e5d32",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "recorded_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "actual_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "recorded_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "actual_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "recorded_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "actual_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-11-not-applicable.json",
+      "sha256": "16b5cc21caf103922b7752832e3150be5cd7a706abc61b1f7d6342921943c917",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "recorded_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "actual_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "recorded_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "actual_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "recorded_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "actual_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S63-01-not-applicable.json",
+      "sha256": "b37ee5820e87c6135c08fcac2b9c87fb49f483ddb31f917e39577e7269440992",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/CaTocList.astro",
+          "recorded_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "actual_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "recorded_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "actual_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ThemeProvider.astro",
+          "recorded_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "actual_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S67-01-not-applicable.json",
+      "sha256": "682e34402a40cb9df8ac547020cb7043a5e71ac59075e3e0650a25335639531e",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "recorded_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "actual_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "recorded_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "actual_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/owned-output.ts",
+          "recorded_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "actual_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+      "sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/package-lock.json",
+          "recorded_sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+          "actual_sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+          "equal": true
+        },
+        {
+          "path": "site/package.json",
+          "recorded_sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+          "actual_sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+          "equal": true
+        },
+        {
+          "path": "site/public/examples/statusline-themes.json",
+          "recorded_sha256": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+          "actual_sha256": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-wayfinding.ts",
+          "recorded_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+          "actual_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/decision-evidence.ts",
+          "recorded_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+          "actual_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/model.ts",
+          "recorded_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+          "actual_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/render.ts",
+          "recorded_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+          "actual_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "recorded_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+          "actual_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "recorded_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "actual_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "recorded_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+          "actual_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "recorded_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "actual_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/CaTocList.astro",
+          "recorded_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "actual_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "recorded_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "actual_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "recorded_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "actual_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "recorded_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "actual_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "recorded_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "actual_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/StatuslineGallery.astro",
+          "recorded_sha256": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043",
+          "actual_sha256": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "recorded_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "actual_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ThemeProvider.astro",
+          "recorded_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "actual_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "equal": true
+        },
+        {
+          "path": "site/src/data/context-examples.json",
+          "recorded_sha256": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+          "actual_sha256": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "recorded_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "actual_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "recorded_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+          "actual_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "recorded_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "actual_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/academy-wayfinding.css",
+          "recorded_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+          "actual_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/academy-preserved.json",
+      "sha256": "7eef785ac981ca4a2b1b537ca8f1bedc40253c5ba8bc38b81486e5a1a12a15f6",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "recorded_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "actual_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-wayfinding.ts",
+          "recorded_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+          "actual_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/gen.ts",
+          "recorded_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "actual_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "recorded_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "actual_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/owned-output.ts",
+          "recorded_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "actual_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/topic-map.ts",
+          "recorded_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+          "actual_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generation-order-preserved.json",
+      "sha256": "9340735f992e7037294cbd4a62e22aaf7eb1b1b598e45ddc99ac4cceb8f4b04d",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/normalize.ts",
+          "recorded_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "actual_sha256": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "recorded_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "actual_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/gen.ts",
+          "recorded_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "actual_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "recorded_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "actual_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/owned-output.ts",
+          "recorded_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "actual_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/generator-retired.json",
+      "sha256": "0e99a27a9a6c913865179e7f13feddd1418d3fcea75d6ae96d096c92e26fbfc1",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/gen.ts",
+          "recorded_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "actual_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "recorded_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "actual_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "recorded_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "actual_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/owned-output.ts",
+          "recorded_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "actual_sha256": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "recorded_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "actual_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/navigation-preserved.json",
+      "sha256": "e8d0f1376bbf56499547359be8d30fe0d61e54c5a579a65aa4ca3b2129228c6f",
+      "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "recorded_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "actual_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "recorded_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "actual_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "equal": true
+        }
+      ]
+    }
+  ]
+}

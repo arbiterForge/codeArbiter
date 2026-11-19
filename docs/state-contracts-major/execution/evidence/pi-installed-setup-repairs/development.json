@@ -1,0 +1,52 @@
+{
+  "schema": "codearbiter.installed-pi-setup-repairs/1",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "actual_source_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "full_subjects": {
+    ".github/scripts/observe_pi_installed_rpc.py": {
+      "sha256": "d938a17303589d102770cd8f3e62b46b29f45d3d2e001cfd314bf3fe9cf656c5",
+      "bytes": 28068
+    },
+    ".github/scripts/test_pi_parent_tui_observation.py": {
+      "sha256": "7cb86d6114d49843e24203be2f723a915e5778e3d692e8611c7fd3f9fc212295",
+      "bytes": 30068
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+      "bytes": 277146
+    }
+  },
+  "method_coalescing": "Darwin two existing literal/mutation methods and new source regression exact AST; separate serialization regression exact AST; every other original method unchanged.",
+  "regression_results": "Both named assertions failed on original sources for actual causes, then passed; author affected controls retained in separate immutable deliveries.",
+  "independent_review": {
+    "Darwin_and_reader": "darwin-reader-security-admission.json",
+    "parent_payload": "parent-payload-review-admission.json",
+    "result": "PASS no findings; scopes exclude each reviewer own code"
+  },
+  "limits": [
+    "No actual Pi/TUI runtime replay; original RPC passed, parent did not execute.",
+    "No dependency, limit, physical artifact validation, trust, main or publication boundary changes."
+  ],
+  "Root_current_integration_checks": [
+    {
+      "command": "C:/Python314/python.exe -B -X utf8 .github/scripts/test_pi_parent_tui_observation.py",
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "tests": 22,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_seconds": 0.376,
+      "actual_exit_code": 0
+    },
+    {
+      "command": "C:/Python314/python.exe -B -X utf8 .github/scripts/test_pi_ci_wiring.py",
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "tests": 17,
+      "failures": 0,
+      "errors": 0,
+      "skips": 0,
+      "unittest_seconds": 0.995,
+      "actual_exit_code": 0
+    }
+  ]
+}

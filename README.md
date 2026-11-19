@@ -10,7 +10,7 @@ and durable project context. You decide. codeArbiter enforces.
 <img alt="Claude Code plugin" src="https://img.shields.io/badge/Claude_Code-plugin-d97757">
 <img alt="Codex plugin" src="https://img.shields.io/badge/OpenAI_Codex-plugin-10a37f">
 <img alt="Pi Feature Forge preview" src="https://img.shields.io/badge/ca--pi-Feature_Forge_preview-d97757">
-<img alt="version 3.8.9" src="https://img.shields.io/badge/version-3.8.9-2b7489">
+<img alt="version 4.0.0" src="https://img.shields.io/badge/version-4.0.0-2b7489">
 <img alt="core lanes" src="https://img.shields.io/badge/core_lanes-17-555">
 <img alt="skills" src="https://img.shields.io/badge/skills-22-555">
 <img alt="agents" src="https://img.shields.io/badge/agents-20-555">
@@ -255,6 +255,16 @@ Activation is explicit and per repository. Claude Code and Codex check
 `.codearbiter/CONTEXT.md` at SessionStart. Pi checks the same file through its `session_start`
 extension event and also requires affirmative project trust. Without `arbiter: enabled`, the global
 install is dormant: no repository persona, no repository gates, and no governance row.
+
+Claude/Codex SessionStart performs session-mode settlement before this activation check.
+On a host with a statusline, it can also repair an existing ca-owned global statusline pin
+while preserving foreign configuration. In an opted-in repository, startup maintains the
+managed Git enforcement shims and Git-common enforcer registry; the task-board writer
+maintains its retained lock sidecar and exact Git-common `info/exclude` rule. Governance
+records remain in `.codearbiter/`, while those owned Git and host maintenance paths have
+their own boundaries. Persona composition and delivery occur at the per-turn prompt seam;
+SessionStart emits the startup state. For passive inspection before entering an unfamiliar
+repository session, use `init --check --passive --root PATH`.
 
 The project record lives beside the code:
 

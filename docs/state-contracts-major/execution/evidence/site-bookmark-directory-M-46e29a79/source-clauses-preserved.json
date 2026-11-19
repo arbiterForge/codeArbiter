@@ -1,0 +1,86 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools finite validation/event/lifecycle clause inspection at immutableM joined to frozenfd7"
+  },
+  "inputs": {
+    "site/src/components/AcademyBookmark.astro": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+    "site/src/scripts/academy-bookmark.ts": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+    "site/src/styles/academy-wayfinding.css": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+    "site/src/components/GuideDirectory.astro": "5df67010d4359d7a5c2f81b4914104812eeba82be063fc3b0f8b795a10bc8160",
+    "site/src/scripts/guide-filter.ts": "62dca60757ab9b275280238eb93dcc16ea04dda0c0c5cb9bbd076d538143c91f",
+    "site/scripts/guide-directory.ts": "f3a0fc545056b843265baa854a376226ae71e0f820f0d2e78f5c0e748a968717"
+  },
+  "commands": [],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-bookmark-directory-M-46e29a79/raw/finite-source-clause-observations.json",
+      "sha256": "9c4890ebbe52dc608f078d63bf3c30bf3bc57981281ae8e736abc83f8c8e7005"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S56:03",
+    "disposition:transitions:S56:07",
+    "disposition:transitions:S56:08",
+    "disposition:transitions:S58:03"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S56:03",
+      "inspected_guard_effect_retry": "readBookmark catches acquisition separately as unavailable; null is empty; >1024, malformed/nonobject/array/wrong exact keys/schema/commit/lesson syntax are invalid; release or commit mismatch is stale; unknown current inventory lesson invalid. refresh first hides and removes resume href, maps invalid/stale to explanatory reset/current-track guidance, and makes clear eligible. No stored URL is used. Malformed/unknown browser vectors are not newly executed here.",
+      "witnesses": [
+        "if (raw.length > 1024) return { state: 'invalid' };",
+        "Object.keys(record).sort().join(',') !== 'commit,lessonId,release,schemaVersion'",
+        "if (record.release !== context.release || record.commit !== context.commit) return { state: 'stale' };",
+        "resume.removeAttribute('href');",
+        "clear.hidden = state.state === 'empty' || state.state === 'unavailable';"
+      ],
+      "no_runtime_promotion": true
+    },
+    {
+      "cell": "disposition:transitions:S56:07",
+      "inspected_guard_effect_retry": "Both event registrations use the one current AbortSignal. storage refresh runs only for null key or the exact base-scoped bookmarkKey; pageshow refresh is unconditional. Both invoke the same read-only acquire/read/validate/render closure, never saveBookmark. Current generated release/commit/lesson IDs are context parameters and remain validated on every refresh; no claim of real second-tab dispatch.",
+      "witnesses": [
+        "window.addEventListener('storage', event => {",
+        "if (event.key === null || event.key === bookmarkKey(context.base)) refresh();",
+        "window.addEventListener('pageshow', refresh, { signal });"
+      ],
+      "no_runtime_promotion": true
+    },
+    {
+      "cell": "disposition:transitions:S56:08",
+      "inspected_guard_effect_retry": "connection aborts any prior lifecycle, installs one new controller and passes its signal to local save/clear and window storage/pageshow listeners. disconnectedCallback aborts that controller. Abort has no storage action and does not change verifier progress; disconnected dispatch cancellation is code conformance only, not browser-observed.",
+      "witnesses": [
+        "this.lifecycle?.abort();",
+        "this.lifecycle = new AbortController();",
+        "const { signal } = this.lifecycle;",
+        "disconnectedCallback() { this.lifecycle?.abort(); }"
+      ],
+      "no_runtime_promotion": true
+    },
+    {
+      "cell": "disposition:transitions:S58:03",
+      "inspected_guard_effect_retry": "connection aborts the previous controller, creates one controller, returns if required DOM/cards are absent, and passes its signal to input/change/submit/clear. disconnectedCallback aborts it. update only changes hidden/textContent and clear changes local input/select then focuses; no storage, network or history API is in this finite owner/helper cone. Browser round-trip demonstrates usable reconnect but not dispatch while detached.",
+      "witnesses": [
+        "this.controller?.abort();",
+        "this.controller = new AbortController();",
+        "const options = { signal: this.controller.signal };",
+        "disconnectedCallback() { this.controller?.abort(); }"
+      ],
+      "no_runtime_promotion": true
+    }
+  ],
+  "scope": "Four explicit source clauses only; no original/current runtime claim from literal equality.",
+  "limits": [
+    "Genuine hosted normal docs push R43582198099 at product M; no relabeling to a local browser or another source. Original names come from list output, not an invented Playwright JSON reporter.",
+    "Runtime cases use original CI Chrome157.0.8103.50 on Ubuntu26.04.1. No exact hosted browser executable digest, platform union or installed/native/host/provider claim.",
+    "Actual storage-denial fixture intentionally overrides acquisition. Bookmark is reading convenience, not completion or authority. No real cross-tab dispatch or disconnected listener invocation is claimed.",
+    "Finite helper source inspection supplements explicit guards and effects; unexecuted malformed/Unicode/oversized vectors are identified rather than called new passing tests.",
+    "Immutable built product/source M and original artifact/readback IDs are retained. These inputs do not create a generic full site-build membership claim or establish a later rebuilt site from owner-file equality.",
+    "Original whole acquisition/joblog/ZIP remain private. Hosted raw artifact expiry/unavailability may make future owning authentication unavailable; no reader exception or policy relaxation is proposed."
+  ]
+}

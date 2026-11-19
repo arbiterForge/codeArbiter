@@ -1,0 +1,15 @@
+test_counts_all_conclusions_including_unknowns_and_null (__main__.BaselineTest.test_counts_all_conclusions_including_unknowns_and_null) ... ok
+test_cycles_and_unknown_dependencies_refuse (__main__.BaselineTest.test_cycles_and_unknown_dependencies_refuse) ... ok
+test_dirty_workflow_cannot_be_bound_to_clean_head_before_api_read (__main__.BaselineTest.test_dirty_workflow_cannot_be_bound_to_clean_head_before_api_read) ... ok
+test_matrix_needs_and_real_durations (__main__.BaselineTest.test_matrix_needs_and_real_durations) ... ok
+test_optimized_inventory_still_rejects_wrong_checkout (__main__.BaselineTest.test_optimized_inventory_still_rejects_wrong_checkout) ... ok
+test_protection_contexts_and_checks_only_fallback (__main__.BaselineTest.test_protection_contexts_and_checks_only_fallback) ... ok
+test_skipped_matrix_name_is_still_identified (__main__.BaselineTest.test_skipped_matrix_name_is_still_identified) ... ok
+test_timestamp_and_runner_accounting (__main__.BaselineTest.test_timestamp_and_runner_accounting) ... ok
+test_unknown_ambiguous_and_missing_jobs_refuse (__main__.BaselineTest.test_unknown_ambiguous_and_missing_jobs_refuse) ... ok
+test_wrong_source_refuses_before_job_retrieval (__main__.BaselineTest.test_wrong_source_refuses_before_job_retrieval) ... ok
+
+----------------------------------------------------------------------
+Ran 10 tests in 0.336s
+
+OK

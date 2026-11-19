@@ -1,0 +1,102 @@
+{
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+    "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "size": 6365,
+    "git_blob": "71843f6bc73d68f8491f89b95081e6198dfb7e00"
+  },
+  ".github/scripts/test_routing_and_cleanup_surface.py": {
+    "sha256": "fa3272d55e5e78b2ba67dcaf3bedc1ed846b875f246621b56d7e8d28821f66ad",
+    "size": 40009,
+    "git_blob": "d5eff2d33357430b265f272bd7e0bbebb8f35856"
+  },
+  "core/surface/COMMANDS.md": {
+    "sha256": "e34019216a13d6c1d683690d6f9e58ec2a056638fdb4acf441723ad9a003f086",
+    "size": 7400,
+    "git_blob": "662ac6c88b69c95c971fedf5bd535f8aa48190ca"
+  },
+  "core/surface/SPRINT.md": {
+    "sha256": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+    "size": 13016,
+    "git_blob": "4a719ae5df42d6447ad58172d81480ccbdd6f436"
+  },
+  "core/surface/commands/conflict.md": {
+    "sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+    "size": 3653,
+    "git_blob": "96e20f1e79e0412acb37ec7ee626119e45406722"
+  },
+  "core/surface/includes/artifacts.md": {
+    "sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+    "size": 8931,
+    "git_blob": "b3f612df41d0b42231933b8dae7d737c86a8652f"
+  },
+  "core/surface/includes/routing-table.md": {
+    "sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+    "size": 10061,
+    "git_blob": "bd8d7d03d321724eef0c075c50f28ff825c59fb8"
+  },
+  "core/surface/includes/safety-core.md": {
+    "sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+    "size": 4988,
+    "git_blob": "2c42c9a4765accd00a21e13ba753a722f99f15bb"
+  },
+  "core/surface/skills/context-check/SKILL.md": {
+    "sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+    "size": 14678,
+    "git_blob": "2db5a03a1d2f09ea2ee05832b3dc4eedd7763606"
+  },
+  "core/surface/skills/executing-plans/SKILL.md": {
+    "sha256": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+    "size": 7387,
+    "git_blob": "6e456bf6612cb1acb531e1b767cb4a73d72854d4"
+  },
+  "core/surface/skills/subagent-driven-development/SKILL.md": {
+    "sha256": "e0baf7d005932cc314e5e8c3356c1590df5649986374e3f5ba64e12ce4f49ad7",
+    "size": 12729,
+    "git_blob": "3836c58d0658433064b161381334ec8dc38da6fd"
+  },
+  "plugins/ca-codex/SPRINT.md": {
+    "sha256": "212dbc7880dd84b5fd7ac64861b15598b13f29f1f178012e821444c7c3c57639",
+    "size": 13040,
+    "git_blob": "47cc63814234968dc823d03779fad99aac4a0053"
+  },
+  "plugins/ca-codex/routines/context-check/SKILL.md": {
+    "sha256": "b4d1d59b5bb6c122bcfb65cb664c1a18764c919fa35808a5ec9d04cb41dbfb46",
+    "size": 14700,
+    "git_blob": "e3271848dbc86ea3f03c3eb6e44c118eb8946bb8"
+  },
+  "plugins/ca-codex/skills/ca-conflict/SKILL.md": {
+    "sha256": "e8ae678e595aa226addafb690b4e537fac0bc56cb1798e1cab9f230590b906ff",
+    "size": 3667,
+    "git_blob": "a6285ae623ef5efd5611c093fea8b2da4042a60d"
+  },
+  "plugins/ca-pi/SPRINT.md": {
+    "sha256": "028a1a761b6a6c8d7813e85a9b42cb2de0e0be9e4a7e3d23596e3a864d63a499",
+    "size": 13002,
+    "git_blob": "b2e0edc1c00d62ac2073bf4bd313e5b9fa7ddc52"
+  },
+  "plugins/ca-pi/routines/context-check/SKILL.md": {
+    "sha256": "8cac8d753de58b6b2e67f63f8e945762100250cca10bc72d26369101ac152c88",
+    "size": 14636,
+    "git_blob": "4fbf83188c10e3dc86239e99d5239e074c795812"
+  },
+  "plugins/ca-pi/skills/ca-conflict/SKILL.md": {
+    "sha256": "900e0f27847067b1bffe2259b31d5215804b3c072803dba9da9bdd33a07139a6",
+    "size": 3667,
+    "git_blob": "15113044835cb68318f7ddbde770d9126d75767d"
+  },
+  "plugins/ca/SPRINT.md": {
+    "sha256": "99483b43184b9af982ed645b4d97725c6cd3a1a76c05934701f9ee42fe68c6cd",
+    "size": 13042,
+    "git_blob": "03f40fe2a074464c4950e1a5e909fc7456694b35"
+  },
+  "plugins/ca/commands/conflict.md": {
+    "sha256": "65ef31744cffee8cfdb15670d51c6c741f382b4ecd920d45f00dd4e91212095c",
+    "size": 3649,
+    "git_blob": "ae884ec5e9e7ce0da5a5dc706c5b941982f6c52d"
+  },
+  "plugins/ca/skills/context-check/SKILL.md": {
+    "sha256": "b222c9047b2bc85fad5435853dc35af22c55d802fb644b2da2336ba17200d9ae",
+    "size": 14698,
+    "git_blob": "c41f25bf06b5751248ab19f3c6ed2db0ea750953"
+  }
+}

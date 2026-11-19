@@ -1,0 +1,22 @@
+{
+ "phase": "original-backslash-red",
+ "argv": [
+  "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+  "run",
+  "--root",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\original-red\\site",
+  "--config",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\vitest.private.mjs",
+  "--reporter=verbose",
+  "--no-color",
+  "--testNamePattern=filesystem containment"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h",
+ "exit_code": 1,
+ "elapsed_seconds": 0.409346899978118,
+ "source_sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+ "test_sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+ "stdout_sha256": "0b6076cf7dac8eacb4cc1097a4d41a436fbce47175f28afb9fe017d7aa5a9763",
+ "stderr_sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d"
+}

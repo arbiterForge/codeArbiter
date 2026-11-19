@@ -1,0 +1,65 @@
+{
+  "commands": [
+    {
+      "label": "precedence-negative-control",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "test/doctor.test.ts",
+        "-t",
+        "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\precedence-negative-control.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools",
+      "exit_code": 1,
+      "seconds": 0.9159296998986974
+    },
+    {
+      "label": "focused-green",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "test/doctor.test.ts",
+        "-t",
+        "aggregates the terminal doctor verdict without clearing active-dispatch degradation or granting state|reports exact active origins and limits the module-identity claim|wrapper self-test calls only the stored wrapper with the exact H-03 dry-run|wrapper self-test is unhealthy if the dry-run executes or lacks an exact H-03 block|wrapper self-test skips while dormant without claiming active dispatch|reports enabled global untrusted state without a bridge probe or wrapper self-test",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\focused-green.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools",
+      "exit_code": 0,
+      "seconds": 0.7518854000372812
+    },
+    {
+      "label": "typecheck",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/typescript/bin/tsc",
+        "--noEmit"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\candidate\\plugins\\ca-pi\\tools",
+      "exit_code": 0,
+      "seconds": 2.4616848999867216
+    }
+  ],
+  "runtime_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+  "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "NO_COLOR",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME"
+  ],
+  "source_restored_sha256": "32aa5790fc4fe54efc3d65870f179f0aa0b3d8581f2aefe753ba73f2d12f83d0"
+}

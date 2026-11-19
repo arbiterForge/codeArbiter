@@ -1,0 +1,329 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-010",
+  "positive_input_join": {
+    "plugins/ca-sandbox/tools/cli.ts": {
+      "sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "bytes": 19688,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+        "bytes": 19688
+      }
+    },
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": {
+      "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+      "bytes": 8027,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+        "bytes": 8027
+      }
+    },
+    "plugins/ca-sandbox/tools/docker-gate.ts": {
+      "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "bytes": 6847,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+        "bytes": 6847
+      }
+    }
+  },
+  "current_input_membership": [],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:S54:02",
+      "frozen_record": {
+        "transition_id": "S54:02",
+        "machine_id": "S54",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "first SIGINT",
+          "guard": "not already interrupted",
+          "to": "interrupt requested",
+          "effects": "Abort shared controller; request cooperative cleanup.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "CLI dispatcher and interrupt handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "separate CLI",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+              "symbol": "test dependency admission",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+              "lines": "1-163"
+            }
+          ],
+          "from": "running",
+          "transition_id": "S54:02"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "f5c1d875895027bd52219d3ff772a99d799b676264a9b4a4842ac866818bf380",
+      "group": "source-group-010",
+      "assessment": "First SIGINT aborts cooperative control, second forces130; successful resolution after interrupt becomes130 while catch failure remains1. Required Docker gate is test admission only. No swallowed exceptions, production enablement or new normalization inferred.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S54:03",
+      "frozen_record": {
+        "transition_id": "S54:03",
+        "machine_id": "S54",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "second SIGINT",
+          "guard": "already interrupted",
+          "to": "forced exit 130",
+          "effects": "Exit immediately; cleanup may not finish.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "CLI dispatcher and interrupt handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "separate CLI",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+              "symbol": "test dependency admission",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+              "lines": "1-163"
+            }
+          ],
+          "from": "interrupt requested",
+          "transition_id": "S54:03"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "489e45e4870a31dab84b7baaa2b6c929e7dac0793de629d41089c061a4083ed3",
+      "group": "source-group-010",
+      "assessment": "First SIGINT aborts cooperative control, second forces130; successful resolution after interrupt becomes130 while catch failure remains1. Required Docker gate is test admission only. No swallowed exceptions, production enablement or new normalization inferred.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S54:04",
+      "frozen_record": {
+        "transition_id": "S54:04",
+        "machine_id": "S54",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "promise resolves",
+          "guard": "interrupted flag true",
+          "to": "resolved exit 130",
+          "effects": "Override normal command exit to cancellation.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "CLI dispatcher and interrupt handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "separate CLI",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+              "symbol": "test dependency admission",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+              "lines": "1-163"
+            }
+          ],
+          "from": "running or interrupted",
+          "transition_id": "S54:04"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "947b0d4136077929b39a91255681ac0f14938adce321e91f46ef33791ce17602",
+      "group": "source-group-010",
+      "assessment": "First SIGINT aborts cooperative control, second forces130; successful resolution after interrupt becomes130 while catch failure remains1. Required Docker gate is test admission only. No swallowed exceptions, production enablement or new normalization inferred.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S54:05",
+      "frozen_record": {
+        "transition_id": "S54:05",
+        "machine_id": "S54",
+        "owner": "sandbox",
+        "baseline": {
+          "event": "promise throws",
+          "guard": "exception path",
+          "to": "failed exit 1",
+          "effects": "Catch currently maps exception to 1 even after abort.",
+          "failure_retry": "Keep interrupt intent and operation failure separate when normalizing result semantics.",
+          "source": [
+            {
+              "path": "plugins/ca-sandbox/tools/cli.ts",
+              "symbol": "CLI dispatcher and interrupt handling",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+              "lines": "1-496"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "symbol": "separate CLI",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts",
+              "lines": "1-205"
+            },
+            {
+              "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+              "symbol": "test dependency admission",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker-gate.ts",
+              "lines": "1-163"
+            }
+          ],
+          "from": "running or interrupted",
+          "transition_id": "S54:05"
+        },
+        "task_ids": [
+          "SBX-D04",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-30"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b0dbc4a8d4cdeab3d7727aa8ccf0c314ad67db7900ab9237b6cac95aa5519bc9",
+      "group": "source-group-010",
+      "assessment": "First SIGINT aborts cooperative control, second forces130; successful resolution after interrupt becomes130 while catch failure remains1. Required Docker gate is test admission only. No swallowed exceptions, production enablement or new normalization inferred.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "sandbox-normative-boundaries"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "sandbox-normative-boundaries",
+      "paths": [
+        "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+        "plugins/ca-sandbox/commands/sandbox-destroy.md",
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+        "plugins/ca-sandbox/tools/claude-inside.js"
+      ],
+      "assessment": "Actual command/skill/catalog/README use separate container and volume discovery snapshots, not globalt0 or arbitrary new-resource preservation. Claude-inside header/usage identify phases as guidance and preserve real token/argv/policy/co-mount guards. Prior complete finite SW/source65 analyses apply; no model execution, default global destruction, consumer maintainer prerequisites or new approval ceremony."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

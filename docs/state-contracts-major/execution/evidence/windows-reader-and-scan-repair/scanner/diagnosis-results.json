@@ -1,0 +1,53 @@
+{
+  "HEAD": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "source_inputs_before": {
+    "core/pysrc/_sensitivelib.py": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+    "plugins/ca/hooks/_sensitivelib.py": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+    "plugins/ca/hooks/tests/test_crypto_context.py": "1447696e67c984052f9e634ce31696c567c94d9b2d527c657e5242d64bca05c0",
+    "core/pysrc/_bashguardlib.py": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873"
+  },
+  "fixture_bytes": 200029,
+  "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-crypto-debug-home-4g4qeyn1",
+  "hypotheses": {
+    "H1": "Shared contextual scanner allocation/token-window or regex path dominates large ordinary input; profile shared scan vs hook total",
+    "H2": "Cold hook startup/Git/context/native helper work dominates independently of scanner; compare timed stages",
+    "H3": "Hosted3.15 or4-module contention contributes; local3.14 cannot establish equivalence"
+  },
+  "environment": {
+    "PYTHONTRACEMALLOC": null,
+    "PYTHONWARNINGS": null,
+    "ARTIFACT_TEST_INSTALLATION": null
+  },
+  "actual_hook_results": [
+    {
+      "hook": "_pre_bash",
+      "seconds": 0.6885076999897137,
+      "returncode": 0,
+      "stderr": ""
+    },
+    {
+      "hook": "_git_enforce",
+      "seconds": 0.6869121000636369,
+      "returncode": 0,
+      "stderr": ""
+    }
+  ],
+  "git_full_diff_seconds": 0.023433499969542027,
+  "profiled_scan_seconds": 0.7125049000605941,
+  "scan_result": {
+    "available": true,
+    "crypto": false,
+    "findings": 0
+  },
+  "source_inputs_after": {
+    "core/pysrc/_sensitivelib.py": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+    "plugins/ca/hooks/_sensitivelib.py": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+    "plugins/ca/hooks/tests/test_crypto_context.py": "1447696e67c984052f9e634ce31696c567c94d9b2d527c657e5242d64bca05c0",
+    "core/pysrc/_bashguardlib.py": "28fb7a0875395a284df082722e13caa42c35d02bb77a4567bafbbc0e1c45d101",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873"
+  }
+}

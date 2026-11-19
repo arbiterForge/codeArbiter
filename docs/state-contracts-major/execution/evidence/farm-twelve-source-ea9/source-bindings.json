@@ -1,0 +1,170 @@
+{
+ "schema": "codearbiter.source-conformance-bindings/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "files": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": {
+   "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "bytes": 6365,
+   "git_blob_oid": "71843f6bc73d68f8491f89b95081e6198dfb7e00",
+   "physical_before_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+   "physical_after_sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5"
+  },
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": {
+   "sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+   "bytes": 2450,
+   "git_blob_oid": "886b3c4f08dbad58b896b9ad026ece7b29d600f2",
+   "physical_before_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+   "physical_after_sha256": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8"
+  },
+  "core/artifact-release-manifest.json": {
+   "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+   "bytes": 864,
+   "git_blob_oid": "ca170c2b363301e75c28b39976c92218e5ac624c",
+   "physical_before_sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+   "physical_after_sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e"
+  },
+  "core/artifacts/internal/operations/farm_projection.go": {
+   "sha256": "1572ede5a88343cefb1cfc87cdc1a5a2fb5de3ae0eb7fb2a266846e39751114f",
+   "bytes": 27036,
+   "git_blob_oid": "a35e0b7a54c4ffa11d323c96f14c226f1461f363",
+   "physical_before_sha256": "1572ede5a88343cefb1cfc87cdc1a5a2fb5de3ae0eb7fb2a266846e39751114f",
+   "physical_after_sha256": "1572ede5a88343cefb1cfc87cdc1a5a2fb5de3ae0eb7fb2a266846e39751114f"
+  },
+  "docs/state-contracts-major/PROGRAM.md": {
+   "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "bytes": 7910,
+   "git_blob_oid": "b07288b0a1f090e722caa571fbd5d97ed78def92",
+   "physical_before_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+   "physical_after_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7"
+  },
+  "docs/state-contracts-major/contracts/machine-coverage.json": {
+   "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "bytes": 385316,
+   "git_blob_oid": "e8454acad91b8a9f3931826a2db4bd8893ae2dfb",
+   "physical_before_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+   "physical_after_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd"
+  },
+  "docs/state-contracts-major/contracts/program.json": {
+   "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "bytes": 6403,
+   "git_blob_oid": "5977547ed52a1414358d4e3adba0e0435b4c50fb",
+   "physical_before_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+   "physical_after_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+  },
+  "docs/state-contracts-major/contracts/tasks.json": {
+   "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "bytes": 331224,
+   "git_blob_oid": "3f52ff13e833b002a9759706dd6f5f48e499cc63",
+   "physical_before_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+   "physical_after_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f"
+  },
+  "docs/state-contracts-major/contracts/transition-coverage.json": {
+   "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "bytes": 3185278,
+   "git_blob_oid": "cf092ff8ef7776f81a23377eb8946f941a6cd1a9",
+   "physical_before_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+   "physical_after_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "plugins/ca-pi/tools/src/extension.ts": {
+   "sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+   "bytes": 64790,
+   "git_blob_oid": "efd2f9891ab6f6e6a8c6882ffc7faefcdcee861f",
+   "physical_before_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+   "physical_after_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+  },
+  "plugins/ca-pi/tools/src/farm.ts": {
+   "sha256": "f3d58821846db2eb235571bda19485199c70ea4d21b8d162e0a976308d7f14fa",
+   "bytes": 11321,
+   "git_blob_oid": "dca28fa02fdccd4546a3ad0e656c483d0d082d43",
+   "physical_before_sha256": "f3d58821846db2eb235571bda19485199c70ea4d21b8d162e0a976308d7f14fa",
+   "physical_after_sha256": "f3d58821846db2eb235571bda19485199c70ea4d21b8d162e0a976308d7f14fa"
+  },
+  "plugins/ca-pi/tools/src/path-boundary.ts": {
+   "sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+   "bytes": 2993,
+   "git_blob_oid": "9875b1f1f0fd1f051ba658dfb6a36a3f04237c4f",
+   "physical_before_sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+   "physical_after_sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e"
+  },
+  "plugins/ca-pi/tools/src/process-tree.ts": {
+   "sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+   "bytes": 51594,
+   "git_blob_oid": "404c1068078e1a1d2d7c956ea4a31bc3fa3a6495",
+   "physical_before_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+   "physical_after_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+  },
+  "plugins/ca/tools/artifact-manifest.ts": {
+   "sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+   "bytes": 3879,
+   "git_blob_oid": "2d729abdfa631587d2665ee1834571eb976db7ea",
+   "physical_before_sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+   "physical_after_sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0"
+  },
+  "plugins/ca/tools/exec.ts": {
+   "sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+   "bytes": 16986,
+   "git_blob_oid": "db85f1c889b80839d0fff8fcc1d13311f1f09214",
+   "physical_before_sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+   "physical_after_sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73"
+  },
+  "plugins/ca/tools/farm-recovery.ts": {
+   "sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+   "bytes": 8863,
+   "git_blob_oid": "a967762c4acf905d5ed93c963efc0f1366400a51",
+   "physical_before_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+   "physical_after_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885"
+  },
+  "plugins/ca/tools/farm.ts": {
+   "sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+   "bytes": 204519,
+   "git_blob_oid": "e1bef569ef858b9733a881f191d113e87104f3fc",
+   "physical_before_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc",
+   "physical_after_sha256": "a3beba3ce291ca9908f679ee00a190b66b0c44a961296640fc13366ae9aceacc"
+  },
+  "plugins/ca/tools/mutation.ts": {
+   "sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+   "bytes": 27098,
+   "git_blob_oid": "6ce489508ac8a2799e86fcf7473b7ff7c9bf79d5",
+   "physical_before_sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+   "physical_after_sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d"
+  },
+  "plugins/ca/tools/worktree-fs.ts": {
+   "sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+   "bytes": 8279,
+   "git_blob_oid": "4911563fed16616b2b5251b5b062d76e5ebb4205",
+   "physical_before_sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+   "physical_after_sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  }
+ },
+ "baseline_files": {
+  "plugins/ca-pi/tools/src/farm.ts": {
+   "sha256": "9a7f32f5b777055b1910846d717c179ec6da80dffc59c8dba88382d20a9d999b",
+   "bytes": 11126,
+   "same": false
+  },
+  "plugins/ca/tools/exec.ts": {
+   "sha256": "e976e51dc078c0dd59dfec54c7f48af6d5a12529c34618f762a65a3154cd85ea",
+   "bytes": 16935,
+   "same": false
+  },
+  "plugins/ca/tools/farm.ts": {
+   "sha256": "adaeb19e7ec2abb01827050af4f9dc676ccf25ec6a59451ea25eaa395f164257",
+   "bytes": 189857,
+   "same": false
+  },
+  "plugins/ca/tools/mutation.ts": {
+   "sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+   "bytes": 27098,
+   "same": true
+  },
+  "plugins/ca/tools/worktree-fs.ts": {
+   "sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+   "bytes": 8279,
+   "same": true
+  }
+ },
+ "observed_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "ledger_basis_sha256_advisory_only": "38f98f274bfbaddd6732223dc83b7e7ede7c8ae07ef1f298ee41b8cf19375c39",
+ "limits": "Immutable positive sources and actual physical equality; whole mutable ledger is advisory only, selected full-row CAS owns adoption. Existing prior runtime evidence is not renewed."
+}

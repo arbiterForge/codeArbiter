@@ -1,0 +1,8 @@
+{
+  "format": "codearbiter.lossless-original-transcript/1",
+  "original_name": "original.stdout.log",
+  "decoded_sha256": "584b576af7ff63534d79f878ad6956aa7c1a26284be2f50d435113c778043ac9",
+  "decoded_bytes": 446,
+  "encoding": "base64",
+  "data": "eyJwbGF0Zm9ybSI6IndpbmRvd3MiLCJob3N0IjoiY2xhdWRlIiwic2FtcGxlQ291bnQiOjEwMCwic3RhcnR1cE1zIjoyMTE5LjYyODgsImNvcmVQNTBNcyI6MC42OTk2LCJhZGFwdGVyUDUwTXMiOjEuMzY0MSwiYWRhcHRlclA5NU1zIjoyLjAxNjh9DQp7InBsYXRmb3JtIjoid2luZG93cyIsImhvc3QiOiJjb2RleCIsInNhbXBsZUNvdW50IjoxMDAsInN0YXJ0dXBNcyI6MjAuODg4NiwiY29yZVA1ME1zIjowLjcyNzgsImFkYXB0ZXJQNTBNcyI6MS4zOTY1LCJhZGFwdGVyUDk1TXMiOjMuNDcxMX0NCnsicGxhdGZvcm0iOiJ3aW5kb3dzIiwiaG9zdCI6InBpIiwic2FtcGxlQ291bnQiOjEwMCwic3RhcnR1cE1zIjozNC4wMTIyLCJjb3JlUDUwTXMiOjAuNzAwNiwiYWRhcHRlclA1ME1zIjowLjAxNTU5OTk5OTk5OTk5OTE3LCJhZGFwdGVyUDk1TXMiOjAuMDU2Nzk5OTk5OTk5OTk5MDd9DQo="
+}

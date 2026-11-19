@@ -1,0 +1,364 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "inputs": {
+    "plugins/ca-pi/tools/src/status.ts": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+    "plugins/ca-pi/tools/src/footer-state.ts": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+    "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+    "plugins/ca-pi/tools/src/git-facts.ts": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+    "plugins/ca-pi/tools/src/bridge.ts": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+    "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+    "plugins/ca-pi/tools/src/contracts.ts": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/test/status.test.ts": "98be82bb6fdb0489cd5f7cf7fd3c3ad4e5ec377f52a097cb1359229d916d0ad6",
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+    "plugins/ca-pi/tools/vitest.config.ts": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d"
+  },
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/pi_program finite immutable0830 footer lifecycle clause inspection with historical component assertions separately retained"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S18:01",
+    "disposition:transitions:S18:02",
+    "disposition:transitions:S18:04",
+    "disposition:transitions:S18:05",
+    "disposition:transitions:S18:06"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S18:01",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "start session",
+        "guard": "interactive hasUI and mode absent/TUI",
+        "to": "install pending",
+        "effects": "Dispose prior generation; await metrics library; retain native footer until safe installation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "any",
+        "transition_id": "S18:01"
+      },
+      "contract_sha256": "969c62491f567e254cad86e9acf27911db13bf4868773496465d7ec3fa84e679",
+      "inspected_source_clauses": "start first disposes prior local generation, increments generation, resets snapshots/cursor, then admits hasUI=true and absent/tui mode. Metrics are awaited before any new footer factory is installed. The extension calls start at session_start and rejects a superseded lifecycle continuation before activation/refresh.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 102,
+          "end": 134,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 650,
+          "end": 667,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect"
+      ],
+      "limits": "Finite source preservation at immutable0830; component selectors support only the assertions explicitly present, not every source branch. Governance failure/clearing and allSettled branches are source-conformance claims, not newly executed failure cases."
+    },
+    {
+      "cell": "disposition:transitions:S18:02",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "metrics ready",
+        "guard": "generation still current",
+        "to": "installed",
+        "effects": "Install owned footer; guard against stale async completion.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "install pending",
+        "transition_id": "S18:02"
+      },
+      "contract_sha256": "1cac585030fdc803c1b484ab58bed0c5e03a2ed655a89951ee0f9e727bc0e64a",
+      "inspected_source_clauses": "Metrics shape is checked and context+generation are rechecked after await. Only then is the footer factory installed and installed=true recorded; a stale factory context yields an inert component. Installation failure attempts native restoration and emits the fixed warning.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 119,
+          "end": 145,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 196,
+          "end": 204,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect"
+      ],
+      "limits": "Finite source preservation at immutable0830; component selectors support only the assertions explicitly present, not every source branch. Governance failure/clearing and allSettled branches are source-conformance claims, not newly executed failure cases."
+    },
+    {
+      "cell": "disposition:transitions:S18:04",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "refresh",
+        "guard": "current lease/generation",
+        "to": "refreshing",
+        "effects": "Serialize refreshes; softly prepare bridge; independently await usage/governance/Git using allSettled.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "installed",
+        "transition_id": "S18:04"
+      },
+      "contract_sha256": "868e97fdcf24ea51f390cff2f141f2652408f238ac3ba83275962517036b9be9",
+      "inspected_source_clauses": "Refresh captures generation and chains through refreshQueue; a rejected task is caught for subsequent scheduling. runRefresh requires same context/current generation/installed, soft-catches prepareBridge, rechecks identity, then independently awaits usage/governance/Git via allSettled. These are lifecycle guards, not delegated-write authorization grants.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 207,
+          "end": 233,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work"
+      ],
+      "limits": "Finite source preservation at immutable0830; component selectors support only the assertions explicitly present, not every source branch. Governance failure/clearing and allSettled branches are source-conformance claims, not newly executed failure cases."
+    },
+    {
+      "cell": "disposition:transitions:S18:05",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "partial data success",
+        "guard": "same current lifecycle",
+        "to": "installed",
+        "effects": "Use fulfilled usage cursor; keep prior governance if a trusted refresh fails; clear governance if inactive/untrusted; unavailable Git remains unknown.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "refreshing",
+        "transition_id": "S18:05"
+      },
+      "contract_sha256": "1b3e5da53d2b13132b8c47fb514a62272fa6798d04a7f4411357b462157af5be",
+      "inspected_source_clauses": "After all observations and optional update-version read, same context+generation is required before state application. Only fulfilled usage advances its returned acknowledgedCursor; trusted failed/undefined governance retains prior data, while inactive/untrusted clears it. Unavailable/untrusted Git enrichment is undefined and footer-state omits repository/dirty rather than declaring clean. The independent Pi-provided branch may remain visible; unknown here does not mean erase every host branch fact.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 234,
+          "end": 249,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/footer-state.ts",
+          "start": 184,
+          "end": 217,
+          "file_sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work"
+      ],
+      "limits": "Finite source preservation at immutable0830; component selectors support only the assertions explicitly present, not every source branch. Governance failure/clearing and allSettled branches are source-conformance claims, not newly executed failure cases."
+    },
+    {
+      "cell": "disposition:transitions:S18:06",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "stale completion",
+        "guard": "generation changed",
+        "to": "disposed or newer installed",
+        "effects": "Ignore result rather than overwrite new session.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/footer.ts",
+            "symbol": "footer integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer.ts",
+            "lines": "1-489"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/footer-state.ts",
+            "symbol": "footer projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/footer-state.ts",
+            "lines": "1-230"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/git-facts.ts",
+            "symbol": "bounded Git observations",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/git-facts.ts",
+            "lines": "1-150"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/status.ts",
+            "symbol": "status projection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/status.ts",
+            "lines": "1-274"
+          }
+        ],
+        "from": "refreshing",
+        "transition_id": "S18:06"
+      },
+      "contract_sha256": "726c9a7925882061f8a221ed3d5e91853bd9e74a4a81183dc9ed5a1d990d99bc",
+      "inspected_source_clauses": "Both post-prepare and post-results checks reject stale context/generation. New start/dispose advances generation and resets refreshQueue, so a replacement session does not wait for the old queue and the old result cannot replace new snapshots. Extension adds its own session_start lifecycle check.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 219,
+          "end": 239,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/status.ts",
+          "start": 252,
+          "end": 266,
+          "file_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 650,
+          "end": 667,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+        "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect"
+      ],
+      "limits": "Finite source preservation at immutable0830; component selectors support only the assertions explicitly present, not every source branch. Governance failure/clearing and allSettled branches are source-conformance claims, not newly executed failure cases."
+    }
+  ],
+  "withheld": [
+    {
+      "cell": "disposition:transitions:S18:03",
+      "reason": "Combined frozen metrics-unavailable/noninteractive/stale row includes a bounded notice; current source warns on current metrics/install failure but noninteractive and stale completion return silently. Keep full row withheld rather than generalizing one tested failure. No defect or new requirement inferred."
+    },
+    {
+      "cell": "disposition:transitions:S18:07",
+      "reason": "Source defines a component dispose callback that releases branch subscription; class dispose restores native footer through host setFooter only when locally installed. Existing shutdown assertion checks setFooter(undefined), not actual host invocation of component dispose or foreign-owner arbitration. Keep complete clause withheld pending actual wrapper/host contract tracing."
+    },
+    {
+      "cell": "disposition:machines:S18",
+      "reason": "Incomplete frozen clauses03/07 prevent whole-machine preservation."
+    },
+    {
+      "cell": "task:PI-L02",
+      "reason": "This finite group is not complete footer/live-host task acceptance."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/source-review.json",
+      "sha256": "6409fb9d797ba998cabbd776b9152154508321dd334d185ad4becc4e39d82a21"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-s18-footer-source-0830/component-observations.json",
+      "sha256": "13665e0cac42e3307212818096c502f5d4417aa5526c0c20357e781727e981c5"
+    }
+  ],
+  "limits": [
+    "Gov is undergoing an intentional merge; this packet reads immutable0830 Git blobs only and makes no post-merge/current-worktree claim.",
+    "No tests, native builds, package journeys, source/index/ledger writes or provider requests were performed.",
+    "No real parent TUI, rendered footer, installed Pi subscription lifecycle, host-union numeric qualification or final integrated-source runtime claim.",
+    "Owner byte equality is joined to row-specific source predicates; changed imported bridge/contracts/extension are explicitly input-bound and equal to historical executed source, not described as frozen-baseline whole-file preservation.",
+    "No S10/S11 endpoint policy resolution or method/body/replay change."
+  ]
+}

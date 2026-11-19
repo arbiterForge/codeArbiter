@@ -1,0 +1,208 @@
+{
+  "format": "private-owned-inert-native-observation/1",
+  "state": "ACTUAL_LOCAL_CAPTURED",
+  "source_identity": {
+    "base_commit": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+    "physical_approved_overlay": {
+      ".github/scripts/_windows_rpc_timeout.py": "d7a3edcfecee163a97bd8689dbdbbbf9d5304ccea7c53175d1d571a560b7a3fa",
+      ".github/scripts/_windows_dbgeng.py": "0e685a895b8467a7737a1f887bde5dd86e1288e4e87b93374938a6e6eb802b24",
+      ".github/scripts/test_pi_package.py": "023b5c8c41eedaebbe2f5334ecf3000de3e840e2a425d43828b48057e6b4ed7b",
+      ".github/scripts/pi_cli_resolver.py": "9161c4ee81f0d2f9ea566b682c72785f861a1c7c51331070d8068c94f1bf31e1"
+    },
+    "scope": "Exact adopted collector/test overlay, not committed bb66 runtime or whole clean-worktree attestation."
+  },
+  "unit": {
+    "selector": "PiPackageTests.test_rpc_native_shutdown_real_owned_node_handles_and_late_exit",
+    "passed": 1,
+    "failed": 0,
+    "errors": 0,
+    "skipped": 0,
+    "unit_seconds": 1.342
+  },
+  "actual_native": {
+    "profile": "inbox-v1",
+    "status": "captured",
+    "pid": 9136,
+    "creation_time": 134393148565735785,
+    "original_handle": 300,
+    "after_handle": 300,
+    "before": {
+      "state": "running",
+      "exitCode": null
+    },
+    "after": {
+      "state": "running",
+      "exitCode": null
+    },
+    "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "worker": {
+      "bound": true,
+      "attached": true,
+      "detached": true,
+      "hresult": 0,
+      "policy": 561160,
+      "phase": "detach",
+      "elapsedMs": 1141
+    },
+    "diagnostic": {
+      "phase": "worker-result",
+      "failure": null,
+      "elapsedMs": 1228,
+      "remainingMs": 4951
+    },
+    "thread_count": 12,
+    "recognized_frame_instruction_offsets": 83,
+    "tool_hashes": {
+      "dbgeng.dll": "bfa188b10eb64a94f1eb59bfb0f8d85eb5dfc803cd0f6b5c554816fe311a236e",
+      "dbghelp.dll": "1463249a85bb239fcb536780f3b964c5f2fd68398ffbd35ebec0d65660c8d83e"
+    },
+    "publisher_signature": "not-verified",
+    "elapsed_ms": 1278
+  },
+  "control_kinds": [
+    "mocked-hook",
+    "actual-capability",
+    "foreign-identity",
+    "post-terminate-signaled"
+  ],
+  "launch_roles": [
+    "owned-inert-node",
+    "owned-typed-worker"
+  ],
+  "closed_observer_errors": [],
+  "before_after": {
+    "root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y",
+    "outcome": {
+      "exit_code": 0,
+      "elapsed_seconds": 1.7682983000122476,
+      "timed_out": false,
+      "output_limited": false,
+      "streams": {
+        "stdout": {
+          "observed_bytes": 44,
+          "retained_bytes": 44,
+          "limited": false
+        },
+        "stderr": {
+          "observed_bytes": 262,
+          "retained_bytes": 262,
+          "limited": false
+        }
+      },
+      "reader_threads_exited": true,
+      "forced_containment": null
+    },
+    "physical_stable": true,
+    "material_stable": true,
+    "runtime_stable": true,
+    "node_stable": true,
+    "runtime_files": 10795
+  },
+  "limits": [
+    "Single inert Node24.22.1 on this Windows host; no Pi/SDK/model/provider workload and no explanation of hosted Node22.19 timeout.",
+    "Module-relative InstructionOffset/ReturnOffset values are not function names or proof of compile-cache/pipe cause.",
+    "Existing original test explicitly terminates the owned Node before late-signaled exit1; not natural-exit qualification.",
+    "SDK/inbox signatures/version are not cryptographically attested by this capture; original profile/library hashes retained.",
+    "Five-second polling budget/caps unchanged; no general cancellability guarantee for file/Win32 calls.",
+    "No source/Gov/index/ref/marker/status/proof changes or installs/network/build/native Go effects."
+  ],
+  "history": [
+    {
+      "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-native-attribution-inert/delivery.json",
+      "sha256": "63fb6926ac0a69f0d8a8eb7ca9718575c367c23228cef76499d10df1687a2334",
+      "state": "Audit setup refusal, no Node launch."
+    },
+    {
+      "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-native-attribution-inert-r1/delivery.json",
+      "sha256": "62d70fe3583e3d497e634c69a7348c4c7fafcbfb318b2ad36499715bdb099550",
+      "state": "C-alias first identity-control failure; no typed worker. Prior raw call-label mistake explicitly corrected."
+    },
+    {
+      "path": "C:/Users/brenn/AppData/Local/Temp/ca-pi-native-attribution-fixture-r1/delivery.json",
+      "sha256": "82b9e899633139fb13185bb9bfd1e14ab0884630a968363cfdf39984d8b7fadc",
+      "state": "Pure12PASS after preserved properRED and fixture-only correction."
+    }
+  ],
+  "filemap": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\observe.py",
+      "sha256": "4aa3c8fca5a13cf72aa9cd7e3be6cff9c4f999f17bbef24730001f69c69e5d67",
+      "bytes": 3671
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\run.py",
+      "sha256": "037338288477775a623b5349643f7f31838b6cfee822d6e7ab5dd8f671d276a6",
+      "bytes": 5984
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\locator-and-classification.patch",
+      "sha256": "17af6c08ea108b83742b6d58d7c12e7058c9da7211ba80925492eb28afe67997",
+      "bytes": 1539
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\latest.json",
+      "sha256": "be5f18e66850a4d46c8fbc0e9bc85b4bad9e7fd0571d6de5037d00dcebdc9db4",
+      "bytes": 692
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\after.json",
+      "sha256": "ab3c378a12ae3b1ce270d8405a4fbe54a29c2ca4d5107b0e73420cb2b392004d",
+      "bytes": 1751841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\before.json",
+      "sha256": "ab3c378a12ae3b1ce270d8405a4fbe54a29c2ca4d5107b0e73420cb2b392004d",
+      "bytes": 1751841
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-0.json",
+      "sha256": "e104aabe26249fd4952340c6c0722365874df9423d084bf9057d5fa7c6c2ac82",
+      "bytes": 486
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-1.json",
+      "sha256": "db3ae7e83b1581c1fa8cd1cd2df9627fa278d3776242a54693622b1aad7747b5",
+      "bytes": 9476
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-2.json",
+      "sha256": "5064700bc7abc9cb88662feee127007ab8342294a26441fdae9cf05a15f45522",
+      "bytes": 431
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\capture-3.json",
+      "sha256": "c06d43471d5d8db062fcfcda2c272df7f47d14585d04aabc23ae61ca41256c86",
+      "bytes": 438
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\config.json",
+      "sha256": "52d1677bdfb5a5acfa12451419cdb63bd1b7a5613188f1c0a520c60678b37aa5",
+      "bytes": 488
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\execution.json",
+      "sha256": "1f3429f7f08aabb38f9a6b575985582875c814a8c6b5f037c25a3be686aaa650",
+      "bytes": 1244
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\observation.json",
+      "sha256": "a416f71611a46a53bc197e28b703b3c01295ee9d1d87fd9136e6db9e42a64b08",
+      "bytes": 32438
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\outcome.json",
+      "sha256": "90ef9f941cdfaaa5e83bb62cd92addc80e411650748609aeba3909ea440cbd40",
+      "bytes": 399
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\stderr.log",
+      "sha256": "3d30abb210606d855c02aaa7116ec8cee5b2b5a5db325531d9edb84acd34c31f",
+      "bytes": 262
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-attribution-inert-r2\\actual-once-_9a89k7y\\stdout.log",
+      "sha256": "64f5e4fbd5b88d31861b315840c19a07e25b013de57e73ee931444d85f57b137",
+      "bytes": 44
+    }
+  ]
+}

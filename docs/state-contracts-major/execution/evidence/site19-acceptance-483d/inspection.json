@@ -1,0 +1,409 @@
+{
+  "schema": "codearbiter.site-remaining-clause-inspection/1",
+  "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "performed": "Finite current guard/effect/retry source inspection; no tests/effects",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S60:03",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 26,
+          "end": 49,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "start": 69,
+          "end": 77,
+          "file_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a"
+        }
+      ],
+      "assessment": "A new fragment cancels the earlier frame, resolves a literal owned target, reveals only its ancestors and queues one frame. The frame requires non-aborted connection and connected target; explicit link focus is retained across native hash rescheduling, then scrollIntoView runs. No programmatic history write.",
+      "frozen_row_sha256": "20b49d8e03660e8e69a8c6d29341b1b3fa357c472bbcbb649f044746ea58a616"
+    },
+    {
+      "cell": "disposition:transitions:S60:05",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 18,
+          "end": 25,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "start": 51,
+          "end": 74,
+          "file_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5"
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "start": 69,
+          "end": 77,
+          "file_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a"
+        }
+      ],
+      "assessment": "New chapter selection cancels pending animation; click microtask checks abort before resolution. Disconnect aborts the connection controller, removes signal-owned listeners and cancels its frame. Reconnection aborts the previous controller. Stale queued work cannot write history; only native links do.",
+      "frozen_row_sha256": "52bfa7e032e35d63f01f37da4d1f53f99bb7ee4e36f2c539b75e505259b82206"
+    },
+    {
+      "cell": "disposition:transitions:S64:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 31,
+          "end": 43,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 99,
+          "end": 125,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 239,
+          "end": 271,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 46,
+          "end": 99,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 121,
+          "end": 131,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        }
+      ],
+      "assessment": "Nonempty capture inventory and all listed current source hashes are checked before reference generation. Missing/malformed/stale captures fail the CLI. Reference collector/parser/catalog/curated admission calls precede rendering and publisher invocation; this is conditional source control-flow, not a claim the current external corpus was executed/admitted.",
+      "frozen_row_sha256": "a91c1b70799250c07e2d1c88792a3b70d17cefe843899ce0684723b5939fe108"
+    },
+    {
+      "cell": "disposition:transitions:S64:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 43,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        }
+      ],
+      "assessment": "Only after generate returns does CLI render/write hooks, configuration and optional existing changelog, then load Academy source/topic map, publish Academy and finally generate release applicability. Exceptions propagate or terminate preflight nonzero. No global transaction is implied across distinct output owners.",
+      "frozen_row_sha256": "b54771b08e744db230255342c0793b2ea9665b378422a9a14f21aae1b2ea73b8"
+    },
+    {
+      "cell": "disposition:transitions:S64:04",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 119,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 454,
+          "end": 459,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        }
+      ],
+      "assessment": "Reference helper returns only after owned publication returns. Top-level CLI reaches its final completion log only after Academy and release applicability return; thrown required-stage errors cannot reach the ordinary successful end. This is the serial completion guard for invoked stages, not a completeness assertion about unobserved output bytes.",
+      "frozen_row_sha256": "7da282967342505664e8789bf8eb183d47830d4dc5ec618d10dc9187e9e0d7c7"
+    },
+    {
+      "cell": "disposition:transitions:S67:02",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 181,
+          "end": 224,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 226,
+          "end": 242,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 337,
+          "end": 349,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        }
+      ],
+      "assessment": "Installer token counts are exact per OS, checksum text canonical, SHA256 matches actual installer bytes and both checksum/installer bytes equal Git show of observed commit. Remaining installer tokens refuse. Home/lesson action validation and guide reads follow; errors throw before Academy publication. This preservation excludes a claim every guide/action equals Git.",
+      "frozen_row_sha256": "5620382f3188ef536692f0b99014002f16e06f18fc7e1b166ec9ec344c593a4e"
+    },
+    {
+      "cell": "disposition:transitions:S67:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "start": 47,
+          "end": 87,
+          "file_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e"
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "start": 262,
+          "end": 282,
+          "file_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e"
+        },
+        {
+          "path": "site/scripts/academy-wayfinding.ts",
+          "start": 17,
+          "end": 46,
+          "file_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31"
+        },
+        {
+          "path": "site/scripts/topic-map.ts",
+          "start": 54,
+          "end": 75,
+          "file_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1"
+        },
+        {
+          "path": "site/scripts/topic-map.ts",
+          "start": 121,
+          "end": 136,
+          "file_sha256": "1da65d67cea4a240d18212b185f89095ebfa799e541e4bbc226b73f14de113c1"
+        },
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 109,
+          "end": 119,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        }
+      ],
+      "assessment": "Caller validates topic pages/lesson membership before Academy generation. Guide metadata/identity/tracks and authored next links are checked in memory; duplicate/unknown/self links or missing topic coverage throw. Output models are constructed before publisher can replace prior Academy files. Runtime admission of a particular Academy corpus is not inferred.",
+      "frozen_row_sha256": "1feb56580248465c358787566a5f3b7e7e34a2d972b15dc34f8ba1422578a5bd"
+    },
+    {
+      "cell": "disposition:transitions:S67:05",
+      "witnesses": [
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "start": 102,
+          "end": 127,
+          "file_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e"
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "start": 163,
+          "end": 203,
+          "file_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e"
+        },
+        {
+          "path": "site/scripts/generate-academy.ts",
+          "start": 283,
+          "end": 319,
+          "file_sha256": "bd59c53b0654d213929b60cfe43614806d906d33687d55d0d27227f95892516e"
+        }
+      ],
+      "assessment": "Every guide action macro must resolve during in-memory lesson rendering, all index/track/content/sidebar strings are assembled, then owned publication completes before return. No successful current course is returned after a thrown action/render/write error. The old delete-first intermediate state is retired separately.",
+      "frozen_row_sha256": "ee042ea67687239c08b69aa12abc91938a37efe10335d7fddf96a22189744a19"
+    },
+    {
+      "cell": "disposition:transitions:S67:07",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 200,
+          "end": 215,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 245,
+          "end": 250,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 337,
+          "end": 357,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        }
+      ],
+      "assessment": "Observed Git HEAD is recorded while Home/lesson guide/action bytes are read from working files. Only installer/checksum bytes are separately compared to committed bytes. No global guide/action cleanliness check exists; this caveat is preserved, not a claim that all rendered content equals the source commit.",
+      "frozen_row_sha256": "897e54598f1f85543b3db5a8dec552d060cb1de592f328c4730ae36629112740"
+    }
+  ],
+  "holds": {
+    "S59:01": {
+      "reason": "Inherited audit description is not a uniform family contract: DecisionEvidence selects first section; ContextExplorer selects validated declared initial/default overlap; ExampleChoices selects0; AcademyOverview synchronizes existing disclosure state. No uniform first eligible panel across all four.",
+      "witnesses": [
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "start": 45,
+          "end": 60,
+          "file_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40"
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "start": 56,
+          "end": 70,
+          "file_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de"
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 15,
+          "end": 24,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "start": 225,
+          "end": 250,
+          "file_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6"
+        }
+      ]
+    },
+    "S59:03": {
+      "reason": "Inherited audit wording requires aria-selected and tab stops; original/current ExampleChoices explicitly uses labelled button group, aria-pressed and native Tab/Enter, with Arrow/Home/End selecting/focusing. It deliberately avoids tab roles. Other cited families are disclosure/button selections. No new tab-widget feature is selected by SITE-U01/U02.",
+      "witnesses": [
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "start": 6,
+          "end": 54,
+          "file_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca"
+        }
+      ]
+    },
+    "S61:10": {
+      "reason": "Original/current print handler saves only reading.open and reveals static reading; CSS hides canvas/controls and prints static reading. It does not snapshot selection/viewport or fit the canvas for print. Existing browser print case observes static reading and original view/zoom, not the full literal frozen clause.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "start": 92,
+          "end": 92,
+          "file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+        }
+      ]
+    },
+    "S61:11": {
+      "reason": "Original/current afterprint/disconnect restores reading.open and clears that backup. Selections/viewport are left unmodified, not saved/restored by a full print backup. Full literal clause remains unestablished; no regression from fd7 and no accepted new print design requirement identified.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 299,
+          "end": 305,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ]
+    },
+    "S63:01": {
+      "reason": "Original/current TOC connects scroll/resize listeners, coalesces a frame and accounts for header offset; disconnect removes listeners/cancels frame. No general arbitrary layout-change observer/event is present. The combined literal scroll/resize/layout-change clause is broader than that actual baseline.",
+      "witnesses": [
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 35,
+          "end": 70,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214"
+        }
+      ]
+    },
+    "S67:01": {
+      "reason": "Original/current loader validates required inventory arrays, order, duplicates, release, tracks, safe resolved paths and Home setup, but does not reject extra manifest keys as an exact closed shape or independently establish a Git submodule relationship. The full literal exact-shape/real-submodule wording is stronger than its actual source.",
+      "witnesses": [
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 139,
+          "end": 158,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        },
+        {
+          "path": "site/scripts/academy-source.ts",
+          "start": 309,
+          "end": 357,
+          "file_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c"
+        }
+      ]
+    }
+  },
+  "existing_runtime_limits": "Existing actual browser/unit evidence inspected only as historical contextual support. No TESTED/runtime promotion is proposed; source-only scope does not assert browser geometry, user action or concrete corpus acceptance.",
+  "retired": [
+    {
+      "cell": "disposition:transitions:S64:02",
+      "rationale": "BUILD-G01 deliberately replaces clean-before-write reference publication. Current generate assembles all expected files in memory then publishOwnedFiles stages/verifies bytes and removes stale owned targets only during controlled promotion. Thus the specific old deletion-before-writing state is retired; successful stale cleanup remains implemented.",
+      "frozen_row_sha256": "a84b6fd8ede374e1a5ddf359e72933bbed6116cc52b72b82c7933ff40e12244f"
+    },
+    {
+      "cell": "disposition:transitions:S64:05",
+      "rationale": "BUILD-G01 deliberately replaces unconditional partial-output-on-error within reference publication. Render errors occur before publication; publisher failure rolls applied files back or retains an explicit unusable marker/journal if recovery fails. Other later CLI owners can already have published, so no global transaction or whole-tree rollback is claimed.",
+      "frozen_row_sha256": "4ed935e3c55d71865f608b4c4e12457330c214c64d253a5aaad1fe24a58bf07a"
+    },
+    {
+      "cell": "disposition:transitions:S67:04",
+      "rationale": "BUILD-G01 deliberately replaces Academy-root deletion before rendering. Current code constructs every Academy route/generated projection in memory before owned staged publication. Stale owned files are removed only in the promotion transaction; the old output-removed-first intermediate state is retired.",
+      "frozen_row_sha256": "26b9e42b3ea8d1d4121d35b08840a9cc7f11254446c33453668cdcff8b4ceb18"
+    },
+    {
+      "cell": "disposition:transitions:S67:06",
+      "rationale": "BUILD-G01 deliberately replaces late Academy render failure leaving an incomplete tree. Action/render errors precede the publisher. Publication failure restores the old projection or retains an unusable marker/journal if rollback fails. This does not certify all consumers/global output trees or an executed crash journey.",
+      "frozen_row_sha256": "eb5261ded38e1b685bb8af5e86b70bec60c113a85b8a9bc93be13d457c816eac"
+    }
+  ],
+  "hold_baseline_comparison": {
+    "site/scripts/academy-source.ts": {
+      "baseline_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "current_sha256": "6f5e2447e3e065f09d12f6d62e9af3292e4131430bb4761a6feec641a122aa9c",
+      "whole_file_identical": true
+    },
+    "site/src/components/AcademyOverview.astro": {
+      "baseline_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+      "current_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+      "whole_file_identical": true
+    },
+    "site/src/components/ContextExplorer.astro": {
+      "baseline_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+      "current_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+      "whole_file_identical": true
+    },
+    "site/src/components/DecisionEvidence.astro": {
+      "baseline_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+      "current_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+      "whole_file_identical": true
+    },
+    "site/src/components/ExampleChoices.astro": {
+      "baseline_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+      "current_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+      "whole_file_identical": true
+    },
+    "site/src/components/TableOfContents.astro": {
+      "baseline_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+      "current_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+      "whole_file_identical": true
+    },
+    "site/src/scripts/workflow-atlas.ts": {
+      "baseline_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "current_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+      "whole_file_identical": true
+    },
+    "site/src/styles/workflow-atlas.css": {
+      "baseline_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "current_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+      "whole_file_identical": true
+    }
+  },
+  "task_precedence": "SITE-U01 scopes search query/expansion failure; SITE-U02 scopes documentation drawer listener lifetime. Neither adds tab-widget, generic TOC-layout, print-canvas or strict Academy-manifest feature. Six inherited inaccurate audit descriptions are held for explicit accounting, not automatically converted to new product requirements."
+}

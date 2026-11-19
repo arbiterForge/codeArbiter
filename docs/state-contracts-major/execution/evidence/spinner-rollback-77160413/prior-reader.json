@@ -1,0 +1,16 @@
+{
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-supported-prior-reader.json",
+  "sha256": "72aaa99aef7381e9f9eca1b3ca9993c1ccf5f73df3f19229b13cf29998194711",
+  "bytes": 711,
+  "record": {
+    "source_ref": "ca-codex-v0.26.9",
+    "source_commit": "3f1bd13762ed9f25320e58907f9bf98a81128504",
+    "path": "core/pysrc/wire-statusline.py",
+    "blob_sha256": "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92",
+    "function_ast_sha256": "99dacd81e587cd91cc6c92ab4943c2ee45af0dad696788dd09ad05a25fab655c",
+    "constants": {
+      "SPINNER_BACKUP_KEY": "_codearbiterSpinnerVerbsBackup"
+    },
+    "function": "def _uninstall_spinner_verbs(settings):\n    if SPINNER_BACKUP_KEY not in settings:\n        return\n    prior_sv = settings.pop(SPINNER_BACKUP_KEY)\n    if prior_sv is None:\n        settings.pop(\"spinnerVerbs\", None)\n    else:\n        settings[\"spinnerVerbs\"] = prior_sv"
+  }
+}

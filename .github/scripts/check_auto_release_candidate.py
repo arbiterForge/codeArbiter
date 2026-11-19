@@ -98,6 +98,84 @@ def _intent_paths(row) -> list[str]:
     return paths
 
 
+# R-03 / C-F03: the ONE owner of release-check enforcement classes.
+#
+# D-GOV-PRETAG (B, 2026-11-12): declared pre-tag checks are a REQUIRED gate,
+# ratifying the enforcement required CI already applied. ADR-0040's advisory
+# wording still needs the G-01 successor through the authorized ADR workflow.
+# CI and the release workflow both call this script, so a class cannot drift
+# between them. `implemented_by` names where each class is actually enforced:
+# a declaration (an ADR, or a row here) alone never counts as implemented or
+# qualified; policy_problems() checks every row against the shipped workflows.
+# The major-program readiness barrier is a release-specific requirement owned
+# separately, not an entry here and not a permanent all-release gate.
+CHECK_POLICY = {
+    "pre-tag": {
+        "enforcement": "required",
+        "purpose": "consumer safety: the target's declared release-skill checks "
+                   "(proof freshness, ledger) pass on the exact candidate bytes",
+        "boundary": "before a new version's tag is created (CI candidate gate and "
+                    "release planning)",
+        "implemented_by": [
+            (".github/workflows/ci.yml", "--run-pre-tag"),
+            (".github/workflows/release.yml", "check_auto_release_candidate.py --pre-tag-target"),
+        ],
+    },
+    "pi-npm-provenance": {
+        "enforcement": "required",
+        "purpose": "ADR-0044: exact-byte integrity, npm signatures and SLSA "
+                   "provenance bind the Pi package to its source",
+        "boundary": "before the Pi GitHub Release becomes public",
+        "implemented_by": [
+            (".github/actions/publish-target/action.yml", "validate_publication_attestation"),
+        ],
+    },
+    "codex-candidate-provenance": {
+        "enforcement": "advisory",
+        "purpose": "static Codex candidate provenance (ADR-0040); the package "
+                   "cohort verify is the consumer-safety gate",
+        "boundary": "reported as a warning; never relabelled verified",
+        "implemented_by": [
+            (".github/workflows/release.yml", "verify_codex_candidate_provenance.py"),
+        ],
+    },
+    "codex-ruleset-audit": {
+        "enforcement": "advisory",
+        "purpose": "distribution ruleset posture (ADR-0040)",
+        "boundary": "reported as a warning; never relabelled verified",
+        "implemented_by": [
+            (".github/actions/publish-target/action.yml", "verify_codex_distribution_rulesets.py"),
+        ],
+    },
+}
+ENFORCEMENT_CLASSES = ("required", "advisory")
+
+
+def policy_problems(repo: Path, policy: dict | None = None) -> list[str]:
+    """Rows whose class is unknown or whose enforcement is not in the source."""
+    problems = []
+    for check, row in (CHECK_POLICY if policy is None else policy).items():
+        if row.get("enforcement") not in ENFORCEMENT_CLASSES:
+            problems.append(f"{check}: unknown enforcement class {row.get('enforcement')!r}")
+            continue
+        implementations = row.get("implemented_by") or []
+        if not implementations:
+            problems.append(f"{check}: declared with no implementation")
+        for path, token in implementations:
+            try:
+                text = (repo / path).read_text(encoding="utf-8")
+            except OSError:
+                text = ""
+            if token not in text:
+                problems.append(f"{check}: {path} does not implement it ({token!r} absent)")
+    return problems
+
+
+def run_pre_tag_target(repo: Path, target: str) -> None:
+    """Run one target's declared pre-tag checks; required, so failure raises."""
+    _run_pre_tag(repo, [TargetResult(target, "", True)])
+
+
 def _run_pre_tag(repo: Path, targets: list[TargetResult]) -> None:
     python = sys.executable
     environment = {"PATH": os.environ.get("PATH", ""), "PY": python}
@@ -192,8 +270,13 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--repo", type=Path, default=REPO_ROOT)
     parser.add_argument("--candidate", default="HEAD")
     parser.add_argument("--run-pre-tag", action="store_true")
+    parser.add_argument("--pre-tag-target",
+                        help="release planning: run one target's required pre-tag checks")
     args = parser.parse_args(argv)
     try:
+        if args.pre_tag_target:
+            run_pre_tag_target(args.repo.resolve(), args.pre_tag_target)
+            return 0
         results = evaluate_candidate(args.repo, args.candidate)
         if args.run_pre_tag:
             _run_pre_tag(args.repo.resolve(), results)

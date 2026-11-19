@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sdk-phase-retention-0k9po0s8\\phase-target-green.stderr",
+ "original_sha256": "c93986e1bfca6ea90cbc7f5a7347ce40c75f90a59cc89cfd9bb98b8137cb7261",
+ "original_bytes": 315,
+ "utf8_text": "test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames (test_pi_package.DebuggerPhaseProgressTests.test_owned_phase_worker_deadline_retains_last_announced_boundary_without_frames) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 1.014s\r\n\r\nOK\r\n"
+}

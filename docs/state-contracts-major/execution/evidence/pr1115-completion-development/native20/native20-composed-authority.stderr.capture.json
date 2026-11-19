@@ -1,0 +1,7 @@
+{
+  "schema": "literal-utf8-development-capture/1",
+  "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native20-composed-authority.stderr",
+  "original_sha256": "31e0a05e9776870f6584b352785f80d5c62f64631ef4a713d9dfdb6b35a62aa4",
+  "original_bytes": 1160,
+  "utf8_text": "..........F...........\r\n======================================================================\r\nFAIL: test_n11_current_contract_requires_nonempty_history_control_and_every_event_child (test_major_native_observation.NativeCompositeAuthorityTests.test_n11_current_contract_requires_nonempty_history_control_and_every_event_child)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_major_native_observation.py\", line 953, in test_n11_current_contract_requires_nonempty_history_control_and_every_event_child\r\n    self.assertEqual(set(policy['native_composite_cells']),set(RECIPES)|set(PROGRESS_EXPECTED)|set(FINDING_EXPECTED)|set(BOUNDARY_EXPECTED))\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: Items in the first set but not the second:\r\n'disposition:transitions:N37:01'\r\n\r\n----------------------------------------------------------------------\r\nRan 22 tests in 15.117s\r\n\r\nFAILED (failures=1)\r\n"
+}

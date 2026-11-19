@@ -1,0 +1,323 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "site/scripts/execution-maps/atlas-command.ts": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+  "site/scripts/execution-maps/atlas-model.ts": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+  "site/scripts/execution-maps/atlas-render.ts": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+  "site/scripts/execution-maps/atlas-theme.ts": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+  "site/scripts/execution-maps/atlas.ts": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+  "site/scripts/generate-atlas.ts": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68"
+ },
+ "disposition_ids": [
+  "disposition:machines:SX05",
+  "disposition:transitions:SX05:01",
+  "disposition:transitions:SX05:02",
+  "disposition:transitions:SX05:03",
+  "disposition:transitions:SX05:04",
+  "disposition:transitions:SX05:05",
+  "disposition:transitions:SX05:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/source-bindings.json",
+   "sha256": "06ab894db016456bb0dbae1916fcc066328ae1164fffa20f105c53ccc7c50f2a"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/clause-inspection.json",
+   "sha256": "0e49d5db9985342758fbc957bb58a2f9aaad8be6e89641ffe75f40e567db0991"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/findings.json",
+   "sha256": "d7e25c98a0a30dde72c5e618db389e3efe151d7eb6c207cda3f42c2ed8ef9e88"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/site-six-healthy-source-cb/owner-baseline-current.diff",
+   "sha256": "57107c73ff95e00f1dc5505204624dd7a6bec92a17531fc880cfb1ff6ed34742"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:SX05",
+   "frozen_row_sha256": "c31d16aa6a6b2b210a079bb45b60f65470d18f6d0cfdfc6c826a44925982cb90",
+   "clause_ids": [
+    "disposition:transitions:SX05:01",
+    "disposition:transitions:SX05:02",
+    "disposition:transitions:SX05:03",
+    "disposition:transitions:SX05:04",
+    "disposition:transitions:SX05:05",
+    "disposition:transitions:SX05:06"
+   ],
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/atlas-model.ts",
+     "start": 1,
+     "end": 123,
+     "file_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+     "span_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 401,
+     "end": 407,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "6b5895a187e4d663e3386dd1fad8c416d12682158f2d30cad5117243905e0109"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 452,
+     "end": 519,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "5610d9c9aeb4ad471cebb654dabced3c7709d70f523fee5bc58e4a2a38406735"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 321,
+     "end": 400,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "35274c9d0076b23d4c0c76c8d5008cc7e81097ac0857a254bc324a93c1833771"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-command.ts",
+     "start": 1,
+     "end": 17,
+     "file_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+     "span_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-model.ts",
+     "start": 42,
+     "end": 49,
+     "file_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+     "span_sha256": "29a65c7a75f8ff5b58e86f61113fc878ca3775779c6f7f6ba208d164cf4ae392"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 20,
+     "end": 40,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "c990bd6d50b7e14ec997bce10593083f03c0e3826ef3db32670bb8dd64fd29c5"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 298,
+     "end": 319,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "dd4a496c27d4236f37367c49366d477006b43f9b9914563e785938f6c77277bf"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 409,
+     "end": 519,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "b4cbdf103d286a6f055f2ce854f23cca522a4d8bd2c2fb34a41a3692050cb489"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-theme.ts",
+     "start": 1,
+     "end": 14,
+     "file_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+     "span_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-render.ts",
+     "start": 1,
+     "end": 50,
+     "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+     "span_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-model.ts",
+     "start": 29,
+     "end": 45,
+     "file_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+     "span_sha256": "e8409820a0bc28f08535c319eb003089cdedea9d5c48227964ba6f55c854c283"
+    },
+    {
+     "path": "site/scripts/generate-atlas.ts",
+     "start": 1,
+     "end": 24,
+     "file_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+     "span_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-render.ts",
+     "start": 40,
+     "end": 50,
+     "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+     "span_sha256": "8201f61c73640986ef2e261fcf2e233544b1aba1963cce48599f0137664567b6"
+    }
+   ],
+   "semantic_assessment": "All literal source clauses inspected, including retained advanced edges. Named accepted changes and narrow controller/fixture/runtime limits remain explicit in the clause matrix; this machine proposal is source-only.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX05:01",
+   "frozen_row_sha256": "f5f026d9814d521b43e525ca84a63499c5ca572eb2f2ce8a6d5654fe93de1546",
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/atlas-model.ts",
+     "start": 1,
+     "end": 123,
+     "file_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+     "span_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 401,
+     "end": 407,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "6b5895a187e4d663e3386dd1fad8c416d12682158f2d30cad5117243905e0109"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 452,
+     "end": 519,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "5610d9c9aeb4ad471cebb654dabced3c7709d70f523fee5bc58e4a2a38406735"
+    }
+   ],
+   "semantic_assessment": "Cloned immutable graph/catalog validates repository/revision, unique identities, sources/routes/edges, geometry/text breaks and source-update membership. loadAtlas revalidates after named current labels. Geometry organizes teaching data, never execution/authority.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX05:02",
+   "frozen_row_sha256": "70447a0f218705e33a4add99cf6fb232c979e8b3019ec05d295a755bd78d2c1c",
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 321,
+     "end": 400,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "35274c9d0076b23d4c0c76c8d5008cc7e81097ac0857a254bc324a93c1833771"
+    }
+   ],
+   "semantic_assessment": "Each finite inventory read snapshots actual safe unlinked regular files and validates optional pins. Offline Git batch with repository selectors cleared checks exact pinned/selected blob bodies/framing against LF-normalized current source. Only unpinned root changelog permits insertion above intact reviewed history. No moving-main fallback or process cache.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX05:03",
+   "frozen_row_sha256": "b79b6d938053298f4a6c438d55ee3751c92b999f3bc79914a5cd4e6afb775436",
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/atlas-command.ts",
+     "start": 1,
+     "end": 17,
+     "file_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+     "span_sha256": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-model.ts",
+     "start": 42,
+     "end": 49,
+     "file_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+     "span_sha256": "29a65c7a75f8ff5b58e86f61113fc878ca3775779c6f7f6ba208d164cf4ae392"
+    }
+   ],
+   "semantic_assessment": "Safe IDs and a whole-file SKILL_ENTRY permit one reviewed skill redirect; scalar description parsing rejects missing/multiline forms. No recursive template guessing/general YAML parser.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX05:04",
+   "frozen_row_sha256": "370ed2af6014b2792f6e3ea58fc62e24065851623e7bcf1a157f6359696d1e24",
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 20,
+     "end": 40,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "c990bd6d50b7e14ec997bce10593083f03c0e3826ef3db32670bb8dd64fd29c5"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 298,
+     "end": 319,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "dd4a496c27d4236f37367c49366d477006b43f9b9914563e785938f6c77277bf"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas.ts",
+     "start": 409,
+     "end": 519,
+     "file_sha256": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+     "span_sha256": "b4cbdf103d286a6f055f2ce854f23cca522a4d8bd2c2fb34a41a3692050cb489"
+    }
+   ],
+   "semantic_assessment": "Registry plus explicit retired names must match catalog, retired invocations null and owners historical; lens roster must match pin. Named selected-work/major labels/source maps overlay retained spatial positions/history. No successful current load or whole old runtime revalidation implied.",
+   "intake_variances": [
+    "Accepted work-owner, scoped dependency stop and discovery-harvest overlays supersede named text/owner bindings only; old packets/geometry retain original epochs."
+   ],
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX05:05",
+   "frozen_row_sha256": "ec0de192222c7891e3b85c16f02d34a27706962fe3cd910f405efe03f9c4348c",
+   "witnesses": [
+    {
+     "path": "site/scripts/execution-maps/atlas-theme.ts",
+     "start": 1,
+     "end": 14,
+     "file_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+     "span_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-render.ts",
+     "start": 1,
+     "end": 50,
+     "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+     "span_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-model.ts",
+     "start": 29,
+     "end": 45,
+     "file_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+     "span_sha256": "e8409820a0bc28f08535c319eb003089cdedea9d5c48227964ba6f55c854c283"
+    }
+   ],
+   "semantic_assessment": "Theme requires root tokens, resolves named vars with cycle/missing checks and refuses angle/brace/url forms. Authored labels/source metadata are escaped; graph/base constrain IDs/URLs. CSS values are not font bytes or browser/AX geometry; arbitrary hostile CSS parsing is outside scope.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  },
+  {
+   "cell": "disposition:transitions:SX05:06",
+   "frozen_row_sha256": "a3ee114895d384caa159ef59cf278637f9272792f8674a17b6d4652bc5797ecb",
+   "witnesses": [
+    {
+     "path": "site/scripts/generate-atlas.ts",
+     "start": 1,
+     "end": 24,
+     "file_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+     "span_sha256": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68"
+    },
+    {
+     "path": "site/scripts/execution-maps/atlas-render.ts",
+     "start": 40,
+     "end": 50,
+     "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+     "span_sha256": "8201f61c73640986ef2e261fcf2e233544b1aba1963cce48599f0137664567b6"
+    }
+   ],
+   "semantic_assessment": "Portable viewer transpilation refuses TypeScript errors, then HTML/reading guide/SVG/source ledger write sequentially under original revision destination. Embedded data is escaped. Partial outputs possible; no actual export/build/browser observed.",
+   "limits": "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed."
+  }
+ ],
+ "scope": "Only named PLANNED source-conformance cells; all advanced evidence retained. SX06 machine/edge excluded for containment finding.",
+ "limits": [
+  "Reasoned source-only inspection; no tests, capture, screenshot, browser, site build, owner validator, network/API, provider, install or native execution. No runtime epoch renewed.",
+  "Only18 PLANNED cells in six healthy families are proposed. SX06 machine and SX06:06 remain PLANNED for reported containment gap; all28 already advanced edge objects/evidence remain exact.",
+  "Conditional source procedures do not prove current generated data/pin satisfaction, renderer or helper output, distribution/publication, installed host discovery, browser behavior, task acceptance or whole-program completion.",
+  "Current/pinned owners and named accepted R-08, selected-work and dependency-scoped guidance are distinguished from frozen historical claims. No source hash confers user authority or authenticates an executing principal.",
+  "Root owns independent review, strict original-owner admission and canonical adoption; packet data joins are not executed behavior or owner validation. Changed source epochs need scoped semantic reinspection, not mechanical restamping."
+ ]
+}

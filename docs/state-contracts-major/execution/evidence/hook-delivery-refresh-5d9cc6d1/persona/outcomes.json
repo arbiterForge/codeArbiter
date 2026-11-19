@@ -1,0 +1,59 @@
+{
+ "schema": "codearbiter.private-fix-outcomes/1",
+ "finding": "WF33-DELIVERY-RECORD-01",
+ "original_RED": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\red.json",
+   "sha256": "26d4a8345773faff151f9e19413df56fd7e1d7aa0f210a0e743d1e10f897cb92",
+   "bytes": 765
+  },
+  "test_methods": 1,
+  "assertion_failures": 2,
+  "hosts": [
+   "claude",
+   "codex"
+  ],
+  "oracle": "Returning A body absent after emitted B record atomic-write failure, with every turn in a fresh hook process"
+ },
+ "expanded_RED": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\expanded-red.json",
+   "sha256": "a73a8f4aa4efbc2d988d61bbbf1bf485451a4644710c8b48e70f63e1c3cc2c55",
+   "bytes": 871
+  },
+  "test_methods": 2,
+  "assertion_failures": 4,
+  "oracles": [
+   "Same two cross-process transition failures",
+   "Two missing bounded double-denial diagnostics"
+  ]
+ },
+ "final_GREEN": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\green.json",
+   "sha256": "dad6f7e880c66ad6d0a6d01f99efa56b21db5bdff6e0478c81321665f211b2e8",
+   "bytes": 658
+  },
+  "test_methods": 52,
+  "original_methods": 50,
+  "new_methods": 2,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0
+ },
+ "double_denial": "Both host paths emit B, attempt stale-record removal after write denial, report bounded unconfirmed diagnostic on removal denial; old A tuple and returning-A suppression remain explicitly observed limitation.",
+ "unchanged_behavior": "Original no-op/duplicate/round-trip-without-delivery/compaction/new-session/legacy marker/envelope/approval and mode reporting controls passed unchanged.",
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\source-preservation.json",
+  "sha256": "33fe1f24ea44f8573e67f85ba091bb201c1d48c1cb8c51c8ce5fb58e40a26ef5",
+  "bytes": 1781
+ },
+ "critical_mutation": "Original source RED is exact removal of the failed-update invalidation behavior; no redundant test replay.",
+ "coverage": "No numeric Python tooling per exact typed CTX-TECH-STACK/FACT-005 passage retained in source-preservation.json; direct outcome tests and syntax compilation performed.",
+ "limits": [
+  "If storage denies both update and removal, stale record can remain and a future returning-A prompt may still be suppressed; exact limit is tested, bounded diagnostic reports unconfirmed dedup, and no durable invalidation is claimed.",
+  "No pre-emission policy change, in-process authority cache, new delivery schema, host installation, provider, native/SDK, dependency, network/API or actual user-home/settings effect. Only owned Temp fixtures run.",
+  "Four private source copies are byte-equal; Root owns actual generation, independent review, canonical adoption, staged gates and exact-head hosted qualification. No source disposition or runtime epoch promoted.",
+  "Emission and state persistence remain separate effects; no concurrent-hook serialization, filesystem crash durability, model retention or exactly-once delivery guarantee."
+ ]
+}

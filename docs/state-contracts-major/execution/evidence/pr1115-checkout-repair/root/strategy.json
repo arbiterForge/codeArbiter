@@ -1,0 +1,34 @@
+{
+  "scope": "Confirmed cached-index/private-Git-policy cleanliness defect; implementation choice, no new architecture or publication authority.",
+  "constraints": [
+    "Same protected local Git policy; no user index/worktree mutation",
+    "Real staged/conflict changes must remain a refusal",
+    "Actual current-policy worktree/untracked and exact profile exceptions retained",
+    "HEAD/index races and unavailable reads fail closed"
+  ],
+  "options": {
+    "fresh_HEAD_index_and_actual_index_guard": {
+      "Scalable": "Adequate. Linear checkout/index reads; bounded owned index, no service.",
+      "Maintainable": "Strong. Standard read-tree plus explicit real staged guard; existing demonstrated fresh-index path.",
+      "Available": "Adequate. Existing Git and private Temp only; failures remain refusals.",
+      "Reliable": "Strong. Pins HEAD and checks actual index separately; rechecks both after observation.",
+      "Testable": "Strong. Confirmed cache case, LF positive, staged negative and no-mutation assertions.",
+      "Securable": "Strong. Credential-blind local commands, private index, no source normalization or real index writes."
+    },
+    "rebuild_actual_index_entries": {
+      "Scalable": "Adequate. Linear index serialization and worktree reads.",
+      "Maintainable": "Weak. Must preserve conflict, sparse and index-extension semantics through a second representation.",
+      "Available": "Adequate. Existing Git and private Temp only.",
+      "Reliable": "Adequate. Carries staged entries directly; additional index semantics need explicit handling.",
+      "Testable": "Adequate. Same failure case plus additional index-reconstruction controls.",
+      "Securable": "Adequate. Private output; more index input reconstruction to review."
+    }
+  },
+  "selected": "fresh_HEAD_index_and_actual_index_guard",
+  "decisive_lenses": [
+    "Maintainable",
+    "Reliable",
+    "Testable"
+  ],
+  "source_cause": "ca-198-checkout-cache-diagnosis-5573bb06/causal-handoff.json SHA50fde950f565f445b87b5dbb4437b4acae6a9ed51034bb4260699485887be3db"
+}

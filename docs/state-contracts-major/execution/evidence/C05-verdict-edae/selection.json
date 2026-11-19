@@ -1,0 +1,29 @@
+{
+  "format": "C05-existing-ten-selection/1",
+  "names": [
+    "test_every_passing_suite_is_reported_and_the_run_passes",
+    "test_one_failing_suite_fails_the_run_and_is_named",
+    "test_a_suite_that_runs_no_tests_fails",
+    "test_a_zero_exit_without_a_unittest_verdict_fails",
+    "test_suites_really_run_concurrently",
+    "test_a_hung_suite_is_terminated_and_fails_with_its_output",
+    "test_interpreter_env_applies_to_following_suites_only",
+    "test_the_named_interpreter_actually_runs_the_suite",
+    "test_invalid_invocations_are_refused_before_running_anything",
+    "test_each_real_unittest_run_requires_a_positive_successful_summary",
+    "test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch"
+  ],
+  "requested_cells": [
+    "disposition:transitions:C05:04",
+    "disposition:transitions:C05:05"
+  ],
+  "unchanged_rows": [
+    "C05",
+    "C05:01",
+    "C05:02",
+    "C05:03"
+  ],
+  "limits": "Prepare only; wait committed source. Missing timeout-validation requirement is Root-owned separately, not inferred from these observations.",
+  "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "candidate_C05_01": "Assess after actual preflight/invalid-shape/interpreter-wrapper/concurrency assertions pass; no machine promotion."
+}

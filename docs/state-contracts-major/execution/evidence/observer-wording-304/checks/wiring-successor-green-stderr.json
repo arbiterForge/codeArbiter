@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\wiring-successor-green.stderr",
+ "original_sha256": "59a39ca60a359d0c954f4eaf43a32ecf46ef014b4bb86d1fe3f6e8c51e7011a6",
+ "original_bytes": 316,
+ "utf8_text": "test_h_ci_wraps_one_original_execution_and_keeps_closed_source_roles (test_major_qualification_report.HookReviewObservationProfileTests.test_h_ci_wraps_one_original_execution_and_keeps_closed_source_roles) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.019s\r\n\r\nOK\r\n"
+}

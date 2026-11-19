@@ -1,0 +1,20 @@
+{
+ "argv": [
+  "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+  "run",
+  "--root",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture",
+  "--config",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\vitest.config.mjs",
+  "--coverage",
+  "--reporter=json",
+  "--outputFile",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\owning-green.named.json"
+ ],
+ "exit": 0,
+ "seconds": 0.7997556000191253,
+ "test_sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada",
+ "stdout_sha256": "d04ac9c009a01d80abd2ce373d8218d612afb5648770f29d3b83a0988079bb7c",
+ "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+}

@@ -1,0 +1,86 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "f1b72420b3b761d09029e8b536eb7db65df1ee8f",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound Windows isolation, mapped-work and Docs source deltas"
+  },
+  "inputs": {
+    ".github/workflows/ci.yml": "30d5cb480374a452b6664558b16c2a30c2aa6b39a23c10c3b2d3eba9d6813609",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/artifact-coverage.py": "447b1cd6b06c737e3a020d97a8999b1a66ed833ca2da1356dd3e362c818cec8b"
+  },
+  "disposition_ids": [
+    "disposition:machines:T02",
+    "disposition:transitions:T02:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/windows-integration-evidence-source-f1b72420/source-inspection.json",
+      "sha256": "489e64dddd2448d3803d6ce82d8fc2725d0855625dbaa11e614352f6897ba4a8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-56241415/proof-16.json",
+      "sha256": "5b0b9831dbd28ff2d3718ee474f5dc8787f0f4e6e1cd1456af08748b57bb9cd6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-56241415/source-delta-review.json",
+      "sha256": "ebf4214d60d8ce1b50d57c4b9fdf60f3bc68a088c72fac2dc3ff47139b4d45db"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-20.json",
+      "sha256": "0c2fab8dd3efd37a692df667239dbe00f35a652bef73839c7d2ab3688f4ac443"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-56241415/proof-16.json",
+    "sha256": "5b0b9831dbd28ff2d3718ee474f5dc8787f0f4e6e1cd1456af08748b57bb9cd6",
+    "original_code": "56241415ac897ca09799d709c1a4ec26bcd03eab",
+    "stored_at": "ea4f1ff4c93bb81c11942d2b0b79b69bbadc90dc"
+  },
+  "scope": "T02 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+  "changed_paths": [
+    ".github/workflows/ci.yml"
+  ],
+  "limits": [
+    "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+    "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+    "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+    "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+    "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves finite owner, effect and authorization predicates. The fixed Windows upload handoff uses the same two existing native candidate members.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "This source renewal preserves each prior finite clause. The new original-result routes were not promoted.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Only native coverage source behavior and existing status are affirmed. No hosted, installed or runtime evidence was advanced.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; the newly routed claims are outside this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Current source refinement preserves all prior finite owner and guard clauses; no new runtime claims are part of this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Preserve frozen exact owners and scoped guard/effect/retry. Changed CI/test paths add observer-only routes or inspected read-only Doc evidence alongside unchanged bound control blocks.",
+    "No execution, installation, release, task or hosted result is changed or established.",
+    "The finite predicates keep their exact owning behavior. The Hook refinements bind two existing test modes to their closed names and immutable source, while the associated producer and aggregate proof boundaries stay intact.",
+    "No execution, installation, release, task or hosted result is changed or established.",
+    "Scope is source conformance. The changed launcher requires an original Windows hosted run for runtime evidence."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ]
+}

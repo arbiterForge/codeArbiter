@@ -18,6 +18,9 @@ import {
   childAttestationDigest,
 } from "./attestation.ts";
 import { compatibilityDirection } from "./compatibility.ts";
+import { ROLE_JUDGMENT_STATES } from "./contracts.ts";
+import { encodeBootstrapEnvelope } from "./delegation-contract.ts";
+import type { DelegationSummary } from "./delegation-contract.ts";
 import { lexicallyInside } from "./path-boundary.ts";
 import { safeDiagnostic } from "./redaction.ts";
 import { loadRoleCatalog } from "./roles.ts";
@@ -73,9 +76,20 @@ export type PiChildRequest = ChildLaunchInput & {
   parentEnv?: Readonly<NodeJS.ProcessEnv>;
   platform?: NodeJS.Platform;
   timeoutMs?: number;
+  /** Parent-only closure, never serialized in a task or accepted from child input. */
+  openDelegation?: (runId: string, signal: AbortSignal) => Promise<ParentDelegationChannel>;
 };
 
+export interface ParentDelegationChannel {
+  readonly endpoint: string;
+  readonly token: string;
+  revoke(): void;
+  close(): Promise<void>;
+  summary?(): DelegationSummary;
+}
+
 export interface ChildResult {
+  delegation?: DelegationSummary;
   terminal: "completed" | "degraded";
   pid?: number;
   correlationId?: string;
@@ -705,9 +719,24 @@ function assistantText(message: unknown, containsSensitiveValue: (text: string) 
     const block = item as Record<string, unknown>;
     return block.type === "text" && typeof block.text === "string" ? [block.text] : [];
   }).join("");
-  if (text.trim() === "" || Buffer.byteLength(text, "utf8") > MAX_OUTPUT_BYTES) return undefined;
+  const trimmed = text.trim();
+  if (trimmed === "" || Buffer.byteLength(text, "utf8") > MAX_OUTPUT_BYTES) return undefined;
   if (containsSensitiveValue(text)) return undefined;
-  const safe = safeDiagnostic(text, MAX_OUTPUT_BYTES);
+  let report: unknown;
+  try { report = JSON.parse(trimmed); }
+  catch { /* Diagnostics outside the role protocol still use ordinary text redaction. */ }
+  let safe: string;
+  if (report !== null && typeof report === "object" && !Array.isArray(report)
+    && Object.keys(report).length === 2 && "state" in report && "summary" in report
+    && typeof report.summary === "string" && ROLE_JUDGMENT_STATES.some((state) => state === report.state)) {
+    // Compare the decoded field too, since JSON can escape an exact operator value.
+    if (containsSensitiveValue(report.summary)) return undefined;
+    safe = JSON.stringify({ state: report.state, summary: safeDiagnostic(report.summary, MAX_OUTPUT_BYTES) });
+  } else {
+    safe = safeDiagnostic(text, MAX_OUTPUT_BYTES);
+    // Diagnostic normalization cannot turn a malformed object into a role report.
+    if (report === undefined && safe.startsWith("{") && safe !== trimmed) return undefined;
+  }
   return safe === "" || Buffer.byteLength(safe, "utf8") > MAX_OUTPUT_BYTES ? undefined : safe;
 }
 
@@ -755,6 +784,7 @@ export async function runPiChild(
   // until `authorize` attaches the real upstream, so the window between bind and authorize is
   // fail-closed rather than open.
   let broker;
+  let delegation: ParentDelegationChannel | undefined;
   try {
     broker = await startInferenceBroker({ nonce });
   } catch {
@@ -773,6 +803,7 @@ export async function runPiChild(
       parent: request.parentEnv ?? process.env,
       provider: launch.provider,
     }, { baseUrl: broker.baseUrl, token: broker.token });
+    const sensitiveEnvironment = preparedEnvironment;
     broker.authorize({
       nonce,
       baseUrl: preparedEnvironment.upstream.baseUrl,
@@ -781,7 +812,8 @@ export async function runPiChild(
       // The same predicate that suppresses a child echoing operator material through its final
       // assistant message now also guards the broker's response path, so the two halves of the
       // child boundary cannot drift apart.
-      containsSensitiveValue: preparedEnvironment.containsSensitiveValue,
+      containsSensitiveValue: (text) => sensitiveEnvironment.containsSensitiveValue(text)
+        || (delegation !== undefined && text.includes(delegation.token)),
     });
   } catch (error) {
     // ADR-0017: a selected-provider record that cannot be projected credential-blind refuses
@@ -809,10 +841,32 @@ export async function runPiChild(
       return false;
     }
   };
-  const withEnvironmentCleanup = async (result: ChildResult): Promise<ChildResult> =>
-    (await cleanupEnvironment()) ? result : childFailure("isolation-cleanup");
+  let delegationCleanup: Promise<boolean> | undefined;
+  const closeDelegation = (): Promise<boolean> => delegationCleanup ??= (async () => {
+    try { delegation?.revoke(); await delegation?.close(); return true; } catch { return false; }
+  })();
+  const withEnvironmentCleanup = async (result: ChildResult): Promise<ChildResult> => {
+    const delegationClosed = await closeDelegation();
+    const environmentClosed = await cleanupEnvironment();
+    // A cleanup failure cannot retract a report already observed after the
+    // complete protocol. Keep only its bounded, secret-checked text; the run
+    // remains degraded and this creates no workflow registration or authority.
+    const observedResult = !delegationClosed || !environmentClosed
+      ? { ...childFailure("isolation-cleanup"), ...(result.terminal === "completed" && result.output !== undefined ? { output: result.output } : {}) }
+      : result;
+    const summary = delegation?.summary?.();
+    return summary === undefined ? observedResult : { ...observedResult, delegation: summary };
+  };
   try {
     if (signal.aborted) return await withEnvironmentCleanup(childFailure());
+    if (request.openDelegation !== undefined) {
+      if (launch.launchKind === "internal-compaction") return await withEnvironmentCleanup(childFailure());
+      try { delegation = await request.openDelegation(nonce, signal); }
+      catch { return await withEnvironmentCleanup(childFailure()); }
+    }
+    const bootstrap = encodeBootstrapEnvelope({ nonce, ...(delegation === undefined ? {} : {
+      delegation: { endpoint: delegation.endpoint, token: delegation.token },
+    }) });
     let child;
     try {
       child = await spawnProcessTree(launch.nodePath, buildChildArgv(launch), {
@@ -908,7 +962,7 @@ export async function runPiChild(
         capability.on("error", () => finishFailure("startup_failure"));
         if (capability.destroyed === true || capability.writable === false) finishFailure("startup_failure");
         else {
-          try { capability.end(nonce, "utf8"); }
+          try { capability.end(bootstrap, "utf8"); }
           catch { finishFailure("startup_failure"); }
         }
       }
@@ -954,7 +1008,8 @@ export async function runPiChild(
           if (record.type === "agent_end") {
             const messages = record.messages as unknown[];
             const finalAssistant = [...messages].reverse().find((message) => isRecord(message) && message.role === "assistant");
-            const finalOutput = successfulFinalAssistant(finalAssistant, launch, preparedEnvironment.containsSensitiveValue);
+            const finalOutput = successfulFinalAssistant(finalAssistant, launch, (text) => preparedEnvironment.containsSensitiveValue(text)
+              || (delegation !== undefined && text.includes(delegation.token)));
             if (record.willRetry !== false || finalOutput === undefined) { finishFailure("protocol_error"); return; }
             output = finalOutput;
             phase = "await-settled";
@@ -1027,7 +1082,11 @@ export async function runPiChild(
     // child's live broker token - on disk, and must never leave the loopback listener bound
     // after its child is gone. Both cleanups are idempotent, so neither double-runs behind an
     // ordinary return.
-    await cleanupEnvironment();
-    await closeBroker();
+    try {
+      await closeDelegation();
+    } finally {
+      await cleanupEnvironment();
+      await closeBroker();
+    }
   }
 }

@@ -1,0 +1,84 @@
+{
+  "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "actual_HEAD_before": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "actual_index_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "inputs_before": {
+    "site/src/components/Search.astro": {
+      "executed_Temp": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+      "immutable_Git": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+      "Gov_physical": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183"
+    },
+    "site/src/components/SplashDocsRail.astro": {
+      "executed_Temp": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+      "immutable_Git": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+      "Gov_physical": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e"
+    },
+    "site/test/components/lifecycle.spec.ts": {
+      "executed_Temp": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+      "immutable_Git": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+      "Gov_physical": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317"
+    },
+    "site/test/components/search-boundaries.spec.ts": {
+      "executed_Temp": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "immutable_Git": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+      "Gov_physical": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd"
+    },
+    "site/playwright.components.config.ts": {
+      "executed_Temp": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+      "immutable_Git": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+      "Gov_physical": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff"
+    },
+    "site/package.json": {
+      "executed_Temp": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+      "immutable_Git": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+      "Gov_physical": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3"
+    },
+    "site/package-lock.json": {
+      "executed_Temp": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "immutable_Git": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "Gov_physical": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a"
+    }
+  },
+  "runtime_before": {
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+    "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js": "3ce7cba6f5128dd5f54c98b6a5036b0f850496878cc2e21044b675fe3c594e3e",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+  },
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+    "--silent",
+    "run",
+    "test:components",
+    "--",
+    "--reporter=json",
+    "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\playwright-output"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\site",
+  "environment": {
+    "SystemRoot": "C:\\WINDOWS",
+    "WINDIR": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PATH": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin;C:/Program Files/Git/cmd;C:/Windows/System32",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home",
+    "HOMEDRIVE": "C:",
+    "HOMEPATH": "\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home",
+    "APPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home\\AppData\\Roaming",
+    "LOCALAPPDATA": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home\\AppData\\Local",
+    "XDG_CONFIG_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home\\.config",
+    "XDG_CACHE_HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\home\\.cache",
+    "PLAYWRIGHT_SKIP_BROWSER_DOWNLOAD": "1"
+  },
+  "scope": "Exact committed7-input component source copied byte-for-byte to Temp; admitted node_modules junction. Actual installed Chrome, controlled Pagefind/markup, not production-page/index.",
+  "node_version": "v24.22.1",
+  "npm_version": "11.16.0"
+}

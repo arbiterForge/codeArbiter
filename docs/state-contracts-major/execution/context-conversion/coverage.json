@@ -1,0 +1,264 @@
+[
+  {
+    "section": ".codearbiter/CONTEXT.md@54:611",
+    "records": [
+      "CTX-PROJECT#NOTE-001"
+    ]
+  },
+  {
+    "section": ".codearbiter/CONTEXT.md@611:2080",
+    "records": [
+      "CTX-PROJECT#NOTE-002"
+    ]
+  },
+  {
+    "section": ".codearbiter/CONTEXT.md@2080:3867",
+    "records": [
+      "CTX-PROJECT#NOTE-003"
+    ]
+  },
+  {
+    "section": ".codearbiter/CONTEXT.md@3867:5096",
+    "records": [
+      "CTX-PROJECT#NOTE-004"
+    ]
+  },
+  {
+    "section": ".codearbiter/CONTEXT.md@5096:5915",
+    "records": [
+      "CTX-PROJECT#NOTE-005"
+    ]
+  },
+  {
+    "section": ".codearbiter/CONTEXT.md@5915:6351",
+    "records": [
+      "CTX-PROJECT#NOTE-006"
+    ]
+  },
+  {
+    "section": ".codearbiter/tech-stack.md@0:310",
+    "records": [
+      "CTX-TECH-STACK#NOTE-001"
+    ]
+  },
+  {
+    "section": ".codearbiter/tech-stack.md@310:2437",
+    "records": [
+      "CTX-TECH-STACK#NOTE-002"
+    ]
+  },
+  {
+    "section": ".codearbiter/tech-stack.md@2437:4303",
+    "records": [
+      "CTX-TECH-STACK#NOTE-003"
+    ]
+  },
+  {
+    "section": ".codearbiter/tech-stack.md@4303:13256",
+    "records": [
+      "CTX-TECH-STACK#NOTE-004"
+    ]
+  },
+  {
+    "section": ".codearbiter/tech-stack.md@13256:18414",
+    "records": [
+      "CTX-TECH-STACK#NOTE-005"
+    ]
+  },
+  {
+    "section": ".codearbiter/tech-stack.md@18414:21290",
+    "records": [
+      "CTX-TECH-STACK#NOTE-006"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@0:254",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-001"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@254:1062",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-002"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@1062:2460",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-003"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@2460:3636",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-004"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@3636:4911",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-005"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@4911:5361",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-006"
+    ]
+  },
+  {
+    "section": ".codearbiter/coding-standards.md@5361:5963",
+    "records": [
+      "CTX-CODING-STANDARDS#NOTE-007"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@0:513",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-001"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@513:928",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-002"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@928:2942",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-003"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@2942:4273",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-004"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@4273:4989",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-005"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@4989:6125",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-006"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@6125:7079",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-007"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@7079:8314",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-008"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@8314:10579",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-009"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@10579:11241",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-010"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@11241:12828",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-011"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@12828:16413",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-012"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@16413:17172",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-013"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@17172:21953",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-014"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@21953:23319",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-015"
+    ]
+  },
+  {
+    "section": ".codearbiter/security-controls.md@23319:24018",
+    "records": [
+      "CTX-SECURITY-CONTROLS#NOTE-016"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@0:258",
+    "records": [
+      "CTX-CODE-MAP#NOTE-001"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@258:1089",
+    "records": [
+      "CTX-CODE-MAP#NOTE-002"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@1089:3059",
+    "records": [
+      "CTX-CODE-MAP#NOTE-003"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@3059:4875",
+    "records": [
+      "CTX-CODE-MAP#NOTE-004"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@4875:5659",
+    "records": [
+      "CTX-CODE-MAP#NOTE-005"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@5659:6121",
+    "records": [
+      "CTX-CODE-MAP#NOTE-006"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@6121:6906",
+    "records": [
+      "CTX-CODE-MAP#NOTE-007"
+    ]
+  },
+  {
+    "section": ".codearbiter/code-map.md@6906:7905",
+    "records": [
+      "CTX-CODE-MAP#NOTE-008"
+    ]
+  },
+  {
+    "section": ".codearbiter/CONTEXT.md@34:54",
+    "records": []
+  }
+]

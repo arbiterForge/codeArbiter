@@ -146,7 +146,9 @@ d("layering [docker] — deps at /deps survive the /work/repo volume + live-edit
 
     const build = await buildOrReuseImage(repoDir, dephash);
     t.images.push(build.tag);
-    expect(build.tag).toBe(imageTag(repoDir, dephash));
+    expect(build.cacheKey).toMatch(/^[a-f0-9]{64}$/);
+    expect(build.imageId).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(build.tag).toBe(imageTag(repoDir, build.cacheKey!));
 
     const vol = `${NS}-node-vol-${Date.now()}`;
     seedVolumeFromImage(build.tag, vol);
@@ -187,7 +189,9 @@ d("layering [docker] — deps at /deps survive the /work/repo volume + live-edit
 
     const build = await buildOrReuseImage(repoDir, dephash);
     t.images.push(build.tag);
-    expect(build.tag).toBe(imageTag(repoDir, dephash));
+    expect(build.cacheKey).toMatch(/^[a-f0-9]{64}$/);
+    expect(build.imageId).toMatch(/^sha256:[a-f0-9]{64}$/);
+    expect(build.tag).toBe(imageTag(repoDir, build.cacheKey!));
 
     const vol = `${NS}-py-vol-${Date.now()}`;
     seedVolumeFromImage(build.tag, vol);

@@ -1,0 +1,263 @@
+{
+  "schema": "codearbiter-pi-component-support/1",
+  "source_event": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "actual_checkout": "83b21cb73190b245291337468aed30c12e628981",
+  "run_id": 43532123830,
+  "source_origin": {
+    "run_id": 43532123830,
+    "event_head": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+    "actual_checkout": "83b21cb73190b245291337468aed30c12e628981",
+    "run_event": "pull_request",
+    "run_conclusion": "cancelled",
+    "artifacts": [
+      {
+        "host": "ubuntu",
+        "artifact_id": 14087508655,
+        "job_id": 132252425163,
+        "archive_sha256": "ec9321afa786c33c19b94a37b998e3e57bd3bf6f7639f64a18f0f6c8bd14816c",
+        "members": [
+          {
+            "path": "ubuntu-latest.checked.json",
+            "sha256": "443941587772145b465f9e55477cc00c2e52470aae948899dde87bb52cea3571"
+          },
+          {
+            "path": "ubuntu-latest.json",
+            "sha256": "8c215152e6bc98f70dfc2f267e17538bee82a65e0c3b43031101b46fbcf1e347"
+          },
+          {
+            "path": "ubuntu-latest.provenance.json",
+            "sha256": "7a88f4c1e2cdeda45010e592ef1a62573ebbaa528178e5b787ec21fbfab4eb66"
+          }
+        ],
+        "origin": "Original successfuljob in PR run; NOT trusted-main push qualification"
+      },
+      {
+        "host": "windows",
+        "artifact_id": 14087504011,
+        "job_id": 132252425297,
+        "archive_sha256": "0b514541eb9c8ba377dfaded565d47f0ef07fd5389ee02eddb2580ad62cff45f",
+        "members": [
+          {
+            "path": "windows-latest.checked.json",
+            "sha256": "491984387d38ee9763184903f495290968723a3a1f501ab375458e56564f0b56"
+          },
+          {
+            "path": "windows-latest.json",
+            "sha256": "13edc69e693915b2bae6ae3f06c67cf9760dc1e9cbb3d81560210f2e2011ba86"
+          },
+          {
+            "path": "windows-latest.provenance.json",
+            "sha256": "cdeabeeffeb4d21dcdf12a4f01791b7d2799bceb417009ae4d6b09c0f364de4a"
+          }
+        ],
+        "origin": "Original successfuljob in PR run; NOT trusted-main push qualification"
+      }
+    ],
+    "scope": "Authentic original component result artifacts only; current readiness refuses PR/failedrun origin as final hosted qualification. No local-host relabel."
+  },
+  "state": "RETAINED_COMPONENT_RESULTS_NOT_FINAL_READINESS",
+  "cases": [
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > a production metrics-loader failure restores native UI without aborting adapter activation",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 4.74735400000003
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > a production metrics-loader failure restores native UI without aborting adapter activation",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 10.36869999999999
+        }
+      },
+      "assertion_body": {
+        "file": "plugins/ca-pi/tools/test/status.test.ts",
+        "line": 294,
+        "name": "Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+        "body_sha256_lf": "438b29897b2d275838e5877d6a71cddeacb25f37c29a160e820386301b29e6c6",
+        "body": "async () => {\n    const cwd = await enabledProject();\n    const packageRoot = await bareProject();\n    const catalog: CommandCatalogEntry[] = [{ name: \"doctor\", description: \"doctor\", skillPath: \"skills/ca-doctor/SKILL.md\" }];\n    await preparePackage(packageRoot, catalog);\n    const host = new StatusHost(packageRoot, catalog);\n    const notifications: string[] = [];\n    let health: unknown;\n    const context = host.context(cwd, true, { interactive: true });\n    context.ui.notify = (message) => notifications.push(message);\n    installParent(host, {\n      bridge: new StatusBridge(),\n      catalog,\n      packageRoot,\n      loadPersona: async () => \"persona\",\n      loadFooterMetrics: async () => { throw new Error(\"runtime module unavailable\"); },\n      doctorReport: async (_context, facts) => { health = facts; return \"doctor\"; },\n    });\n\n    await expect(host.emit(\"session_start\", context)).resolves.toBeUndefined();\n    expect(host.footerCalls).toEqual([undefined]);\n    expect(notifications).toContain(\"codeArbiter footer unavailable; native Pi footer restored; run /ca-doctor\");\n    expect(host.last()).toBe(\"codeArbiter host: pi governed\");\n    await host.invoke(\"ca-doctor\", \"\", context);\n    expect(health).toEqual({\n      footer: { expected: true, initialized: false },\n      sidebar: { expected: true, installed: false, degraded: false },\n      background: { expected: true, initialized: false, healthy: false },\n    });\n  }",
+        "current_source_substring_match": true
+      },
+      "semantic_scope": "Existing draft mapping not independently promoted; exact execution/source join only",
+      "immutable_0830_body_match": true
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > a replacement session wins while the prior deferred metrics load cannot resurrect",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 4.809346000000005
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > a replacement session wins while the prior deferred metrics load cannot resurrect",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 40.42579999999998
+        }
+      },
+      "assertion_body": {
+        "file": "plugins/ca-pi/tools/test/status.test.ts",
+        "line": 365,
+        "name": "Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+        "body_sha256_lf": "ca4f203401e4597cf848a08f425a837b3124f9381b11b55a6d83f12ee53f2a3e",
+        "body": "async () => {\n    const firstCwd = await enabledProject();\n    const secondCwd = await bareProject();\n    const packageRoot = await bareProject();\n    const host = new StatusHost(packageRoot, []);\n    let releaseFirst!: () => void;\n    let firstEntered!: () => void;\n    const gate = new Promise<void>((resolveGate) => { releaseFirst = resolveGate; });\n    const entered = new Promise<void>((resolveEntered) => { firstEntered = resolveEntered; });\n    let loads = 0;\n    const activationCwds: string[] = [];\n    installParent(host, {\n      bridge: new StatusBridge(),\n      catalog: [],\n      packageRoot,\n      loadPersona: async () => \"persona\",\n      loadFooterMetrics: async () => {\n        loads += 1;\n        if (loads === 1) {\n          firstEntered();\n          await gate;\n        }\n        return footerMetrics;\n      },\n      readActivation: async (cwd) => { activationCwds.push(cwd); return false; },\n    });\n    const firstContext = host.context(firstCwd, true, { interactive: true });\n    const secondContext = host.context(secondCwd, true, { interactive: true });\n\n    const firstStart = host.emit(\"session_start\", firstContext);\n    await entered;\n    await host.emit(\"session_start\", secondContext);\n    expect(host.footerCalls).toHaveLength(1);\n    expect(host.footerCalls[0]).toBeTypeOf(\"function\");\n    expect(activationCwds).toEqual([secondCwd]);\n    releaseFirst();\n    await firstStart;\n\n    expect(host.footerCalls).toHaveLength(1);\n    expect(activationCwds).toEqual([secondCwd]);\n    expect(host.calls).toEqual([]);\n  }",
+        "current_source_substring_match": true
+      },
+      "semantic_scope": "Existing draft mapping not independently promoted; exact execution/source join only",
+      "immutable_0830_body_match": true
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 6.536109999999951
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 44.192800000000034
+        }
+      },
+      "assertion_body": {
+        "file": "plugins/ca-pi/tools/test/status.test.ts",
+        "line": 729,
+        "name": "Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+        "body_sha256_lf": "977418893f2aa5ca6c2ba721e09457c9c934de2c9fa1f7e607307a572459f343",
+        "body": "async () => {\n    const firstCwd = await bareProject();\n    const secondCwd = resolve(await bareProject(), \"contains-10-in-path\");\n    await mkdir(secondCwd);\n    const packageRoot = await bareProject();\n    const host = new StatusHost(packageRoot, []);\n    let releaseFirst!: () => void;\n    let firstEntered!: () => void;\n    const firstGate = new Promise<void>((resolveGate) => { releaseFirst = resolveGate; });\n    const entered = new Promise<void>((resolveEntered) => { firstEntered = resolveEntered; });\n    let calls = 0;\n    const bridge: BridgePort = {\n      call: async (request) => {\n        calls += 1;\n        if (calls === 1) {\n          firstEntered();\n          await firstGate;\n        }\n        const input = request.input as { scanEnd: number };\n        const totals = {\n          inputTokens: request.cwd === secondCwd ? 20 : 10,\n          outputTokens: 0,\n          cacheReadTokens: 0,\n          cacheWriteTokens: 0,\n          costUsd: 0,\n        };\n        return {\n          version: 1,\n          outcome: \"notice\",\n          resultPatch: { footerUsage: {\n            status: \"ok\", session: totals, today: totals,\n            acceptedThrough: input.scanEnd, highWater: input.scanEnd,\n          } },\n        };\n      },\n    };\n    installParent(host, {\n      bridge, catalog: [], packageRoot, loadPersona: async () => \"persona\", footerMetrics,\n    });\n    const makeContext = (cwd: string, id: string) => {\n      const context = host.context(cwd, true, { interactive: true });\n      context.sessionManager = {\n        getSessionId: () => id,\n        getEntries: () => [{ type: \"message\", message: { role: \"user\" } }],\n      };\n      return context;\n    };\n    const firstContext = makeContext(firstCwd, \"first\");\n    const secondContext = makeContext(secondCwd, \"second\");\n\n    const firstStart = host.emit(\"session_start\", firstContext);\n    await entered;\n    const secondStart = host.emit(\"session_start\", secondContext);\n    await secondStart;\n    expect(calls).toBe(2);\n    const secondFactory = host.footerCalls.at(-1) as (tui: { requestRender(): void }, theme: unknown, data: {\n      getGitBranch(): string;\n    }) => { render(width: number): string[] };\n    const component = secondFactory({ requestRender: () => undefined }, {}, { getGitBranch: () => \"main\" });\n    const render = () => component.render(100).join(\"\\n\").replace(/\\x1b\\[[0-9;]*m/gu, \"\");\n    expect(render()).toContain(\"20\");\n    releaseFirst();\n    await firstStart;\n    const sessionRow = render().split(\"\\n\").find((line) => /\u2502\\s*Session\\s*\u2502/u.test(line));\n    expect(sessionRow).toMatch(/\u2193\\s+20\\s+\u2191/u);\n    expect(sessionRow).not.toMatch(/\u2193\\s+10\\s+\u2191/u);\n  }",
+        "current_source_substring_match": true
+      },
+      "semantic_scope": "Existing draft mapping not independently promoted; exact execution/source join only",
+      "immutable_0830_body_match": true
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle restores Pi's native footer on session shutdown",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle restores Pi's native footer on session shutdown",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > restores Pi's native footer on session shutdown",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 3.6716070000000514
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle restores Pi's native footer on session shutdown",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > restores Pi's native footer on session shutdown",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 37.15409999999997
+        }
+      },
+      "assertion_body": {
+        "file": "plugins/ca-pi/tools/test/status.test.ts",
+        "line": 408,
+        "name": "Pi keyed status lifecycle restores Pi's native footer on session shutdown",
+        "body_sha256_lf": "7c4f39e6d1bf3427fced740293ac25e2e73c30917d99e1c66c6eb0bd27397817",
+        "body": "async () => {\n    const cwd = await bareProject();\n    const packageRoot = await bareProject();\n    const host = new StatusHost(packageRoot, []);\n    installParent(host, {\n      bridge: new StatusBridge(),\n      catalog: [],\n      packageRoot,\n      loadPersona: async () => \"persona\",\n      footerMetrics,\n    });\n    const context = host.context(cwd, true, { interactive: true });\n\n    await host.emit(\"session_start\", context);\n    await host.emit(\"session_shutdown\", context);\n\n    expect(host.footerCalls).toHaveLength(2);\n    expect(host.footerCalls.at(-1)).toBeUndefined();\n  }",
+        "current_source_substring_match": true
+      },
+      "semantic_scope": "Existing draft mapping not independently promoted; exact execution/source join only",
+      "immutable_0830_body_match": true
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 6.471075000000042
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 68.46670000000006
+        }
+      },
+      "assertion_body": {
+        "file": "plugins/ca-pi/tools/test/status.test.ts",
+        "line": 683,
+        "name": "Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+        "body_sha256_lf": "beaa5fc0f011317bfd5d66062d7ee0761b495e00e675bb30a172b8ae894a8bf0",
+        "body": "async () => {\n    const cwd = await bareProject();\n    const packageRoot = await bareProject();\n    const host = new StatusHost(packageRoot, []);\n    const entries = Array.from({ length: 300 }, () => ({ type: \"message\", message: { role: \"user\" } }));\n    const scans: number[] = [];\n    let releaseFirst!: () => void;\n    let firstEntered!: () => void;\n    const firstGate = new Promise<void>((resolveGate) => { releaseFirst = resolveGate; });\n    const entered = new Promise<void>((resolveEntered) => { firstEntered = resolveEntered; });\n    const totals = { inputTokens: 0, outputTokens: 0, cacheReadTokens: 0, cacheWriteTokens: 0, costUsd: 0 };\n    const bridge: BridgePort = {\n      call: async (request) => {\n        const input = request.input as { scanStart: number; scanEnd: number };\n        scans.push(input.scanStart);\n        if (scans.length === 1) {\n          firstEntered();\n          await firstGate;\n        }\n        return {\n          version: 1,\n          outcome: \"notice\",\n          resultPatch: { footerUsage: {\n            status: \"ok\", session: totals, today: totals,\n            acceptedThrough: input.scanEnd, highWater: input.scanEnd,\n          } },\n        };\n      },\n    };\n    installParent(host, {\n      bridge, catalog: [], packageRoot, loadPersona: async () => \"persona\", footerMetrics,\n    });\n    const context = host.context(cwd, true, { interactive: true });\n    context.sessionManager = { getSessionId: () => \"serialized\", getEntries: () => entries };\n\n    const start = host.emit(\"session_start\", context);\n    await entered;\n    const settled = host.emit(\"agent_settled\", context);\n    await Promise.resolve();\n    const beforeRelease = [...scans];\n    releaseFirst();\n    await Promise.all([start, settled]);\n    expect(beforeRelease).toEqual([0]);\n    expect(scans).toEqual([0, 256]);\n  }",
+        "current_source_substring_match": true
+      },
+      "semantic_scope": "Existing draft mapping not independently promoted; exact execution/source join only",
+      "immutable_0830_body_match": true
+    },
+    {
+      "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+      "observations": {
+        "ubuntu": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 1.3720900000000142
+        },
+        "windows": {
+          "selector": "vitest:plugins/ca-pi/tools/test/status.test.ts:Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "path": "plugins/ca-pi/tools/test/status.test.ts",
+          "fullTestName": "Pi keyed status lifecycle > shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "result": "pass",
+          "mode": "run",
+          "retry_count": 0,
+          "duration_ms": 2.9162999999999784
+        }
+      },
+      "assertion_body": {
+        "file": "plugins/ca-pi/tools/test/status.test.ts",
+        "line": 325,
+        "name": "Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+        "body_sha256_lf": "5e2629ffa1879e1cec7a82f0a29d4e485352f92fe51f90e254ee79a31ec95d30",
+        "body": "async () => {\n    const cwd = await enabledProject();\n    const packageRoot = await bareProject();\n    const host = new StatusHost(packageRoot, []);\n    let releaseMetrics!: () => void;\n    let metricsEntered!: () => void;\n    const gate = new Promise<void>((resolveGate) => { releaseMetrics = resolveGate; });\n    const entered = new Promise<void>((resolveEntered) => { metricsEntered = resolveEntered; });\n    const operations: string[] = [];\n    const bridge: BridgePort = {\n      call: async () => { operations.push(\"bridge\"); return { version: 1, outcome: \"notice\" }; },\n    };\n    installParent(host, {\n      bridge,\n      catalog: [],\n      packageRoot,\n      loadPersona: async () => { operations.push(\"persona\"); return \"persona\"; },\n      loadFooterMetrics: async () => {\n        metricsEntered();\n        await gate;\n        return footerMetrics;\n      },\n      readActivation: async () => { operations.push(\"activation\"); return true; },\n      prepareBridge: () => { operations.push(\"prepare\"); },\n      prepareFooterBridge: () => { operations.push(\"footer-prepare\"); },\n      installEnforcement: () => { operations.push(\"enforcement\"); },\n    });\n    const context = host.context(cwd, true, { interactive: true });\n\n    const start = host.emit(\"session_start\", context);\n    await entered;\n    await host.emit(\"session_shutdown\", context);\n    releaseMetrics();\n    await start;\n\n    expect(operations).toEqual([]);\n    expect(host.footerCalls).toEqual([]);\n    expect(host.calls).toEqual([]);\n  }",
+        "current_source_substring_match": true
+      },
+      "semantic_scope": "Existing draft mapping not independently promoted; exact execution/source join only",
+      "immutable_0830_body_match": true
+    }
+  ],
+  "limits": [
+    "Historical successful Ubuntu and Windows component jobs within a cancelled PR run; no fresh execution or installed TUI claim.",
+    "StatusHost replaces UI/event ports; controlled bridge, metrics, trust and activation dependencies are fixture substitutes."
+  ]
+}

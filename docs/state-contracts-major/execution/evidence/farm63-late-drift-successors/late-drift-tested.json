@@ -1,0 +1,174 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual original regression1RED/2controls then3GREEN, plus current941 owning Windows run; no new execution for proposal"
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/state-contracts.test.ts": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01"
+  ],
+  "commands": [
+    {
+      "mode": "coverage",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+      "started_utc": "2026-11-14T02:57:42.795034+00:00",
+      "finished_utc": "2026-11-14T03:02:06.211665+00:00",
+      "seconds": 263.4215792999603,
+      "exit_code": 0,
+      "before_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "after_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "full_input_count": 29,
+      "input_changes": [],
+      "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_version": "v24.22.1",
+      "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/current-selected-observations.json",
+      "sha256": "182047ac98d237197618836b154679b1e14829b57e8544a0c1535a04e5ef37f1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/execution-origin.json",
+      "sha256": "0e358b797f3e876d03c4dd08b5e6d89818bfdf68339861352ca6243f2c6a89fa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/scoped-clause-delta.json",
+      "sha256": "3f4862f8871b1e17c807682e73a09c3120db8bed3dbda95f365d28abfa0ca501"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/introduced-late-drift-edge.json",
+      "sha256": "6f1450da8b43d0999a8877ec5b51e388e7683206b290af4af0ee0edc54244fb9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/red-tests.json",
+      "sha256": "56d8639a75ad577c56818bce5421f0eae4cd765883e3ac779e1c785b3dee9abd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/red-result.json",
+      "sha256": "392172c620d8baa2e3d9cb9100db0408585d4a788383b89f4a1c3c3461e74913"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/green-tests.json",
+      "sha256": "98d7876f0cd7b0a48cff3c2adfcea78e36c57fb85bbea096c5ae5db7d3f311af"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/green-result.json",
+      "sha256": "7d04f50369d481e5a26efd84138ac772da01afec07d1fb5496a3b84baa34c6f1"
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "fresh-prestage-drift-action-boundary",
+      "cells": [
+        "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01"
+      ],
+      "selectors": [
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations",
+          "result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/current-selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations",
+          "result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/current-selected-observations.json"
+        },
+        {
+          "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations",
+          "result": "passed",
+          "raw_ref": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/current-selected-observations.json"
+        }
+      ],
+      "claim": "First clean then new outside.ts: one author,zero resets,zero Git calls and escalation. Unknown repeats existing refusal; second clean proceeds through add/commit/merge. Tests contain real action-count assertions through controlled RunTaskDeps, not actual concurrent filesystem mutation."
+    }
+  ],
+  "actual_red_green_origin": {
+    "red": {
+      "mode": "red",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "state-contracts.test.ts",
+        "-t",
+        "fresh pre-stage",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\red-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+      "started_utc": "2026-11-14T02:55:47.012733+00:00",
+      "finished_utc": "2026-11-14T02:55:49.354733+00:00",
+      "seconds": 2.3420348999788985,
+      "exit_code": 1,
+      "before_HEAD": "f4dde0ed232a38c10f270d8fe999c3646cf282f8",
+      "after_HEAD": "f4dde0ed232a38c10f270d8fe999c3646cf282f8",
+      "full_input_count": 29,
+      "input_changes": [],
+      "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_version": "v24.22.1",
+      "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+    },
+    "green": {
+      "mode": "green",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "state-contracts.test.ts",
+        "-t",
+        "fresh pre-stage",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\green-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+      "started_utc": "2026-11-14T02:55:58.628955+00:00",
+      "finished_utc": "2026-11-14T02:55:59.593546+00:00",
+      "seconds": 0.9646063999971375,
+      "exit_code": 0,
+      "before_HEAD": "f4dde0ed232a38c10f270d8fe999c3646cf282f8",
+      "after_HEAD": "f4dde0ed232a38c10f270d8fe999c3646cf282f8",
+      "full_input_count": 29,
+      "input_changes": [],
+      "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_version": "v24.22.1",
+      "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+    },
+    "same_assertions": true,
+    "raws_preserved_original_Temp": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw"
+  },
+  "nonclaims": [
+    "No new runtime/native/public schema or operation. No filesystem atomicity, live provider, full task, hosted/platform/installed/publication qualification."
+  ]
+}

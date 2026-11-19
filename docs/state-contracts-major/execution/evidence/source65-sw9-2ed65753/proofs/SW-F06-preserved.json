@@ -1,0 +1,113 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/acceptance_security_review: finite accepted normative text and actual owner assessment; private author proposal"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "plugins/ca-sandbox/COMMANDS.md": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+    "plugins/ca-sandbox/README.md": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+    "plugins/ca-sandbox/commands/sandbox.md": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+    "plugins/ca-sandbox/tools/build.ts": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+    "plugins/ca-sandbox/tools/create.ts": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+    "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c"
+  },
+  "disposition_ids": [
+    "disposition:findings:SW-F06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-clause-assessment.json",
+      "sha256": "c893cd7fc0de73642e06fe2b3c7e9d8ce610cef875372bfbbf420068f41f3d01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/source-bindings.json",
+      "sha256": "7d5438daf15ececf16de433cdfa69a7ce00b310d4940b6a085f4966e23f54a41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-baseline-current-joins.json",
+      "sha256": "cb225ccdf9601fa6599f05889add061750b06de9739f6488d10bf69e7792b235"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:SW-F06",
+      "frozen_row_sha256": "fc615044fe5388d9fa77d87f05c41a43789568eca59f55018f8daebffa253b44",
+      "clause_ids": [
+        "SW-F06:1",
+        "SW-F06:2",
+        "SW-F06:3",
+        "SW-F06:4"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-sandbox/COMMANDS.md",
+          "start": 58,
+          "end": 65,
+          "file_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+          "span_sha256": "bc0fdc7c557aa861d043b8dc5a275eb2d98c49dd51ed8286cd73ac11117ce112"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "start": 52,
+          "end": 54,
+          "file_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+          "span_sha256": "2808d34675e46f78272cbf65590e97e6757c1c3687b460a5d4a3f228a2214cec"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "start": 6,
+          "end": 14,
+          "file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+          "span_sha256": "1a4a6d4e552e67b37e97216657fd31dc829f9534152d15db55671b5a42f0ac95"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "start": 19,
+          "end": 25,
+          "file_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+          "span_sha256": "ecbc1ed0e308669b9db314076c395836ffe135547f9f420375b8b1a2a7cdc171"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "start": 794,
+          "end": 865,
+          "file_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+          "span_sha256": "17185069c3b9eba668421c27599313a2522f48ddb885a20e4491c9dd1179758a"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/dephash.ts",
+          "start": 1,
+          "end": 82,
+          "file_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+          "span_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "start": 348,
+          "end": 354,
+          "file_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+          "span_sha256": "add08e13d3eb110a5c288ed205adfea592070689476b8aa954dc413de1a0ec1b"
+        }
+      ],
+      "semantic_assessment": "All affected public surfaces describe stable v2 identity and observed provenance/image identity as prerequisites for reuse; equal dependency hash or tag existence alone does not qualify a hit."
+    }
+  ],
+  "scope": "Only this finite normative finding at actual source; the frozen diagnosis is corrected by the explicitly narrowed accepted contract.",
+  "accepted_contract_note": "All affected public surfaces describe stable v2 identity and observed provenance/image identity as prerequisites for reuse; equal dependency hash or tag existence alone does not qualify a hit.",
+  "limits": [
+    "Reasoned source guard/effect/retry or finite normative-text conformance only, not observed execution.",
+    "No tests, native/SDK/Pi/Docker/browser/provider/API/network/install or original-owner replay was performed.",
+    "No TESTED/runtime epoch, whole linked task, installed package, model behavior, human acceptance, final-main or publication qualification.",
+    "Existing storage denial, cooperative concurrency, per-resource acquisition, unsupported grammar and platform limits remain; no global atomicity, durability or adversarial attestation.",
+    "Private proposal only. Root owns adoption, original strict authentication, independent review and canonical/index/ref/marker writes."
+  ]
+}

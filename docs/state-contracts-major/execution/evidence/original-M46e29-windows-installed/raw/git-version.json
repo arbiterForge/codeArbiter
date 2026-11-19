@@ -1,0 +1,11 @@
+{
+  "argv": [
+    "C:/Program Files/Git/cmd/git.exe",
+    "--version"
+  ],
+  "exit_code": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "stdout": "git version 2.55.0.windows.3\n",
+  "stderr": ""
+}

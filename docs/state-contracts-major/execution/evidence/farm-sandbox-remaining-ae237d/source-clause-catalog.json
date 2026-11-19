@@ -1,0 +1,2152 @@
+{
+  "plugins/ca/tools/farm.ts": {
+    "whole_file_sha256": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "physical_review_sha256": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "DEFAULT_API_BASE_URL",
+        "start_line": 128,
+        "end_line": 128,
+        "sha256": "c4fd97984674ed770e2967afa1d0c2c8d44f3d7c96b6a1ca4f7f152a09c9cdac"
+      },
+      {
+        "symbol": "effectContext",
+        "start_line": 130,
+        "end_line": 130,
+        "sha256": "97b49dd93b9601f3c6f305d1b067b0d24f192fb321366b37059d3f31c90c9324"
+      },
+      {
+        "symbol": "taskEffects",
+        "start_line": 131,
+        "end_line": 131,
+        "sha256": "2def28dc670718988aed43441d5c096d5a9f1948c5ea5c7707aa8cffae7dc6c2"
+      },
+      {
+        "symbol": "ENV",
+        "start_line": 132,
+        "end_line": 185,
+        "sha256": "9969d2b6b3011242fd57fcb8d2b5da2e9ee510c5ec1e736f56dfbbc31e64574d"
+      },
+      {
+        "symbol": "git",
+        "start_line": 194,
+        "end_line": 194,
+        "sha256": "e3362d85d1f3bc5aa7fca3152165552ec9a9da69b6f245f5ee45ffb82089c2e6"
+      },
+      {
+        "symbol": "sleep",
+        "start_line": 195,
+        "end_line": 195,
+        "sha256": "41ef1682bbb89a2fb40448048fc5e2340be09b0e3fe9dcae11a990060c18d21f"
+      },
+      {
+        "symbol": "ARTIFACT_PROTOCOL",
+        "start_line": 205,
+        "end_line": 205,
+        "sha256": "f071287f446a0eb814e71b6d479403ae7811dcd9d3692ce86a441537932c5bd9"
+      },
+      {
+        "symbol": "ARTIFACT_SCHEMA_VERSION",
+        "start_line": 206,
+        "end_line": 206,
+        "sha256": "e85852de088b9c829d3a40d4350a46d2effc19618662df2bcc4cbca5a04e1667"
+      },
+      {
+        "symbol": "ARTIFACT_RELEASE_FORMAT",
+        "start_line": 207,
+        "end_line": 207,
+        "sha256": "3312c12123e2b1c0a349a018f5aaaafb15f5c2389f895b3ee5df666adcfb427e"
+      },
+      {
+        "symbol": "ARTIFACT_MAX_RESPONSE",
+        "start_line": 208,
+        "end_line": 208,
+        "sha256": "bfbb11fdf334b92d415537037352c7109f4a6ca77f50243f7428bcd5c61d36bf"
+      },
+      {
+        "symbol": "artifactPlatform",
+        "start_line": 212,
+        "end_line": 225,
+        "sha256": "9cfc3128ca0ac9d5dc802212b32cc5e3866e501f3473d719ca6e44868b022555"
+      },
+      {
+        "symbol": "exactKeys",
+        "start_line": 227,
+        "end_line": 228,
+        "sha256": "7f148a18f5c8a6e18e359038fec1c53697539b4c2818ca83caafc0ef5e2dea4e"
+      },
+      {
+        "symbol": "sameArtifactPath",
+        "start_line": 232,
+        "end_line": 235,
+        "sha256": "581162d8861cf34e95eff6833c91617f93ba422a0bf2a252a2ead9c2084e8acf"
+      },
+      {
+        "symbol": "trustedInstallationDirectory",
+        "start_line": 237,
+        "end_line": 252,
+        "sha256": "a22fb6e0ed97921d198e856730a732c3dd92ae20b7192787d0638d54fb4f73ba"
+      },
+      {
+        "symbol": "pinnedRegular",
+        "start_line": 254,
+        "end_line": 267,
+        "sha256": "bdbe0bf0f43b504cacac91ef594219828c8053eeffd38a0550919ab779af21cf"
+      },
+      {
+        "symbol": "installedArtifactBinary",
+        "start_line": 269,
+        "end_line": 313,
+        "sha256": "b682499ae24343f980174c666caf771d67a2e8b0af0cc465fb99ed639a303b8d"
+      },
+      {
+        "symbol": "WINDOWS_PIN_GUARD",
+        "start_line": 315,
+        "end_line": 329,
+        "sha256": "ddf2a59efd0a3f39de71b681cdbe6a63c0aba271944044e1bc50007defe655b9"
+      },
+      {
+        "symbol": "WINDOWS_PIN_READY_TIMEOUT_MS",
+        "start_line": 331,
+        "end_line": 331,
+        "sha256": "3e3d152657802078cc67d66537a0a0c72e63d5a86a5d23a12cc3b2db953223fe"
+      },
+      {
+        "symbol": "WINDOWS_PIN_CLOSE_TIMEOUT_MS",
+        "start_line": 332,
+        "end_line": 332,
+        "sha256": "fe8a57eb5215d08874653896ac3fc0e06050c052e543ba83ef77d57b62be6372"
+      },
+      {
+        "symbol": "waitForChildClose",
+        "start_line": 334,
+        "end_line": 351,
+        "sha256": "32031726019d0dd9fb92bb3e0fbcf3b5e3eeda1c40f6c351166fed9f01926c95"
+      },
+      {
+        "symbol": "releaseWindowsPinGuard",
+        "start_line": 353,
+        "end_line": 363,
+        "sha256": "899efef0314d11ab85de1263c3f4f630b87511611270ee39af6e58700249ed24"
+      },
+      {
+        "symbol": "windowsPinGuard",
+        "start_line": 365,
+        "end_line": 395,
+        "sha256": "3fc202bde11e201b765cde8c60dbc27c80b8fdf50706dd99fbd7a1ea123f72c1"
+      },
+      {
+        "symbol": "runPinnedArtifact",
+        "start_line": 397,
+        "end_line": 450,
+        "sha256": "a438b80822673ba58568ea41cf7bbd25ba302b89672056fac281c84a75e6c4e9"
+      },
+      {
+        "symbol": "artifactResult",
+        "start_line": 452,
+        "end_line": 472,
+        "sha256": "12d1bbf6baeacf56ad37fb8c3d06460eca384514c0385e3fee4898310161f78d"
+      },
+      {
+        "symbol": "verifyFarmArtifactBoundary",
+        "start_line": 474,
+        "end_line": 520,
+        "sha256": "2d7e40f9e23420283a0ef24a524981e33709f77a640a54b110f8b8d0f929299f"
+      },
+      {
+        "symbol": "createLimiter",
+        "start_line": 531,
+        "end_line": 561,
+        "sha256": "a8c305fd0d1e3bb9d5e6c76cf65c2c8bd9ae9393e33778ae1687c6e983fd95e5"
+      },
+      {
+        "symbol": "workerLimit",
+        "start_line": 563,
+        "end_line": 563,
+        "sha256": "2e9d1bdbad6ed17d809bff54d1b9c0ac137076d93599cc64ede0307f3d5ac6d9"
+      },
+      {
+        "symbol": "NOSIGN",
+        "start_line": 568,
+        "end_line": 568,
+        "sha256": "ead8002239f9f7daf947105359e5f8ce02475fa15331f73d334364b2d59a4111"
+      },
+      {
+        "symbol": "isInside",
+        "start_line": 573,
+        "end_line": 576,
+        "sha256": "7027701848ce989eff95f5550b6e05b2fd6eba6fa3120ab4396b48e76295eb95"
+      },
+      {
+        "symbol": "repoTopLevel",
+        "start_line": 586,
+        "end_line": 598,
+        "sha256": "f9d407f5f2faac7aab7a944f622c2e698d2e8d0b2d7ec1dcb778e300e8af3ae9"
+      },
+      {
+        "symbol": "canonicalize",
+        "start_line": 621,
+        "end_line": 648,
+        "sha256": "6f9a62502bebcbf2d3d2ad82880276db0614f0356a1e71b21d13be42449e7976"
+      },
+      {
+        "symbol": "validateWorktreeRoot",
+        "start_line": 653,
+        "end_line": 663,
+        "sha256": "74a9c1b46eb48199ea008211c7016baa2c4a4251ec5ff0cb66bad2fd39ce6e1b"
+      },
+      {
+        "symbol": "_allowedWorktreeRoot",
+        "start_line": 665,
+        "end_line": 665,
+        "sha256": "ec825ecdb4e1caf6e0130bf8f55149ee66c4661c1affeab4e0fcad4119143bc0"
+      },
+      {
+        "symbol": "allowedWorktreeRoot",
+        "start_line": 666,
+        "end_line": 674,
+        "sha256": "32c1b84bc71052963bcb61ceabec06f0028c35f73059854cb2d8eae48758aea9"
+      },
+      {
+        "symbol": "_resetAllowedWorktreeRoot",
+        "start_line": 679,
+        "end_line": 681,
+        "sha256": "316bee94171ed3721bdd76c2fe848ff0d43cee92993d92e1e716415a47d0077b"
+      },
+      {
+        "symbol": "assertContainedWorktree",
+        "start_line": 685,
+        "end_line": 694,
+        "sha256": "500180293cfbc6b71ced0c9267b2ca64a4e9434b9750fbeb1b0847c360239eed"
+      },
+      {
+        "symbol": "runGate",
+        "start_line": 703,
+        "end_line": 722,
+        "sha256": "f77ffafcf50a0cd223effce4f29bcf08155639fd889666ab65a18bb8233458ce"
+      },
+      {
+        "symbol": "renderInjectedFile",
+        "start_line": 754,
+        "end_line": 759,
+        "sha256": "da105f753cd6cc036878086b33ac20d53c702596c27d5a557281923c17b76427"
+      },
+      {
+        "symbol": "TRUNCATION_MARKER",
+        "start_line": 761,
+        "end_line": 761,
+        "sha256": "8c1559accca3d0a7a9735dd5f5e46d3d3a5db764f384391f04c0d5ec66b51461"
+      },
+      {
+        "symbol": "CURRENT_CONTEXT",
+        "start_line": 762,
+        "end_line": 762,
+        "sha256": "c274f81d99a11ebebe84138165d80f5fe833dcee94e2cb39d0f957a4f0908696"
+      },
+      {
+        "symbol": "PRIOR_CONTEXT",
+        "start_line": 763,
+        "end_line": 763,
+        "sha256": "6b5b3bf7e0c366a59f1e901b6f1ffe2f95ad3dc93ea42d3a11d31256e57ac8b8"
+      },
+      {
+        "symbol": "utf8Prefix",
+        "start_line": 766,
+        "end_line": 771,
+        "sha256": "9e1e07465c46beda8fbc4404728e5fd04c0429220c5e0dd07593d0ee8f66e05d"
+      },
+      {
+        "symbol": "capInjected",
+        "start_line": 774,
+        "end_line": 806,
+        "sha256": "044598d6da5e16537b87399e7ce5c28bffbd986fda4606f032bf4f12b3c51faf"
+      },
+      {
+        "symbol": "buildEnrichment",
+        "start_line": 808,
+        "end_line": 859,
+        "sha256": "86d89dc9ef9b9ff05211ae0afbfc75eaca9f5188767e59f97aa63c6d972001cf"
+      },
+      {
+        "symbol": "captureInScope",
+        "start_line": 869,
+        "end_line": 885,
+        "sha256": "e92ab2bf323e335b5efd8e9b80d7b079dc44fdbc18fd6083f1d31077a4073532"
+      },
+      {
+        "symbol": "buildPrompt",
+        "start_line": 893,
+        "end_line": 934,
+        "sha256": "cfcd36d71d61afe5c2896c93f8325f980388aff1f6a5a26a78b9e1aa4e6f3efb"
+      },
+      {
+        "symbol": "extractFileBlocks",
+        "start_line": 941,
+        "end_line": 980,
+        "sha256": "bf84da582b4aa9354c2c92ec144501aa08fb9a2fc127ea567e42a817ac27c649"
+      },
+      {
+        "symbol": "diagnosticApiOrigin",
+        "start_line": 1001,
+        "end_line": 1009,
+        "sha256": "19d3bdecda54b1bdde6d92ef7c67bb905c413897c3fe5e14331384306ac70938"
+      },
+      {
+        "symbol": "reportedUsage",
+        "start_line": 1020,
+        "end_line": 1029,
+        "sha256": "5852cdeed6b30921c83b2f3aefea4a8bee3c396d47e0630072174c6e1da70bd6"
+      },
+      {
+        "symbol": "parseChatCompletion",
+        "start_line": 1031,
+        "end_line": 1067,
+        "sha256": "fbd2288975324ec36c3e40770ba778dfde14ab0155689e43d7569e84d79173b7"
+      },
+      {
+        "symbol": "readSampling",
+        "start_line": 1083,
+        "end_line": 1088,
+        "sha256": "3386bbb88ea3343b49843f65c95fb6cd6b4d58990d0856434cd7d0bfe7af55c2"
+      },
+      {
+        "symbol": "buildChatBody",
+        "start_line": 1090,
+        "end_line": 1098,
+        "sha256": "5a83d6a8e8835be83779a80752ec3a99bd661cb995bd3c1a3c8122157f23dbef"
+      },
+      {
+        "symbol": "MAX_API_TIMER_MS",
+        "start_line": 1105,
+        "end_line": 1105,
+        "sha256": "43f9063e86c369def6ae55071a14bdab37a9b7ff0c9e0d421813c5deb2163b4b"
+      },
+      {
+        "symbol": "HTTP_MONTHS",
+        "start_line": 1106,
+        "end_line": 1106,
+        "sha256": "7e0ca0d6d735a8780bb896e37ab7f6676aaea7688310f09f82a1fa297e90e5e8"
+      },
+      {
+        "symbol": "HTTP_DAYS",
+        "start_line": 1107,
+        "end_line": 1107,
+        "sha256": "943891ed0048ec4d275f3716d6160f44e65421f0826dcd9a3ddbb8ad29d01d9a"
+      },
+      {
+        "symbol": "httpDateMillis",
+        "start_line": 1109,
+        "end_line": 1137,
+        "sha256": "ce6c52e88b0f35b72e4c7ee56348dc47bcbd668be7024377aec34525f81e30f2"
+      },
+      {
+        "symbol": "apiRetryDelay",
+        "start_line": 1141,
+        "end_line": 1156,
+        "sha256": "824235813fdbb113b7979db0be0080c5e44bcb5c0d0a9ccd8652e3ae12d219bb"
+      },
+      {
+        "symbol": "callApi",
+        "start_line": 1158,
+        "end_line": 1228,
+        "sha256": "3aed13977efb27226660153c5064778216c691fb663da37538ec75ab9dcc71f9"
+      },
+      {
+        "symbol": "runWorker",
+        "start_line": 1230,
+        "end_line": 1285,
+        "sha256": "6855df70a3653c2cc8ba30988b90765345fe1a64449839166b05eda35f1bc133"
+      },
+      {
+        "symbol": "httpWorker",
+        "start_line": 1316,
+        "end_line": 1319,
+        "sha256": "1b4e8544572b99610812be587608a60b336770d32367b6e0a2a396d4811fb136"
+      },
+      {
+        "symbol": "checkDrift",
+        "start_line": 1335,
+        "end_line": 1352,
+        "sha256": "1bdc09b6c44485780f47967e2fdc61bc870f0b455e382f88b02d0602855c6e84"
+      },
+      {
+        "symbol": "postApplySweep",
+        "start_line": 1378,
+        "end_line": 1398,
+        "sha256": "953f659cb53d9698e2b8b3b36282a65363171989a31b7f90cf52dc6973f113a8"
+      },
+      {
+        "symbol": "fileHash",
+        "start_line": 1406,
+        "end_line": 1413,
+        "sha256": "8517b7323e288b119a26f10d5b5c22224582dcb2a88aea737d3719b233fc5006"
+      },
+      {
+        "symbol": "resetWorktree",
+        "start_line": 1420,
+        "end_line": 1426,
+        "sha256": "3b403f81cc80140227091897d885ab9dd81a612379e8b582ae0618a8cce1c071"
+      },
+      {
+        "symbol": "gateFailureFields",
+        "start_line": 1447,
+        "end_line": 1452,
+        "sha256": "82054a8751c1f9ad5efd41ae99d4379d1711c8026e13a3a892767596428527b0"
+      },
+      {
+        "symbol": "setupFingerprint",
+        "start_line": 1454,
+        "end_line": 1459,
+        "sha256": "bd0bcb08aa0619958bb2735a4f95000b7fa47e45f2340a009a0b8ff6a492aa40"
+      },
+      {
+        "symbol": "runSetupPhases",
+        "start_line": 1462,
+        "end_line": 1482,
+        "sha256": "ff132f20e08631ffe8d0c4831e74ed1b1deea4a0276c87866b4775e576f739fd"
+      },
+      {
+        "symbol": "mintRunId",
+        "start_line": 1539,
+        "end_line": 1541,
+        "sha256": "6171be780fbde342d93bf995d825c9b8d7458405d4fbaf4cf9f637e11730cfe5"
+      },
+      {
+        "symbol": "msgOf",
+        "start_line": 1543,
+        "end_line": 1543,
+        "sha256": "54112e1937ad438263f389d1552f045ce271eb076a8e360e49aaa94408ebd53e"
+      },
+      {
+        "symbol": "SAFE_RUN_ID",
+        "start_line": 1551,
+        "end_line": 1551,
+        "sha256": "cc0647f49b194568e219de4c90313f2e5029c659b6706ef0901efaea02f91626"
+      },
+      {
+        "symbol": "RESERVED_RUN_ID_STEM",
+        "start_line": 1569,
+        "end_line": 1569,
+        "sha256": "b9c103319c702fe720896e07146ac7048584d888e255c3d2a3edcf17de07ee10"
+      },
+      {
+        "symbol": "assertSafeRunId",
+        "start_line": 1570,
+        "end_line": 1581,
+        "sha256": "4966e6e7bfbe0d2270637552566631310988344ac7094fbb69f39d71a353106b"
+      },
+      {
+        "symbol": "runArtifactDir",
+        "start_line": 1591,
+        "end_line": 1593,
+        "sha256": "9d3c04431e23fe6e398fc84cbac53623609c111c8d28ec053ce7e85eef4e5929"
+      },
+      {
+        "symbol": "renameWithRetry",
+        "start_line": 1599,
+        "end_line": 1610,
+        "sha256": "d9efac7922194434c7a999f7d4bd254d4db45694f946032236aacfcece32968e"
+      },
+      {
+        "symbol": "atomicWriteFile",
+        "start_line": 1637,
+        "end_line": 1677,
+        "sha256": "3129dde2a89033be41f28711d3f7ee949e4cf69ed961ef2b41bae6f15eeca591"
+      },
+      {
+        "symbol": "newRunArtifactHealth",
+        "start_line": 1718,
+        "end_line": 1726,
+        "sha256": "7dea8a1a8330c443056f2ae1bb3d586a98aa023d2444b2ac255e60b481087821"
+      },
+      {
+        "symbol": "projectPlanMetaForReport",
+        "start_line": 1757,
+        "end_line": 1761,
+        "sha256": "e81809ebea489d1f6543e421f9a8de5adaa579b1439b5f57639585915b741f94"
+      },
+      {
+        "symbol": "MAX_RECORDED_ARTIFACT_ERRORS",
+        "start_line": 1765,
+        "end_line": 1765,
+        "sha256": "c95116241e4788092aaab3bad1b945ab72865f99f6345a9bec842851c5a2178e"
+      },
+      {
+        "symbol": "noteArtifactError",
+        "start_line": 1773,
+        "end_line": 1777,
+        "sha256": "b8d8214fb529f4444d0b405a7ee5cf3821c2dfe6787c7776ea73a4c026eb180f"
+      },
+      {
+        "symbol": "noteUnavailableDiff",
+        "start_line": 1783,
+        "end_line": 1798,
+        "sha256": "a9249cad1614126d32002ddf691140ec5d917c48239ab6c0d793ddc83cfa7236"
+      },
+      {
+        "symbol": "mergeChain",
+        "start_line": 1802,
+        "end_line": 1802,
+        "sha256": "aa421f1bf24971b9b390b3adc921900d08bc722356305d4e85abb023e3b9eb78"
+      },
+      {
+        "symbol": "integrationWorktree",
+        "start_line": 1803,
+        "end_line": 1803,
+        "sha256": "bce7c4c40879d58aee35d7296a70eacdff3cdcbb6c05c4d21ff39c987165a3e8"
+      },
+      {
+        "symbol": "withMergeLock",
+        "start_line": 1805,
+        "end_line": 1809,
+        "sha256": "dcfec1fb6b8596945e1738eafd67d1586ff54afd7aa35709e762c860f31fb0dc"
+      },
+      {
+        "symbol": "worktreeChain",
+        "start_line": 1833,
+        "end_line": 1833,
+        "sha256": "d5fdb65f5a2de4e0c427f8d23eed98854ec459e72fe0824dccf52091a6f2e351"
+      },
+      {
+        "symbol": "withWorktreeLock",
+        "start_line": 1835,
+        "end_line": 1839,
+        "sha256": "0d5210701e436a5eb34fd9f0c2984eaf6b01c08249734f207fcb10ec671a5de8"
+      },
+      {
+        "symbol": "prepareWorktree",
+        "start_line": 1845,
+        "end_line": 1861,
+        "sha256": "716f0d9c427d10aac44ff643623f0d73c7ab908ed90c63e5d84efee9f72768e1"
+      },
+      {
+        "symbol": "CLEANUP_ATTEMPTS",
+        "start_line": 1889,
+        "end_line": 1889,
+        "sha256": "0b85333e33c42f2def94a65747729dc6f05d9f9b59d065d6b9adbe42e009e11e"
+      },
+      {
+        "symbol": "CLEANUP_DELAY_MS",
+        "start_line": 1890,
+        "end_line": 1890,
+        "sha256": "5c7a79ae32c84bd823540af04f8cfa16dddaf771b2fd4ed4a65ae4f198eb62d6"
+      },
+      {
+        "symbol": "samePath",
+        "start_line": 1896,
+        "end_line": 1910,
+        "sha256": "d92ca54ec4e880d3c324be4270de3bf961d3ac7305ff3e751695b9e05dba4934"
+      },
+      {
+        "symbol": "stillRegistered",
+        "start_line": 1917,
+        "end_line": 1928,
+        "sha256": "0417d6af6b68d291dbddfd0d26a5b09f3d10e2342435bbe7c5e168c2c2ffaa2c"
+      },
+      {
+        "symbol": "observeWorktreePath",
+        "start_line": 1935,
+        "end_line": 1946,
+        "sha256": "a10c4600c329fb82dbc5256d5534000a79d53ff8de01ef77b29b91ce11d39189"
+      },
+      {
+        "symbol": "removeWorktreeVerified",
+        "start_line": 1953,
+        "end_line": 2019,
+        "sha256": "ab6a9064287817be2d33db9c6c2b95be81d83fb2ef37e1ec1af9bc3a731b06dd"
+      },
+      {
+        "symbol": "deleteBranchVerified",
+        "start_line": 2024,
+        "end_line": 2051,
+        "sha256": "d4e3b4163b80317ea8f4d7240d7d95bbeaa40a342249fb17bef0014a9cabd2b3"
+      },
+      {
+        "symbol": "runExitCode",
+        "start_line": 2058,
+        "end_line": 2065,
+        "sha256": "83e9f5d2d6982113501fb6653324fe6d845a196c510a8b6e4707cc141b694219"
+      },
+      {
+        "symbol": "cleanupFailures",
+        "start_line": 2070,
+        "end_line": 2082,
+        "sha256": "d15fc87c75fb1dcf38dfbcd9aecd85f2b5c38e3d12f635624fc163dd4cbeeade"
+      },
+      {
+        "symbol": "cleanupReportLines",
+        "start_line": 2088,
+        "end_line": 2099,
+        "sha256": "2ee0d16cfd70bdd2d2ff3e79618639c0fcf461385f61d57117adc435b1ee146a"
+      },
+      {
+        "symbol": "mutationSurvivalNote",
+        "start_line": 2120,
+        "end_line": 2125,
+        "sha256": "eacace99e136b2e13ef030d06697cf1313ef839c9632feb624d1b7d64970b8df"
+      },
+      {
+        "symbol": "defaultRunTaskDeps",
+        "start_line": 2145,
+        "end_line": 2156,
+        "sha256": "655baf42da8a837e8bd7a85318cd5a0f84c1173daca1eb499811673b764e02cf"
+      },
+      {
+        "symbol": "effectiveSampling",
+        "start_line": 2161,
+        "end_line": 2175,
+        "sha256": "2e2baa89884bf9502ce58ce1f14173fe6d84e6ace741b616ed878fa067ee9a65"
+      },
+      {
+        "symbol": "writeFilesInto",
+        "start_line": 2183,
+        "end_line": 2189,
+        "sha256": "e4aa6012c0bb9a4d6c839c83ff5f549b756b66907571c85a28a5422468144410"
+      },
+      {
+        "symbol": "bestOfN",
+        "start_line": 2222,
+        "end_line": 2368,
+        "sha256": "02bd806137d6b1400527398433153dc54e44298d03b3219e21e318122d36b656"
+      },
+      {
+        "symbol": "prepareEvaluationWorktree",
+        "start_line": 2374,
+        "end_line": 2386,
+        "sha256": "ff0963415c4e9d5be8738d9eb6412b4621c410a387a943b3131c1fe55a7bb483"
+      },
+      {
+        "symbol": "runTask",
+        "start_line": 2388,
+        "end_line": 2811,
+        "sha256": "a8fdc7cbbdf3e7078c4bb196e4f0b7321ee932cac102bb2a22e46b16d961285b"
+      },
+      {
+        "symbol": "SAFE_TASK_ID",
+        "start_line": 2833,
+        "end_line": 2833,
+        "sha256": "40dcd84bb244fdf8edcf502fd200db64ae0ad083d8a7a94b76116b83b598e23c"
+      },
+      {
+        "symbol": "LOOPBACK_HOSTS",
+        "start_line": 2847,
+        "end_line": 2847,
+        "sha256": "04cf897d2e29083c59afb46347ab5930c597ae628ed2c7b2a18b504bad41ba64"
+      },
+      {
+        "symbol": "assertSecureBaseUrl",
+        "start_line": 2849,
+        "end_line": 2864,
+        "sha256": "311af8552f504aadbeda5f421a037453702ca351488913492cf1b51324c5c7d1"
+      },
+      {
+        "symbol": "PLAN_SHAPE",
+        "start_line": 2893,
+        "end_line": 2929,
+        "sha256": "79eeee6b06a988e13d9b6cf2814c176b51148151870f0eddbeeea3db04d35e78"
+      },
+      {
+        "symbol": "PLAN_NON_EMPTY",
+        "start_line": 2934,
+        "end_line": 2934,
+        "sha256": "2b7fca79d5ec5434e22781b98907a60eb56de56abf26b8bfb1e93ee1fba644da"
+      },
+      {
+        "symbol": "PLAN_INT_MIN",
+        "start_line": 2936,
+        "end_line": 2936,
+        "sha256": "1688e61213ca7a9126d7cb27d517bae921199cedd32d8a166045d98b854633fc"
+      },
+      {
+        "symbol": "PLAN_LABEL_MAX",
+        "start_line": 2938,
+        "end_line": 2938,
+        "sha256": "b997c30b61d908aa142ca4e8407cf6b6f74469de2c67d0d51932bc0830406a59"
+      },
+      {
+        "symbol": "clipLabel",
+        "start_line": 2939,
+        "end_line": 2939,
+        "sha256": "b5fa1e8c6776aa10eedc4c9c07d3c6f500fadac1ba67e1a8120959b24e1fc1f5"
+      },
+      {
+        "symbol": "jsonTypeName",
+        "start_line": 2940,
+        "end_line": 2940,
+        "sha256": "094fa20c29122cb50afd5bb07b10dd4e843d086f94f8f02560d960dc49b214b7"
+      },
+      {
+        "symbol": "isJsonObject",
+        "start_line": 2941,
+        "end_line": 2942,
+        "sha256": "ebe83daec4304ecf7673152f60c33bfc7ebfcfd190a9c2aaba9a0998c20c5879"
+      },
+      {
+        "symbol": "checkPlanField",
+        "start_line": 2944,
+        "end_line": 2976,
+        "sha256": "b07f89e24a890f4e8ef93c2cb03e4c5c063837330e4641439b19c3068f766f8a"
+      },
+      {
+        "symbol": "checkPlanObject",
+        "start_line": 2978,
+        "end_line": 2993,
+        "sha256": "e997a37cf4192747f68d58056d4f5fd418d3f3a90faafb889737cd73d3847313"
+      },
+      {
+        "symbol": "parsePlan",
+        "start_line": 3000,
+        "end_line": 3003,
+        "sha256": "4ca90d706876aa7566e298d83befdef5496b2aaf0d69371f3d0f7e401b3fef93"
+      },
+      {
+        "symbol": "validate",
+        "start_line": 3005,
+        "end_line": 3096,
+        "sha256": "a179aa39fd82c15d2e3a649c68e934e2de07ab2be0362a3abda6d9b70bedefb7"
+      },
+      {
+        "symbol": "resolveConfig",
+        "start_line": 3098,
+        "end_line": 3119,
+        "sha256": "073dd224d1067cec8ed083cbf11b9a753587bc3c38953c24208667055f44c3c3"
+      },
+      {
+        "symbol": "screenEntitlements",
+        "start_line": 3136,
+        "end_line": 3170,
+        "sha256": "1af0af9741c13b8e9563d49a12e425875aee04b5fbfbd21c6eeacced44bec6b9"
+      },
+      {
+        "symbol": "makeEntitlementProbe",
+        "start_line": 3181,
+        "end_line": 3203,
+        "sha256": "70badcdbcf9f0d836e29b93c2c81248fd3e977c83d4fdf9b0a200e30097642c7"
+      },
+      {
+        "symbol": "runCanary",
+        "start_line": 3208,
+        "end_line": 3296,
+        "sha256": "e928586bb5a7f2ee1b9d5fa8b86545117b313af9f74122b0e5605ab714e8aa49"
+      },
+      {
+        "symbol": "selectReadyTasks",
+        "start_line": 3302,
+        "end_line": 3322,
+        "sha256": "e4f45d73d9bf71fd012b2895d4585c7cb057b3451636e0ec4e9261d03083d9b3"
+      },
+      {
+        "symbol": "main",
+        "start_line": 3327,
+        "end_line": 3682,
+        "sha256": "1a65a0f98b879272eb329df6c7b6b762d50c6b939b9bb176f59fa17b65979f7b"
+      },
+      {
+        "symbol": "writeReport",
+        "start_line": 3684,
+        "end_line": 3842,
+        "sha256": "e84bc3448f9ab3d2420132f65d6b15c77fda2fdf2758a2ff17b1691a4e24166d"
+      },
+      {
+        "symbol": "_thisFile",
+        "start_line": 3846,
+        "end_line": 3846,
+        "sha256": "44c93d95e49883750bccf8ababf5865b2911956c13d9f4fd4bc983974fbf24ba"
+      },
+      {
+        "symbol": "_entryFile",
+        "start_line": 3847,
+        "end_line": 3847,
+        "sha256": "91905052f1cc523c64670190c046511789ece98d24d93c82f5075df913db83cb"
+      },
+      {
+        "symbol": "direct-entry",
+        "start_line": 3848,
+        "end_line": 3853,
+        "sha256": "099480ad7e05cbf0fb9115172e396d2fc1b55b4e444f527ca74893b2d346fa12"
+      }
+    ]
+  },
+  "plugins/ca/tools/worktree-fs.ts": {
+    "whole_file_sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+    "physical_review_sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "UNSAFE_MESSAGE",
+        "start_line": 7,
+        "end_line": 7,
+        "sha256": "9598901194410f0d586cd7808068d8cef561afff4666fedc797e612b2e94fee1"
+      },
+      {
+        "symbol": "isUnsafeWorktreePathError",
+        "start_line": 16,
+        "end_line": 18,
+        "sha256": "7bdca060212199d6138f0924953857dea97997298c9fcb17261a6d9369059af8"
+      },
+      {
+        "symbol": "unsafe",
+        "start_line": 25,
+        "end_line": 27,
+        "sha256": "eae96525c3b5ebcfe4c649ed398ee55f46f09228fe286b854bb4bdb1a8d00afb"
+      },
+      {
+        "symbol": "isMissing",
+        "start_line": 29,
+        "end_line": 31,
+        "sha256": "ad65956b6362423c89735001af72c630e66a2d92757862fce526616a2421d4b5"
+      },
+      {
+        "symbol": "contained",
+        "start_line": 33,
+        "end_line": 36,
+        "sha256": "30af2d0faf85b4cf1891fb378268d0c08a7889e33d19176c8dfeb09c5dbb1bf9"
+      },
+      {
+        "symbol": "canonicalizeAncestors",
+        "start_line": 59,
+        "end_line": 79,
+        "sha256": "768c9dd430691ce8b8f51a7557596f4b700a018401616cca10729fb484d7c6cc"
+      },
+      {
+        "symbol": "sameFile",
+        "start_line": 81,
+        "end_line": 83,
+        "sha256": "c6ef1fddfb1ff7797a67037f86eb1e1663dc84a9525315d8bff297c526e672bf"
+      },
+      {
+        "symbol": "safeRegularFile",
+        "start_line": 85,
+        "end_line": 87,
+        "sha256": "dd0ce6ccb1d71946741f26a3c16fc1252a7f315999dcba6f2016624c104085a8"
+      },
+      {
+        "symbol": "writeWorktreeFile",
+        "start_line": 95,
+        "end_line": 194,
+        "sha256": "f07be146f2349db2ddad931d56649c05f34b225a697bde408fcf51b68a40abf2"
+      }
+    ]
+  },
+  "plugins/ca/tools/exec.ts": {
+    "whole_file_sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "physical_review_sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "EXIT_TIMEOUT",
+        "start_line": 44,
+        "end_line": 44,
+        "sha256": "46f86dc2eb10cd14fae2ba01bc6bc7a447d29493aeb9836735dc053c8f55aa8c"
+      },
+      {
+        "symbol": "EXIT_TIMEOUT_UNCLEAN",
+        "start_line": 45,
+        "end_line": 45,
+        "sha256": "6094b97b699d4a718a46b4fedbbefedaec12458bfeaa8806c347de4e8c6a572d"
+      },
+      {
+        "symbol": "[SHELL_BIN, SHELL_FLAG]",
+        "start_line": 49,
+        "end_line": 50,
+        "sha256": "fe810576e38aa72ffe086402ec1955ceadd669ce319dc42d8d86a3af2d01cc33"
+      },
+      {
+        "symbol": "SHELL_OPTS",
+        "start_line": 54,
+        "end_line": 55,
+        "sha256": "5280024c8f7044b95c3ea8ba93d05c5e491207220adabd1786644146e4d181aa"
+      },
+      {
+        "symbol": "numEnv",
+        "start_line": 69,
+        "end_line": 84,
+        "sha256": "e97009d2a955ace24d0b32df31bafa7f21feec9e74255c7c8d51c46b7ef132e2"
+      },
+      {
+        "symbol": "GATE_TIMEOUT_MS",
+        "start_line": 93,
+        "end_line": 93,
+        "sha256": "689395f4aa14789ade7c506a13dfafc83ad01d555a8a360c558b6a5786487ecd"
+      },
+      {
+        "symbol": "KILL_VERIFY_DEFAULT_MS",
+        "start_line": 100,
+        "end_line": 100,
+        "sha256": "eec4ef39b868fdb2d88d1a74c01916cf848b1f94550185da5a810001ae84bb82"
+      },
+      {
+        "symbol": "taskkillPath",
+        "start_line": 118,
+        "end_line": 121,
+        "sha256": "bca9fa0192957561d6ce47776fa5f6e3b9d87c20f2704790a30605eefcb4c9cd"
+      },
+      {
+        "symbol": "pidPresent",
+        "start_line": 127,
+        "end_line": 134,
+        "sha256": "5d24df5664792e89b7e45fc5fe81c93939565eca2bea511dc32ec9482e7245ef"
+      },
+      {
+        "symbol": "waitUntilGone",
+        "start_line": 136,
+        "end_line": 142,
+        "sha256": "a029a55409e99d208c287790d0ec33713d2bc4ff1702afbf3d6e1f08782ee470"
+      },
+      {
+        "symbol": "awaitTaskkill",
+        "start_line": 148,
+        "end_line": 178,
+        "sha256": "84ab86ac8b4c2a048144860cbd2846077a6c3134cea17d90e6510316eaeaae50"
+      },
+      {
+        "symbol": "treeKill",
+        "start_line": 200,
+        "end_line": 246,
+        "sha256": "3e45255fbe2c029cf76177e464dc126d165d446c913cce9a364e5a4250755637"
+      },
+      {
+        "symbol": "scrubbedEnv",
+        "start_line": 255,
+        "end_line": 260,
+        "sha256": "4e1514b621c143e9421a9f042ff85371f30f7b1a3fd644a76f264354942d83ce"
+      },
+      {
+        "symbol": "run",
+        "start_line": 276,
+        "end_line": 342,
+        "sha256": "9ceba5d5ed913d7a5eaa9eed31faf6dd2524a63cb733c7c9789e10b921adf8a8"
+      },
+      {
+        "symbol": "readWorktreeFile",
+        "start_line": 351,
+        "end_line": 357,
+        "sha256": "bbd9106b513a96e8ef372b30565548ada4debf6b282cf5943590a8d5ae83392b"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/docker.ts": {
+    "whole_file_sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "physical_review_sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "DOCKER_ENV",
+        "start_line": 25,
+        "end_line": 25,
+        "sha256": "ce159a1f462378413feadbd14ec0859d37b78eb5195d31989e93066b76ea9d26"
+      },
+      {
+        "symbol": "DEFAULT_DOCKER_TIMEOUT_MS",
+        "start_line": 69,
+        "end_line": 69,
+        "sha256": "e02972296939bbe6376836e79000f21d74a78e02c20f3a7f955001b4bd0c872e"
+      },
+      {
+        "symbol": "DOCKER_OPERATION_TIMEOUTS_MS",
+        "start_line": 80,
+        "end_line": 100,
+        "sha256": "aa180d2daf9f1ef57a08db4a844c220ae541b10534a9a31b8e84c9600f318e65"
+      },
+      {
+        "symbol": "timeoutForArgs",
+        "start_line": 103,
+        "end_line": 105,
+        "sha256": "a255a79fc76dc35336e991058ba73ad0f2607aa7fe2a8ec87bd01e9fe79518f5"
+      },
+      {
+        "symbol": "DOCKER_TIMEOUT_EXIT_CODE",
+        "start_line": 108,
+        "end_line": 108,
+        "sha256": "a9ecd7188721711a0e86574d4c747bc1f7237a5e4810889f39c0182c634c861a"
+      },
+      {
+        "symbol": "DOCKER_ABORT_EXIT_CODE",
+        "start_line": 111,
+        "end_line": 111,
+        "sha256": "bc6ddf8c894034f787f2403bb3db04e335b663285b182b90a402457aa08ae1f8"
+      },
+      {
+        "symbol": "DEFAULT_DOCKER_MAX_BUFFER",
+        "start_line": 128,
+        "end_line": 128,
+        "sha256": "5e96fc87e557ab66406665a799303ad6cf89d98b90c9bc935b5a2f2f37ed1a82"
+      },
+      {
+        "symbol": "runDocker",
+        "start_line": 174,
+        "end_line": 299,
+        "sha256": "10ebab982f4a8d0698502d8ef0bde38baa4ffff6483f1d187462247599bce13b"
+      },
+      {
+        "symbol": "defaultDockerRun",
+        "start_line": 306,
+        "end_line": 308,
+        "sha256": "ca31aebd758a0a600e7512c401f418a2783817856fa3f5daf18a488952fb5e7d"
+      },
+      {
+        "symbol": "makeDockerRun",
+        "start_line": 320,
+        "end_line": 325,
+        "sha256": "103a10b4ad26306281ce94b5803225c28b17a7db73489654ca5f71cfa9eeb09f"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/create.ts": {
+    "whole_file_sha256": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+    "physical_review_sha256": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "CLONE_IMAGE",
+        "start_line": 60,
+        "end_line": 61,
+        "sha256": "b395c9ee5490f677a3961f1775365f1553174f1d589a138197dc8455edb93ca7"
+      },
+      {
+        "symbol": "APP_DIR",
+        "start_line": 63,
+        "end_line": 63,
+        "sha256": "4d6ca5fbed13de917b31563a7f800dbebbae5633865b3e8040e3e7dd5c846ae1"
+      },
+      {
+        "symbol": "VOLUME_PREFIX",
+        "start_line": 65,
+        "end_line": 65,
+        "sha256": "c0e8adb51944b026781aa7a960860d46b8f6e9c0a910bbcf902457e864535dca"
+      },
+      {
+        "symbol": "CLONE_TIMEOUT_MS",
+        "start_line": 75,
+        "end_line": 75,
+        "sha256": "e666830f4d436806f5a8fd8eb62266baf72783285ef5b32b4c0f1a772919df46"
+      },
+      {
+        "symbol": "CP_TIMEOUT_MS",
+        "start_line": 81,
+        "end_line": 81,
+        "sha256": "8406ff013a290da54290ee9bdc91631b3e40cf31216614fca3cfd27dbd3e8f6d"
+      },
+      {
+        "symbol": "compensateCreate",
+        "start_line": 107,
+        "end_line": 126,
+        "sha256": "a653f297678d95f39873bf4d9976f8be7eddbec6eae84f2cd76584a112088406"
+      },
+      {
+        "symbol": "validateRepoUrl",
+        "start_line": 186,
+        "end_line": 203,
+        "sha256": "76fe13d512773491e5a7213f4c116a8ff488d076c24761e25153283cdc903130"
+      },
+      {
+        "symbol": "newSandboxId",
+        "start_line": 221,
+        "end_line": 223,
+        "sha256": "2316f7f27a3bd9b2228d506e01210c124323ea98b21662a1f6ee37c2a68c3e99"
+      },
+      {
+        "symbol": "spawnAsync",
+        "start_line": 239,
+        "end_line": 243,
+        "sha256": "698aa91aa354ce3a0071448579915a3b343afcbeb3c8a741c7c6489692c0af4c"
+      },
+      {
+        "symbol": "defaultCloneRepo",
+        "start_line": 254,
+        "end_line": 261,
+        "sha256": "fa7947d9648894fc1cbd9312a4406a434360aa010a04df39115a9faf3516b189"
+      },
+      {
+        "symbol": "buildCloneArgs",
+        "start_line": 277,
+        "end_line": 297,
+        "sha256": "355a2fa4e2e8a93166d4cda2d7b0441f1e530993bb6f507388437b68860f1f68"
+      },
+      {
+        "symbol": "buildCpHelperCreateArgs",
+        "start_line": 308,
+        "end_line": 322,
+        "sha256": "b61e1b65dc8ecc0beddf4010374e2d41364d47cf3fa27a83ca41a18527cb2a15"
+      },
+      {
+        "symbol": "defaultBuildImage",
+        "start_line": 336,
+        "end_line": 371,
+        "sha256": "72929bbe3d9cb6e60c68f22d1d5656a944a2ea1a646e1efaf0cef92a144d6f75"
+      },
+      {
+        "symbol": "MANIFEST_NAMES",
+        "start_line": 373,
+        "end_line": 389,
+        "sha256": "fa4bc97e5dacc7771dab5ad196968ee1676e2c416e583033272fe5fc0143b39b"
+      },
+      {
+        "symbol": "readManifests",
+        "start_line": 391,
+        "end_line": 421,
+        "sha256": "20d8eb3321ea790cdb2808173dc615b5f78ea32aaeef7e77d520c2e178de0ee0"
+      },
+      {
+        "symbol": "createSandbox",
+        "start_line": 431,
+        "end_line": 501,
+        "sha256": "e27ca894db8f78d53dfdf4e8723f4def58d22c2001e5ddd24918972cb65f74a7"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/run.ts": {
+    "whole_file_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "physical_review_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "APP_DIR",
+        "start_line": 48,
+        "end_line": 48,
+        "sha256": "4d6ca5fbed13de917b31563a7f800dbebbae5633865b3e8040e3e7dd5c846ae1"
+      },
+      {
+        "symbol": "SANDBOX_LABEL",
+        "start_line": 50,
+        "end_line": 50,
+        "sha256": "2e2483535cbc0dc2571001be94d431a84eb36950372d352339863a27bd2f4565"
+      },
+      {
+        "symbol": "SANDBOX_USER",
+        "start_line": 52,
+        "end_line": 52,
+        "sha256": "54a4b055bf0e357d5ae9c40d0b96aba5c3a2e9d7050198eef998dd56c168dd9d"
+      },
+      {
+        "symbol": "NETWORKED_POLICIES",
+        "start_line": 73,
+        "end_line": 73,
+        "sha256": "0759c1e2bfe35211411ec2de859b36d5e55d3a81c56e6f757ddc675693ee25f0"
+      },
+      {
+        "symbol": "ordinaryNetworkCapability",
+        "start_line": 74,
+        "end_line": 76,
+        "sha256": "6488e3ef9f4cc45448013c029b91d973734cd028d6d2111552e784e676d1b266"
+      },
+      {
+        "symbol": "hardeningFlags",
+        "start_line": 122,
+        "end_line": 143,
+        "sha256": "1f0c01da5a2d471a7c4015e81a0619a4e47917879e8b158e6e52865b75b8f2f2"
+      },
+      {
+        "symbol": "buildRunArgs",
+        "start_line": 145,
+        "end_line": 193,
+        "sha256": "71ae76339ee0ef6a1e97b1faa89a4e4457bb2ad540482fd76ae43b2454292630"
+      },
+      {
+        "symbol": "runContainer",
+        "start_line": 207,
+        "end_line": 222,
+        "sha256": "0660ca72e3dd99d3091048f6cf6a22d5063ec3bdc8382d455e54dac4cea1a146"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/mounts.ts": {
+    "whole_file_sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "physical_review_sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "looksLikeShorthand",
+        "start_line": 72,
+        "end_line": 74,
+        "sha256": "b6b2a23c4fe37e8e6e160929f5fb376b5b51619f50a7f08bc06d6e479d5f4904"
+      },
+      {
+        "symbol": "renderSpec",
+        "start_line": 80,
+        "end_line": 134,
+        "sha256": "172a3b8b811db5d757111722f1174bade5b2e14ec39f4758399df90ece8c2d7d"
+      },
+      {
+        "symbol": "buildMountArgs",
+        "start_line": 145,
+        "end_line": 157,
+        "sha256": "6d87d689020cf0ecfe73c734c3d341ee92e8c48c5bc38a29aab89f4e0e260f1e"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/dephash.ts": {
+    "whole_file_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "physical_review_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "DEPHASH_LENGTH",
+        "start_line": 43,
+        "end_line": 43,
+        "sha256": "3156819868d024512687edd56700001e97fba0047e9afc2f1a96325dc6fe22f3"
+      },
+      {
+        "symbol": "sha256Hex",
+        "start_line": 45,
+        "end_line": 53,
+        "sha256": "b8febfe7ec779137b78bfc163de6eff79d8f0c6ec82794bd3cf1917a58f531c2"
+      },
+      {
+        "symbol": "computeDepHash",
+        "start_line": 65,
+        "end_line": 82,
+        "sha256": "0ae82545055266a569a6b2188ea8f179ecdf7bb5f6a2f892e6d5308b716f9a71"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/build.ts": {
+    "whole_file_sha256": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+    "physical_review_sha256": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "IMAGE_PREFIX",
+        "start_line": 14,
+        "end_line": 14,
+        "sha256": "4788b27148e17cb3db3421c47698d23340b48135c95719d62a04e215ccdc93c5"
+      },
+      {
+        "symbol": "DEPS_DIR",
+        "start_line": 16,
+        "end_line": 16,
+        "sha256": "9ce318da0e89476b01267fec53b9a138d81dabc1105700d9ee175ea55b291613"
+      },
+      {
+        "symbol": "APP_DIR",
+        "start_line": 18,
+        "end_line": 18,
+        "sha256": "4d6ca5fbed13de917b31563a7f800dbebbae5633865b3e8040e3e7dd5c846ae1"
+      },
+      {
+        "symbol": "NIXPACKS_APP_DIR",
+        "start_line": 22,
+        "end_line": 22,
+        "sha256": "0a3497d11da386222f0f8e0c75370238723e55a41ff941bc9ec93b870faf3139"
+      },
+      {
+        "symbol": "FALLBACK_BASE_IMAGE",
+        "start_line": 33,
+        "end_line": 34,
+        "sha256": "d691d97f4033cffa3c1d2ad7f381695c60ccfc908bbcb652c07ea870970e8c32"
+      },
+      {
+        "symbol": "NIXPACKS_BASE_IMAGE",
+        "start_line": 38,
+        "end_line": 39,
+        "sha256": "1e268a78f46005704c15a7e21eb27636a617e418bebb25bfdc6ee0768c694661"
+      },
+      {
+        "symbol": "NIXPACKS_GENERATOR_ARGS",
+        "start_line": 40,
+        "end_line": 40,
+        "sha256": "71e6f6f0efcc01b0506ece909c22684160e5769790e61e478661f74e716f57f2"
+      },
+      {
+        "symbol": "NATIVE_RUNTIME_START",
+        "start_line": 41,
+        "end_line": 41,
+        "sha256": "55442e5e2f523a42648f821eabed92d5ea38a9b3df8340cc50f02ef36a9cef39"
+      },
+      {
+        "symbol": "MAX_NATIVE_INPUT_BYTES",
+        "start_line": 42,
+        "end_line": 42,
+        "sha256": "a88df6f03af456ecd57b5288c28659a8acec78327b471120e528d294eb12be87"
+      },
+      {
+        "symbol": "NIXPACKS_BUILD_PROFILE",
+        "start_line": 45,
+        "end_line": 53,
+        "sha256": "151d15d0cb7bbc272ea965207c1f53326aa699122aad34ee15603ef7dc6ea0b7"
+      },
+      {
+        "symbol": "nixpacksEnvironment",
+        "start_line": 54,
+        "end_line": 61,
+        "sha256": "755d8d4db485e49fde354a750602733df25264a74891490b69afddc7cc6c2557"
+      },
+      {
+        "symbol": "validateGeneratedImageInputs",
+        "start_line": 68,
+        "end_line": 140,
+        "sha256": "651eff84867e0798bc6178e9dc2d373bdde652976eb8f8ab268c19fc2988d74e"
+      },
+      {
+        "symbol": "BUILD_ENV",
+        "start_line": 169,
+        "end_line": 169,
+        "sha256": "96e9e53f32b27887a771fa98222c318bb16c39adcc43283cc630f55e9de2755b"
+      },
+      {
+        "symbol": "run",
+        "start_line": 178,
+        "end_line": 231,
+        "sha256": "16b5701378b2d2f6a311f514ea8e91558b6bb35c32228838f9f43f9d44d35552"
+      },
+      {
+        "symbol": "runForTests",
+        "start_line": 235,
+        "end_line": 235,
+        "sha256": "685df8511408351dc64a58408900c5e3220409d421c5b399feaa20912229c684"
+      },
+      {
+        "symbol": "imageTag",
+        "start_line": 241,
+        "end_line": 243,
+        "sha256": "f1dd21b59e04832c4886afe188021888ffaf765eda2f1f2a544458dc9bcff711"
+      },
+      {
+        "symbol": "CACHE_LABEL",
+        "start_line": 244,
+        "end_line": 244,
+        "sha256": "4b545be1fe7667ef12ac435dd58aad083464f7705e5bd0342f117e60bb484022"
+      },
+      {
+        "symbol": "reportBuildStage",
+        "start_line": 327,
+        "end_line": 337,
+        "sha256": "7dc6dea57ff9e4de3aa4930ecdd54f020ece153ae4bfda9408e80466f1bee06a"
+      },
+      {
+        "symbol": "defaultImageInspect",
+        "start_line": 342,
+        "end_line": 346,
+        "sha256": "7e5865ed218914b1cf854576fd98de01fdacb834b304b91293e56aaf9f970dea"
+      },
+      {
+        "symbol": "defaultImageIdentity",
+        "start_line": 348,
+        "end_line": 355,
+        "sha256": "58b55d5f03a7ab6a8c463607d573da5215811a46f477f51f3ab9f6da9f84e7bf"
+      },
+      {
+        "symbol": "defaultTargetPlatform",
+        "start_line": 356,
+        "end_line": 363,
+        "sha256": "6a5b6c08cc9c52484af912dc0f45538e69e6de3987b14a6001b40979a75e4db7"
+      },
+      {
+        "symbol": "buildIdentityArgs",
+        "start_line": 364,
+        "end_line": 367,
+        "sha256": "10c1a2e90aa87bca9e5a0dcfb19d7e456bd05cb6f78f1fc0eaab406c3675fc89"
+      },
+      {
+        "symbol": "observedNixpacksVersion",
+        "start_line": 369,
+        "end_line": 371,
+        "sha256": "05aca4be746daf85ccc48f94834f32900ea4b71713981dedb7f54128b7113b87"
+      },
+      {
+        "symbol": "defaultNixpacksVersion",
+        "start_line": 372,
+        "end_line": 377,
+        "sha256": "cc2e9f57ce906d872337f6470efc5aef5a563afe20bdff8735d355a44a033d64"
+      },
+      {
+        "symbol": "detectWslNixpacks",
+        "start_line": 386,
+        "end_line": 401,
+        "sha256": "ef65c3af4a5fd02b43e52cd09b7226667991ffc3cba19b351bd688d4983da9d4"
+      },
+      {
+        "symbol": "defaultEnsureNixpacks",
+        "start_line": 416,
+        "end_line": 453,
+        "sha256": "c8b6ee37078092c273fb712957e87be0977f506e264887c58c6e2f70c94c79bd"
+      },
+      {
+        "symbol": "generateDockerfile",
+        "start_line": 468,
+        "end_line": 498,
+        "sha256": "11799874662b2999226684482090311337ec917897833bc94b49a5a029665efd"
+      },
+      {
+        "symbol": "buildCapabilities",
+        "start_line": 501,
+        "end_line": 505,
+        "sha256": "7457aa9ab15a37328dbdee62df1948d3bde475f6dca6b211ea9371f7ff9f1c81"
+      },
+      {
+        "symbol": "detectStack",
+        "start_line": 506,
+        "end_line": 517,
+        "sha256": "b9cd131e223c5061931bdfd5a2147d6b3494b45b6f8ebbe4c88393857a65e42e"
+      },
+      {
+        "symbol": "inspectNativeProviderInputs",
+        "start_line": 525,
+        "end_line": 611,
+        "sha256": "b67d108cd1f715684d1a273f3561fde96febd4fbbc3eea6aca74ec24a3a75fb0"
+      },
+      {
+        "symbol": "relocationOverlay",
+        "start_line": 620,
+        "end_line": 641,
+        "sha256": "60f1dba9b68c9a71c68f4df7e86932d7238c7b785c8a00748d4ed700f8fb8712"
+      },
+      {
+        "symbol": "generateNixpacks",
+        "start_line": 650,
+        "end_line": 677,
+        "sha256": "8945a851b8da1a49008746ca4c8624efaa9bcc12304e51acb57efd4b2df39299"
+      },
+      {
+        "symbol": "runNixpacksBuild",
+        "start_line": 684,
+        "end_line": 736,
+        "sha256": "3acc940b79f2e679563581cf5d774f12b0d49cf75dca3ae1bd11ffee10f089b3"
+      },
+      {
+        "symbol": "verifyBuiltIdentity",
+        "start_line": 743,
+        "end_line": 749,
+        "sha256": "065958493736b3f64a7d8a0694d338dd46d57f0c3ff775fb2ff5cc8e75eee773"
+      },
+      {
+        "symbol": "defaultRunBuild",
+        "start_line": 750,
+        "end_line": 769,
+        "sha256": "3f3d7f74cbb3f5c50c5b4ecbeaaaa02603a97a7fd08425ff34e3025d57e0aad7"
+      },
+      {
+        "symbol": "defaultBuildDeps",
+        "start_line": 771,
+        "end_line": 780,
+        "sha256": "e515523bdf786afbf15a159ab1e029983179d92e76504a55e4a17fdcfdd9773a"
+      },
+      {
+        "symbol": "buildOrReuseImage",
+        "start_line": 797,
+        "end_line": 865,
+        "sha256": "b8e9ce7138e8c43ccefd0cfadc818b8eb0f39d09451dd7affa5053ed9d6c4f36"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/network.ts": {
+    "whole_file_sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "physical_review_sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "ALLOWLIST_EXPERIMENTAL",
+        "start_line": 53,
+        "end_line": 59,
+        "sha256": "5ad9d48ab7259a2809ae71b5af5515e64b01bcfe30de8fcf3b95aecdfc0dedcc"
+      },
+      {
+        "symbol": "DEFAULT_BRIDGE",
+        "start_line": 109,
+        "end_line": 109,
+        "sha256": "1ac26f0d873171b55868f978c8f2ca12d1e1ef519e7e7541c441e4b0990c0256"
+      },
+      {
+        "symbol": "buildFirewallScript",
+        "start_line": 126,
+        "end_line": 148,
+        "sha256": "7884c7dfe052f917641ae0add5ab499ade545d460994bd1966fea54b13e26c3a"
+      },
+      {
+        "symbol": "buildFirewallScriptForHosts",
+        "start_line": 162,
+        "end_line": 199,
+        "sha256": "e7649655be343f622bc6f7104e174e4dc918433b7c1c1d95b76aa8fbf93032f2"
+      },
+      {
+        "symbol": "applyNetworkPolicy",
+        "start_line": 208,
+        "end_line": 272,
+        "sha256": "22cbe9861de1d8d5efb62d7292f0e45868f92411dc7f16b51c3ca9042caa909a"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/cli.ts": {
+    "whole_file_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "physical_review_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "NET_POLICIES",
+        "start_line": 54,
+        "end_line": 54,
+        "sha256": "04c3e6a3db563c05e85c5ea0f3eb404d60490485331a285e7839f7e3085d13ed"
+      },
+      {
+        "symbol": "DEFAULT_SHELL",
+        "start_line": 58,
+        "end_line": 58,
+        "sha256": "24b3f442179dcf795b8d85e62a2612069e5c6cd4f53959d0cd7a04cd4df0f5ce"
+      },
+      {
+        "symbol": "SIGINT_EXIT_CODE",
+        "start_line": 85,
+        "end_line": 85,
+        "sha256": "5870a1c357240bbd42a04abc0928e7ec9ca914c08fabc9c03d5c5180c8763aac"
+      },
+      {
+        "symbol": "isFlag",
+        "start_line": 101,
+        "end_line": 103,
+        "sha256": "756564ca70d05a649823c38f959dce0c6804df11715d6f3392945dd31ff2594a"
+      },
+      {
+        "symbol": "splitFlag",
+        "start_line": 109,
+        "end_line": 113,
+        "sha256": "d12be3c629dca7636f433f82cb2da2d5764c508e534daf14c2b5bcf0f7283e56"
+      },
+      {
+        "symbol": "rejectUnknown",
+        "start_line": 116,
+        "end_line": 119,
+        "sha256": "32a0175e9f439b67d4a70c683da76f00406c727cec36a1829aa2f9ec3a0e256c"
+      },
+      {
+        "symbol": "parseCli",
+        "start_line": 132,
+        "end_line": 151,
+        "sha256": "75ac42eb2c5e305a4e3e0960b125e07bec573b42986e8200569e5dab3da078a6"
+      },
+      {
+        "symbol": "parseCreate",
+        "start_line": 153,
+        "end_line": 181,
+        "sha256": "ffc58cd4f6aacce0f685bc6bbd86e87052a3057c748c535f729bf6d3e62fb33f"
+      },
+      {
+        "symbol": "parseShell",
+        "start_line": 183,
+        "end_line": 207,
+        "sha256": "ae2138d9e039d2844c13759740ee6c1845e3dabb78ec18fdc0ac666b43989e47"
+      },
+      {
+        "symbol": "parseExec",
+        "start_line": 209,
+        "end_line": 231,
+        "sha256": "f26d79c7a493ec7bcd5af774d9870b481e5149edb28a9cb691b6f06ab0fd6d1c"
+      },
+      {
+        "symbol": "parseCp",
+        "start_line": 233,
+        "end_line": 267,
+        "sha256": "4ef9ae2a34d6120c47f1ab5646a2e1baa9bfa3392e9fda19336b9cc76853abca"
+      },
+      {
+        "symbol": "parseDestroy",
+        "start_line": 269,
+        "end_line": 287,
+        "sha256": "2c49b9df38b05dad1927dbc485d51d10aa7e616c23cf0c65e5f8afbd4b03d901"
+      },
+      {
+        "symbol": "parsePrune",
+        "start_line": 289,
+        "end_line": 292,
+        "sha256": "c666f4fecdc67bd05e06d9e0ccca9bc6fb66e6ed8fd1cd3349cc1501c3e9cc22"
+      },
+      {
+        "symbol": "defaultShell",
+        "start_line": 304,
+        "end_line": 313,
+        "sha256": "cf481b5b33f72f1377c3dd79341040cb151ff4d9a1b1c079097899f89e20c801"
+      },
+      {
+        "symbol": "makeDefaultHandlers",
+        "start_line": 322,
+        "end_line": 338,
+        "sha256": "b8604a6ab8984f25519314990b81715b2ebe629c21e573e7c3a34874ec9542aa"
+      },
+      {
+        "symbol": "defaultHandlers",
+        "start_line": 341,
+        "end_line": 341,
+        "sha256": "9dae59444d75bfe915f26d2d6b428499d01f13bd364cbc402c34f42cf483468b"
+      },
+      {
+        "symbol": "TEARDOWN_FAILURE_EXIT",
+        "start_line": 351,
+        "end_line": 351,
+        "sha256": "13f3c8b43a88389eb66d3e30a86a0d06c2921a9e35c5d889c235bae2ca9c6b55"
+      },
+      {
+        "symbol": "USAGE_ERROR_EXIT",
+        "start_line": 362,
+        "end_line": 362,
+        "sha256": "72482022c866cf0fb98ded5268cfd9d21e50da6936a365b3a63ebcd5aa2aff4b"
+      },
+      {
+        "symbol": "teardownExit",
+        "start_line": 373,
+        "end_line": 377,
+        "sha256": "e3e47eb350d19b60244bfe3ccfe4aca3e622c3a1783302090bedcd8c939f90c6"
+      },
+      {
+        "symbol": "runCli",
+        "start_line": 396,
+        "end_line": 438,
+        "sha256": "85663b7afed0b631c4c5c41d364c1ed48dc8b7d6613997aa664b6e836db21fbd"
+      },
+      {
+        "symbol": "usage",
+        "start_line": 440,
+        "end_line": 450,
+        "sha256": "09483a5d51e7f79bda1a885d6b8cc3d95408c3aae8e603fa107c1c88adde3215"
+      },
+      {
+        "symbol": "_thisFile",
+        "start_line": 454,
+        "end_line": 454,
+        "sha256": "44c93d95e49883750bccf8ababf5865b2911956c13d9f4fd4bc983974fbf24ba"
+      },
+      {
+        "symbol": "_entryFile",
+        "start_line": 455,
+        "end_line": 455,
+        "sha256": "91905052f1cc523c64670190c046511789ece98d24d93c82f5075df913db83cb"
+      },
+      {
+        "symbol": "direct-entry",
+        "start_line": 456,
+        "end_line": 496,
+        "sha256": "d7c0ad4c78e54346d6835014ab535fc64618fe6f1ac1a660a67849786f43f769"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/claude-inside.ts": {
+    "whole_file_sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "physical_review_sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "CLAUDE_CODE_VERSION",
+        "start_line": 57,
+        "end_line": 57,
+        "sha256": "e43acf8b5845e5c9b8ee7a5db74755497a37651891753c7e78154a7014f3ca69"
+      },
+      {
+        "symbol": "CLAUDE_CODE_PACKAGE",
+        "start_line": 59,
+        "end_line": 59,
+        "sha256": "a98203e094f7078288410b590bfcf5e20bd1f6190fc62518cdd91354b3eea967"
+      },
+      {
+        "symbol": "CLAUDE_BASE_IMAGE",
+        "start_line": 71,
+        "end_line": 72,
+        "sha256": "1a641bdd911877aa527fb9f624734b46d3be520e939bef8bc99f306f0351efc9"
+      },
+      {
+        "symbol": "CLAUDE_HOME",
+        "start_line": 78,
+        "end_line": 78,
+        "sha256": "148e137840b158f2f29c32c25bd482997e2bc0aa7380712edc9ff9e52dee32ad"
+      },
+      {
+        "symbol": "TOKEN_ENV_VAR",
+        "start_line": 80,
+        "end_line": 80,
+        "sha256": "aa5b3f62416421032a9ee97022bf3730cf7d2f25b8f8c1b74ae51d828a8e14ab"
+      },
+      {
+        "symbol": "ANTHROPIC_ALLOW_HOSTS",
+        "start_line": 101,
+        "end_line": 105,
+        "sha256": "59de4baf4dc55c2d47d6925ae8c061143916f8e3a9175a69521cbdf909e06728"
+      },
+      {
+        "symbol": "buildClaudeImageDockerfile",
+        "start_line": 138,
+        "end_line": 159,
+        "sha256": "c285a98d06c4287f6c57d156a0a5cd57a7b8804b13af899a874b221db0b564f1"
+      },
+      {
+        "symbol": "resolveClaudeNetworkPlan",
+        "start_line": 201,
+        "end_line": 242,
+        "sha256": "c40a26b7969e070f204f48ca38ba3560b755857d1a852478c83189d065506f1c"
+      },
+      {
+        "symbol": "buildClaudeRunArgs",
+        "start_line": 263,
+        "end_line": 327,
+        "sha256": "36abf8d6513a2497195f4667b22b6b237c8e38bb8e16918b8248096494363251"
+      },
+      {
+        "symbol": "claudeFirewallScript",
+        "start_line": 337,
+        "end_line": 339,
+        "sha256": "1685fa7a46e5797b355317b38881758ebe42c456a161f8e6f9740f38edbe0810"
+      },
+      {
+        "symbol": "runClaudeInside",
+        "start_line": 358,
+        "end_line": 406,
+        "sha256": "88859930bf480c9bd0b5040036eba4118e0fd244cec0823ab567e5ef4033f5cc"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/claude-inside-cli.ts": {
+    "whole_file_sha256": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "physical_review_sha256": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "USAGE_ERROR_EXIT",
+        "start_line": 43,
+        "end_line": 43,
+        "sha256": "72482022c866cf0fb98ded5268cfd9d21e50da6936a365b3a63ebcd5aa2aff4b"
+      },
+      {
+        "symbol": "NET_POLICIES",
+        "start_line": 45,
+        "end_line": 45,
+        "sha256": "96a8ae3606e298fd007bdefbc5456cc9d7bab2321e0586a6fa1b00bd10741270"
+      },
+      {
+        "symbol": "parseClaudeCli",
+        "start_line": 61,
+        "end_line": 112,
+        "sha256": "21620c536669e5bdd656db1f014278e0c91d5919f1d327a1fc112fc97f492f90"
+      },
+      {
+        "symbol": "usage",
+        "start_line": 114,
+        "end_line": 127,
+        "sha256": "2bd8579b81f39e0488ef3908f75e35afc81f595241b2867aacb171c23ef99fc1"
+      },
+      {
+        "symbol": "runClaudeInsideCli",
+        "start_line": 141,
+        "end_line": 187,
+        "sha256": "39be346a53048c9b1a32f1fb8d121e9861b0949527f13b753c47f2576d2ffaf8"
+      },
+      {
+        "symbol": "_thisFile",
+        "start_line": 191,
+        "end_line": 191,
+        "sha256": "44c93d95e49883750bccf8ababf5865b2911956c13d9f4fd4bc983974fbf24ba"
+      },
+      {
+        "symbol": "_entryFile",
+        "start_line": 192,
+        "end_line": 192,
+        "sha256": "91905052f1cc523c64670190c046511789ece98d24d93c82f5075df913db83cb"
+      },
+      {
+        "symbol": "direct-entry",
+        "start_line": 193,
+        "end_line": 205,
+        "sha256": "8ba72a753c47f7d62949d3b6f6a0a629033178931730c264d48b1d1a30619d95"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/exec.ts": {
+    "whole_file_sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "physical_review_sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "DEFAULT_EXEC_MAX_BYTES",
+        "start_line": 39,
+        "end_line": 41,
+        "sha256": "6e84fdf754f62de85e59fb912b0cc9963fcb942d0a9c48e743ac8ac13b83733d"
+      },
+      {
+        "symbol": "defaultDockerRun",
+        "start_line": 95,
+        "end_line": 95,
+        "sha256": "ede5b3fb7e4992a1bc65a16bee48cd69131f98508d3e465f6bf59dff4f317c66"
+      },
+      {
+        "symbol": "buildExecArgs",
+        "start_line": 105,
+        "end_line": 110,
+        "sha256": "5b42a09bb4c8c73af5feab968a366e310252c91f83d186832c0ecd4a5dc36b59"
+      },
+      {
+        "symbol": "capBytes",
+        "start_line": 120,
+        "end_line": 132,
+        "sha256": "c241a58750ad596bf17be0e084917d8bc032cb8561f1034f30755daf2761bfde"
+      },
+      {
+        "symbol": "execInSandbox",
+        "start_line": 145,
+        "end_line": 216,
+        "sha256": "70c651ab12490b5c7f498ab6d032c38ec90f5a9f2ed1bdf68dcd604dcf8efbe9"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/cp.ts": {
+    "whole_file_sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "physical_review_sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "buildCpOutArgs",
+        "start_line": 57,
+        "end_line": 68,
+        "sha256": "b26ca67b3d99a51b5b93404cc2f06e7f1de0f295d00b2cdf7065edcca2733a55"
+      },
+      {
+        "symbol": "cpOut",
+        "start_line": 80,
+        "end_line": 89,
+        "sha256": "7c9041c7906a3810d53489568f7c48dffbcc735aca916a2d025c6cb9ff69d7ec"
+      },
+      {
+        "symbol": "assertNoCopyInBind",
+        "start_line": 106,
+        "end_line": 110,
+        "sha256": "e0c568ef54a0c46c3e9c43f3db40f952dbfe7ce26ce0cdd10d6af7f4935d0545"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/tools/docker-gate.ts": {
+    "whole_file_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "physical_review_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "clauses": [
+      {
+        "symbol": "REQUIRE_ENV",
+        "start_line": 42,
+        "end_line": 42,
+        "sha256": "5b1b04b2a7a427ec8c7c3e5a24652a927de18b40a667563c42773a31714a5c40"
+      },
+      {
+        "symbol": "SENTINEL_ENV",
+        "start_line": 44,
+        "end_line": 44,
+        "sha256": "af2f4386ca218a9ce11779fdd6470cfa3bb16166d8b4ef967ae2b138f7ba5e86"
+      },
+      {
+        "symbol": "defaultProbe",
+        "start_line": 71,
+        "end_line": 77,
+        "sha256": "d9307ae25a69d4680021ceecab84400d65b719f868f9f142970effade6f59b48"
+      },
+      {
+        "symbol": "requiredMode",
+        "start_line": 87,
+        "end_line": 90,
+        "sha256": "c10c726f8e94a109f54e493a4b10b2620896211100cefbe40794a92958693ab2"
+      },
+      {
+        "symbol": "decideGate",
+        "start_line": 93,
+        "end_line": 113,
+        "sha256": "19dd65ad869cbd2cc2032fb7a127a709651bd41029236ba2a2e718b1b7a148d7"
+      },
+      {
+        "symbol": "recordLayer",
+        "start_line": 121,
+        "end_line": 125,
+        "sha256": "5578fe307625b910c3c4ca9dc2b5c6f7e818dc48a70a08489ba6392e28c7196a"
+      },
+      {
+        "symbol": "dockerGate",
+        "start_line": 140,
+        "end_line": 163,
+        "sha256": "0f1cbe82cae40c1f69366176655ea52fcc9bdbbdca6870e4d85766c7ad995ca3"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/skills/INDEX.md": {
+    "whole_file_sha256": "c1479a36e6c897874dbc1c0991b33226664154545a2108d10111a57d269e7739",
+    "physical_review_sha256": "c1479a36e6c897874dbc1c0991b33226664154545a2108d10111a57d269e7739",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "# skills — catalog (surface scan)",
+        "start_line": 1,
+        "end_line": 11,
+        "sha256": "c1479a36e6c897874dbc1c0991b33226664154545a2108d10111a57d269e7739"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": {
+    "whole_file_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+    "physical_review_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "51bf9f71e7c35f5e83bbe71cd3dbeb242e04ab3cf7bd538ff246f24aaa5a1192"
+      },
+      {
+        "symbol": "# sandbox-lifecycle",
+        "start_line": 6,
+        "end_line": 9,
+        "sha256": "94d3f04dbde7cdc0346845245909b3d466c2fc931ab10509b97e8ad7cc1c1494"
+      },
+      {
+        "symbol": "## Pre-flight",
+        "start_line": 10,
+        "end_line": 19,
+        "sha256": "1a5cf44b5f0648308d6000cc78bd0f2afbe2e9118a0489be70e83b3d551355c3"
+      },
+      {
+        "symbol": "## Create",
+        "start_line": 20,
+        "end_line": 31,
+        "sha256": "5b038e2a477f55be6b4de59410ef91522dd1b9516518885f26d3f9471bb45dc7"
+      },
+      {
+        "symbol": "## Interact",
+        "start_line": 32,
+        "end_line": 37,
+        "sha256": "6533f54ea526a87d0f1136c7a6f25e1d1c5d00936e1e8906d8a3c2a3a126984d"
+      },
+      {
+        "symbol": "## Explicit teardown",
+        "start_line": 38,
+        "end_line": 45,
+        "sha256": "56b2e79427e84addf70ca863840dfc793da7a7997d02267182eb5ef951abc29a"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/commands/sandbox.md": {
+    "whole_file_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+    "physical_review_sha256": "77c70d21ed44f79c14783a5f68dee0baec958901cfa73c675ae4e69e16ee60c9",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "cdc917106d0277c3a0dd4eb62f07ce4bf7538d1d48e1065e0601fb6070d64b10"
+      },
+      {
+        "symbol": "# /ca-sandbox:sandbox",
+        "start_line": 6,
+        "end_line": 15,
+        "sha256": "1a4a6d4e552e67b37e97216657fd31dc829f9534152d15db55671b5a42f0ac95"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/commands/sandbox-shell.md": {
+    "whole_file_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+    "physical_review_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "3d9409571d456d029555bfafe1460ab296c422f00d922245e28d2d872166a44d"
+      },
+      {
+        "symbol": "# /ca-sandbox:sandbox-shell — interactive shell in the box",
+        "start_line": 6,
+        "end_line": 14,
+        "sha256": "cc57d7493d4d8ba7f6247c2020d2b005efa1a045b5273febbd48b757146e05ac"
+      },
+      {
+        "symbol": "## Flow",
+        "start_line": 15,
+        "end_line": 23,
+        "sha256": "05c5509cd87f603f2a2a64e9b318460acabcd320fd819f4c6643c2348aa9ffef"
+      },
+      {
+        "symbol": "## Routes to",
+        "start_line": 24,
+        "end_line": 29,
+        "sha256": "1c902ce42c0763964af4e4646ccef6ff29b58143793aeb54e53baba819746163"
+      },
+      {
+        "symbol": "## When NOT to use",
+        "start_line": 30,
+        "end_line": 35,
+        "sha256": "b0c6526f0a8285cc2fec0a5f0fe0ca8c5510cafb49892736995945db7f20a728"
+      },
+      {
+        "symbol": "## Hard gate",
+        "start_line": 36,
+        "end_line": 44,
+        "sha256": "6300b08117fed13f3db9094ca7caef87a99b29360bf4572e154dad398e6d99de"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/commands/sandbox-exec.md": {
+    "whole_file_sha256": "343d5f2f0bb4458e4eec6e0cfe0ebc36354174166f5c3aa2ac378c6acafcbbd9",
+    "physical_review_sha256": "343d5f2f0bb4458e4eec6e0cfe0ebc36354174166f5c3aa2ac378c6acafcbbd9",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "30bfa8731ffda1ad0959de72541313aad007620f29c1a35cd70ae5d5021046ed"
+      },
+      {
+        "symbol": "# /ca-sandbox:sandbox-exec — exec a command in the box",
+        "start_line": 6,
+        "end_line": 15,
+        "sha256": "169c9ec5b798bd7f5d977a2f9e74cffd63e8bb0fd9ed0859d95bb4c58cc16ba3"
+      },
+      {
+        "symbol": "## Flow",
+        "start_line": 16,
+        "end_line": 23,
+        "sha256": "f9826bf1f690a14f982605aa7f164de1a3344435a67ddafe5d3e0ea3fadb3a9d"
+      },
+      {
+        "symbol": "## Routes to",
+        "start_line": 24,
+        "end_line": 28,
+        "sha256": "e6cbf0538be24d4207d76460ec949dae6e1c9adb916c743f49920744f4cab329"
+      },
+      {
+        "symbol": "## When NOT to use",
+        "start_line": 29,
+        "end_line": 34,
+        "sha256": "171207fc57f1e14120657105bd9f0a65f7c9ada32ea6adc7c999ac96823df18d"
+      },
+      {
+        "symbol": "## Hard gate",
+        "start_line": 35,
+        "end_line": 44,
+        "sha256": "960d6c12d6bc368d1db17146faf308b653628ba411e2d68d6231187bb5bd9d32"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/commands/sandbox-cp.md": {
+    "whole_file_sha256": "5e1d09903a97fa7905bd23f34122a15ac7c65998301dcdc85ffd5d0734580df4",
+    "physical_review_sha256": "5e1d09903a97fa7905bd23f34122a15ac7c65998301dcdc85ffd5d0734580df4",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "75149c59b9b6d5def57ad676705a322d2ec8023436b15185b7adb7ec615dc1a8"
+      },
+      {
+        "symbol": "# /ca-sandbox:sandbox-cp — copy a file out of the box",
+        "start_line": 6,
+        "end_line": 15,
+        "sha256": "7185058b2aabbf88a90619b9fec4fccf8ebc330ea2536722e63a2d14140ee7a5"
+      },
+      {
+        "symbol": "## Flow",
+        "start_line": 16,
+        "end_line": 22,
+        "sha256": "7033f1e4040e9ab796eb82de7f43ec4851f6b5467f6c7e8f52638aaaf8f74b7a"
+      },
+      {
+        "symbol": "## Routes to",
+        "start_line": 23,
+        "end_line": 27,
+        "sha256": "80f859a5f6bdd84d4d7ff7212dab5f7a7ca1c7e5037a41e4cdb1d65185f5d049"
+      },
+      {
+        "symbol": "## When NOT to use",
+        "start_line": 28,
+        "end_line": 33,
+        "sha256": "7f8baf4a927931f3d5e6f304d9a97b785e17597708b207db515649376d35b816"
+      },
+      {
+        "symbol": "## Hard gate",
+        "start_line": 34,
+        "end_line": 42,
+        "sha256": "1e863f57d225ddec5961e3d0a6d2fae8cbb6897f4446ddca0d43a34871751669"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/commands/sandbox-destroy.md": {
+    "whole_file_sha256": "1bbfb59fdfdc63881552f64ea4e1227a82349ddc99818b71ed37af2c9e8e1eb4",
+    "physical_review_sha256": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "515257d4fb5f3ab63e7e834d768d9ccd49c45c4a5e082a74829ab5872512e07d"
+      },
+      {
+        "symbol": "# /ca-sandbox:sandbox-destroy",
+        "start_line": 6,
+        "end_line": 15,
+        "sha256": "f4c5dd89ab763a11f0d5949fd06f187e1f751e13707902bfe1134badb47c1f71"
+      }
+    ]
+  },
+  "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": {
+    "whole_file_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "physical_review_sha256": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "epoch": "ACTUAL_REVIEWED_BYTES_LITERAL_AT_ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "line_ending_note": "Review physical text and immutable Git text agree modulo CRLF/LF only; proof binds committed bytes, no runtime test identity is inferred.",
+    "clauses": [
+      {
+        "symbol": "frontmatter-and-introduction",
+        "start_line": 1,
+        "end_line": 5,
+        "sha256": "882ba6ce7a63991f3ea650a64ac87c4e1188c6cb7f091f34fb0cefaf40c7f684"
+      },
+      {
+        "symbol": "# sandbox-claude-inside",
+        "start_line": 6,
+        "end_line": 15,
+        "sha256": "133b0b2d969979cefd550940dcd474afb4218a55a3118d6bea5c0c984cbc8863"
+      },
+      {
+        "symbol": "## Pre-flight",
+        "start_line": 16,
+        "end_line": 36,
+        "sha256": "69aa1ec0f51ccc79df6653151de743e245226952aadd370963028701ea8ccc9b"
+      },
+      {
+        "symbol": "## Phase 1 — Posture · gate: BLOCK",
+        "start_line": 37,
+        "end_line": 54,
+        "sha256": "b1206b627803531be3402762dcc0347a4b3d6b6d13fce70b302eaba0a530bfc2"
+      },
+      {
+        "symbol": "## Phase 2 — Image · gate: BLOCK",
+        "start_line": 55,
+        "end_line": 77,
+        "sha256": "b8a3f8d901993cb736823d4ed033d1db988d664b738bdf3e5d8c8a753d6485aa"
+      },
+      {
+        "symbol": "## Phase 3 — Token · gate: BLOCK",
+        "start_line": 78,
+        "end_line": 96,
+        "sha256": "af7400f1f00ea1b788358a1dc5ceebbdaf036b7f8aaba74f59f78853dfa2ea26"
+      },
+      {
+        "symbol": "## Phase 4 — Run · gate: BLOCK",
+        "start_line": 97,
+        "end_line": 114,
+        "sha256": "20e038fa9e24883fc9403bb32f8986fa699f65fe146e662b375277b4f5aef242"
+      },
+      {
+        "symbol": "## Phase 5 — Teardown · gate: BLOCK",
+        "start_line": 115,
+        "end_line": 129,
+        "sha256": "6bd5506a8c358e398cbd6e07e23252197ba1f3c9d29d2ca88587ea5147024d99"
+      },
+      {
+        "symbol": "## Hard rules",
+        "start_line": 130,
+        "end_line": 154,
+        "sha256": "f36b6971fcb70aacc642860e45a43cdf26428bd2132291eb7b884320f859a46a"
+      }
+    ]
+  }
+}

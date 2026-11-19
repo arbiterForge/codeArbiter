@@ -1,0 +1,155 @@
+{
+ "schema": "codearbiter.c06-original-retention-positive-check/1",
+ "recorded_at": "2026-11-17T03:21:38.644933+00:00",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "result": "PASS",
+ "scope": "One unchanged original AuthorityRetentionTest.test_real_four_original_shards_retain_observations_and_execute_once on exact private candidate2a274ccc.",
+ "case": "test_artifact_authority_retention.AuthorityRetentionTest.test_real_four_original_shards_retain_observations_and_execute_once",
+ "unit_tests_run": 1,
+ "unit_passed": 1,
+ "unit_skipped": 0,
+ "fixture_children": 4,
+ "fixture_named_outcomes": {
+  "passed": 4,
+  "skipped": 1,
+  "meaning": "Original fixture deliberately includes one synthetic supported skip, and asserts exactly four distinct effects A/B/C/D once, original named observations and retained bundle state. This is separate from the outer one-unit PASS."
+ },
+ "seconds": {
+  "unittest": 1.879198800015729,
+  "outer": 2.001615599991055,
+  "outer_limit": 120
+ },
+ "candidate_subjects_before_after": {
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\repo\\.github\\scripts\\run_artifact_authority_shard.py": {
+   "sha256": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+   "bytes": 25652
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\repo\\.github\\scripts\\test_ci20_native_pipeline.py": {
+   "sha256": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+   "bytes": 38285
+  }
+ },
+ "original_case_source": {
+  "path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\test_artifact_authority_retention.py",
+  "sha256": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+  "candidate_copy_equal": true,
+  "original_case_and_assertions_unchanged": true
+ },
+ "dependency_repo": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+ "canonical_dependency_epoch": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "dependency_joins": {
+  ".github/scripts/major_qualification_report.py": {
+   "sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+   "bytes": 139525,
+   "index_oid": "72add648394a7d383d804241fe76934198a59f94",
+   "before_after_equal": true
+  },
+  ".github/scripts/major_readiness.py": {
+   "sha256": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+   "bytes": 82923,
+   "index_oid": "93d67b8217a9d511572e29e4ac9fce9da3e8462d",
+   "before_after_equal": true
+  },
+  ".github/scripts/_immutable_git_blobs.py": {
+   "sha256": "00f6a25401e514ae22cb6f18198913ab1eb1bb8816775c27b3cab25d9bf72ada",
+   "bytes": 8275,
+   "index_oid": "684f202a0cd8756ef78c8247550431b84fc88c9c",
+   "before_after_equal": true
+  },
+  ".github/scripts/ci20_native_binding.py": {
+   "sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+   "bytes": 15795,
+   "index_oid": "0507a59e8087f92265191d3d33f783d41ea8325d",
+   "before_after_equal": true
+  },
+  ".github/scripts/_boundedproc.py": {
+   "sha256": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+   "bytes": 12673,
+   "index_oid": "7c8db0a1a2a1e6b714f9657cdf09eaf8a62f5061",
+   "before_after_equal": true
+  },
+  ".github/scripts/_contextverificationlib.py": {
+   "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+   "bytes": 23733,
+   "index_oid": "1e99a2395fab11115d95108b6766d88fdf30eed8",
+   "before_after_equal": true
+  },
+  "core/pysrc/_artifactmanifestlib.py": {
+   "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+   "bytes": 4249,
+   "index_oid": "1e84d812031a969be1decaa73ee8ea0bf8c613cb",
+   "before_after_equal": true
+  },
+  "core/pysrc/_gitexec.py": {
+   "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "bytes": 24644,
+   "index_oid": "6f959b77dbe4a1779bb55e7002ddc237c9b0eab1",
+   "before_after_equal": true
+  },
+  ".github/scripts/test_artifact_authority_retention.py": {
+   "sha256": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+   "bytes": 14960,
+   "index_oid": "7aa2e87879d997d34432abc3343f2946ff4af157",
+   "before_after_equal": true
+  }
+ },
+ "sealed_fix_delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-owned-child-fix-ydcjngai\\delivery.json",
+  "sha256": "e6a6647abf6a382fbcff06e2105f4f441139f8933b8e5252b34511528f88dc19",
+  "unchanged": true
+ },
+ "runtime": {
+  "executable": "C:\\Python314\\python.exe",
+  "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "python_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "git_path": "C:\\Program Files\\Git\\cmd\\git.EXE",
+  "git_executable_sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364"
+ },
+ "observed_original_contracts": [
+  "All four declared shards settle exit0 and original plan/coverage join accepts.",
+  "Real tiny owned Python fixture children produce original unittest TestResult observations and effects once.",
+  "Original parent imports preserve committed private fixture source; source-stable observations pass.",
+  "Actual raw timing and named observation JSON exist at original assertion points and original descriptor is VALIDATED_ORIGINAL_SHARDS.",
+  "Unchanged original test-owned teardown removes its private Git/fixture directory after assertions; no claim its bundle remains available afterward."
+ ],
+ "prior_pure_controls": "13 prior focused controls reused without rerun; source/test exact hashes unchanged.",
+ "raw_files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-original-retention-positive-pq9rez5z\\before.json",
+   "sha256": "0af5bf590f18b635dd242304398780f06ac07e9d4650817c6b9c8ee8507f4f60",
+   "bytes": 2158
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-original-retention-positive-pq9rez5z\\command.json",
+   "sha256": "166634472fdbf7b2b8476cc96fa98324c28b361cc54c0e63360fea04f1088ab5",
+   "bytes": 608
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-original-retention-positive-pq9rez5z\\result.json",
+   "sha256": "861b16ffca4f0f289d3b4df7a7aae157feb3f4651523c4722ccf15b2d53f8057",
+   "bytes": 924
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-original-retention-positive-pq9rez5z\\run-one.py",
+   "sha256": "6860b7348dd86ebf9ab6a7ef67852d301294b968fa62caff857a943f2abda327",
+   "bytes": 1904
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-original-retention-positive-pq9rez5z\\stderr.raw",
+   "sha256": "536ea644b46cd09a954cd96981c460df89e4469de35d78b7620dede26ecd3138",
+   "bytes": 305
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C06-original-retention-positive-pq9rez5z\\stdout.raw",
+   "sha256": "cc210e443fd7d0108bf10f5eaae2fb2bcc6364405220ccefed961ec498ec4731",
+   "bytes": 1466
+  }
+ ],
+ "limits": [
+  "Root explicitly authorized this one existing Python/Git fixture only. No native/Go build, actual native candidate, provider, runtime host, network/API/Docker, install or full-suite execution.",
+  "Native retention_context is the original test explicit unit double; successful source-test observation is not native/installed/hosted-CI qualification.",
+  "No canonical/index/ref/marker/ledger/progress/source-proof update; no modification to sealed fix delivery.",
+  "Controller and fixed Git executable hashes do not claim a full isolated runtime dependency inventory or OS process-tree containment.",
+  "Original assertion-level retained artifacts were inspected by the unchanged test before its teardown; no archive content was fabricated or reconstructed."
+ ]
+}

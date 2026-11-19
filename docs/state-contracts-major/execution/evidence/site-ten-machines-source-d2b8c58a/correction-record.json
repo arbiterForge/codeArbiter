@@ -1,0 +1,168 @@
+{
+  "format": "codearbiter.source-evidence-wording-correction/1",
+  "finding": "SITE-SOURCE-01",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "original_packet": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-machines-source-p_ci5nmi\\delivery.json",
+    "sha256": "82d7a749e02892639c38444d5b9ae9d971a5462f8e1b8d9311c7a9d15c02f8fc"
+  },
+  "review": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-ten-independent-review-p8g9tped\\review.json",
+    "sha256": "acc3b2f2b2bf0b34f0bd215b0da82b92cdaa039d8c563613e1182041abfb8309"
+  },
+  "cell": "disposition:transitions:S56:05",
+  "before": "Explicit save validates current lesson membership, writes only the scoped bookmark key, and refreshes display only on successful write.",
+  "after": "Explicit save validates current lesson membership and writes only the scoped bookmark key. The listener refreshes the display after either save result, then reports success or failure explicitly.",
+  "source_witness": {
+    "path": "site/src/components/AcademyBookmark.astro",
+    "line": 62,
+    "end": 64,
+    "sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90"
+  },
+  "changed_canonical_files": [
+    {
+      "path": "raw/S56-inspection.json",
+      "old_sha256": "03e34e3b57b8f0d3196a18de030641a9976c72bba5740ce95ff85b4d41a30b03",
+      "new_sha256": "bae5b0bc4dd24f71e48db2b90677f7ac1787f9d1663138a374a18513f69438c8"
+    },
+    {
+      "path": "proofs/S56-preserved.json",
+      "old_sha256": "c547de595aa8456a18d0b3388b082e6128576e498857c3b633c409d04d77b735",
+      "new_sha256": "cb99d1b409c2d883931e859a1e48ab8376e8a4866755acedc7a3dacb98305cf0"
+    },
+    {
+      "path": "clause-matrix.json",
+      "old_sha256": "9942c17a9c424ffccad24847b94322707b04e8bc1aba3ec617dafe8715d99fee",
+      "new_sha256": "752537c9fc2bae9601cb9ac824c36f7c7f70fa3d6cc43c4a9a0498e1f9a5b161"
+    },
+    {
+      "path": "machine-fragments.json",
+      "old_sha256": "b4044f828bb71af1fae7a01e5d38ecac9acf80decb94e07fb4dea78bfbaae3d5",
+      "new_sha256": "c196395ce2a0d3a6d0bec513a64913dfd785e04fedc67006641db8107a26f1e3"
+    }
+  ],
+  "unchanged_canonical_files": [
+    {
+      "path": "source-joins.json",
+      "old_sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa",
+      "new_sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+    },
+    {
+      "path": "raw/S57-inspection.json",
+      "old_sha256": "c458171cd6bbefc5284052f549876920a9dd3d6408fff046bb66d164b12cae53",
+      "new_sha256": "c458171cd6bbefc5284052f549876920a9dd3d6408fff046bb66d164b12cae53"
+    },
+    {
+      "path": "proofs/S57-preserved.json",
+      "old_sha256": "d40b4c9a75da21be28fcf63a5871fabd500eb5643b4192e7248d93d49d29355f",
+      "new_sha256": "d40b4c9a75da21be28fcf63a5871fabd500eb5643b4192e7248d93d49d29355f"
+    },
+    {
+      "path": "raw/S58-inspection.json",
+      "old_sha256": "d9c1964545bf256b7a976fef15ab8696d62773091cee36a2b0dff59982ff5d2b",
+      "new_sha256": "d9c1964545bf256b7a976fef15ab8696d62773091cee36a2b0dff59982ff5d2b"
+    },
+    {
+      "path": "proofs/S58-preserved.json",
+      "old_sha256": "ecb120859dc235d5991f8af86f819eb5c224e0119a0fb1892500925e4d81a017",
+      "new_sha256": "ecb120859dc235d5991f8af86f819eb5c224e0119a0fb1892500925e4d81a017"
+    },
+    {
+      "path": "raw/S59-inspection.json",
+      "old_sha256": "fbc8224b124ad1ec5b3cca22dbc1a64b278124c1dfb0771148b3e61fcc75a79f",
+      "new_sha256": "fbc8224b124ad1ec5b3cca22dbc1a64b278124c1dfb0771148b3e61fcc75a79f"
+    },
+    {
+      "path": "proofs/S59-preserved.json",
+      "old_sha256": "38b6db27c67902ff0aba0f08ade584377996627d5c05c5a140ef6278ee04e134",
+      "new_sha256": "38b6db27c67902ff0aba0f08ade584377996627d5c05c5a140ef6278ee04e134"
+    },
+    {
+      "path": "raw/S60-inspection.json",
+      "old_sha256": "b9073576bfab0c56258e3d815032334898d959054adac6c9e905c05faef1ba9c",
+      "new_sha256": "b9073576bfab0c56258e3d815032334898d959054adac6c9e905c05faef1ba9c"
+    },
+    {
+      "path": "proofs/S60-preserved.json",
+      "old_sha256": "2073c43795452a28220e8a4cad6999b11eb57052d6fcd7a14da85e8d22c9b947",
+      "new_sha256": "2073c43795452a28220e8a4cad6999b11eb57052d6fcd7a14da85e8d22c9b947"
+    },
+    {
+      "path": "raw/S61-inspection.json",
+      "old_sha256": "1c5dd5e463ec3a94467ff424ef642508ccdf186950e2a6594d44c84e470cf6f5",
+      "new_sha256": "1c5dd5e463ec3a94467ff424ef642508ccdf186950e2a6594d44c84e470cf6f5"
+    },
+    {
+      "path": "proofs/S61-preserved.json",
+      "old_sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7",
+      "new_sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7"
+    },
+    {
+      "path": "raw/S63-inspection.json",
+      "old_sha256": "1f06b903bc448fbad0d4f8da43c0864b1e7da872f565e05e69b6514cceac4f79",
+      "new_sha256": "1f06b903bc448fbad0d4f8da43c0864b1e7da872f565e05e69b6514cceac4f79"
+    },
+    {
+      "path": "proofs/S63-preserved.json",
+      "old_sha256": "acff28c887626ca6c3904e9803f6586366c70950dc615365df5ec9103f003aa5",
+      "new_sha256": "acff28c887626ca6c3904e9803f6586366c70950dc615365df5ec9103f003aa5"
+    },
+    {
+      "path": "raw/S64-inspection.json",
+      "old_sha256": "1535941793d97207b45f6b600901694f6302321406253f88c57dd78c57a60251",
+      "new_sha256": "1535941793d97207b45f6b600901694f6302321406253f88c57dd78c57a60251"
+    },
+    {
+      "path": "proofs/S64-preserved.json",
+      "old_sha256": "6807369c351f2015d16afd2bd19766379ce329c4c278cecff70430830f5e0c03",
+      "new_sha256": "6807369c351f2015d16afd2bd19766379ce329c4c278cecff70430830f5e0c03"
+    },
+    {
+      "path": "raw/S66-inspection.json",
+      "old_sha256": "9e08ddf412ef9ceb509e1fe1a2bff598cd8675a4b14e0497ce07f8a8c35570b5",
+      "new_sha256": "9e08ddf412ef9ceb509e1fe1a2bff598cd8675a4b14e0497ce07f8a8c35570b5"
+    },
+    {
+      "path": "proofs/S66-preserved.json",
+      "old_sha256": "b8dfe15dea7216bf6f677e537bee842d6aa58050eb8fbdb0f9edd676749cfd16",
+      "new_sha256": "b8dfe15dea7216bf6f677e537bee842d6aa58050eb8fbdb0f9edd676749cfd16"
+    },
+    {
+      "path": "raw/S67-inspection.json",
+      "old_sha256": "4a918fcda4fd68b3f6e6262c2681d1215c5fd7ad1f55baaf17a7304a2f075f63",
+      "new_sha256": "4a918fcda4fd68b3f6e6262c2681d1215c5fd7ad1f55baaf17a7304a2f075f63"
+    },
+    {
+      "path": "proofs/S67-preserved.json",
+      "old_sha256": "f311bea0458aa7fe7a5d47bd52848a6714f084438f2a9183a4cc702c81923ae4",
+      "new_sha256": "f311bea0458aa7fe7a5d47bd52848a6714f084438f2a9183a4cc702c81923ae4"
+    },
+    {
+      "path": "retained-source-reuse.json",
+      "old_sha256": "6088ee05f5ea1dee56833e570116b2f815249523f269ea597fd5acc4ae297428",
+      "new_sha256": "6088ee05f5ea1dee56833e570116b2f815249523f269ea597fd5acc4ae297428"
+    },
+    {
+      "path": "checks.json",
+      "old_sha256": "a5131ee2be62af124995ac11dae70dbe67d4a25632e011235903674b1e48ec40",
+      "new_sha256": "a5131ee2be62af124995ac11dae70dbe67d4a25632e011235903674b1e48ec40"
+    }
+  ],
+  "checks": {
+    "two_representations_exact_statement_only": true,
+    "proof_change_only_raw_digest": true,
+    "CAS_change_only_S56_proof_digest": true,
+    "all10_original_expected_before_and_row_hashes_unchanged": true,
+    "other65_clause_assessments_unmodified": true,
+    "original_packet_preserved": true,
+    "tests_validators_source_changes": 0
+  },
+  "reuse": {
+    "review": "Remaining65 clauses/all46 input joins/all14 retained proofs remain the original independent review scope. No new full review claimed.",
+    "strict_owner_preview": {
+      "path": "C:/Users/brenn/AppData/Local/Temp/ca-site-ten-source-preview-cx6mljgd/strict-preview.json",
+      "sha256": "76bbe56d4b6f8cb01ab8ee0fcba834e3ee8298b5d9185525bf5266d6eaf27a02",
+      "status": "Original Root-owned preview retained, not rerun in this successor."
+    }
+  }
+}

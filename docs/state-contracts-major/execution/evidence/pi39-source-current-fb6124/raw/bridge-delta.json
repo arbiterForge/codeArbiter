@@ -1,0 +1,10 @@
+{
+  "source_commit": "fb6124c4a7e2e799f044699b3be9a1e54ef56447",
+  "old_source_commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "old_sha256": "ea12e297c3b11b7dfa1dbace96925fb293a36e4e952e6d2d7d069b23ce8de5b4",
+  "current_sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+  "one_replacement_only": true,
+  "before": "spawnImpl(paths.python, [...(this.options.pythonPrefixArgs ?? []), paths.script]",
+  "after": "spawnImpl(paths.python, [...(this.options.pythonPrefixArgs ?? []), \"-B\", paths.script]",
+  "line": 862
+}

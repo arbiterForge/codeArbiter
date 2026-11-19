@@ -1,0 +1,525 @@
+<!doctype html>
+<html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><meta name="color-scheme" content="light"><meta http-equiv="Content-Security-Policy" content="default-src 'none'; style-src 'unsafe-inline'; img-src data:; base-uri 'none'; form-action 'none'"><meta name="ca-artifact-format" content="codearbiter.artifact/0.1.0"><title>Coding standards · codeArbiter</title><style>
+:root{color-scheme:light;--ink:#172332;--muted:#516173;--line:#d5dde5;--paper:#fff;--soft:#f4f6f9;--accent:#81530b;--nav:#101923;--gold:#efba4a;font:16px/1.6 system-ui,-apple-system,"Segoe UI",sans-serif}*{box-sizing:border-box;min-width:0}html{scroll-behavior:auto;scroll-padding-top:1rem}body{margin:0;background:var(--soft);color:var(--ink);overflow-wrap:anywhere}a{color:#235a86;text-decoration-thickness:.08em;text-underline-offset:.16em}a:focus-visible,summary:focus-visible{outline:3px solid #b36b00;outline-offset:4px}a:hover{text-decoration:underline}.skip{position:absolute;left:1rem;top:-8rem;z-index:5;background:white;padding:1rem}.skip:focus{top:1rem}.layout{display:grid;grid-template-columns:17rem minmax(0,1fr);max-width:112rem;margin:auto}.sidebar{background:var(--nav);color:#dbe4ee;padding:2rem 1.5rem;position:sticky;top:0;height:100vh;overflow:auto}.sidebar img{max-width:100%;height:40px;width:auto;object-fit:contain;object-position:left}.sidebar h2{font-size:.75rem;letter-spacing:.12em;text-transform:uppercase;color:#b3c2d1;margin-top:2rem}.sidebar a{display:block;color:#dbe4ee;padding:.4rem 0;text-decoration:none;font-size:.9rem}.sidebar a:hover{color:var(--gold)}.sidebar p{font-size:.8rem;color:#aebdcc}.sidebar .companion{border-top:1px solid #3a4654;margin-top:1.5rem;padding-top:1.5rem}.main{padding:3rem clamp(1rem,4vw,5rem);max-width:90rem}.hero{padding-bottom:2rem;border-bottom:3px solid #26374a;margin-bottom:2rem}.eyebrow{font-size:.76rem;text-transform:uppercase;letter-spacing:.14em;color:var(--muted);font-weight:700}.status{display:inline-block;font-size:.77rem;font-weight:700;background:#ece6db;color:#624513;padding:.3rem .65rem;border:1px solid #cec2ae;border-radius:.3rem}.hero h1{font-size:clamp(2rem,4vw,3.4rem);line-height:1.15;letter-spacing:-.035em;margin:1.2rem 0}.deck{font-size:1.1rem;max-width:75ch}.meta{display:flex;gap:.6rem 1.2rem;flex-wrap:wrap;font-size:.8rem;color:var(--muted)}h2{font-size:1.6rem;line-height:1.3}h3{font-size:1.15rem;line-height:1.35}.group{margin:2.5rem 0}.group>h2{padding-bottom:.65rem;border-bottom:1px solid var(--line)}.record{padding:1.5rem;background:var(--paper);border:1px solid var(--line);border-radius:.5rem;margin:1rem 0;box-shadow:0 1px 2px #17233205}.record .record{box-shadow:none;background:var(--soft);padding:1rem}.record-head{display:flex;gap:.65rem;align-items:baseline;flex-wrap:wrap;margin-bottom:.85rem}.record-head h3{margin:0;flex:1 1 20rem}.id{font:700 .78rem/1.5 ui-monospace,Consolas,monospace;color:#654f28;text-decoration:none;background:#f1ece0;border-radius:.2rem;padding:.15rem .4rem}.kind,.badge{font-size:.73rem;text-transform:uppercase;letter-spacing:.05em;color:var(--muted)}.retired{border-style:dashed;background:#f7f7f7}.field{margin:.9rem 0}.label{display:block;font-size:.76rem;letter-spacing:.06em;text-transform:uppercase;font-weight:700;color:var(--muted);margin-bottom:.25rem}.field p{margin:.2rem 0;white-space:pre-wrap}.missing{font-size:.9rem;color:#765810;font-style:italic}.items{padding-left:1.4rem;margin:.4rem 0}.items li{margin:.4rem 0}.fields{border-left:2px solid var(--line);padding-left:1rem}.table-wrap{overflow:auto;max-width:100%;border:1px solid var(--line);border-radius:.3rem;margin:1rem 0}table{border-collapse:collapse;width:100%;font-size:.9rem;table-layout:fixed}th,td{padding:.7rem .8rem;text-align:left;vertical-align:top;border-bottom:1px solid var(--line);overflow-wrap:anywhere}th{background:#e9eef3;font-weight:700}tr:last-child td{border:0}pre{padding:1rem;background:#edf1f5;border:1px solid var(--line);border-radius:.3rem;white-space:pre-wrap;overflow-wrap:anywhere;font:.84rem/1.6 ui-monospace,Consolas,monospace}code{font-family:ui-monospace,Consolas,monospace}.refs{font-size:.82rem;display:flex;gap:.6rem;flex-wrap:wrap}.block{margin:.8rem 0}.block p{white-space:pre-wrap}.notice{border-left:4px solid #a37825;padding:.8rem 1rem;background:#f4eddc}.footer{font-size:.8rem;color:var(--muted);border-top:1px solid var(--line);padding-top:1rem;margin-top:3rem}.digest{font: .75rem/1.6 ui-monospace,Consolas,monospace;word-break:break-all}details{border:1px solid var(--line);border-radius:.3rem;padding:.7rem 1rem}summary{cursor:pointer;font-weight:600}.back{font-size:.8rem;float:right;margin-left:1rem}.record:target{outline:3px solid #b5812a;outline-offset:3px}@media(max-width:850px){.layout{display:block}.sidebar{position:relative;height:auto;padding:1.2rem 1rem}.sidebar nav{display:flex;flex-wrap:wrap;gap:.1rem 1rem}.sidebar nav a{padding:.2rem 0}.sidebar h2,.sidebar .identity{display:none}.sidebar .companion{margin-top:.7rem;padding-top:.7rem}.main{padding:1.5rem 1rem}.record{padding:1rem}.hero h1{font-size:2rem}table{font-size:.82rem}.record-head h3{flex-basis:100%}}@media print{.layout{display:block}.sidebar,.skip,.back{display:none}.main{max-width:none;padding:0}.record{box-shadow:none;break-inside:avoid;border-color:#888}.record .record{break-inside:auto}.hero h1{font-size:26pt}.group{break-before:auto}.group>h2{break-after:avoid}a{color:inherit}.table-wrap{overflow:visible}body{font-size:10pt;background:white}pre{white-space:pre-wrap}details{display:block}.footer{font-size:8pt}}
+</style></head><body><a class="skip" href="#main-content">Skip to document</a><div class="layout"><aside class="sidebar"><img src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==" alt="codeArbiter"><p class="identity">CTX-CODING-STANDARDS</p><h2>In this document</h2><nav aria-label="Document sections"><a href="#group-records">Records</a><a href="#group-notes">Notes</a><a href="#group-sections">Sections</a><a href="#group-sources">Sources</a><a href="#group-baseline">Baseline</a><a href="#group-retired_symbols">Retired symbols</a></nav><p>Generated from the embedded model. Edit through the artifact engine, not the HTML view.</p></aside><main class="main" id="main-content"><header class="hero"><p class="eyebrow">codeArbiter / knowledge</p><span class="status">DRAFT · progress and verification tracked separately</span><h1>Coding standards</h1><p class="deck">Structural and style conventions.</p><div class="meta"><span>CTX-CODING-STANDARDS</span><span>Revision 5 · schema 0.3.2</span><span>15 addressable records</span></div></header><section class="group" id="group-records"><a class="back" href="#main-content">Top</a><h2>Records</h2>
+<!-- CA:BEGIN:CONV-001 -->
+<article class="record" id="CONV-001" data-ca-symbol="CONV-001" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-001">CONV-001</a><h3>Coding standards — codeArbiter</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span># Coding standards — codeArbiter
+
+Conventions for source in this repository. Build/test commands belong to
+`tech-stack.md`; accepted security controls belong to `security-controls.md`.
+Shared instruction authoring belongs to `core/surface/README.md`.
+
+</div></article>
+<!-- CA:END:CONV-001 -->
+
+<!-- CA:BEGIN:CONV-002 -->
+<article class="record" id="CONV-002" data-ca-symbol="CONV-002" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-002">CONV-002</a><h3>Source ownership</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Source ownership
+
+- Shared Python is authored in `core/pysrc/`, then copied by
+  `tools/sync-core.py` into governance-host hooks. Do not edit those copies.
+- Shared instructions are authored in `core/surface/`, then rendered by
+  `tools/build-surface.py` using `core/hosts.json`.
+- The native Go engine is `core/artifacts/`. Public and embedded schemas and
+  generated model types must agree through their existing generator/checks.
+- Farm TypeScript lives in `plugins/ca/tools/`; the infrastructure sibling
+  lives in `plugins/ca-sandbox/tools/`.
+- Pi host TypeScript lives in `plugins/ca-pi/tools/src/`; the adapter consumes
+  the shared kernel rather than reimplementing it.
+- Site generators/tests live in `site/scripts/` and `site/test/`; curated
+  prose and generated content have distinct owners.
+
+</div></article>
+<!-- CA:END:CONV-002 -->
+
+<!-- CA:BEGIN:CONV-003 -->
+<article class="record" id="CONV-003" data-ca-symbol="CONV-003" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-003">CONV-003</a><h3>Python hooks and bridge</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Python hooks and bridge
+
+Use Python&#39;s standard library only in shipped hooks. No third-party runtime
+imports; a package used by a separately locked reference-conformance test is
+not a hook dependency.
+
+Keep entry hooks thin and shared logic in leading-underscore libraries.
+Use `snake_case` functions/variables, `UPPER_SNAKE` constants, and
+`CapWords` classes. Imports must not perform filesystem, Git or process work.
+Separate pure decisions from bounded filesystem/process access so tests can
+exercise malformed, absent, stale and unsafe input independently.
+
+Preserve the existing hook header convention: Python shebang, concise
+codeArbiter purpose, design invariants and public API notes. Existing legacy
+header differences are not a reason for unrelated sweeping edits.
+
+Malformed input must not crash SessionStart. Entry points follow their owning
+documented fail-open/fail-closed policy and surface bounded diagnostics.
+Libraries may return or raise their documented typed failures; callers must
+not turn a refused or uncertain write into success. Missing and unreadable state
+are different conditions.
+
+Keep enforcement IDs stable and covered by the corresponding tests. Use explicit
+argument arrays for subprocess boundaries and retain path/size/schema bounds.
+The syntax floor is `python -m py_compile` on changed canonical Python files;
+behavioral tests cover the affected outcomes.
+
+</div></article>
+<!-- CA:END:CONV-003 -->
+
+<!-- CA:BEGIN:CONV-004 -->
+<article class="record" id="CONV-004" data-ca-symbol="CONV-004" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-004">CONV-004</a><h3>Native Go engine</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Native Go engine
+
+Use the module&#39;s pinned Go toolchain and existing package boundaries. Keep Go
+source formatted with `gofmt`. The module remains dependency-free; do not add a
+datastore, service or general permission/rules layer to implement ordinary state
+updates.
+
+Preserve closed schemas and typed operation boundaries. Treat format, schema,
+renderer, protocol, artifact revision and product release as separate identities.
+Generate derived types with the existing tool; do not independently patch
+generated definitions.
+
+Retain bounded input/output, explicit omitted context, stable references,
+safe rendering, compare-and-swap, locks, journals and exact replay/recovery.
+A reported result is not an attestation. Progress, verification, review and
+publication remain distinct under ADR-0043. Unknown applicability remains
+unknown; neither stale history nor a later failing check may be hidden.
+
+Tests should discriminate changed behavior, including negative results and
+recovery paths. Historical HTML, transaction before-images, and fixture digests
+must retain their original meaning and bytes. Fix the producer/view contract
+before changing a pinned expected value.
+
+</div></article>
+<!-- CA:END:CONV-004 -->
+
+<!-- CA:BEGIN:CONV-005 -->
+<article class="record" id="CONV-005" data-ca-symbol="CONV-005" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-005">CONV-005</a><h3>TypeScript tools and host adapter</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## TypeScript tools and host adapter
+
+`strict: true` remains mandatory. Use `camelCase` values/functions,
+`CapWords` types/interfaces and the tree&#39;s established explicit local import
+extensions. Keep concise codeArbiter purpose headers. Runtime and development
+dependency scopes are not interchangeable; use pinned lockfiles.
+
+The farm and sandbox ship their built JavaScript. Rebuild affected bundles from
+source and keep source/output synchronized. The Pi build owns both parent/child
+extensions, `helpers/windows-supervisor.js` and `helpers/approval-dialog.js`;
+do not hand-edit those outputs.
+
+Pi uses Node 22.19+ and Python 3. The external Pi runtime is a reviewed
+test/install input, not a shipped runtime dependency. Keep host API declarations
+at the existing adapter boundary. Require affirmative project trust before
+repository-aware activation. Preserve final tool-argument enforcement,
+bounded/redacted host crossings, isolated child environments, the existing
+inference broker and whole-process-tree cleanup. Do not add a second runner.
+
+`plugins/ca-pi/package.json` owns its independent version. Generate the root
+Git/npm manifest through `tools/build-host-packages.py`. Publication follows
+the protected hosted release path, never an ad-hoc local npm publish.
+
+</div></article>
+<!-- CA:END:CONV-005 -->
+
+<!-- CA:BEGIN:CONV-006 -->
+<article class="record" id="CONV-006" data-ca-symbol="CONV-006" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-006">CONV-006</a><h3>Shared instructions</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## Shared instructions
+
+Use the existing command-backed owner rather than adding duplicate public
+procedures. Descriptions should identify intent and the side-effect boundary.
+Host-specific tool names and unsupported capabilities belong in the host
+descriptor/conditional notes. Generate all host copies and check resource
+closure. Instructions must not recreate artifact permission codes or compulsory
+per-task reviewer chains removed by ADR-0043.
+
+</div></article>
+<!-- CA:END:CONV-006 -->
+
+<!-- CA:BEGIN:CONV-007 -->
+<article class="record" id="CONV-007" data-ca-symbol="CONV-007" data-ca-kind="records"><div class="record-head"><a class="id" href="#CONV-007">CONV-007</a><h3>License and exact bytes</h3><span class="badge">convention</span><span class="badge">source-observed</span></div><div class="field"><span class="label">Related refs</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Scope</span><div class="fields"><div class="field"><span class="label">Paths</span><span class="missing">None recorded</span></div></div></div><div class="field"><span class="label">Source refs</span><ul class="items"><li><a href="#SRC-001">SRC-001</a></li></ul></div><div class="field"><span class="label">Statement</span>## License and exact bytes
+
+The repository license is AGPL-3.0-only and the recorded copyright holder is
+SUaDtL (ADR-0009). No new per-file copyright or SPDX headers; the root LICENSE
+governs.
+
+New tracked text uses UTF-8 without BOM and LF. Follow the actual scoped
+`.gitattributes` rules, including the native module, generated surfaces,
+workflows and plugin/site source. Do not normalize retained HTML, immutable
+artifact evidence, migration before-images or frozen fixtures: their `-text`
+or explicit byte contract takes precedence. Never create a whole-file newline
+rewrite as an incidental edit.
+</div></article>
+<!-- CA:END:CONV-007 -->
+</section><section class="group" id="group-notes"><a class="back" href="#main-content">Top</a><h2>Notes</h2>
+<!-- CA:BEGIN:NOTE-001 -->
+<article class="record" id="NOTE-001" data-ca-symbol="NOTE-001" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-001">NOTE-001</a><h3>Coding standards — codeArbiter</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>254</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>0</div></div></div><div class="field"><span class="label">Text</span># Coding standards — codeArbiter
+
+Conventions for source in this repository. Build/test commands belong to
+`tech-stack.md`; accepted security controls belong to `security-controls.md`.
+Shared instruction authoring belongs to `core/surface/README.md`.
+
+</div></article>
+<!-- CA:END:NOTE-001 -->
+
+<!-- CA:BEGIN:NOTE-002 -->
+<article class="record" id="NOTE-002" data-ca-symbol="NOTE-002" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-002">NOTE-002</a><h3>Source ownership</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>1062</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>254</div></div></div><div class="field"><span class="label">Text</span>## Source ownership
+
+- Shared Python is authored in `core/pysrc/`, then copied by
+  `tools/sync-core.py` into governance-host hooks. Do not edit those copies.
+- Shared instructions are authored in `core/surface/`, then rendered by
+  `tools/build-surface.py` using `core/hosts.json`.
+- The native Go engine is `core/artifacts/`. Public and embedded schemas and
+  generated model types must agree through their existing generator/checks.
+- Farm TypeScript lives in `plugins/ca/tools/`; the infrastructure sibling
+  lives in `plugins/ca-sandbox/tools/`.
+- Pi host TypeScript lives in `plugins/ca-pi/tools/src/`; the adapter consumes
+  the shared kernel rather than reimplementing it.
+- Site generators/tests live in `site/scripts/` and `site/test/`; curated
+  prose and generated content have distinct owners.
+
+</div></article>
+<!-- CA:END:NOTE-002 -->
+
+<!-- CA:BEGIN:NOTE-003 -->
+<article class="record" id="NOTE-003" data-ca-symbol="NOTE-003" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-003">NOTE-003</a><h3>Python hooks and bridge</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>2460</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>1062</div></div></div><div class="field"><span class="label">Text</span>## Python hooks and bridge
+
+Use Python&#39;s standard library only in shipped hooks. No third-party runtime
+imports; a package used by a separately locked reference-conformance test is
+not a hook dependency.
+
+Keep entry hooks thin and shared logic in leading-underscore libraries.
+Use `snake_case` functions/variables, `UPPER_SNAKE` constants, and
+`CapWords` classes. Imports must not perform filesystem, Git or process work.
+Separate pure decisions from bounded filesystem/process access so tests can
+exercise malformed, absent, stale and unsafe input independently.
+
+Preserve the existing hook header convention: Python shebang, concise
+codeArbiter purpose, design invariants and public API notes. Existing legacy
+header differences are not a reason for unrelated sweeping edits.
+
+Malformed input must not crash SessionStart. Entry points follow their owning
+documented fail-open/fail-closed policy and surface bounded diagnostics.
+Libraries may return or raise their documented typed failures; callers must
+not turn a refused or uncertain write into success. Missing and unreadable state
+are different conditions.
+
+Keep enforcement IDs stable and covered by the corresponding tests. Use explicit
+argument arrays for subprocess boundaries and retain path/size/schema bounds.
+The syntax floor is `python -m py_compile` on changed canonical Python files;
+behavioral tests cover the affected outcomes.
+
+</div></article>
+<!-- CA:END:NOTE-003 -->
+
+<!-- CA:BEGIN:NOTE-004 -->
+<article class="record" id="NOTE-004" data-ca-symbol="NOTE-004" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-004">NOTE-004</a><h3>Native Go engine</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>3636</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>2460</div></div></div><div class="field"><span class="label">Text</span>## Native Go engine
+
+Use the module&#39;s pinned Go toolchain and existing package boundaries. Keep Go
+source formatted with `gofmt`. The module remains dependency-free; do not add a
+datastore, service or general permission/rules layer to implement ordinary state
+updates.
+
+Preserve closed schemas and typed operation boundaries. Treat format, schema,
+renderer, protocol, artifact revision and product release as separate identities.
+Generate derived types with the existing tool; do not independently patch
+generated definitions.
+
+Retain bounded input/output, explicit omitted context, stable references,
+safe rendering, compare-and-swap, locks, journals and exact replay/recovery.
+A reported result is not an attestation. Progress, verification, review and
+publication remain distinct under ADR-0043. Unknown applicability remains
+unknown; neither stale history nor a later failing check may be hidden.
+
+Tests should discriminate changed behavior, including negative results and
+recovery paths. Historical HTML, transaction before-images, and fixture digests
+must retain their original meaning and bytes. Fix the producer/view contract
+before changing a pinned expected value.
+
+</div></article>
+<!-- CA:END:NOTE-004 -->
+
+<!-- CA:BEGIN:NOTE-005 -->
+<article class="record" id="NOTE-005" data-ca-symbol="NOTE-005" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-005">NOTE-005</a><h3>TypeScript tools and host adapter</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>4911</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>3636</div></div></div><div class="field"><span class="label">Text</span>## TypeScript tools and host adapter
+
+`strict: true` remains mandatory. Use `camelCase` values/functions,
+`CapWords` types/interfaces and the tree&#39;s established explicit local import
+extensions. Keep concise codeArbiter purpose headers. Runtime and development
+dependency scopes are not interchangeable; use pinned lockfiles.
+
+The farm and sandbox ship their built JavaScript. Rebuild affected bundles from
+source and keep source/output synchronized. The Pi build owns both parent/child
+extensions, `helpers/windows-supervisor.js` and `helpers/approval-dialog.js`;
+do not hand-edit those outputs.
+
+Pi uses Node 22.19+ and Python 3. The external Pi runtime is a reviewed
+test/install input, not a shipped runtime dependency. Keep host API declarations
+at the existing adapter boundary. Require affirmative project trust before
+repository-aware activation. Preserve final tool-argument enforcement,
+bounded/redacted host crossings, isolated child environments, the existing
+inference broker and whole-process-tree cleanup. Do not add a second runner.
+
+`plugins/ca-pi/package.json` owns its independent version. Generate the root
+Git/npm manifest through `tools/build-host-packages.py`. Publication follows
+the protected hosted release path, never an ad-hoc local npm publish.
+
+</div></article>
+<!-- CA:END:NOTE-005 -->
+
+<!-- CA:BEGIN:NOTE-006 -->
+<article class="record" id="NOTE-006" data-ca-symbol="NOTE-006" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-006">NOTE-006</a><h3>Shared instructions</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>5361</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>4911</div></div></div><div class="field"><span class="label">Text</span>## Shared instructions
+
+Use the existing command-backed owner rather than adding duplicate public
+procedures. Descriptions should identify intent and the side-effect boundary.
+Host-specific tool names and unsupported capabilities belong in the host
+descriptor/conditional notes. Generate all host copies and check resource
+closure. Instructions must not recreate artifact permission codes or compulsory
+per-task reviewer chains removed by ADR-0043.
+
+</div></article>
+<!-- CA:END:NOTE-006 -->
+
+<!-- CA:BEGIN:NOTE-007 -->
+<article class="record" id="NOTE-007" data-ca-symbol="NOTE-007" data-ca-kind="notes"><div class="record-head"><a class="id" href="#NOTE-007">NOTE-007</a><h3>License and exact bytes</h3></div><div class="field"><span class="label">Basis</span>source-observed</div><div class="field"><span class="label">Origin</span><div class="fields"><div class="field"><span class="label">End</span>5963</div><div class="field"><span class="label">Path</span>.codearbiter/coding-standards.md</div><div class="field"><span class="label">Start</span>5361</div></div></div><div class="field"><span class="label">Text</span>## License and exact bytes
+
+The repository license is AGPL-3.0-only and the recorded copyright holder is
+SUaDtL (ADR-0009). No new per-file copyright or SPDX headers; the root LICENSE
+governs.
+
+New tracked text uses UTF-8 without BOM and LF. Follow the actual scoped
+`.gitattributes` rules, including the native module, generated surfaces,
+workflows and plugin/site source. Do not normalize retained HTML, immutable
+artifact evidence, migration before-images or frozen fixtures: their `-text`
+or explicit byte contract takes precedence. Never create a whole-file newline
+rewrite as an incidental edit.
+</div></article>
+<!-- CA:END:NOTE-007 -->
+</section><section class="group" id="group-sections"><a class="back" href="#main-content">Top</a><h2>Sections</h2><span class="missing">None recorded</span></section><section class="group" id="group-sources"><a class="back" href="#main-content">Top</a><h2>Sources</h2>
+<!-- CA:BEGIN:SRC-001 -->
+<article class="record" id="SRC-001" data-ca-symbol="SRC-001" data-ca-kind="sources"><div class="record-head"><a class="id" href="#SRC-001">SRC-001</a><h3>Original Markdown coding-standards</h3></div><div class="field"><span class="label">Locator</span>.codearbiter/coding-standards.md at 97e1ecac795138cacb83a9d5e81c39d4c234867a; SHA-256 4a719552b4f0cdff8c3144912d9d087fc05b0cf8f1661722e31cafb19759fd7c</div><div class="field"><span class="label">Note</span>Source observed during user-authorized HTML conversion; inherited claims retain original evidence limits.</div><div class="field"><span class="label">Type</span>repository</div><div class="field"><span class="label">Url</span><span class="missing">Not yet supplied</span></div></article>
+<!-- CA:END:SRC-001 -->
+</section><section class="group" id="group-baseline"><a class="back" href="#main-content">Top</a><h2>Baseline</h2><div class="fields"><div class="field"><span class="label">Commit</span>97e1ecac795138cacb83a9d5e81c39d4c234867a</div><div class="field"><span class="label">Observed date</span>2026-11-13</div><div class="field"><span class="label">Repository</span><span class="missing">Not yet supplied</span></div></div></section><section class="group" id="group-retired_symbols"><a class="back" href="#main-content">Top</a><h2>Retired symbols</h2><span class="missing">None recorded</span></section><section class="group"><h2>Governance record</h2><p class="notice">Hash consistency establishes content identity, not who approved it. Explicit verification or approval claims require their own evidence; recorded progress does not establish those claims.</p><div class="fields"><div class="field"><span class="label">Approvals</span><span class="missing">None recorded</span></div><div class="field"><span class="label">Review notes</span><span class="missing">None recorded</span></div><div class="field"><span class="label">State</span>draft</div></div></section><footer class="footer"><p>codearbiter-html/0.1.0 · self-contained, static HTML · no runtime network resources</p><p class="digest">Normative SHA-256: f62820f532c3e4600d4e8d0b087c48b0fabc6763113b9acc944ac5235b854c28<br>Model SHA-256: 2cfaffda414ad95e4714ba10418b7f76335083c2c5e1130809565a9876a42b46</p></footer></main></div>
+<script id="ca-artifact-model" type="application/json">
+{
+  "artifact_id": "CTX-CODING-STANDARDS",
+  "format": "codearbiter.artifact",
+  "format_version": "0.1.0",
+  "governance": {
+    "approvals": [],
+    "review_notes": [],
+    "state": "draft"
+  },
+  "integrity": {
+    "model_sha256": "2cfaffda414ad95e4714ba10418b7f76335083c2c5e1130809565a9876a42b46",
+    "normative_sha256": "f62820f532c3e4600d4e8d0b087c48b0fabc6763113b9acc944ac5235b854c28",
+    "symbol_count": 15
+  },
+  "kind": "knowledge",
+  "normative": {
+    "baseline": {
+      "commit": "97e1ecac795138cacb83a9d5e81c39d4c234867a",
+      "observed_date": "2026-11-13",
+      "repository": null
+    },
+    "notes": [
+      {
+        "basis": "source-observed",
+        "id": "NOTE-001",
+        "origin": {
+          "end": 254,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 0
+        },
+        "text": "# Coding standards — codeArbiter\n\nConventions for source in this repository. Build/test commands belong to\n`tech-stack.md`; accepted security controls belong to `security-controls.md`.\nShared instruction authoring belongs to `core/surface/README.md`.\n\n",
+        "title": "Coding standards — codeArbiter"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-002",
+        "origin": {
+          "end": 1062,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 254
+        },
+        "text": "## Source ownership\n\n- Shared Python is authored in `core/pysrc/`, then copied by\n  `tools/sync-core.py` into governance-host hooks. Do not edit those copies.\n- Shared instructions are authored in `core/surface/`, then rendered by\n  `tools/build-surface.py` using `core/hosts.json`.\n- The native Go engine is `core/artifacts/`. Public and embedded schemas and\n  generated model types must agree through their existing generator/checks.\n- Farm TypeScript lives in `plugins/ca/tools/`; the infrastructure sibling\n  lives in `plugins/ca-sandbox/tools/`.\n- Pi host TypeScript lives in `plugins/ca-pi/tools/src/`; the adapter consumes\n  the shared kernel rather than reimplementing it.\n- Site generators/tests live in `site/scripts/` and `site/test/`; curated\n  prose and generated content have distinct owners.\n\n",
+        "title": "Source ownership"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-003",
+        "origin": {
+          "end": 2460,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 1062
+        },
+        "text": "## Python hooks and bridge\n\nUse Python's standard library only in shipped hooks. No third-party runtime\nimports; a package used by a separately locked reference-conformance test is\nnot a hook dependency.\n\nKeep entry hooks thin and shared logic in leading-underscore libraries.\nUse `snake_case` functions/variables, `UPPER_SNAKE` constants, and\n`CapWords` classes. Imports must not perform filesystem, Git or process work.\nSeparate pure decisions from bounded filesystem/process access so tests can\nexercise malformed, absent, stale and unsafe input independently.\n\nPreserve the existing hook header convention: Python shebang, concise\ncodeArbiter purpose, design invariants and public API notes. Existing legacy\nheader differences are not a reason for unrelated sweeping edits.\n\nMalformed input must not crash SessionStart. Entry points follow their owning\ndocumented fail-open/fail-closed policy and surface bounded diagnostics.\nLibraries may return or raise their documented typed failures; callers must\nnot turn a refused or uncertain write into success. Missing and unreadable state\nare different conditions.\n\nKeep enforcement IDs stable and covered by the corresponding tests. Use explicit\nargument arrays for subprocess boundaries and retain path/size/schema bounds.\nThe syntax floor is `python -m py_compile` on changed canonical Python files;\nbehavioral tests cover the affected outcomes.\n\n",
+        "title": "Python hooks and bridge"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-004",
+        "origin": {
+          "end": 3636,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 2460
+        },
+        "text": "## Native Go engine\n\nUse the module's pinned Go toolchain and existing package boundaries. Keep Go\nsource formatted with `gofmt`. The module remains dependency-free; do not add a\ndatastore, service or general permission/rules layer to implement ordinary state\nupdates.\n\nPreserve closed schemas and typed operation boundaries. Treat format, schema,\nrenderer, protocol, artifact revision and product release as separate identities.\nGenerate derived types with the existing tool; do not independently patch\ngenerated definitions.\n\nRetain bounded input/output, explicit omitted context, stable references,\nsafe rendering, compare-and-swap, locks, journals and exact replay/recovery.\nA reported result is not an attestation. Progress, verification, review and\npublication remain distinct under ADR-0043. Unknown applicability remains\nunknown; neither stale history nor a later failing check may be hidden.\n\nTests should discriminate changed behavior, including negative results and\nrecovery paths. Historical HTML, transaction before-images, and fixture digests\nmust retain their original meaning and bytes. Fix the producer/view contract\nbefore changing a pinned expected value.\n\n",
+        "title": "Native Go engine"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-005",
+        "origin": {
+          "end": 4911,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 3636
+        },
+        "text": "## TypeScript tools and host adapter\n\n`strict: true` remains mandatory. Use `camelCase` values/functions,\n`CapWords` types/interfaces and the tree's established explicit local import\nextensions. Keep concise codeArbiter purpose headers. Runtime and development\ndependency scopes are not interchangeable; use pinned lockfiles.\n\nThe farm and sandbox ship their built JavaScript. Rebuild affected bundles from\nsource and keep source/output synchronized. The Pi build owns both parent/child\nextensions, `helpers/windows-supervisor.js` and `helpers/approval-dialog.js`;\ndo not hand-edit those outputs.\n\nPi uses Node 22.19+ and Python 3. The external Pi runtime is a reviewed\ntest/install input, not a shipped runtime dependency. Keep host API declarations\nat the existing adapter boundary. Require affirmative project trust before\nrepository-aware activation. Preserve final tool-argument enforcement,\nbounded/redacted host crossings, isolated child environments, the existing\ninference broker and whole-process-tree cleanup. Do not add a second runner.\n\n`plugins/ca-pi/package.json` owns its independent version. Generate the root\nGit/npm manifest through `tools/build-host-packages.py`. Publication follows\nthe protected hosted release path, never an ad-hoc local npm publish.\n\n",
+        "title": "TypeScript tools and host adapter"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-006",
+        "origin": {
+          "end": 5361,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 4911
+        },
+        "text": "## Shared instructions\n\nUse the existing command-backed owner rather than adding duplicate public\nprocedures. Descriptions should identify intent and the side-effect boundary.\nHost-specific tool names and unsupported capabilities belong in the host\ndescriptor/conditional notes. Generate all host copies and check resource\nclosure. Instructions must not recreate artifact permission codes or compulsory\nper-task reviewer chains removed by ADR-0043.\n\n",
+        "title": "Shared instructions"
+      },
+      {
+        "basis": "source-observed",
+        "id": "NOTE-007",
+        "origin": {
+          "end": 5963,
+          "path": ".codearbiter/coding-standards.md",
+          "start": 5361
+        },
+        "text": "## License and exact bytes\n\nThe repository license is AGPL-3.0-only and the recorded copyright holder is\nSUaDtL (ADR-0009). No new per-file copyright or SPDX headers; the root LICENSE\ngoverns.\n\nNew tracked text uses UTF-8 without BOM and LF. Follow the actual scoped\n`.gitattributes` rules, including the native module, generated surfaces,\nworkflows and plugin/site source. Do not normalize retained HTML, immutable\nartifact evidence, migration before-images or frozen fixtures: their `-text`\nor explicit byte contract takes precedence. Never create a whole-file newline\nrewrite as an incidental edit.\n",
+        "title": "License and exact bytes"
+      }
+    ],
+    "records": [
+      {
+        "basis": "source-observed",
+        "id": "CONV-001",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "# Coding standards — codeArbiter\n\nConventions for source in this repository. Build/test commands belong to\n`tech-stack.md`; accepted security controls belong to `security-controls.md`.\nShared instruction authoring belongs to `core/surface/README.md`.\n\n",
+        "title": "Coding standards — codeArbiter",
+        "type": "convention"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CONV-002",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Source ownership\n\n- Shared Python is authored in `core/pysrc/`, then copied by\n  `tools/sync-core.py` into governance-host hooks. Do not edit those copies.\n- Shared instructions are authored in `core/surface/`, then rendered by\n  `tools/build-surface.py` using `core/hosts.json`.\n- The native Go engine is `core/artifacts/`. Public and embedded schemas and\n  generated model types must agree through their existing generator/checks.\n- Farm TypeScript lives in `plugins/ca/tools/`; the infrastructure sibling\n  lives in `plugins/ca-sandbox/tools/`.\n- Pi host TypeScript lives in `plugins/ca-pi/tools/src/`; the adapter consumes\n  the shared kernel rather than reimplementing it.\n- Site generators/tests live in `site/scripts/` and `site/test/`; curated\n  prose and generated content have distinct owners.\n\n",
+        "title": "Source ownership",
+        "type": "convention"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CONV-003",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Python hooks and bridge\n\nUse Python's standard library only in shipped hooks. No third-party runtime\nimports; a package used by a separately locked reference-conformance test is\nnot a hook dependency.\n\nKeep entry hooks thin and shared logic in leading-underscore libraries.\nUse `snake_case` functions/variables, `UPPER_SNAKE` constants, and\n`CapWords` classes. Imports must not perform filesystem, Git or process work.\nSeparate pure decisions from bounded filesystem/process access so tests can\nexercise malformed, absent, stale and unsafe input independently.\n\nPreserve the existing hook header convention: Python shebang, concise\ncodeArbiter purpose, design invariants and public API notes. Existing legacy\nheader differences are not a reason for unrelated sweeping edits.\n\nMalformed input must not crash SessionStart. Entry points follow their owning\ndocumented fail-open/fail-closed policy and surface bounded diagnostics.\nLibraries may return or raise their documented typed failures; callers must\nnot turn a refused or uncertain write into success. Missing and unreadable state\nare different conditions.\n\nKeep enforcement IDs stable and covered by the corresponding tests. Use explicit\nargument arrays for subprocess boundaries and retain path/size/schema bounds.\nThe syntax floor is `python -m py_compile` on changed canonical Python files;\nbehavioral tests cover the affected outcomes.\n\n",
+        "title": "Python hooks and bridge",
+        "type": "convention"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CONV-004",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Native Go engine\n\nUse the module's pinned Go toolchain and existing package boundaries. Keep Go\nsource formatted with `gofmt`. The module remains dependency-free; do not add a\ndatastore, service or general permission/rules layer to implement ordinary state\nupdates.\n\nPreserve closed schemas and typed operation boundaries. Treat format, schema,\nrenderer, protocol, artifact revision and product release as separate identities.\nGenerate derived types with the existing tool; do not independently patch\ngenerated definitions.\n\nRetain bounded input/output, explicit omitted context, stable references,\nsafe rendering, compare-and-swap, locks, journals and exact replay/recovery.\nA reported result is not an attestation. Progress, verification, review and\npublication remain distinct under ADR-0043. Unknown applicability remains\nunknown; neither stale history nor a later failing check may be hidden.\n\nTests should discriminate changed behavior, including negative results and\nrecovery paths. Historical HTML, transaction before-images, and fixture digests\nmust retain their original meaning and bytes. Fix the producer/view contract\nbefore changing a pinned expected value.\n\n",
+        "title": "Native Go engine",
+        "type": "convention"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CONV-005",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## TypeScript tools and host adapter\n\n`strict: true` remains mandatory. Use `camelCase` values/functions,\n`CapWords` types/interfaces and the tree's established explicit local import\nextensions. Keep concise codeArbiter purpose headers. Runtime and development\ndependency scopes are not interchangeable; use pinned lockfiles.\n\nThe farm and sandbox ship their built JavaScript. Rebuild affected bundles from\nsource and keep source/output synchronized. The Pi build owns both parent/child\nextensions, `helpers/windows-supervisor.js` and `helpers/approval-dialog.js`;\ndo not hand-edit those outputs.\n\nPi uses Node 22.19+ and Python 3. The external Pi runtime is a reviewed\ntest/install input, not a shipped runtime dependency. Keep host API declarations\nat the existing adapter boundary. Require affirmative project trust before\nrepository-aware activation. Preserve final tool-argument enforcement,\nbounded/redacted host crossings, isolated child environments, the existing\ninference broker and whole-process-tree cleanup. Do not add a second runner.\n\n`plugins/ca-pi/package.json` owns its independent version. Generate the root\nGit/npm manifest through `tools/build-host-packages.py`. Publication follows\nthe protected hosted release path, never an ad-hoc local npm publish.\n\n",
+        "title": "TypeScript tools and host adapter",
+        "type": "convention"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CONV-006",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## Shared instructions\n\nUse the existing command-backed owner rather than adding duplicate public\nprocedures. Descriptions should identify intent and the side-effect boundary.\nHost-specific tool names and unsupported capabilities belong in the host\ndescriptor/conditional notes. Generate all host copies and check resource\nclosure. Instructions must not recreate artifact permission codes or compulsory\nper-task reviewer chains removed by ADR-0043.\n\n",
+        "title": "Shared instructions",
+        "type": "convention"
+      },
+      {
+        "basis": "source-observed",
+        "id": "CONV-007",
+        "related_refs": [],
+        "scope": {
+          "paths": []
+        },
+        "source_refs": [
+          "SRC-001"
+        ],
+        "statement": "## License and exact bytes\n\nThe repository license is AGPL-3.0-only and the recorded copyright holder is\nSUaDtL (ADR-0009). No new per-file copyright or SPDX headers; the root LICENSE\ngoverns.\n\nNew tracked text uses UTF-8 without BOM and LF. Follow the actual scoped\n`.gitattributes` rules, including the native module, generated surfaces,\nworkflows and plugin/site source. Do not normalize retained HTML, immutable\nartifact evidence, migration before-images or frozen fixtures: their `-text`\nor explicit byte contract takes precedence. Never create a whole-file newline\nrewrite as an incidental edit.\n",
+        "title": "License and exact bytes",
+        "type": "convention"
+      }
+    ],
+    "retired_symbols": [],
+    "sections": [],
+    "sources": [
+      {
+        "id": "SRC-001",
+        "locator": ".codearbiter/coding-standards.md at 97e1ecac795138cacb83a9d5e81c39d4c234867a; SHA-256 4a719552b4f0cdff8c3144912d9d087fc05b0cf8f1661722e31cafb19759fd7c",
+        "note": "Source observed during user-authorized HTML conversion; inherited claims retain original evidence limits.",
+        "title": "Original Markdown coding-standards",
+        "type": "repository",
+        "url": null
+      }
+    ],
+    "summary": "Structural and style conventions.",
+    "title": "Coding standards"
+  },
+  "presentation": {
+    "brand_name": "codeArbiter",
+    "companion_path": "",
+    "logo_data_uri": "data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxNjAgMjgiIHdpZHRoPSIxNjAiIGhlaWdodD0iMjgiIHJvbGU9ImltZyIgYXJpYS1sYWJlbD0iY29kZUFyYml0ZXIiPgogIDx0aXRsZT5jb2RlQXJiaXRlcjwvdGl0bGU+CiAgPGRlc2M+QW4gdW5wcm92ZW4gY29tbWl0IGNyb3NzZXMgYSBnb3Zlcm5lZCBnYXRlIGFuZCBsZWF2ZXMgYXMgYSBwcm92ZW4gZGVjaXNpb24uPC9kZXNjPgogIDxkZWZzPgogICAgPGxpbmVhckdyYWRpZW50IGlkPSJjYS1nYXRlLWdvbGQiIHgxPSI2IiB5MT0iNCIgeDI9IjI2IiB5Mj0iMjMiIGdyYWRpZW50VW5pdHM9InVzZXJTcGFjZU9uVXNlIj4KICAgICAgPHN0b3Agc3RvcC1jb2xvcj0iI2YzYzk1OCIvPgogICAgICA8c3RvcCBvZmZzZXQ9IjEiIHN0b3AtY29sb3I9IiNkODk5MjAiLz4KICAgIDwvbGluZWFyR3JhZGllbnQ+CiAgPC9kZWZzPgoKICA8ZyBhcmlhLWhpZGRlbj0idHJ1ZSI+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImNvbW1pdC1saW5lIgogICAgICBkPSJNMiAyMGgyNCIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjNDY1NTY1IgogICAgICBzdHJva2Utd2lkdGg9IjEuNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgLz4KICAgIDxjaXJjbGUKICAgICAgZGF0YS1icmFuZC1lbGVtZW50PSJ1bnByb3Zlbi1ub2RlIgogICAgICBjeD0iNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyIgogICAgICBmaWxsPSIjMDkwZDEyIgogICAgICBzdHJva2U9IiM3ZjhkOWQiCiAgICAgIHN0cm9rZS13aWR0aD0iMS4zIgogICAgLz4KICAgIDxnCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0iZ2F0ZS1wb3N0cyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSJ1cmwoI2NhLWdhdGUtZ29sZCkiCiAgICAgIHN0cm9rZS13aWR0aD0iMi4xNSIKICAgICAgc3Ryb2tlLWxpbmVjYXA9InJvdW5kIgogICAgPgogICAgICA8cGF0aCBkPSJNMTEgMTB2MTIiLz4KICAgICAgPHBhdGggZD0iTTE3IDEwdjEyIi8+CiAgICA8L2c+CiAgICA8cmVjdAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9ImdhdGUtYmVhbSIKICAgICAgeD0iNiIKICAgICAgeT0iNyIKICAgICAgd2lkdGg9IjE2IgogICAgICBoZWlnaHQ9IjIuNzUiCiAgICAgIHJ4PSIuNTUiCiAgICAgIGZpbGw9InVybCgjY2EtZ2F0ZS1nb2xkKSIKICAgIC8+CiAgICA8cGF0aAogICAgICBkYXRhLWJyYW5kLWVsZW1lbnQ9InRlcm1pbmFsLWNoZXZyb24iCiAgICAgIGQ9Im0xMS45IDMuNSAyLjEgMyAyLjEtMyIKICAgICAgZmlsbD0ibm9uZSIKICAgICAgc3Ryb2tlPSIjZjNjOTU4IgogICAgICBzdHJva2Utd2lkdGg9IjEuNTUiCiAgICAgIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIKICAgICAgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCIKICAgIC8+CiAgICA8Y2lyY2xlCiAgICAgIGRhdGEtYnJhbmQtZWxlbWVudD0icHJvdmVuLW5vZGUiCiAgICAgIGN4PSIyNCIKICAgICAgY3k9IjIwIgogICAgICByPSIyLjU1IgogICAgICBmaWxsPSIjZTVhZDJjIgogICAgLz4KICA8L2c+CgogIDx0ZXh0CiAgICB4PSIzNCIKICAgIHk9IjIwLjc1IgogICAgZm9udC1mYW1pbHk9IidNYW5yb3BlIFZhcmlhYmxlJywgJ1NlZ29lIFVJIFZhcmlhYmxlJywgJ1NlZ29lIFVJJywgc2Fucy1zZXJpZiIKICAgIGZvbnQtc2l6ZT0iMTYiCiAgICBsZXR0ZXItc3BhY2luZz0iLS4yNSIKICA+CiAgICA8dHNwYW4gZmlsbD0iI2U3ZWRmNCIgZm9udC13ZWlnaHQ9IjQzMCI+Y29kZTwvdHNwYW4+PHRzcGFuIGZpbGw9IiNlNmFkMmMiIGZvbnQtd2VpZ2h0PSI3NTAiPkFyYml0ZXI8L3RzcGFuPgogIDwvdGV4dD4KPC9zdmc+Cg==",
+    "logo_git_blob": null,
+    "logo_origin": "embedded codeArbiter logo",
+    "renderer": "codearbiter-html/0.1.0",
+    "stylesheet_sha256": "584ac549e16aeccd18359cafd3cbfc49339b11d6bf0cbd07727324d93acc6405"
+  },
+  "revision": 5,
+  "schema_version": "0.3.2",
+  "slug": "coding-standards"
+}
+</script>
+</body></html>

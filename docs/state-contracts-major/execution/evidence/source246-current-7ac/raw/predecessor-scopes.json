@@ -1,0 +1,1007 @@
+{
+  "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "predecessors": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/preserved.json",
+      "sha256": "5fff96d190d7c80c73b45e274655bd03c814755fd5a3e34a64bd70ad529206a1",
+      "source_epoch": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "scope": "Exact59 existing PRESERVED source-only contracts and separate1 accepted retired contract, with every predecessor scope/limit/history retained; no task/status promotion or runtime qualification.",
+      "limits": [
+        "No tests, CLI/SDK/native/Pi/Codex/model/provider/network/build/install or release execution.",
+        "Literal e064 Git source is the proof subject. Two nonexecuted Markdown inputs have stable physical CRLF transport with exact LF-normalized equality and separate hashes; no executable/runtime normalization or raw byte-equality claim.",
+        "All original raw/proof evidence retains actual epochs; lossless flat predecessor proof containers preserve exact bytes including CRLF. Existing original42 raw refs remain immutable history.",
+        "No S10/S11 HTTP policy, user/model/UI/host/physical consent, installed/native cohort, whole-task/program/main/publication closure."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/after.json",
+          "sha256": "72c8f5d59985c4083c7a4f0658f019c7d89b6a6a0bfa45819920a17d82565be8"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/before.json",
+          "sha256": "33323051669832b74fb52d0bf67349e16af2afa4bdf527fd90b7abb9f6c7b35f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/clause-inspection.json",
+          "sha256": "d586c43e5ebf3befd0d4aaafcb25d31e9536e752482073111ab26b0922f9b0c9"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/current-witnesses.json",
+          "sha256": "a4abbd71e960ae918c1e379598c0380cd3e7ebf0a0f87fcaea24794c82b970f8"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/frozen-60.json",
+          "sha256": "6aa2c13a81a98aee88dd0cd9e8d7e474d81920335882d753ffd3bfc97309a83b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-01.json",
+          "sha256": "9ebab322041bf8c570398913790f9a12320de24132692196cab689f80e0157ab"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-02.json",
+          "sha256": "715b3daf046cdb9dc9672d2def7364f8e67060d4f984ca3e774b4a7d15ecd89f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-03.json",
+          "sha256": "b5a9f000e995ac68eff18de944e7221dc09ac2b99b1c69ec8ec977bb0ac67041"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-04.json",
+          "sha256": "38dbb60b1295459490b6d73827cbed1263357f0b444e8a2976fa617796dda98f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-05.json",
+          "sha256": "bc9989c49b75715d6f33a7c20dddab1a72b5dd694e3513e6b4037480dc2603f5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-06.json",
+          "sha256": "93d77356797a6708bc1be930ee4bdf8ceff03d4685464ab546d1ca9b7b386ed6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-07.json",
+          "sha256": "6f4c72f12226e548f7dd26f894bb0563aafde95d273a0dbd4afdd6b930bbe54d"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-08.json",
+          "sha256": "4da6308662c9008d8e39ddb62e0f792ec1f6b953b1a928defde2ab3a029ce16c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/predecessor-index.json",
+          "sha256": "fab5cc9bfb0744de1f8b6a3a547208486b93ddeac67f0ed5888946317764225f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/typed-dependencies.json",
+          "sha256": "816b79035b9bde57bdddd634aa7889d1d60f2b3e021a83dc786df13e796b3935"
+        }
+      ],
+      "changed_inputs": [
+        ".github/workflows/ci.yml",
+        "core/pysrc/_gitexec.py",
+        "plugins/ca-pi/CHANGELOG.md",
+        "plugins/ca-sandbox/tools/cli.test.ts"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-provider/preserved.json",
+      "sha256": "7e9d7a5d957d70dddb4aae26763cde725cdf5029ad4d8c26b728bb6595b2f8b3",
+      "source_epoch": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "scope": "28 complete transition clauses and 4 exact constituent machines; current source PRESERVED only. Original6 parser,7 unchanged-path,3 native identity observations remain separately sourced corroboration, not unique-count or fresh-runtime qualification. S38 and all unselected rows untouched.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/work-provider/source-inspection.json",
+          "sha256": "7f182ad91cd2fe8307d280aa38bc73eccfddf5ddf6c131c3960b7ddcb86c98b4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.json",
+          "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/preclaim-seven/GREEN.log",
+          "sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.json",
+          "sha256": "25af662244ccdc0d8797cc0d2080d9aecde6f9a77047a0a605eac659585d5e45"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/parser-six/GREEN.log",
+          "sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.json",
+          "sha256": "99f21f37dc77cee3d1116ced4e5067ad6f6a79e54fd558329d2bf08de8e6ba17"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/native-identity-three/actual-focused.log",
+          "sha256": "716d9d550a93a10171669807010fd18c499818aca4232cbb458f196914cc97ea"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/prior-seven-source-reuse.json",
+          "sha256": "b53d61985795b05e8b14754887cfc1f38f7c9c8c4191291c8c924f7f41fbfdb5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/depth-oracle-correction.txt",
+          "sha256": "d78926b33017fdc764a1c7253b1a7858ca52630380643ea9ff0b91a994264b78"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-bindings/source-closure.json",
+          "sha256": "f8a1803bfcf09080e4454461d40546a47508cf465e4154c18cc99f507a104411"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/original-observations-source-join.json",
+          "sha256": "8bf34b0c5f1e88b83c8b0a463243975534eac404bfb1d0e72f4efa5fdfd0c912"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/provider-source-delta.json",
+          "sha256": "ff773795181f6b92909c418f0eb1b32cea1bcd3049c34f34376df4d7edaba0be"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/input-bindings.json",
+          "sha256": "34aa3af0bc17fd311c4b3aed9219f3aedfdedfd08641c29834d464d7177b773c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-source-renewal-7eba/raw/exact-stale-selection.json",
+          "sha256": "4eee1488882a45a31b1b64134920eb1d53d5051e83789c010689d62785f4ba7e"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/hooks6-preserved.json",
+      "sha256": "aca02f52e176c9c172051d463a375278d8ee58c3e22f0d3100a87ee19862571f",
+      "source_epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "scope": "Current-sourcePRESERVED successoronly; fulloriginalguard/effect/retry andsameinputkeys/scopes retained. Existingrawobservationsremainattheiroriginalepochs, no runtimepassesinvented.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/native-identity-run.json",
+          "sha256": "99f21f37dc77cee3d1116ced4e5067ad6f6a79e54fd558329d2bf08de8e6ba17"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/native-identity-run.log",
+          "sha256": "716d9d550a93a10171669807010fd18c499818aca4232cbb458f196914cc97ea"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/parser-run.json",
+          "sha256": "25af662244ccdc0d8797cc0d2080d9aecde6f9a77047a0a605eac659585d5e45"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/parser-run.log",
+          "sha256": "6aa90b08e0cd85cc9c0708c125cf206354b31ecc0ceb16f705d1c1456cd8782a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/network-run.json",
+          "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/network-run.log",
+          "sha256": "1bec590faba3288b9f6baed9600017b8aacecbd9161fcd5881e1a403a4088e38"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/parser-independent-review.json",
+          "sha256": "66a16b5cf862ebaa0f218bb1b35ce2a31d518fd783943e0e41da4fb36e042a31"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/raw/native-identity-runner.py",
+          "sha256": "00ccb7210a8ff4c164a35d720fd24957143bda41f86a7829eda8afc37ca96abc"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/input-join.json",
+          "sha256": "379fddb4c8c3e5c9358672254d5085d0529e104b84c7be343161c9c922b590eb"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-inspection.json",
+          "sha256": "61d716b51676100f19429d639b700fbc272a398361e8b64552a8e5dab0f4c650"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/mapped-S38-finite-9e3b2ea5/source-conformance.json",
+          "sha256": "636e4ab5ef2fdb5bc43113079fd5cdcc4db5c0a86a4949b8e88932252fcc1bd4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/module-and-test-addition-join.json",
+          "sha256": "bf73fb17d6c2906de1e2de942d05f97f28ee9043e6c1f58d2302b428a2448233"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/input-and-causal-readset-join.json",
+          "sha256": "3ef67fb78185ef1e54b10d6c110c2eac5fce37d0d78c5b4c3f2f0d4718773f4f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/native-preserved27-c2cf0a18/source-inspection.json",
+          "sha256": "b5f48ac079d9e2f8e48ee25b87a03e350456736cd198f176beecce67132bcc06"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+      "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11",
+      "source_epoch": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61",
+      "scope": "Nine previouslyPLANNED Sandbox clauses and finite completeS47/S50/S51 source machines. Existing related activeTESTED/PRESERVED row histories are untouched; no historical test is relabelled as rerun. S51 late-success cancellation specificsourcegap nowclosed by actualcommitted code plus exact43GREEN/4RED.",
+      "limits": [
+        "No new execution in successor.",
+        "No installed/liveDocker/networkenforcement/provider/model/physicalconsent/scenario/task/publication qualification.",
+        "Root rebuilt Claude bundle is literalcommitted inventory only, not new shippedCLI runtime evidence.",
+        "Whole-machinePRESERVED means finite complete source guard/effect/retry conformance, not every interleaving or whole-runtime acceptance.",
+        "Original frozen105 intake and all unselected evidence/history remain untouched.",
+        "Root stores original RED stderr as lossless UTF8 JSON text to retain its exact terminal blank line; original bytes/hash remain explicit and reconstructable. No raw observation or source claim changed."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-vitest.json",
+          "sha256": "37a14d4040d0eea6cf4bcd6aae4d65bec8413b87b6d4dcf359814500094c3bd1"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-exit.json",
+          "sha256": "2db0d8d5a6b160fdcff59119484d1cea61611ac284186d9949913ecea09e60d5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED.stdout",
+          "sha256": "366457b09968925ca8dda12fead12baceeb7c3c23fb2db76e36505272cea3556"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED.stderr.json",
+          "sha256": "a886d6857a22fb01d8fc0f0f221ee8a073f3c3956e5a671e112ca1c3a6a3695c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+          "sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-exit.json",
+          "sha256": "62c80b7fd328fb175cd097777fe5e3107c0d9f330846183c538f1701e092abb5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN.stdout",
+          "sha256": "467dabcfbe462e797d000e6dddc0021c9699ca9d4c9be274feb0f685f29e5b8b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-changed-coverage.json",
+          "sha256": "d42c78259dee4744a3d4c92e0519cc005df8f7313ae3487238dc90a199cf1581"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.json",
+          "sha256": "719d22b2c9ff6e7edde7d44280830022e7d4c4c723f4b5bd2a64a3f6ab32faa4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-preservation.json",
+          "sha256": "cfb71ee2d07bf6f29ef4b9ef4685360419d0fe858cc4f9580eece524e933b775"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-freeze.json",
+          "sha256": "b55da4920015ba0e8260fd3a75e96648152c827f5dc8ad1b9b31fdf103e5b911"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-delivery.json",
+          "sha256": "b06ba81554b4ad2dfa4cf993549db230afa5aad6e1188c1a93f553f9c60c5aaf"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-vitest.config.mjs",
+          "sha256": "98f52963d3744921ecb712908ed4cc0933c5ab9c06837c48eedada3263db7b5a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-tsconfig-checked.json",
+          "sha256": "bdc5df264528dccf38c41e12cd19b19346b7fbeb6b1c3c8422d1b08edd64611a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+          "sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/sandbox4-preserved.json",
+          "sha256": "37220fe9efd2f0ac9a69ae959366669da374c4bbe85f503723fee387ebf1e416",
+          "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+          "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2",
+          "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+          "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869",
+          "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+          "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+          "sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+          "sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/delivery.json",
+          "sha256": "3d64d554c137a6d28abfff9f81f5b6ca6b5a0046d791505f34af197b0c17594c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/source-inspection.json",
+          "sha256": "1c4ae14839eb4c6262579e7ef4342a78dd21f3596e74fb33b5cf4474fefd4c70"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/input-join.json",
+          "sha256": "5d2968b00dcffe547296bedf348e813333ee8d56e681f429ec11f07531c735b6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/cas-proposal.json",
+          "sha256": "54891e36cf537b1286399ae762c0c670ea03e60d34f42bfa975dcf8d4bac85c5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/original-observations.json",
+          "sha256": "4f0a2c1d7f066b57b9a0cc422232f0cb7ad92c968095a9ddf16e4bd866078d90"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/input-join.json",
+          "sha256": "06f801a2d66848a60970625b696c62bbe0cef08c1a58a6c76fe1de28f779b927"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/source-inspection.json",
+          "sha256": "3c8defb47bd21f5698d1b2989019e4ecb984ccedc033b46527a88faa4edf5ba1"
+        }
+      ],
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/cli.test.ts"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/preserved.json",
+      "sha256": "4e7ffec8d4d123bc9b5b69c9457ff8e2a2c1950762e2a92be4959069148d7738",
+      "source_epoch": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+      "scope": "OnlywholeS49/S52/S54/SW02finite sourceconformance. All35clauses mapped toactualcurrent guard/effect/retry and unchanged/admitted originalnamed componentfacts. Existingtransitionstatuses/history untouched; no task/runtime/installed/modelpromotion. SW01specificcataloggap held.",
+      "limits": [
+        "No newtests/build/provider/Docker/signal/TTY/API effects.",
+        "RealDocker/defaultbuilder/wholephasecontainment and installed/runtime/platform acceptance remain distinct unknowns unless separatelyauthenticallyproved.",
+        "SW02PRESERVED means complete sourceinstruction contract, not observedagent/physicalconsent compliance.",
+        "S54catch-after-abort maps1 asacceptedfrozenlimitation.",
+        "Originalobservations remainat originalepochs; actualnamed path-scopes joined, no countsusedaswhole-suite completion."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+          "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+          "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+          "sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-command-result.json",
+          "sha256": "70ba8d527e49901a8da14843feb818ffc58afb58cbac8236d6d0e4a68860c976"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-run-start.json",
+          "sha256": "63b5cd45e07c861694e5c10d69f30c717f7fcbf54deccc5287ef791380061118"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-selection.json",
+          "sha256": "de51e9e33a747bec8715722e5a90aaed0b1d1876724752c8c1caa5a0b239b635"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cache-builder-guards-tested.json",
+          "sha256": "35909af1bbe66746a9ad446a636876db481d028e38bbdb5592570c13fadabc7b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+          "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+          "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+          "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+          "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-copy-contract-tested.json",
+          "sha256": "3762d92c83ebe332f49697430dbb90f9199f7d5b6fb69fe77fcdd759825e1e07"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-cli-dispatch-tested.json",
+          "sha256": "e21b85d3cc9c0914c8625ca7fe37ad612bd537b86133e3ff78090c568244cdb0"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+          "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-preserved.json",
+          "sha256": "bd03c03c3c413f0e562fd0481271f41896493533abbf4c823305e44018d968f8"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-01.json",
+          "sha256": "71925f1b0d2b47b4510b9263e1200fd9876c62c7a2666ecf76fde2dfd902d59a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw02-current-instruction-contracts-preserved.json",
+          "sha256": "d88f52145f856cd212e17e91172743ae34ab43578313794fd044ed3b781ced2a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/retired-SW02-09.json",
+          "sha256": "d729d83af5cfb81299b1c3c1d34077442458f220aba43dcdb31bde01b103521f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/sandbox-cache-cancel-tested.json",
+          "sha256": "23af831046adc0cade86896e2914df97dcae411297131aeb9658006a0b7c03cc"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/execution-origins.json",
+          "sha256": "c4d6240a13cb20f64a643d5ff4d3593e78d6921b56c72fc3496b1957f512bbee"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-actual-vitest-exit.json",
+          "sha256": "dbef206991ff4fde1a31f991058d45d9b1e38c2fbd2b6edd6e9b25a3b93b58e5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-actual-vitest-result.json",
+          "sha256": "6f482e8e83fbb8b6d24afc4cb263594156c5adee210fa889cce3b93ed9fdac0c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-delivery-vitest-successor.json",
+          "sha256": "2088cd0c55cfed91eb7712f8f24d860d471346d008965023ba0cb9499d95c550"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-vitest-verify.config.mjs",
+          "sha256": "97e3476639d5a5d3583c50255c7eb8e4220e6f3132162848f27b90651fe4766e"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/source-input-join.json",
+          "sha256": "c0f2c6e7be9efd2bc7ef4ee480070699a776130dbd605bac412d04622a2864be"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/preserved.json",
+          "sha256": "1d35dc22932c406d5215706666ad1ac9335d8409452b06006d721dc7a22cce11"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-vitest.json",
+          "sha256": "37a14d4040d0eea6cf4bcd6aae4d65bec8413b87b6d4dcf359814500094c3bd1"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-exit.json",
+          "sha256": "2db0d8d5a6b160fdcff59119484d1cea61611ac284186d9949913ecea09e60d5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED.stdout",
+          "sha256": "366457b09968925ca8dda12fead12baceeb7c3c23fb2db76e36505272cea3556"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED.stderr.json",
+          "sha256": "a886d6857a22fb01d8fc0f0f221ee8a073f3c3956e5a671e112ca1c3a6a3695c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+          "sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-exit.json",
+          "sha256": "62c80b7fd328fb175cd097777fe5e3107c0d9f330846183c538f1701e092abb5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN.stdout",
+          "sha256": "467dabcfbe462e797d000e6dddc0021c9699ca9d4c9be274feb0f685f29e5b8b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-changed-coverage.json",
+          "sha256": "d42c78259dee4744a3d4c92e0519cc005df8f7313ae3487238dc90a199cf1581"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.json",
+          "sha256": "719d22b2c9ff6e7edde7d44280830022e7d4c4c723f4b5bd2a64a3f6ab32faa4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.stdout",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.stderr",
+          "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-preservation.json",
+          "sha256": "cfb71ee2d07bf6f29ef4b9ef4685360419d0fe858cc4f9580eece524e933b775"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-freeze.json",
+          "sha256": "b55da4920015ba0e8260fd3a75e96648152c827f5dc8ad1b9b31fdf103e5b911"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-delivery.json",
+          "sha256": "b06ba81554b4ad2dfa4cf993549db230afa5aad6e1188c1a93f553f9c60c5aaf"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-vitest.config.mjs",
+          "sha256": "98f52963d3744921ecb712908ed4cc0933c5ab9c06837c48eedada3263db7b5a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-tsconfig-checked.json",
+          "sha256": "bdc5df264528dccf38c41e12cd19b19346b7fbeb6b1c3c8422d1b08edd64611a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+          "sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/sandbox4-preserved.json",
+          "sha256": "37220fe9efd2f0ac9a69ae959366669da374c4bbe85f503723fee387ebf1e416",
+          "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+          "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2",
+          "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+          "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869",
+          "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+          "sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/delivery.json",
+          "sha256": "3d64d554c137a6d28abfff9f81f5b6ca6b5a0046d791505f34af197b0c17594c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/preserved.json",
+          "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/source-inspection.json",
+          "sha256": "1c4ae14839eb4c6262579e7ef4342a78dd21f3596e74fb33b5cf4474fefd4c70"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/input-join.json",
+          "sha256": "5d2968b00dcffe547296bedf348e813333ee8d56e681f429ec11f07531c735b6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/cas-proposal.json",
+          "sha256": "54891e36cf537b1286399ae762c0c670ea03e60d34f42bfa975dcf8d4bac85c5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/original-observations.json",
+          "sha256": "4f0a2c1d7f066b57b9a0cc422232f0cb7ad92c968095a9ddf16e4bd866078d90"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/input-join.json",
+          "sha256": "06f801a2d66848a60970625b696c62bbe0cef08c1a58a6c76fe1de28f779b927"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/source-inspection.json",
+          "sha256": "3c8defb47bd21f5698d1b2989019e4ecb984ccedc033b46527a88faa4edf5ba1"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/original-observations.json",
+          "sha256": "97359032ecb8880b7e8bec376571934089f1f2b35379325f9d3e75139d4efae6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/input-join.json",
+          "sha256": "431631a3abc2c08e03a0d437672161f01a8ac85fb55bcdcddf0184596b77ebe8"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/sandbox-four-machines-9a26600f/source-inspection.json",
+          "sha256": "6834f45841023cd2e6b4fbfcf0b2dce445a52eff016a554bf4e86430e9cc2b30"
+        }
+      ],
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/cli.test.ts"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+      "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+      "source_epoch": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+      "scope": "All six finite conditional source clauses and source machine. Candidate/trusted receipt validity remains a checked condition, not an authentic artifact observation.",
+      "limits": [
+        "No test/build/installed/native/platform/API/publication effects for this cone.",
+        "No current genuine artifact, runtime/module membership/absence, whole-task or installed qualification."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/inspection.json",
+          "sha256": "66f688fd4a5b997123f38ff119a1d712268566b4398e3f01b4f5d831be5f6653"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/source-joins.json",
+          "sha256": "1274118805250def90fdb6ca162cdf60a071887635e8c452c419d6a67c407a08"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+      "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+      "source_epoch": "553d07fefa2195ee1f137be2b452981a330ce54f",
+      "scope": "Whole finite S71 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification.",
+      "limits": [
+        "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+        "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+        "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+        "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/inspection.json",
+          "sha256": "77f5d617c5e85ee9becc6fe2ef42d6a1e8b6367a7feae47ee3fe56916bfe1cd6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/source-joins.json",
+          "sha256": "ebbe4af65cb5c9feb18592adb9d3e63fbde8252b56157e1a7ce6e7cf48aaaf6b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/cold-installed.json",
+          "sha256": "08c674efe2e221fe4571dfda2538393fff7a63eef71c0610ed9a7a0f6b990228"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+      "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a",
+      "source_epoch": "553d07fefa2195ee1f137be2b452981a330ce54f",
+      "scope": "Whole finite S72 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification.",
+      "limits": [
+        "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+        "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+        "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+        "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/inspection.json",
+          "sha256": "77f5d617c5e85ee9becc6fe2ef42d6a1e8b6367a7feae47ee3fe56916bfe1cd6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/source-joins.json",
+          "sha256": "ebbe4af65cb5c9feb18592adb9d3e63fbde8252b56157e1a7ce6e7cf48aaaf6b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/cold-installed.json",
+          "sha256": "08c674efe2e221fe4571dfda2538393fff7a63eef71c0610ed9a7a0f6b990228"
+        }
+      ],
+      "changed_inputs": [
+        ".github/scripts/test_artifact_installed_host.py",
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+      "sha256": "f3ae9766d5f5ec6d521d28644cccfb66f96286a81083fdbf591eeb9830bb2bc6",
+      "source_epoch": "553d07fefa2195ee1f137be2b452981a330ce54f",
+      "scope": "Whole finite S73 source contract and its individually mapped baseline guards/effects/retry, including explicitly accepted scoped corrections. Conditional source procedure only; no new runtime or installed/publication/task qualification.",
+      "limits": [
+        "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+        "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+        "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+        "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/inspection.json",
+          "sha256": "77f5d617c5e85ee9becc6fe2ef42d6a1e8b6367a7feae47ee3fe56916bfe1cd6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/source-joins.json",
+          "sha256": "ebbe4af65cb5c9feb18592adb9d3e63fbde8252b56157e1a7ce6e7cf48aaaf6b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/channel-current-891e99c0/channel-tested.json",
+          "sha256": "87a892bad2996dd0ceeaac09f44a47ee8c296582a4359c11ac93261a19869733"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+      "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+      "source_epoch": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+      "scope": "Finite conditional source guard/effect/retry acceptance only. No authentic production artifact, runtime receipt, installed/native/remote publication or task/scenario/program qualification.",
+      "limits": [
+        "No tests/build/native/browser/provider/API/install/publication effects.",
+        "Positive source exposures are not retrospective loaded-module/native membership/absence/installed inventory observations.",
+        "Historical runtime evidence and unselected records remain original; no relabelled epoch.",
+        "Candidate/module/tool/OS/remote effects remain conditional caller boundaries, not proven observations."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/inspection.json",
+          "sha256": "b8d0182303726f03117279999716efebd44e2b17187cf320932b0ae2a0e3409a"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/source-joins.json",
+          "sha256": "5c8f58974b8e1d2a4004daa18b65753df5e2037ac41f2429e9a2fee8b067f417"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-conflict-recovery/preserved.json",
+      "sha256": "88d30e5faecddb5de9c9ebb12c86b6f053cf1fa8f04e39e9a3ff8b0f193b6030",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "legacy-conflict-recovery: 10 whole transition clauses and 2 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/legacy-conflict-recovery/source-inspection.json",
+          "sha256": "0ff303a8abdeefb281cd56115f54e31c1d8cbc8685b84bbe890323b867f7d1ab"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/preserved.json",
+      "sha256": "a25c5e9a5ab829d792347e328704906a9b3516a49b1771460c8920e1ba96285e",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "context: 28 whole transition clauses and 2 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/context/source-inspection.json",
+          "sha256": "23e1ef0b5b5293c6a1cfb9bdb488963f550b8e989b9d22adf3ca005ff09abda1"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/display-git-probes/preserved.json",
+      "sha256": "e3dc014411c552f09291224a41e86aacc98a64ad6070b2b3a986713690b571d1",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "display-git-probes: 3 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/display-git-probes/source-inspection.json",
+          "sha256": "4a610e649e6b30d3c968ced6d38d0863bc42ea3c9a4f3e8e3a3a67331859878e"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/git-dispatch/preserved.json",
+      "sha256": "cd2f992ae68f86a5a0c761478f35699ff7a2c9d282e4a6a702636c9a21c1c04f",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "git-dispatch: 13 whole transition clauses and 2 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/git-dispatch/source-inspection.json",
+          "sha256": "333e811dfe30825c46aa0bd7dbf3170eb666c45c851437f130bdc42e3be1945a"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/preserved.json",
+      "sha256": "a888077179b654f64050e240df9af05ec5b6d3de05823738dc53ba3911dda409",
+      "source_epoch": "7eba2507b312a9e9044539fddb6d64ea8652a12d",
+      "scope": "Renew exact21 preserved baseline transition clauses and3complete source machines at immutable7eba/physical source bytes. PreservePRESERVEDclass and originald594 history. No runtime/installed/platform/task/scenario/model/consent/provider/publication/wholeprogramme qualification. No change to41multi-drift records or push04HOLD.",
+      "limits": [
+        "Current guard delta corrects ownership of independent simple read statements, retains whole-command conservative scan for complex/redirect/unknown syntax; not arbitrary shell execution security.",
+        "Original10author and9independent observations corroborate exact34ed branches only; no current whole-callgraph execution or unchanged fullsuite assertion.",
+        "All source bindings authenticated through recovered immutableorigin objects; Govlocaladminremainsmissing, no workspaceHEAD/indexclaim."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/source-inspection.json",
+          "sha256": "2a9ac93b941b8b06fc65c72e927404a48f1db9e1e2e411fa9fabc2798ab3ed92"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/input-join.json",
+          "sha256": "09949d693a894d2d760a44d208bdd3df5e11440c7321fc8d945d50ea17681ecd"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/author10.json",
+          "sha256": "35ad5bbc12d2c15f337060415f76a6f0557856ba8bce2decf4212c944601d565"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/author10.log",
+          "sha256": "cbe2866aad0593621b939c072002ced78f74f755f20be9b88445c0c176482b1d"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/guard24-source-renewal-7eba/raw/independent9.json",
+          "sha256": "7623cde76183078e99657c2868b98c928b6ae424b24e065cb7537f3d51147921"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/task-lock-exclusion/preserved.json",
+      "sha256": "e048203707f782ec7096c638aa6d3687f59fad5c2cbf5ee4d6cf5ef3334b0d29",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "task-lock-exclusion: 5 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/task-lock-exclusion/source-inspection.json",
+          "sha256": "831403413b1f21a4254058cefeab258c5bd841034028267e7dcb96e56daf563a"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/retired-advisory.json",
+      "sha256": "bfcc66455125220c033883d38acf140d55a1324e3abb1e08911b0ec51e851ef6",
+      "source_epoch": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "scope": "Exact59 existing PRESERVED source-only contracts and separate1 accepted retired contract, with every predecessor scope/limit/history retained; no task/status promotion or runtime qualification.",
+      "limits": [
+        "No tests, CLI/SDK/native/Pi/Codex/model/provider/network/build/install or release execution.",
+        "Literal e064 Git source is the proof subject. Two nonexecuted Markdown inputs have stable physical CRLF transport with exact LF-normalized equality and separate hashes; no executable/runtime normalization or raw byte-equality claim.",
+        "All original raw/proof evidence retains actual epochs; lossless flat predecessor proof containers preserve exact bytes including CRLF. Existing original42 raw refs remain immutable history.",
+        "No S10/S11 HTTP policy, user/model/UI/host/physical consent, installed/native cohort, whole-task/program/main/publication closure."
+      ],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/after.json",
+          "sha256": "72c8f5d59985c4083c7a4f0658f019c7d89b6a6a0bfa45819920a17d82565be8"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/before.json",
+          "sha256": "33323051669832b74fb52d0bf67349e16af2afa4bdf527fd90b7abb9f6c7b35f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/clause-inspection.json",
+          "sha256": "d586c43e5ebf3befd0d4aaafcb25d31e9536e752482073111ab26b0922f9b0c9"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/current-witnesses.json",
+          "sha256": "a4abbd71e960ae918c1e379598c0380cd3e7ebf0a0f87fcaea24794c82b970f8"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/frozen-60.json",
+          "sha256": "6aa2c13a81a98aee88dd0cd9e8d7e474d81920335882d753ffd3bfc97309a83b"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-01.json",
+          "sha256": "9ebab322041bf8c570398913790f9a12320de24132692196cab689f80e0157ab"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-02.json",
+          "sha256": "715b3daf046cdb9dc9672d2def7364f8e67060d4f984ca3e774b4a7d15ecd89f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-03.json",
+          "sha256": "b5a9f000e995ac68eff18de944e7221dc09ac2b99b1c69ec8ec977bb0ac67041"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-04.json",
+          "sha256": "38dbb60b1295459490b6d73827cbed1263357f0b444e8a2976fa617796dda98f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-05.json",
+          "sha256": "bc9989c49b75715d6f33a7c20dddab1a72b5dd694e3513e6b4037480dc2603f5"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-06.json",
+          "sha256": "93d77356797a6708bc1be930ee4bdf8ceff03d4685464ab546d1ca9b7b386ed6"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-07.json",
+          "sha256": "6f4c72f12226e548f7dd26f894bb0563aafde95d273a0dbd4afdd6b930bbe54d"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/old-proof-08.json",
+          "sha256": "4da6308662c9008d8e39ddb62e0f792ec1f6b953b1a928defde2ab3a029ce16c"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/predecessor-index.json",
+          "sha256": "fab5cc9bfb0744de1f8b6a3a547208486b93ddeac67f0ed5888946317764225f"
+        },
+        {
+          "path": "docs/state-contracts-major/execution/evidence/source60-current-e064/raw/typed-dependencies.json",
+          "sha256": "816b79035b9bde57bdddd634aa7889d1d60f2b3e021a83dc786df13e796b3935"
+        }
+      ],
+      "changed_inputs": [
+        ".github/workflows/ci.yml",
+        "core/pysrc/_gitexec.py",
+        "plugins/ca-pi/CHANGELOG.md",
+        "plugins/ca-sandbox/tools/cli.test.ts"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+      "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "Derived referenced file-path set, unknown-null hashing and maintained writer contract only. Relevant parse_release_targets/load_targets/provenance_trigger_paths and write_text_atomic definitions are AST-identical to baseline; concrete current bodies/error branches read. Other changed shared helper functions do not establish actual module/runtime/data availability or successful generation/hash/write.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+          "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-inventory/preserved.json",
+      "sha256": "6d23c0edf366510f74ef1247e5223bd5f259fba716f2b02dd564c85f74eee392",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "tribunal-inventory: 2 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-inventory/source-inspection.json",
+          "sha256": "db83928cd3f4cde1ba8df2ea5006052673894b908df564805d7c40d3382326b4"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-run-leads/preserved.json",
+      "sha256": "7cfdcea3c75474aac56009bd990439f05833ae0262893e957ef268d54317dfda",
+      "source_epoch": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "scope": "tribunal-run-leads: 12 whole transition clauses and 0 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+      "limits": [],
+      "original_raw_refs_preserved": [
+        {
+          "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/tribunal-run-leads/source-inspection.json",
+          "sha256": "38cac65cd2c3268755504893077764e1081c55ed8963b74969f12eb6074e6f28"
+        }
+      ],
+      "changed_inputs": [
+        "core/pysrc/_gitexec.py"
+      ]
+    }
+  ],
+  "retention": "All original source proof/raw files remain byte-exact at their maintained paths and true epochs. No rewritten/normalized historical output or fabricated new execution."
+}

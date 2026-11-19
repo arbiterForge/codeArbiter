@@ -458,3 +458,161 @@ test("WEB-033: route contracts and fresh-cache post-load observations remain rec
     contentType: "application/json",
   });
 });
+
+// These acceptance setups modify only existing built DOM state. No fixture HTML
+// or replacement drawer script stands in for the original Pages payload.
+async function openBuiltDocumentationDrawer(page: Page) {
+  const baseURL = test.info().project.use.baseURL;
+  if (typeof baseURL !== "string") throw new Error("A loopback base URL is required");
+  const origin = new URL(baseURL);
+  if (origin.protocol !== "http:" || origin.hostname !== "127.0.0.1" || origin.username || origin.password) {
+    throw new Error("Built drawer acceptance requires the owned loopback server");
+  }
+  await page.route("**/*", route => {
+    const requested = new URL(route.request().url());
+    return requested.origin === origin.origin || requested.protocol === "data:" || requested.protocol === "blob:"
+      ? route.continue() : route.abort("blockedbyclient");
+  });
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await expect(page.locator("ca-splash-docs")).toHaveAttribute("data-initialized", "true");
+  return page.locator("ca-splash-docs .ca-docs-rail__opener");
+}
+
+async function observedDrawerBackgrounds(page: Page) {
+  return page.evaluate(() => ({
+    overflow: document.body.style.overflow,
+    backgrounds: Array.from(document.querySelectorAll<HTMLElement>("[data-drawer-acceptance-background]"))
+      .map(node => ({ index: Number(node.dataset.drawerAcceptanceBackground), inert: node.inert, ariaHidden: node.getAttribute("aria-hidden") }))
+      .sort((a, b) => a.index - b.index),
+  }));
+}
+
+test("S62: backdrop restores heterogeneous saved background and scroll state", async ({ page }) => {
+  const opener = await openBuiltDocumentationDrawer(page);
+  const seeded = await page.locator("ca-splash-docs").evaluate(element => {
+    const nodes = [...new Set([
+      document.querySelector<HTMLElement>("header"),
+      ...Array.from(element.parentElement!.children).filter((node): node is HTMLElement => node instanceof HTMLElement && node !== element),
+    ].filter((node): node is HTMLElement => node instanceof HTMLElement))];
+    document.body.style.overflow = "clip";
+    nodes.forEach((node, index) => {
+      node.dataset.drawerAcceptanceBackground = String(index);
+      node.inert = index % 2 === 0;
+      if (index % 3 === 0) node.removeAttribute("aria-hidden");
+      else node.setAttribute("aria-hidden", index % 3 === 1 ? "false" : "true");
+    });
+    return {
+      overflow: document.body.style.overflow,
+      backgrounds: nodes.map((node, index) => ({ index, inert: node.inert, ariaHidden: node.getAttribute("aria-hidden") })),
+    };
+  });
+  expect(seeded.backgrounds.length).toBeGreaterThanOrEqual(3);
+  expect(seeded.backgrounds.map(node => node.ariaHidden)).toEqual(expect.arrayContaining([null, "false", "true"]));
+  await opener.click();
+  await expect(opener).toHaveAttribute("aria-expanded", "true");
+  await expect(page.getByRole("dialog", { name: "Documentation navigation", exact: true })).toBeVisible();
+  const locked = await observedDrawerBackgrounds(page);
+  expect(locked.overflow).toBe("hidden");
+  expect(locked.backgrounds.every(node => node.inert && node.ariaHidden === "true")).toBe(true);
+
+  const backdrop = page.locator("ca-splash-docs [data-ca-docs-drawer-close]");
+  await expect(backdrop).toHaveCount(1);
+  const box = await backdrop.boundingBox();
+  if (!box) throw new Error("The built backdrop must have a pointer target");
+  expect(box.width).toBeGreaterThan(8);
+  expect(box.height).toBeGreaterThan(8);
+  // The right edge lies outside the actual drawer; do not force an obscured click.
+  await backdrop.click({ position: { x: box.width - 4, y: 4 } });
+  expect(await observedDrawerBackgrounds(page)).toEqual(seeded);
+  await expect(opener).toHaveAttribute("aria-expanded", "false");
+  await expect(opener).toBeFocused();
+  await expect(page.locator("#ca-docs-drawer")).toHaveAttribute("aria-hidden", "true");
+  expect(await page.locator("#ca-docs-drawer").evaluate(node => (node as HTMLElement).inert)).toBe(true);
+  expect(await page.locator("[data-ca-docs-drawer-layer]").evaluate(node => (node as HTMLElement).hidden)).toBe(true);
+});
+
+test("S62: Tab wraps at both ends of the built drawer", async ({ page }) => {
+  const opener = await openBuiltDocumentationDrawer(page);
+  await opener.click();
+  await expect(opener).toHaveAttribute("aria-expanded", "true");
+  const count = await page.locator("[data-ca-docs-tray]").evaluate(tray => {
+    // Match the declared owner eligibility on real laid-out controls, then use
+    // actual keyboard input to test the effect rather than invoking its handler.
+    const eligible = Array.from(tray.querySelectorAll<HTMLElement>(
+      'a[href],button:not([disabled]),input:not([disabled]),select:not([disabled]),textarea:not([disabled]),summary,[tabindex]:not([tabindex="-1"])',
+    )).filter(node => !node.hasAttribute("hidden") && node.getAttribute("aria-hidden") !== "true" && !node.closest("[inert]") && node.getClientRects().length > 0);
+    if (eligible.length >= 2) {
+      eligible[0].dataset.drawerAcceptanceBoundary = "first";
+      eligible[eligible.length - 1].dataset.drawerAcceptanceBoundary = "last";
+    }
+    return eligible.length;
+  });
+  expect(count).toBeGreaterThanOrEqual(2);
+  const first = page.locator('[data-drawer-acceptance-boundary="first"]');
+  const last = page.locator('[data-drawer-acceptance-boundary="last"]');
+  await last.focus();
+  await expect(last).toBeFocused();
+  await page.keyboard.press("Tab");
+  await expect(first).toBeFocused();
+  await page.keyboard.press("Shift+Tab");
+  await expect(last).toBeFocused();
+  await expect(opener).toHaveAttribute("aria-expanded", "true");
+});
+
+type DrawerListenerWitness = { element: HTMLElement; signal: AbortSignal; calls: number };
+
+test("S62: disconnecting an open drawer releases its document listener", async ({ page }) => {
+  const opener = await openBuiltDocumentationDrawer(page);
+  const capture = await page.locator("ca-splash-docs").evaluate(element => {
+    const parent = element.parentElement!;
+    const next = element.nextSibling;
+    const descriptor = Object.getOwnPropertyDescriptor(document, "addEventListener");
+    const nativeAdd = document.addEventListener;
+    const records: DrawerListenerWitness[] = [];
+    Object.defineProperty(document, "addEventListener", {
+      configurable: true,
+      value: function (this: Document, type: string, listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions) {
+        if (type === "keydown" && listener && typeof options === "object" && options.signal instanceof AbortSignal) {
+          const witness = { element: element as HTMLElement, signal: options.signal, calls: 0 };
+          records.push(witness);
+          const observed: EventListener = function (this: EventTarget, event: Event) {
+            witness.calls += 1;
+            if (typeof listener === "function") return listener.call(this, event);
+            return listener.handleEvent(event);
+          };
+          // Keep the actual native AbortSignal and original listener options.
+          return Reflect.apply(nativeAdd, this, [type, observed, options]);
+        }
+        return Reflect.apply(nativeAdd, this, [type, listener, options]);
+      },
+    });
+    try {
+      // One setup reconnect isolates this element's new document registration.
+      // Repeated reconnect behavior is already tested by the existing cases.
+      element.remove();
+      parent.insertBefore(element, next);
+    } finally {
+      if (descriptor) Object.defineProperty(document, "addEventListener", descriptor);
+      else Reflect.deleteProperty(document, "addEventListener");
+    }
+    if (records.length === 1) Reflect.set(window, "__drawerAcceptanceWitness", records[0]);
+    document.body.style.overflow = "clip";
+    return { registrations: records.length, initialized: (element as HTMLElement).dataset.initialized, aborted: records.map(record => record.signal.aborted) };
+  });
+  expect(capture).toEqual({ registrations: 1, initialized: "true", aborted: [false] });
+  await opener.click();
+  await expect(opener).toHaveAttribute("aria-expanded", "true");
+  expect(await page.evaluate(() => document.body.style.overflow)).toBe("hidden");
+  const detached = await page.evaluate(() => {
+    const witness = Reflect.get(window, "__drawerAcceptanceWitness") as DrawerListenerWitness;
+    witness.element.remove();
+    return { connected: witness.element.isConnected, initialized: witness.element.hasAttribute("data-initialized"), aborted: witness.signal.aborted, calls: witness.calls };
+  });
+  expect(detached).toEqual({ connected: false, initialized: false, aborted: true, calls: 0 });
+  await page.keyboard.press("Escape");
+  expect(await page.evaluate(() => {
+    const witness = Reflect.get(window, "__drawerAcceptanceWitness") as DrawerListenerWitness;
+    return { calls: witness.calls, overflow: document.body.style.overflow, focusInDetached: witness.element.contains(document.activeElement) };
+  })).toEqual({ calls: 0, overflow: "clip", focusInDetached: false });
+});

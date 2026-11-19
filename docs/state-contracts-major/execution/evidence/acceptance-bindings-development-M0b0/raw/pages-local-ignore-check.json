@@ -1,0 +1,34 @@
+{
+  "result": "PASS",
+  "source": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "authoring_file_in_public": false,
+  "generated_downloads_still_ignored": [
+    {
+      "source": ".gitignore",
+      "line": "74",
+      "pattern": "/site/public/workflow-atlas/",
+      "path": "site/public/workflow-atlas/owned-probe/atlas.html"
+    },
+    {
+      "source": ".gitignore",
+      "line": "74",
+      "pattern": "/site/public/workflow-atlas/",
+      "path": "site/public/workflow-atlas/owned-probe/sources.json"
+    },
+    {
+      "source": ".gitignore",
+      "line": "74",
+      "pattern": "/site/public/workflow-atlas/",
+      "path": "site/public/workflow-atlas/owned-probe/all-routes.svg"
+    }
+  ],
+  "source_and_unrelated_assets_not_ignored": [
+    "site/scripts/generate-atlas.ts",
+    "site/scripts/execution-maps/atlas.ts",
+    "site/public/favicon.svg"
+  ],
+  "exact_served_archive_guard": "UNCHANGED",
+  "original_hosted_red": "Docs43960617323/job133626715454 actual465equal+oneextra workflow-atlas/.gitignore",
+  "first_local_probe": "Excluded: Windows text-mode stdin added CR to Git paths; corrected invocation uses binary NUL-delimited input.",
+  "qualification": false
+}

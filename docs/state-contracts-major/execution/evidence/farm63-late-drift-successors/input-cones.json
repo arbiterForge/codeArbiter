@@ -1,0 +1,29 @@
+{
+  "source_subject": "0d7c0f2be54e8547e2e4356a558fd653d2aed08c",
+  "captured_actual_inputs": 29,
+  "cones": {
+    "farm24-preserved.json": {
+      "count": 19,
+      "added_selected_test_inputs": [
+        "plugins/ca/tools/plan-contract.test.ts"
+      ]
+    },
+    "remapped3-tested.json": {
+      "count": 17,
+      "added_selected_test_inputs": []
+    },
+    "cleanup14-tested.json": {
+      "count": 13,
+      "added_selected_test_inputs": []
+    },
+    "farm25-preserved.json": {
+      "count": 17,
+      "added_selected_test_inputs": []
+    },
+    "farm8-tested.json": {
+      "count": 16,
+      "added_selected_test_inputs": []
+    }
+  },
+  "meaning": "Existing import/dependency source ownership unchanged by the exact guard; current tested cone bytes all join actual941 before/after and literal source0d7. Explicit selected test roots missing from a former preservation list are added, not hidden or assigned historical execution."
+}

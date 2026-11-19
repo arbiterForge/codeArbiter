@@ -1,0 +1,39 @@
+{
+  "schema": "codearbiter.current-scoped-source-inspection/1",
+  "source_commit": "6e9cf6bd4631184174100923e6e012960669ddf6",
+  "prior_source_checkpoint": "b97623833f073a1047164ab611986496a4cf9f14",
+  "delta": {
+    ".github/scripts/test_ci_impact.py": {
+      "before": "bceace04fb243eafb547293d2e54ba72848ba8609fa6c7b9fec0036927b5b32c",
+      "current": "c35944fea6bc31fe839c1e6bb76b14e9eff5f1979617f09600cee9f2e4e1837d",
+      "assessment": "The Recovery matrix test routes through the same strict guard. It consumes the exact existing strict recovery structure guard, whose count is still five independent original commands, one native setup, and three runner cells. Existing independent-status assertions stay in place. A new Debug ordering selector requires unique original step names, locked prepare/observe adjacency, and old-client checks before the post-run candidate recheck. The planner and runtime owners retain their own unchanged code."
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "before": "c29cad420a56075859af7f7999309f1c73b023fe308a7bf2a8600348aedfb835",
+      "current": "ff134165d5010c7df74c3d3d16f30316306dd49d1acb4e106e9775b4ca9557c4",
+      "assessment": "The changed structural helper mirrors the exact normalize/check/output and two-file upload step. One new structural case refuses foreign resolution, omitted leaf check, the original unnormalized parent path and glob widening. All existing test methods and non-Recovery helpers retain the same AST. This evidence cites the fixture\u2019s source predicate."
+    },
+    ".github/workflows/ci.yml": {
+      "before": "e612f43aba135a700ab29b7aac3aca67850244f070b44667c123790bb81392fc",
+      "current": "61f83893c9a5276363598ff10a2d7dfba0aec19836caa4e8aaed2d1931b04188",
+      "assessment": "The Windows-only Recovery upload resolves the existing candidate. The existing sibling installation still owns the same candidate. Resolve-Path normalizes that directory, checks each of the same two member paths as a leaf, and exposes the absolute directory with forward separators through the job output. Upload consumes the two exact files, retaining step condition, pinned action, artifact identity, no-overwrite, expiration and visibility. The prerequisite graph, Windows and ordinary Recovery suite execution, branch/attempt identity and authorization remain original. The independent locked Debug observation now precedes all ten byte-identical Linux-only compatibility steps, including all three nested checkouts, keeping prepare and observe adjacent. Compatibility steps, references and ordering within the block retain their existing owner and controls, and final candidate verification follows every check."
+    }
+  },
+  "ci_touched_jobs": [
+    "artifact-native-bridges",
+    "workflow-recovery"
+  ],
+  "original_fixed_installation_and_artifact_keys": true,
+  "original_linux_compatibility_block": {
+    "steps": 10,
+    "sha256": "3ed87d560f67491d20650406b8f3130e7c128f9e2d032ee8f6022e9ec18da00a",
+    "nested_source_checkouts": 3,
+    "old_position": "before example generation and the Debug source observation",
+    "new_position": "after adjacent locked Debug preparation and observation, before the same candidate recheck"
+  },
+  "changed_structural_selectors": [
+    "RecoveryContractTests.test_recovery_upload_uses_only_existing_files_from_the_resolved_directory",
+    "WorkflowContractTest.test_recovery_checks_have_required_native_cells_and_independent_exit_statuses",
+    "DebugSuiteRegistrationTest.test_locked_debug_observation_precedes_nested_compatibility_checkouts"
+  ]
+}

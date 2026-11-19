@@ -1,8 +1,9 @@
+import { assertComplete, assertOwnedOutput, publishOwnedFiles } from "./owned-output";
 import type { AstroIntegration } from 'astro';
 import * as pagefind from 'pagefind';
 import { createHash } from 'node:crypto';
 import { execFileSync } from 'node:child_process';
-import { lstat, mkdir, mkdtemp, readFile, rename, rm, writeFile } from 'node:fs/promises';
+import { lstat, mkdir, mkdtemp, readFile, rm, writeFile } from 'node:fs/promises';
 import { dirname, join } from 'node:path';
 import { fileURLToPath } from 'node:url';
 
@@ -52,6 +53,7 @@ export function validateSearchFiles(files: readonly IndexFile[]): void {
 /** Await all local writes and verify their bytes, independently of native-service shutdown. */
 export async function writeSearchFiles(output: string, files: readonly IndexFile[], pageCount: number): Promise<SearchBundleReport> {
   validateSearchFiles(files);
+  assertOwnedOutput(output);
   const destination = join(output, 'pagefind');
   const previous = await lstat(destination).catch((error: NodeJS.ErrnoException) => {
     if (error.code !== 'ENOENT') throw error;
@@ -71,10 +73,9 @@ export async function writeSearchFiles(output: string, files: readonly IndexFile
       if (!written.equals(Buffer.from(file.content))) throw new Error(`Pagefind write mismatch: ${file.path}`);
       report.files.push({ path: file.path, bytes: written.length, sha256: createHash('sha256').update(written).digest('hex') });
     }
-    // This is the build output, not a live deployment. Replace only its own search
-    // directory after every asset has passed validation; never touch source files.
-    await rm(destination, { force: true, recursive: true });
-    await rename(staging, destination);
+    // The shared publisher keeps the old complete bytes until every candidate
+    // asset has passed validation and rolls back any failed rename.
+    publishOwnedFiles(output, "pagefind", new Map(files.map(file => [join(destination, file.path), file.content])), [destination]);
     return report;
   } finally {
     await rm(staging, { force: true, recursive: true });
@@ -109,6 +110,11 @@ export function completePagefind(): AstroIntegration {
   return {
     name: 'codearbiter:complete-pagefind',
     hooks: {
+      'astro:config:done': ({ config }) => {
+        const source = fileURLToPath(new URL('./src/', config.root));
+        assertComplete(source, 'reference');
+        assertComplete(source, 'academy');
+      },
       'astro:build:done': async ({ dir, logger }) => {
         const report = await buildSearchIndex(fileURLToPath(dir));
         const main = report.files.find(file => file.path === 'pagefind.js')!;

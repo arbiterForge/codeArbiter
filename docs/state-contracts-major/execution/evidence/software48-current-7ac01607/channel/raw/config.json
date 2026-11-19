@@ -1,0 +1,58 @@
+{
+  "owner": "channel",
+  "source": "7ac016078da0beedc92537334d6c8d849794f2dc",
+  "REPO": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "inputs": [
+    ".github/scripts/test_marketplace_git_channels.py",
+    "tools/promote-claude-marketplace.py",
+    "tools/promote-codex-marketplace.py",
+    "tools/build-host-packages.py",
+    "tools/owned_output.py",
+    "tools/host_descriptors.py",
+    "core/pysrc/_artifactmanifestlib.py",
+    "core/pysrc/_releaselib.py",
+    "core/pysrc/_gitexec.py",
+    "core/hosts.json",
+    ".claude-plugin/marketplace.json",
+    ".github/scripts/_releaselib.py"
+  ],
+  "roots": [
+    ".github/scripts",
+    "core/pysrc",
+    "tools"
+  ],
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\channel\\observe-channel.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "timeout": 120,
+  "selectors": [
+    "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+    "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries"
+  ],
+  "original_proof_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\execution\\evidence\\channel-current-891e99c0\\channel-tested.json",
+  "original_proof_sha256": "87a892bad2996dd0ceeaac09f44a47ee8c296582a4359c11ac93261a19869733",
+  "original_scope": [
+    "Synthetic archive/native payload bytes and real local Git remotes only; no original native engine/cohort qualification or npm/provider/publication/installed host effects.",
+    "No whole-suite/native/site/browser rerun or aggregate task/machine promotion. Twelve declared owner inputs were literally captured in working files and immutable Git before/after.",
+    "Original0830 nineteen-case observations remain immutable historical evidence; this16-case current-source observation is a distinct successor."
+  ]
+}

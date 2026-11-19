@@ -1,0 +1,54 @@
+EE
+======================================================================
+ERROR: test_complete_population_does_not_reopen_resolved_history_prose (test_major_readiness.CompletedPopulationTest.test_complete_population_does_not_reopen_resolved_history_prose)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_major_readiness.py", line 442, in test_complete_population_does_not_reopen_resolved_history_prose
+    self.assertEqual(self.requirements()['unresolved_decision_count'], 0)
+                     ~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_major_readiness.py", line 369, in requirements
+    return owner.requirements(self.repo, self.source, 7)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_readiness.py", line 814, in requirements
+    return _requirements(repo, source, run_id)
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_readiness.py", line 903, in _requirements
+    native = selected_recipes(policy.get('native_composite_cells', []))
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_native_observation.py", line 589, in selected_recipes
+    owner.require(isinstance(cells, list) and len(cells) <= len(RECIPES)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  and all(isinstance(cell, str) and cell in RECIPES for cell in cells)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  and cells == sorted(set(cells)), 'invalid native composition selection')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_readiness.py", line 133, in require
+    raise ReadinessError(message)
+major_readiness.ReadinessError: invalid native composition selection
+
+======================================================================
+ERROR: test_complete_reviewed_population_preserves_local_origin_and_non_circularity (test_major_readiness.CompletedPopulationTest.test_complete_reviewed_population_preserves_local_origin_and_non_circularity)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_major_readiness.py", line 428, in test_complete_reviewed_population_preserves_local_origin_and_non_circularity
+    result = self.requirements()
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_major_readiness.py", line 369, in requirements
+    return owner.requirements(self.repo, self.source, 7)
+           ~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_readiness.py", line 814, in requirements
+    return _requirements(repo, source, run_id)
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_readiness.py", line 903, in _requirements
+    native = selected_recipes(policy.get('native_composite_cells', []))
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_native_observation.py", line 589, in selected_recipes
+    owner.require(isinstance(cells, list) and len(cells) <= len(RECIPES)
+    ~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  and all(isinstance(cell, str) and cell in RECIPES for cell in cells)
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                  and cells == sorted(set(cells)), 'invalid native composition selection')
+                  ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\major_readiness.py", line 133, in require
+    raise ReadinessError(message)
+major_readiness.ReadinessError: invalid native composition selection
+
+----------------------------------------------------------------------
+Ran 2 tests in 12.921s
+
+FAILED (errors=2)

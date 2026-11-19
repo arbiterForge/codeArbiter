@@ -1,0 +1,478 @@
+{
+  "schema": "codearbiter.workflow-source-clause-inspection/1",
+  "observer": "/root/packaging_site_tools",
+  "source_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "Nine finite WF21/22 instruction clauses only; no execution/model/user/Git/cleanup/archive/installed acceptance.",
+  "source_comparisons": [
+    {
+      "path": "core/surface/commands/standup.md",
+      "declared_owner": true,
+      "baseline_sha256": "f9b652a7bf6764d8f0bfbe5b6b51a400175b3916bbf3d50160e47617ba5f17df",
+      "current_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+      "declared_owner": true,
+      "baseline_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+      "current_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+      "declared_owner": true,
+      "baseline_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38",
+      "current_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/includes/safety-core.md",
+      "declared_owner": false,
+      "baseline_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "current_sha256": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/arbiter.md",
+      "declared_owner": false,
+      "baseline_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "current_sha256": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/includes/routing-table.md",
+      "declared_owner": false,
+      "baseline_sha256": "eb5eea0172f2bb591c3be252bfa3ba66529a412eb3ad0a1448a531213e981d53",
+      "current_sha256": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/commands/conflict.md",
+      "declared_owner": false,
+      "baseline_sha256": "ea96bc18a20f8096211ffea954456d41593bdbdc139cafd3bf1a8a0bdb8e819b",
+      "current_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/includes/helper-invocation.md",
+      "declared_owner": false,
+      "baseline_sha256": "75467678ab56e1871b1aeb1b1b08b15273b7cd3c65b7d4928020570b426ca9cc",
+      "current_sha256": "75467678ab56e1871b1aeb1b1b08b15273b7cd3c65b7d4928020570b426ca9cc",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "declared_owner": false,
+      "baseline_sha256": "eaf3036a03b30334bd61520b9bc2b48836ca1b8fcb038afc23a08fdc2f03c43c",
+      "current_sha256": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "declared_owner": false,
+      "baseline_sha256": "05419cf635d82a4889c2f964654bf2337e0ab878bc6e1fc4786c50d8e7dd31be",
+      "current_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/surface/includes/command-compatibility.md",
+      "declared_owner": false,
+      "baseline_sha256": "0c13e07bf6bad350fe0efc6a2e7b0e7f666e130a6ff18ed8fcc9c588afdc62fa",
+      "current_sha256": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/pysrc/_standuplib.py",
+      "declared_owner": false,
+      "baseline_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+      "current_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/pysrc/work.py",
+      "declared_owner": false,
+      "baseline_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "current_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/pysrc/taskwrite.py",
+      "declared_owner": false,
+      "baseline_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "current_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "whole_file_identical": true,
+      "baseline_absence": null
+    },
+    {
+      "path": "core/pysrc/_taskboardlib.py",
+      "declared_owner": false,
+      "baseline_sha256": "1ff827bca68c253f59293cd97708a4d92e4d05fbc1e68228d4c17e111114aa46",
+      "current_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    },
+    {
+      "path": ".codearbiter/context/security-controls.html",
+      "declared_owner": false,
+      "baseline_sha256": null,
+      "current_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+      "whole_file_identical": false,
+      "baseline_absence": "HTML policy representation introduced after frozen baseline"
+    },
+    {
+      "path": ".codearbiter/security-controls.md",
+      "declared_owner": false,
+      "baseline_sha256": "0c3c3b13ddfad25d67f9113d653d797d6b5d9d8e391744d9e090c431c9122255",
+      "current_sha256": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+      "whole_file_identical": false,
+      "baseline_absence": null
+    }
+  ],
+  "standup_addition_boundary": {
+    "path": "core/surface/commands/standup.md",
+    "start": 147,
+    "end": 158,
+    "sha256": "f328050a933fbbfd0fc34e80dde9c558dfb5342680d993d9d339e4db300d2124",
+    "removing_only_exact_addition_equals_entire_baseline": true,
+    "excluded": "New recovery scan/resume/authority/notice behavior is NOT qualified by these baseline rows."
+  },
+  "archive_dependency_body_comparisons": [
+    {
+      "symbol": "archive_candidates",
+      "current_lines": [
+        1057,
+        1086
+      ],
+      "baseline_lines": [
+        805,
+        834
+      ],
+      "body_sha256": "80f8f9970f60f67f1ade30cce9a341b877283d376aea97667e43539da48324eb",
+      "exact_body_equal": true,
+      "limit": "Supporting changed-file boundary check; not runtime coverage or full executable dependency equivalence."
+    },
+    {
+      "symbol": "already_archived",
+      "current_lines": [
+        1089,
+        1110
+      ],
+      "baseline_lines": [
+        837,
+        858
+      ],
+      "body_sha256": "ec50c12633956c3a75f52f9317062ceb528a692d645efea86b68b22a78723fa6",
+      "exact_body_equal": true,
+      "limit": "Supporting changed-file boundary check; not runtime coverage or full executable dependency equivalence."
+    },
+    {
+      "symbol": "archive_transform",
+      "current_lines": [
+        1182,
+        1223
+      ],
+      "baseline_lines": [
+        930,
+        971
+      ],
+      "body_sha256": "8fe1fcebb76a38c76008ffe1f994f3d7587cd4cf10ae62fe21e3cb68dec353a4",
+      "exact_body_equal": true,
+      "limit": "Supporting changed-file boundary check; not runtime coverage or full executable dependency equivalence."
+    },
+    {
+      "symbol": "task_block",
+      "current_lines": [
+        1113,
+        1179
+      ],
+      "baseline_lines": [
+        861,
+        927
+      ],
+      "body_sha256": "b7e368aa5b4fe51757c55ef4efccf2b1f230be2eecc22e802e2fa4ef746a29e7",
+      "exact_body_equal": true,
+      "limit": "Supporting changed-file boundary check; not runtime coverage or full executable dependency equivalence."
+    },
+    {
+      "symbol": "parse_board",
+      "current_lines": [
+        257,
+        305
+      ],
+      "baseline_lines": [
+        252,
+        300
+      ],
+      "body_sha256": "ff3eb86811b672229e244ee806138d604379aa7752c5d467687d7ae889c26cc6",
+      "exact_body_equal": true,
+      "limit": "Supporting changed-file boundary check; not runtime coverage or full executable dependency equivalence."
+    },
+    {
+      "symbol": "_extract_date",
+      "current_lines": [
+        242,
+        254
+      ],
+      "baseline_lines": [
+        237,
+        249
+      ],
+      "body_sha256": "a954642e993587ad742a2c1ee9d91579db681d5b0e805b212c33fe8b9c641ecb",
+      "exact_body_equal": true,
+      "limit": "Supporting changed-file boundary check; not runtime coverage or full executable dependency equivalence."
+    }
+  ],
+  "changed_shared_guard_assessment": [
+    {
+      "path": "core/surface/commands/standup.md",
+      "assessment": "Only additive read-only recovery scan step; exact baseline clauses remain. Extension excluded.",
+      "excluded_span": {
+        "path": "core/surface/commands/standup.md",
+        "start": 147,
+        "end": 158,
+        "sha256": "f328050a933fbbfd0fc34e80dde9c558dfb5342680d993d9d339e4db300d2124",
+        "removing_only_exact_addition_equals_entire_baseline": true,
+        "excluded": "New recovery scan/resume/authority/notice behavior is NOT qualified by these baseline rows."
+      }
+    },
+    {
+      "path": "core/surface/includes/artifacts.md",
+      "assessment": "Added recorded-progress/1/schema0.3.4 explanation expressly separates reported DONE, assessed evidence and declarations; no permission or unit acceptance manufactured. Read relevant current format/selection and resume guards."
+    },
+    {
+      "paths": [
+        "core/surface/includes/routing-table.md",
+        "core/surface/commands/conflict.md"
+      ],
+      "assessment": "Changed scoped dependent pause still forbids guessed resolution and preserves global host/user stops; independently authorized continuation does not approve a disputed cleanup/integration."
+    },
+    {
+      "path": "core/surface/includes/knowledge.md",
+      "assessment": "Current-format active-record reading/error interface inspected in already committed WF16 packet; information remains no permission. No runtime reader completeness/safety claim."
+    },
+    {
+      "path": "core/pysrc/_taskboardlib.py",
+      "assessment": "Changed state/add/promotion/board-diff classifiers inspected as changed-file boundary; six actual archive/parser/date/dedup function bodies exact. Read date/undated/per-item/order interfaces; equality is supporting triage, not executed proof."
+    }
+  ],
+  "row_specific_mapping": [
+    {
+      "cell": "disposition:transitions:WF-21:01",
+      "preserved_source_clause": "Optional caller-selected isolation uses exact selected plan/base/unit list; inventory and preserve unrelated dirty hashes; owned-path dirty overlap stops.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+          "start": 9,
+          "end": 55,
+          "file_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38"
+        }
+      ],
+      "semantic_assessment": "Actual optional-method, baseline preservation and no-new-discard-authority clauses read. Changed artifacts guidance keeps reported progress distinct from actual caller acceptance.",
+      "limits": "No provisioned worktree, containment, platform/tool invocation or actual model compliance."
+    },
+    {
+      "cell": "disposition:transitions:WF-21:02",
+      "preserved_source_clause": "Integrate only caller-accepted units with accessible current command/cwd/input/source/status evidence; refresh rebased tip; one integration branch and one caller exit, never per-unit PR/default integration.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+          "start": 67,
+          "end": 95,
+          "file_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38"
+        }
+      ],
+      "semantic_assessment": "Unchanged normative caller acceptance and current-tip clauses inspected; DONE alone is not verified acceptance.",
+      "limits": "No executed merge/rebase, accepted unit, ancestry, conflict resolution or real review verdict."
+    },
+    {
+      "cell": "disposition:transitions:WF-21:03",
+      "preserved_source_clause": "Fetch current default then prove containment by ancestry, exact merged PR head or byte-identical fallback; inventory/classify residue; uncertain unique work and stashes retained.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+          "start": 96,
+          "end": 123,
+          "file_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38"
+        },
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 48,
+          "end": 115,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        }
+      ],
+      "semantic_assessment": "Both whole owners unchanged; read actual proof ordering, stale/gone exclusion, PR-diff corroboration and per-artifact unique-default clauses.",
+      "limits": "No current network/PR/Git/FS inventory, stash or actual containment/classification execution."
+    },
+    {
+      "cell": "disposition:transitions:WF-21:04",
+      "preserved_source_clause": "Confirm named removal with same-run proof; branch -d first; -D only exact documented squash-proof/refusal path; isolated unit cleanup additionally requires refreshed ancestor tip, clean tree and named path/branch, never -D.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/using-git-worktrees/SKILL.md",
+          "start": 96,
+          "end": 123,
+          "file_sha256": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38"
+        },
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 117,
+          "end": 153,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        },
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 184,
+          "end": 219,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        },
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 227,
+          "end": 250,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        }
+      ],
+      "semantic_assessment": "Actual source confirmation and retain/decline rules checked against unchanged all-modes irreversible-action safety boundary; no permission fabricated.",
+      "limits": "No user confirmation, deletion, shell/OS containment or cleanup effect accepted."
+    },
+    {
+      "cell": "disposition:transitions:WF-21:05",
+      "preserved_source_clause": "Fast-forward fetched default before checkout, verify actual branch, ff-only pull; refuse divergence/other-worktree ownership/failure rather than reset/discard.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 131,
+          "end": 182,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        },
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 239,
+          "end": 248,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        }
+      ],
+      "semantic_assessment": "Read actual distinction between genuine kept-artifact conflict and stale local ref; no stale-ref failure is fixed by deleting kept data.",
+      "limits": "No actual Git fetch, checkout, ref/default transition or host execution."
+    },
+    {
+      "cell": "disposition:transitions:WF-22:01",
+      "preserved_source_clause": "Report current Git/work/context with unknowns; gone ref alone is no deletion proof; owner read failure cannot select a second writer; drift advisory never auto-flips.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/standup.md",
+          "start": 8,
+          "end": 68,
+          "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb"
+        },
+        {
+          "path": "core/surface/commands/standup.md",
+          "start": 170,
+          "end": 186,
+          "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb"
+        },
+        {
+          "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+          "start": 48,
+          "end": 95,
+          "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7"
+        }
+      ],
+      "semantic_assessment": "Whole baseline prefix exact after excluding accepted additive step7. Fixed helper/interpreter routing keeps failed read explicit.",
+      "limits": "No observed live branch/workboard/drift/briefing/model behavior. New recovery step7 excluded."
+    },
+    {
+      "cell": "disposition:transitions:WF-22:02",
+      "preserved_source_clause": "Offer confirmed ff-only sync only when shared pure ff_pull_eligible says clean and behind; dirty/diverged retained, no merge/rebase/reset.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/standup.md",
+          "start": 21,
+          "end": 27,
+          "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb"
+        },
+        {
+          "path": "core/surface/commands/standup.md",
+          "start": 170,
+          "end": 183,
+          "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb"
+        }
+      ],
+      "semantic_assessment": "Inspected unchanged _standuplib predicate: behind>0 and not parse_porcelain.dirty. Classifier identifies eligibility; it does not itself pull or confirm.",
+      "limits": "No Git update, real status inputs, user approval or executed classifier acceptance."
+    },
+    {
+      "cell": "disposition:transitions:WF-22:03",
+      "preserved_source_clause": "Native selection pages64/budget65536 with stable membership; at most256; complete and strictly older14calendar days; advisory snapshot rechecked; undated IDs only explicit; title unique.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/standup.md",
+          "start": 70,
+          "end": 89,
+          "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb"
+        }
+      ],
+      "semantic_assessment": "Read unchanged date predicate and taskwrite undated refusal; whole board file changed only in classifier branches outside inspected archive call cone. Source caller still must prove title uniqueness.",
+      "limits": "No clock, membership, parser/native execution. Not a claim taskwrite alone refuses every ambiguous title."
+    },
+    {
+      "cell": "disposition:transitions:WF-22:04",
+      "preserved_source_clause": "Archive selected members on fresh sibling branch/worktree from fetched default; repeat owner/state/date checks; native stable operation ID plus expected revision/model CAS; legacy archive-first; partial IDs retained; separate homogeneous commit only selected paths.",
+      "witnesses": [
+        {
+          "path": "core/surface/commands/standup.md",
+          "start": 91,
+          "end": 145,
+          "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb"
+        }
+      ],
+      "semantic_assessment": "Inspected unchanged work.py paired-CAS/stable-ID interface, actual taskwrite done-first/read-failure refusal, archive_transform per-item dedup and existing caller uniqueness checks.",
+      "limits": "No worktree/archival/CAS/commit/provider action, actual physical confirmation, native backend or installed-host proof."
+    }
+  ],
+  "source_bound_policy": {
+    "path": ".codearbiter/context/security-controls.html",
+    "record_ids": [
+      "CON-001",
+      "CON-002",
+      "CON-003",
+      "CON-004",
+      "CON-005",
+      "CON-006",
+      "CON-007",
+      "CON-008",
+      "CON-009",
+      "CON-010",
+      "CON-011",
+      "CON-012",
+      "CON-013",
+      "CON-014",
+      "CON-015",
+      "CON-016"
+    ],
+    "complete_prior_export_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "read": "Complete current records and identical retained notes already read via installed owner; current HTML policy input bound. Stub is operative scope only."
+  },
+  "unproved_boundaries": [
+    "Complete executable/ArtifactClient/nativeGo/host/OS/network dependencies and actual external records are not qualified.",
+    "Source obligations only, no actual archive CAS/concurrency/deletion/model execution inferred from equality.",
+    "Separate step7 helper-card declared-leaf omission reported to parent; no source change."
+  ],
+  "tests_run": 0,
+  "source_index_mutations": false
+}

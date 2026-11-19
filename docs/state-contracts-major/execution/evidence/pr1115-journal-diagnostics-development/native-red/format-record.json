@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "C:/Program Files/Go/bin/gofmt.exe",
+    "-w",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_boundary_test.go",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_denial_windows_test.go",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_denial_unix_test.go"
+  ],
+  "returncode": 0,
+  "duration_seconds": 0.029575399996247143,
+  "before": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_boundary_test.go": "6a011da4155d3163b3dc157d96968bf774bc72048ad6dd00a2dac5a35ac0ce9c",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_denial_windows_test.go": "fa4abbd0f4259cdd3d458d7141453465179ce06390877b4e739527d8b1c697f6",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_denial_unix_test.go": "3e3871ac48b5e49b4d27668a0478fb7d80238bf9ffdb069bd5a14cfe8948300d"
+  },
+  "after": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_boundary_test.go": "ce4e049057c729a209375e19596fbfa18d33960e4b00683d2fc50bff39ba7b30",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_denial_windows_test.go": "63414ff54ccba5ee28580f81d0d88a616c3205267e78e305804560b15968c8a1",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-journal-six-run-cb2b3f32\\candidate\\core\\artifacts\\internal\\store\\journal_contract_denial_unix_test.go": "b86ae151a3a826c21fa70a415d1089525a5652889d144df9b36fce28f4847cef"
+  },
+  "original_drafts_unchanged": true
+}

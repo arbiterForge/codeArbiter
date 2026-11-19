@@ -1,0 +1,33 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest,shutil;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\.codex\\\\worktrees\\\\program-governance-prep\\\\codeArbiter\\\\.github\\\\scripts');print(\"actual_git=\"+str(shutil.which(\"git\")));r=unittest.TextTestRunner(verbosity=2).run(unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in ['test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit', 'test_release_workflow.ReceiptShellBoundaryTest']));sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "controlled_existing_git_dir": "C:\\Program Files\\Git\\mingw64\\libexec\\git-core",
+  "environment_keys": [
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "HOME",
+    "PATH",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "source_sha256": "6ab07368324e26edf7a9bd6a274fb65ecbc14caee2e2da9f73958686ee343dbf",
+  "seconds": 0.187,
+  "exit_code": 1,
+  "stdout_sha256": "a463623b61f88332c9b8a3d60e59b0b54df2894981656fb7ce80cb53b3595280",
+  "stderr_sha256": "ee06601bc75449ae7d91abe0e3c99ae70fe0727be5cc1e87190521447d07a6cd",
+  "scope": "Five original methods, actual installed Git internal executable+existing same-installation Bash. No lookup mocks. Original hosted selected Git path still UNKNOWN."
+}

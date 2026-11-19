@@ -1,0 +1,84 @@
+{
+  "kind": "private-test-owner-corrective-proposal",
+  "epoch": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "subjects": [
+    {
+      "path": ".github/workflows/ci.yml",
+      "preimage_sha256": "99b0d1acef9996b68e0259dfaacd9a9ea4be91d8f98b108e230e71baeeb704d0",
+      "sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+      "bytes": 275749,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\candidate\\.github\\workflows\\ci.yml",
+      "physical_canonical_still_preimage": true
+    },
+    {
+      "path": ".github/scripts/test_hook_ci_partition.py",
+      "preimage_sha256": "983e848b9234ffbaf2b7c797b2f734514583d3f34768dbc014eab5d561363daf",
+      "sha256": "a4039de1bf1434718fe6b8cc3d43232ff897b2d7767f33b46eee109bb3f7cbe7",
+      "bytes": 48826,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+      "physical_canonical_still_preimage": true
+    }
+  ],
+  "patch": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-test-owner-_0rvdlk6\\candidate.patch",
+  "patch_sha256": "c403785383b78c30ab83e220e024d9a36c9b22b2888e4494137f37ce8758625f",
+  "proper_red": "assertion-red.json",
+  "initial_direct_validator_error_retained": "red.json",
+  "green": {
+    "partition_wiring": {
+      "methods": 52,
+      "unittest_seconds": 0.124,
+      "outer_seconds": 0.2031004999880679,
+      "receipt": "wiring-green.json"
+    },
+    "pure_npm": {
+      "methods": 17,
+      "unittest_seconds": 11.292,
+      "outer_seconds": 11.573772999981884,
+      "receipt": "pure-green.json"
+    }
+  },
+  "unchanged_npm_test_source_sha256": "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f",
+  "old_method_ast_count": 52,
+  "unchanged_old_methods": 51,
+  "one_existing_method_change": [
+    [
+      "SourceQualificationRoleTests",
+      "test_exact_hw04_addition_preserves_all_prior_ordered_commands"
+    ]
+  ],
+  "new_test_methods": 3,
+  "hook_inventory": {
+    "commands": 76,
+    "contracts": 75,
+    "previous75_sha256": "091a92554695fbb82b5f3027d5ecb0b1076d350947b960219fddc39dd5f711e2",
+    "new76_sha256": "ded35eea9a75a8ec9d9a4d76e986dd48763f4258962945ffd527bb0c20d85974"
+  },
+  "selection": {
+    "hook": [
+      "AdmissionTests",
+      "IdentityLimitTests",
+      "RuntimePortabilityTests"
+    ],
+    "native_each_six": [
+      "ProducerBoundaryTests"
+    ],
+    "methods_disjoint_17_plus_1": true
+  },
+  "limits": [
+    "No producer test body/assertion/30-second deadline or production observer changes.",
+    "The new producer unit CI step on all six pinned CPython3.14 jobs is not yet executed.",
+    "Prior pinned3.14 full18 baseline is reused; full-runtime producer was not replayed locally.",
+    "Unsupported CPython3.15 hosted child phase/count/time cause remains UNKNOWN.",
+    "No Go/native/Node/npm/provider/network/product invocation or canonical write."
+  ],
+  "tool": {
+    "python": "C:\\Python314\\python.exe",
+    "version": [
+      3,
+      14,
+      6
+    ],
+    "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+  },
+  "context_consumed": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\npm-runtime-test-owner-context.json"
+}

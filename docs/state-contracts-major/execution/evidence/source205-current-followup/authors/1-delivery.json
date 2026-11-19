@@ -1,0 +1,86 @@
+{
+ "schema": "codearbiter.private-source-proposal-delivery/1",
+ "state": "PROPOSAL_ONLY_NO_SELF_INDEPENDENT_APPROVAL",
+ "actor": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "observed_inspection_HEAD": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "predecessor": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\delivery.json",
+  "sha256": "b5e22a7b7e90e62dee1deb59f05e188e3fc07ed7281da0c8c8cfed9c6fecfca8",
+  "bytes": 9079
+ },
+ "predecessor_independent_peer_sha256": "29639ae12300ff8ced46e0558536379758fffef46d2488abc634a57e4239c4af",
+ "original_owner_refusal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\source205-original-owner-failures.json",
+  "sha256": "457b35e191c7416695d993c894837f8a51c05d91d729301155f9a935ff5bc4e6",
+  "bytes": 3180
+ },
+ "correction_scope": [
+  "machines:hooks:command-evidence",
+  "transitions:hooks:command-evidence:01",
+  "transitions:hooks:command-evidence:02",
+  "transitions:hooks:command-evidence:03",
+  "transitions:hooks:command-evidence:04",
+  "transitions:hooks:command-evidence:05",
+  "transitions:hooks:command-evidence:06"
+ ],
+ "CAS_rows": 67,
+ "unchanged_other_CAS_rows": 60,
+ "retained_advanced_rows": 18,
+ "changed_active_proof_files": 1,
+ "unchanged_active_proof_files": 10,
+ "adoption_file_count": 17,
+ "adoption_filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\adoption-filemap.json",
+  "sha256": "8616c11fa7923fc9999daedbde05b3fd8680045da406d26d346e4b970bdf548c",
+  "bytes": 6644
+ },
+ "cas_proposal": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\cas-proposal.json",
+  "sha256": "bb83ce35b9a9b5efe8af26a5cdfe3181235fcbed5b40e1137c5f400b92884c1b",
+  "bytes": 127390
+ },
+ "supplement": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\command-owner-supplement.json",
+  "sha256": "1f65cfb35fe2da8d195a3b740e7ba58176a1846dedea622ebc157619a1c942d1",
+  "bytes": 27761
+ },
+ "predecessor_proof_retention": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\command-owner-predecessor.json",
+  "sha256": "8021191ebd9150d71ae6da434f75044e64fd54ee40e1f04e5d8bd897bd76d9bd",
+  "bytes": 15111
+ },
+ "command_proof": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\proofs\\hooks-command-evidence-preserved.json",
+  "sha256": "a05f157814e62529e679254803f773417fe671936e30e8b1dc939a44ea024412",
+  "bytes": 23754
+ },
+ "diff": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\command-proof.patch",
+  "sha256": "28f6ea91075fe2632d70ea39e843f21cc49500d8720f60463c0078612926a30b",
+  "bytes": 17440
+ },
+ "validation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-command-owner-successor-y_a9vi_r\\validation.json",
+  "sha256": "fc00cdb95de8d2f228e84f579d1c80f9b2c042d237485c0349fcb0cc390d619f",
+  "bytes": 683
+ },
+ "source_bindings_reused": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\source-bindings.json",
+  "sha256": "1fb0bc0a5b9b6bbb0a5778aa3c7473b7aa4436f12b7302691482981d4e13503a",
+  "bytes": 24903
+ },
+ "clause_matrix_reused": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-kernel-context-eleven-source-6d8-3dy3km0_\\clause-inspection.json",
+  "sha256": "fb0f419efc542d8d24115010ad418287ac0caada0681005b8a0f2c01c511d115",
+  "bytes": 371132
+ },
+ "limits": [
+  "Source-only supplement; no tests, product imports, runtime, strict owner execution, API/network, native, probes, install or canonical/index/ref/marker/ledger mutation.",
+  "Historical proof subject remains literal 6d8; cfa8 is the observed inspection epoch, not a relabeled execution or runtime renewal.",
+  "No change to declaration, source freshness, authorized-observation, constraint or native-reader semantics. No independent self-review or qualification claim."
+ ],
+ "next_action": "Root composes the complete205 private preview and runs unchanged strict owner once; this author did not execute it.",
+ "git_index_oid": null
+}

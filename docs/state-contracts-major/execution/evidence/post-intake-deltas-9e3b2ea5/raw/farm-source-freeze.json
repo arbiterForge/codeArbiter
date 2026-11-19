@@ -1,0 +1,66 @@
+{
+  "state": "TEMP_ONLY_ROOT_CARRY_REVIEW_REQUIRED",
+  "original_source_epoch": "59fdd8a068dc3cc095a7961d3fcfa7c6ffe9efca",
+  "current_Gov_HEAD": "5f3aaa8bd74f6d2a98b61ea0f41c5a41aee909cb",
+  "source_preimages": {
+    "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+    "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123"
+  },
+  "source_after": {
+    "plugins/ca/tools/farm.ts": "0dda0868c34a6ddaf70edd3fc9bfaf1edb0d8746b40d3f4b92b8eb28c5283f88",
+    "plugins/ca/tools/farm.js": "bac2ae71c9371b36f8291a60d4190d91b358ce88df9d81e69c1c9651f67cad24",
+    "plugins/ca/tools/farm-registry-lock.test.ts": "221e5c98ee1136be63777f230936eb41fab61a8fd02502c5bb28fc51cf3d9905"
+  },
+  "patch_sha256": "ad665ef45568a79a573e02a60835129700604ed030bc09256eddc5df73790d94",
+  "actual_RED": {
+    "raw": "lock-red.json",
+    "sha256": "258c9abd4ab4c6b4b0fe5a5bdce77a3fcaecc29abd36e1ba21ea1cc6e147e915",
+    "reason": "Actual old helper permitted second process overlap while first held barrier in linked checkout; expected real contention."
+  },
+  "author_results": {
+    "new_source_and_bundle_controls": 7,
+    "existing_397_controls": 4,
+    "existing_515_controls": 4,
+    "scoped15_raw_sha256": "f867bd96436838858d16612036e0430a3c0a75371f5cb3ed8e5bfb64f1351824",
+    "current7_raw_sha256": "2433cb2ac18ae50ff19aeb0b6d7e61cd2a6761eb860474869101146e464deea7",
+    "current_typecheck_exit0": true,
+    "build_exit0_byte_parity": true,
+    "actual_32_inputs_before_after": true,
+    "epochs": "Initial15 at identical production TS/JS; final7 adds explicit caller-refusal assertions in test source. No production change between runs."
+  },
+  "changed_lock_coverage": {
+    "functions": [
+      "withCommonWorktreeLock",
+      "withWorktreeLock"
+    ],
+    "source_line_interval": [
+      1840,
+      1901
+    ],
+    "lines": {
+      "covered": 42,
+      "total": 43,
+      "percent": 97.67
+    },
+    "branches": {
+      "covered": 31,
+      "total": 34,
+      "percent": 91.18
+    },
+    "statements": {
+      "covered": 46,
+      "total": 50,
+      "percent": 92.0
+    },
+    "scope": "Changed lock-helper interval only; whole-owner scoped run coverage is intentionally partial, not955-suite qualification.",
+    "raw_report_sha256": "33bd34a391ec0c330812302627758040d8235c6dd1a74e1163e84ae10eb35d90"
+  },
+  "limits": [
+    "Cooperative Farm-only cross-process lock. External Git clients do not participate.",
+    "Crash/unknown/stale/foreign sidecar is never stolen or deleted automatically; bounded refusal preserves ownership.",
+    "Same-user malicious path replacement races are not claimed atomically prevented.",
+    "No broad955 rerun, real provider/network/native run, or hosted platform union claimed.",
+    "Existing conditional owned-cleanup prune/branch targets unchanged; no new operator discard authority."
+  ],
+  "policy_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e"
+}

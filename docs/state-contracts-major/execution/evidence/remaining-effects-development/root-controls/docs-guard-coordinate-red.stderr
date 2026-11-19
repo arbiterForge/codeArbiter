@@ -1,0 +1,20 @@
+F.
+======================================================================
+FAIL: test_refusal_location_identifies_actual_guard_instead_of_shared_raise (test_site_playwright_observation.DocsAuthorityTests.test_refusal_location_identifies_actual_guard_instead_of_shared_raise)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\.github\scripts\test_site_playwright_observation.py", line 72, in test_refusal_location_identifies_actual_guard_instead_of_shared_raise
+    self.assertEqual(record['location'], {
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^
+        'module': 'site_playwright_observation.py',
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        'line': self.docs.validate_observation.__code__.co_firstlineno + 1})
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'module': 'major_readiness.py', 'line': 133} != {'module': 'site_playwright_observation.py', 'line': 290}
+- {'line': 133, 'module': 'major_readiness.py'}
++ {'line': 290, 'module': 'site_playwright_observation.py'}
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.053s
+
+FAILED (failures=1)

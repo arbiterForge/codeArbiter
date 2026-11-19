@@ -1,0 +1,1 @@
+{"audit_depth": "none", "audit_event": "none", "audit_site": "none", "code": "unclassified", "error": "RuntimeError", "family": "runtime", "format": "codearbiter.installed-host-failure/0.2.0", "host": "claude", "phase": "commit-proof", "step": "enforce_runtime_event"}

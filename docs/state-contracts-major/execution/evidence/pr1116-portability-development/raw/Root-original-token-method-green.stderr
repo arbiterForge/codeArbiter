@@ -1,0 +1,6 @@
+test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only (test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.011s
+
+OK

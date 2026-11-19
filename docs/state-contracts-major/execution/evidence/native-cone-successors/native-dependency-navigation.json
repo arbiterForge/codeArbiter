@@ -1,0 +1,3644 @@
+{
+  "schema": "codearbiter-native-dependency-navigation/1",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "original_capture_count": 349,
+  "stale_original_inputs": [
+    "core/pysrc/_workflowrecoverylib.py"
+  ],
+  "all243_native_inputs_literal_equal": true,
+  "go_subprocess_boundaries": [
+    {
+      "path": "core/artifacts/internal/evidence/completion_workspace.go",
+      "line": 262,
+      "call": "cmd := exec.CommandContext(ctx, executable, args...)"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/completion_workspace_test.go",
+      "line": 26,
+      "call": "cmd := exec.Command(\"git\", append([]string{\"-C\", root}, args...)...)"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/completion_workspace_test.go",
+      "line": 47,
+      "call": "git, gitErr := exec.LookPath(\"git\")"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/completion_workspace_test.go",
+      "line": 89,
+      "call": "cmd := exec.Command(python, \"-c\", script, source, root)"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/completion_workspace_test.go",
+      "line": 150,
+      "call": "build := exec.Command(\"go\", \"build\", \"-o\", executable, source)"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/completion_workspace_test.go",
+      "line": 536,
+      "call": "if out, err := exec.Command(\"cmd\", \"/d\", \"/c\", \"mklink\", \"/J\", link, root).CombinedOutput(); err != nil {"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+      "line": 29,
+      "call": "if _, err := exec.LookPath(\"npm\"); err != nil {"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+      "line": 58,
+      "call": "out, err := exec.Command(python, \"-c\", script, source, root).CombinedOutput()"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/review_regressions_test.go",
+      "line": 238,
+      "call": "if out, err := exec.Command(\"cmd\", \"/c\", \"mklink\", \"/J\", link, outside).CombinedOutput(); err != nil {"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/snapshot_test.go",
+      "line": 19,
+      "call": "git, err := exec.LookPath(\"git\")"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/snapshot_test.go",
+      "line": 77,
+      "call": "git, err := exec.LookPath(\"git\")"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/snapshot_test.go",
+      "line": 264,
+      "call": "out, err := exec.Command(\"git\", \"-C\", root, \"ls-files\", \".codearbiter/gate-events.log\").Output()"
+    },
+    {
+      "path": "core/artifacts/internal/evidence/snapshot_test.go",
+      "line": 818,
+      "call": "cmd := exec.Command(\"git\", \"-C\", root, \"update-index\", \"--index-info\")"
+    },
+    {
+      "path": "core/artifacts/internal/operations/completion_fixture_test.go",
+      "line": 20,
+      "call": "command := exec.Command(\"git\", append([]string{\"-C\", root}, args...)...)"
+    },
+    {
+      "path": "core/artifacts/internal/operations/main_test.go",
+      "line": 38,
+      "call": "git, err := exec.LookPath(\"git\")"
+    },
+    {
+      "path": "core/artifacts/internal/store/crash_test.go",
+      "line": 46,
+      "call": "command := exec.Command(os.Args[0], \"-test.run=^TestProcessDeathRecovery$\")"
+    },
+    {
+      "path": "core/artifacts/internal/store/crash_test.go",
+      "line": 126,
+      "call": "command := exec.Command(os.Args[0], \"-test.run=^TestJournalPublicationCrash$\")"
+    },
+    {
+      "path": "core/artifacts/internal/store/junction_windows_test.go",
+      "line": 27,
+      "call": "if out, err := exec.Command(\"cmd\", \"/c\", \"mklink\", \"/J\", filepath.Join(root, \"link\"), real).CombinedOutput(); err != nil {"
+    },
+    {
+      "path": "core/artifacts/internal/store/readonly_lock_windows_test.go",
+      "line": 411,
+      "call": "output, err := exec.Command(\"cmd\", \"/c\", \"mklink\", \"/J\", filepath.Join(f.Root, \".codearbiter\"), inner).CombinedOutput()"
+    },
+    {
+      "path": "core/artifacts/internal/store/store_test.go",
+      "line": 587,
+      "call": "out, e := exec.Command(\"cmd\", \"/c\", \"mklink\", \"/J\", filepath.Join(f.Root, \"junction\"), filepath.Join(f.Root, \"inner\")).CombinedOutput()"
+    }
+  ],
+  "evidence_python_call_roots": [
+    "completionPython",
+    "producerNPMBindings"
+  ],
+  "evidence_transitive_python_helpers": [
+    "TestCompletionAdmitsActualProducerLaunchBindingCounts",
+    "TestCompletionLaunchFileBoundMatchesContract",
+    "TestCompletionWorkspaceByteBounds",
+    "TestCompletionWorkspaceCanonicalNormalizationIsExact",
+    "TestCompletionWorkspaceCanonicalStateUpdatesStayFresh",
+    "TestCompletionWorkspaceLargeEvidenceClosure",
+    "TestCompletionWorkspaceLaunchFileLinkedParent",
+    "TestCompletionWorkspaceLegacyWindowsIdentity",
+    "TestCompletionWorkspaceMappedMutationInvalidates",
+    "TestCompletionWorkspaceRawMatchesPython",
+    "TestCompletionWorkspaceRawMultipleRootsMatchProducerOrder",
+    "TestCompletionWorkspaceRawTracksGitTypes",
+    "TestCompletionWorkspaceRawWhileNativeLockHeld",
+    "TestCompletionWorkspaceRejectsIdentityAndCommandSubstitution",
+    "TestCompletionWorkspaceSymlinkParityAndEscape",
+    "completionPython",
+    "producerNPMBindings"
+  ],
+  "python_producer": {
+    "roots": [
+      "core/pysrc/_artifactauthoritylib.py"
+    ],
+    "inputs": {
+      "core/pysrc/_artifactauthoritylib.py": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+      "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "core/pysrc/_sensitivelib.py": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe"
+    },
+    "edges": [
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactpromptlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactpromptlib.py",
+        "to": "core/pysrc/_replylib.py"
+      },
+      {
+        "from": "core/pysrc/_replylib.py",
+        "to": "core/pysrc/_artifactpromptlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactpromptlib.py",
+        "to": "core/pysrc/_contextselectlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextselectlib.py",
+        "to": "core/pysrc/_contextreportlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextselectlib.py",
+        "to": "core/pysrc/_provenancelib.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_hooklib.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/hostapi.py"
+      },
+      {
+        "from": "core/pysrc/hostapi.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/hostapi.py",
+        "to": "core/pysrc/_activationlib.py"
+      },
+      {
+        "from": "core/pysrc/_activationlib.py",
+        "to": "core/pysrc/hostapi.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_activationlib.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_scopelib.py"
+      },
+      {
+        "from": "core/pysrc/_scopelib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_protectedlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedlib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_protectedlib.py",
+        "to": "core/pysrc/_protectedstatelib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_hooklib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactlib.py",
+        "to": "core/pysrc/_artifactmanifestlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactlib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_sensitivelib.py"
+      },
+      {
+        "from": "core/pysrc/_sensitivelib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_contextsnapshotlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextsnapshotlib.py",
+        "to": "core/pysrc/_contextreportlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextsnapshotlib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_contextsnapshotlib.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_contextsnapshotlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      }
+    ],
+    "dynamic_import_navigation": [
+      {
+        "path": "core/pysrc/hostapi.py",
+        "line": 736,
+        "expression": "importlib.util.spec_from_file_location('_host', path)"
+      }
+    ],
+    "original_capture_missing": [],
+    "original_capture_mismatch": []
+  },
+  "qualification_runner": {
+    "roots": [
+      "tools/build-artifacts.py",
+      "tools/go_test_parallel.py",
+      ".github/scripts/_contextverificationlib.py"
+    ],
+    "inputs": {
+      "tools/build-artifacts.py": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      ".github/scripts/_contextverificationlib.py": "09cd4fcff6c484f6561162c5d5769e91775f62ae7c211757c82d7b84092e2fd4",
+      ".github/scripts/test_context_native.py": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+      ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "tools/go_test_parallel.py": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40"
+    },
+    "edges": [
+      {
+        "from": "tools/build-artifacts.py",
+        "to": "core/pysrc/_artifactmanifestlib.py"
+      },
+      {
+        "from": "tools/build-artifacts.py",
+        "to": ".github/scripts/_contextverificationlib.py"
+      },
+      {
+        "from": ".github/scripts/_contextverificationlib.py",
+        "to": "core/pysrc/_artifactmanifestlib.py"
+      },
+      {
+        "from": "tools/build-artifacts.py",
+        "to": ".github/scripts/test_context_native.py"
+      },
+      {
+        "from": ".github/scripts/test_context_native.py",
+        "to": ".github/scripts/_contextverificationlib.py"
+      },
+      {
+        "from": "tools/build-artifacts.py",
+        "to": ".github/scripts/ci20_native_binding.py"
+      },
+      {
+        "from": ".github/scripts/ci20_native_binding.py",
+        "to": ".github/scripts/_contextverificationlib.py"
+      },
+      {
+        "from": "tools/go_test_parallel.py",
+        "to": ".github/scripts/_contextverificationlib.py"
+      }
+    ],
+    "dynamic_import_navigation": [],
+    "original_capture_missing": [
+      ".github/scripts/test_context_native.py",
+      ".github/scripts/ci20_native_binding.py"
+    ],
+    "original_capture_mismatch": []
+  },
+  "installed_bridge_and_old_clients": {
+    "roots": [
+      ".github/scripts/test_artifact_authoring.py",
+      "tools/test-artifact-mixed-schema.py",
+      "tools/test-artifact-work-old-client.py"
+    ],
+    "inputs": {
+      ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+      "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "core/pysrc/_artifactauthoritylib.py": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+      "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+      "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+      "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+      "core/pysrc/_sensitivelib.py": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+      "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+      "tools/test-artifact-mixed-schema.py": "c9607b6896c24ad4382432ca5b125843933d4723303fbdd1d73902bedf3b6ad5",
+      "tools/test-artifact-work-old-client.py": "83ee139aedc819f324f8c50a5d5c1ab43014a0c6fe7b4f92245c9563a809fb70"
+    },
+    "edges": [
+      {
+        "from": ".github/scripts/test_artifact_authoring.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactlib.py",
+        "to": "core/pysrc/_artifactmanifestlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactlib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": ".github/scripts/test_artifact_authoring.py",
+        "to": "core/pysrc/_artifactauthoritylib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactpromptlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactpromptlib.py",
+        "to": "core/pysrc/_replylib.py"
+      },
+      {
+        "from": "core/pysrc/_replylib.py",
+        "to": "core/pysrc/_artifactpromptlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactpromptlib.py",
+        "to": "core/pysrc/_contextselectlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextselectlib.py",
+        "to": "core/pysrc/_contextreportlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextselectlib.py",
+        "to": "core/pysrc/_provenancelib.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_hooklib.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/hostapi.py"
+      },
+      {
+        "from": "core/pysrc/hostapi.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/hostapi.py",
+        "to": "core/pysrc/_activationlib.py"
+      },
+      {
+        "from": "core/pysrc/_activationlib.py",
+        "to": "core/pysrc/hostapi.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_activationlib.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_scopelib.py"
+      },
+      {
+        "from": "core/pysrc/_scopelib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_protectedlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedlib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_protectedlib.py",
+        "to": "core/pysrc/_protectedstatelib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_hooklib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_protectedstatelib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_hooklib.py",
+        "to": "core/pysrc/_sensitivelib.py"
+      },
+      {
+        "from": "core/pysrc/_sensitivelib.py",
+        "to": "core/pysrc/_pathnorm.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_contextsnapshotlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextsnapshotlib.py",
+        "to": "core/pysrc/_contextreportlib.py"
+      },
+      {
+        "from": "core/pysrc/_contextsnapshotlib.py",
+        "to": "core/pysrc/_gitexec.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_contextsnapshotlib.py"
+      },
+      {
+        "from": "core/pysrc/_provenancelib.py",
+        "to": "core/pysrc/_contextsnapshotlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "core/pysrc/_artifactauthoritylib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": ".github/scripts/test_artifact_authoring.py",
+        "to": "core/pysrc/_intentlib.py"
+      },
+      {
+        "from": "core/pysrc/_intentlib.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": ".github/scripts/test_artifact_authoring.py",
+        "to": "core/pysrc/_artifactlib.py"
+      },
+      {
+        "from": "tools/test-artifact-mixed-schema.py",
+        "to": ".github/scripts/test_artifact_authoring.py"
+      }
+    ],
+    "dynamic_import_navigation": [
+      {
+        "path": "core/pysrc/hostapi.py",
+        "line": 736,
+        "expression": "importlib.util.spec_from_file_location('_host', path)"
+      }
+    ],
+    "original_capture_missing": [],
+    "original_capture_mismatch": []
+  },
+  "groups": [
+    {
+      "id": "native-operation-admission",
+      "cells": [
+        "disposition:transitions:N01:01",
+        "disposition:transitions:N37:01"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAllOperationSchemasClosed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/protocol_test.go",
+              "start": 8,
+              "end": 22,
+              "body_sha256": "0af9b2e727c7411f51fb6bc093bee4f7598f6e5109c03d30a573ef4ffeb355ea",
+              "file_sha256": "abb85d1bbbe0dbb89fc951adec9491739b5d46c5a28be1744c0e8f3f42f54f80"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestOperationRegistryReverseClosure",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/descriptors_test.go",
+              "start": 161,
+              "end": 183,
+              "body_sha256": "ce817c1a245a7922e93e4a8fd362c71051780ee83ba7bd22d439fd84eb12f395",
+              "file_sha256": "bb070f2074675e4473885f6735be31e8e307e8b70326be03dd7df621bcb3861b"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCapabilitiesAdvertiseVersionedOperationContract",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/descriptors_test.go",
+              "start": 185,
+              "end": 208,
+              "body_sha256": "e1e30e73fc5ea91be1caf25e5bc748603bab7ff5d068648858b09fa67cd8c78b",
+              "file_sha256": "bb070f2074675e4473885f6735be31e8e307e8b70326be03dd7df621bcb3861b"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/cmd/ca-artifact:TestCLIEmitsJSONFaultAndMatchingExitClass",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/cmd/ca-artifact/main_test.go",
+              "start": 9,
+              "end": 24,
+              "body_sha256": "8b8fb5e962783f2fd70d6ffd1bb955a16a8b0496da5b54e19367d5c8f56870c2",
+              "file_sha256": "173855b959fc24785c602f76c437c3170b141fcbadad83a35eb528084096892c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-typed-retirement",
+      "cells": [
+        "disposition:transitions:N06:03",
+        "disposition:transitions:N13:01"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckedTaskKeepsTypedHistory",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 53,
+              "end": 119,
+              "body_sha256": "943bb721779159563e068e6cd8fb61bd461d8c8668231dfc53e44037563e36b7",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckpointKeepsScopeBaseline",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 123,
+              "end": 153,
+              "body_sha256": "33d2de23b587f9aac9a60c6e3a0a174acc9543395494f4c2f4af3251f9b5e4b9",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestUntypedTombstoneDoesNotOwnHistory",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 157,
+              "end": 189,
+              "body_sha256": "bba959dc36dd9cf9c05fe1da3e79f16e8e67beb4cf6125b9cf4193867da858a1",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetirementKindMustNameAnActualCollection",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 199,
+              "end": 210,
+              "body_sha256": "25e8166071ccbfdfea2988e2d5ce3d65c9b4a46a6478d7c8e10a35bcf3ef063b",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInterruptedRetirementRecoversExactly",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 171,
+              "end": 206,
+              "body_sha256": "da0d38e60a530604e57407a499670a37319ed9212e8828142de18cce6e0d2363",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 36,
+              "end": 50,
+              "body_sha256": "e3cf9594910e6a4595314a2486c0992a9174a50a06a5d9b7bf4d73e62359adc4",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-ordinary-progress",
+      "cells": [
+        "disposition:transitions:N09:01",
+        "disposition:transitions:N09:02",
+        "disposition:transitions:N09:03",
+        "disposition:transitions:N09:05"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDraftWorkNeedsNoApprovalOrContextTicket",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/assistive_test.go",
+              "start": 86,
+              "end": 114,
+              "body_sha256": "0eb95aca2f166465f750ccd277a5715d57a4e58cbc88421021c846640f517243",
+              "file_sha256": "00859a597624dbc01c043ca4feb543e085fb5481554a3a0184959c466cf177b8"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveResumePreservesStopsAndRejectsDuplicateStart",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/assistive_test.go",
+              "start": 160,
+              "end": 173,
+              "body_sha256": "2fdb7be34e96d3eb85197e9ecd5fbc513331a8a02cb97b03332dffdde22d1e57",
+              "file_sha256": "00859a597624dbc01c043ca4feb543e085fb5481554a3a0184959c466cf177b8"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveReportedReviewCannotMasqueradeAsReceiptedReview",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/assistive_test.go",
+              "start": 253,
+              "end": 269,
+              "body_sha256": "693a0c96ed5faa03e06bf436e7ce82411c3532ac6822ac77d3b40750493a2353",
+              "file_sha256": "00859a597624dbc01c043ca4feb543e085fb5481554a3a0184959c466cf177b8"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01BaselineOrdinaryWorkKeepsReportedFailuresExplicit",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_contract_test.go",
+              "start": 28,
+              "end": 89,
+              "body_sha256": "1e8eea94632bab6e5349e849d39d4314a7eb34e84de81cbfbbc522acf7cdb8be",
+              "file_sha256": "26c52feffcac0d0b19a46608be9c91e20c68c6edf1a40cb5a4233b78b610a091"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01TaskLabelBasesAreDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_contract_test.go",
+              "start": 94,
+              "end": 169,
+              "body_sha256": "f34bcdbd90e1662556b4928a7c7786ce122f43beb90d62fcbeb98748e57e8c74",
+              "file_sha256": "26c52feffcac0d0b19a46608be9c91e20c68c6edf1a40cb5a4233b78b610a091"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-dependent-progress",
+      "cells": [
+        "disposition:transitions:N09:04",
+        "disposition:transitions:N11:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09TaskBlockPreservesDependentRecordedProgress",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/intentional_change_test.go",
+              "start": 21,
+              "end": 44,
+              "body_sha256": "0161a266ae589f759132afc62f3ce20e2754f891bb14cca39e2630f2a4c1583a",
+              "file_sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09BlockingDependencyPreservesEveryRecordedProgressLabel",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/intentional_change_test.go",
+              "start": 108,
+              "end": 145,
+              "body_sha256": "cb25f251f2c82987e243fe8d7e820843f588cd6f242483d0607ef3a48d314b99",
+              "file_sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDependencyInvalidationPreservesIndependentStops",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/dependency_advice_test.go",
+              "start": 87,
+              "end": 112,
+              "body_sha256": "2ac53e3f2c324e358e7a2d26139c4871474a505f74f2971bfb1c2bd33fbeef98",
+              "file_sha256": "f353a26a30d71b04f8593d4531b98e63d7544bc55f79cf3b7ef4db0a327ac03a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-advisory-readiness",
+      "cells": [
+        "disposition:transitions:N11:01",
+        "disposition:transitions:N11:02",
+        "disposition:transitions:N11:04"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT09PreservedProgressKeepsDependencyReadinessIndependent",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/intentional_change_test.go",
+              "start": 48,
+              "end": 60,
+              "body_sha256": "163fc1996ebade8bf54896599701f9166a0826b6e5d83d77488cc59755205d23",
+              "file_sha256": "f37d3438898dc96bc9f22303bc6b9aec3844933e4c7847e244b1fa4718418f6b"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveSelectionUsesDependenciesNotCheckpointOrder",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/assistive_test.go",
+              "start": 139,
+              "end": 158,
+              "body_sha256": "f8df44283de8f8d0861b8027ae284de7d1c26ea9d68a5706aae9f86b069ca6c2",
+              "file_sha256": "00859a597624dbc01c043ca4feb543e085fb5481554a3a0184959c466cf177b8"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 36,
+              "end": 61,
+              "body_sha256": "e15e860bd821a20a7582399e90f3cb5d5b6ba0a0da4c34e7b179c2fced459c58",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskContextShowsStopsAndUnfinishedDependencies",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/task_context_test.go",
+              "start": 144,
+              "end": 163,
+              "body_sha256": "f76e2c87819ff9afa961a6ae46bb47856552f9e3fa021377c3f4bcf4b3c43c81",
+              "file_sha256": "6e7659a9b1a7378339b97cb1d717b6378f94a92eff9560cf8544185a5cf5da8a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-scoped-check-history",
+      "cells": [
+        "disposition:transitions:N13:01",
+        "disposition:transitions:N13:02",
+        "disposition:transitions:N13:03",
+        "disposition:transitions:N13:04"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRecordsCommandOutcomeWithoutNewAuthority",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/task_check_test.go",
+              "start": 101,
+              "end": 143,
+              "body_sha256": "035f23844cd06980caba58dc4895e071e8ce8b43ae01f8a0a553dc332b4ff7b2",
+              "file_sha256": "54e31ecbf7ad9f7ac013b3b94959195009bcb8660ffa15212d8e20cbe255de40"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckRejectsInventedPassesAndMismatchedNamedCommands",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/task_check_test.go",
+              "start": 200,
+              "end": 221,
+              "body_sha256": "01c38931f7bd7639a58b1455d54ed99af3edbeccb6111bbe46025166b20ad67b",
+              "file_sha256": "54e31ecbf7ad9f7ac013b3b94959195009bcb8660ffa15212d8e20cbe255de40"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckNeverExecutesItsSourceAndEscapesHTML",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/task_check_test.go",
+              "start": 247,
+              "end": 272,
+              "body_sha256": "f5c06f07c077b98b9326cfc5f7a70fa5eaa4607bf99eeeb213f988646dd63232",
+              "file_sha256": "54e31ecbf7ad9f7ac013b3b94959195009bcb8660ffa15212d8e20cbe255de40"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckBoundedRecentViewKeepsHistoryInJournal",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/task_check_test.go",
+              "start": 274,
+              "end": 290,
+              "body_sha256": "552909e793c0444109a075fa9a734c03ed3614f68ed037b0d170fddf5f8603f6",
+              "file_sha256": "54e31ecbf7ad9f7ac013b3b94959195009bcb8660ffa15212d8e20cbe255de40"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckScopedSourceChangesDoNotRestartUnrelatedWork",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/input_scope_test.go",
+              "start": 34,
+              "end": 71,
+              "body_sha256": "f7a210d8b3aa9560bd3b29c0894dea41a1a76beaf02ccb4264188d9581f04415",
+              "file_sha256": "c0b7b97ac2dcf4211d1c7b177210750a1e8e21acaf3985c7b853b3ad29756035"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckOutOfBoundsOrUnsafeInputsRemainUnassessed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/input_scope_test.go",
+              "start": 185,
+              "end": 207,
+              "body_sha256": "44d9ac1213fc65e2eb7931a90b070267983ceb23ae7e13737ad6eeda38e4afdb",
+              "file_sha256": "c0b7b97ac2dcf4211d1c7b177210750a1e8e21acaf3985c7b853b3ad29756035"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTaskCheckHistoricalRecordIsNotGivenNewSourceIdentity",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/input_scope_test.go",
+              "start": 209,
+              "end": 230,
+              "body_sha256": "ce40a275b2e275e03a0d7666202ef30accc889a6b08da953469f647b18979ce9",
+              "file_sha256": "c0b7b97ac2dcf4211d1c7b177210750a1e8e21acaf3985c7b853b3ad29756035"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-check-conflicts",
+      "cells": [
+        "disposition:transitions:N14:01",
+        "disposition:transitions:N14:02",
+        "disposition:transitions:N14:03",
+        "disposition:transitions:N14:04",
+        "disposition:transitions:N14:05"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsRespectDefinitionAndSourceScope",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/check_conflicts_test.go",
+              "start": 22,
+              "end": 68,
+              "body_sha256": "020eca2701d69ed643eab680c2fa36ae57d6b62a84d6b6b494f360e21c52d6ad",
+              "file_sha256": "022511cd1f0285d59b5f473e47ef389d12e36197961315e1348d8bf776b7ff18"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsMatchEveryUnindexedCommandWithoutBindingIt",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/check_conflicts_test.go",
+              "start": 70,
+              "end": 111,
+              "body_sha256": "6d0d53199988d3e2fc7ec4c64e7aefa2a05df612883a466a206fc2d41cd5803b",
+              "file_sha256": "022511cd1f0285d59b5f473e47ef389d12e36197961315e1348d8bf776b7ff18"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckConflictsDoNotPromoteUnboundOrTrimmedHistory",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/check_conflicts_test.go",
+              "start": 113,
+              "end": 134,
+              "body_sha256": "1c61797f76792b8ea09da86fed3a30bfa558032a1fe5034dfa92ed23fa74e7aa",
+              "file_sha256": "022511cd1f0285d59b5f473e47ef389d12e36197961315e1348d8bf776b7ff18"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCheckReportBoundaryCannotCoverARepeatedLaterReport",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/check_conflicts_test.go",
+              "start": 136,
+              "end": 160,
+              "body_sha256": "70fc8d75bb8122df0245d60fde57c8ed44dbaeefb16901f4188d3e5816720adf",
+              "file_sha256": "022511cd1f0285d59b5f473e47ef389d12e36197961315e1348d8bf776b7ff18"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-snapshot-integrity",
+      "cells": [
+        "disposition:transitions:N16:01",
+        "disposition:transitions:N16:02",
+        "disposition:transitions:N16:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotRejectsDifferingScans",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_test.go",
+              "start": 840,
+              "end": 873,
+              "body_sha256": "d87337cd0042a8b2c29d992170054b238dc4da9092a99402aa84636fc0c9c50d",
+              "file_sha256": "2b46aac7312b8097af1bd8df2b33fb499412f116928a60a6a62d4620ea6f3a65"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotGitProbeFailureFailsClosed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_test.go",
+              "start": 334,
+              "end": 351,
+              "body_sha256": "7cb90a1c73fe6b2693a7daf0fe1f371be59682eee07ea463168df56c4c964915",
+              "file_sha256": "2b46aac7312b8097af1bd8df2b33fb499412f116928a60a6a62d4620ea6f3a65"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotUnreadableDotGitFailsClosed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_canonical_test.go",
+              "start": 113,
+              "end": 142,
+              "body_sha256": "e0f78d780b26f848987a12990d5b34ebd732192cff9b61c6dbbdbceb1e54406a",
+              "file_sha256": "c2ac03020b25fcbf1e67cf5f4f7ab09add3afa9624115ff8c2c04ee1fa624337"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotProgressOnlyUpdateKeepsIdentity",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_test.go",
+              "start": 480,
+              "end": 547,
+              "body_sha256": "04631e7ab729bfb88baddeeddea6518b76f850ea353483b902a30e32ee4d6835",
+              "file_sha256": "2b46aac7312b8097af1bd8df2b33fb499412f116928a60a6a62d4620ea6f3a65"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotTrackedSymlinkIsUnsafePath",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_hardening_test.go",
+              "start": 146,
+              "end": 162,
+              "body_sha256": "abaeca968b5fb5cc0f9ec84bffe41fcf90827e3208f61e658ed0c5e45fffb735",
+              "file_sha256": "e82c880f70f84998102083090892cc1d582ef90b5aaff1af48d53d1ad229afe5"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotShipSetMembership",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_test.go",
+              "start": 18,
+              "end": 73,
+              "body_sha256": "abcf832dd441bf6dfe519a09b82b59fbbc7eee739bec29190bade1b911314dce",
+              "file_sha256": "2b46aac7312b8097af1bd8df2b33fb499412f116928a60a6a62d4620ea6f3a65"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestSnapshotExecutableFromIndexMode",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/snapshot_test.go",
+              "start": 200,
+              "end": 221,
+              "body_sha256": "1947736ad7a4539f66337acfd3345886ce2a8c73a4bc17c11556a01496c9bfe5",
+              "file_sha256": "2b46aac7312b8097af1bd8df2b33fb499412f116928a60a6a62d4620ea6f3a65"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-preview-output-composition",
+      "cells": [
+        "disposition:transitions:N16:04",
+        "disposition:transitions:N21:01",
+        "disposition:transitions:N21:04",
+        "disposition:transitions:N21:05"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextPreviewComposesWithStrictConsumers",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_preview_output_test.go",
+              "start": 20,
+              "end": 55,
+              "body_sha256": "db77b4fe3caf4606e0398473133633fd92e2644a29d76632788ca744054afe92",
+              "file_sha256": "02837dd724ab9f7966a150f1f23ea36c9f66103ab75196578ebb6780d7891397"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestStaleContextPreviewRemainsRecognizedButCannotApply",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_preview_output_test.go",
+              "start": 57,
+              "end": 73,
+              "body_sha256": "dacf01909c7ce88428f6a5ed24d82b7ef106d55428436051e25e13c21882c51c",
+              "file_sha256": "02837dd724ab9f7966a150f1f23ea36c9f66103ab75196578ebb6780d7891397"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReservedPreviewOutputsFailClosed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_preview_reserved_test.go",
+              "start": 15,
+              "end": 63,
+              "body_sha256": "dc9292aa0633b748148d4d1c435658232e035eaed290fcdf083df4e2ab2a9576",
+              "file_sha256": "efd27edcbb7c2cae7ba2bca151c4ce052e752114b5fde33a50e5132824ce0c96"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestRecognizedOutputsCoverEveryDerivedKind",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/output_contract_test.go",
+              "start": 12,
+              "end": 27,
+              "body_sha256": "55a7701a73d6e197ea1414d0370bbbfc2a5ae27e408e83b2ed2c5fcb76b96aa8",
+              "file_sha256": "22ac4aee28a217c3da36977fa664f22baf9662d0f1c7a683909ddaa74df2f050"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestStoredPreviewContractRejectsMalformedRecords",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/preview_contract_test.go",
+              "start": 77,
+              "end": 138,
+              "body_sha256": "e0eafc2c1d5acf0c02050a8c4c11a5d2155f5c129e41849deca18576a438fe9a",
+              "file_sha256": "083c1407a7913ecc310b56a5744d91c2df60fdb50e8a0b14e3727abc103cc5b0"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-completion-closure",
+      "cells": [
+        "disposition:transitions:N17:01",
+        "disposition:transitions:N17:02",
+        "disposition:transitions:N17:04",
+        "disposition:transitions:N17:05"
+      ],
+      "scope": "go-python-producer",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "python_producer_required": true,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+              "start": 70,
+              "end": 102,
+              "body_sha256": "1bfd88da7c2e867444c1cc105dd21f9da7881a2cdb2237ab0ba783bb5b47bd41",
+              "file_sha256": "49eed36e4a9bdc684cbd14f28177355265be3026932791ddf40b3637c1b7c05d"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "python_producer_required": true,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+              "start": 106,
+              "end": 135,
+              "body_sha256": "2c0d8f91d997edb8843bc4ddc75af09c8dee9d5d2a0c69e7f13bf93674ad2b5a",
+              "file_sha256": "49eed36e4a9bdc684cbd14f28177355265be3026932791ddf40b3637c1b7c05d"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/runner_contract_test.go",
+              "start": 359,
+              "end": 381,
+              "body_sha256": "966b50da68908e2a041c5029b06430f82f13ff1284cc7ae0558cf68052305eee",
+              "file_sha256": "1a459def27ec537cb037a62f6478b25a831e20563c0929a360417227858b1614"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_review_test.go",
+              "start": 196,
+              "end": 255,
+              "body_sha256": "247ac96bd186cf36584511ed31f3aba21a5727b9931b231d64b56d9f4181a6de",
+              "file_sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_review_test.go",
+              "start": 50,
+              "end": 73,
+              "body_sha256": "59412795d3bbb34998d01dd4f2c91d602661968787f26d96c05bd090d98ed81a",
+              "file_sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_review_test.go",
+              "start": 141,
+              "end": 194,
+              "body_sha256": "2938bbe41e02cf89d3f36a8b1a856a3f3f3a821fb0bfd536b1fc0a4dccd17cb9",
+              "file_sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_review_test.go",
+              "start": 346,
+              "end": 405,
+              "body_sha256": "154ef0dead38eb9310d9f6bc945ce40111c3bfa3563b08911a91501e494ba961",
+              "file_sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_review_test.go",
+              "start": 407,
+              "end": 449,
+              "body_sha256": "55385b411fb66245753fdb4a624c15f9d0412ff8c7cfc3527e6ea13c4ccb68fc",
+              "file_sha256": "ee872da765eb30a6e225dd83f74dd0ea8f5a8f3d5956b70bb284db4b6f3d6e0c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-review-reuse",
+      "cells": [
+        "disposition:transitions:N17:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_rerun_test.go",
+              "start": 13,
+              "end": 81,
+              "body_sha256": "464ae154ddbd9accf2997ff82a2aeec50370e6c613404c2cf91e737f63fe31cf",
+              "file_sha256": "558437da0248c21d8e09629f2add7f3f721f8065f9ec793af27021b267952217"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/completion_rerun_test.go",
+              "start": 83,
+              "end": 108,
+              "body_sha256": "d058c09ff6fa99e53452af5b4a1b172a621b68fff4da63c6c07013abf0d9775c",
+              "file_sha256": "558437da0248c21d8e09629f2add7f3f721f8065f9ec793af27021b267952217"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-context-ownership",
+      "cells": [
+        "disposition:transitions:N21:02",
+        "disposition:transitions:N21:03",
+        "disposition:transitions:N21:04",
+        "disposition:transitions:N21:05",
+        "disposition:transitions:N21:06"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentCreateAdoptUpdate",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 54,
+              "end": 117,
+              "body_sha256": "2c270bd5e14fb4c77c87a2a299d839d14fa319ce15b056eb5ad032b5f4732a43",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryAdoptsMissingAndLegacyProvenance",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 331,
+              "end": 382,
+              "body_sha256": "d747676dbe4892dfb7f04611c23a2ed3e507a3217c00d10c0005fa2ee81fb527",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentSelectionPreservesControls",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 384,
+              "end": 407,
+              "body_sha256": "e10eaf717900301073ccf777fd668296b907a687318d8b5058101714fb9da260",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryRejectsAmbiguousUnsafeOrForgedRequests",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 409,
+              "end": 462,
+              "body_sha256": "ed2c17669a235b8e1f6636c3d53d3118a0c4b5b4fdbf606dabce7726a67d494b",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryCreateReplayAndIntegrity",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 292,
+              "end": 329,
+              "body_sha256": "2f3445ee28278a1c7c0e53cab69ab9dae5f0c3560c602f7021514f18a9d12b88",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestOrdinaryContextAdoptionRecoveryPreservesHistory",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/assistive_recovery_test.go",
+              "start": 11,
+              "end": 55,
+              "body_sha256": "b20a11628de2673f16cb374eec87eac738e60a18106b0e728593230e22e512aa",
+              "file_sha256": "6090fc203f3fcf584d7e6618b0c37610b03d4445c498d9136288edafd17d6b31"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextAuthorityExactPreviewFixture",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_authority_test.go",
+              "start": 74,
+              "end": 154,
+              "body_sha256": "aa05cea136f95f6fee8476048bfa2c248433ff3efb27115fe015a322bb5bfdc8",
+              "file_sha256": "6072c1a6b9704b8421beb62687a9341eaa1bfd1509454067bf229065c40b5e21"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextApplyRequestShapes",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/protocol_test.go",
+              "start": 24,
+              "end": 52,
+              "body_sha256": "fc457fc36f698af5b494506172a3b751b99411b13343d9fe1b1eb548e3840c27",
+              "file_sha256": "abb85d1bbbe0dbb89fc951adec9491739b5d46c5a28be1744c0e8f3f42f54f80"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-finalization",
+      "cells": [
+        "disposition:transitions:N22:01",
+        "disposition:transitions:N22:02",
+        "disposition:transitions:N22:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextFinalizationPositiveControls",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/finalization_test.go",
+              "start": 55,
+              "end": 116,
+              "body_sha256": "f4b8977486fc8fbb1785194a69cda63404fcfd198bd3efdfef731f00a3539219",
+              "file_sha256": "5d6e7e65c191c82fd811d332b9fb67f871e42b254d8693b729adcb38f914a121"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextFinalizationNegativeControls",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/finalization_test.go",
+              "start": 118,
+              "end": 192,
+              "body_sha256": "bff8adf98900b504f5d1bb7bd0d5c994a9356de962580d4794151562690a4d3a",
+              "file_sha256": "5d6e7e65c191c82fd811d332b9fb67f871e42b254d8693b729adcb38f914a121"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextOrdinaryFinalization",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 145,
+              "end": 162,
+              "body_sha256": "9ecdc1e31f46db347e03599f84652d017090dc6cca337ced5619a039993e32dd",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestContextWholeDocumentOnboardingFinalization",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/context_assistive_test.go",
+              "start": 164,
+              "end": 290,
+              "body_sha256": "85fc77a9a6f3f8fe5b2c09d8e4993c75e0697e13f42fafc91551bbc845fb8199",
+              "file_sha256": "5deaae33a184e961524ca11a2de5da4ca412c6eb3cc60b242638d68c0ad7ca63"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-knowledge-cutover",
+      "cells": [
+        "disposition:transitions:N23:01",
+        "disposition:transitions:N23:02",
+        "disposition:transitions:N23:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeBootstrapsPortableProjectBeforeFirstWork",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_project_bootstrap_test.go",
+              "start": 27,
+              "end": 76,
+              "body_sha256": "4c93b18b6fdd09cbcf668eabf0c2289079c6f7736029314f5403f138f7abbc21",
+              "file_sha256": "907809e318a88f6f01246b7d4a22ee437fed87e9d29751bd741ecf02478b6375"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeRejectsOrphanAndKeepsLegacyOwner",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_project_bootstrap_test.go",
+              "start": 78,
+              "end": 104,
+              "body_sha256": "d13379509ef201881071c8e5836caa78106912205761d46ed124e5c67373fa7b",
+              "file_sha256": "907809e318a88f6f01246b7d4a22ee437fed87e9d29751bd741ecf02478b6375"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverPreservesSettingsAndScopeBlocks",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 119,
+              "end": 159,
+              "body_sha256": "c28b29b7d51c58e934a1bc23841e48709e4e7a77cbe87b38a6b9bb166af47614",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRefusesUnrecordedContent",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 161,
+              "end": 179,
+              "body_sha256": "7917a059b285763b7cb7c097f03aed9649a71d2d3ddd610bcf3bf8623a4b64ea",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRefusesUnmappedSections",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 181,
+              "end": 198,
+              "body_sha256": "0dc03318ca967502b82431686eb5441b29790014d148da6fbc367392355030f8",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeCutoverRetryKeepsLaterWorkAndStaleApplyFails",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 264,
+              "end": 298,
+              "body_sha256": "632e7d5d4e1d08bd276c449671831f14427beab96b171cbb5da0f22f6c1af327",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestReadsNeverMigrate",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 300,
+              "end": 311,
+              "body_sha256": "7d88bc4d320243eab5cf3e3dc9db3f1550f859ffc53947fbee5255f70752ad57",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-three-way-identity",
+      "cells": [
+        "disposition:transitions:N24:01",
+        "disposition:transitions:N24:02",
+        "disposition:transitions:N24:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeKeepsBothSidesAndRenamesCollidingIDs",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 484,
+              "end": 505,
+              "body_sha256": "6688c8bb52419107e0e93ee710a0a914f307b697f00caf1f1ba4467b3ce05def",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRewritesIncomingEditReferences",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 507,
+              "end": 531,
+              "body_sha256": "3930d35ab50f0fcbba1a953038e49868386d431642d61a52b314ac702e5040c7",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeMergeRefusesTheSameRecordChangedTwice",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/knowledge_ops_test.go",
+              "start": 533,
+              "end": 558,
+              "body_sha256": "275d49721b1146b7aba9bf41c59647f6b9e8a2ab5b8c8130ee886e71fa749081",
+              "file_sha256": "f76d0d535bf1baf351705bc4d08941fb8dd315eeb07027f8100205ececacef57"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-work-origin-adoption",
+      "cells": [
+        "disposition:transitions:N28:01",
+        "disposition:transitions:N28:02",
+        "disposition:transitions:N28:03",
+        "disposition:transitions:N28:04"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestKnowledgeInitializeBootstrapsPortableProjectBeforeFirstWork",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_project_bootstrap_test.go",
+              "start": 27,
+              "end": 76,
+              "body_sha256": "4c93b18b6fdd09cbcf668eabf0c2289079c6f7736029314f5403f138f7abbc21",
+              "file_sha256": "907809e318a88f6f01246b7d4a22ee437fed87e9d29751bd741ecf02478b6375"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginRetryFindsArchivedIdentity",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 789,
+              "end": 822,
+              "body_sha256": "394335072206cecead235cdd7b686c3820f706b4f4bf052ba83180d6ec261a82",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkOriginRetryRepairsMissingAttachmentAfterArchive",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 824,
+              "end": 854,
+              "body_sha256": "40bfa04e9345f79596f3610757f54c5d396bdf6b6e0de82d7fb314bc7dddd49f",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 76,
+              "end": 119,
+              "body_sha256": "f390408eedd055ac0a17cfab0f3d28cac3085f67d5b25fd062b7683509393ce8",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesStaleBoardAndUncoveredRows",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 474,
+              "end": 503,
+              "body_sha256": "a2add0b7e4471e441226a7d567fa016ad3c084fc8e9e6af5e1e52003af508442",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRefusesTamperedSourceMeaning",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 369,
+              "end": 420,
+              "body_sha256": "576f4d3ab0fcb27a564aaae61bdf6041155643f657f3b68e607c23df85216d73",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptRecoveryPreservesLaterBoardEdit",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 555,
+              "end": 615,
+              "body_sha256": "b701d7f3946f739f689c3693b7335eff0c6b45578d0d1ca1b0cc4d6194a544fb",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-issue-generations-uncertainty",
+      "cells": [
+        "disposition:transitions:N30:01",
+        "disposition:transitions:N30:02",
+        "disposition:transitions:N30:03",
+        "disposition:transitions:N30:04",
+        "disposition:transitions:N31:01",
+        "disposition:transitions:N31:02",
+        "disposition:transitions:N31:03",
+        "disposition:transitions:N31:04",
+        "disposition:transitions:N31:05",
+        "disposition:transitions:N31:06"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectLostCreateResponseRemainsUnknown",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 941,
+              "end": 1004,
+              "body_sha256": "fb0e7009f4c8e157c50d9fb30c50508ea9c26d0810a46af2cf4d17da0d251056",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkStatusEffectPreservesBindingAndRecordsRemoteConflict",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 1006,
+              "end": 1076,
+              "body_sha256": "49c0554924897a861020a577d31f5cfa0c8469d005e433f7b392537a8bdbc0d2",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkIssueAdoptionRequiresUnboundIdentityAndExactRepository",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 1078,
+              "end": 1111,
+              "body_sha256": "1b59136039cfb77cd1b71b23d3f3bda53aeee1e3fa757a8382293aa8c3629847",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectBindingChangeDoesNotSend",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 1113,
+              "end": 1141,
+              "body_sha256": "98db29cb1a8b7b1e351a478807251334b2db28bcec11bb870af9b8f4ee4c2be1",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectDeferredClaimRequiresMergeObservation",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 1143,
+              "end": 1190,
+              "body_sha256": "4b9b68229383cd79e712df75e735210b4b5f2e9effb98c61a08062ad65d29b99",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkEffectConcurrentSyncHasOneClaim",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 1192,
+              "end": 1233,
+              "body_sha256": "6cd154c7d2a9e2521c2674cfb81b8d4deaeafb0e724b3746659ba9a240e10f31",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTrackerCoordinationT01FiniteOptInMap",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_transition_map_test.go",
+              "start": 17,
+              "end": 58,
+              "body_sha256": "a3f87a5bb0205d1adc52e5d53e839e8bfdaf29a60573eb0eb69649f8b5d2c4c1",
+              "file_sha256": "6c8f031516cd651cd575cbd508ae377ebf8f1128cf23c0daa076e182c4898752"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-farm-seal-dispatch",
+      "cells": [
+        "disposition:transitions:N34:01",
+        "disposition:transitions:N34:02",
+        "disposition:transitions:N34:03",
+        "disposition:transitions:N34:04",
+        "disposition:transitions:N34:05"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionBinding",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 157,
+              "end": 168,
+              "body_sha256": "6548a1845d64343386dfab82afd8294062f30efda8ecfd65eb21d240109c1e35",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionBindingIncludesOrderedPendingDependencies",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 170,
+              "end": 181,
+              "body_sha256": "1e34807d80cbf2804250a7e5987bd1f9031bcfe3c53177d17abcff66f49b0f5f",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAuthorizedFarmEnrichment",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 183,
+              "end": 213,
+              "body_sha256": "7b234607f855df545716d2240200681fb68f4bef79a4c3a7948b9c24260feaa5",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCanaryPreflightRequiresExactBaseBytes",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 230,
+              "end": 246,
+              "body_sha256": "2da018863ffcf36c7654d96a5b22177959b9ccb30bf0a82c27532f8c060ab19d",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmSealRejectsMatchingOpenShapeForgery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 335,
+              "end": 355,
+              "body_sha256": "729c1361179c1665e7dbae0547a4f3ec117f0ae940955864f11308ab9d7c01c1",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmAuthorizationRejectsLegacyObservationLaundering",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 248,
+              "end": 263,
+              "body_sha256": "1b09f9f9992492eab900905028230fca5b4dffb0f817a02cb58f3a0e9a308544",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFarmProjectionRefreshSelectsCurrentBinding",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/farm_projection_test.go",
+              "start": 265,
+              "end": 283,
+              "body_sha256": "e6edd954f3408d03a3d1c459559d6b034039fad7b0d9ee63b2054d6de7cc1778",
+              "file_sha256": "35b423a672778808d0fe79f7e42ae8e6969349d12a8aec45c366a293f4c76870"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-derived-work-views",
+      "cells": [
+        "disposition:transitions:N35:01",
+        "disposition:transitions:N35:02",
+        "disposition:transitions:N35:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProjectViewPresentsBoundedCanonicalWork",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/project_view_test.go",
+              "start": 15,
+              "end": 106,
+              "body_sha256": "c87bb165aca1ec69e2b618c9a53e98170c6a811131e501e9e4f4fb01bc6f3495",
+              "file_sha256": "42e4e6c665ac81a06cca06473fcd463c1e485f13eafb5c0a6a4a5dd7039d14e1"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestProjectViewShowsBoundedRecordedArchitecture",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/project_view_test.go",
+              "start": 108,
+              "end": 133,
+              "body_sha256": "3d936c5a1290dead77e7ed646fd7ad000a09bba4bcfafa11bbd94352ef122870",
+              "file_sha256": "42e4e6c665ac81a06cca06473fcd463c1e485f13eafb5c0a6a4a5dd7039d14e1"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCycleViewGroupsCanonicalWorkWithoutCopyingIt",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/project_view_test.go",
+              "start": 135,
+              "end": 189,
+              "body_sha256": "01a86e3e83051fe39d2595a1b93cecf3991aff3699b7b2e4a5c9377884b6ef56",
+              "file_sha256": "42e4e6c665ac81a06cca06473fcd463c1e485f13eafb5c0a6a4a5dd7039d14e1"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkListPagesArchiveAndRejectsChangedMembership",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 1272,
+              "end": 1328,
+              "body_sha256": "30a4bbc940dcdf3e946603781502183bce12ab8b0e254e2b404a63d71e013233",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestGeneratedWorkViewIsNotCanonical",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_view_test.go",
+              "start": 59,
+              "end": 87,
+              "body_sha256": "5d9dae94022fc8676773988306af83ea097715025dd8df8631378da90661d7eb",
+              "file_sha256": "602bc447fb0f040c0019e53073a72044e061e7b19669305bb8357a414b56cd5d"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewSelectsActualPlanTaskWithoutPromotingChecks",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_view_test.go",
+              "start": 89,
+              "end": 108,
+              "body_sha256": "9828dc951978669a83b2c776fc7539d6b74a04d5c69118075a0733a43b50ee00",
+              "file_sha256": "602bc447fb0f040c0019e53073a72044e061e7b19669305bb8357a414b56cd5d"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkContextShowsBlockedPlanTaskAndUnresolvedReportWithoutChangingIt",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_view_test.go",
+              "start": 133,
+              "end": 162,
+              "body_sha256": "7ebdc3229205c8b83ef2a8f218e7cc548c612c8c30afeb335aa0739e5919f7cf",
+              "file_sha256": "602bc447fb0f040c0019e53073a72044e061e7b19669305bb8357a414b56cd5d"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-qualitative-decision",
+      "cells": [
+        "disposition:transitions:N39:01",
+        "disposition:transitions:N39:02",
+        "disposition:transitions:N39:03"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownRequiresFields",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/sprint_test.go",
+              "start": 71,
+              "end": 104,
+              "body_sha256": "052082f44d67125531fc7b5757907fd922eac61a5f9f552673bcce50ba515350",
+              "file_sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionIndifferentIsUniform",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/sprint_test.go",
+              "start": 136,
+              "end": 163,
+              "body_sha256": "c6cc0310db50b9202975564b1bb662f42896cbdb88d3aed56810a3f5e387dd5c",
+              "file_sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionCriticalUnknownBlocksSelection",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/sprint_test.go",
+              "start": 165,
+              "end": 182,
+              "body_sha256": "af8642baa4ddc43dc31c48767f01d85f399f469753b42a1342cfd97dc5ca76b4",
+              "file_sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionStrongRefusedWithCriticalUnknown",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/sprint_test.go",
+              "start": 184,
+              "end": 209,
+              "body_sha256": "ee12619040554d32e9d4057f892851c48f56e77557576a889b469b99734329fb",
+              "file_sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionUnknownCannotShieldDominatedChoice",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/sprint_test.go",
+              "start": 211,
+              "end": 299,
+              "body_sha256": "4460efb91f230b46fc3e5dfcfb42977fbadd3f5c27bc831c0dcec71cf9b347bd",
+              "file_sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestSMARTSDecisionV2KeepsRetainedRejections",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/observation/sprint_test.go",
+              "start": 304,
+              "end": 353,
+              "body_sha256": "de6c7b818f0e645af160f120e5776856d08b31b3bab64e762cb720e77ac3dc0e",
+              "file_sha256": "68b99953256f9f8e444317936ad911119ea08164c7cb3606f7bc757f39cb7c73"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-prerequisite-ordinary-report-and-currency",
+      "cells": [
+        "disposition:transitions:N12:01",
+        "disposition:transitions:N12:02"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 36,
+              "end": 61,
+              "body_sha256": "e15e860bd821a20a7582399e90f3cb5d5b6ba0a0da4c34e7b179c2fced459c58",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveDecisionRemainsAUserChoiceNotAToolResult",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 97,
+              "end": 126,
+              "body_sha256": "f09ee51906e78aa02db19e77e87d17566031a373ee9a8532d9812cf7a8a1733c",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 63,
+              "end": 95,
+              "body_sha256": "48c8aef53ac3b67338b3a1c97b7a2c3e3e327b94e5d019dc9f1f97edf39ce51f",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 128,
+              "end": 159,
+              "body_sha256": "604e7f8cf7f175ea955270628ce877683a23e621d2fc05331b82dd844bda5462",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 161,
+              "end": 197,
+              "body_sha256": "cc3b199eaa406ed0e02c4774c77b4fb77025d61bbbc6d6cc96fbe066adcbb02e",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-evidence-positive-memo-and-scan-boundary",
+      "cells": [
+        "disposition:transitions:N36:01",
+        "disposition:transitions:N36:02"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceObjectsReadOnce",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 261,
+              "end": 300,
+              "body_sha256": "ae7a0406c609cbe79ce881180cdd918767fed8eb870d436dda7d35f99ae09ed5",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseNeverCachesErrorsOrAbsence",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 305,
+              "end": 386,
+              "body_sha256": "6d4dae7b2ea2086af375ead4d1a8d3f74ad456d6e0e815ded5903eda5364d16e",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestEvidenceReuseServesCopiesNotTheMemosBytes",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 474,
+              "end": 512,
+              "body_sha256": "1f1a7ae06ada76ff5150b5c412891a87da6fdb949ac66792a9ac70707f512a8a",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNonStoreReaderNeverSeedsReuse",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 517,
+              "end": 542,
+              "body_sha256": "a9bacf086f1c44f369c8e417a565fc1252d5c5b51f4da932f9c2bada5fc56705",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMismatchedBytesAreNeverRecorded",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 546,
+              "end": 584,
+              "body_sha256": "0aaa86479e9478263858ffb0a6737178c5c79804f657122a75b3ea109b0f5f50",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRawReadBudgetStopsRecording",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 588,
+              "end": 610,
+              "body_sha256": "bf1cfe4125298249b2f4e374b8a6dd7d904a724e31fa2745bec27088633ad39b",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotNeverFallsBackToRootRelativeReadForChainObject",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 391,
+              "end": 419,
+              "body_sha256": "2d82aa6726acf135e0203b1332d0acfe6cc4bf08ad4aa4e7ac0ae3b33a6864a1",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestSnapshotChecksUnreferencedEvidenceObjects",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_reads_test.go",
+              "start": 423,
+              "end": 442,
+              "body_sha256": "bf7b5405298fd55d664a82adf44de26212729cbdcbbe8ce75f1c80c6b3a51607",
+              "file_sha256": "aa1833e9bcc86e279af4ace4aca5c2a168ae3f038c08e9d4ba9d3c101778f115"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-work-check-status-is-schema-only",
+      "cells": [
+        "disposition:transitions:N29:07",
+        "disposition:findings:N-F06"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNoOperationRequestCanSetWorkCheckStatus",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_check_status_test.go",
+              "start": 18,
+              "end": 32,
+              "body_sha256": "3d0f5d8a7d7835b6cefc205aa523802ba3f936b4af1cc225c7a42ac253dfe7ff",
+              "file_sha256": "ca4c27b1614dd6238ced69e12da7cc6fda871bc559246a29ed069af49ed627de"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkLifecycleNeverManufacturesCheckStatus",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_check_status_test.go",
+              "start": 34,
+              "end": 70,
+              "body_sha256": "b3d0dd7d9a056aa08f203790c09b6d2395829ee13724e0a2a35b299190292d41",
+              "file_sha256": "ca4c27b1614dd6238ced69e12da7cc6fda871bc559246a29ed069af49ed627de"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkAdoptJournalsBoardCutoverAndReplays",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_test.go",
+              "start": 76,
+              "end": 119,
+              "body_sha256": "f390408eedd055ac0a17cfab0f3d28cac3085f67d5b25fd062b7683509393ce8",
+              "file_sha256": "bb8d9864d32b3b19197f1723903e1b140165ca0f582ced50f5e71850cf2bd7e2"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestWorkViewRetainsObservedPullSeparatelyFromChecksAndIssue",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/work_view_test.go",
+              "start": 164,
+              "end": 204,
+              "body_sha256": "1708ae6a2fd253573ba51ff90dbde17d7a8d1a97d153e6dbd8648d076b4b6fcb",
+              "file_sha256": "602bc447fb0f040c0019e53073a72044e061e7b19669305bb8357a414b56cd5d"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "native-unsupported-platform-diagnostic-boundary",
+      "cells": [
+        "disposition:findings:N-F08"
+      ],
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnsupportedPlatformDiagnosticIsTruthful",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/backends_test.go",
+              "start": 11,
+              "end": 26,
+              "body_sha256": "7e7737ffc0de1b713dc4b01bf1a9a6b3a4df7ab6644e8f739df2b8e425d4f513",
+              "file_sha256": "4437af1b49089ea304663ce4f3dcbb2e8039bb90e75be4b2e5e8c986513887f7"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestSupportedBackendDeclarationMatchesBuiltBackend",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/backends_test.go",
+              "start": 28,
+              "end": 39,
+              "body_sha256": "48493e59035803a57945a3708750a128f39c1becb76253995e8cfcadd0869cfc",
+              "file_sha256": "4437af1b49089ea304663ce4f3dcbb2e8039bb90e75be4b2e5e8c986513887f7"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "remaining_rows": [
+    {
+      "cell": "disposition:transitions:N01:03",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentObservationsShareRepositoryLock",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 102,
+              "end": 131,
+              "body_sha256": "fdb8cd35f4bb89d68d329107fb98351f9b3291859ffe4137e91b990e67bb09a7",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationSharedClassification",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 61,
+              "end": 68,
+              "body_sha256": "847162d99956c903cbe99275eea77049b1ee0618e75c71eb3ab8b41b13c6d43c",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestPlanVerificationWriterExclusion",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 70,
+              "end": 84,
+              "body_sha256": "a3dfaffa036ecc695812dc7af53c202cc9ca98a0946177e70ae58a9032db711c",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestFreshStoreObservationsReportNoLocalStore",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/read_only_windows_test.go",
+              "start": 19,
+              "end": 63,
+              "body_sha256": "108b239afb907d8edafc5e67a61d75860d8ae0de31451ccbe5294b84b9a6f1d7",
+              "file_sha256": "06b8d47dd7d95d6f5f44a9fbe348d84d6a967821ca607073805d1614447f36eb"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N01:04",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveExclusiveOperations",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 137,
+              "end": 165,
+              "body_sha256": "072243c6a434bea5c70d62d9c6eac56b7ff9f67c05a5d25481c49d9f910d45ff",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 167,
+              "end": 190,
+              "body_sha256": "7b36cbc8e29e05d2ae92b7ababf0612d128d4c5dfc995327d9150b50db0f450f",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestIndexObservationUsesExclusiveEngineLock",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/read_only_windows_test.go",
+              "start": 143,
+              "end": 194,
+              "body_sha256": "c55452b62691b7670af7b67a212e03fdd6b366c2234f2368c14b90e11716fd17",
+              "file_sha256": "06b8d47dd7d95d6f5f44a9fbe348d84d6a967821ca607073805d1614447f36eb"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N01:05",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreCreatesOnlyLockMetadata",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/init_store_test.go",
+              "start": 72,
+              "end": 96,
+              "body_sha256": "57865ba7ccdb5223b15fe408b48656d29e480c95318a22b4762c5fca2f1e7113",
+              "file_sha256": "77782792c97b65fc6cce2cd0b542707812a559230c60debf271d7b3f24395a50"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestInitStoreIsIdempotent",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/init_store_test.go",
+              "start": 98,
+              "end": 132,
+              "body_sha256": "5adb7083a949abc03328f96e97ff8146644ab3cc5eb99ae5a07cea760a0fc271",
+              "file_sha256": "77782792c97b65fc6cce2cd0b542707812a559230c60debf271d7b3f24395a50"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N01:06",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 86,
+              "end": 166,
+              "body_sha256": "3c418a22d3f9a7657788287d53a2335e5ca2ebe2d66b9543b499de4cbb250073",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveAdmission",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 192,
+              "end": 236,
+              "body_sha256": "4f981c649c6479fda03287c7c2cef0c779253976f2b440b95c41dd4ccca63254",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:01",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestTransactionalCAS",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 33,
+              "end": 55,
+              "body_sha256": "4cf519a302c69b8d0d1b7372184fe82e927e976735e4edef92844f8100e036d2",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 221,
+              "end": 269,
+              "body_sha256": "2483ba976001eb3f313e4e4b50d4bf8204811350854e61554a85185a5e87a358",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPreJournalIOFailureHasBoundedPublicDiagnostic",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 79,
+              "end": 117,
+              "body_sha256": "135f113def57e2865f822936ae4aa5d508ae5deaf11e683a38cfe9294c92c3d6",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPathEscapeAndSymlink",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 291,
+              "end": 309,
+              "body_sha256": "4788894d8309e912e6bf027c113a794c6a7e4f49eef4e0ad3269876f76e7ca90",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:02",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalPublicationCrash",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/crash_test.go",
+              "start": 100,
+              "end": 186,
+              "body_sha256": "02daa3c2d66f1cdd27e17dbf5996509917c10458430cbe137d6289e44e2c42f9",
+              "file_sha256": "d933c54125503079d5b3f66e2f45eb4b594d455e56290e13bc5879c0a144221a"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/crash_test.go",
+              "start": 17,
+              "end": 98,
+              "body_sha256": "23a57acac4c8f2f2685fbe894c98bda779923abf33df1605b4d6898c0840c5b6",
+              "file_sha256": "d933c54125503079d5b3f66e2f45eb4b594d455e56290e13bc5879c0a144221a"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestPartialJournalStageRequiresManualReconciliation",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 57,
+              "end": 77,
+              "body_sha256": "1c28ead856cfac881c230c112a906d71f1c68d2390ff3154549a85cd49ea046b",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:03",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextRecoveryAndPaths",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/recovery_test.go",
+              "start": 45,
+              "end": 319,
+              "body_sha256": "c13099f7306e1bf76fe46ffc362d0044fcd5149dfc012672b0508cada7b63d32",
+              "file_sha256": "94bf0842b5a9f89151b70e3f0fdf5d725b6ff0529c320468583b926e17924502"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:04",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 86,
+              "end": 166,
+              "body_sha256": "3c418a22d3f9a7657788287d53a2335e5ca2ebe2d66b9543b499de4cbb250073",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:05",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 86,
+              "end": 166,
+              "body_sha256": "3c418a22d3f9a7657788287d53a2335e5ca2ebe2d66b9543b499de4cbb250073",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestConcurrentReadersPreserveWriterRetry",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/concurrent_readers_test.go",
+              "start": 167,
+              "end": 190,
+              "body_sha256": "7b36cbc8e29e05d2ae92b7ababf0612d128d4c5dfc995327d9150b50db0f450f",
+              "file_sha256": "87fc193dbd9cfc02e8826e10cc470beae47d1ce3474dc6d89ba5dd49dc45cab3"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:06",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 86,
+              "end": 166,
+              "body_sha256": "3c418a22d3f9a7657788287d53a2335e5ca2ebe2d66b9543b499de4cbb250073",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:07",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 86,
+              "end": 166,
+              "body_sha256": "3c418a22d3f9a7657788287d53a2335e5ca2ebe2d66b9543b499de4cbb250073",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N02:08",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestNT01JournalOutcomeCodesStayDistinct",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/preservation_journal_test.go",
+              "start": 86,
+              "end": 166,
+              "body_sha256": "3c418a22d3f9a7657788287d53a2335e5ca2ebe2d66b9543b499de4cbb250073",
+              "file_sha256": "c4d0bde25a5e0e64f0e9479c139f0dc5ce5e1ede2fe788279ae60f6809a9e0da"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N03:01",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 221,
+              "end": 269,
+              "body_sha256": "2483ba976001eb3f313e4e4b50d4bf8204811350854e61554a85185a5e87a358",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/crash_test.go",
+              "start": 17,
+              "end": 98,
+              "body_sha256": "23a57acac4c8f2f2685fbe894c98bda779923abf33df1605b4d6898c0840c5b6",
+              "file_sha256": "d933c54125503079d5b3f66e2f45eb4b594d455e56290e13bc5879c0a144221a"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 270,
+              "end": 290,
+              "body_sha256": "2aaab0e0a645b0d29bced19e7eb6027190f5722f54c52b4a1b3e5f9fdca1ac4a",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N03:02",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 221,
+              "end": 269,
+              "body_sha256": "2483ba976001eb3f313e4e4b50d4bf8204811350854e61554a85185a5e87a358",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestProcessDeathRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/crash_test.go",
+              "start": 17,
+              "end": 98,
+              "body_sha256": "23a57acac4c8f2f2685fbe894c98bda779923abf33df1605b4d6898c0840c5b6",
+              "file_sha256": "d933c54125503079d5b3f66e2f45eb4b594d455e56290e13bc5879c0a144221a"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 270,
+              "end": 290,
+              "body_sha256": "2aaab0e0a645b0d29bced19e7eb6027190f5722f54c52b4a1b3e5f9fdca1ac4a",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N03:03",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestReplaceRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 221,
+              "end": 269,
+              "body_sha256": "2483ba976001eb3f313e4e4b50d4bf8204811350854e61554a85185a5e87a358",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N03:04",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestRecoveryConflictPreservesExternalEdit",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 270,
+              "end": 290,
+              "body_sha256": "2aaab0e0a645b0d29bced19e7eb6027190f5722f54c52b4a1b3e5f9fdca1ac4a",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N03:05",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestObstructedTransactionNamesOffendingEntry",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_diagnostics_test.go",
+              "start": 16,
+              "end": 49,
+              "body_sha256": "145f5c1e84a7add765984ace01b233b9b7ef5b9c33cc827f63abb599d6144823",
+              "file_sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestInvalidJournalFilenameNamesEntry",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_diagnostics_test.go",
+              "start": 290,
+              "end": 307,
+              "body_sha256": "1520d879296738bf0cd059fa2232401532b22145e901f1d090bdcd462ba06904",
+              "file_sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalRemovedBetweenListAndReadBlocksWithPath",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_diagnostics_test.go",
+              "start": 328,
+              "end": 347,
+              "body_sha256": "ecd5d5693446472204da0030c380a7ba173b79eec0e3737d1b34591515eff021",
+              "file_sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestJournalDigestGrammar",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_digest_test.go",
+              "start": 34,
+              "end": 74,
+              "body_sha256": "7a92041cc1fe53ca86e177129a26983580cd89b89ecd7e6ec7d6345e70efe6aa",
+              "file_sha256": "8b62c89bef277bcfb9f60538f4a7d4d787ca91dc1444faacf67171341b3ababa"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestUnparseableFinalJournalNamesPathAndBlocksRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_diagnostics_test.go",
+              "start": 225,
+              "end": 250,
+              "body_sha256": "dc67ae8a9f7a7d804d82e4503b2c92b5dc38b4f20e83c49fbc82293db1dc9535",
+              "file_sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedFinalJournalReportsCorruptionAndBlocksWrites",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_diagnostics_test.go",
+              "start": 252,
+              "end": 288,
+              "body_sha256": "b091ab57c80c89b63d39c520743f0da61e8cac4f4b5501c88a3abb5a09f870c6",
+              "file_sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestOversizedJournalAfterSizeBlocksReplayAndRecovery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/journal_diagnostics_test.go",
+              "start": 173,
+              "end": 223,
+              "body_sha256": "69a40ebbc5b7d6939e0595192333bdba4950df15cc8d690849453f9e1bb6394c",
+              "file_sha256": "7ce3285cb674ac4f8137d26aba3a2320b6dd980bc49a0c912354762fe8133398"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N04:02",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveLegacyReadPreservesBytesAndNewFieldsRequireNewSchema",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 237,
+              "end": 269,
+              "body_sha256": "d300564714298ecb3c490d6a35429319d6cf9a16c373733051aa43cca844e1e0",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N04:03",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveLegacyReadPreservesBytesAndNewFieldsRequireNewSchema",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/prerequisite_observation_test.go",
+              "start": 237,
+              "end": 269,
+              "body_sha256": "d300564714298ecb3c490d6a35429319d6cf9a16c373733051aa43cca844e1e0",
+              "file_sha256": "501eec6d17894d0162217602c1aaceba1f5f8aa6066155c19591243718dbe0df"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckedTaskKeepsTypedHistory",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 53,
+              "end": 119,
+              "body_sha256": "943bb721779159563e068e6cd8fb61bd461d8c8668231dfc53e44037563e36b7",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N06:02",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestTypedRecordReorder",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/reorder_test.go",
+              "start": 11,
+              "end": 61,
+              "body_sha256": "2b7c2904b8f7d54c5b2f8e1a15930982a29b1408456d1b0d26813f128dcdd635",
+              "file_sha256": "cea94feb78c18259bcab5e9ba79c542ea4896bd815bb7cf9af7bb1fd9ddd3ef8"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRecordReorderRejectsInvalidCheckpointDependencyOrder",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/reorder_test.go",
+              "start": 63,
+              "end": 79,
+              "body_sha256": "1e8edde829381f795b11eac84dbcf8a49eda6f5cd1cc92c95036eb8a53070bef",
+              "file_sha256": "cea94feb78c18259bcab5e9ba79c542ea4896bd815bb7cf9af7bb1fd9ddd3ef8"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRecordReorderRejectsMalformedOrStaleRequestsAtomically",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/reorder_test.go",
+              "start": 81,
+              "end": 119,
+              "body_sha256": "f49cb496e1415d3d39aee6b89071d6a102e89105d9d981cc61d6522502c0ba53",
+              "file_sha256": "cea94feb78c18259bcab5e9ba79c542ea4896bd815bb7cf9af7bb1fd9ddd3ef8"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N06:04",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCheckedTaskKeepsTypedHistory",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/retirement_test.go",
+              "start": 53,
+              "end": 119,
+              "body_sha256": "943bb721779159563e068e6cd8fb61bd461d8c8668231dfc53e44037563e36b7",
+              "file_sha256": "f8c709cc02f7fd02cd0e04751da4b32d76bcfdea7bd8573e84de753463b48473"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N20:03",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchWholeRecordParityAndPages",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 55,
+              "end": 104,
+              "body_sha256": "42b68a928c560c5a53ecfc1a76d2b814f4a38dd55df2995cff9df0853810f213",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchRejectsInvalidWholeSelection",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 106,
+              "end": 145,
+              "body_sha256": "8de2a94b46a800e2d9c6a484b9f911ccdbfe57bba8f90c0384c5a18253e0161e",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchRejectsOversizedLaterRecordBeforeDelivery",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 147,
+              "end": 154,
+              "body_sha256": "48b608555ad97dafc3b141bfdb22bca5b4d1f633597c85e3480aa66329eb8db8",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestExactBatchPinsContinuationAndKeepsRenderValidation",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 156,
+              "end": 180,
+              "body_sha256": "7919a70fba49f97ed0a6ce61345ec41527be7bcfc6018bf30e697f089d9c6efd",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationWholeArraysAndPages",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 240,
+              "end": 294,
+              "body_sha256": "528a8365658bce8dba5bddc81800609e846a3d1225b8fd42203f37aac5f85add",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationRejectsInvalidRequests",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 296,
+              "end": 352,
+              "body_sha256": "360757203588e2c155d9fbb411ae50885cf670c31a4f27a1c11bc4320f9aa79a",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationRejectsIncompleteOrOversizedSelection",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 354,
+              "end": 384,
+              "body_sha256": "37c59c2e23218ea06d73a50246feae93cb2a2c6d53a59cd74907abdedba4411c",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationPinsContinuationAndRender",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 386,
+              "end": 411,
+              "body_sha256": "c7460e2a3c48589a59c2f7e98fed04d6dad2931f52582bbd9a7946582162f64d",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestPlanVerificationEmptyPlan",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/read_test.go",
+              "start": 413,
+              "end": 430,
+              "body_sha256": "fd7c49e0d11eee022c899bd7b95d9aa26ae80f1adfdc0163a2fec82e5ff54c5c",
+              "file_sha256": "86a763660d60bc6db3696740e2d2e4cf8b153c5b18753b0de1fd85857883b386"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/read:TestOutlineDirectPageParity",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/read/outline_bench_test.go",
+              "start": 30,
+              "end": 76,
+              "body_sha256": "12e8bed07407efc67644bddaf1a2cf3a94520974b2b07e5d083d891ce254ce22",
+              "file_sha256": "eb2c2216533312760b0d3dd79dccb839f84e8be08b6a22e5bda0d7735cf2091a"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N27:01",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/descriptors_test.go",
+              "start": 212,
+              "end": 258,
+              "body_sha256": "b34b0fcfa1e6dea969e2ce0f60847b4f0a318e45760151bc9fc8d05c4abeceb6",
+              "file_sha256": "bb070f2074675e4473885f6735be31e8e307e8b70326be03dd7df621bcb3861b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N27:02",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRepairIsDiscoverableAppliedAndReplayed",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/operations/descriptors_test.go",
+              "start": 212,
+              "end": 258,
+              "body_sha256": "b34b0fcfa1e6dea969e2ce0f60847b4f0a318e45760151bc9fc8d05c4abeceb6",
+              "file_sha256": "bb070f2074675e4473885f6735be31e8e307e8b70326be03dd7df621bcb3861b"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N27:03",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestTransactionalCAS",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 33,
+              "end": 55,
+              "body_sha256": "4cf519a302c69b8d0d1b7372184fe82e927e976735e4edef92844f8100e036d2",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/store:TestCreateRaceDoesNotOverwrite",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/store/store_test.go",
+              "start": 326,
+              "end": 342,
+              "body_sha256": "bf911ecb76ade6d0a5bff08f593517bdd04c4a09c660b9bfe43e9df24eb05410",
+              "file_sha256": "3094f10ab41286b317d08b0aae8436dbd626a3fff87d80445b78824cf5355521"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N38:01",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextDocumentContract",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/contract_test.go",
+              "start": 14,
+              "end": 238,
+              "body_sha256": "789f9653aa8b64281d37e619b936ab7c84a3c5684f0cc55fb73e7470c22eebef",
+              "file_sha256": "86dd10c2175fbcb4c3bda1f1232939ee6f720001a9c70a3f58d8fb3d916ae94c"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N38:04",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMutationAdmission",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/operations_test.go",
+              "start": 126,
+              "end": 534,
+              "body_sha256": "4aeab09cd33a5787ecf8614a4475ee0f87da9989ae6483422dacb07bf0fd5d40",
+              "file_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContentEvidencePathRejectsSensitiveComponents",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/evidence_test.go",
+              "start": 117,
+              "end": 134,
+              "body_sha256": "d055fb714695357f982ef7600315a269f712a549c59c6faa2c9051adeb165814",
+              "file_sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N38:05",
+      "scope": "go-only",
+      "selectors": [
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestTracksNamesSeparatelyFromContent",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/evidence_test.go",
+              "start": 15,
+              "end": 43,
+              "body_sha256": "c423444d700408c2495da3c0c5acf5eb780cc277f9dceb0b1f43e785efec462a",
+              "file_sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestScopeOrderAndOwnershipBoundaries",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/evidence_test.go",
+              "start": 45,
+              "end": 73,
+              "body_sha256": "425b6d403320d4db8da58cbc15fa29c3e4dde6331497e46aee03a85027d89a99",
+              "file_sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestDoesNotTraverseExcludedBoundaries",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/evidence_test.go",
+              "start": 75,
+              "end": 100,
+              "body_sha256": "e53106667a790844abd6eb14079e5c3214657b50a473cdf9ca8b1e6426a957ca",
+              "file_sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestFileLimitIncludesNonmatchingFiles",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/evidence_test.go",
+              "start": 102,
+              "end": 115,
+              "body_sha256": "8ffc08cfbe3707578d1bc73ed6e1877299f802ac9a5286133ec8b3b65b4e18df",
+              "file_sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestMembershipDigestNestedRegularEntries",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/evidence_test.go",
+              "start": 136,
+              "end": 161,
+              "body_sha256": "59364a211d851a29d84169f8812843df172803ec5dc657a7461ffb6972d76602",
+              "file_sha256": "584d42ee375e3836ce498cbd61718e6d987d47e248b001a1c2f29d691c4c2c4f"
+            }
+          ]
+        },
+        {
+          "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/contextdocument:TestContextMutationAdmission",
+          "python_producer_required": false,
+          "witnesses": [
+            {
+              "path": "core/artifacts/internal/contextdocument/operations_test.go",
+              "start": 126,
+              "end": 534,
+              "body_sha256": "4aeab09cd33a5787ecf8614a4475ee0f87da9989ae6483422dacb07bf0fd5d40",
+              "file_sha256": "19d6f21e1f3e7764eaf4db8d6b82a6e3add295086abfdb97164b15ea9a60391a"
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "limits": [
+    "Conservative same-package function-call navigation, backed by exact source lines. No new Go execution/build or current runtime result is claimed.",
+    "Methods in other Go packages cannot invoke the unexported evidence test helpers. Production native subprocess owner is fixed read-only Git probes; operations TestMain only configures isolated Git; store death fixtures launch the existing test executable.",
+    "Old installed bridge/package-copy and older-binary identities remain separate original journeys; this navigation does not erase them or relabel them current."
+  ]
+}

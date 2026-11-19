@@ -1,0 +1,37 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor\\affected-controls-bootstrap.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hw04-launch-binding-feature-i7lca186\\identity-streaming-successor",
+  "exit_code": 0,
+  "duration_seconds": 15.669442999991588,
+  "source_before": {
+    ".github/scripts/npm_binding_observation.py": "cfedbbdd5b2f8e69027062303302ee704183a34a2cfead8b7ac1c160623e72c8",
+    ".github/scripts/test_npm_binding_observation.py": "53713ae085613051fd47acdf62b45a32aea7d5e3281fd1fab141c6c5dfa7ebfb",
+    ".github/scripts/major_readiness.py": "175a4198d0cb45de0e6b199e76b815e91e573b149f0ffacd601fe93db78d2b10",
+    ".github/scripts/major_native_observation.py": "d91f5b5f5b5ece6e4ddc67d7d572d4e505ff21bc07d58cd5965305f56558913e",
+    "tools/build-artifacts.py": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+    ".github/workflows/ci.yml": "f36e3c38df2f84369fad9d4d31b98df31f3c530d31e567fce071bfce94eb4db3",
+    ".github/major-qualification-policy.json": "71c287edd8ebb92eac35314c40f0d23a73c3b63646e356af78ac54ceec8567d8",
+    "core/artifacts/internal/evidence/launch_binding_limits_test.go": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810"
+  },
+  "source_after": {
+    ".github/scripts/npm_binding_observation.py": "cfedbbdd5b2f8e69027062303302ee704183a34a2cfead8b7ac1c160623e72c8",
+    ".github/scripts/test_npm_binding_observation.py": "53713ae085613051fd47acdf62b45a32aea7d5e3281fd1fab141c6c5dfa7ebfb",
+    ".github/scripts/major_readiness.py": "175a4198d0cb45de0e6b199e76b815e91e573b149f0ffacd601fe93db78d2b10",
+    ".github/scripts/major_native_observation.py": "d91f5b5f5b5ece6e4ddc67d7d572d4e505ff21bc07d58cd5965305f56558913e",
+    "tools/build-artifacts.py": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+    ".github/workflows/ci.yml": "f36e3c38df2f84369fad9d4d31b98df31f3c530d31e567fce071bfce94eb4db3",
+    ".github/major-qualification-policy.json": "71c287edd8ebb92eac35314c40f0d23a73c3b63646e356af78ac54ceec8567d8",
+    "core/artifacts/internal/evidence/launch_binding_limits_test.go": "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810"
+  },
+  "runtime_snapshot_instrumentation": "passive sys.setprofile around exact two runtime_snapshot calls in original embedded-script inert producer fixture",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "37a4463d60f8ef90f2e72f4d51890edbaa37c9b9be5cd894a74d48709582e9d2"
+}

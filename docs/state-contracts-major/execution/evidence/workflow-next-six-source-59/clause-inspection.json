@@ -1,0 +1,2378 @@
+{
+ "schema": "codearbiter.literal-source-clause-inspection/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "families": [
+  "WF-15",
+  "WF-17",
+  "WF-19",
+  "WF-20",
+  "WF-22",
+  "WF-24"
+ ],
+ "literal_clause_count": 31,
+ "clauses": [
+  {
+   "id": "WF-15:01",
+   "machine_id": "WF-15",
+   "frozen_contract": {
+    "transition_id": "WF-15:01",
+    "machine_id": "WF-15",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "ADR request",
+     "event": "Status-only mode",
+     "guard": "Valid status arguments",
+     "to": "Read-only health report",
+     "effects": "Inspect decisions and evidence without authoring prerequisites or mutations.",
+     "failure_retry": "Do not fall through from status into ADR creation.",
+     "source": [
+      {
+       "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/references/authoring.md"
+      },
+      {
+       "path": "core/surface/commands/adr-status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/adr-status.md"
+      },
+      {
+       "path": "core/surface/includes/smarts/decision-log-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/decision-log-format.md"
+      }
+     ],
+     "transition_id": "WF-15:01"
+    },
+    "task_ids": [
+     "HW-27"
+    ],
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "4581eb49da1ff50023e6048a9bcc778a3e45b0f10d5390c1e15d57edb267e5e6",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Mode is selected from actual request/caller before writable prerequisites; invalid/ambiguous arguments stay read-only.",
+   "effect_assessment": "Status reports exact stems and lifecycle evidence without marker, log, staging, repair or authoring.",
+   "failure_retry_assessment": "No fallthrough to authoring; absent and unreadable storage differ. Optional challenge supplies neither initialization nor mutation authority.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+     "start": 13,
+     "end": 51,
+     "file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+     "span_sha256": "c039503e0f167c71c23dcd051ff218ec8c48b19b03b841fee6c7a28e7e65c72b"
+    },
+    {
+     "path": "core/surface/commands/adr-status.md",
+     "start": 9,
+     "end": 14,
+     "file_sha256": "5ebf347bbf893c8256159d0d1953e152eec6135fbc4b48052ff968c2de0d05eb",
+     "span_sha256": "19245313c2c2468ad7aa506dacc8d7c6da5d4554b0f561bd85eaa91b333809cb"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-15:02",
+   "machine_id": "WF-15",
+   "frozen_contract": {
+    "transition_id": "WF-15:02",
+    "machine_id": "WF-15",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "ADR authoring",
+     "event": "Create proposal",
+     "guard": "Actual user-owned choice; full-stem identity and correct numbering",
+     "to": "Proposed ADR",
+     "effects": "Mint exact project-root authoring marker, write proposal and attributed append-only log, remove marker on controlled exit.",
+     "failure_retry": "Marker expires after 30 minutes; forced termination is not cleanup proof.",
+     "source": [
+      {
+       "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/references/authoring.md"
+      },
+      {
+       "path": "core/surface/commands/adr-status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/adr-status.md"
+      },
+      {
+       "path": "core/surface/includes/smarts/decision-log-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/decision-log-format.md"
+      }
+     ],
+     "transition_id": "WF-15:02"
+    },
+    "task_ids": [
+     "HW-27"
+    ],
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "694da4ecea59cbdf9dbdf2a9e96331e9cb0718b5727e74701ce4a18ac7c659fc",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Actual user-confirmed content, full-stem indexing and unused next sequential number guard authoring; general trust is insufficient.",
+   "effect_assessment": "Resolve exact project_root through installed guards, arm one marker, author Proposed record and attributed append-only log, then remove exact marker on every controlled exit.",
+   "failure_retry_assessment": "Thirty-minute freshness is retained, not crash-safe cleanup; report remaining marker and original failure when cleanup fails, and do not continue writing.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 18,
+     "end": 89,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "ac83ac31cb4e3d1707a2bda3710fe03e5dd1de28c9ca36caaceb8bbaaee30ef6"
+    },
+    {
+     "path": "core/surface/includes/smarts/decision-log-format.md",
+     "start": 7,
+     "end": 56,
+     "file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+     "span_sha256": "da6424262178965b719bd1508fb47256e77c77dc4227b32cb25db30ba45fe028"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-15:03",
+   "machine_id": "WF-15",
+   "frozen_contract": {
+    "transition_id": "WF-15:03",
+    "machine_id": "WF-15",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Proposed ADR",
+     "event": "Accept decision",
+     "guard": "User actually accepts; source body is committed",
+     "to": "Accepted decision with source binding",
+     "effects": "Commit accepted status/body first, then append the acceptance event with the actual blob/source identity.",
+     "failure_retry": "Do not invent a commit hash or confuse acceptance with implementation.",
+     "source": [
+      {
+       "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/references/authoring.md"
+      },
+      {
+       "path": "core/surface/commands/adr-status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/adr-status.md"
+      },
+      {
+       "path": "core/surface/includes/smarts/decision-log-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/decision-log-format.md"
+      }
+     ],
+     "transition_id": "WF-15:03"
+    },
+    "task_ids": [
+     "HW-27"
+    ],
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "48b354ee75df9012166f50ac6d1a2a0dd29dfd37b07b0901040ec081252aca8a",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Explicit acceptance and independently reviewed complete obligations are separate from implementation; committed accepted ADR source is required.",
+   "effect_assessment": "Commit accepted body/log first, then shipped adr-acceptance writer computes/verifies exact committed bindings and appends locked event for a subsequent commit.",
+   "failure_retry_assessment": "No invented source identity or second binding; dirty/current-body/ancestry mismatch refuses. Writer naming a reviewer is cooperative attribution, not proof of an actual independent review.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 91,
+     "end": 124,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "da1664bbdeaf7c6008e68197d6d1c0e0ec7ff2c5e5744ca9a4cef3dc4a7de42b"
+    },
+    {
+     "path": "core/pysrc/_adrlifecyclewrite.py",
+     "start": 95,
+     "end": 157,
+     "file_sha256": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+     "span_sha256": "6edd8444faaf2d1de641e9af18b59b63c79aa37b8e49db0188c7100ad3c26274"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-15:04",
+   "machine_id": "WF-15",
+   "frozen_contract": {
+    "transition_id": "WF-15:04",
+    "machine_id": "WF-15",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Accepted decision",
+     "event": "Record implemented/verified evidence",
+     "guard": "All sealed obligations and current evidence satisfy the requested claim",
+     "to": "Derived implemented/verified status",
+     "effects": "Append evidence events; derive status without rewriting earlier entries.",
+     "failure_retry": "Missing, invalidated or expired evidence reduces current claim; an accepted ADR alone remains planned.",
+     "source": [
+      {
+       "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/references/authoring.md"
+      },
+      {
+       "path": "core/surface/commands/adr-status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/adr-status.md"
+      },
+      {
+       "path": "core/surface/includes/smarts/decision-log-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/decision-log-format.md"
+      }
+     ],
+     "transition_id": "WF-15:04"
+    },
+    "task_ids": [
+     "HW-27"
+    ],
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "33fc6ef0372ce13aa0dee381545b93bfd236e96062c6e441e88682b771ce1d81",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Every sealed obligation needs current input-bound implementation and fresh verification evidence for the requested derived claim.",
+   "effect_assessment": "Append implementation/verification/invalidation or reviewed correction events; accepted remains Accepted/Planned until complete applicable evidence.",
+   "failure_retry_assessment": "Missing, unsealed, stale, expired or mismatched evidence narrows the derived report. Correction preserves original malformed event and cannot substitute a new user decision.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+     "start": 53,
+     "end": 72,
+     "file_sha256": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+     "span_sha256": "f88147b2a14a12485507fe2dc98a47a5ba9f5fc4c7b6be9870c1ddc7202e5864"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 126,
+     "end": 157,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "17ad3250e246d0579b34470ba574d0c084fd2e2c3f9afb241a9b82e12ddb3405"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-15:05",
+   "machine_id": "WF-15",
+   "frozen_contract": {
+    "transition_id": "WF-15:05",
+    "machine_id": "WF-15",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Existing decision",
+     "event": "Supersession or deferral",
+     "guard": "Actual user decision",
+     "to": "Superseded/deferred record",
+     "effects": "Append a new forward Supersedes reference or explicit deferral trigger, preserving the old body/history.",
+     "failure_retry": "Do not back-edit history or infer deferral from silence.",
+     "source": [
+      {
+       "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/decision-lifecycle/references/authoring.md"
+      },
+      {
+       "path": "core/surface/commands/adr-status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/adr-status.md"
+      },
+      {
+       "path": "core/surface/includes/smarts/decision-log-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/smarts/decision-log-format.md"
+      }
+     ],
+     "transition_id": "WF-15:05"
+    },
+    "task_ids": [
+     "HW-27"
+    ],
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "proposed_composed_scenario_ids": [],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "5335f489b1c0fd2e1d8cd952ef60e3ebfc47a09bdb48427275359393fc2f03fb",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Only actual user instruction changes status or records deferral; exact full-stem supersession disambiguates identities.",
+   "effect_assessment": "Append forward Supersedes/log entry or a deferred entry with real re-evaluation trigger; retain prior body/history.",
+   "failure_retry_assessment": "No inference from silence or back-reference edits. The explicitly documented identifier-only maintainer correction is a narrow separate allowance, not decision-content rewriting.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/smarts/decision-log-format.md",
+     "start": 7,
+     "end": 56,
+     "file_sha256": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+     "span_sha256": "da6424262178965b719bd1508fb47256e77c77dc4227b32cb25db30ba45fe028"
+    },
+    {
+     "path": "core/surface/skills/decision-lifecycle/references/authoring.md",
+     "start": 61,
+     "end": 65,
+     "file_sha256": "79d05df31221b93ee6ddeb3ee90cee63d40c094ba7a639aee991ff170580f696",
+     "span_sha256": "7f6e111bc2eea9277284585e84daceb805b25b5c7a8fc039e1073621451e6ae4"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:01",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:01",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Repository uninspected",
+     "event": "Passive init check",
+     "guard": "Explicit directory; --check --passive",
+     "to": "Inventory only",
+     "effects": "Report existing state without repository scripts, Git/network effects or authority claims.",
+     "failure_retry": "performed:false does not establish initialization or enforcement.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:01"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "1b3a4a0dda8ae9243670f9b18deb93bbce925aa4257fa9a3eb6658f4a0ae5e98",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Explicit root plus --check --passive selects pre-session inventory; caller-supplied root identity remains unverified.",
+   "effect_assessment": "Inventory reports performed:false/unverified/not_established and reads only bounded activation marker; no Git/network/repository script is run by this branch.",
+   "failure_retry_assessment": "Passive inventory cannot undo earlier active-session effects or prove initialization, enforcement, permissions or safe model source reads.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/init.md",
+     "start": 67,
+     "end": 83,
+     "file_sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+     "span_sha256": "ee01b5b46564ba14efb40121dbe77c8650d3add2b88be24717a6d0f025c3f198"
+    },
+    {
+     "path": "core/pysrc/_activationlib.py",
+     "start": 190,
+     "end": 233,
+     "file_sha256": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+     "span_sha256": "e641b1a2ab2aa746f224c41fbbd33ac50c5eab759bfc72d1b304971344b2a781"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:02",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:02",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Uninitialized repository",
+     "event": "Scaffold",
+     "guard": "Existing files are admissible and no initialized/conflicting state",
+     "to": "Activation scaffold",
+     "effects": "Create missing scaffold; default new context format is HTML. Preserve existing regular files and history.",
+     "failure_retry": "An initialized/malformed/conflicting scaffold requires review; never clear the directory to retry.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:02"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "7b3fb04dc399769ac8c864aa6af7acaa684ecb3f5e5cca228c23ecc3fecb0b89",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Only absent or recognized safe uninitialized scaffold entries are admissible; initialized/malformed/linked/conflicting state refuses.",
+   "effect_assessment": "Default new format is HTML; scaffold creates absent files and retains existing regular bytes, board ownership and append-only history.",
+   "failure_retry_assessment": "Recovery never clears directory or marker; stage mismatch, native-work state, unknown partial state and malformed headers require inspection. Requested --format cannot convert retained context.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/init.md",
+     "start": 85,
+     "end": 105,
+     "file_sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+     "span_sha256": "631789c4226e2b7602c4984f440db18c5126d954b5ebcc0f349cf7155881c1cf"
+    },
+    {
+     "path": "core/pysrc/init-codearbiter.py",
+     "start": 220,
+     "end": 312,
+     "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+     "span_sha256": "d2661921fbbcfd16d35a5cc3dbf8f2dfc78a488f7f03037d9c54d91bfe25754a"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:03",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:03",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Activation scaffold",
+     "event": "Choose acquisition path",
+     "guard": "Meaningful implementation exists",
+     "to": "Brownfield acquisition",
+     "effects": "Inspect six bounded evidence categories and derive context from source.",
+     "failure_retry": "No meaningful implementation routes to decompose; context flags are not proof of implementation.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:03"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "71b76238f2e4c3d8111a3ba30a8a2d1ef0727f15c7f7fe6135660b6c90d3921b",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Meaningful implementation beyond the explicit excluded set and absent initialized marker guard brownfield acquisition.",
+   "effect_assessment": "Inspect six logical evidence categories with bounded direct inspection or optional scoped agents; no six-agent requirement or repository script execution from declarations.",
+   "failure_retry_assessment": "No meaningful source routes to decompose. Existing initialized projects route to selected acquisition/refresh owners; report gaps instead of treating missing work as inspected.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 15,
+     "end": 34,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "d6ad6d23a64923702fc312d5ec5be9d4d4b4fd03f0d8ea04839a0b3829796ff3"
+    },
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 50,
+     "end": 111,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "89b40f1f8ce5c6065aaa6a141062b83daaec420c0376c5f324df0bed4f638fa7"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:04",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:04",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Acquisition",
+     "event": "Synthesize claims",
+     "guard": "Actual observations and sources known",
+     "to": "Draft context",
+     "effects": "Separate observed/inferred/proposed/approved/unknown claims, commands and scope.",
+     "failure_retry": "A missing report or search gap is not not_found; confidence is not authority.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:04"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "c9a5525d472cb469e5fd92dd9f78efb523e744a077df0c7a18c4d6338f13a61a",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Claims bind actual category, searched scope, sources and observations; confidence does not grant permission or semantic truth.",
+   "effect_assessment": "Keep source-observed/inferred/proposed/user-reported/unknown separate, commands unrun and retained source purpose/consumer explicit.",
+   "failure_retry_assessment": "Failed/missing/oversized report is not absence. Negative findings state searched scope; never synthesize user decisions, security claims or verification.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 93,
+     "end": 111,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "74c08bfce7f409ab3e157d845836355bb96570bc83e20ac065481361254b4493"
+    },
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 113,
+     "end": 167,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "42ace248892cf042bc8ec8bec8a023aefd43cf5f1657ed646c28587575f60f19"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:05",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:05",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Draft context",
+     "event": "Resolve relevant gaps",
+     "guard": "User-owned decisions genuinely needed now",
+     "to": "Resolved/explicitly deferred questions",
+     "effects": "Batch independent choices and preserve both sides of conflicts; retain explicit deferrals on the question board.",
+     "failure_retry": "Unresolved prerequisites block dependent work; unrelated uncertainty does not freeze all work.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:05"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "2ef7df9061ea5aea3a13156ea7041f427fad8c8f0af12139ee7b2cbca9041a65",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Ask only material user-owned decisions needed for current selected output; preserve contradictory citations and request narrow reinspection first.",
+   "effect_assessment": "Batch independent choices, record actual resolution or explicit dated deferral on question board, retain both sides when conflict persists.",
+   "failure_retry_assessment": "Deferral remains unresolved; permission/security/scope prerequisite blocks dependents. Independent authorized work continues; neither uncertainty nor an unrelated database question becomes universal stop.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 190,
+     "end": 215,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "499741f002ee912d2217e3507ffa12a180d9fa603bde10014fbc526208fac155"
+    },
+    {
+     "path": "core/surface/skills/context-creation/references/markdown-format.md",
+     "start": 189,
+     "end": 219,
+     "file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+     "span_sha256": "11e9ddbda9b6a0ef46164e50fccfda11feadc513f315b4657bc6009992132c00"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:06",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:06",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Draft context",
+     "event": "Write selected documents",
+     "guard": "Preview and exact source/preimage bindings valid",
+     "to": "Managed context pairs",
+     "effects": "Use native paired writer/knowledge owner; preserve human content, provenance and selected work owner.",
+     "failure_retry": "Source/output drift needs a fresh preview; uncertain writes use the original ID/recovery.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:06"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "b20c9fc3a7772d21564d6dd5ba46ffebb928c066186bcb2bfa7a8914e5d18215",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Select actual format/owner and current source/preimages; HTML uses native journaled record writes, while supported Markdown uses paired preview/apply.",
+   "effect_assessment": "Preserve human notes/content and actual work owner/IDs; use add/update in knowledge or exact paired writer, never raw HTML or provenance edits.",
+   "failure_retry_assessment": "Lost response reuses original request or native recovery; changed supported source/output needs fresh inspection/preview. Universal per-document approval/preview is not imposed on HTML ordinary writes under ADR43.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 217,
+     "end": 235,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "bd1b5442f1ca86ffa4ba21d9cd5cabd2364b17cbf235c41368576d75a8a573db"
+    },
+    {
+     "path": "core/surface/skills/context-creation/references/markdown-format.md",
+     "start": 221,
+     "end": 263,
+     "file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+     "span_sha256": "3a645a621ffa337420a0726eb689318af182597e015391ecccd0fdfc760db17d"
+    }
+   ],
+   "intake_variances": [
+    "Preview wording applies to managed Markdown paired writer. Ordinary HTML knowledge record writes use native journaled add/update without a per-document preview/approval ceremony under ADR43."
+   ],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:07",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:07",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Required outputs present",
+     "event": "Finalize initialization",
+     "guard": "All selected-format prerequisites and identities validate",
+     "to": "Initialized marker committed",
+     "effects": "Commit marker with matching provenance/project identity and read back.",
+     "failure_retry": "The marker proves population, not semantic truth, host enforcement or passing checks.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:07"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "e841a7692def3ba3ffc1db8e6a628de7dd793b2600f24ac52d8316c99a9eedda",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "HTML checks five parseable documents and selected owner; Markdown validates thirteen exact output identities and current source bindings.",
+   "effect_assessment": "Native transaction writes standalone initialized marker with matching context provenance or new portable project identity; read back retained result.",
+   "failure_retry_assessment": "Unknowns/open questions may remain under actual selected-format rules; no hand marker append. Population is not semantic truth, host enforcement, or passing checks.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-creation/SKILL.md",
+     "start": 256,
+     "end": 270,
+     "file_sha256": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+     "span_sha256": "f7b5d4883182a1455066c74d6dcdda41d96eb72d998bb7d1e5e415ba56dd48f9"
+    },
+    {
+     "path": "core/surface/skills/context-creation/references/markdown-format.md",
+     "start": 265,
+     "end": 288,
+     "file_sha256": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+     "span_sha256": "f4cd88be68f8c65349e6095ba4cd00d10600c4d04f7da1a3cda0c8d60b0284ab"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-17:08",
+   "machine_id": "WF-17",
+   "frozen_contract": {
+    "transition_id": "WF-17:08",
+    "machine_id": "WF-17",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Initialized project",
+     "event": "Refresh requested",
+     "guard": "Selected affected domains",
+     "to": "Context refresh owner",
+     "effects": "Retain marker, decisions, work IDs and history; use context-check.",
+     "failure_retry": "Never remove initialization to rerun onboarding.",
+     "source": [
+      {
+       "path": "core/surface/commands/init.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/init.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/context-creation/references/markdown-format.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-creation/references/markdown-format.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      }
+     ],
+     "transition_id": "WF-17:08"
+    },
+    "task_ids": [
+     "HW-10",
+     "HW-16",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11",
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "b1e34282404a3fdd4d4d73519da034709bf13027449a54fb13a4690d8ecae1b2",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Initialized project selects existing decompose acquisition/target owner or selected context-check refresh, rather than initial population.",
+   "effect_assessment": "Keep initialized marker, prior knowledge/history, ADR references and selected work identity.",
+   "failure_retry_assessment": "Never clear initialization or repeat finalization to refresh; ordinary status/drift report remains audit-only until actual refresh selection.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/init.md",
+     "start": 30,
+     "end": 64,
+     "file_sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+     "span_sha256": "5fe7e20b696db6fdfb2b2a1c2fd092965db4e90c6a2ef3c7a2954ceffaf36aca"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 24,
+     "end": 40,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "55749e3c30c6c9484a31bc1ac4c7952086cc1937b0c45e887e69815f3a492494"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-19:01",
+   "machine_id": "WF-19",
+   "frozen_contract": {
+    "transition_id": "WF-19:01",
+    "machine_id": "WF-19",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Context requested",
+     "event": "Select format and owning source",
+     "guard": "Actual repository format inspected",
+     "to": "Markdown / HTML owner",
+     "effects": "Read exact knowledge records or managed Markdown; do not parse rendered HTML for canonical data.",
+     "failure_retry": "Mixed/duplicate owners refuse the dependent write, not unrelated safe work.",
+     "source": [
+      {
+       "path": "core/surface/skills/context-check/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      },
+      {
+       "path": "core/surface/includes/artifacts.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+      }
+     ],
+     "transition_id": "WF-19:01"
+    },
+    "task_ids": [
+     "HW-06",
+     "HW-10",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-08",
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "e3e5fda4f06d5284d33015974de9ef9c5ff2e6c1af9ee6f369ca2548369b3207",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Inspect actual format; HTML records belong to knowledge.py, Markdown belongs to retained managed paired owner.",
+   "effect_assessment": "Use exact active native records or direct Markdown; current narrative read is revision-bound and excludes retired data. Do not scrape rendered HTML.",
+   "failure_retry_assessment": "Mixed/unsafe ownership refuses affected writes, not safe unrelated work; retained historical notes are not revived policy or new authority.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 10,
+     "end": 49,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "0f6190ff8195fca9e99373cef1c28b36dad0c052d4ccab0fb6619e04115b997e"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 42,
+     "end": 73,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "004bc496e865b4e5251c9517a67a67619f6bd1c9f81ce1dbe05c3a76945d1472"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-19:02",
+   "machine_id": "WF-19",
+   "frozen_contract": {
+    "transition_id": "WF-19:02",
+    "machine_id": "WF-19",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Selected context",
+     "event": "Assess freshness",
+     "guard": "Current source membership/content evidence",
+     "to": "Current / stale / unknown",
+     "effects": "Report scoped provenance and actual missing observation.",
+     "failure_retry": "Hash equality is byte identity, not semantic truth; scoped selection is not full coverage.",
+     "source": [
+      {
+       "path": "core/surface/skills/context-check/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      },
+      {
+       "path": "core/surface/includes/artifacts.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+      }
+     ],
+     "transition_id": "WF-19:02"
+    },
+    "task_ids": [
+     "HW-06",
+     "HW-10",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-08",
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "ea0117e4d552cb08bb39b022aced8173d8ae2d213b8e1e1300cde1837741e4ad",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Freshness requires bounded current membership/content and exact provenance coverage; missing/partial/unknown inputs remain unknown.",
+   "effect_assessment": "Report legacy drift and every enrolled v2 identity state separately, with actual affected source scope and semantic limitations.",
+   "failure_retry_assessment": "Hash/current identity alone does not prove meaning; empty v1 drift does not establish v2 freshness, and selected incremental scope is not full coverage.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 87,
+     "end": 117,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "d54c893ef3ede68db0a5ce45e73e51d44bfd1fdb2ae68e12744dd1c67829626e"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 119,
+     "end": 135,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "2b7e567df711b39ee67d89c5b3c9cd5da7322bae13d6415535e3e026c3233057"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-19:03",
+   "machine_id": "WF-19",
+   "frozen_contract": {
+    "transition_id": "WF-19:03",
+    "machine_id": "WF-19",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Stale managed Markdown",
+     "event": "Prepare bounded refresh",
+     "guard": "Supported v1 adoption or v2 update path",
+     "to": "Preview",
+     "effects": "Preserve unselected managed/unowned spans, source bindings and exact preimages.",
+     "failure_retry": "Unsupported layout refuses write; safe inspection can continue.",
+     "source": [
+      {
+       "path": "core/surface/skills/context-check/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      },
+      {
+       "path": "core/surface/includes/artifacts.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+      }
+     ],
+     "transition_id": "WF-19:03"
+    },
+    "task_ids": [
+     "HW-06",
+     "HW-10",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-08",
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "701f7fca392ad98dec7a71468f4512e18de1fabcee79d7ffac157805b3d3a7c1",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Supported absent/v1 adoption or v2 update requires explicit selected fields and current pair/source identity.",
+   "effect_assessment": "Preview preserves unselected managed and unowned bytes plus legacy provenance history; material normative adoption stays with actual decision owner.",
+   "failure_retry_assessment": "Unsupported/ambiguous/oversized layout refuses only that write; preserve bytes and continue authorized task reading. No raw Write/Edit or regex fallback.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 137,
+     "end": 163,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "716f75ecc8e5f6cf7d2e2bf08be4fcc628f0328aca33a1f40b889f20e990a61d"
+    },
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 226,
+     "end": 248,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "57e560db60a8cf9d647feeaa362f8f6a9670feda9494695130a43427ea6489c2"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-19:04",
+   "machine_id": "WF-19",
+   "frozen_contract": {
+    "transition_id": "WF-19:04",
+    "machine_id": "WF-19",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Preview",
+     "event": "Apply",
+     "guard": "Exact CAS/source/output identities unchanged",
+     "to": "Updated pair",
+     "effects": "Commit document and provenance together; read back.",
+     "failure_retry": "Stale preview is re-inspected, not force-applied. Uncertain response replays same request.",
+     "source": [
+      {
+       "path": "core/surface/skills/context-check/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      },
+      {
+       "path": "core/surface/includes/artifacts.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+      }
+     ],
+     "transition_id": "WF-19:04"
+    },
+    "task_ids": [
+     "HW-06",
+     "HW-10",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-08",
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "adb59b8f508a6e796b146cdeba3b30704455c7d86594836bd3ab334d9bf9e1a9",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Exact returned preview ref/hash and current expected document/provenance/source identity guard paired apply.",
+   "effect_assessment": "Writer commits selected document and provenance together under native lock; readback retains initialized marker and foreign spans.",
+   "failure_retry_assessment": "Stale preview requires reinspection, not force apply; uncertain operation retries identical request/ID or recovery. This is CAS, not new artifact approval authority.",
+   "witnesses": [
+    {
+     "path": "core/surface/skills/context-check/SKILL.md",
+     "start": 226,
+     "end": 248,
+     "file_sha256": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+     "span_sha256": "57e560db60a8cf9d647feeaa362f8f6a9670feda9494695130a43427ea6489c2"
+    },
+    {
+     "path": "core/pysrc/_contextwriterlib.py",
+     "start": 37,
+     "end": 96,
+     "file_sha256": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+     "span_sha256": "272095dd347b9399c788cbb88f07a6216b2c7b0e1d807097e4abe2d7e83202fa"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-19:05",
+   "machine_id": "WF-19",
+   "frozen_contract": {
+    "transition_id": "WF-19:05",
+    "machine_id": "WF-19",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Legacy format",
+     "event": "Explicit conversion",
+     "guard": "Complete source disposition map and reviewed candidate",
+     "to": "Staged conversion then cutover",
+     "effects": "Use preview/apply/finalize/cutover; preserve original bytes/history.",
+     "failure_retry": "Original approvals/status prose does not become new authority. Rollback refuses intervening candidate edits.",
+     "source": [
+      {
+       "path": "core/surface/skills/context-check/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      },
+      {
+       "path": "core/surface/includes/artifacts.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+      }
+     ],
+     "transition_id": "WF-19:05"
+    },
+    "task_ids": [
+     "HW-06",
+     "HW-10",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-08",
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "19ed77cb41a32cff523a90a96cece046d9d5a13dc16c8c872c1cbd0dcdb5deaa",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Conversion requires actual user format choice plus complete returned section dispositions/current fingerprint; no silent cutover.",
+   "effect_assessment": "Keep two distinct conversion owners: knowledge.py converts repository context through section inventory/coverage and expected cutover; explicit legacy spec/plan conversion uses migration-preview/apply with complete nonoverlapping line mapping and reviewed draft pair. Both preserve original bytes/history; this is not a universal refresh or approval ceremony.",
+   "failure_retry_assessment": "Original approval/status prose is historical data, not transferred authority. Changed context token or spec/plan preview refuses. Completed spec/plan migration rollback checks every current after-image and refuses intervening edits; uncertain transactions use recovery rather than rollback. No operation executed here.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 119,
+     "end": 136,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "92b5415f0b70dae214cc59d9207fcef40b6619951e4143850ef7fa903e31ba60"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "start": 318,
+     "end": 359,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "4c041f4ceacce4afe80b168c5b616643d9b6b5ade381f4c51def02f7f88f9cd8"
+    },
+    {
+     "path": "core/surface/includes/artifacts-attestation.md",
+     "start": 505,
+     "end": 513,
+     "file_sha256": "a6cee9eefaea087572d2c76e772d4a85b0022b89b1e4ab4cb870aadde7c147b3",
+     "span_sha256": "dd834a183cd0760cd2d90720c5cc58969872babe64432cc8a34c522d51bda019"
+    },
+    {
+     "path": "core/artifacts/internal/operations/migration.go",
+     "start": 20,
+     "end": 109,
+     "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+     "span_sha256": "ad5594770c76acbd0fb478010f01bc3791aa9c88fa873d378832d79f316e8e64"
+    },
+    {
+     "path": "core/artifacts/internal/operations/migration.go",
+     "start": 139,
+     "end": 184,
+     "file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+     "span_sha256": "90b32f0299f561fd0b96faf0a289cfc586393caa7447927f0e41393ceb0601e6"
+    },
+    {
+     "path": "core/artifacts/internal/store/transaction.go",
+     "start": 572,
+     "end": 626,
+     "file_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+     "span_sha256": "d67f60671c364c82946e7ed0b4e9865f6575416d6e4d350bb160dea641393c10"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-19:06",
+   "machine_id": "WF-19",
+   "frozen_contract": {
+    "transition_id": "WF-19:06",
+    "machine_id": "WF-19",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Knowledge conflict",
+     "event": "Merge conflict repair",
+     "guard": "Owner recognizes supported conflict shape",
+     "to": "Merged or refused",
+     "effects": "Combine disjoint edits and report ID renumbering; keep both competing edits when both changed.",
+     "failure_retry": "Never silently choose one semantic side.",
+     "source": [
+      {
+       "path": "core/surface/skills/context-check/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/context-check/SKILL.md"
+      },
+      {
+       "path": "core/surface/includes/knowledge.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/knowledge.md"
+      },
+      {
+       "path": "core/surface/includes/artifacts.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/artifacts.md"
+      }
+     ],
+     "transition_id": "WF-19:06"
+    },
+    "task_ids": [
+     "HW-06",
+     "HW-10",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-08",
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "0c8cf8cb3747a833b7fc2abddb2f8a2297a23a823ccbf5910fe05f6fd2f3b6bb",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Only known knowledge/decomposition path with actual three Git stages/current SHA selects native merge owner.",
+   "effect_assessment": "Native record-level merge combines disjoint edits and reports any renumbering; competing same-record edits retain unresolved conflict instead of silently selecting one.",
+   "failure_retry_assessment": "Both-changed refusal preserves competing evidence for resolution; not a promise to auto-commit both semantic sides. No manual HTML rewrite or semantic choice supplied by this proof.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/knowledge.md",
+     "start": 137,
+     "end": 142,
+     "file_sha256": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+     "span_sha256": "9de818a8223b396d5fd995c84598d85336740c8c3bb4b5cba9f5b13f9c269003"
+    },
+    {
+     "path": "core/pysrc/knowledge.py",
+     "start": 469,
+     "end": 488,
+     "file_sha256": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+     "span_sha256": "c41890af163d4bdf9a761c54d9c09276168a9462b19f1aaa3c18158b53c023b1"
+    },
+    {
+     "path": "core/artifacts/internal/operations/knowledge_merge.go",
+     "start": 50,
+     "end": 115,
+     "file_sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+     "span_sha256": "56fc94e154143fef2ae1635aa55b2b73328810b5c92e79138bca44836fc298e8"
+    },
+    {
+     "path": "core/artifacts/internal/operations/knowledge_merge.go",
+     "start": 260,
+     "end": 329,
+     "file_sha256": "a8d933705831d4e36a068b40562a7f1cab472b22b570fcc65abc913696a478c5",
+     "span_sha256": "df6ef26a10b343b3e07c4d0b5840cbc404d0c5ee9a34bed0536ae3cde352b572"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-20:01",
+   "machine_id": "WF-20",
+   "frozen_contract": {
+    "transition_id": "WF-20:01",
+    "machine_id": "WF-20",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Work command",
+     "event": "Choose repository work owner",
+     "guard": "Legacy board or native store selected",
+     "to": "Single work owner",
+     "effects": "Route unchanged intent through its helper; preserve IDs/origins/history.",
+     "failure_retry": "Dual ownership is a refusal; no parallel board/native record.",
+     "source": [
+      {
+       "path": "core/surface/commands/task.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/task.md"
+      },
+      {
+       "path": "core/surface/commands/status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+      },
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      }
+     ],
+     "transition_id": "WF-20:01"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "2c687928cfaf71af8877e140694fce5751e986136f9e0edaad90c49dcc85b05c",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Select exact installed helper and current native/legacy owner; existing board remains legacy until explicit adoption.",
+   "effect_assessment": "Route same user intent and stable WORK-ID through selected facade, preserving origins/history and original owner.",
+   "failure_retry_assessment": "Mixed/nonregular/unsafe store refuses; no parallel native/board creation, title-based guessing, or fallback to another writer.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 8,
+     "end": 31,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "3f1eac404f64ea9b2b19ca00ba0b9c2a4c45fb249a9aed00988453f7f0382280"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 26,
+     "end": 48,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "8dcff0c7403c5079190761586f0452896494bd9a27fdb50fb55926ac61da9849"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-20:02",
+   "machine_id": "WF-20",
+   "frozen_contract": {
+    "transition_id": "WF-20:02",
+    "machine_id": "WF-20",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Work mutation requested",
+     "event": "Create/update/complete",
+     "guard": "Actual authorized work outcome",
+     "to": "Local work updated",
+     "effects": "Stable IDs, explicit origin and idempotent operation identify work; direct queued-to-complete can reflect work already done.",
+     "failure_retry": "Do not invent start transitions solely to satisfy a ritual.",
+     "source": [
+      {
+       "path": "core/surface/commands/task.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/task.md"
+      },
+      {
+       "path": "core/surface/commands/status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+      },
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      }
+     ],
+     "transition_id": "WF-20:02"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "cdb4616dfc56edc3648a47717ea5497a94ca41a28ee140c1073554022ae9d2e4",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Actual authorized work outcome plus stable operation identity guards mutation; expected revision/hash pair selected from actual owner.",
+   "effect_assessment": "Create/start/complete/reopen preserves stable IDs, explicit origin and idempotent native operation. Already performed queued work can be recorded complete directly.",
+   "failure_retry_assessment": "No invented start ritual or completion-to-passing-evidence inference. Native uncertain retry reuses request/preimage; legacy stale update refuses and requires row inspection.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 24,
+     "end": 42,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "2aa50f00d6fc9553323df339195983008a0c9b16c841600d49f967d7e7ed26e4"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 362,
+     "end": 403,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "31582bf15d96092aa605ae80cec70d0427c920caf76ac77e8e27fcf5c8529a2a"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-20:03",
+   "machine_id": "WF-20",
+   "frozen_contract": {
+    "transition_id": "WF-20:03",
+    "machine_id": "WF-20",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Mapped work updated",
+     "event": "Remote synchronization selected",
+     "guard": "Mapping/timing and explicit operation permit sync",
+     "to": "Provider/project coordination",
+     "effects": "Local transition retains durable effects; explicit sync performs remote work and reports each target separately.",
+     "failure_retry": "Local completion is not successful remote delivery; uncertainty requires reconciliation.",
+     "source": [
+      {
+       "path": "core/surface/commands/task.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/task.md"
+      },
+      {
+       "path": "core/surface/commands/status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+      },
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      }
+     ],
+     "transition_id": "WF-20:03"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "b899d91e239d2459fa0eae0ef3d6f0f98a971c767ba10e3afc304ae05f43c983",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Only configured native mapping and explicit sync operation transmit under selected provider timing; absent map leaves ordinary lifecycle available.",
+   "effect_assessment": "Local transition records durable target intent/wait reason without GitHub request; explicit sync reports issue/Project targets separately.",
+   "failure_retry_assessment": "Local completion is not remote delivery. Reconcile uncertain send, preserve disabled-map effects and report Project read/update race without remote CAS claim.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 44,
+     "end": 62,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "38fa3c7f98aabc4782a5fc8921006a93e83a2f8d8af278d2fabf487ebf91b7ee"
+    },
+    {
+     "path": "core/pysrc/work.py",
+     "start": 327,
+     "end": 359,
+     "file_sha256": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+     "span_sha256": "56345d227aab7abc5c36d64c9fc9ab5572e2f5ed86f3bc94c171f8273c4b16e5"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-20:04",
+   "machine_id": "WF-20",
+   "frozen_contract": {
+    "transition_id": "WF-20:04",
+    "machine_id": "WF-20",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Status requested",
+     "event": "Read bounded membership",
+     "guard": "Page limit/digest and actual observation known",
+     "to": "Read-only status report",
+     "effects": "Separate progress, evidence and authority; retain counts beyond display cap as unknown unless proved.",
+     "failure_retry": "Missing/failed observation is not empty or zero; statusline redraw should not spawn native engine each frame.",
+     "source": [
+      {
+       "path": "core/surface/commands/task.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/task.md"
+      },
+      {
+       "path": "core/surface/commands/status.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/status.md"
+      },
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      }
+     ],
+     "transition_id": "WF-20:04"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "12e3c3b6396e7c576de706cfaac32b26f688aa3419185b86455122410cd8d1b8",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Membership-bound paging and actual observations guard bounded status counts; explicit selected read does not become per-frame native call.",
+   "effect_assessment": "Separate implementation/progress, checks/applicability, user stops, work count and recovery complete/partial/unavailable state.",
+   "failure_retry_assessment": "Over256/incomplete/changed/unsafe membership yields unknown count with reported total, not zero. Missing ledger means no registered obligations, not completed history; status does not repair or perform downstream effects.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/status.md",
+     "start": 29,
+     "end": 81,
+     "file_sha256": "1355e635239bfc50130fdcf23d1fba4eac42d57a2a6100676aae3dc10d424dcf",
+     "span_sha256": "0b1a16dd0fceeb0e8011aa2e6f8463cb74969e14accaea3358c354aaf9229f84"
+    },
+    {
+     "path": "core/surface/commands/task.md",
+     "start": 26,
+     "end": 31,
+     "file_sha256": "ba61bd0f8559e5f1503762ed8a95e50277384239c8d37a7833bb547d7379ac6c",
+     "span_sha256": "99134a9d5f5484d161999c8f9bfa3c7c3cc999e744b269d939d1f4928efd4ead"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-22:01",
+   "machine_id": "WF-22",
+   "frozen_contract": {
+    "transition_id": "WF-22:01",
+    "machine_id": "WF-22",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Standup requested",
+     "event": "Collect inventory",
+     "guard": "Current Git/work/context observations",
+     "to": "Standup report",
+     "effects": "Report branch, work, questions, overrides and drift with unknowns preserved.",
+     "failure_retry": "Remote-gone status alone is not integration/deletion proof.",
+     "source": [
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      },
+      {
+       "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/post-merge-cleanup/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-22:01"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "97184f210dac21e54f72be16f771f54a9361b77f0c1b386a2442a369755d63fd",
+   "ledger_status": "PRESERVED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Collect actual branch/worktree/work/context observations before named actions; remote-gone alone is not containment.",
+   "effect_assessment": "Report dirty/diverged/stash/unpushed state and unknown owner/recovery observations without auto-flipping progress.",
+   "failure_retry_assessment": "Deletion still needs exact contained tip and named confirmation; failed ownership read does not fall back to a second store.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 12,
+     "end": 49,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "0c1125017603a92f2bf42d75e661b545130b7fe8be4e2a041b5cb99eaee5fa1a"
+    },
+    {
+     "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+     "start": 48,
+     "end": 95,
+     "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+     "span_sha256": "66c7a5964e0fe50e746e75365eb930ffd7620a387806a7dc5087fae0c346a038"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-22:02",
+   "machine_id": "WF-22",
+   "frozen_contract": {
+    "transition_id": "WF-22:02",
+    "machine_id": "WF-22",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Clean behind branch",
+     "event": "Selected sync",
+     "guard": "Fast-forward and existing explicit confirmation",
+     "to": "Updated branch",
+     "effects": "Pull only through the bounded ff-only path.",
+     "failure_retry": "Dirty/diverged/conflicting state is retained and reported.",
+     "source": [
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      },
+      {
+       "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/post-merge-cleanup/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-22:02"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "7e92d674401c00eae6c468ff148010eac1f262e228a3fcda80be1d456aad6f3b",
+   "ledger_status": "PRESERVED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Existing helper offers ff pull only for clean tree and positive behind count; explicit selected confirmation controls actual action.",
+   "effect_assessment": "Use ff-only path; no merge, rebase, reset, dirty-tree pull or default-branch write is granted.",
+   "failure_retry_assessment": "Dirty/diverged/refused state is reported and preserved; source eligibility is an offer, never evidence a fetch/pull occurred.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 21,
+     "end": 27,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "dd6cf27117ac9054b72ce37ee85e8fc9d2322ea33f1e8212fc8e70c5464202af"
+    },
+    {
+     "path": "core/pysrc/_standuplib.py",
+     "start": 174,
+     "end": 183,
+     "file_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+     "span_sha256": "293622872cfa6f5f0c287286229c03ee0a74d869077356c77109409544c57623"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-22:03",
+   "machine_id": "WF-22",
+   "frozen_contract": {
+    "transition_id": "WF-22:03",
+    "machine_id": "WF-22",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Completed work candidates",
+     "event": "Select archive",
+     "guard": "Older than 14 calendar days, or explicit undated IDs; at most 256 bounded members",
+     "to": "Archive preview",
+     "effects": "Record exact owner, IDs, dates and membership snapshot.",
+     "failure_retry": "Unknown date is not eligible by age; unrelated newly completed rows cannot ride the batch.",
+     "source": [
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      },
+      {
+       "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/post-merge-cleanup/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-22:03"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "067251c64830e7a01435f3abd90ad17087ae2d3d77d596d228f83df72e789bec",
+   "ledger_status": "PRESERVED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Bounded256 membership snapshot selects completed rows strictly older than14 calendar days; undated row only by explicit exact-ID --allow-undated choice.",
+   "effect_assessment": "Record exact selected owner/project, IDs or uniquely proved legacy titles, date and membership; later recheck actual row on archive branch.",
+   "failure_retry_assessment": "Unknown age is not eligible, silent/nonselected members cannot join batch, same-title replacement is forbidden and advisory content_snapshot:false requires re-read.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 70,
+     "end": 89,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "d8a04c6b9bb65c1bd5cf06c05e2409a063ae4e7d61d5e63488d1c1e4dccca1d1"
+    },
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 114,
+     "end": 136,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "37c8d6fcf1a68a455515d8ba7f39703508e6927337e8530ff7267de5addbf900"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-22:04",
+   "machine_id": "WF-22",
+   "frozen_contract": {
+    "transition_id": "WF-22:04",
+    "machine_id": "WF-22",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Archive approved",
+     "event": "Apply in fresh sibling worktree",
+     "guard": "Fetched default and current identities rechecked",
+     "to": "Archived selected records",
+     "effects": "Native per-item CAS or legacy append-archive/remove-board; commit archive separately.",
+     "failure_retry": "Partial progress is reported and branch preserved; do not attach archive to an unrelated commit.",
+     "source": [
+      {
+       "path": "core/surface/commands/standup.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/standup.md"
+      },
+      {
+       "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/post-merge-cleanup/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-22:04"
+    },
+    "task_ids": [
+     "HW-14",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-10",
+     "SEQ-11"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "a33a815b65e7e6b72c8e7523a0f953f5209ba8acdb76edad0b4fe56bb8f1cc24",
+   "ledger_status": "PRESERVED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Named archive selection plus fresh sibling path/unused branch and fetched default tip; verify clean HEAD and same actual owner before writes.",
+   "effect_assessment": "Native per-item expected revision/hash or selected legacy append-archive then remove-board; stage only owner paths and commit dedicated archive change.",
+   "failure_retry_assessment": "Selection is not atomic batch: report completed/remaining after refusal and retain branch. Preserve journals/foreign index and keep archival out of unrelated feature commits.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/standup.md",
+     "start": 91,
+     "end": 145,
+     "file_sha256": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+     "span_sha256": "7b0b3356c5466ea83c347e86177a4939655bd344876619767e9bf91228a58170"
+    },
+    {
+     "path": "core/surface/skills/post-merge-cleanup/SKILL.md",
+     "start": 227,
+     "end": 250,
+     "file_sha256": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+     "span_sha256": "01c7c79b8db72e214b4fbb053ac11b8527b4f0ec5dc2bf0d9683421f6ec4c41d"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-24:01",
+   "machine_id": "WF-24",
+   "frozen_contract": {
+    "transition_id": "WF-24:01",
+    "machine_id": "WF-24",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Blocked action",
+     "event": "Request override",
+     "guard": "Exact gate/reason/operator and specific action known",
+     "to": "Audit append required",
+     "effects": "Append under lock before the bypass action.",
+     "failure_retry": "Audit-write failure forbids the bypass; an override is not a standing grant.",
+     "source": [
+      {
+       "path": "core/surface/commands/override.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+      },
+      {
+       "path": "core/surface/includes/security-gate-record.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+      },
+      {
+       "path": "core/surface/skills/crypto-compliance/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/secret-handling/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-24:01"
+    },
+    "task_ids": [
+     "HW-17",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "8a357edde93538beba17a2887f7397ded9211b85c0b9518f97117f8c049bd25c",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Specific gate/reason and actual operator identity guard ordinary scoped override; security-critical gates use heavier route.",
+   "effect_assessment": "Append attributed audit row under shared canonical audit-path lock and fsync before bypass action.",
+   "failure_retry_assessment": "Failed audit append forbids bypass; no standing grant, rewrite or concurrent raw-append escape during conflict repair.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 11,
+     "end": 37,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "b460ed25a3a9440283b3d9aff3c82deee3e8b0f39d6a98ed6ef06a2c9e22eb01"
+    },
+    {
+     "path": "core/pysrc/_overrideappendlib.py",
+     "start": 99,
+     "end": 152,
+     "file_sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+     "span_sha256": "e196582d5d4b7997988316379a17eb5ca44117f2163bb3757fd104cc4d4d17e3"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-24:02",
+   "machine_id": "WF-24",
+   "frozen_contract": {
+    "transition_id": "WF-24:02",
+    "machine_id": "WF-24",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Security-heavy finding",
+     "event": "Acknowledge override",
+     "guard": "User states the finding in own words and grants exact action",
+     "to": "Audited override candidate",
+     "effects": "Record actual acknowledgment and candidate binding through the approved producer.",
+     "failure_retry": "No self-approved independent PASS; ordinary override text cannot impersonate reviewer evidence.",
+     "source": [
+      {
+       "path": "core/surface/commands/override.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+      },
+      {
+       "path": "core/surface/includes/security-gate-record.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+      },
+      {
+       "path": "core/surface/skills/crypto-compliance/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/secret-handling/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-24:02"
+    },
+    "task_ids": [
+     "HW-17",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "80c9c81d2ada20cc0ceb45ecbe56ba285151d8175b8f13552ad7f4792963a2cc",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "User must acknowledge exact critical/crypto-secret/irreversible finding in own words and authorize exact action; bare yes/general trust insufficient.",
+   "effect_assessment": "Mandatory SECURITY-OVERRIDE audit precedes reviewed-text bypass producer; genuine unavailable-text binary uses distinct combined audited producer.",
+   "failure_retry_assessment": "Attributed bypass, binary marker and independent-review PASS remain distinct. Autonomous sprint cannot auto-decide security-critical override or impersonate reviewer evidence.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 57,
+     "end": 117,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "9b2c1b94f3b4bbbcbefa7429d3eb2411698c6944536ecf05d700505273d1af2c"
+    },
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-24:03",
+   "machine_id": "WF-24",
+   "frozen_contract": {
+    "transition_id": "WF-24:03",
+    "machine_id": "WF-24",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Sensitive staged change",
+     "event": "Independent gate review passes",
+     "guard": "Same worktree, full staged candidate and relevant digests",
+     "to": "Candidate-bound pass marker",
+     "effects": "Write the security/migration record only after actual passing review.",
+     "failure_retry": "New/unstaged/stale/other-worktree content is not covered. Override prose saying sensitive-lines-only is stale; actual writer binds complete candidate too.",
+     "source": [
+      {
+       "path": "core/surface/commands/override.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+      },
+      {
+       "path": "core/surface/includes/security-gate-record.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+      },
+      {
+       "path": "core/surface/skills/crypto-compliance/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/secret-handling/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-24:03"
+    },
+    "task_ids": [
+     "HW-17",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "9a569a44caa4b20f8411f728e07c2dcaf321df521683ef2dee93d6b8f96407d5",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Actual independent PASS applies to same reviewed worktree, complete staged candidate and sensitive diagnostic hashes; marker physical main-worktree location does not change reviewed subject root.",
+   "effect_assessment": "Standalone approved producer records exact candidate only after genuine review; producer success is not semantic reviewer PASS.",
+   "failure_retry_assessment": "Unstaged/untracked/other-worktree/stale rows excluded; unrelated staged edit invalidates. commit -a refusal depends on guarded/absorbed candidate, not universal command ban.",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/security-gate-record.md",
+     "start": 7,
+     "end": 37,
+     "file_sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+     "span_sha256": "63e95b5f803c6b9de6a6e1f435fd0553f25ca010b7ed731447e13e52396d58bd"
+    },
+    {
+     "path": "core/pysrc/security-pass.py",
+     "start": 165,
+     "end": 183,
+     "file_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+     "span_sha256": "c1c05b59ef96835b159bc0b6a17eacbc988d8298b5af38f70717d3684c0ced05"
+    }
+   ],
+   "intake_variances": [],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  },
+  {
+   "id": "WF-24:04",
+   "machine_id": "WF-24",
+   "frozen_contract": {
+    "transition_id": "WF-24:04",
+    "machine_id": "WF-24",
+    "owner": "hooks-workflows",
+    "baseline": {
+     "from": "Append-only log conflict",
+     "event": "Use conflict helper",
+     "guard": "Supported exact three-stage prefix/suffix shape",
+     "to": "Validated append union",
+     "effects": "Retain existing prefix, audit the repair and stage only the exact log.",
+     "failure_retry": "No general rewrite/truncation bypass from this narrow helper.",
+     "source": [
+      {
+       "path": "core/surface/commands/override.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+      },
+      {
+       "path": "core/surface/includes/security-gate-record.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+      },
+      {
+       "path": "core/surface/skills/crypto-compliance/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+      },
+      {
+       "path": "core/surface/skills/secret-handling/SKILL.md",
+       "symbol": "Complete workflow body",
+       "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+      }
+     ],
+     "transition_id": "WF-24:04"
+    },
+    "task_ids": [
+     "HW-17",
+     "HW-27"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+     "SEQ-29"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+   },
+   "frozen_contract_sha256": "c1258038a94115d17ef025f100580f69763b1375a090cbd22f97ec0645549414",
+   "ledger_status": "PLANNED",
+   "assessment": "PRESERVED_SOURCE_CONTRACT_WITH_EXPLICIT_SCOPES",
+   "guard_assessment": "Only supported regular three-stage append-only audit conflict with original prefix, two valid append suffixes and actual attributed reason is admissible.",
+   "effect_assessment": "Keep base then deterministic suffix union and audit repair; actual bounded stage set is selected log plus mandatory clean overrides.log sink when target is gate-events.log, one path when target itself is overrides.log.",
+   "failure_retry_assessment": "Frozen singular stage-only wording is analytical shorthand, not universal one-file effect: unchanged pinned/current helper deliberately stages this exact audited set and validates/rolls back own outputs. No arbitrary rewrite/truncation/general staging bypass.",
+   "witnesses": [
+    {
+     "path": "core/surface/commands/override.md",
+     "start": 38,
+     "end": 54,
+     "file_sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+     "span_sha256": "629e1393a4907fdf37217ce8f986a2584972875467e311b7dd3f92d4f7a08c7b"
+    },
+    {
+     "path": "core/pysrc/_appendonlyconflictlib.py",
+     "start": 348,
+     "end": 440,
+     "file_sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+     "span_sha256": "f8f672bee58c603f646e077dced8876dfc7dde2920988256b3ce9e23ca363077"
+    }
+   ],
+   "intake_variances": [
+    "Singular stage-only clause does not literally cover gate-events.log repair: unchanged pinned/current helper stages exact target plus mandatory clean overrides.log sink; no unrelated paths."
+   ],
+   "basis": "Reasoned pinned/current source and relevant callee inspection; normative guidance is not proof of actual agent compliance."
+  }
+ ],
+ "accepted_changes": {
+  "HW-06": "Dependent-only context conflict pause; independent authorized work including mutations continues.",
+  "HW-14": "Explicit status/standup bounded recovery reader without automatic side effects or complete-count fiction.",
+  "HW-16": "Actual per-turn persona/startup/storage owner statements, retaining passive and active distinctions.",
+  "HW-17": "Whole staged candidate/worktree/security diagnostics binding; producer success is not semantic PASS.",
+  "ADR-0043": "No new artifact approval/reviewer/ticket ceremony for ordinary progress/refresh; actual permissions remain.",
+  "source-bound-followups": "Existing shipped ADR acceptance/correction writer and current active knowledge narrative reads are source-bound improvements, not new blanket authority."
+ },
+ "limits": [
+  "Source-only reasoned inspection, no test/native/build/SDK/provider/model/network/API/install/dispatch/real workflow operation executed.",
+  "Only six machines and twenty-seven actual PLANNED edges proposed; four advanced WF22 rows and all other records/history/epochs retained. No accepted task, scenario, CI, host, promotion or publication qualification.",
+  "ADR43 applies to ordinary progress/refresh; real user/host/security stops and commit/release controls remain. No artifact receipt creates authority or independent review.",
+  "Every literal baseline event/guard/effect/retry is recorded. Managed Markdown preview differs from HTML journaled record writes; spec/plan migration differs from context conversion; audited log target/sink set is explicit.",
+  "Unkeyed hashes and Git names bind cooperative bytes, not hostile same-user containment, semantic truth, actual approval or external authenticity."
+ ]
+}

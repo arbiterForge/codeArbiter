@@ -40,10 +40,7 @@ type FS struct {
 
 const NativeWrites = true
 
-var Backend = map[string]string{
-	"darwin":  "darwin-osroot-flock",
-	"windows": "windows-osroot-lockfileex",
-}[runtime.GOOS]
+var Backend = SupportedBackends[runtime.GOOS]
 
 func Open(root string) (*FS, error) {
 	a, e := filepath.Abs(root)

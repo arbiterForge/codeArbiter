@@ -1,0 +1,63 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".github/scripts/run_artifact_authority_shard.py": "2a274ccc4704979acf8a1301567d897559425f32f04aae7cc1de3f8130423e1d",
+    ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github/scripts/major_qualification_report.py": "0bce288ca86ffa66a5ee6586e7873b955f713e579b1f3f86668c5c68cbed934f",
+    ".github/workflows/ci.yml": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+    ".github/scripts/test_ci20_native_pipeline.py": "e50321586d52115a17d5ad64e4340181ecf0dd200fa447473f07bd4912cc4e89",
+    ".github/scripts/test_artifact_authority_retention.py": "30b87cebeb04a07fb7c061d2e65812723d9b49de4f8fd8526adcc53074136eb5",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+  },
+  "disposition_ids": [
+    "disposition:machines:C06",
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-048-inspection.json",
+      "sha256": "6b5d7eabb2119fbae117fc587392d16a00fdf718af3965a2198701d086f379e8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+      "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json",
+    "sha256": "dcd01c7f5ce5688e8a5a166255fbfe1b2935ae40538125f949cb5e891c9f4d36",
+    "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-048-inspection.json",
+  "scope": "Current source-only originalC06disposition; no task/runtime/host promotion",
+  "limits": [
+    "Four canonical regressions and original real-four-child positive are retained in the code commit, not replayed or restated as installed/OS proof.",
+    "Only source-only PRESERVED dispositions; task/runtime/host/publication status unchanged.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ]
+}

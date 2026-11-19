@@ -1,0 +1,185 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+  ".github/scripts/check_auto_release_candidate.py": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+  ".github/workflows/ci.yml": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+  ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+  "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C15",
+  "disposition:transitions:C15:01",
+  "disposition:transitions:C15:02",
+  "disposition:transitions:C15:03"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C15",
+   "frozen_row_sha256": "392ad8f4f16f798cc5be17b19f71dcb6d1ce16b71df466442e0f41cd9504301e",
+   "clause_ids": [
+    "disposition:transitions:C15:01",
+    "disposition:transitions:C15:02",
+    "disposition:transitions:C15:03",
+    "disposition:transitions:C15:04",
+    "disposition:transitions:C15:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 200,
+     "end": 237,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "967e8ff21047827a9b545587e376f70ddae905a8d1f5ce6fb963b04f3ef1f8be"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 224,
+     "end": 239,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "eb4d1f561f58df848a668b9e13f7c8ce313da5042e18cba17039b01c47f58589"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 89,
+     "end": 98,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "158d6baf5c359e8cb23c378b593b5a860008e1b2281f6247f2e406bf4752b5a5"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 241,
+     "end": 265,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "f65f6fb8c9b6f5d0714a125c91bb49a971a71b7f6d0270550ee023f3fe4a2dde"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 101,
+     "end": 197,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "e5507260c47b087ef4730dcb01f7d2720e2df6857aa92a02abb7b0382a5e683a"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4910,
+     "end": 4927,
+     "file_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+     "span_sha256": "13e876799663d25e56bf70085fc6880912260889bb623ef3ed50a5bae28d8222"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 178,
+     "end": 191,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "476cf91bb6bb8341e04ce2217aa983ec6750be1b69fbf2e8105e0ea98359afdb"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 101,
+     "end": 122,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "f75d3674cc8762d245161a9357ea267e55c53c9ff8a7bfaa771adf019e3333c4"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 174,
+     "end": 197,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "1f368a27f371bf0973ca8c302a5ad15399da2cd069bca046afa5c6042e9ebe3c"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:01",
+   "frozen_row_sha256": "8d758a684aaa9687d907772f0013e8239cd6a94bf8883cd60f2dd50780fc8881",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 200,
+     "end": 237,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "967e8ff21047827a9b545587e376f70ddae905a8d1f5ce6fb963b04f3ef1f8be"
+    }
+   ],
+   "semantic_assessment": "Candidate checker resolves the exact commit and complete target declarations, requires manifest agreement, and rejects a version behind the highest stable target tag. New-version eligibility is computed per target.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:02",
+   "frozen_row_sha256": "cdc844114b8302b05c5a82681390984cd51f51f92331cd426e40ab0daa4d9611",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 224,
+     "end": 239,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "eb4d1f561f58df848a668b9e13f7c8ce313da5042e18cba17039b01c47f58589"
+    }
+   ],
+   "semantic_assessment": "A target not newer than its latest stable tag skips new-intent checks and returns an ineligible TargetResult. This accepts the candidate check, not a publication or readiness record.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C15:03",
+   "frozen_row_sha256": "29c6a2247ad773c01e83624d29001f4139e95ddce8b26728524b1d3a50541be7",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 89,
+     "end": 98,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "158d6baf5c359e8cb23c378b593b5a860008e1b2281f6247f2e406bf4752b5a5"
+    },
+    {
+     "path": ".github/scripts/check_auto_release_candidate.py",
+     "start": 241,
+     "end": 265,
+     "file_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+     "span_sha256": "f65f6fb8c9b6f5d0714a125c91bb49a971a71b7f6d0270550ee023f3fe4a2dde"
+    }
+   ],
+   "semantic_assessment": "Eligible target binds the latest first-parent changelog change, same version, and an unchanged declared manifest/generated/changelog/payload/artifact surface through the candidate, including declared exclusions. Drift rejects and requires a new intent commit.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

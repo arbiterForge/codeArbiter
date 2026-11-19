@@ -1,0 +1,40 @@
+{
+  "source_commit": "3bd40349f4a403a38ac01979369875faad258548",
+  "head_after": "3bd40349f4a403a38ac01979369875faad258548",
+  "started_at": "2026-11-14T08:36:16.565398+00:00",
+  "finished_at": "2026-11-14T08:36:21.489587+00:00",
+  "elapsed_seconds": 4.924269700073637,
+  "command": {
+    "argv": [
+      "C:\\Python314\\python.exe",
+      "-B",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-owned-settings-326a5zp2\\run-selected.py",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-owned-settings-326a5zp2"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "exit_code": 0
+  },
+  "observer_command": {
+    "argv": [
+      "C:\\Python314\\python.exe",
+      "-B",
+      "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-seq21-owned-settings-326a5zp2\\observe.py"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter"
+  },
+  "python": {
+    "executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "platform": "Windows-11-10.0.26200-SP0"
+  },
+  "input_count": 102,
+  "literal_git_join": true,
+  "inputs_stable": true,
+  "initial_status": "?? .codearbiter/.artifacts/\n",
+  "index_raw_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "home_empty_after": true,
+  "fixture_temp_empty_after": true,
+  "secrets_environment": "minimal runtime allowlist, private home and private TEMP set before any test imports; no inherited provider variables",
+  "scope": "Existing unittest main-function calls with real settings files and mocked authenticated adapter identity only. No host installation/native build/browser/provider/network."
+}

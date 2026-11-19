@@ -1,0 +1,31 @@
+{
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "--target",
+    "ES2022",
+    "--module",
+    "ESNext",
+    "--moduleResolution",
+    "Bundler",
+    "--lib",
+    "ES2022",
+    "--types",
+    "node",
+    "--strict",
+    "--esModuleInterop",
+    "--skipLibCheck",
+    "--forceConsistentCasingInFileNames",
+    "--resolveJsonModule",
+    "test/components/search-boundaries.spec.ts"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-search-boundaries-45a6\\site",
+  "exit_code": 0,
+  "seconds": 0.583,
+  "observed_test_sha256": "268ce616672f45114c3adeebc87ae9149bc51faf1aa70a7834af4009feb930bf",
+  "final_test_sha256": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+  "executable_JS_sha256": "458645c21a3071483fa15eb3ba6752d92935f0557f46fdce1f7ee55947c9828e",
+  "declaration_only_change": true,
+  "scope": "Site exact compiler options, only new file; not whole-site typecheck. No declared lint script."
+}

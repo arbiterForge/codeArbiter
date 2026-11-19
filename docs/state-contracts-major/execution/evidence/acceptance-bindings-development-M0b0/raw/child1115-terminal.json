@@ -1,0 +1,506 @@
+{
+  "schema": "exact-pr-watch-terminal-disposition/1",
+  "recorded_utc": "2026-11-16T21:29:14.154130+00:00",
+  "pr": 1115,
+  "expected_head": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "observed_head": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "base": "major/state-contracts",
+  "ci": {
+    "id": 43954090117,
+    "head_sha": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "path": ".github/workflows/ci.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "docs": {
+    "id": 43954091033,
+    "head_sha": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+    "event": "pull_request",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "success",
+    "path": ".github/workflows/docs.yml",
+    "head_branch": "codex/state-contracts-remaining-qualification"
+  },
+  "verdict": "PASS",
+  "counts": {
+    "SKIPPED": 8,
+    "SUCCESS": 92
+  },
+  "all_checks_terminal": true,
+  "required": [
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43954090117/job/133625767627",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "SUCCESS"
+    }
+  ],
+  "program_controls": {
+    "verdict": "PASS",
+    "controls": [
+      {
+        "job": 133604096559,
+        "os": "ubuntu-latest",
+        "job_id": 133603916447,
+        "bytes": 266572,
+        "sha256": "3653e4d135e58a2abe9781c37446cdab26ba29d32e6f8a9a7c6852baf2eaee0f",
+        "state": "READ"
+      },
+      {
+        "job": 133604096643,
+        "os": "windows-latest",
+        "job_id": 133603916447,
+        "bytes": 266572,
+        "sha256": "3653e4d135e58a2abe9781c37446cdab26ba29d32e6f8a9a7c6852baf2eaee0f",
+        "state": "READ"
+      },
+      {
+        "job": 133604096613,
+        "os": "macos-latest",
+        "job_id": 133603916447,
+        "bytes": 266572,
+        "sha256": "3653e4d135e58a2abe9781c37446cdab26ba29d32e6f8a9a7c6852baf2eaee0f",
+        "state": "READ"
+      }
+    ]
+  },
+  "typescript_coverage": [
+    {
+      "job": 133610033696,
+      "tree": "plugins/ca-pi/tools",
+      "host_count": 2,
+      "status": "COMPLETE_SUPPORTED_HOST_UNION",
+      "required_metrics": [
+        "lines",
+        "branches"
+      ],
+      "threshold": 70,
+      "metrics": [
+        {
+          "metric": "statements",
+          "percent": 81.92,
+          "covered": 7171,
+          "total": 8753
+        },
+        {
+          "metric": "branches",
+          "percent": 81.96,
+          "covered": 6505,
+          "total": 7936
+        },
+        {
+          "metric": "functions",
+          "percent": 84.94,
+          "covered": 1145,
+          "total": 1348
+        },
+        {
+          "metric": "lines",
+          "percent": 86.95,
+          "covered": 6095,
+          "total": 7009
+        }
+      ],
+      "log_sha256": "99478f096c2fa0ef9c3b5507d52f62e637246150ca70ee366feb1e6ccb544124"
+    },
+    {
+      "job": 133611209357,
+      "tree": "plugins/ca/tools",
+      "host_count": 2,
+      "status": "COMPLETE_SUPPORTED_HOST_UNION",
+      "required_metrics": [
+        "lines",
+        "branches"
+      ],
+      "threshold": 70,
+      "metrics": [
+        {
+          "metric": "statements",
+          "percent": 73.37,
+          "covered": 1684,
+          "total": 2295
+        },
+        {
+          "metric": "branches",
+          "percent": 74.15,
+          "covered": 1406,
+          "total": 1896
+        },
+        {
+          "metric": "functions",
+          "percent": 67.3,
+          "covered": 212,
+          "total": 315
+        },
+        {
+          "metric": "lines",
+          "percent": 74.94,
+          "covered": 1433,
+          "total": 1912
+        }
+      ],
+      "log_sha256": "fd9afa731aa67e89019321589304472ea19e3c722649af60628de7ca674501c7"
+    }
+  ],
+  "native_coverage": {
+    "expected_platforms": [
+      "darwin/amd64",
+      "darwin/arm64",
+      "linux/amd64",
+      "linux/arm64",
+      "windows/amd64",
+      "windows/arm64"
+    ],
+    "go_version": "go1.27.1",
+    "metric": "statements",
+    "minimum_met": true,
+    "minimum_statements": 70.0,
+    "missing_platforms": [],
+    "not_measured": [
+      "lines",
+      "branches"
+    ],
+    "platforms": [
+      "darwin/amd64",
+      "darwin/arm64",
+      "linux/amd64",
+      "linux/arm64",
+      "windows/amd64",
+      "windows/arm64"
+    ],
+    "source_sha256": "aa34ecc4f2d9369228c6f41e1f0d1289ca3b660613f9fee3adaeab0f31042c4b",
+    "statements": {
+      "covered": 11957,
+      "percent": 85.0487,
+      "total": 14059
+    },
+    "status": "COMPLETE"
+  },
+  "native_job_outcomes_only": {
+    "[CHECK] | [CORE] | Tested native candidate build <": [
+      {
+        "id": 133604096174,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096240,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096274,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096281,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096285,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096416,
+        "name": "[CHECK] | [CORE] | Tested native candidate build <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "[CHECK] | [CORE] | Default native, storage and context checks <": [
+      {
+        "id": 133604095906,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604095937,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604095938,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096022,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096026,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133604096087,
+        "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "[CHECK] | [CORE] | Native adapters and conformance <": [
+      {
+        "id": 133610178234,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178270,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178278,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178474,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178851,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610179276,
+        "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "[CHECK] | [CORE] | Native authority <": [
+      {
+        "id": 133610178167,
+        "name": "[CHECK] | [CORE] | Native authority <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178243,
+        "name": "[CHECK] | [CORE] | Native authority <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178260,
+        "name": "[CHECK] | [CORE] | Native authority <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178290,
+        "name": "[CHECK] | [CORE] | Native authority <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610178491,
+        "name": "[CHECK] | [CORE] | Native authority <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133610179234,
+        "name": "[CHECK] | [CORE] | Native authority <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ],
+    "[CHECK] | [CORE] | Structured artifact cold package  <": [
+      {
+        "id": 133621524759,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133621524807,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133621524812,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133621524819,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133621524890,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      },
+      {
+        "id": 133621524911,
+        "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+        "status": "completed",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "original_logs": [
+    {
+      "job": 133603916447,
+      "name": "[CHECK] | [REPO] | Impact selection",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133603916447.log",
+      "bytes": 266572,
+      "sha256": "3653e4d135e58a2abe9781c37446cdab26ba29d32e6f8a9a7c6852baf2eaee0f"
+    },
+    {
+      "job": 133604096559,
+      "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096559.log",
+      "bytes": 857612,
+      "sha256": "cabe6e5c76a58477058b286c6f6601669ace1e511e7cf75e1cb69693cd85cfc2"
+    },
+    {
+      "job": 133604096643,
+      "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096643.log",
+      "bytes": 872099,
+      "sha256": "03427074c4d2b931c2ad7683919d8c3bfb31ed50f7c7de03c43b6f5b031c943d"
+    },
+    {
+      "job": 133604096613,
+      "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096613.log",
+      "bytes": 857063,
+      "sha256": "76cc4efe239e4e86c0d148f48bfe74763212d9f54954eb4420051a76cd3f920f"
+    },
+    {
+      "job": 133610033696,
+      "name": "[CHECK] | [PI  ] | Coverage union",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133610033696.log",
+      "bytes": 43442,
+      "sha256": "99478f096c2fa0ef9c3b5507d52f62e637246150ca70ee366feb1e6ccb544124"
+    },
+    {
+      "job": 133611209357,
+      "name": "[CHECK] | [REPO] | Coverage union",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133611209357.log",
+      "bytes": 97215,
+      "sha256": "fd9afa731aa67e89019321589304472ea19e3c722649af60628de7ca674501c7"
+    },
+    {
+      "job": 133604096740,
+      "name": "Coverage union  <os: ubuntu-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096740.log",
+      "bytes": 61152,
+      "sha256": "e589c077d0e58ca96dda1f3063524375df62ab7056822d722db844d8e78e4baa"
+    },
+    {
+      "job": 133604096712,
+      "name": "Coverage union  <os: windows-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096712.log",
+      "bytes": 74454,
+      "sha256": "35421b47a0462c3df92aa7765f67e420fccd8f3548537195c75a04f94548ad55"
+    },
+    {
+      "job": 133604096885,
+      "name": "Coverage union (Pi)  <os: ubuntu-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096885.log",
+      "bytes": 38209,
+      "sha256": "ec7c5c63f90c3d210ad86aeff4fb4f0c83291219d9db4d94969153aa849a805e"
+    },
+    {
+      "job": 133604096974,
+      "name": "Coverage union (Pi)  <os: windows-latest>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096974.log",
+      "bytes": 50216,
+      "sha256": "f9558bda6b36b50964a3b0961961723eebaa20d64f877767a9cfc3f6cc418e5b"
+    },
+    {
+      "job": 133613868360,
+      "name": "[CHECK] | [CORE] | Native Go statement coverage",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133613868360.log",
+      "bytes": 36595,
+      "sha256": "876223f3527995e8b0b8178d39e83be5298f822977334b033c81870bc0d72cbc"
+    },
+    {
+      "job": 133604096169,
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/amd64>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096169.log",
+      "bytes": 93930,
+      "sha256": "b6045d32419b0a9de9857fe5a923eef79cca72d086a1aadf330f301387e34e79"
+    },
+    {
+      "job": 133604096303,
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/arm64>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096303.log",
+      "bytes": 89085,
+      "sha256": "8a53ed4218cbdd5b3f5a4afa112f323f7114893a55f026345d080d0614cd126f"
+    },
+    {
+      "job": 133604096077,
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/amd64>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096077.log",
+      "bytes": 89609,
+      "sha256": "cb95de80dc43d850450263509aa39c3e1f91a3158dfdf11faba489d0b06aad27"
+    },
+    {
+      "job": 133604096248,
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/arm64>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096248.log",
+      "bytes": 89731,
+      "sha256": "b3855f507831b36a3a5e6163e5dced3bdf1a24f7f434e195308dedb2fdb440c4"
+    },
+    {
+      "job": 133604096321,
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/amd64>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096321.log",
+      "bytes": 92029,
+      "sha256": "43a2c9deee61126d018e74938c44958723b64d7240d13afac28798c37f68f5b1"
+    },
+    {
+      "job": 133604096172,
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/arm64>",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-9d714e4c-watch-t976m54h\\selected-original-133604096172.log",
+      "bytes": 96154,
+      "sha256": "4c963fc0b4f0705fed2b7138777129c4a5b7cb7df9b4484867f2d6ee8d0d4822"
+    }
+  ],
+  "terminal_receipt_sha256": "8883c4a29590fe0fe491a3da18962acadcedde9e8e0a7c676ac5ccf8ba149773",
+  "final_summary_sha256": "90a0ef72ea2c2d6c6a9b974b4a44fabd19da14dfe1fd3e936bd5b058566077c5",
+  "merge_performed": false,
+  "qualification_promotion": false,
+  "limits": [
+    "PR checks do not qualify installed/native normal-run evidence.",
+    "No retry/cancel/merge/source/ref writes; parent1098 held from main.",
+    "Exactly one naturally completed local watcher; no active watch remains.",
+    "Original PR receipts and coverage do not replace a fresh trusted normal-integration run or its original payload authentication."
+  ]
+}

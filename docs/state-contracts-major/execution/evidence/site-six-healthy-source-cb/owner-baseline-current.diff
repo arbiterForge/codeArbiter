@@ -1,0 +1,337 @@
+--- baseline/site/scripts/execution-maps/atlas.ts
++++ current/site/scripts/execution-maps/atlas.ts
+@@ -16,6 +16,7 @@
+ import debug from './atlas-data/debug-handoff.json';
+ import tribunal from './atlas-data/tribunal-lifecycle.json';
+ import assistiveUpdate from './atlas-data/assistive-update.json';
++import majorUpdate from './atlas-data/major-state-contracts-update.json';
+ 
+ // Original diagram/source links retain REVIEWED_AT. Freshness is separately
+ // revalidated against this exact source revision, never whichever HEAD is newest.
+@@ -95,6 +96,19 @@
+ // #1054 caches packaged schema patterns and default presentation assets after
+ // validation. Rendered artifact semantics and the reviewed map stay the same.
+ export const SCHEMA_CACHE_RENDER_BLOB='916287678b836f1bf9a98782dc8e7d0bb58d6986';
++
++// The Pi 1.5.0 promotion changes the supported host fingerprint and its owned
++// compatibility guidance, not the historical atlas geometry. Bind those exact
++// reviewed bytes without relabelling the older repository-wide revalidation.
++export const PI_SUPPORT_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
++  'core/hosts.json':'2fc53a8b7ca7b0e5a656f5640d9662d798af8856',
++  'core/surface/commands/doctor.md':'1c912de8eea432af5aec35d84294bae28a7b339a',
++  'core/surface/includes/ops-mode.md':'cb1b2fef89a60711ca6a038b0e18b22dea9e07c8',
++  'core/surface/includes/pi-host-notes.md':'3df45a408ecb79c772f188d4151449d85fab1492',
++  'core/surface/includes/safety-core.md':'2c42c9a4765accd00a21e13ba753a722f99f15bb',
++  'docs/parity.md':'17d824a7ddc47662daa9d4069ac5afd453e033ac',
++});
++export const PI_HOST_DESCRIPTOR_BLOB=PI_SUPPORT_SOURCE_BLOBS['core/hosts.json'];
+ 
+ // PR1029 adds an operator-confirmed, exact-digest recovery for one stranded
+ // Tribunal write lock. S29's resume/history/continue path still requires the
+@@ -194,10 +208,12 @@
+   'core/surface/skills/subagent-driven-development/SKILL.md':'0d96d04585e579907b3a86d7b2823a9079f60b59',
+ });
+ // Native-first enrollment changes the scaffold, selected Work instructions and
+-// plan attachment text. The existing atlas routes and gate owners still apply;
+-// bind the exact reviewed source bytes for the affected inputs.
++// plan attachment text. The greenfield marker repair retains those routes while
++// accepting only the bounded session-start marker-file set that can precede enrollment.
++// The existing atlas routes and gate owners still apply; bind the exact reviewed
++// source bytes for the affected inputs.
+ export const NATIVE_FIRST_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+-  'core/pysrc/init-codearbiter.py':'40a841ce804efc29ace2abe75fe4c2989b9131b8',
++  'core/pysrc/init-codearbiter.py':'f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4',
+   'core/surface/SPRINT.md':'f5eea338a7a053d6dbaff0f9332dcfe9bf5f82e7',
+   'core/surface/commands/feature.md':'6a5fcbc7469ac82a2586ff3ae168d7c0fa5fd907',
+   'core/surface/commands/fix.md':'e81d7a9190b160d248aa7ea322b272cb8fa5badc',
+@@ -234,10 +250,12 @@
+ // distinguish a broken host adapter from an opaque edit, and make both
+ // security producers standalone commands. These change recovery text and
+ // refusal classification without adding an owner, gate, or route.
++// PR1094's review follow-up only aligns the enumerated board-transition
++// guidance with the existing classifier; route and gate ownership stay fixed.
+ export const HOOK_RECOVERY_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze({
+   'core/pysrc/_bashguardlib.py':'0f899bc13543ac3832e8bc8e488e6a96391a8e24',
+   'core/surface/commands/override.md':'d5b32413bca07aa89b60a6027d533b8ae56d8ed4',
+-  'core/surface/skills/commit-gate/SKILL.md':'94f80240e35df2f92181d00c67fe1cac07c2fb8b',
++  'core/surface/skills/commit-gate/SKILL.md':'79ae22722040e774a769047fde17427398eb0073',
+ });
+ // The corrective handoff changes guard classification, state diagnostics,
+ // authority handoffs and payload identity reporting without adding routes or
+@@ -296,6 +314,11 @@
+   'docs/parity.md':'ea25f8681bcd2c4d5be27ea79fc9f365aee175fc',
+ });
+ 
++// Current program bindings supersede only the named owners; all historical packets remain intact.
++export const MAJOR_SOURCE_BLOBS:Readonly<Record<string,string>>=Object.freeze(
++  Object.fromEntries(majorUpdate.changes.map(change=>[change.path,change.blob])),
++);
++
+ function rootBoundGitEnv():NodeJS.ProcessEnv {
+   const env={...process.env};
+   // Match core/pysrc/_gitexec.py: retain configuration such as safe.directory,
+@@ -411,15 +434,31 @@
+   setNode('debug-handoff','d-task',undefined,
+     'A concrete follow-up uses the selected work owner under existing authorization.\nThe work.py facade routes native and legacy writes without a second board.\nA design question may lead to an attributed ADR later, never by automatic conversion.');
+ }
++/** Current text over retained spatial positions; source packets keep their original bytes. */
++function applyMajorRoutes(atlas:Atlas):void {
++  const set=(id:string,body:string,detail?:string):void=>{
++    const node=atlas.views.flatMap(view=>view.nodes).find(node=>node.id===id);
++    if(!node?.layout.body)throw new Error(`Major-program atlas node missing: ${id}`);
++    node.body=body;node.layout.body.lengths=body.split('\n').map(line=>Array.from(line).length);
++    if(detail)node.detail=detail;
++  };
++  set('k-conflict','Contradictory governing rules\nPause affected work and dependents\nContinue independent authorized work',
++    'Retain both exact sources and actual authority, data or decision dependencies. Shared dependencies can expand the pause. Unknown dependencies need inspection; an explicit global user or host stop remains global.');
++  set('k-task','Capture follow-ups at discovery\nPromote selected authorized items\nReport exact target readback');
++  set('c-harvest','Register qualifying findings early\nReconcile uncertain effects before retry\nPromote only under existing authority',
++    'Discovery capture retains exact extractor origin, stable workflow/work run and source fingerprint. Terminal harvest reconciles each selected operation and target. Unregistered text and durable:false reports are not recovered obligations; a new session does not inherit a revoked grant.');
++  const recovery=atlas.views.flatMap(view=>view.nodes).find(node=>node.id==='f-recovery')!;
++  recovery.detail='Inspect the durable operation outcome before retry. Registered follow-ups survive interruption in a Git-common journal; current authority and exact source/target binding are checked again. Partial or unavailable inventory remains explicit, and status never repairs or promotes work. Unknown effects hold only dependent resources. Only finite trusted reason codes supply bounded recovery guidance; status never replays effects or regrants authority. An uncertain decline stays claimed until exact audit readback, and changed facts use a new linked obligation without reopening settled history. Installed-cohort and real parent-host qualification remain separate.';
++}
+ export function loadAtlas(root=repositoryRoot()):Atlas {
+   const atlas=originalAtlas();
+   if(atlas.commit!==REVIEWED_AT)throw new Error('Atlas review identities disagree');
+-  const pinFor=(path:string,pin?:string):string|undefined=>pin??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
++  const pinFor=(path:string,pin?:string):string|undefined=>pin??MAJOR_SOURCE_BLOBS[path]??PI_SUPPORT_SOURCE_BLOBS[path]??PERSONA_CONTEXT_SOURCE_BLOBS[path]??HOOK_RECOVERY_SOURCE_BLOBS[path]??CORRECTIVE_SOURCE_BLOBS[path]??TRACKER_COORDINATION_SOURCE_BLOBS[path]??NATIVE_FIRST_SOURCE_BLOBS[path]??SED_READ_SOURCE_BLOBS[path]??WORK_SYSTEM_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?MARKER_PREFLIGHT_BLOB:undefined)??(path==='core/artifacts/internal/render/render.go'?SCHEMA_CACHE_RENDER_BLOB:undefined)??TRIBUNAL_LOCK_RECOVERY_SOURCE_BLOBS[path]??CONTEXT_KNOWLEDGE_SOURCE_BLOBS[path]??COMMAND_REMOVAL_SOURCE_BLOBS[path]??SMARTS_INTEGRATION_SOURCE_BLOBS[path]??ASSISTIVE_SOURCE_BLOBS[path]??RUNTIME_COMPATIBILITY_SOURCE_BLOBS[path]??CONTEXT_MAINTENANCE_SOURCE_BLOBS[path]??DRAFT_PREVIEW_SOURCE_BLOBS[path]??BROWNFIELD_SOURCE_BLOBS[path]??LEGACY_CODE_MAP_SOURCE_BLOBS[path]??(path==='core/pysrc/_artifactauthoritylib.py'?UNITTEST_COLLECTOR_BLOB:undefined);
+   const requests=new Map<string,string|undefined>([
+-    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',undefined],
++    ['core/surface/command-routes.json',catalog.catalog_snapshot.verified_current_blob],['core/hosts.json',PI_HOST_DESCRIPTOR_BLOB],
+   ]);
+   for(const path of [...atlas.sources.filter(source=>!source.path.startsWith('site/')).map(source=>source.path),
+-    ...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
++    ...Object.keys(MAJOR_SOURCE_BLOBS),...Object.keys(ASSISTIVE_SOURCE_BLOBS),...Object.keys(CORRECTIVE_SOURCE_BLOBS),...atlas.commands.filter(command=>!RETIRED_COMMANDS[command.name]).map(command=>`core/surface/commands/${command.name}.md`)
+   ])if(!requests.has(path))requests.set(path,pinFor(path));
+   const checked=checkedSources(root,requests);
+   const read=(path:string,pin?:string):string=>{
+@@ -464,10 +503,17 @@
+   if(JSON.stringify(names)!==JSON.stringify(expected))throw new Error('Atlas lens roster changed; review the Tribunal route');
+   atlas.lensCount=names.length;
+   applySelectedWorkRoute(atlas);
++  applyMajorRoutes(atlas);
+   atlas.scope+=` Original source links and spatial positions retained; task labels show the selected work owner. Source compatibility revalidated at ${REVALIDATED_AT}.`;
+   atlas.scope+=` Unittest collector compatibility bound to reviewed blob ${UNITTEST_COLLECTOR_BLOB}.`;
+-  atlas.sourceUpdate=structuredClone(assistiveUpdate);
++  const currentChanges=new Map(assistiveUpdate.changes.map(change=>[change.path,structuredClone(change)]));
++  for(const change of majorUpdate.changes) {
++    const previous=currentChanges.get(change.path);
++    currentChanges.set(change.path,{...structuredClone(change),nodes:[...new Set([...(previous?.nodes??[]),...change.nodes])],summary:change.summary+(previous?' Historical source packet: '+previous.summary:'')});
++  }
++  atlas.sourceUpdate={...structuredClone(majorUpdate),summary:majorUpdate.summary+' '+assistiveUpdate.summary,changes:[...currentChanges.values()]};
+   atlas.scope=`Historical route snapshot at ${REVIEWED_AT}. Current assistive source bindings identify inspected implementation bytes, with ${assistiveUpdate.revision} as the committed source base. Live host qualification and release are separate evidence. `+atlas.scope;
++  atlas.scope+=` State-contract changes bind ${majorUpdate.changes.length} complete owner files by exact Git blob; source base ${majorUpdate.revision}.`;
+   atlas.caveats=atlas.caveats.map(note=>`Historical snapshot: ${note}`);
+   const errors=validateAtlas(atlas);if(errors.length)throw new Error(errors.join('\n'));
+   return atlas;
+--- baseline/site/scripts/release-applicability.ts
++++ current/site/scripts/release-applicability.ts
+@@ -27,12 +27,21 @@
+ /** Whether the selected tag's original-publication receipt has been reconciled into the ledger. */
+ export type OriginalPublicationReceiptStatus = "recorded" | "not-recorded";
+ 
++export interface PublicationObservation {
++  state: "unknown" | "published" | "draft" | "tag-only" | "mismatch";
++  observedAt?: string;
++  workflowRun?: string;
++  observationSource?: string;
++  releaseId?: number;
++}
++
+ export interface CurrentGovernanceRelease {
+   target: GovernanceTarget;
+   version: string;
+   tag: string;
+   publicationCommit: string;
+   originalPublicationReceipt: OriginalPublicationReceiptStatus;
++  publication?: PublicationObservation;
+ }
+ 
+ /** A release tag in the checkout and the commit it peels to. */
+@@ -95,6 +104,7 @@
+     hostDiscoveryProven: boolean;
+     replayDigest: string;
+     applicable: boolean;
++    publication: PublicationObservation;
+     statement: string;
+     currentSource: {
+       path: string;
+@@ -121,6 +131,7 @@
+   proof: DirectHookReplayEvidence;
+   currentHookSource: string | Uint8Array;
+   git: ReleaseApplicabilityGit;
++  publicationObservation?: unknown;
+ }
+ 
+ interface ReleaseTarget {
+@@ -394,14 +405,8 @@
+   return 0;
+ }
+ 
+-/**
+- * Select each governance host's latest published release: the highest stable
+- * SemVer release tag in the checkout. The receipt ledger no longer gates new
+- * tags (ADR-0040), so it lags publication; it supplies only the separate
+- * original-publication receipt status, and a recorded receipt must name the
+- * same commit as the tag. Docs builds fetch full history and tags; a checkout
+- * with no stable tag for a host fails closed rather than presenting a stale row.
+- */
++/** Select the highest stable local tag as a source identity. This does not
++ * establish that a GitHub Release exists, is non-draft, or is currently public. */
+ export function selectCurrentGovernanceReleases(
+   releaseTargetsMarkdown: string,
+   publishedTagsJson: string,
+@@ -581,12 +586,44 @@
+   return { mode: "local", commit, dirty: git.isDirty() };
+ }
+ 
++/** Consume the existing release owner's durable observation, matching the exact
++ * tag, manifest version and peeled commit. Historical receipts are not inputs.
++ * The timestamp is retained: this is an observation, never a live API claim. */
++export function observedPublication(release: CurrentGovernanceRelease, input: unknown): PublicationObservation {
++  const unknown: PublicationObservation = { state: "unknown" };
++  if (!input || typeof input !== "object" || Array.isArray(input)) return unknown;
++  const record = input as Record<string, unknown>;
++  if (record.format !== "codearbiter.route-publication-observation/0.1.0"
++      || record.clock_starts !== "confirmed-non-draft-github-release"
++      || !["public", "draft-inclusive"].includes(String(record.release_visibility))
++      || typeof record.source_commit !== "string" || !NONZERO_LOWER_COMMIT_SHA.test(record.source_commit)
++      || typeof record.workflow_run !== "string" || !/^[1-9][0-9]*$/.test(record.workflow_run)
++      || typeof record.observed_at !== "string" || !/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(record.observed_at)
++      || !Number.isFinite(Date.parse(record.observed_at)) || Date.parse(record.observed_at) > Date.now() + 60000
++      || !Array.isArray(record.observations)) return unknown;
++  const matches = record.observations.filter((row: unknown) => row && typeof row === "object"
++    && (row as Record<string, unknown>).target === release.target && (row as Record<string, unknown>).tag === release.tag);
++  if (matches.length !== 1) return unknown;
++  const row = matches[0] as Record<string, unknown>;
++  if (row.tag_commit !== release.publicationCommit || row.first_containing_version !== release.version) return unknown;
++  const provenance = { observedAt: record.observed_at, workflowRun: record.workflow_run, observationSource: record.source_commit };
++  if (row.state === "published" && row.release_draft === false && Number.isSafeInteger(row.release_id) && Number(row.release_id) > 0)
++    return { state: "published", releaseId: Number(row.release_id), ...provenance };
++  if (row.state === "draft" && row.release_draft === true && Number.isSafeInteger(row.release_id) && Number(row.release_id) > 0)
++    return { state: "draft", releaseId: Number(row.release_id), ...provenance };
++  if (row.state === "tag-only" && record.release_visibility === "draft-inclusive" && row.release_id === null && row.release_draft === null)
++    return { state: "tag-only", ...provenance };
++  if (row.state === "mismatch") return { state: "mismatch", ...provenance };
++  return unknown;
++}
++
+ export function createReleaseApplicabilityRecord({
+   build,
+   releases,
+   proof,
+   currentHookSource,
+   git,
++  publicationObservation,
+ }: CreateReleaseApplicabilityRecordInput): ReleaseApplicabilityRecord {
+   if (proof.evidenceKind !== DIRECT_HOOK_EVIDENCE_KIND) {
+     throw new Error(`Direct-hook replay evidenceKind must be ${DIRECT_HOOK_EVIDENCE_KIND}`);
+@@ -617,6 +654,7 @@
+       tag: release.tag,
+       publicationCommit: release.publicationCommit,
+       originalPublicationReceipt: release.originalPublicationReceipt,
++      publication: observedPublication(release, publicationObservation),
+       manifestPath: release.manifestPath,
+       manifestPaths: [...release.manifestPaths],
+     };
+@@ -658,10 +696,13 @@
+   const currentMatches = currentDigest === replayDigest;
+   const publishedMatches = publishedDigest === replayDigest;
+   const applicable = currentMatches && publishedMatches;
+-  const statement = applicable
+-    ? "Replay digest applies to both the current hook source and the exact latest published ca artifact source."
++  const publication = publishedCa.publication;
++  const artifactLabel = publication.state === "published" ? "observed published ca artifact" : "selected ca tag";
++  const statement = (applicable
++    ? `Replay digest applies to both the current hook source and the exact ${artifactLabel} source.`
+     : `Replay digest mismatch: current hook source ${currentMatches ? "matches" : "does not match"}; `
+-      + `latest published ca artifact source ${publishedMatches ? "matches" : "does not match"}.`;
++      + `${artifactLabel} source ${publishedMatches ? "matches" : "does not match"}.`)
++    + ` Publication state: ${publication.state}${publication.observedAt ? ` (observed ${publication.observedAt})` : ""}.`;
+ 
+   return {
+     schemaVersion: 3,
+@@ -687,6 +728,7 @@
+       hostDiscoveryProven: proof.hostDiscoveryProven,
+       replayDigest,
+       applicable,
++      publication,
+       statement,
+       currentSource: {
+         path: proof.source,
+@@ -862,8 +904,23 @@
+   );
+   const build = resolveDocumentationBuildIdentity(git, environment);
+   const currentHookSource = readFileSync(currentHookPath);
++  let publicationObservation: unknown;
++  const observationPath = environment.CODEARBITER_PUBLICATION_OBSERVATION;
++  if (observationPath) {
++    try {
++      const path = resolve(observationPath);
++      let cursor = path;
++      while (true) {
++        if (lstatSync(cursor).isSymbolicLink()) throw new Error("linked publication observation");
++        const parent = dirname(cursor); if (cursor === parent) break; cursor = parent;
++      }
++      if (!lstatSync(path).isFile() || lstatSync(path).size > 1048576) throw new Error("unbounded publication observation");
++      publicationObservation = JSON.parse(readFileSync(path, "utf8"));
++    } catch { publicationObservation = undefined; }
++  }
+   const record = createReleaseApplicabilityRecord({
+     build,
++    publicationObservation,
+     releases,
+     proof,
+     currentHookSource,
+--- baseline/site/scripts/version-facts.ts
++++ current/site/scripts/version-facts.ts
+@@ -126,7 +126,15 @@
+   add("node.minimum", nodeMinimum[1], SOURCES.piPackage);
+ 
+   const ciSource = read(SOURCES.ciWorkflow);
+-  const ciMatrix = exactlyOne(ciSource, /^\s*codex-version: \[([^\]]*)\]\s*$/m, "codex.ci", SOURCES.ciWorkflow);
++  // The source compatibility job owns this fact. Other installed-observer
++  // jobs may deliberately test their own independent Codex matrix.
++  const codexHost = exactlyOne(
++    ciSource,
++    /^  codex-host:[ \t]*\r?\n([\s\S]*?)(?=^  [A-Za-z0-9_-]+:[^\r\n]*(?:\r?\n|$)|(?![\s\S]))/m,
++    "codex.ci job",
++    SOURCES.ciWorkflow,
++  );
++  const ciMatrix = exactlyOne(codexHost[1], /^        codex-version: \[([^\]]*)\][ \t]*\r?$/m, "codex.ci", SOURCES.ciWorkflow);
+   const ciVersions = quotedList(ciMatrix[1], "codex.ci", SOURCES.ciWorkflow);
+   add("codex.ci", ciVersions.join(" and "), SOURCES.ciWorkflow);
+ 
+--- baseline/site/src/release-applicability-presentation.ts
++++ current/site/src/release-applicability-presentation.ts
+@@ -4,6 +4,7 @@
+ 
+ export interface ProofApplicabilityInput {
+   applicable: boolean;
++  publication?: { state: string };
+   publishedSource: { matchesReplay: boolean };
+   currentSource: { matchesReplay: boolean };
+ }
+@@ -22,17 +23,19 @@
+     throw new Error("Generated proof applicability is internally inconsistent");
+   }
+ 
++  const publication = proof.publication?.state ?? "unknown";
++  const artifact = publication === "published" ? "exact observed published ca artifact" : `selected ca tag (publication ${publication})`;
+   if (proof.applicable) {
+     return {
+       isMismatch: false,
+-      message: "Replay source applies to the exact latest published ca artifact",
++      message: `Replay source applies to the ${artifact}`,
+     };
+   }
+ 
+   return {
+     isMismatch: true,
+     message: publishedMatchesReplay
+-      ? "Replay source matches the exact latest published ca artifact, but differs from the current hook source"
+-      : "Digest mismatch: the exact latest published ca artifact does not match the replay source",
++      ? `Replay source matches the ${artifact}, but differs from the current hook source`
++      : `Digest mismatch: the ${artifact} does not match the replay source`,
+   };
+ }

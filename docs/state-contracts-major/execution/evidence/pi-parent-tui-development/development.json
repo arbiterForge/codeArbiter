@@ -1,0 +1,133 @@
+{
+  "schema": "codearbiter.major.pi-parent-tui-development/1",
+  "recorded_at": "2026-11-17T01:06:53.045481+00:00",
+  "controller_anchor": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+  "subjects": [
+    {
+      "path": ".github/scripts/pi_parent_tui_observation.py",
+      "preimage_sha256": null,
+      "private_predecessor_sha256": "82d9d22e5106de2fdaace521c86fee8f2e592e8d79f7cb496e615e9d89e3e3c7",
+      "sha256": "49323466cbad2a56baf22ed45c90155a6ed8ea1b82cae8c3b333d416f7d8742a",
+      "bytes": 36440,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\pi_parent_tui_observation.py",
+      "canonical_current_sha256": null,
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/scripts/test_pi_parent_tui_observation.py",
+      "preimage_sha256": null,
+      "private_predecessor_sha256": "c1bc76c602e1c6a3ec1d4d5e475d8aa02b2c6a5802f63f4e66fb01c048a405c4",
+      "sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+      "bytes": 23571,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py",
+      "canonical_current_sha256": null,
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/scripts/observe_pi_installed_rpc.py",
+      "preimage_sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+      "private_predecessor_sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "sha256": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+      "bytes": 27952,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\observe_pi_installed_rpc.py",
+      "canonical_current_sha256": "f6c607187eb4a7701c712613695637ba9ccfb8b4f1069b75a926ef6a8dc63352",
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/scripts/coordinate_pi_host.py",
+      "preimage_sha256": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6",
+      "private_predecessor_sha256": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+      "sha256": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+      "bytes": 12234,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\coordinate_pi_host.py",
+      "canonical_current_sha256": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6",
+      "canonical_still_original_preimage": true
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "preimage_sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+      "private_predecessor_sha256": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f",
+      "sha256": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f",
+      "bytes": 277057,
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\workflows\\ci.yml",
+      "canonical_current_sha256": "418d34e1a2ece703cd87c812d72149992a014a7910810189e5e69f275d992338",
+      "canonical_still_original_preimage": true
+    }
+  ],
+  "observations": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/delivery.json",
+      "sha256": "1787f35c7736e705adc46c9781ebbed867cbcd27da9d48b2c856ccbeb6284aac",
+      "bytes": 7220,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/initial-lookup-red.json",
+      "sha256": "6f095a7359d1a062ea7daf9700a5c3b95b6d4ea67448ed31eeec262e0c7730df",
+      "bytes": 3596,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\minted-lookup-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/initial-lookup-green.json",
+      "sha256": "96c991ea261cc4091c765073efc2415b47319f2200aaba0619f274bc679543f7",
+      "bytes": 3523,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\minted-cleanup-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/exited-leader-red.json",
+      "sha256": "f9aec16414163584c2cda5f0b8551d9114199085d408930fc01542fd355003b9",
+      "bytes": 2335,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\target-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/exited-leader-green.json",
+      "sha256": "64b8c96e21347767ee73ec930e7607c8656e7031b930c4dd44ad90823b6660ab",
+      "bytes": 2276,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-owned-group-successor-espo5h8v\\cleanup-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-parent-tui-development/root-affected.json",
+      "sha256": "511d26c39e7db4cf720b36ce75edb8cef02e889fa039d118a046aab4e0b72198",
+      "bytes": 1128,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\pi-parent-tui-root-affected.json"
+    }
+  ],
+  "implemented": [
+    "First real public-parent-TUI fixture for three write/edit/managed-command effects, using a declared loopback SSE provider and scripted public confirmation keys.",
+    "Trusted normal installed Linux job selects the fixture after original RPC success, reuses same reviewed Pi1.5 installation and authenticated package projections, runs under120-second outer supervisor/90-second body, and retains separate original outputs before cleanup.",
+    "Retain newly minted process-group ownership before optional live-leader lookups; clean the owned group independently of leader exit, refuse conflicting/current groups and unverified apparent success."
+  ],
+  "checks": {
+    "canonical_affected": {
+      "methods": 37,
+      "passed": 37,
+      "skipped": 0,
+      "unittest_seconds": 0.655,
+      "supervisor_seconds": 0.8499983999936376,
+      "scope": "Inert protocol/authority/process-syscall and existing RPC/coordinator/wiring controls; no real Pi/PTY/provider execution."
+    },
+    "generation": "Four declared generators PASS; no generated tracked changes.",
+    "proper_reds": [
+      "Original exited leader/live same-group descendant assertion failed, then affected cleanup controls pass.",
+      "Initial getpgid/getsid missing-leader regression produced two assertion failures, then all five cleanup methods pass.",
+      "Original _produce lacked selected author invocation and Linux CI selection; proper two-method wiring RED then GREEN."
+    ]
+  },
+  "pending": [
+    "Actual trusted normal Linux Pi1.5 parentTUI execution and retained original effect/journal/terminal readback.",
+    "Future denial/replay/revocation/interrupt/lifecycle/mixed-bundle/platform cases and real human journey remain outside this first fixture.",
+    "Independent exact-source review, final scans/integrity, complete child CI and subsequent normal integration qualification."
+  ],
+  "qualification": false,
+  "runtime_executed": false,
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "limits": [
+    "Scripted fixture consent is not human consent or full PI-D07 acceptance.",
+    "Whole admitted package/SDK graph is a closure superset, not complete actual child-import telemetry.",
+    "Successful group signal is not proof every descendant was reaped; detached/new-session descendants remain outside the group guarantee.",
+    "Original RPC method/profile/roles and report admission grammar are unchanged; parent-author output alone cannot authorize major readiness.",
+    "Child1116 is still separately under exact-head hosted watch; parent1098/main/publication remain held."
+  ]
+}

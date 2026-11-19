@@ -1,0 +1,115 @@
+{
+ "schema": "codearbiter.private-prose-review/1",
+ "reviewer": "/root independent of private docs author",
+ "verdict": "PASS",
+ "findings": [],
+ "source_commit": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "full_subjects": {
+  "plugins/ca-sandbox/COMMANDS.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca-sandbox\\COMMANDS.md",
+   "destination": "plugins/ca-sandbox/COMMANDS.md",
+   "sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+   "bytes": 5949,
+   "author_candidate_sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+   "physical_preimage_sha256": "41273c84591f22ec1c62c5983e8c5cb61747996a4698fa7eee53aaa7d432020e",
+   "git_preimage_sha256": "41273c84591f22ec1c62c5983e8c5cb61747996a4698fa7eee53aaa7d432020e",
+   "text_projection": "EXACT"
+  },
+  "plugins/ca/README.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca\\README.md",
+   "destination": "plugins/ca/README.md",
+   "sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+   "bytes": 4128,
+   "author_candidate_sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+   "physical_preimage_sha256": "3e149cf4c54a070b08c69817884a02481b0acb46a3040f80691e29e5c64935f4",
+   "git_preimage_sha256": "3e149cf4c54a070b08c69817884a02481b0acb46a3040f80691e29e5c64935f4",
+   "text_projection": "EXACT"
+  },
+  "core/surface/commands/init.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\core\\surface\\commands\\init.md",
+   "destination": "core/surface/commands/init.md",
+   "sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+   "bytes": 8075,
+   "author_candidate_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+   "physical_preimage_sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+   "git_preimage_sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+   "text_projection": "EXACT"
+  },
+  "plugins/ca/commands/init.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca\\commands\\init.md",
+   "destination": "plugins/ca/commands/init.md",
+   "sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+   "bytes": 7821,
+   "author_candidate_sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+   "physical_preimage_sha256": "10fab6054773e8250556d663d9f8b2606c1445e5b2dc8afaefffe1ded7136170",
+   "git_preimage_sha256": "10fab6054773e8250556d663d9f8b2606c1445e5b2dc8afaefffe1ded7136170",
+   "text_projection": "EXACT"
+  },
+  "plugins/ca-codex/skills/ca-init/SKILL.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca-codex\\skills\\ca-init\\SKILL.md",
+   "destination": "plugins/ca-codex/skills/ca-init/SKILL.md",
+   "sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+   "bytes": 7719,
+   "author_candidate_sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+   "physical_preimage_sha256": "c8494d78bea8d7bdc8d9705bc98b310d340b357787e57e28fbe833f382077add",
+   "git_preimage_sha256": "c8494d78bea8d7bdc8d9705bc98b310d340b357787e57e28fbe833f382077add",
+   "text_projection": "EXACT"
+  },
+  "plugins/ca-pi/skills/ca-init/SKILL.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca-pi\\skills\\ca-init\\SKILL.md",
+   "destination": "plugins/ca-pi/skills/ca-init/SKILL.md",
+   "sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+   "bytes": 7681,
+   "author_candidate_sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+   "physical_preimage_sha256": "40d05c09076e24bab24103442fa1cb7797449f17f4b1b5df7e91c0a5f15f3902",
+   "git_preimage_sha256": "40d05c09076e24bab24103442fa1cb7797449f17f4b1b5df7e91c0a5f15f3902",
+   "text_projection": "EXACT"
+  },
+  "plugins/ca-sandbox/commands/sandbox-destroy.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca-sandbox\\commands\\sandbox-destroy.md",
+   "destination": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+   "sha256": "1335cd7a83fff3b9da3781f6c9c68c9faf950117b7c4be32f0d98eb9690dff6b",
+   "bytes": 1260,
+   "author_candidate_sha256": "66ecbe3c76ca94a4e1b38256c37a6c64efa4c6964c246af9119f245389de7431",
+   "physical_preimage_sha256": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+   "git_preimage_sha256": "1bbfb59fdfdc63881552f64ea4e1227a82349ddc99818b71ed37af2c9e8e1eb4",
+   "text_projection": "Git-declared LF"
+  },
+  "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca-sandbox\\skills\\sandbox-lifecycle\\SKILL.md",
+   "destination": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+   "sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "bytes": 6047,
+   "author_candidate_sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+   "physical_preimage_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+   "git_preimage_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+   "text_projection": "EXACT"
+  },
+  "plugins/ca-sandbox/README.md": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-wording-root-review-5f9kkrpb\\canonical-candidates\\plugins\\ca-sandbox\\README.md",
+   "destination": "plugins/ca-sandbox/README.md",
+   "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "bytes": 6301,
+   "author_candidate_sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+   "physical_preimage_sha256": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+   "git_preimage_sha256": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+   "text_projection": "EXACT"
+  }
+ },
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\delivery.json",
+  "sha256": "6061b4a1f8412512eaea304c31d552b4d64bee50db9c51adbfc22e9bfa63714e"
+ },
+ "patch_sha256": "73d8441f268c513b60caa2a982db751efa3dec3a59cfe41260a36cd67e47f664",
+ "scope": "Two normative precision corrections across nine actual affected sources/projections. Explicit per-resource container-then-volume discovery sets match destroy.ts312-338; init owns ignore-rule maintenance, taskwrite owns its lock. No new authority, runtime behavior or test required.",
+ "inspection": [
+  "Actual init-codearbiter.py470-496 calls ensure_task_lock_excluded; taskwrite only acquireslock. _taskexcludelib exclusive protocol confirmed.",
+  "Actual prune implementation captures/removes containers before captures/removes volumes; explicit broad scope and named destroy separation retained across four affected Sandbox surfaces.",
+  "Canonical static init paragraph and all three descriptor-derived generated projections match; no host tokens or other template behavior changed. Root post-transfer build-surface --check remains required."
+ ],
+ "text_projection": "One selected authored Markdown candidate retained CRLF privately; repository text:set/eol:lf with no filters/encoding. Root-reviewed canonical candidate is exact CRLF-to-LF projection, with separate private/Git/physical hashes. This does not normalize immutable raw proofs or claim runtime byte equality.",
+ "tests": "None: reversible prose-only. Generation parity and normal staging/scans follow.",
+ "task_runtime_promotion": false,
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED"
+}

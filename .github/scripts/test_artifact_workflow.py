@@ -1498,6 +1498,16 @@ class ArtifactWorkflowTest(unittest.TestCase):
     def test_interrupted_task_reconciles_and_redispatches_after_process_recreation(
         self,
     ) -> None:
+        # Reconciliation can raise the progress schema to 0.3.4. Establish that
+        # normative epoch before issuing this fixture's source-verified approval;
+        # an older approval must not become current merely through redispatch.
+        self.harness.mutate(
+            "task-block", "PLAN-FLOW", task="T-001", reason="Prepare current progress epoch."
+        )
+        self.harness.mutate(
+            "task-reconcile", "PLAN-FLOW", task="T-001", state="PENDING",
+            reason="Fixture baseline ready before source-verified approval.",
+        )
         self.harness.approve_pair()
         original_plan = self.harness.client.call(
             "identity", {"artifact_id": "PLAN-FLOW"}
@@ -1535,6 +1545,15 @@ class ArtifactWorkflowTest(unittest.TestCase):
             state="PENDING",
             reason="Process ended before completion could be established.",
         )
+        # The interruption/reconciliation changes recorded work, retaining the
+        # approved normative identity and its independently verified authority.
+        self.assertEqual(
+            resumed.client.call("identity", {"artifact_id": "PLAN-FLOW"})["normative_sha256"],
+            original_plan["normative_sha256"],
+        )
+        self.assertTrue(resumed.client.call(
+            "validate", {"artifact_id": "PLAN-FLOW", "gate": "approved"}
+        )["valid"])
         fresh_ticket = resumed.context_ticket("T-001")
         resumed.mutate(
             "task-start",

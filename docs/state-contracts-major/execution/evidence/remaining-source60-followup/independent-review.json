@@ -1,0 +1,182 @@
+{
+ "schema": "codearbiter.private-source-independent-review/1",
+ "reviewer": "/root/acceptance_security_review",
+ "author": "/root/ci_repair_review",
+ "independent_of_authorship": true,
+ "role": "bounded source conformance/security/evidence reviewer",
+ "verdict": "PASS",
+ "gate_status": "PASS_SOURCE_ONLY_PRIVATE_PROPOSAL",
+ "findings": [],
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\delivery.json",
+  "sha256": "99decf671169673e93aa3f436942e1df14161cb0e3ae2acd2fd5e0e105a43753",
+  "bytes": 10741
+ },
+ "full_subjects": {
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f",
+   "bytes": 25425
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260",
+   "bytes": 19811
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7",
+   "bytes": 37856
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7",
+   "bytes": 421867
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b",
+   "bytes": 3054
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/01-predecessor.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\01-predecessor.json",
+   "sha256": "32ee110f5af4353de4cbcf95f48a643f973a46832b5eaaded250b7933307b7f2",
+   "bytes": 3178
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/02-predecessor.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\02-predecessor.json",
+   "sha256": "079122f21ed70b6608c3f2e4f916d4ab59154e30d4c6680224199577ff4c3bb8",
+   "bytes": 2622
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/03-predecessor.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\03-predecessor.json",
+   "sha256": "6d23c0edf366510f74ef1247e5223bd5f259fba716f2b02dd564c85f74eee392",
+   "bytes": 1805
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/04-predecessor.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\04-predecessor.json",
+   "sha256": "7cfdcea3c75474aac56009bd990439f05833ae0262893e957ef268d54317dfda",
+   "bytes": 2562
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited/05-predecessor.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\inherited\\05-predecessor.json",
+   "sha256": "4afe3de897bffd1ccb27028b7dc83473223f9461f97a7d54572635a72d572617",
+   "bytes": 49859
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-prune-plan-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-prune-plan-preserved.json",
+   "sha256": "c811ee97b2e6f9d6b778bda765ba90db5febce889bffa9f8907d900a79df97ae",
+   "bytes": 15624
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-prune-execute-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-prune-execute-preserved.json",
+   "sha256": "c2cae997e3149f79b32bf387f32bcb9c69101e9139e7ff878c76968af3d81e28",
+   "bytes": 11659
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-pi-accounting-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-pi-accounting-preserved.json",
+   "sha256": "bc59d4cd9c4cc0cef0eb8f0d5313bc9223962a0ff05d059fbb1b1aed04b8ad0a",
+   "bytes": 15383
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-doctor-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-doctor-preserved.json",
+   "sha256": "8ed7ee50b39617b1a426370cd8903375427a4a05175415b558c02f541a0ad94b",
+   "bytes": 24482
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-tribunal-inventory-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-tribunal-inventory-preserved.json",
+   "sha256": "55c0e7e0c008cc51c97c442f4658d096d705ce456cf14d1418f973c484ee7c5f",
+   "bytes": 8200
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-tribunal-run-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-tribunal-run-preserved.json",
+   "sha256": "e73cdd88108ea91e302e7c50851bf7e28f6ec41808f34ea1a03d37541b2fb26d",
+   "bytes": 10434
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-tribunal-lock-leads-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-tribunal-lock-leads-preserved.json",
+   "sha256": "453a67a086d1fc1daa237e5fc061cb19260215a9ecb4177e53f75a98506f02e4",
+   "bytes": 12480
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-pi-python-bridge-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-pi-python-bridge-preserved.json",
+   "sha256": "415e3771a57e3a213290be0c9e23e38eadc51b2fe77423dbffff04cdd5c13f0a",
+   "bytes": 29312
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-codex-pretool-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\hooks-codex-pretool-preserved.json",
+   "sha256": "e29e127cb6cbb1983da99013e9aa2c264df90ca83ca7f943fb5f68447570ff4a",
+   "bytes": 19265
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/S39-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\S39-preserved.json",
+   "sha256": "b0bf1e397790c5aaba6432923db76efa710aa70f942c3aa1d72b0729bf1363f3",
+   "bytes": 26137
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/S40-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\S40-preserved.json",
+   "sha256": "b3fab6a690ce31e3d44ee3782a6e3181c662d3a5e25ae281b30b6b0dd5789752",
+   "bytes": 16742
+  },
+  "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/S41-preserved.json": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-source-2e09-rwhj0q48\\proofs\\S41-preserved.json",
+   "sha256": "d16ddf6b82b8020a58e2a793dfba518e475e5c84633a9d0ec7bb7dd0b078364d",
+   "bytes": 18807
+  }
+ },
+ "inventory": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-remaining-hooks60-independent-yybvpfpc\\inventory.json",
+  "sha256": "166683b0db27b36cf129c0cce986741885023537c48816e4598a52b3dcd0937d",
+  "bytes": 85434
+ },
+ "coverage": {
+  "clauses": 76,
+  "proposals": 60,
+  "retained_advanced": 28,
+  "positive_inputs": 31,
+  "witnesses": 144,
+  "proofs": 12,
+  "adoptable_files": 22,
+  "lossless_copies": 5
+ },
+ "input_proof": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\remaining-hooks60-root-peer-input.txt",
+   "sha256": "ada5ceedb91994f1f20857735d23cf6c8478c4ed81b65fe3d7a2b5ad311b2bac",
+   "bytes": 9976
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\remaining-hooks60-root-peer-context.json",
+   "sha256": "439596e2646d3fe08ce767411942f1e58719b5cc683fca1e0ef7aa0a7250a709",
+   "bytes": 34386
+  }
+ ],
+ "substantive_review": [
+  "All76 literal frozen transition clauses and corresponding authored guard/effect/retry assessments read.60 row proposals are exactly12machines plus48currently PLANNEDedges;28already advanced rows remain byte-equivalent at object level, including active evidence/history/source epochs. No task/finding status or runtime qualification is changed.",
+  "Pruning: reviewed pure strategy/protected-tail planning, structural no-growth/identity/tool/parent checks, explicit dry versus execute, backup-before-truncate, observed-growth and post-write rollback, single-splice self-heal and advisory cold nudge. Rechecked committed2e09 component commonpath+base-inequality refusal before activation/self_heal; actual core SHA2560fa5469a3992cb1c8076c566d99407c1cf40d0f11a88d7a80bc82721122f5a72 matches prior independently reviewed candidate. Source assessment correctly limits field/anchor protection, size/mtime admission, and best-effort state; it does not promise global role retention or descriptor/ancestor/concurrent-writer safety.",
+  "Pi accounting: actual validation, isolated path resolution, contiguous scan admission, replay highWater, shard-first replacement, aggregate retention/cache, explicit nonacceptance and lock release checked. acceptedThrough is distinguished from durable highWater; failed aggregate/cache can leave an advanced shard without acknowledging this call.256 successful retention target,64days,8192recognized-entry limit and unsafe/corrupt handling are represented honestly.",
+  "Doctor: inspected actual scoped Pi adapter identity, selected-host/payload observation, pinned artifact capability/index path, selected Git shim diagnostic, declared MCP/statusline checks and FAIL aggregation. Metadata observation is distinguished from executable/installed proof. Frozen bare ca-pi failure is accurately identified as superseded by accepted HW03; static checks and a described probe are not claimed as execution by this packet.",
+  "Tribunal: reviewed bounded inventory/manifest acquisition and explicit absent semantic parser, inherited profile overrides and heuristic costing. Run allocation/source fingerprints/cursors, exclusive/fsynced writes, current-source progression, abort exception, persistent OS guard/owned lock cleanup, explicit digest-bound lock recovery, immutable leads/disposition history and severity/verification eligibility match actual source. Caller event fields are not authenticated remote/report effects; aggregate triage-log growth has no universal8MiB post-append guarantee, expressly disclosed.",
+  "Pi bridge and Codex pretool: checked closed event/request schemas, byte/depth/population constraints, strict UTF8/duplicate keys, fixed exception-class diagnostics, bounded capture, exact core event/tool routing and block/nonzero semantics, canonical plan-file codec/typed outcomes, pure prune IDs and advisory footer/recovery projections. Codex read bound is a timed daemon wait, not a byte cap; parsed timeout overrides lack finite/nonnegative validation, disclosed. Patch parser opaque refusal and per-file move/Claude batched normalization are accurately bounded; notice code preserves guard verdict and records emission after output.",
+  "Legacy task lifecycle: checked selected origin/board-revision/native-owner guards, validated queued insertion, ordinary start/done/noop/refusal versus explicit reopen/attachment, current lookup ambiguity distinctions, whole-block archival, archive-first interruption/dedup, harvest proposals and blocking-decision escalation, closed owner board-diff compositions and advisory merged-ID drift. Pure low-level title/raw lookup is not universal identity/CAS protection; source packet explicitly assigns that protection to selected writer/work adapter. Harvest dedup is against already stored board/archive/question origins; this review adds no promise of universal within-batch uniqueness.",
+  "All31positive inputs matched immutable current Git OID/SHA256/bytes and physical raw bytes. Pinned baseline existence/bytes matched, including explicitly absent newer helper.144unique source witness spans independently rehashed.76frozen clause objects/hash joins and60frozen machine/transition CAS bindings checked.22adoptable files hashed, authored JSON canonical ASCII indent1 LF;5historical copies deliberately lossless.",
+  "Historical copy acquisition: all5private copies equal current original Git bytes/hash/length; actual retention commits are recorded separately from original observation epochs. Explicit original ref_commit checked where present. The two oldest source-epoch commits precede artifact retention; no fiction that source epoch is the artifact creation commit. All observed retention commits are ancestors of2e09. Existing evidence records remain unchanged."
+ ],
+ "reuse": [
+  "Prior independent prune code review de99c703e4b3b437d117aa27c711fab4a0b5f82dc4d8fe77d1cf0d9bc03c3fde reused only for exact0fa5469a production bytes and original retained unit evidence; actual committed guard inspected again. No code self-review.",
+  "Unchanged selected work-owner/plan-file/mode/recovery helper semantics reused from earlier source/repair inspections where exact current input hashes match; current claim boundary and cited caller checked. Full security policy previously read remains the applicable review basis; no new crypto primitive, TLS/authentication or executable change is proposed.",
+  "Root strict private source preview reused without replay: exact delivery hash bound below. Its777/57 counts remain a private preview result, not canonical admission or runtime qualification."
+ ],
+ "reused_root_preview": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-additive-source-preview-bqpaj6rq\\delivery.json",
+  "sha256": "a0ed841e142d7bc1c3253e1c5cdacdfb3c72e487f5ded65eb01d1bcd70d3f1c3",
+  "bytes": 705
+ },
+ "limits": [
+  "Source-only private proposal PASS. No product/test/native/installed/live-host/provider/model/human execution or task/scenario/whole-program acceptance inferred. No tests, owner validator, scanner, APIs or network rerun by this reviewer.",
+  "No canonical/index/ref/marker/ledger write or security marker produced. These are private-file identities; no staged candidate, patch or index OID is claimed. Root must preserve exact reviewed files and own eventual admission.",
+  "Explicit intake variances describe actual narrower controls; they do not amend immutable decisions, invent implementation promises, waive accepted obligations, or authorize new user modes/main merge/publication.",
+  "Orientation context had broad selected paths and an advisory incomplete map; exact sealed31positiveinputs, literal contracts and actual source witnesses controlled this finite review. No unrelated source corpus audit was added."
+ ]
+}

@@ -37,7 +37,9 @@ Assign every finding a severity and a disposition:
 
 **`BLOCKS`** — MUST be resolved before the current change lands. Assign when:
 - The finding is CRITICAL severity.
-- The finding is HIGH severity and breaks correctness, security, or a stated coding standard.
+- The finding is HIGH severity. HIGH has one meaning: it blocks (`reviewer-contract.md`,
+  "Severity and gate"). Do not re-grade a HIGH. A reviewer that wants a lower
+  gate must have assigned a lower severity under its own closed rule.
 - The finding is an ESCALATE from the decision-challenger (confidence 1).
 
 **`DEFERRABLE`** — real, but does not block the current change. Assign when:

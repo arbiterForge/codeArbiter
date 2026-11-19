@@ -1,0 +1,20 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\.codex\\\\worktrees\\\\program-governance-prep\\\\codeArbiter\\\\.github\\\\scripts');r=unittest.TextTestRunner(verbosity=2).run(unittest.defaultTestLoader.loadTestsFromName('test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only'));sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+  "head": "ef63f8c306c8e47c111afec12a9d980d0e8927d6",
+  "source_sha256": "fb6130709350e42f97bc66a135bc96b0dc3ce33571f0a1d17b7d85214184f268",
+  "source_preimage_sha256": "6eb9f2e3e622cb6740065d2a4c3dd3b6d6c36a66502c7b05d7dc5bf76bebc919",
+  "exit_code": 0,
+  "seconds": 0.195,
+  "stderr_sha256": "e5939ae6a228846e1d3f14ca233df9d6896f753ecbc62c21f79c2b15f30de7cb",
+  "no_mock_or_import_seam": true
+}

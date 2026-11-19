@@ -1,0 +1,328 @@
+{
+ "schema": "original-installed-parent-bounded-diagnosis/1",
+ "source": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "run_id": 44025115372,
+ "attempt": 1,
+ "event": "push",
+ "job_id": 133856586945,
+ "artifact_id": 14304905010,
+ "archive_sha256": "25421d380d2ee93a6204c27a3f9536270f835d57e397342e91abab1082dab4b6",
+ "authentication": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ac82-linux-original-84wxu4za\\authentication.json",
+  "sha256": "2e725e5b0adc1d0833c69fd1629474b81a4606d03acf70558ca15ecce8fe9dd5"
+ },
+ "original_member_bindings": {
+  "coordinator-failure.json": {
+   "sha256": "3592d1ccc71e938179b37d2bf655db79cd05b8bca39739b52c17f12203184a19",
+   "bytes": 142
+  },
+  "producer/cleanup.json": {
+   "sha256": "ad1ed6243ea081e7d97d9e7bf7443870a40e1ea693c6c7fb4a35354451f1de93",
+   "bytes": 23
+  },
+  "producer/failure.json": {
+   "sha256": "a63d685448d60de2c72b453e29fe40d351059befac37e9329fe00560aecf3532",
+   "bytes": 134
+  },
+  "producer/original-test-result.json": {
+   "sha256": "a9e95c63ae11e88adc72f69d433020aff03c074e2af398261257095ed565c624",
+   "bytes": 255
+  },
+  "producer/parent-author/cleanup.json": {
+   "sha256": "e45f74975fc4c12efdcf060a366c3001fdb437d837eb6c746c7ba7b0f94b1f64",
+   "bytes": 76
+  },
+  "producer/parent-author/original-outcome.json": {
+   "sha256": "984f5eaec29cdd48cb62a049d06ba275087a14a74277306787c842492b237bbb",
+   "bytes": 7016605
+  },
+  "producer/parent-author/verification.json": {
+   "sha256": "5f7ef8ffe0b4c6213e6b30706fba175ff97755bc24239003547fb0e1195672f3",
+   "bytes": 137
+  },
+  "producer/parent-author-supervision.json": {
+   "sha256": "d9ab5576393277530865f0c4a3e23bf86da41be1c002440c000cdec8021d1538",
+   "bytes": 700
+  },
+  "producer/worker-exit.json": {
+   "sha256": "c4367890ee84b44b36b4b2ed5d71c4773bbb58b0fe00a3a5eae489e9a23b21bd",
+   "bytes": 527
+  },
+  "production-admission.json": {
+   "sha256": "a0616659fc87c37cbc0a81759ce58720b25e4ea73e89d88519cf315c1071b15b",
+   "bytes": 273
+  }
+ },
+ "RPC_original_result": {
+  "id": "python:.github/scripts/test_pi_package.py:test_pi_package.PiPackageTests.test_real_isolated_rpc_command_discovery_and_keyed_status",
+  "run_count": 1,
+  "failures": 0,
+  "errors": 0,
+  "skips": 0,
+  "result": "passed",
+  "failure_sha256": []
+ },
+ "parent_process": {
+  "returncode": 0,
+  "timed_out": false,
+  "pid": 2932,
+  "forced_cleanup": false,
+  "exit_key_sent": true,
+  "group_cleanup": "already-gone"
+ },
+ "parent_status": "not-yet-verified",
+ "actual_case": "executed",
+ "consent": "scripted-public-TUI-keys-not-human-consent",
+ "supervision": {
+  "returncode": 1,
+  "timed_out": false,
+  "containment": "exited",
+  "timeout_seconds": 120,
+  "body_seconds": 90,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "7f3f0123b45e07cdc5c1dde7c1caae91e82fd46f702e6d432a8849d7615bbaca"
+ },
+ "verification": {
+  "status": "failed",
+  "phase": "parent",
+  "error_type_sha256": "b6276ba72bbc508431b11298180ac724c3eef76599d6862ff5914355b7524739"
+ },
+ "observed_prompts": {
+  "count": 3,
+  "tools": [
+   "write",
+   "edit",
+   "bash"
+  ],
+  "input_hex": [
+   "0d",
+   "0d",
+   "0d"
+  ]
+ },
+ "fixture_provider": {
+  "request_count": 6,
+  "response_finishes": [
+   "tool_calls",
+   "tool_calls",
+   "tool_calls",
+   "tool_calls",
+   "stop",
+   "stop"
+  ],
+  "any_refused": false
+ },
+ "invariance": {
+  "source": true,
+  "runtime": true,
+  "admitted_graph": true,
+  "installed": false,
+  "payload": true
+ },
+ "installed_inventories": {
+  "before": {
+   "members": 273,
+   "canonical_sorted_compact_ascii_sha256": "cbd71eee19ff4a4f429317aa496b2c4fd0dec874b8873e358c2ab628490b70fd"
+  },
+  "after": {
+   "members": 283,
+   "canonical_sorted_compact_ascii_sha256": "7fe10c27201acf85b1c6f374ffc8c279a0c18780ca81d9c5d6e0f72845d7e965"
+  },
+  "added": [
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_activationlib.cpython-314.pyc",
+    "sha256": "8897e72ef096b8b5e794a4fb306db5028bcf3085c67a3fd278257ef7b17acbd1"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_gitexec.cpython-314.pyc",
+    "sha256": "3a365a1ae136932b046b3b84bda63819ba2e83b4c1e7244d589c5ad36f9c7c36"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_hooklib.cpython-314.pyc",
+    "sha256": "b0108c1b7a5bbaf1d497acd4e94bfa07f4eeeec9c560be02fbc1908bdbc09f2d"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_host.cpython-314.pyc",
+    "sha256": "db11130e81a2b242bdcf8b1aedff3ad58101ffa0c34c0b18c88b22eb1cb4ea93"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_pathnorm.cpython-314.pyc",
+    "sha256": "526767478c486f67dfec563cba8480426492fe4cc33cbdfe78827a2d8b7ab81b"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_protectedlib.cpython-314.pyc",
+    "sha256": "ecfffb040cb54afd5b46988bb4ab04ad6dd20cd7e4be333284711de167e91f09"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_scopelib.cpython-314.pyc",
+    "sha256": "95dbb0116c8fe17efbb1fd188cfa0c0e9159a2a8d698487c21c61162cb6f289e"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_sensitivelib.cpython-314.pyc",
+    "sha256": "a606a0f7453c3f4be129dafbd3883993604779eeffd16740502381d3ae16fe48"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/_updatelib.cpython-314.pyc",
+    "sha256": "8aaf368ccea06b7f985ed76e4c5a7fc1cc4934f1c9a7715c127658b06315fc03"
+   },
+   {
+    "path": "package/plugins/ca-pi/hooks/__pycache__/hostapi.cpython-314.pyc",
+    "sha256": "41fb5ccef6eadc0f5cd10d8a2493da130ba62e88c140c03073295fb4ae496fd9"
+   }
+  ],
+  "removed": [],
+  "modified_existing": []
+ },
+ "declared_membership_boundary": {
+  "source": ".github/scripts/pi_parent_tui_observation.py",
+  "initial_guard_line": 453,
+  "post_guard_lines": [
+   547,
+   548
+  ],
+  "initial": "complete physical membership must equal authenticated cohort Pi package members",
+  "post": "installed_before must exactly equal installed_after; no pycache exclusion",
+  "enumerator": ".github/scripts/retained_archive_cli_observation.py:241-269 complete bounded no-follow enumeration including unexpected additions"
+ },
+ "causal_assessment": {
+  "confirmed": "Actual installed-member drift is sufficient to fail input-drift guard. Original TUI child completed but final fixture admission failed.",
+  "first_failed_assertion": "Not uniquely proved by retained ValueError-type hash: parent-or-protocol-incomplete at545 precedes input-drift at547. Protocol.complete Boolean is not retained. Six successful response records/three prompts/exit0 are observed.",
+  "confirmed_source_gap": "Bridge launches immediate Python child with -B, but its minimal environment does not propagate PYTHONDONTWRITEBYTECODE. SessionStart detached update-refresh launches sys.executable+script without -B; argv flags do not automatically carry to that child.",
+  "writer_attribution": "Detached update-refresh imports the observed module family; original detached child PID/argv/import telemetry not retained, so exact sole-writer attribution remains unproved.",
+  "minimal_regression_proposal": "At the actual shared detached update-refresh launcher, verify no-bytecode launch propagation under a parent using -B and stripped environment; keep exact original package membership guard and unrelated launch/detachment behavior. Do not filter bytecode or restamp inventory."
+ },
+ "source_bindings": {
+  ".github/scripts/pi_parent_tui_observation.py": {
+   "sha256": "49323466cbad2a56baf22ed45c90155a6ed8ea1b82cae8c3b333d416f7d8742a",
+   "bytes": 36440,
+   "git_blob_oid": "0250c7e6974ec2d2c2414c089436c7416cb946ec",
+   "spans": [
+    {
+     "start": 440,
+     "end": 453,
+     "sha256": "270bdf9f4c0293fbf515d4572fce042ff904b291411c01c94d7220cf51121bc0"
+    },
+    {
+     "start": 521,
+     "end": 551,
+     "sha256": "22439ba02a1703866ab5c5a1171573e7051c86c498f717867bbda811bff1731c"
+    },
+    {
+     "start": 553,
+     "end": 571,
+     "sha256": "e2105fab420fe79619e98720e835ca6fb05f5b90b79076d19d5d6523074794f8"
+    }
+   ]
+  },
+  ".github/scripts/observe_pi_installed_rpc.py": {
+   "sha256": "d938a17303589d102770cd8f3e62b46b29f45d3d2e001cfd314bf3fe9cf656c5",
+   "bytes": 28068,
+   "git_blob_oid": "999d113145ecd5440df4be305922c4914b4db4bc",
+   "spans": [
+    {
+     "start": 172,
+     "end": 182,
+     "sha256": "a89b678c8525a51131ea1eafe5b4867dab0ca0e6ef5e753b52a98cd9baf0c049"
+    }
+   ]
+  },
+  ".github/scripts/retained_archive_cli_observation.py": {
+   "sha256": "0df63c5fe6acfc64bc89a8a5fd48884b6c6d9b068e02336d408ab26be5465d0a",
+   "bytes": 47128,
+   "git_blob_oid": "824b5d47d3da9ba3a28e6683ec864e112249efcf",
+   "spans": [
+    {
+     "start": 241,
+     "end": 269,
+     "sha256": "1faf2e4a83a11f0032883ef4b91b82e08ac87b202cf013c33dae0cb926378f7d"
+    }
+   ]
+  },
+  "plugins/ca-pi/tools/src/bridge.ts": {
+   "sha256": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+   "bytes": 45669,
+   "git_blob_oid": "8673ad825ff9b43e8fbaa1635acfd44a1c50dbe6",
+   "spans": [
+    {
+     "start": 84,
+     "end": 110,
+     "sha256": "42f19a9e8f9c788c8f84195d62a58f759f721eaba08ca12f22aaec6aeeeca69e"
+    },
+    {
+     "start": 858,
+     "end": 871,
+     "sha256": "6e3f6cce8646b46d392f32075afafb44436efea211ad7a2a6baf805db6fb18e9"
+    }
+   ]
+  },
+  "core/pysrc/session-start.py": {
+   "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+   "bytes": 71640,
+   "git_blob_oid": "9f14a960219746ec7632c2afbecf0238e215cc51",
+   "spans": [
+    {
+     "start": 938,
+     "end": 953,
+     "sha256": "55e6036ecbd256c6d77ac115bfaf8d43d66df0666b21fd010e9650a87aa460e4"
+    },
+    {
+     "start": 1357,
+     "end": 1363,
+     "sha256": "9841ea224ffea554f36caa18940b87e90629e8402847ea526c370b31bc69bc49"
+    }
+   ]
+  },
+  "plugins/ca-pi/hooks/session-start.py": {
+   "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+   "bytes": 71640,
+   "git_blob_oid": "9f14a960219746ec7632c2afbecf0238e215cc51",
+   "spans": [
+    {
+     "start": 938,
+     "end": 953,
+     "sha256": "55e6036ecbd256c6d77ac115bfaf8d43d66df0666b21fd010e9650a87aa460e4"
+    },
+    {
+     "start": 1357,
+     "end": 1363,
+     "sha256": "9841ea224ffea554f36caa18940b87e90629e8402847ea526c370b31bc69bc49"
+    }
+   ]
+  },
+  "plugins/ca-pi/hooks/update-refresh.py": {
+   "sha256": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+   "bytes": 2072,
+   "git_blob_oid": "0dda6d1b20d8e4328fc19108968095e646ab65e2",
+   "spans": [
+    {
+     "start": 19,
+     "end": 29,
+     "sha256": "07ad3cc289a5db4173fdb07edf6639c5610ca9a1b648d929b39424e5bb8ede3b"
+    },
+    {
+     "start": 33,
+     "end": 54,
+     "sha256": "e86c820dd70ccfcc3ed8cb87748009764ce67535af8953f1b3e5da4f02293c6c"
+    }
+   ]
+  }
+ },
+ "limits": [
+  "Read-only original artifact data and immutable source inspection only; no subject/runtime/probe/replay/API redownload or code change.",
+  "No human/full PI-D07/task/program qualification. Whole normal Ac82 CI remains non-green; Docs success separate.",
+  "Original Windows native-exit cause stays UNKNOWN. No inference that bytecode is harmless or authorized.",
+  "Source-proposed prevention is not an implemented/tested fix."
+ ],
+ "import_projection": {
+  "original_sha256": "c7148f223f23e64f86801d187a33b906cf472557e31d717ffee7e8b987a80b63",
+  "original_bytes": 10797,
+  "original_retained_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ac82-linux-original-84wxu4za\\bounded-diagnosis.json",
+  "transformed_member_maps": [
+   {
+    "path": "/installed_inventories/added",
+    "members": 10
+   }
+  ],
+  "scope": "Passive provenance-labelled projection. Pure installed-member digest maps are represented as path/sha256 rows; every original path and digest is preserved. No scanner configuration, qualification guard or original receipt changed."
+ }
+}

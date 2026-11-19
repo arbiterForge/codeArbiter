@@ -1,0 +1,3 @@
+{"platform":"windows","host":"claude","sampleCount":100,"startupMs":2499.7867,"coreP50Ms":1.156,"adapterP50Ms":2.1979,"adapterP95Ms":2.5875}
+{"platform":"windows","host":"codex","sampleCount":100,"startupMs":27.8559,"coreP50Ms":1.1587,"adapterP50Ms":2.2511,"adapterP95Ms":3.3799}
+{"platform":"windows","host":"pi","sampleCount":100,"startupMs":38.8513,"coreP50Ms":1.102,"adapterP50Ms":0.014499999999998181,"adapterP95Ms":0.07929999999999993}

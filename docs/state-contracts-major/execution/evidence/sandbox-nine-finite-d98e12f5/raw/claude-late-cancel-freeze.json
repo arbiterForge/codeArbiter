@@ -1,0 +1,33 @@
+{
+  "schema": "codearbiter.immutable-author-freeze/1",
+  "files": {
+    "actor-input.txt": "3758cf9381c6e8d9b0ed48850da7f9f4ac50a4206f69eeb3e38a20e159faf4c4",
+    "candidate/plugins/ca-sandbox/tools/claude-inside.test.ts": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+    "candidate/plugins/ca-sandbox/tools/claude-inside.ts": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+    "changed-coverage.json": "d42c78259dee4744a3d4c92e0519cc005df8f7313ae3487238dc90a199cf1581",
+    "coverage/coverage-final.json": "b74f91f39d816ec90df9db3d8df6a34add0e94b88ac0ab538c1a44d05a334ddd",
+    "coverage/coverage-summary.json": "eb1a5c8630bf9e09c9fed03a42f336c109b0d8512dc7db4e984367349214b5e6",
+    "final.patch": "2986916fbdd0551b4013c0674fe19ad27769111782bd44f8f9e5cbbc223750b4",
+    "GREEN-exit.json": "62c80b7fd328fb175cd097777fe5e3107c0d9f330846183c538f1701e092abb5",
+    "GREEN-vitest.json": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640",
+    "GREEN.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "GREEN.stdout": "467dabcfbe462e797d000e6dddc0021c9699ca9d4c9be274feb0f685f29e5b8b",
+    "obligations.json": "c3c9074a25aefdcbf0b081fb1bb0847b911309b07b72fbd2c7b9eabb568cc2a9",
+    "patch-check.json": "d65ed1adbc318923f4f77fcac1fedc018f399c5a2b341466398c7ed8ab119ca1",
+    "preservation.json": "cfb71ee2d07bf6f29ef4b9ef4685360419d0fe858cc4f9580eece524e933b775",
+    "RED-exit.json": "2db0d8d5a6b160fdcff59119484d1cea61611ac284186d9949913ecea09e60d5",
+    "RED-vitest.json": "37a14d4040d0eea6cf4bcd6aae4d65bec8413b87b6d4dcf359814500094c3bd1",
+    "RED.stderr": "56df84709b78855585a4d08fe284fd8529bba89e3785cabb4c7ed10938ab363c",
+    "RED.stdout": "366457b09968925ca8dda12fead12baceeb7c3c23fb2db76e36505272cea3556",
+    "run.py": "d98e1db8317028a086614ac537f7d61b058c4b2193081332eedb7786225a40af",
+    "tsconfig-checked.json": "bdc5df264528dccf38c41e12cd19b19346b7fbeb6b1c3c8422d1b08edd64611a",
+    "tsconfig-scoped.json": "bc00be2a1e128e3f37d21a641ca6be09f789fa10503fe42e6e19041d2299a399",
+    "typecheck-GREEN.json": "719d22b2c9ff6e7edde7d44280830022e7d4c4c723f4b5bd2a64a3f6ab32faa4",
+    "typecheck-GREEN.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "typecheck-GREEN.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "typecheck.json": "b0e0dfeea6b12cc08c3dcffd66f9c4debaa55540b1b453199970248e87d6b9e2",
+    "typecheck.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "typecheck.stdout": "336f9d8863ab38f9a9e1bdbabc328a6184ea29cc307e25f98eeefcd58df4878c",
+    "vitest.config.mjs": "98f52963d3744921ecb712908ed4cc0933c5ab9c06837c48eedada3263db7b5a"
+  }
+}

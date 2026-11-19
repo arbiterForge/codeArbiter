@@ -1,0 +1,73 @@
+{
+ "schema": "codearbiter.major.remaining-source60-followup/1",
+ "recorded_at": "2026-11-17T09:23:18.076466+00:00",
+ "controller_anchor": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "branch": "codex/state-contracts-prune-boundary",
+ "source_cells_added": 60,
+ "authenticated_source_records": 777,
+ "planned": {
+  "findings": 49,
+  "machines": 0,
+  "transitions": 8,
+  "total": 57
+ },
+ "evidence": {
+  "independent_review": {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-source60-followup/independent-review.json",
+   "sha256": "b13ff54846ce7e0169442aea5cb897cd5237cb90ae0d75b128aeeb1edf124e22",
+   "bytes": 16186
+  },
+  "author": {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-source60-followup/author-delivery.json",
+   "sha256": "99decf671169673e93aa3f436942e1df14161cb0e3ae2acd2fd5e0e105a43753",
+   "bytes": 10741
+  },
+  "private_preview": {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-source60-followup/private-preview.json",
+   "sha256": "a0ed841e142d7bc1c3253e1c5cdacdfb3c72e487f5ded65eb01d1bcd70d3f1c3",
+   "bytes": 705
+  },
+  "adoption": {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-source60-followup/source-adoption.json",
+   "sha256": "fa0c660fa62c70dc1886e2a4effe479a9191a5e508c29dd71e7c413abf0f5687",
+   "bytes": 25696
+  }
+ },
+ "preserved_history": "All28 advanced hook/work rows and their original active/history evidence remain whole objects. Five copied predecessor proofs retain exact immutable bytes and original epochs. No historical runtime claim renewed.",
+ "actual_code_fix": {
+  "commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+  "owner": "core/pysrc/_prunelib.py hook_run",
+  "behavior": "Realpath component containment, including equality refusal, runs before self_heal; prefix siblings refuse.",
+  "local": "Three original prefix-sibling assertion failures before repair;13 focused checks passed after repair, including7 new methods and6 unchanged service tests.",
+  "qualification": "Ordinary owned Windows tests; not universal descriptor/ancestor/content-race, hosted or installed proof."
+ },
+ "normal_integration": {
+  "head_commit": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+  "CI": 44046125471,
+  "CI_state": "IN_PROGRESS_AT_LAST_OBSERVATION",
+  "Docs": 44046125414,
+  "Docs_state": "FAILURE",
+  "cause_observed": "Generator academy-source install.sh checksum-drift rejection test exceeded5000ms. No checksum assertion mismatch reported; stall cause unknown. Original1570passed/1failed retained.",
+  "separate_child1119": "f262 Docs44049065813 succeeded; CI44049065822 has failed Linux native snapshot membership because8 passing new reader methods are absent from its expected registry. Original workflows remain pending terminal readback; corrected next head required. No reader assertion failure.",
+  "scoped_original_linux_pi": {
+   "job_id": 133935729873,
+   "artifact_id": 14314936344,
+   "archive_sha256": "e750e0f7f78905c926980877c9ee7b2749ed7393e83e527d4fd2982f903a8ae1",
+   "original_rpc": "1PASS",
+   "parent": "scripted3publicTUIwrite/edit/bash prompts;6 fixture requests; actualexit0; separateverificationPASS",
+   "installed_inventory": "273before/273after,0added/removed/changed; other bound input objects also unchanged",
+   "private_projection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-d482-linux-original-5avywe0p\\bounded-observation.json",
+    "sha256": "b1d57dfc18418468b77097d7e283ab7de6ba6c644cb51b5581d755a1b6926618"
+   },
+   "limits": "One original Linux package observation at d482 only. No human consent/full PI-D07, otherhost, task or whole-normal qualification; Docs failure remains."
+  }
+ },
+ "remaining": "49 finding dispositions and8native transitions need actual criterion-specific evidence. Missing observation mappings do not establish missing features. Complete13 installed package cells and genuinely uncovered delegated-author,upgrade/rollback,retained-state and participant journeys before task qualification.",
+ "task_status_promotion": false,
+ "runtime_epoch_renewal": false,
+ "main_merge": "HELD_FOR_USER_TESTING",
+ "publication": "NOT_AUTHORIZED",
+ "delivery_pr": 1119,
+ "remote_child_branch": "codex/state-contracts-mode-and-adoption"
+}

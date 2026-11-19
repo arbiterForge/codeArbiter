@@ -1,0 +1,198 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bounded current instruction/function-clause conformance review; no runtime/provider/host-session result inferred."
+  },
+  "inputs": {
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "plugins/ca-sandbox/README.md": "b024372b828c7281a68ff7a4542ba20405a356449147e50ad346c5d59f624c8d"
+  },
+  "disposition_ids": [
+    "disposition:transitions:SW02:02",
+    "disposition:transitions:SW02:03",
+    "disposition:transitions:SW02:04",
+    "disposition:transitions:SW02:05",
+    "disposition:transitions:SW02:06",
+    "disposition:transitions:SW02:07",
+    "disposition:transitions:SW02:08",
+    "disposition:transitions:SW02:10",
+    "disposition:transitions:SW02:11",
+    "disposition:transitions:SW02:12",
+    "disposition:transitions:SW02:13",
+    "disposition:transitions:SW02:14"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:SW02:02",
+      "frozen_contract_sha256": "8e6b3dd297ec1640f20ca783890391a218c57ee71125362c323ae5bd2c40a498",
+      "event": "invoke separate driver",
+      "guard": "operator follows prescribed skill route",
+      "current_contract_review": "Separate supported CLI is preserved for routing; its placement does not mechanically enforce five agent-guided phases or add artifact approval.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:03",
+      "frozen_contract_sha256": "417c2841a9916f44a19d20eadb13a43eb33339f77f5b4ab9eeda372cd1e2b9b5",
+      "event": "choose posture",
+      "guard": "named offline or anthropic-only policy and explicit token-only boundary",
+      "current_contract_review": "Exactly offline default or experimental anthropic-only token posture; never combine untrusted source with token home volume.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:04",
+      "frozen_contract_sha256": "16326fc65c374959349bc912fe692a1519222e6e92b975c8b2b83f79002d35be",
+      "event": "build or reuse image",
+      "guard": "pinned Claude CLI SemVer, DISABLE_AUTOUPDATER=1, reviewed digest-pinned node base",
+      "current_contract_review": "Pinned Claude SemVer, disabled autoupdater and reviewed digest base remain prescribed prerequisites; image is not newly qualified by reading this instruction.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:05",
+      "frozen_contract_sha256": "419af25da25f883f32b51bf27b6cef02ef11a898991230fb0ef8211fa47e2ec5",
+      "event": "change base digest",
+      "guard": "reviewed dependency change selected",
+      "current_contract_review": "Changed image pins retain dependency/requalification ownership; historic spike is not automatic current payload proof.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:06",
+      "frozen_contract_sha256": "47a45fb4c57c9e7334b2dc39fb457e0217a717451c1604c3c002c1fa5f927f45",
+      "event": "source credential",
+      "guard": "approved-store OAuth token available in scoped environment; no argv/bind/log/prompt exposure",
+      "current_contract_review": "Approved-store choice/scoped token input is caller guidance; reusable value must not enter argv/log/prompt/host bind. No real credential or paid provider run is required for this source conformance.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:07",
+      "frozen_contract_sha256": "01b2e4a51aa2e054d8b6421483622bf724410174b605e53f75697f4e716da786",
+      "event": "choose home persistence",
+      "guard": "HOME backed by named volume, not host bind",
+      "current_contract_review": "Named home volume enables state persistence without host bind; persistence is distinct from observed authenticated-session capability.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:08",
+      "frozen_contract_sha256": "e8848e39ca1f92ae732f2dbf7ba48aaa5c144d87818feccc0b36a8b392c7a86f",
+      "event": "launch",
+      "guard": "builder-generated argv; no sourceVolume; named policy and isolation requirements",
+      "current_contract_review": "Use supported token-only argv builder and no-source co-mount guards; accepted policy/hardening are mechanical while phase completion remains agent guidance.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:10",
+      "frozen_contract_sha256": "0ac2c333c32fd198fbdc5dccacf325595f60935a1b8bca7727abef2f9062eacf",
+      "event": "proceed with use",
+      "guard": "all model-guided gates judged satisfied",
+      "current_contract_review": "REMAPPED D04: readiness follows actual supported CLI/token/policy/runtime outcomes; separate executable is not proof of a consumed five-phase completion record.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/tools/claude-inside-cli.ts"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:11",
+      "frozen_contract_sha256": "41d04f3c732f53e6d0d5c4f6ad1427e958fed646f802b60bdd1949c394ca4dc5",
+      "event": "teardown",
+      "guard": "operation/session ends",
+      "current_contract_review": "Default credential-home teardown is prescribed with caller ownership; never describe failed removal as absence.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:12",
+      "frozen_contract_sha256": "0a56cc0d9fc04bc5015f4b0217adf9a02c6bb76c902a48f3caa361fbc682c4ac",
+      "event": "explicit recorded --keep-volume choice",
+      "guard": "retention deliberately selected and recorded",
+      "current_contract_review": "Credential-home retention needs explicit recorded keep-volume choice; no durable record format is invented by this proof.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:13",
+      "frozen_contract_sha256": "04a3ae8488f3978ab428e826eb89c00026ada9d84eb1f9c461cba891c58300f9",
+      "event": "default cleanup completes",
+      "guard": "container/credential volume absent in selected scope",
+      "current_contract_review": "REMAPPED D02/D04: verify exact targeted container/credential volume absence, preserve unrelated boxes, retain unknown observations rather than global prune.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    },
+    {
+      "cell": "disposition:transitions:SW02:14",
+      "frozen_contract_sha256": "0c24ce49539f20474568ce10cd8f8f7fa537d26ba5a3b717a27b45c86f31267a",
+      "event": "new token-only container on same volume",
+      "guard": "explicit subsequent run passes posture/image/token gates again",
+      "current_contract_review": "Explicit subsequent use of retained home volume rechecks current posture/image/token guards; retained state is not authenticated-session qualification.",
+      "assertion_refs": [],
+      "source_paths": [
+        "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+      ],
+      "classification": "REVIEWED_SOURCE_CONFORMANCE_ONLY"
+    }
+  ],
+  "limits": [
+    "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+    "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+    "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+  ]
+}

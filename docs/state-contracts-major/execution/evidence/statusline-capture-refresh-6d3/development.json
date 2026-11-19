@@ -1,0 +1,10 @@
+{
+ "schema": "codearbiter.major.affected-guide-capture-refresh/1",
+ "route": "ca-chore generated docs",
+ "controller_anchor": "6d3ba511df0dda20b5d33ed7712b9c95429b9446",
+ "producer_source_commit": "6d8c2f28f1cdf4ccfb2709d45455a2a72fee0588",
+ "producer": "Existing runCapture exact statusline-refusal target with malformed settings inside fresh owned fixture; actual Python execution and loaded-module observation.",
+ "change": "Exact generated capture changes only wire-statusline source SHA from41c489a8 toaaed6ec5. Output, argv, exit, source member set and all other source hashes unchanged. No manual source-hash substitution.",
+ "verification": "Owner assertCapturesFresh passes privately; canonical four-capture verifier runs after adoption. Original stale check remains unchanged.",
+ "limits": "No full capture suite, hook-proof, browser or site build replay. No real user home/settings touched. No runtime/task or installed parent qualification. Main1098/publish held."
+}

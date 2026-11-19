@@ -1,0 +1,82 @@
+{
+  "scope": "Original case-aware reader and security-scan repair observations, with exact original source epochs. PY314 local0.69s did not reproduce hostedPY3153s timeout; deterministic work and parity passed, replacement hosted timing still pending. No whole-program/installed/publication qualification.",
+  "original_hosted_failure": {
+    "run_id": 43550337422,
+    "event_source": "6a636870bc23f5079700faf58a234d19f6823eca",
+    "checkout_source": "43eb2f4bb94234f38d53527fdefd13f1c4544e36",
+    "job_id": 132311178288,
+    "url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43550337422/job/132311178288",
+    "raw_original_sha256": "fdde245e276f98e6baba9cb64afc70281218a2462ed02e5fc13479b98d1e6e59",
+    "observed": "39methods;37pass,two3-second subprocess admission failures on pre-bash andgit-enforce; complete run failure retained, not classified flaky."
+  },
+  "files": {
+    "case/original-final-freeze.json": {
+      "sha256": "9ea488bbd0c954ebb33c1ea6573668f7bf85b61988470ec5411403a5f8648ca2",
+      "bytes": 5238
+    },
+    "case/original-red.log": {
+      "sha256": "aeecbce07439f21eaecdaf525539e7e771bad6d0dfed0d8608b26607ed8a42f0",
+      "bytes": 1131
+    },
+    "case/original-readiness37.stderr.log": {
+      "sha256": "45f43f1adada0a3df5e4a45d0604793180ddade7cedfe96371874f5906f3da19",
+      "bytes": 6280
+    },
+    "case/source-join.json": {
+      "sha256": "6b06357bb56c22bc389fc6dfab74785dd923b3ebb10719a33170b00c4b6e6681",
+      "bytes": 1012
+    },
+    "scanner/author-handoff.json": {
+      "sha256": "711e4d47aa3199e2bb0ec9aa7583117d5931914d1bfaeecdece5c8b90e273106",
+      "bytes": 4409
+    },
+    "scanner/diagnosis-results.json": {
+      "sha256": "1b943ce5ee3f1873cbcc4c10123c62065b47995f475242aa69dc973f1dbf08a1",
+      "bytes": 2606
+    },
+    "scanner/full40-result.json": {
+      "sha256": "9464ecb8d54fbd21a29501d1ba43ca3eb5b8d156ce48ea2856d939decbf544c4",
+      "bytes": 819
+    },
+    "scanner/full40.stderr.log": {
+      "sha256": "3d5627375b6bb52ad39902c7fa65dc5f4ec035abae15892ec3e17674f564ed5c",
+      "bytes": 6571
+    },
+    "scanner/inputs-before.json": {
+      "sha256": "968f9125eeb5aaa0ee82b1a535109bcb2fbb05744b73d284c0ad1f6406fb6c7a",
+      "bytes": 22079
+    },
+    "scanner/inputs-after.json": {
+      "sha256": "968f9125eeb5aaa0ee82b1a535109bcb2fbb05744b73d284c0ad1f6406fb6c7a",
+      "bytes": 22079
+    },
+    "scanner/work-oracle-red-result.json": {
+      "sha256": "7de9bb7f1a8e0bb34fa3b9099bde2ffe977693e90e804d359fba4a32884a6411",
+      "bytes": 391
+    },
+    "scanner/work-oracle-red.stderr.log": {
+      "sha256": "b2923e95abbd161342eed6132a5b94aa1acb180110be8e941b1135462aa3a968",
+      "bytes": 968
+    },
+    "scanner/work-oracle-green-result.json": {
+      "sha256": "ba4164aaf1c605acb1e396faf2f9155617728e907ecae3131bad302311727c32",
+      "bytes": 391
+    },
+    "scanner/decision-equivalence.json": {
+      "sha256": "6c36e492e33bc4b5de481517302992465dc208ccc2d25aa311128b52a0ad12d2",
+      "bytes": 463
+    },
+    "scanner/decision-vectors-before.json": {
+      "sha256": "b1453295c93a42dc907fe2f4f6e6b5add4b390555277bf8739ce44a32b976c66",
+      "bytes": 12486
+    },
+    "scanner/decision-vectors-after.json": {
+      "sha256": "bbc649498993986a4836306005ff5c90a48225c880c485cbe953150fb8249810",
+      "bytes": 12486
+    },
+    "scanner/independent-review.json": {
+      "sha256": "0fd7ea93d1d9171c441026da4b9a9f3456fd643db6d5c245083a330e769ac76c",
+      "bytes": 6390
+    }
+  }
+}

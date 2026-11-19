@@ -1,0 +1,34 @@
+{
+  "returncode": 0,
+  "duration_seconds": 7.186431800015271,
+  "timed_out": false,
+  "containment": "exited",
+  "output_limit_exceeded": false,
+  "stability": {
+    "root_module": true,
+    "private_module": true,
+    "Go_tools_and_GOROOT_source": true,
+    "original_green_cache": true
+  },
+  "named_terminal_counts": {
+    "pass": 203,
+    "fail": 0,
+    "skip": 0
+  },
+  "parent_counts": {
+    "pass": 52,
+    "fail": 0,
+    "skip": 0
+  },
+  "failures": [],
+  "coverage": {
+    "mode": "mode: atomic",
+    "total_statements": 1140,
+    "covered_statements": 811,
+    "percentage": 71.14035087719299,
+    "profile_sha256": "d0abad1e648c7d3159def04037572c8903358cd555791c6a73015b26994108b1",
+    "kind": "Actual Windows store-package statement coverage only, not branch/line/all-platform coverage."
+  },
+  "unfiltered_owning_package_only": true,
+  "default_vet_enabled": true
+}

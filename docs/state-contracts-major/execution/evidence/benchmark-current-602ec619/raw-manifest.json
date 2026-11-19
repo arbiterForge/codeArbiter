@@ -1,0 +1,109 @@
+{
+ "schema": "lossless-original-benchmark-capture-manifest/1",
+ "source_commit": "602ec619325b85e5b37e079fda9e3f6a3f327100",
+ "source_tree": "7a59ccbfee227490fce7a03ed69b521ab5066521",
+ "members": [
+  {
+   "name": "config.json",
+   "bytes": 3128,
+   "sha256": "c53cdef6b51dd44530552b71d86ca54e54ef24a73b5398b76248d06b7fff6323",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/config.json",
+    "sha256": "8b2e2466d3be44e593ec87ca85d9406e4f1737bc4166fae52d861a6cc88019f6",
+    "bytes": 3063,
+    "line_ending_form": "original-crlf-from-retained-lf"
+   }
+  },
+  {
+   "name": "run-start.json",
+   "bytes": 2287820,
+   "sha256": "fc8a468372b07548662519eafe1311d03521b88cfaeb994c489e0a2626a36623",
+   "repository_copy": null
+  },
+  {
+   "name": "after-snapshot.json",
+   "bytes": 2181011,
+   "sha256": "d2e89968e0e1a22da894b4fc7d9f05503f065d84fa3e88e90c96c4832cdcf743",
+   "repository_copy": null
+  },
+  {
+   "name": "boundary-observation.json",
+   "bytes": 7040,
+   "sha256": "d71a1a5a83e562b3e1bbeabcc2f2585a6dda4411914962ac5fc2ca9d7a447129",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/boundary-observation.json",
+    "sha256": "d71a1a5a83e562b3e1bbeabcc2f2585a6dda4411914962ac5fc2ca9d7a447129",
+    "bytes": 7040,
+    "line_ending_form": "lf"
+   }
+  },
+  {
+   "name": "process-exit.json",
+   "bytes": 466,
+   "sha256": "8f26208c2857cef81fed50c2ef2a687084908c7485bea9ddcda4a748ee4b5630",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/process-exit.json",
+    "sha256": "8f26208c2857cef81fed50c2ef2a687084908c7485bea9ddcda4a748ee4b5630",
+    "bytes": 466,
+    "line_ending_form": "lf"
+   }
+  },
+  {
+   "name": "run-result.json",
+   "bytes": 15080,
+   "sha256": "3a5d36169ebc500a0434926a74eb8f6a2656d96e6161c3cf939e30b791237adb",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/run-result.json",
+    "sha256": "3a5d36169ebc500a0434926a74eb8f6a2656d96e6161c3cf939e30b791237adb",
+    "bytes": 15080,
+    "line_ending_form": "lf"
+   }
+  },
+  {
+   "name": "capture-complete.json",
+   "bytes": 415,
+   "sha256": "dbac97ac50183a9d67e9ec9c77c2527f7e0f07569ebf188bbc63b278fdc7d2ab",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/capture-complete.json",
+    "sha256": "dbac97ac50183a9d67e9ec9c77c2527f7e0f07569ebf188bbc63b278fdc7d2ab",
+    "bytes": 415,
+    "line_ending_form": "lf"
+   }
+  },
+  {
+   "name": "original.stdout.log",
+   "bytes": 447,
+   "sha256": "c30b1d3d2765fb1318e889efea7d317e1603f4fdc629798da64f3cbcbbe50c26",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/original.stdout.log",
+    "sha256": "ae6f563948374df0125e66f922a7932874e0a6d566d10cb47296247652b7c4a9",
+    "bytes": 444,
+    "line_ending_form": "original-crlf-from-retained-lf"
+   }
+  },
+  {
+   "name": "original.stderr.log",
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/original.stderr.log",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0,
+    "line_ending_form": "lf"
+   }
+  },
+  {
+   "name": "observer/sitecustomize.py",
+   "bytes": 2884,
+   "sha256": "4b688d96a61ab591f5694f1f9d3666b31ef409e39f25f17f6e80483dcabf06fc",
+   "repository_copy": {
+    "path": "docs/state-contracts-major/execution/evidence/benchmark-current-602ec619/raw/observer/sitecustomize.py.txt",
+    "sha256": "4b688d96a61ab591f5694f1f9d3666b31ef409e39f25f17f6e80483dcabf06fc",
+    "bytes": 2884,
+    "line_ending_form": "lf"
+   }
+  }
+ ],
+ "original_archive_sha256": "dedfd7101f29800d948ac4c864bc0527cb6b81ad13c8e7a03f30d347cf526bff",
+ "retention": "Original private capture retains all members. The two large runtime inventories remain in that capture."
+}

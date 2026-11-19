@@ -1,0 +1,29 @@
+test_no_tag_is_publish_fresh (__main__.CoreClassifyPublishStateTest.test_no_tag_is_publish_fresh) ... ok
+test_nondraft_release_is_already_published (__main__.CoreClassifyPublishStateTest.test_nondraft_release_is_already_published) ... ok
+test_nondraft_release_on_a_tag_at_another_commit_is_abort (__main__.CoreClassifyPublishStateTest.test_nondraft_release_on_a_tag_at_another_commit_is_abort) ... ok
+test_tag_at_head_version_match_no_release_is_resume (__main__.CoreClassifyPublishStateTest.test_tag_at_head_version_match_no_release_is_resume) ... ok
+test_tag_points_elsewhere_is_abort (__main__.CoreClassifyPublishStateTest.test_tag_points_elsewhere_is_abort) ... ok
+test_version_mismatch_is_abort (__main__.CoreClassifyPublishStateTest.test_version_mismatch_is_abort) ... ok
+test_complete_64_character_commit_identity_is_supported (__main__.CoreMergeReadinessArmsTest.test_complete_64_character_commit_identity_is_supported) ... ok
+test_green_is_still_reachable (__main__.CoreMergeReadinessArmsTest.test_green_is_still_reachable) ... ok
+test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity (__main__.CoreMergeReadinessArmsTest.test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity) ... ok
+test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run (__main__.CoreMergeReadinessArmsTest.test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run) ... ok
+test_missing_on_empty_check_runs (__main__.CoreMergeReadinessArmsTest.test_missing_on_empty_check_runs) ... ok
+test_missing_required_binding_fields_never_form_green_evidence (__main__.CoreMergeReadinessArmsTest.test_missing_required_binding_fields_never_form_green_evidence) ... ok
+test_missing_when_no_run_matches_the_name (__main__.CoreMergeReadinessArmsTest.test_missing_when_no_run_matches_the_name) ... ok
+test_not_successful_on_a_failed_conclusion (__main__.CoreMergeReadinessArmsTest.test_not_successful_on_a_failed_conclusion) ... ok
+test_pending_when_not_completed (__main__.CoreMergeReadinessArmsTest.test_pending_when_not_completed) ... ok
+test_sha_mismatch_on_a_different_commit (__main__.CoreMergeReadinessArmsTest.test_sha_mismatch_on_a_different_commit) ... ok
+test_a_green_rerun_alongside_a_red_one_is_rejected (__main__.MergeReadinessTest.test_a_green_rerun_alongside_a_red_one_is_rejected) ... ok
+test_completed_success_is_green (__main__.MergeReadinessTest.test_completed_success_is_green) ... ok
+test_every_non_success_conclusion_is_rejected (__main__.MergeReadinessTest.test_every_non_success_conclusion_is_rejected) ... ok
+test_never_raises_on_garbage (__main__.MergeReadinessTest.test_never_raises_on_garbage) ... ok
+test_no_checks_at_all_is_missing (__main__.MergeReadinessTest.test_no_checks_at_all_is_missing) ... ok
+test_queued_and_in_progress_are_pending (__main__.MergeReadinessTest.test_queued_and_in_progress_are_pending) ... ok
+test_success_on_another_commit_is_rejected (__main__.MergeReadinessTest.test_success_on_another_commit_is_rejected) ... ok
+test_unrelated_checks_do_not_stand_in_for_the_gate (__main__.MergeReadinessTest.test_unrelated_checks_do_not_stand_in_for_the_gate) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.001s
+
+OK

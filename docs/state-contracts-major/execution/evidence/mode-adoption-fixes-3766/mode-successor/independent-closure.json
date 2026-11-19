@@ -1,0 +1,128 @@
+{
+ "schema": "codearbiter.private-independent-review/1",
+ "verdict": "PASS",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "review_kind": "NARROW_SUCCESSOR_DELTA_WITH_EXPLICIT_PREDECESSOR_REUSE",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\delivery.json",
+  "sha256": "8b44dab2115d3a48d8ad014bfbc54c59131e8705175b110a970b396d66fe9da2"
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\successor.diff",
+  "sha256": "e2d3a1ef99ccf81f1ea9113521f829fc31c26b95b8dd43fe4b91b4393691e557",
+  "bytes": 4168
+ },
+ "prior_review": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-audit-independent-review-lr1zqfn0\\review.json",
+  "sha256": "fec5db41ca00b5278c338f90c9f3f72966caad1c3792f37c701b62359288c1d8",
+  "reuse": "Unaffected exact pair/session/legacy/identity/retry/queue/caps/callers and original test assertions from prior independent review."
+ },
+ "full_subjects": [
+  {
+   "path": "core/pysrc/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\fixture\\core\\pysrc\\_modelib.py",
+    "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "bytes": 45342
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  },
+  {
+   "path": ".github/scripts/test_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\fixture\\.github\\scripts\\test_modelib.py",
+    "sha256": "dc860c2d14cfc82186b8acd54d78ee951ec2b8f91118d8f0263b3d602cefda10",
+    "bytes": 71026
+   },
+   "preimage_git_oid": "c6e814c7fd2fb724fbe03424bb07b03b46e6993a",
+   "preimage_sha256": "4fbb84b4eab120345e522543e76c6e0e4e02bba0b8c3dc852016ed290b9eb5aa",
+   "physical_sha256": "4fbb84b4eab120345e522543e76c6e0e4e02bba0b8c3dc852016ed290b9eb5aa",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca/hooks/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\fixture\\plugins\\ca\\hooks\\_modelib.py",
+    "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "bytes": 45342
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca-codex/hooks/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\fixture\\plugins\\ca-codex\\hooks\\_modelib.py",
+    "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "bytes": 45342
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  },
+  {
+   "path": "plugins/ca-pi/hooks/_modelib.py",
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-successor-io_429p6\\fixture\\plugins\\ca-pi\\hooks\\_modelib.py",
+    "sha256": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+    "bytes": 45342
+   },
+   "preimage_git_oid": "9593bb119d8a85eea0291ad45d1edaf9dc7e405f",
+   "preimage_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_index_oid": null
+  }
+ ],
+ "observed_head": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "source_binding": "Canonical five subjects remain exact 9bc/6d8 preimages; no successor adopted or staged by reviewer.",
+ "findings": [],
+ "closed_findings": [
+  {
+   "id": "MODE-AUDIT-DEBT-GUIDANCE-01",
+   "closure": "All failed/owed outcomes now state audit completion is unconfirmed and condition replay on durably retained rows for this transition. They explicitly warn unrecorded prior exit cannot be reconstructed and direct inspect/repair/retry. No global debt count is used as evidence of transition persistence.",
+   "regression": "Actual predecessor assertion RED for both foreign-session debt and older same-session/same-mode debt; successor named method passes."
+  }
+ ],
+ "verified": {
+  "sealed_descriptor_records": 38,
+  "hashes_and_sizes": true,
+  "four_source_mirrors_equal": true,
+  "production_delta_only_flip_outcome_guidance": true,
+  "entire_predecessor_AST_equal_except_failed_result_guidance_branch": true,
+  "entire_predecessor_test_AST_equal_after_removing_one_new_method": true,
+  "five_git_preimages_and_physical_bytes": true
+ },
+ "retained_current_results": {
+  "mode_tests_pass": 23,
+  "mode_seconds": 0.5328820999711752,
+  "prompt_tests_pass": 6,
+  "prompt_seconds": 0.22874980000779033,
+  "fresh_process_pair_recovery": {
+   "processes": 2,
+   "both_exit": 0
+  }
+ },
+ "predecessor_results_reused_not_reexecuted_or_relabelled": {
+  "mode_run": 83,
+  "mode_pass": 82,
+  "old_skip": 1,
+  "prompt_pass": 24,
+  "source_sha256": "0cc96df9b44a0f4921399dfb0d28cb2600153f4d946ba24e51eb91e3ed2d24db"
+ },
+ "limits": [
+  "No tests, product imports, runtime replay, API/network/provider/dependency effects or canonical/index/ref/marker writes by reviewer.",
+  "Existing marker-before-journal crash, dual-denial lost debt, bounded queue/replay and shared queue concurrency limits remain accepted; no universal durability or automatic lost-exit reconstruction guarantee.",
+  "Private five-subject source review only, not CI/runtime/task/release/publication qualification."
+ ]
+}

@@ -1,8 +1,10 @@
 import contextlib
+import copy
 import importlib.util
 import io
 import json
 import os
+import pathlib
 import sys
 import tempfile
 import unittest
@@ -203,6 +205,67 @@ class TestInstallWithPriorThirdParty(_WireStatuslineTest):
                  "--plugin-root", self.root, "--interp", "python"])
         self.assertEqual(_read(spath)[ws.BACKUP_KEY], prior)
 
+    def test_install_reinstall_user_takeover_and_restore_preserves_whole_settings(self):
+        def command():
+            return '"python" "' + os.path.realpath(os.path.join(self.root, "hooks", "statusline.py")) + '"'
+
+        def invoke(action):
+            with contextlib.redirect_stdout(io.StringIO()):
+                ws.main([action, "--settings", self.settings,
+                         "--plugin-root", self.root, "--interp", "python"])
+
+        prior_line = {"type": "command", "command": "original-line --theme", "padding": 7,
+                      "extra": {"keep": [1, 2]}}
+        prior_spinner = {"mode": "append", "verbs": ["original-spinner"]}
+        original = {"statusLine": prior_line, "spinnerVerbs": prior_spinner, "theme": "fixture-theme",
+                    "nested": {"unchanged": [1, True, None]}}
+        spinner = copy.deepcopy(ws.ARBITER_SPINNER_VERBS)
+        self.settings = _make_settings(self.tmp.name, copy.deepcopy(original))
+        invoke("install")
+        expected = copy.deepcopy(original)
+        expected.update(statusLine={"type": "command", "command": command(), "padding": 0},
+                        spinnerVerbs=spinner)
+        expected[ws.BACKUP_KEY] = copy.deepcopy(prior_line)
+        expected[ws.OWNER_KEY] = command()
+        expected[ws.SPINNER_BACKUP_KEY] = copy.deepcopy(prior_spinner)
+        expected[ws.SPINNER_OWNER_KEY] = copy.deepcopy(spinner)
+        self.assertEqual(_read(self.settings), expected)
+
+        old_command = command()
+        self.root = _make_plugin_root(os.path.join(self.tmp.name, "second-durable-version"))
+        self.assertNotEqual(command(), old_command)
+        invoke("install")
+        expected["statusLine"] = {"type": "command", "command": command(), "padding": 0}
+        expected[ws.OWNER_KEY] = command()
+        self.assertEqual(_read(self.settings), expected)
+
+        user_line = {"type": "command", "command": "new-user-line", "padding": 11,
+                     "extra": {"new": True}}
+        user_spinner = {"mode": "append", "verbs": ["new-user-spinner"]}
+        user = copy.deepcopy(expected)
+        user["statusLine"] = copy.deepcopy(user_line)
+        user["spinnerVerbs"] = copy.deepcopy(user_spinner)
+        self.settings = _make_settings(self.tmp.name, user)
+        raw = _read_bytes(self.settings)
+        invoke("refresh")
+        self.assertEqual(_read_bytes(self.settings), raw)
+        self.assertEqual(_read(self.settings), user)
+
+        invoke("install")
+        takeover = copy.deepcopy(user)
+        takeover.update(statusLine={"type": "command", "command": command(), "padding": 0},
+                        spinnerVerbs=spinner)
+        takeover[ws.BACKUP_KEY] = copy.deepcopy(user_line)
+        takeover[ws.OWNER_KEY] = command()
+        takeover[ws.SPINNER_BACKUP_KEY] = copy.deepcopy(user_spinner)
+        takeover[ws.SPINNER_OWNER_KEY] = copy.deepcopy(spinner)
+        self.assertEqual(_read(self.settings), takeover)
+        invoke("uninstall")
+        restored = copy.deepcopy(original)
+        restored["statusLine"] = user_line
+        restored["spinnerVerbs"] = user_spinner
+        self.assertEqual(_read(self.settings), restored)
+
 
 class TestUninstall(_WireStatuslineTest):
     """Uninstall → removes our line, restores the backed-up prior setting."""
@@ -289,6 +352,56 @@ class TestUninstall(_WireStatuslineTest):
         self.assertEqual(restored["statusLine"], prior)
         self.assertNotIn(ws.OWNER_KEY, restored)
 
+    def test_legacy_backup_without_owner_preserves_later_third_party_statusline(self):
+        absent = object()
+        replacements = ({"type": "command", "command": "new-user-line", "padding": 4},
+                        "new-user-string-line", None, absent)
+        old_spinner = {"mode": "append", "verbs": ["old user spinner"]}
+        new_spinner = {"mode": "append", "verbs": ["new user spinner"]}
+        for replacement in replacements:
+            for spinner in ("none", "owned", "replaced"):
+                with self.subTest(replacement=replacement, spinner=spinner):
+                    content = {ws.BACKUP_KEY: {"type": "command", "command": "stale-old-line"},
+                               "theme": "user-theme", "nested": {"keep": [1, True, None]}}
+                    if replacement is not absent:
+                        content["statusLine"] = replacement
+                    if spinner != "none":
+                        content.update({"spinnerVerbs": ws.ARBITER_SPINNER_VERBS if spinner == "owned" else new_spinner,
+                            ws.SPINNER_OWNER_KEY: ws.ARBITER_SPINNER_VERBS,
+                            ws.SPINNER_BACKUP_KEY: old_spinner})
+                    spath = _make_settings(self.tmp.name, content)
+                    ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+                    actual = _read(spath)
+                    expected = {"theme": "user-theme", "nested": {"keep": [1, True, None]}}
+                    if replacement is not absent:
+                        expected["statusLine"] = replacement
+                    if spinner != "none":
+                        expected["spinnerVerbs"] = old_spinner if spinner == "owned" else new_spinner
+                    self.assertEqual(actual, expected,
+                        "legacy backup is not evidence of ownership of a later user choice")
+                    before = _read_bytes(spath)
+                    ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+                    self.assertEqual(_read_bytes(spath), before, "settled uninstall must be idempotent")
+
+    def test_legacy_owned_statusline_without_stamp_still_restores_backup(self):
+        commands = ('python "' + os.path.join(self.root, "hooks", "statusline.py") + '"',
+                    '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"')
+        prior = {"type": "command", "command": "exact-prior", "extra": [1, None]}
+        for command in commands:
+            for current in (command, {"type": "command", "command": command}):
+                with self.subTest(command=command, current=current):
+                    spath = _make_settings(self.tmp.name, {"statusLine": current,
+                        ws.BACKUP_KEY: prior, "keep": {"nested": True}})
+                    ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+                    self.assertEqual(_read(spath), {"statusLine": prior, "keep": {"nested": True}})
+
+    def test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement(self):
+        replacement = {"type": "command", "command": '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'}
+        spath = _make_settings(self.tmp.name, {"statusLine": replacement,
+            ws.OWNER_KEY: "different-owned-command", ws.BACKUP_KEY: "old-line", "keep": 7})
+        ws.main(["uninstall", "--settings", spath, "--plugin-root", self.root])
+        self.assertEqual(_read(spath), {"statusLine": replacement, "keep": 7})
+
     def test_stale_owner_marker_never_overwrites_user_replacement(self):
         owned = '"python" "C:\\source\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"'
         replacement = {"type": "command", "command": "user-new-line", "padding": 4}
@@ -354,6 +467,48 @@ class TestLegacySourceMigration(_WireStatuslineTest):
         ws.main(["uninstall", "--settings", spath,
                  "--plugin-root", self.root])
         self.assertNotIn("statusLine", _read(spath))
+
+    def test_legacy_source_and_cache_reinstall_preserves_original_backup(self):
+        variants = {
+            "source": '"python" "C:\\src\\codeArbiter\\plugins\\ca\\hooks\\statusline.py"',
+            "cache": '"python" "C:\\Users\\fixture\\.claude\\plugins\\cache\\codearbiter\\ca\\1.0.0\\hooks\\statusline.py"',
+        }
+        spinner = copy.deepcopy(ws.ARBITER_SPINNER_VERBS)
+        command = '"python" "' + os.path.realpath(os.path.join(self.root, "hooks", "statusline.py")) + '"'
+        for kind, legacy in variants.items():
+            with self.subTest(kind=kind):
+                prior = {"type": "command", "command": "original-" + kind, "padding": 8,
+                         "extra": {"keep": [1, 2]}}
+                original = {"statusLine": {"type": "command", "command": legacy},
+                            ws.BACKUP_KEY: copy.deepcopy(prior), "spinnerVerbs": copy.deepcopy(spinner),
+                            ws.SPINNER_OWNER_KEY: copy.deepcopy(spinner),
+                            ws.SPINNER_BACKUP_KEY: {"mode": "append", "verbs": ["original-spinner"]},
+                            "nested": {"preserve": kind}}
+                self.settings = _make_settings(os.path.join(self.tmp.name, kind), copy.deepcopy(original))
+                ws.main(["install", "--settings", self.settings,
+                         "--plugin-root", self.root, "--interp", "python"])
+                expected = copy.deepcopy(original)
+                expected["statusLine"] = {"type": "command", "command": command, "padding": 0}
+                expected[ws.OWNER_KEY] = command
+                self.assertEqual(_read(self.settings), expected)
+
+        foreign = {"type": "command", "command": '"python" "C:\\tools\\statusline.py"', "padding": 9,
+                   "extra": {"foreign": True}}
+        before = {"statusLine": foreign,
+                  ws.BACKUP_KEY: {"type": "command", "command": "obsolete-backup"},
+                  "spinnerVerbs": {"mode": "append", "verbs": ["current-spinner"]},
+                  "nested": {"preserve": True}}
+        self.settings = _make_settings(os.path.join(self.tmp.name, "near-match"), before)
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        expected = copy.deepcopy(before)
+        expected[ws.BACKUP_KEY] = copy.deepcopy(foreign)
+        expected[ws.OWNER_KEY] = command
+        expected[ws.SPINNER_BACKUP_KEY] = copy.deepcopy(before["spinnerVerbs"])
+        expected[ws.SPINNER_OWNER_KEY] = copy.deepcopy(spinner)
+        expected["statusLine"] = {"type": "command", "command": command, "padding": 0}
+        expected["spinnerVerbs"] = copy.deepcopy(spinner)
+        self.assertEqual(_read(self.settings), expected)
 
 
 class TestOwnershipDetection(unittest.TestCase):
@@ -678,6 +833,124 @@ class TestSpinnerVerbsIdempotent(_WireStatuslineTest):
         self.assertGreater(len(verbs), 0)
 
 
+class TestSpinnerOwnershipIsExact(_WireStatuslineTest):
+    """HW-05 (HOOK-F05): uninstall restored the pre-install spinnerVerbs
+    backup whenever the backup key existed — even when the user had since set
+    their OWN spinner — so uninstall clobbered a later user choice. The
+    installed value is now stamped separately; uninstall restores only while
+    the current value still equals that stamp."""
+
+    PRIOR = {"mode": "replace", "verbs": ["Thinking", "Working"]}
+    CUSTOM = {"mode": "append", "verbs": ["My own verb"]}
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = _make_plugin_root(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _settings(self, content):
+        self.settings = _make_settings(self.tmp.name, content)
+
+    def _install(self):
+        ws.main(["install", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+
+    def _uninstall(self):
+        out = io.StringIO()
+        with contextlib.redirect_stdout(out):
+            ws.main(["uninstall", "--settings", self.settings,
+                     "--plugin-root", self.root])
+        return out.getvalue()
+
+    def _set(self, **updates):
+        data = _read(self.settings)
+        data.update(updates)
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+
+    def test_install_stamps_the_exact_owned_value(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        data = _read(self.settings)
+        self.assertEqual(data[ws.SPINNER_OWNER_KEY], data["spinnerVerbs"])
+        self.assertEqual(data[ws.SPINNER_BACKUP_KEY], self.PRIOR)
+
+    def test_still_owned_uninstall_restores_previous_value(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.PRIOR)
+        self.assertNotIn(ws.SPINNER_OWNER_KEY, data)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+
+    def test_user_custom_spinner_after_install_survives_uninstall(self):
+        """The audit clobber reproduction."""
+        self._settings({"spinnerVerbs": self.PRIOR, "theme": "dark"})
+        self._install()
+        self._set(spinnerVerbs=self.CUSTOM)
+        output = self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.CUSTOM)
+        self.assertNotIn(ws.SPINNER_OWNER_KEY, data)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+        self.assertEqual(data.get("theme"), "dark")
+        self.assertIn("spinner ownership ended", output)
+
+    def test_user_removed_spinner_after_install_is_not_recreated(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        data = _read(self.settings)
+        del data["spinnerVerbs"]
+        with open(self.settings, "w", encoding="utf-8") as f:
+            json.dump(data, f)
+        self._uninstall()
+        self.assertNotIn("spinnerVerbs", _read(self.settings))
+
+    def test_reinstall_after_user_change_does_not_overwrite_silently_then_uninstall_restores_it(self):
+        self._settings({})
+        self._install()
+        self._set(spinnerVerbs=self.CUSTOM)
+        self._install()   # explicit re-install takes over WITH a fresh backup
+        data = _read(self.settings)
+        self.assertEqual(data[ws.SPINNER_BACKUP_KEY], self.CUSTOM)
+        self._uninstall()
+        self.assertEqual(_read(self.settings).get("spinnerVerbs"), self.CUSTOM)
+
+    def test_legacy_backup_without_stamp_is_conservative(self):
+        # Older installs wrote only the backup key. Restore only while the
+        # current value is exactly the verbs codeArbiter installs.
+        self._settings({"spinnerVerbs": ws.ARBITER_SPINNER_VERBS,
+                        ws.SPINNER_BACKUP_KEY: self.PRIOR})
+        self._uninstall()
+        self.assertEqual(_read(self.settings).get("spinnerVerbs"), self.PRIOR)
+        self._settings({"spinnerVerbs": self.CUSTOM,
+                        ws.SPINNER_BACKUP_KEY: self.PRIOR})
+        self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data.get("spinnerVerbs"), self.CUSTOM)
+        self.assertNotIn(ws.SPINNER_BACKUP_KEY, data)
+
+    def test_repeated_uninstall_is_a_noop(self):
+        self._settings({"spinnerVerbs": self.PRIOR, "keep": 1})
+        self._install()
+        self._uninstall()
+        first = _read(self.settings)
+        self._uninstall()
+        self.assertEqual(_read(self.settings), first)
+
+    def test_spinner_ownership_is_independent_of_statusline_replacement(self):
+        self._settings({"spinnerVerbs": self.PRIOR})
+        self._install()
+        self._set(statusLine={"type": "command", "command": "other-statusline"})
+        self._uninstall()
+        data = _read(self.settings)
+        self.assertEqual(data["statusLine"]["command"], "other-statusline")
+        self.assertEqual(data.get("spinnerVerbs"), self.PRIOR)
+
+
 class TestRefreshStalePathOnSessionStart(_WireStatuslineTest):
     """Regression (#fix): a ca-owned statusLine whose command points at an OLD
     plugin-version path must be REFRESHED to the current renderer path on its own
@@ -790,6 +1063,26 @@ class TestRefreshStalePathOnSessionStart(_WireStatuslineTest):
         cmd = sl.get("command") if isinstance(sl, dict) else sl
         self.assertIn(self.script_abs, cmd)
         self.assertNotIn("2.0.1", cmd)
+
+    def test_refresh_preserves_spinner_backups_and_unrelated_settings(self):
+        before = {"statusLine": {"type": "command", "command": self.stale_cmd},
+                  ws.OWNER_KEY: self.stale_cmd,
+                  ws.BACKUP_KEY: {"type": "command", "command": "prior-safe-line", "padding": 17},
+                  "spinnerVerbs": {"mode": "replace", "verbs": ["custom-spinner"]},
+                  ws.SPINNER_BACKUP_KEY: {"mode": "append", "verbs": ["prior-spinner"]},
+                  ws.SPINNER_OWNER_KEY: {"mode": "replace", "verbs": ["old-owned-spinner"]},
+                  "theme": "fixture-theme", "permissions": {"allow": ["inert-entry"]},
+                  "nested": {"unchanged": [1, True, None]}}
+        self.settings = _make_settings(self.tmp.name, copy.deepcopy(before))
+        ws.main(["refresh", "--settings", self.settings,
+                 "--plugin-root", self.root, "--interp", "python"])
+        after = _read(self.settings)
+        expected_command = ws.build_command("python", self.script_abs)
+        expected = copy.deepcopy(before)
+        expected["statusLine"] = ws.owned_statusline(expected_command)
+        expected[ws.OWNER_KEY] = expected_command
+        self.assertNotEqual(before["statusLine"], after["statusLine"])
+        self.assertEqual(after, expected)
 
 
 class TestNonDurableRootIsNeverPinned(_WireStatuslineTest):
@@ -951,6 +1244,239 @@ class TestPluginRootBoundary(_WireStatuslineTest):
             with self.assertRaises(ws.hostapi.PluginRootError):
                 ws.main(["status", "--settings", self.settings,
                          "--plugin-root", self.root])
+
+    def test_install_refusals_preserve_existing_settings(self):
+        def snapshot(folder):
+            return {p.relative_to(folder).as_posix(): None if p.is_dir() else p.read_bytes()
+                    for p in sorted(folder.rglob("*"))}
+
+        for kind in ("mismatched-root", "missing-adapter", "ephemeral-root", "missing-renderer",
+                     "invalid-json", "unreadable-settings"):
+            with self.subTest(kind=kind):
+                folder = pathlib.Path(self.tmp.name, kind)
+                folder.mkdir()
+                self.root = _make_plugin_root(str(folder))
+                self.settings = _make_settings(str(folder), {
+                    "statusLine": {"type": "command", "command": "keep-line"},
+                    "spinnerVerbs": {"mode": "append", "verbs": ["keep-spinner"]},
+                    "nested": {"unchanged": [1, None]},
+                })
+                requested = self.root
+                if kind == "mismatched-root":
+                    requested = _make_plugin_root(str(folder / "foreign"))
+                if kind == "ephemeral-root":
+                    self.root = _make_worktree_plugin_root(str(folder))
+                    requested = self.root
+                if kind == "missing-renderer":
+                    pathlib.Path(self.root, "hooks", "statusline.py").unlink()
+                if kind == "invalid-json":
+                    pathlib.Path(self.settings).write_bytes(b"{owned-invalid-json")
+                before_bytes = _read_bytes(self.settings)
+                before_tree = snapshot(folder)
+                with contextlib.ExitStack() as stack:
+                    expected_error = SystemExit
+                    injected = None
+                    if kind == "missing-adapter":
+                        expected_error = ws.hostapi.PluginRootError
+                        stack.enter_context(mock.patch.object(
+                            ws._hooklib, "get_host", side_effect=expected_error("missing fixture boundary")))
+                    if kind == "unreadable-settings":
+                        expected_error = PermissionError
+                        injected = stack.enter_context(mock.patch.object(
+                            ws, "open", side_effect=PermissionError("owned read refusal"), create=True))
+                    with self.assertRaises(expected_error):
+                        ws.main(["install", "--settings", self.settings,
+                                 "--plugin-root", requested, "--interp", "python"])
+                    if injected is not None:
+                        self.assertEqual(injected.call_count, 1)
+                        self.assertEqual(pathlib.Path(injected.call_args.args[0]), pathlib.Path(self.settings))
+                self.assertEqual(_read_bytes(self.settings), before_bytes)
+                self.assertEqual(snapshot(folder), before_tree)
+
+
+class TestSpinnerReleasedReaderRollback(_WireStatuslineTest):
+    """HW-05: retain current data across the exact supported old reader."""
+
+    RELEASED_READER = "ca-codex-v0.26.9@3f1bd13762ed9f25320e58907f9bf98a81128504"
+    # Exact first-party core/pysrc/wire-statusline.py from this released commit.
+    RELEASED_BLOB_SHA256 = "3ca9de6944a7911a126e1ae486c88a4c029b2684a7a24a3fa152f726f6cced92"
+    RELEASED_FUNCTION_AST_SHA256 = "99dacd81e587cd91cc6c92ab4943c2ee45af0dad696788dd09ad05a25fab655c"
+    RELEASED_FUNCTION_SOURCE_SHA256 = "5516122c7d4da79d2a24d13dd7822f3324b0c6895baf46eb59fc42ad42550f6b"
+    LEGACY_BACKUP_KEY = "_codearbiterSpinnerVerbsBackup"
+    RELEASED_UNINSTALL_SOURCE = 'def _uninstall_spinner_verbs(settings):\n    if SPINNER_BACKUP_KEY not in settings:\n        return\n    prior_sv = settings.pop(SPINNER_BACKUP_KEY)\n    if prior_sv is None:\n        settings.pop("spinnerVerbs", None)\n    else:\n        settings["spinnerVerbs"] = prior_sv'
+    PRIOR = {"mode": "replace", "verbs": ["previous private spinner"]}
+    CUSTOM = {"mode": "append", "verbs": ["new private user spinner"]}
+
+    def setUp(self):
+        self.tmp = tempfile.TemporaryDirectory()
+        self.root = _make_plugin_root(self.tmp.name)
+        self.settings = _make_settings(self.tmp.name)
+
+    def tearDown(self):
+        self.tmp.cleanup()
+
+    def _write(self, value):
+        with open(self.settings, "w", encoding="utf-8") as stream:
+            json.dump(value, stream)
+
+    def _current(self, action):
+        with contextlib.redirect_stdout(io.StringIO()):
+            ws.main([action, "--settings", self.settings,
+                     "--plugin-root", self.root, "--interp", "python"])
+
+    def _released_uninstall(self, settings):
+        import hashlib
+        # Exact source bytes remain stable across Python AST schema versions.
+        self.assertEqual(hashlib.sha256(self.RELEASED_UNINSTALL_SOURCE.encode()).hexdigest(),
+                         self.RELEASED_FUNCTION_SOURCE_SHA256)
+        namespace = {"__builtins__": {}, "SPINNER_BACKUP_KEY": self.LEGACY_BACKUP_KEY}
+        exec(compile(self.RELEASED_UNINSTALL_SOURCE, "<ca-codex-v0.26.9-pure-spinner-reader>", "exec"), namespace)
+        namespace["_uninstall_spinner_verbs"](settings)
+
+    def test_released_reader_cannot_restore_over_new_user_spinner(self):
+        self._write({"spinnerVerbs": self.PRIOR, "theme": "private-theme",
+                     "nested": {"keep": [1, True, None]}})
+        self._current("install")
+        installed = _read(self.settings)
+        self.assertEqual(installed[ws.SPINNER_BACKUP_KEY], self.PRIOR)
+        self.assertEqual(installed[ws.SPINNER_OWNER_KEY], installed["spinnerVerbs"])
+        installed["spinnerVerbs"] = self.CUSTOM
+        installed["nested"]["later_user_choice"] = {"keep": "current"}
+        self._write(installed)
+        before = _read(self.settings)
+        changed = _read(self.settings)
+        self._released_uninstall(changed)
+        self._write(changed)
+        after = _read(self.settings)
+        self.rollback_readback = {"before": before, "after": after}
+        self.assertEqual(after["spinnerVerbs"], self.CUSTOM,
+                         "released rollback reader restored an older spinner over the later user choice")
+        self.assertEqual(after[ws.SPINNER_BACKUP_KEY], self.PRIOR,
+                         "rollback must retain current backup metadata")
+        self.assertEqual(after[ws.SPINNER_OWNER_KEY], before[ws.SPINNER_OWNER_KEY])
+        self.assertEqual(after, before, "rollback reader must leave current settings and metadata intact")
+
+    def test_literal_legacy_backup_migration_preserves_custom_and_unrelated_values(self):
+        for label, current, expected in (
+                ("owned", ws.ARBITER_SPINNER_VERBS, self.PRIOR),
+                ("user-custom", self.CUSTOM, self.CUSTOM)):
+            with self.subTest(state=label):
+                unrelated = {"statusLine": {"type": "command", "command": "private-user-line"},
+                             "theme": "private-theme", "nested": {"keep": [1, True, None]}}
+                self._write(dict(unrelated, spinnerVerbs=current,
+                                 **{self.LEGACY_BACKUP_KEY: self.PRIOR}))
+                self._current("uninstall")
+                after = _read(self.settings)
+                self.assertEqual(after["spinnerVerbs"], expected)
+                self.assertNotIn(self.LEGACY_BACKUP_KEY, after)
+                self.assertEqual(after, dict(unrelated, spinnerVerbs=expected))
+
+    def test_malformed_backup_metadata_never_grants_ownership_of_custom_spinner(self):
+        malformed = (
+            ("legacy", {self.LEGACY_BACKUP_KEY: "not-a-spinner-object"}),
+            ("stamped", {ws.SPINNER_BACKUP_KEY: {"verbs": True},
+                         ws.SPINNER_OWNER_KEY: ["not-an-owned-spinner-object"]}),
+        )
+        for label, metadata in malformed:
+            with self.subTest(state=label):
+                unrelated = {"statusLine": {"type": "command", "command": "private-user-line"},
+                             "theme": "private-theme", "nested": {"keep": [1, True, None]}}
+                self._write(dict(unrelated, spinnerVerbs=self.CUSTOM, **metadata))
+                self._current("uninstall")
+                after = _read(self.settings)
+                self.assertEqual(after["spinnerVerbs"], self.CUSTOM)
+                for key, value in unrelated.items():
+                    self.assertEqual(after[key], value)
+
+
+    def test_owned_refresh_protects_legacy_backup_from_released_reader(self):
+        script = os.path.join(self.root, "hooks", "statusline.py")
+        desired = ws.build_command("python", script)
+        old_root = _make_plugin_root(os.path.join(self.tmp.name, "prior-durable-version"))
+        stale = ws.build_command("python", os.path.join(old_root, "hooks", "statusline.py"))
+        self.assertNotEqual(stale, desired)
+        self.assertFalse(ws._durabilitylib.is_ephemeral_path(script))
+        self.assertTrue(os.path.isfile(script))
+        self.refresh_rollback_readbacks = []
+        for label, command in (("stale-owned", stale), ("already-current-owned", desired)):
+            with self.subTest(path_state=label):
+                original = {"statusLine": ws.owned_statusline(command), ws.OWNER_KEY: command,
+                            "spinnerVerbs": self.CUSTOM, self.LEGACY_BACKUP_KEY: self.PRIOR,
+                            "theme": "private-theme", "nested": {"keep": [1, True, None]}}
+                self.assertNotIn(ws.SPINNER_OWNER_KEY, original)
+                self._write(original)
+                loaded = _read(self.settings)
+                self.assertTrue(ws.is_ours(loaded["statusLine"], loaded))
+                # Exercise the shared mutation used directly by session-start,
+                # persisting only its real changed flag, just like its callers.
+                changed = ws.refresh_if_stale(loaded, script, "python")
+                if changed:
+                    ws.save_settings(self.settings, loaded)
+                refreshed = _read(self.settings)
+                self.assertEqual(refreshed["statusLine"], ws.owned_statusline(desired))
+                self.assertEqual(refreshed[ws.OWNER_KEY], desired)
+                self.assertEqual(refreshed["spinnerVerbs"], self.CUSTOM)
+                self.assertEqual(refreshed[ws.SPINNER_BACKUP_KEY], self.PRIOR)
+                before_old = _read(self.settings)
+                after_old = _read(self.settings)
+                self._released_uninstall(after_old)
+                self._write(after_old)
+                observed = _read(self.settings)
+                self.refresh_rollback_readbacks.append({"path_state": label, "refresh_changed": changed,
+                    "before_old_reader": before_old, "after_old_reader": observed})
+                self.assertEqual(observed["spinnerVerbs"], self.CUSTOM,
+                                 "released reader clobbered custom spinner after owned refresh")
+                self.assertEqual(observed[ws.SPINNER_BACKUP_KEY], self.PRIOR)
+                self.assertEqual(observed, before_old,
+                                 "owned refresh must retain backup and unrelated settings across rollback")
+                steady = _read(self.settings)
+                self.assertFalse(ws.refresh_if_stale(steady, script, "python"))
+                self.assertEqual(steady, observed, "current backup metadata must not cause repeated refresh writes")
+
+    def test_mixed_backup_formats_refuse_writes_and_leave_refresh_inert(self):
+        script = os.path.join(self.root, "hooks", "statusline.py")
+        command = ws.build_command("python", script)
+        original = {"statusLine": ws.owned_statusline(command), ws.OWNER_KEY: command,
+                    "spinnerVerbs": self.CUSTOM, ws.SPINNER_BACKUP_KEY: self.PRIOR,
+                    self.LEGACY_BACKUP_KEY: {"mode": "replace", "verbs": ["different prior"]},
+                    "nested": {"keep": [1, True, None]}}
+        self.assertNotEqual(ws.SPINNER_BACKUP_KEY, self.LEGACY_BACKUP_KEY)
+        for action in ("install", "uninstall"):
+            with self.subTest(action=action):
+                self._write(original)
+                before = _read_text(self.settings)
+                with self.assertRaises(SystemExit):
+                    self._current(action)
+                self.assertEqual(_read_text(self.settings), before)
+        loaded = _read(self.settings)
+        self.assertFalse(ws.refresh_if_stale(loaded, script, "python"))
+        self.assertEqual(loaded, original)
+        before = _read_text(self.settings)
+        self._current("refresh")
+        self.assertEqual(_read_text(self.settings), before)
+
+    def test_legacy_migration_keeps_foreign_and_ephemeral_refresh_inert(self):
+        ephemeral = _make_worktree_plugin_root(os.path.join(self.tmp.name, "ephemeral"))
+        for label, plugin, current in (
+                ("foreign", self.root, {"type": "command", "command": "private-user-line"}),
+                ("ephemeral", ephemeral, ws.owned_statusline(ws.build_command(
+                    "python", os.path.join(ephemeral, "hooks", "statusline.py"))))):
+            with self.subTest(boundary=label):
+                self.root = plugin  # The fixture adapter must authenticate this executing root.
+                original = {"statusLine": current, "spinnerVerbs": self.CUSTOM,
+                            self.LEGACY_BACKUP_KEY: self.PRIOR, "keep": {"nested": True}}
+                if label == "ephemeral":
+                    original[ws.OWNER_KEY] = current["command"]
+                self._write(original)
+                before = _read_text(self.settings)
+                loaded = _read(self.settings)
+                self.assertFalse(ws.refresh_if_stale(loaded, os.path.join(
+                    plugin, "hooks", "statusline.py"), "python"))
+                self.assertEqual(loaded, original)
+                with contextlib.redirect_stdout(io.StringIO()):
+                    ws.main(["refresh", "--settings", self.settings,
+                             "--plugin-root", plugin, "--interp", "python"])
+                self.assertEqual(_read_text(self.settings), before)
 
 
 if __name__ == "__main__":

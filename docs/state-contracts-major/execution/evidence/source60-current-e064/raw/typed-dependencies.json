@@ -1,0 +1,1139 @@
+{
+  "format": "source60-finite-typed-dependencies/1",
+  "source_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+  "groups": {
+    "G06": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+      "old_scope_limits": [
+        "No ADR/status/acceptance/lifecycle/index/marker or Gov write.",
+        "No ADR Implemented/Verified promotion: lifecycle export lists missing current implementation evidence for all10sealed obligations.",
+        "No taskG01/R03, whole38associated baseline rows, actual CI/pre-tag command/publication/host delivery closure.",
+        "Pi HTTP ADR0018/0019 pending choice remains separate and untouched.",
+        "Source-only conformance; generated host guidance parity and old raw test counts are not represented as executed current evidence."
+      ],
+      "edges": [
+        {
+          "path": ".codearbiter/decisions/0048-required-declared-pre-tag-checks.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+          "old_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+          "old_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/0044-trusted-pi-npm-publication.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+          "old_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/decision-log.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "1ca2da03c1c471920ee5de2cc863f233aa9370d113e058f55d6a17ed3c41f363",
+          "old_sha256": "1ca2da03c1c471920ee5de2cc863f233aa9370d113e058f55d6a17ed3c41f363",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/adr-lifecycle.jsonl",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d3181bda046513723b0315d3c53efa328177d1c1ce403bdaa7fefa61a324ea79",
+          "old_sha256": "d3181bda046513723b0315d3c53efa328177d1c1ce403bdaa7fefa61a324ea79",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/check_auto_release_candidate.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+          "old_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+          "changed": false
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+          "old_sha256": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473",
+          "changed": true
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+          "old_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+          "changed": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "old_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "old_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "old_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "changed": false
+        },
+        {
+          "path": "core/surface/skills/release/SKILL.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "24503b6688fa9b3f390d246fb5cafc2955336dcf504fd0c400662fd30d23a19d",
+          "old_sha256": "24503b6688fa9b3f390d246fb5cafc2955336dcf504fd0c400662fd30d23a19d",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/release-targets.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+          "old_sha256": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/finding-dispositions.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+          "old_sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        }
+      ]
+    },
+    "G07": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "old_scope_limits": [],
+      "edges": [
+        {
+          "path": "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+          "old_sha256": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+          "old_sha256": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+          "old_sha256": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/builder-observation.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+          "old_sha256": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/cache-provenance.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+          "old_sha256": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "b40ae21eec8ff1bfaa707e827627fad2d0ef4f8505491ad7b52055295a5e5727",
+          "old_sha256": "b40ae21eec8ff1bfaa707e827627fad2d0ef4f8505491ad7b52055295a5e5727",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+          "old_sha256": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+          "old_sha256": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+          "changed": true
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+          "old_sha256": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+          "changed": true
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/cli-resolve.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+          "old_sha256": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/cli.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+          "old_sha256": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/cli.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+          "old_sha256": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/cp.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "3741020ad0375ed4723ec8dcae667c9d30074e368582827ae6d3f149b4002623",
+          "old_sha256": "3741020ad0375ed4723ec8dcae667c9d30074e368582827ae6d3f149b4002623",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/cp.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+          "old_sha256": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+          "old_sha256": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create-partial-compensation.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+          "old_sha256": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+          "old_sha256": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+          "old_sha256": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+          "old_sha256": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/dephash.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+          "old_sha256": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/dephash.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+          "old_sha256": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/destroy.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+          "old_sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/docker-gate.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+          "old_sha256": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/docker-gate.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+          "old_sha256": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/docker.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+          "old_sha256": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/exec.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+          "old_sha256": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/exec.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+          "old_sha256": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/installed-bundle.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+          "old_sha256": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/layering.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+          "old_sha256": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/lifecycle.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+          "old_sha256": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/mounts.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+          "old_sha256": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/mounts.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+          "old_sha256": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/multistack.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+          "old_sha256": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/native-build-inputs.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+          "old_sha256": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/network.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+          "old_sha256": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/network.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+          "old_sha256": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/package-lock.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+          "old_sha256": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/package.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+          "old_sha256": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/registry.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+          "old_sha256": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/run.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+          "old_sha256": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/run.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+          "old_sha256": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/smoke.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+          "old_sha256": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/smoke.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+          "old_sha256": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+          "old_sha256": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/supply-chain.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+          "old_sha256": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/teardown.test.ts",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+          "old_sha256": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/tsconfig.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+          "old_sha256": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/vitest.config.ts",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+          "old_sha256": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/sandbox.js",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+          "old_sha256": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "old_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "old_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        }
+      ]
+    },
+    "G09": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+      "old_scope_limits": [
+        "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+        "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+        "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+        "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+      ],
+      "edges": [
+        {
+          "path": ".github/integration-candidate.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "39264033eba8bd03e758bf61597f2ebe52820b7aed6e62bed1d2b687d199566c",
+          "old_sha256": "39264033eba8bd03e758bf61597f2ebe52820b7aed6e62bed1d2b687d199566c",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "old_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/integration_candidate.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+          "old_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+          "changed": false
+        },
+        {
+          "path": "core/hosts.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+          "old_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_artifactmanifestlib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "old_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+          "old_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "old_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "old_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        },
+        {
+          "path": "package.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+          "old_sha256": "b43ba5459d1445cfc98e918288c450894a024377b7924b7243d9b252a8ba8143",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-pi/CHANGELOG.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "e4482137329df698296e78a4b1e984c2beead060841161866b2c2bf1216a4831",
+          "old_sha256": "a27356bb5c0f203ce97e9ce81fbbe8dea5c2f683615e31406bc7f18ed90993e3",
+          "changed": true
+        },
+        {
+          "path": "plugins/ca-pi/package.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+          "old_sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-pi/tools/build.mjs",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "d659b6b6d0b712cd28b35331991aa41c8948cc3b954c700ae8916d022b378049",
+          "old_sha256": "d659b6b6d0b712cd28b35331991aa41c8948cc3b954c700ae8916d022b378049",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-pi/tools/package-lock.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+          "old_sha256": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-pi/tools/package.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+          "old_sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca/hooks/secret-detection-corpus.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+          "old_sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+          "changed": false
+        },
+        {
+          "path": "tools/build-host-packages.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+          "old_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+          "changed": false
+        },
+        {
+          "path": "tools/host_descriptors.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+          "old_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+          "changed": false
+        },
+        {
+          "path": "tools/owned_output.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+          "old_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+          "changed": false
+        }
+      ]
+    },
+    "G24": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+      "old_scope_limits": [],
+      "edges": [
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+          "old_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+          "changed": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "old_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        }
+      ]
+    },
+    "G25": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+      "old_scope_limits": [
+        "No ADR/status/acceptance/lifecycle/index/marker or Gov write.",
+        "No ADR Implemented/Verified promotion: lifecycle export lists missing current implementation evidence for all10sealed obligations.",
+        "No taskG01/R03, whole38associated baseline rows, actual CI/pre-tag command/publication/host delivery closure.",
+        "Pi HTTP ADR0018/0019 pending choice remains separate and untouched.",
+        "Source-only conformance; generated host guidance parity and old raw test counts are not represented as executed current evidence."
+      ],
+      "edges": [
+        {
+          "path": ".codearbiter/decisions/0048-required-declared-pre-tag-checks.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+          "old_sha256": "05b807a2e7e3bcd6e95f9ef7009d83fc7ab0354a2ab5fd0bdb3c0fd3ceac26bf",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+          "old_sha256": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/0044-trusted-pi-npm-publication.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+          "old_sha256": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/decision-log.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "1ca2da03c1c471920ee5de2cc863f233aa9370d113e058f55d6a17ed3c41f363",
+          "old_sha256": "1ca2da03c1c471920ee5de2cc863f233aa9370d113e058f55d6a17ed3c41f363",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/decisions/adr-lifecycle.jsonl",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d3181bda046513723b0315d3c53efa328177d1c1ce403bdaa7fefa61a324ea79",
+          "old_sha256": "d3181bda046513723b0315d3c53efa328177d1c1ce403bdaa7fefa61a324ea79",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/check_auto_release_candidate.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+          "old_sha256": "b00914befa56089cf633d0327f35e88166bdfcb05b45aff36c1ae4786c9f5d07",
+          "changed": false
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+          "old_sha256": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473",
+          "changed": true
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+          "old_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+          "changed": false
+        },
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "old_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "old_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "old_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "changed": false
+        },
+        {
+          "path": "core/surface/skills/release/SKILL.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "24503b6688fa9b3f390d246fb5cafc2955336dcf504fd0c400662fd30d23a19d",
+          "old_sha256": "24503b6688fa9b3f390d246fb5cafc2955336dcf504fd0c400662fd30d23a19d",
+          "changed": false
+        },
+        {
+          "path": ".codearbiter/release-targets.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+          "old_sha256": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/finding-dispositions.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+          "old_sha256": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        }
+      ]
+    },
+    "G26": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "old_scope_limits": [
+        "Final publication/publicreadback are subsequentQ03 delivery obligations under PROGRAM46/56; no release is required before prepromotion review can preserve healthy boundaries.",
+        "PRESERVED here certifies inspected source guard/effect/retry contracts, not live provider availability, actual installed/cohort/platform cells, finalmain artifacts or wholeR01/SEQ22/program completion. Those existing required obligations are not passed by this record.",
+        "Source9e3 owners equal execution-source bytes from earlier74057/31e. Runtime observations are original retained outputs; no fresh execution at9e3 is claimed.",
+        "Original6fe marketplace rawlog is default unittest dots: full-module invocation plus exact current13-source join establishes contextual population, not fabricated named raw pass rows.",
+        "Own receipt-shell tests are cited as observed corroboration only; this is not self-review of their patch. Root separately owns staged admission and independent test review."
+      ],
+      "edges": [
+        {
+          "path": ".github/actions/publish-target/action.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "old_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+          "changed": false
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+          "old_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/release_target.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+          "old_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "old_sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "old_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/tag_publication_receipt.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+          "old_sha256": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/_npm_publishlib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+          "old_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+          "changed": false
+        },
+        {
+          "path": "tools/promote-claude-marketplace.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+          "old_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+          "changed": false
+        },
+        {
+          "path": "tools/promote-codex-marketplace.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+          "old_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+          "changed": false
+        },
+        {
+          "path": "tools/build-host-packages.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+          "old_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_artifactmanifestlib.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "old_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/test_release_target.py",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+          "old_sha256": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/test_release_workflow.py",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "a583c039057e33945e9d268409c2757ed83cad8a709334e2385998b2553fd4ae",
+          "old_sha256": "a583c039057e33945e9d268409c2757ed83cad8a709334e2385998b2553fd4ae",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/test_marketplace_git_channels.py",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+          "old_sha256": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/test_codex_marketplace_distribution.py",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "067d6d867a34542ccd07b60ac44850776515c32f226ca2dc98cb40e6f0aa576e",
+          "old_sha256": "067d6d867a34542ccd07b60ac44850776515c32f226ca2dc98cb40e6f0aa576e",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "old_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "core/pysrc/_gitexec.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+          "old_sha256": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+          "changed": false
+        },
+        {
+          "path": "tools/owned_output.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+          "old_sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+          "changed": false
+        },
+        {
+          "path": "tools/host_descriptors.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+          "old_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+          "changed": false
+        },
+        {
+          "path": "core/hosts.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+          "old_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+          "changed": false
+        },
+        {
+          "path": "tools/install-artifact-payload.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+          "old_sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+          "changed": false
+        },
+        {
+          "path": ".claude-plugin/marketplace.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+          "old_sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+          "changed": false
+        },
+        {
+          "path": ".github/scripts/test_ci_impact.py",
+          "role": "historical-test-source-only-no-execution",
+          "current_sha256": "0343d54d9889f8e63706be6d678af0cf42bd46a7ba3582e1af91487591466b1d",
+          "old_sha256": "d24fe9bbda5694b5aaaf18f79c9b4eb1f6290d77dca876b88d306a37ca3f2886",
+          "changed": true
+        },
+        {
+          "path": "tools/ci-impact.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "feedc9104f75d9034384bc41af1ee41e20892e7a57a35a2eb951e0fed2594a90",
+          "old_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79",
+          "changed": true
+        },
+        {
+          "path": ".github/scripts/release_source.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+          "old_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+          "changed": false
+        },
+        {
+          "path": ".github/workflows/ci.yml",
+          "role": "workflow-callsite-and-guard-source",
+          "current_sha256": "44ea5cde79a82197d459f9ebd8a3ee670350bcce91c09acd086409e7a466cd7c",
+          "old_sha256": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473",
+          "changed": true
+        }
+      ]
+    },
+    "G28": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "old_scope_limits": [],
+      "edges": [
+        {
+          "path": ".github/ci-impact-map.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "ce540c486fc18c87f16ee9309ea4f33b10763cc83f1ae790343e860eb40f83b5",
+          "old_sha256": "ce540c486fc18c87f16ee9309ea4f33b10763cc83f1ae790343e860eb40f83b5",
+          "changed": false
+        },
+        {
+          "path": "core/hosts.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+          "old_sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "old_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "old_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "changed": false
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "role": "checked-declaration-or-data",
+          "current_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "old_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "changed": false
+        },
+        {
+          "path": "tools/ci-impact.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "feedc9104f75d9034384bc41af1ee41e20892e7a57a35a2eb951e0fed2594a90",
+          "old_sha256": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79",
+          "changed": true
+        },
+        {
+          "path": "tools/host_descriptors.py",
+          "role": "executable-source-inspected-only-not-executed",
+          "current_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+          "old_sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+          "changed": false
+        }
+      ]
+    },
+    "G29": {
+      "old_proof_ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+      "old_scope_limits": [
+        "Finite named software/source contracts only. No whole-task/whole-program promotion, paid provider, all-crash/partial-compensation, unexecuted platform or new installed runtime claim.",
+        "Actual old execution epochs/raw producer classes remain unchanged. Retaining an extract/current source hash is not another execution.",
+        "Exact callback/declaration hashes and line anchors are in selected-named-observations; full source files are captured inputs, never replaced by AST/function equality."
+      ],
+      "edges": [
+        {
+          "path": "plugins/ca-sandbox/skills/INDEX.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "696258850c06456b2bac2276d72a60f43918076c6f2b806c6e9e68806696ed0b",
+          "old_sha256": "c1479a36e6c897874dbc1c0991b33226664154545a2108d10111a57d269e7739",
+          "changed": true
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+          "old_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+          "old_sha256": "0da6140363fad993f69641d3d83571c5a64ecf8ac17cab9d4d2f4b6165e8fa02",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+          "old_sha256": "e604105b72360e21271342ce2cfafa6c0c242291fe1eb87a92147b6b77e36d77",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-exec.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "343d5f2f0bb4458e4eec6e0cfe0ebc36354174166f5c3aa2ac378c6acafcbbd9",
+          "old_sha256": "343d5f2f0bb4458e4eec6e0cfe0ebc36354174166f5c3aa2ac378c6acafcbbd9",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-cp.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "5e1d09903a97fa7905bd23f34122a15ac7c65998301dcdc85ffd5d0734580df4",
+          "old_sha256": "5e1d09903a97fa7905bd23f34122a15ac7c65998301dcdc85ffd5d0734580df4",
+          "changed": false
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "role": "instruction-or-accepted-policy-source",
+          "current_sha256": "1bbfb59fdfdc63881552f64ea4e1227a82349ddc99818b71ed37af2c9e8e1eb4",
+          "old_sha256": "1bbfb59fdfdc63881552f64ea4e1227a82349ddc99818b71ed37af2c9e8e1eb4",
+          "changed": false
+        }
+      ]
+    }
+  },
+  "runtime_boundary": "Only source-level call/return/guard contracts are claimed. Declared CLI/API targets, process effects, model behavior and required host/runtime gates are not executed by reading their callsites."
+}

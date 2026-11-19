@@ -164,7 +164,13 @@ func WorkView(data WorkViewData) ([]byte, error) {
 	if data.CompletedAt != "" {
 		w.WriteString(`<p>Completed locally ` + esc(data.CompletedAt) + `</p>`)
 	}
-	w.WriteString(`</section><section class="work-card" id="checks"><h2>Checks</h2><p class="state">` + esc(strings.ToUpper(checkStatus[:1])+checkStatus[1:]) + `</p><p>Check status is separate from local completion. Read the attached plan for exact verification evidence.</p></section>`)
+	w.WriteString(`</section><section class="work-card" id="checks"><h2>Checks</h2><p class="state">` + esc(strings.ToUpper(checkStatus[:1])+checkStatus[1:]) + `</p><p>Check status is separate from local completion. Read the attached plan for exact verification evidence.</p>`)
+	if checkStatus == "passed" || checkStatus == "failed" {
+		// Accepted stored vocabulary (N-F06): native create and adopt write
+		// unknown, and no implemented operation writes passed or failed.
+		w.WriteString(`<p>No native codeArbiter operation sets this value; it was stored in the work record by another writer and is not a verification event.</p>`)
+	}
+	w.WriteString(`</section>`)
 	w.WriteString(`<section class="work-card" id="delivery"><h2>Delivery</h2>`)
 	if data.DeliveryState == "" {
 		w.WriteString(`<p class="state">Unobserved</p><p>This local record does not establish a merge, release or deployment.</p>`)

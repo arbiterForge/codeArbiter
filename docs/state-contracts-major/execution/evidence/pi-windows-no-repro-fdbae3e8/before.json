@@ -1,0 +1,9 @@
+{
+  "bound_source_epoch": "eaf108d0bbd3296631c029c89f6cb9321f8d5713",
+  "actual_execution_head": "fdbae3e8d0b296f402bd918596188fb748ccab7b",
+  "index_sha256": "12efddc4cef011f36507ab94c7532006b7cccb5bd3021149e70f4991026c82eb",
+  "first_party_files": 367,
+  "source_owner_files": 14,
+  "runtime_files": 18,
+  "sdk_files": 4
+}

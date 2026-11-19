@@ -1,0 +1,15 @@
+{
+  "authority_functions_AST_unchanged": true,
+  "old19_recipes_semantically_exact": true,
+  "new_cell_only": "disposition:transitions:N37:01",
+  "global_policy_count": 20,
+  "global_policy_sorted_unique": true,
+  "all_non_composite_policy_fields_equal_including_old_native16": true,
+  "old_test_bodies_preserved_except_additive_exact_set_union": true,
+  "new_test_methods": 2,
+  "new_private_fixture_helper": 1,
+  "new_Go_file_byte_identical_to_actual_unit": true,
+  "JSON_authored_UTF8_LF": true,
+  "original_source_current_positive_joins": true,
+  "no_canonical_writes": true
+}

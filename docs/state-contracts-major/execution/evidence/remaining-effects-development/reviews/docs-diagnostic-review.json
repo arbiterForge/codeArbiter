@@ -1,0 +1,115 @@
+{
+  "schema": "codearbiter-affected-independent-review/1",
+  "recorded_at": "2026-11-16T08:53:57.111436+00:00",
+  "verdict": "PASS",
+  "security_verdict": "PASS",
+  "functional_verdict": "PASS",
+  "coverage_verdict": "SCOPED_PYTHON_NO_TOOLING_BEHAVIORAL_PASS",
+  "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "candidate": null,
+  "subject_kind": "exact_frozen_working_tree_subset",
+  "patch_sha256": "bc5c5075dee667535d3c95b5ca1df0f6c8722216001f57f61b237a36ba4c0d62",
+  "patch_format": "git diff --binary --full-index HEAD -- <three paths>",
+  "alternate_patch": {
+    "argv": "git diff --binary -- <three paths>",
+    "sha256": "7527ce6526310ce7085f7ffcfeed61be3f2e1b49affc8f77afc90037ff2c9964",
+    "note": "Same source subjects; default abbreviated Git index serialization."
+  },
+  "full_subjects": {
+    ".github/scripts/site_playwright_observation.py": {
+      "index_oid": null,
+      "sha256": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+      "bytes": 39661,
+      "head_oid": "05f9497e7d6c3d723202e369dcac9ec08693d8eb",
+      "subject_state": "working_tree_not_staged"
+    },
+    ".github/scripts/test_site_playwright_observation.py": {
+      "index_oid": null,
+      "sha256": "d35809ea055901da37db10bf5c8c8271c18e043b14595bcf32aecd2b58396db1",
+      "bytes": 41517,
+      "head_oid": "7803dc2c92d44e4f698403f41e1c1c1236b95b59",
+      "subject_state": "working_tree_not_staged"
+    },
+    ".github/workflows/docs.yml": {
+      "index_oid": null,
+      "sha256": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+      "bytes": 23454,
+      "head_oid": "da762e750794755103d94375449bb7c1b5948c6d",
+      "subject_state": "working_tree_not_staged"
+    }
+  },
+  "findings": [],
+  "open_findings": [],
+  "resolved_findings": [
+    {
+      "id": "DOCS-GUARD-CALLER-COORDINATE",
+      "severity": "MEDIUM",
+      "resolution": "Known generic guard code objects excluded exactly for owner.require, pages._need and reports.require. Genuine validate_observation and duplicate JSON-key RED tests now identify the calling predicate without private exception text."
+    },
+    {
+      "id": "DOCS-DIAGNOSTIC-ANCESTOR-TEST",
+      "severity": "MEDIUM",
+      "resolution": "Actual owned Windows junction control preserves return1 and confirms no redirected writes; original no-overwrite/canary assertions retained."
+    }
+  ],
+  "checks": [
+    "Original emit environment/source/selection/run/job/upload/archive/observation/report checks retain order and conditions; diagnostic phases add no admission fallback. All other original production function ASTs unchanged.",
+    "Diagnostic contains only fixed format, qualified:false, fixed phase and allowlisted source module basename/line; no exception text, locals, input values or raw paths.",
+    "Exclusive new_output prevents overwrite; canonical parent and ancestor reparse/symlink checks refuse redirect paths. Best-effort diagnostic errors preserve the original failure.",
+    "Original browser observation and refusal survive emit refusal through the pinned diagnostic uploader after successful browser gate, trusted push/main-or-program mode. No GH_TOKEN, deployment permission or qualification report fallback added.",
+    "All original existing test-method ASTs unchanged; six added behavioral methods cover actual guard coordinates, canary, no overwrite, real alias and trusted failure upload wiring."
+  ],
+  "actual_receipt_joins": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-refusal-red.json",
+      "sha256": "c1726e425840798a13c4765a414b4e6a1cc36667278a68b3bbb1b2fbef0fb783",
+      "exit_code": 1,
+      "stderr_sha256": "599161f6892a49ce9336e0882309f84ec45828a61e5b89ddacd088f52ee49f74"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-diagnostic-upload-red.json",
+      "sha256": "037c7073f6a3ac915aff26a6efdc460903a984848415dd144b5c75ee7a5db1c2",
+      "exit_code": 1,
+      "stderr_sha256": "f446f379799ca961f8926f3d0fcad2bf0da5adac068163d17785bfc784bf5c1a"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-guard-coordinate-red.json",
+      "sha256": "8b1a46de6dc1fcdd85b803698b11cd2f1ff00fbb5ecbf259cb35433a58f5f6af",
+      "exit_code": 1,
+      "stderr_sha256": "3b62b8178ffca6690b806031491f56262c7d7cd3ef7c7327ed6c843053d49129"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-json-coordinate-red.json",
+      "sha256": "50bc33c5d45d2f6ff237352b101934ce0d2cf1e8bfad245d2e4de8f7c060f4d8",
+      "exit_code": 1,
+      "stderr_sha256": "1104cc6996eb70bc26d1b7a623a66391e3a25e5e7f51c350e421f0680dff4f5c"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\next-native-docs-green.json",
+      "sha256": "2dd57714d290ab8bd00e4e93d10980d69fa6d7cbb16d2b1170d9a12e485d3f36",
+      "exit_code": 0,
+      "stderr_sha256": "f34fc9431b8a8e9c59c2becc5f8221c10063988672b67b142ad78a453c5b980a"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\docs-coordinate-final-green.json",
+      "sha256": "9cd349cdb2d405c3e34cf07d2fe42d3b058cd8b76d82a487ed2656508aca2c07",
+      "exit_code": 0,
+      "stderr_sha256": "0680cabe287a052378dcde003ad0e557bfbd8a2713efe2c5067db474b6ed03ed"
+    }
+  ],
+  "tests": "Retained41 Docs/native methods PASS3.606s before final one-line reports trampoline addition; final25 Docs methods PASS2.147s. Unchanged native methods reused, not invented as one new42 capture.",
+  "policy_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+  "coverage": {
+    "source": "CTX-TECH-STACK#FACT-005",
+    "exemption_quote": "There is **no coverage tooling for the Python hooks or build tools** (`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`). Those surfaces use direct unittest and behavioral checks, not TypeScript instrumentation.",
+    "critical_paths": "Actual refusal/canary, guard-caller, no-write/no-overwrite and original authority controls; no numeric measurement invented.",
+    "hosted_boundary": "Exact successor hosted CI/Docs still required."
+  },
+  "limits": [
+    "Frozen working bytes are hash-bound and not yet staged; index_oid null is deliberate. Root may join unchanged full-fileSHA values to a later candidate without repeating review.",
+    "Original27d precise Docs refusal remains UNKNOWN; passive original archive parser PASS excludes only that input predicate. No reconstruction of missing browser/source/API evidence.",
+    "Original normal run has failed Docs and Windows conformance; no whole-run/installed/native/deploy/main/publication qualification.",
+    "Read-only review; no tests, source/index/ref/marker or runtime writes. Separate immutable normal watch remains active."
+  ],
+  "independence": "Root authored current code/tests. Reviewer found the two coordinate-chain defects and the missing containment control; reviewer made no source edits."
+}

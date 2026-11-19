@@ -1,0 +1,140 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/check_codex_skill_resources.py": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+  ".github/scripts/check_codex_static_package.py": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+  ".github/scripts/verify_codex_candidate_provenance.py": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+  ".github/scripts/verify_codex_static_candidate.py": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C12"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C12",
+   "frozen_row_sha256": "a8896f3c98e5b7dfef0ab5cdf96f784a527cf62be5706ad9b04f1b7ac302e479",
+   "clause_ids": [
+    "disposition:transitions:C12:01",
+    "disposition:transitions:C12:02",
+    "disposition:transitions:C12:03",
+    "disposition:transitions:C12:04",
+    "disposition:transitions:C12:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 25,
+     "end": 76,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "f321d148e87fc650edd53769da470ab15e2738af8e37c9e767b5542cafb158b5"
+    },
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 93,
+     "end": 112,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "2d85a5341fd7481de509b9a46fe138b52ad95eda0f179af2f57065a395967905"
+    },
+    {
+     "path": ".github/scripts/check_codex_static_package.py",
+     "start": 89,
+     "end": 167,
+     "file_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+     "span_sha256": "1434c48606d055a60174760b98e6b7fd5697613da5c39ec2862074792117b6b5"
+    },
+    {
+     "path": ".github/scripts/check_codex_static_package.py",
+     "start": 170,
+     "end": 296,
+     "file_sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+     "span_sha256": "b8ca4afc281c37d250a9352ebf7defa745be9de85087050c8bf40a0af925ae50"
+    },
+    {
+     "path": ".github/scripts/check_codex_skill_resources.py",
+     "start": 2148,
+     "end": 2179,
+     "file_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+     "span_sha256": "5b1c16262393bd4873640e6ff07c330aeba1a6309d7971ca3ced1eeb3e670749"
+    },
+    {
+     "path": ".github/scripts/check_codex_skill_resources.py",
+     "start": 2930,
+     "end": 3024,
+     "file_sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+     "span_sha256": "d077948697e6dafd8790bf9b7d33e3ce4ce154f9412bdad5accfd3d27496e976"
+    },
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 87,
+     "end": 132,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "099981768005f7ce7d44986b2698bd41a4118009319f0aabc2bc1e045fc5d038"
+    },
+    {
+     "path": ".github/scripts/verify_codex_candidate_provenance.py",
+     "start": 29,
+     "end": 93,
+     "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+     "span_sha256": "5477d09c83055032e062dc117025acd045aeef56ae995763b40d32bf046f30bb"
+    },
+    {
+     "path": ".github/scripts/verify_codex_candidate_provenance.py",
+     "start": 110,
+     "end": 151,
+     "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+     "span_sha256": "14fbd3c337fb210a487061498d90b99a55c26638001a802fa18e57765b582fc2"
+    },
+    {
+     "path": ".github/scripts/verify_codex_static_candidate.py",
+     "start": 146,
+     "end": 167,
+     "file_sha256": "c79f32e90453805d5b5c724110d53beb96752de8d8a512f3d8dd215feb937725",
+     "span_sha256": "3d1993689e842c497f5517c4e6564282f10107e4fd5d283fea6eb2066dbc90a1"
+    },
+    {
+     "path": ".github/scripts/verify_codex_candidate_provenance.py",
+     "start": 167,
+     "end": 189,
+     "file_sha256": "302d5d7e3d639cf315f784a4c576cc90ae808c068a8f5c41bc3b983c7ac3c9f0",
+     "span_sha256": "13ec5fd2de4c4133c1bc34e96a13c90fdd29d9da9d83fe41b77697c9c22e19cc"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

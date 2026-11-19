@@ -1,0 +1,3446 @@
+{
+  "schema_version": 1,
+  "workstream": "hooks-workflows-recovery-generators-pi-qualification",
+  "repository": "arbiterForge/codeArbiter",
+  "source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "state": "implementation-handoff-only; no repository edits or external actions performed",
+  "design_document": "handoff-work/workflow-recovery-design.md",
+  "baseline_catalogues": [
+    "audit-work/hooks.json",
+    "audit-work/workflows.json",
+    "audit-work/generator-extra.json",
+    "audit-work/pi-qualification-extra.json"
+  ],
+  "instructions": [
+    "Re-read changed owner files against the receiving checkout before implementing; do not infer contents from names or trust comments/ADRs as proof of runtime.",
+    "Work on the parent integration branch; keep whole effort held until tested and complete, then use the root major-release workflow.",
+    "Original finding and machine IDs are stable cross-reference keys. New task and proposed file names are implementation proposals, not current APIs.",
+    "Read existing test owners before editing; test paths here are verified existing paths but do not claim their current contents already cover new behavior.",
+    "Generate shared derivatives from canonical owners. Preserve actual denial, closed schemas, reviewer independence, source/evidence bindings and cleanup proof.",
+    "User authorization for scoped conflict continuation, corrected submissions and nonblocking recovery is already given; do not ask for it again.",
+    "Do not turn reviewer resubmission permission into a HIGH disposition decision or progress/evidence policy decision."
+  ],
+  "settled_user_decisions": [
+    {
+      "id": "D-CONFLICT-SCOPE",
+      "decision": "Only dependent work pauses on an unresolved governing conflict; unrelated authorized work continues."
+    },
+    {
+      "id": "D-CORRECTED-SUBMISSION",
+      "decision": "Corrected debug and reviewer submissions may be resubmitted; preserve real authority and immutable request finality."
+    },
+    {
+      "id": "D-DURABLE-RECOVERY",
+      "decision": "Add durable interruption recovery for ordinary work without making it a universal blocker."
+    },
+    {
+      "id": "D-PI-DELEGATION",
+      "decision": "Implement supported scoped parent delegation for Pi child authors; host workstream owns it."
+    },
+    {
+      "id": "D-ADR-HANDOFF",
+      "decision": "Include required ADR updates in the implementation corpus."
+    },
+    {
+      "id": "D-INTEGRATION-MAJOR",
+      "decision": "Use a separate integration branch held until the whole effort is complete/tested, then a major release under the root plan."
+    }
+  ],
+  "unresolved_decisions": [
+    {
+      "id": "D-HIGH-DISPOSITION",
+      "owner": "B and receiving CLI agent",
+      "scope": "Dependency maintenance-only HIGH versus universal HIGH BLOCK",
+      "blocking_tasks": [
+        "HW-09",
+        "HW-20"
+      ],
+      "independent_work_continues": true,
+      "not_implied_by": "Corrected reviewer resubmission permission"
+    },
+    {
+      "id": "D-PROGRESS-EVIDENCE",
+      "owner": "B and receiving CLI agent through native SMARTS workstream",
+      "scope": "Progress state versus verification evidence semantics",
+      "blocking_tasks": [],
+      "independent_work_continues": true,
+      "not_decided_here": true
+    },
+    {
+      "id": "D-ALIAS-REMOVAL",
+      "owner": "B if separately requested",
+      "scope": "Any named future compatibility-route removal",
+      "blocking_tasks": [],
+      "current_plan": "Retain existing routes; no removal proposed or authorized by a major bump alone."
+    }
+  ],
+  "cross_workstream_links": [
+    {
+      "task_id": "NT-04",
+      "finding_ids": [
+        "HOOK-F04",
+        "N-F09"
+      ],
+      "owner": "native_states"
+    },
+    {
+      "task_id": "NT-11",
+      "finding_ids": [
+        "W-F02",
+        "HOOK-B01"
+      ],
+      "owner": "native_states",
+      "scope": "Fresh current valid observed reviewer result; preserve old request finality and closed profiles."
+    },
+    {
+      "task_id": "DIST-M01",
+      "finding_ids": [
+        "HOOK-B05",
+        "SF04"
+      ],
+      "owner": "host_site_lifecycle"
+    },
+    {
+      "task_ids": [
+        "PI-D01",
+        "PI-D02",
+        "PI-D03",
+        "PI-D04",
+        "PI-D05",
+        "PI-D06",
+        "PI-D07"
+      ],
+      "owner": "host_site_lifecycle",
+      "scope": "Supported scoped parent delegation; registration and startup may consume truthful durable observations but cannot restore grants."
+    }
+  ],
+  "tasks": [
+    {
+      "id": "HW-01",
+      "title": "Make persona delivery follow real mode transitions",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-F01"
+      ],
+      "baseline_machine_ids": [
+        "hooks:persona",
+        "hooks:mode",
+        "hooks:mode-audit"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/prompt-submit.py",
+        "core/pysrc/_modelib.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Behavioral defect correction: A\u2192B\u2192A delivers the current persona again; repeated delivery of an unchanged transition remains deduplicated.",
+      "implementation_plan": [
+        "Replace the historical ever-delivered session/mode set as the sole delivery identity with a current transition epoch or equivalent last-delivered identity.",
+        "Bind delivery to session, real mode transition, and compaction generation; advance on committed effective changes and recover partial mode/audit outcomes with HW-02.",
+        "Keep same-mode no-op tokens and duplicate host events idempotent; generate all host copies from core.",
+        "Record the ADR0030 successor clarification without rewriting its accepted body."
+      ],
+      "preserved_invariants": [
+        "Exact whole-prompt token matching.",
+        "Owed audit write-ahead and backing checks.",
+        "No proof that the model consumed or forgot a persona merely from emission."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_prompt_submit.py",
+          ".github/scripts/test_modelib.py",
+          ".github/scripts/test_mode_compaction.py",
+          ".github/scripts/test_mode_readers.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Arbiter\u2192dangerous\u2192arbiter and ops\u2192arbiter\u2192ops deliver each actual transition.",
+          "Duplicate prompt delivery and repeated same-mode token do not grow repeated persona text.",
+          "Compaction and new session redeliver under their actual generations.",
+          "Mode marker/audit fault and recovery do not misreport guard state or suppress the eventual correct persona."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Reproduce the original zero-length return-to-arbiter result, then observe a nonempty correct persona after the fix.",
+        "Unchanged prompt/compaction/mode reader behavior remains consistent on all packaged hosts.",
+        "Deterministic hook enforcement stays independent of mode."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "Audit reproduction: audit-work/probe_mode.py and probe_mode_results.json."
+      ],
+      "rollback": [
+        "Revert the new delivery algorithm as a source change without deleting owed audit rows.",
+        "Version new delivery markers or make old readers ignore them safely; do not reinterpret a new marker as an authorization grant."
+      ],
+      "adr_actions": [
+        "ADR0030 scoped successor: transition identity, delivery generation, and mode-independent guards."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-02",
+      "title": "Expose truthful mode commit-point and audit recovery outcomes",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-F02"
+      ],
+      "baseline_machine_ids": [
+        "hooks:mode",
+        "hooks:mode-audit",
+        "hooks:persona"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/_modelib.py",
+        "core/pysrc/prompt-submit.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "User-visible error/result correction with preserved write ordering: requested, persisted raw, ledger-backed effective, and delivered states become explicit.",
+      "implementation_plan": [
+        "Define a typed partial outcome containing requested mode, raw marker outcome, effective mode, audit debt, and recoverable next action.",
+        "Render failures from the actual outcome instead of the current blanket unchanged-session message.",
+        "Retain owed-audit replay and exact duplicate prevention; coordinate delivery invalidation with HW-01."
+      ],
+      "preserved_invariants": [
+        "Do not claim marker rollback unless observed.",
+        "Raw selected mode does not override ledger backing."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_modelib.py",
+          ".github/scripts/test_prompt_submit.py",
+          ".github/scripts/test_mode_surface.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Inject failure before marker commit, after marker commit before audit settle, during owed-row replay, and after response loss.",
+          "Assert raw/effective/delivered distinctions and exact audit rows after restart.",
+          "No text claims modes switch deterministic gates off."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "The observed raw ops/effective arbiter partial result is reported accurately.",
+        "A recoverable failure can settle audit debt without duplicate history.",
+        "No failure message says no change when a persisted marker changed."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "Audit mode partial-failure probe is the initial regression oracle."
+      ],
+      "rollback": [
+        "Keep reader support for written outcome/marker versions during rollback.",
+        "Never delete debt to make old output appear clean; preserve a readable recovery path."
+      ],
+      "adr_actions": [
+        "ADR0030 scoped successor: remove contradictory gates-on/off interpretation and record partial commit outcomes."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-03",
+      "title": "Align Pi doctor with the actual package identity",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-F03"
+      ],
+      "baseline_machine_ids": [
+        "hooks:doctor",
+        "hooks:host"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/doctor.py",
+        "plugins/ca-pi/hooks/_host.py",
+        "plugins/ca-pi/package.json"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Diagnostic correction only; no rename or relaxation of installation checks.",
+      "implementation_plan": [
+        "Use the canonical host/package identity for @arbiterforge/ca-pi rather than the incorrect bare ca-pi literal.",
+        "Check the scoped identity in both source and packaged layouts while preserving version, extension, skill, and discovery checks."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_pi_doctor.py",
+          "plugins/ca-pi/tools/test/doctor.test.ts",
+          ".github/scripts/test_pi_package.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Valid current scoped package passes identity; a different or malformed package fails.",
+          "Absent extension/skills and inconsistent version still fail their own checks.",
+          "Run doctor against the installed candidate, not a source-only synthetic bare-name fixture."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Doctor no longer recommends reinstall solely because the legitimate package uses its actual scoped name.",
+        "Other health failures retain accurate independent results."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "audit-work/probe_diagnostics_results.json shows the baseline false failure."
+      ],
+      "rollback": [
+        "Revert diagnostic identity lookup only if required; do not mutate or rename installed packages as rollback."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-04",
+      "title": "Prove shared npm launch-binding boundary across Python and Go",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-F04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:verifier"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/_artifactauthoritylib.py",
+        "core/artifacts/internal/observation/contract.go",
+        "core/artifacts/internal/observation/runner_contract.go",
+        "core/artifacts/internal/evidence/completion_workspace.go"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "task_id": "NT-04",
+          "owner": "native_states",
+          "reason": "Owns N-F09 Go schema/role/completion reconciliation."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Cross-language contract correction; legitimate producer bindings must be accepted without broadening unrelated roles or evidence authority.",
+      "implementation_plan": [
+        "Coordinate schema, role cardinalities, and completion checks with native NT-04.",
+        "Use shared boundary fixtures for base launch roles plus 0/30/31/32 workspace manifests and the supported platform launch shapes.",
+        "Preserve exact executable/manifest hashes, argv/cwd binding, actual host launch observation, and historical profile handling."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_artifact_npm_nested_launch.py",
+          ".github/scripts/test_artifact_authority_adapter.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "POSIX producer 30/31/32 workspaces yields valid 32/33/34-file bindings and native completion agrees.",
+          "Supported Windows launch shape reaches its declared role-derived maximum (source bound 37); verify on the required platform cell.",
+          "33 workspace-manifest roles, duplicate roles, changed fingerprints, unknown roles, and malformed bindings remain rejected.",
+          "Old supported host/profile fixtures keep their declared bounds."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "No admitted producer output is refused solely by the former completion max32 mismatch.",
+        "The canonical role-based upper bound is identical at validation and completion.",
+        "A source-only Windows bound is not reported as executed Windows evidence."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "audit-work/probe_launch_binding.py and probe_launch_binding_results.json; probe did not execute project test commands."
+      ],
+      "rollback": [
+        "Ship producer/consumer rollback as a compatible pair; retain readers for already issued supported observations.",
+        "Do not silently reinterpret a previously rejected result as verified success."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-05",
+      "title": "Make spinner uninstall ownership-safe",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-F05"
+      ],
+      "baseline_machine_ids": [
+        "hooks:statusline-wiring"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/wire-statusline.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Behavioral defect correction: preserve a setting changed by the user after installation.",
+      "implementation_plan": [
+        "Persist the exact installed spinner value separately from the prior backup.",
+        "Restore only while the current spinner value still equals the installed owned value; otherwise leave it and report ownership ended.",
+        "Treat statusLine and spinner ownership independently; define a conservative migration for older backups lacking an owned-value stamp."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          "plugins/ca/hooks/tests/test_wire_statusline.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Install\u2192uninstall restores previous value when still owned.",
+          "Install\u2192user custom spinner\u2192uninstall preserves custom value.",
+          "Missing setting, malformed/older backup, repeated uninstall, and partial settings write do not clobber unrelated keys.",
+          "Existing statusLine ownership behavior remains intact."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "The audit clobber reproduction fails before the change and passes afterward.",
+        "Uninstall never substitutes a whole old settings object for the current object."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "audit-work/probe_diagnostics_results.json contains the isolated settings reproduction."
+      ],
+      "rollback": [
+        "Preserve backup metadata across rollback; an older reader must not be allowed to blindly restore it over new user values.",
+        "If old code cannot read new ownership metadata safely, disable that restoration path rather than delete user configuration."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-06",
+      "title": "Apply dependent-only conflict pauses consistently",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F01"
+      ],
+      "baseline_machine_ids": [
+        "hooks:append-conflict"
+      ],
+      "existing_owner_paths": [
+        "core/surface/commands/conflict.md",
+        "core/surface/SPRINT.md",
+        "core/surface/skills/context-check/SKILL.md",
+        "core/surface/COMMANDS.md",
+        ".codearbiter/decisions/0043-assistive-state-engine.md"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "task_id": "PI-D05",
+          "owner": "host_site_lifecycle",
+          "reason": "Dependency-scoped parent delegation pause/revocation."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "User-selected workflow policy change: conflicting rules pause only work whose authority/data/decision dependency intersects the conflict.",
+      "implementation_plan": [
+        "Replace universal stop wording with an explicit affected-scope record and dependency reasoning.",
+        "Preserve exact conflicting statements, source references, hierarchy/recency context, and the rule against the agent choosing the resolution.",
+        "Allow unrelated authorized work, including independent mutations within scope; do not restrict continuation to read-only work unless a real boundary requires it.",
+        "Keep explicit global user/host stops global; propagate affected scope through sprint and child delegation."
+      ],
+      "preserved_invariants": [
+        "No autonomous choice between contradictory governing rules.",
+        "Actual stops and denials remain binding."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_context_workflow.py",
+          ".github/scripts/test_routing_and_cleanup_surface.py",
+          ".github/scripts/test_build_surface.py"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_conflict_scope_surface.py"
+        ],
+        "required_cases": [
+          "Conflict in task A pauses A and actual dependents while independent authorized B continues.",
+          "Shared security/authority dependency correctly expands the affected scope.",
+          "An explicit global stop remains global; no ADR resolution is auto-chosen.",
+          "Rendered Claude/Codex/Pi surfaces agree."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "No remaining universal-all-work sentence contradicts the selected dependent-only owner.",
+        "Scope unknown is reported as unknown and conservatively narrowed from evidence; no invented dependency graph or silent authority selection.",
+        "Child task pause/revocation observes the same scope."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert policy text and generated derivatives together only through an explicit decision change; preserve recorded unresolved conflicts.",
+        "Do not erase decisions or unblock an affected denied operation during rollback."
+      ],
+      "adr_actions": [
+        "ADR0043 implementation clarification/successor aligned to the user-selected dependency scope."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-07",
+      "title": "Allow corrected debug submissions without manufacturing truth or permission",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F02",
+        "HOOK-B01"
+      ],
+      "baseline_machine_ids": [
+        "hooks:debug-handoff"
+      ],
+      "existing_owner_paths": [
+        "core/surface/skills/debug/SKILL.md",
+        "core/surface/skills/debug/references/preparation.md",
+        "core/surface/skills/debug/references/handoff.md",
+        "core/pysrc/_debughandofflib.py",
+        "core/pysrc/debug-handoff.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "User-selected recovery policy change: corrected input may be resubmitted; validator limits and diagnostic/causal authority remain unchanged unless a separate justified schema correction is needed.",
+      "implementation_plan": [
+        "Replace blanket one-shot prohibition with distinct invalid-input, semantic-evidence, stale-binding, operational-failure, and actual-denial handling.",
+        "Require correction provenance and current bindings; unchanged retry loops or interpreter/validator substitution cannot bypass a refusal.",
+        "Retain five dispositions, genuine regression obligations, bounded safe diagnostics, and the fact that valid shape is not causal proof or repair permission.",
+        "Do not create a persistent debug packet store; any recovery obligation carries only a sanitized follow-up."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_debug_handoff.py",
+          ".github/scripts/test_debug_workflow.py",
+          ".github/scripts/test_debug_helper_invocation.py",
+          ".github/scripts/test_debug_qualification.py",
+          ".github/scripts/test_debug_package.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Malformed packet\u2192corrected valid packet accepted through the same installed validator, with unchanged authority.",
+          "Exit2 semantic-evidence failure cannot be solved by changing only labels or fabricating observations.",
+          "Stale runtime binding is refreshed only from real observation; actual denied operation stays denied.",
+          "Exit3 operational retry preserves payload identity until a real correction is made.",
+          "65536-byte/depth/closed-field/diagnostic limits and output redaction remain effective."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Corrected resubmission is explicitly allowed and actionable in all rendered debug resources.",
+        "No validator success grants code-writing, external access, or publication permission.",
+        "No whole rejected packet is persisted or echoed by the new recovery path."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert workflow recovery policy only via an explicit policy decision; keep historical attempts and observations truthful.",
+        "No data migration is needed if no debug store was added."
+      ],
+      "adr_actions": [
+        "Focused successor/addendum if current accepted debug policy requires one: distinguish validation recovery from authorization."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-08",
+      "title": "Link corrected reviewer attempts to fresh immutable requests",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F02",
+        "HOOK-B01"
+      ],
+      "baseline_machine_ids": [
+        "hooks:authority-request",
+        "hooks:claude-review",
+        "hooks:codex-review"
+      ],
+      "existing_owner_paths": [
+        "core/surface/agents/authority-reviewer.md",
+        "core/surface/includes/reviewer-contract.md",
+        "core/pysrc/_artifactauthoritylib.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-07"
+      ],
+      "external_dependencies": [
+        {
+          "task_id": "NT-11",
+          "owner": "native_states",
+          "reason": "Verifies fresh valid observed pass under existing native profiles and preserves terminal history."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "User-selected reviewer recovery: a corrected submission may create a fresh linked request, while old request finality and authority-bearing native result schemas remain intact.",
+      "implementation_plan": [
+        "Distinguish exact transport retry from a corrected logical submission in adapter results and help.",
+        "Preserve old rejected/failed/changes-requested requests; create a new request/attempt with current frozen target, contract, context and actual host child launch when needed.",
+        "Keep the current not-under-the-same-request finality rule; do not misstate it as a ban on all future requests.",
+        "Consume NT-11 native compatibility results; avoid extra fields in closed old observations and avoid synthetic first_stop labels.",
+        "Keep W-F03 severity/disposition decision separate."
+      ],
+      "preserved_invariants": [
+        "A valid native pass remains bound to actual captured launch and current target/contract.",
+        "Actual denial remains an authority constraint."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_artifact_authority_adapter.py",
+          ".github/scripts/test_artifact_installed_host.py",
+          ".github/scripts/test_review_funnel.py"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_review_resubmission.py"
+        ],
+        "required_cases": [
+          "Malformed reviewer result\u2192fresh corrected request with real new capture\u2192valid pass.",
+          "Prior rejection/denial remains immutable and auditable.",
+          "Exact response-loss replay is idempotent; later stop of the same child cannot be treated as a new first_stop.",
+          "Changed target/contract and nonindependent steered child reject stale evidence.",
+          "changes_requested and BLOCK findings never become success receipts solely through resubmission."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Receiving agent demonstrates a supported corrected-review flow on each claimed host, with real attempt linkage.",
+        "No new implicit permission, reviewer independence exception, or denial-to-pass mutation is introduced."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Retain previously written attempt links and terminal requests; old readers must ignore or read versioned metadata safely.",
+        "Rollback can stop new retry creation without invalidating observed independent results or overwriting history."
+      ],
+      "adr_actions": [],
+      "coverage_scope": "W-F02 supplies the validation-versus-authorization analogy; reviewer resubmission is additionally and explicitly user-authorized, not claimed as an original debug-only runtime defect."
+    },
+    {
+      "id": "HW-09",
+      "title": "Resolve maintenance-only HIGH disposition as its own policy choice",
+      "status": "scoped-policy-decision-required",
+      "original_finding_ids": [
+        "W-F03"
+      ],
+      "baseline_machine_ids": [],
+      "existing_owner_paths": [
+        "core/surface/agents/dependency-reviewer.md",
+        "core/surface/includes/reviewer-contract.md",
+        "core/surface/agents/INDEX.md"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": "D-HIGH-DISPOSITION",
+      "semantic_change_scope": "Unresolved semantic policy decision; do not infer its answer from permission to correct/resubmit.",
+      "implementation_plan": [
+        "Present B and the receiving agent the exact conflicting owner clauses and representative maintenance-only/security examples.",
+        "Choose explicitly between preserving universal HIGH blocking with a justified maintenance severity change, or retaining HIGH with a narrowly defined nonblocking maintenance disposition exception.",
+        "If separating severity from disposition, make the allowed exception closed and auditable; never allow arbitrary findings to self-label nonblocking.",
+        "Update shared contract, dependency owner, triage/aggregation consumers and generated index together after the decision."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_review_funnel.py",
+          ".github/scripts/test_build_surface.py"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_dependency_review_disposition.py"
+        ],
+        "required_cases": [
+          "Maintenance-only unmaintained dependency produces the explicitly chosen severity/disposition.",
+          "Known high-impact vulnerability, malicious install script, denied license, and mixed maintenance/security findings retain the selected security gate.",
+          "Resubmission with unchanged findings cannot change gate disposition."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "One exact user-attributed policy governs all consumers, with examples and no contradictory common/body rule.",
+        "Independent tasks continue while this choice is open."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Version/record the prior policy and revert all verdict producers/consumers together if the chosen rule is rolled back.",
+        "Retain prior verdicts as historical observations; do not rewrite severity history."
+      ],
+      "adr_actions": [
+        "Focused attributed policy decision recording severity versus disposition and any narrow exception."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-10",
+      "title": "Define the closed durable workflow recovery contract and ADR boundaries",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:startup",
+        "hooks:knowledge",
+        "hooks:work-owner"
+      ],
+      "existing_owner_paths": [
+        "core/surface/includes/harvest.md",
+        "core/surface/includes/knowledge.md",
+        ".codearbiter/decisions/0008-commit-gate-board-sync-chokepoint.md",
+        ".codearbiter/decisions/0036-bounded-authorization-cleanup-direction.md",
+        ".codearbiter/decisions/0043-assistive-state-engine.md",
+        "core/artifacts/internal/validate/input_policy.go"
+      ],
+      "proposed_new_paths": [
+        "core/workflow-recovery-contract.json"
+      ],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "User-selected new local recovery capability; no new completion, approval, publication, or cleanup authority.",
+      "implementation_plan": [
+        "Adopt/refine the explicit pending/claimed/settled/unavailable transition table in workflow-recovery-design.md.",
+        "Define registered terminal-harvest kind, closed bounded record, source/work/session binding, stable obligation ID, candidate revision and immutable effect operation ID.",
+        "Register Git-common storage ownership, inventory semantics, snapshot exclusion, retention, and compatibility before adding writes.",
+        "Specify result fields that separate durable/observed/partial/unavailable/denied and prohibit an empty-success interpretation of incomplete reads.",
+        "Record successor/addendum ADRs without mutating accepted history."
+      ],
+      "preserved_invariants": [
+        "No automatic external issue/publication.",
+        "No automatic task completion or review pass.",
+        "No new enrollment prerequisite for ordinary work."
+      ],
+      "tests": {
+        "existing_test_paths": [],
+        "proposed_test_paths": [
+          ".github/scripts/test_workflow_recovery_contract.py"
+        ],
+        "required_cases": [
+          "Contract admits only registered kinds and bounded safe fields; unknown version/kind is unavailable.",
+          "Every transition has a legal event/guard/effect and reject/no-op behavior.",
+          "No transition maps validation pass, elapsed age, branch deletion or generic CLI success to authorization/completion.",
+          "Git-common recovery state cannot be claimed as verification input."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "The design is implementable without a global daemon, database, generic command replay, or universal permission gate.",
+        "Ordinary authorized work without a native task ID can register using explicit work_ref none.",
+        "ADR0008 branch contingency and ADR0036 deletion boundary are preserved."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Before any runtime writes ship, rollback is removal of unpublished contract changes.",
+        "Once writers exist, retain versioned readers/export and never delete unknown-version or unresolved records."
+      ],
+      "adr_actions": [
+        "ADR0008 scoped successor for early local capture versus terminal promotion/staging.",
+        "ADR0043 implementation clarification for nonblocking local continuation.",
+        "ADR0036 boundary note: no destructive cleanup authorization is granted by recovery."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-11",
+      "title": "Implement crash-safe local recovery storage and bounded projections",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:startup",
+        "hooks:native-client",
+        "hooks:plan-file"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/_hooklib.py",
+        "core/pysrc/_artifactauthoritylib.py",
+        "core/pysrc/_reconciliationlib.py",
+        "core/pysrc/_planfilelib.py"
+      ],
+      "proposed_new_paths": [
+        "core/pysrc/_workflowrecoverylib.py",
+        "core/pysrc/workflow-recovery.py"
+      ],
+      "dependencies": [
+        "HW-10"
+      ],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "New shared runtime owner for local obligations, with explicit commit points and nonblocking bounded readers.",
+      "implementation_plan": [
+        "Implement versioned Git-common records, OS-held per-obligation locking, revision CAS, atomic durable writes and recoverable record/index updates.",
+        "Implement register/get/scan/claim/reconcile/settle and reason-specific unavailable outcomes through a closed helper interface, never arbitrary executable handlers.",
+        "Authenticate the installed helper owner using existing host/protected-state patterns; do not introduce a broad exception permitting arbitrary commands to write Git metadata.",
+        "Keep automatic scan physically read-only: an incomplete write intent yields partial/unavailable and routes to explicit locked recovery, rather than silently repairing during startup.",
+        "Use a paged index so automatic reads touch at most32 summaries/256KiB; registration max64KiB and max32 candidates per batch, with explicit partial/oversize results.",
+        "Maintain stable origin/ID lookup and compacted terminal tombstones; never age out unresolved records.",
+        "Expose truthfully whether a write committed, was observed, or remains uncertain."
+      ],
+      "preserved_invariants": [
+        "Local bookkeeping is not native evidence or a reusable authorization ticket.",
+        "A failed scanner never blocks unrelated ordinary work."
+      ],
+      "tests": {
+        "existing_test_paths": [],
+        "proposed_test_paths": [
+          ".github/scripts/test_workflow_recovery.py",
+          ".github/scripts/test_workflow_recovery_cli.py"
+        ],
+        "required_cases": [
+          "Crash at every record/index/journal commit point and response-loss replay.",
+          "Concurrent claim/correct/settle using multiple processes; live lock cannot be stolen by TTL.",
+          "Malformed file, path traversal, symlink, unknown version, untrusted helper invocation, disk/write failure, and broken index produce safe unavailable results.",
+          "Large history still yields bounded paged reads; stale cursor cannot claim complete empty state.",
+          "Tombstone compaction preserves exact dedup lookup; rollback leaves pending state intact."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Every acknowledged registration remains discoverable or explicitly unavailable after restart.",
+        "No unbounded whole-history read/sort is hidden inside an automatic scan.",
+        "The helper reports real state after partial write failure and never overwrites concurrent state.",
+        "No injected path or payload can cause arbitrary command execution or target deletion."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Disable new writers and automatic notices while retaining compatible reads/export.",
+        "Keep unresolved records, durable intents, and terminal tombstones; do not remove the store to roll back a code release."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-12",
+      "title": "Add idempotent selected-owner harvest adapters and outcome reconciliation",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:work-owner",
+        "hooks:taskwrite",
+        "hooks:knowledge"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/_worklib.py",
+        "core/pysrc/work.py",
+        "core/pysrc/taskwrite.py",
+        "core/pysrc/_taskboardlib.py",
+        "core/surface/includes/harvest.md"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-11"
+      ],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "New recoverable local promotion adapters; retain existing owner choice, origin deduplication, confirmation and branch contingency.",
+      "implementation_plan": [
+        "Call the selected native or legacy owner; ambiguous/changed ownership makes only the affected obligation unavailable.",
+        "Reconcile response loss by exact operation/origin lookup across active/archive before any retry; do not treat legacy operation ID echoes as a durable ledger.",
+        "Implement a narrow CAS/idempotent adapter for nonblocking deferred-decision append and decline audit if existing owners cannot provide that guarantee.",
+        "Route blocking decisions to existing dependent-only resolution; do not auto-confirm or silently retag them.",
+        "Record per-item target readback receipts and partial-batch outcomes; no status-only parent completion."
+      ],
+      "preserved_invariants": [
+        "Exact origin including suffix is unchanged.",
+        "Origin matching is not same-title guessing.",
+        "Archive-first legacy recovery remains valid."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_taskwriter.py",
+          ".github/scripts/test_taskboardlib.py",
+          ".github/scripts/test_artifact_work_cli.py"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_workflow_harvest_recovery.py"
+        ],
+        "required_cases": [
+          "Native target committed/response lost creates exactly one item and settles on readback.",
+          "Legacy origin replay across open/archive does not duplicate; same-title different-origin item is not selected.",
+          "Deferred decision/decline append commits once despite response loss.",
+          "Dual owner, changed project identity, unknown target outcome, blocked decision, and changed source preserve unresolved state.",
+          "One batch failure leaves earlier successful receipts and later pending items intact."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "All enabled adapters have a demonstrated idempotency/reconciliation contract before retries ship.",
+        "Interactive promotion still uses its existing scoped confirmation; sprint uses only already valid in-scope authority.",
+        "No automatic remote issue, staging, completion, archive, or cleanup occurs."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Disable a failing kind adapter while retaining its unresolved intent and receipts.",
+        "Do not remove target items already created or restore old board files over later edits."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-13",
+      "title": "Register harvest obligations at discovery in each workflow producer",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:knowledge",
+        "hooks:work-owner"
+      ],
+      "existing_owner_paths": [
+        "core/surface/includes/harvest.md",
+        "core/surface/skills/tdd/SKILL.md",
+        "core/surface/skills/brainstorming/SKILL.md",
+        "core/surface/skills/writing-plans/SKILL.md",
+        "core/surface/skills/commit-gate/SKILL.md",
+        "core/surface/commands/checkpoint.md",
+        "core/surface/SPRINT.md"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-12"
+      ],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Workflow behavior change: durable capture happens when a qualifying bounded candidate is known; promotion remains at the existing authorized step.",
+      "implementation_plan": [
+        "Update every declared harvest producer with exact registration inputs, source origin and source binding at discovery.",
+        "Keep commit-gate harvest before staging and retain work-commit contingency under ADR0008.",
+        "Make registration failure visible without stopping unrelated work or claiming conversation-only material is durable.",
+        "Use bounded producer batches and capture only sanitized candidate text; never full transcripts or secret-bearing raw evidence.",
+        "Remove stale terminal-only/no-backstop claims once HW-11/12/14 actually implement recovery."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_build_surface.py",
+          ".github/scripts/test_debug_workflow.py",
+          ".github/scripts/test_artifact_workflow.py"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_workflow_recovery_surface.py"
+        ],
+        "required_cases": [
+          "Each producer can be interrupted before terminal harvest and resume the registered exact candidate.",
+          "No qualifying candidate creates no fictitious successful obligation.",
+          "An unregistered candidate is not claimed recovered.",
+          "Branch abandonment/source change does not silently publish/promote on another branch.",
+          "Rendered host resources preserve exact origin suffix and current helper resolution."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Every declared harvest producer has a source-level registration and terminal settlement path.",
+        "The producer contract reports durable:false honestly when local storage cannot commit.",
+        "No workflow gains an extra universal gate for ordinary authorized work."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Stop new registration calls while retaining already registered obligations and explicit resume support.",
+        "Do not return to claiming guaranteed harvest if terminal-only behavior is restored."
+      ],
+      "adr_actions": [
+        "ADR0008 implementation evidence for early local capture plus unchanged terminal promotion/staging."
+      ],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-14",
+      "title": "Expose bounded nonblocking startup and reentry recovery on all hosts",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:startup",
+        "hooks:persona",
+        "hooks:pi-python-bridge",
+        "hooks:codex-pretool"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/session-start.py",
+        "core/pysrc/prompt-submit.py",
+        "core/pysrc/_standuplib.py",
+        "core/surface/commands/standup.md",
+        "core/surface/commands/status.md",
+        "plugins/ca-pi/hooks/pi-bridge.py",
+        "plugins/ca-pi/tools/src/bridge.ts",
+        "plugins/ca-pi/tools/src/extension.ts",
+        "plugins/ca-codex/hooks/pre-tool-adapter.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-11",
+        "HW-12"
+      ],
+      "external_dependencies": [
+        {
+          "task_id": "PI-D04",
+          "owner": "host_site_lifecycle",
+          "reason": "Parent/child durable outcome observations and recovery."
+        },
+        {
+          "task_id": "PI-D05",
+          "owner": "host_site_lifecycle",
+          "reason": "Revocation/dependent-work conflict scope remains authoritative."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "New bounded read-only continuation notice; automatic startup/reentry never executes promotion or restores authorization.",
+      "implementation_plan": [
+        "Read an existing ledger only for an already active project; missing/dormant state does not create directories or activate the project.",
+        "Share complete/partial/unavailable summary and opaque cursor across host event seams and explicit status/standup.",
+        "Deduplicate presentation by session/ledger revision without deleting underlying obligations; keep notification independent of persona delivery state.",
+        "Consume Pi-D04 observations through supported parent delegation paths; inspection/reconciliation cannot resurrect a revoked child grant.",
+        "Expose a bounded explicit resume route and explain busy/unavailable reasons without a new universal permission prompt."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          "plugins/ca/hooks/tests/test_session_start.py",
+          "plugins/ca/hooks/tests/test_standup.py",
+          ".github/scripts/test_prompt_submit.py",
+          "plugins/ca-pi/tools/test/bridge.test.ts",
+          "plugins/ca-pi/tools/test/activation.test.ts",
+          "plugins/ca-pi/tools/test/status.test.ts"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_workflow_recovery_hosts.py"
+        ],
+        "required_cases": [
+          "Startup after crash shows pending and unavailable subsets without mutating targets.",
+          "Repeated prompt/reentry/compaction does not duplicate notices or lose obligations.",
+          "Missing/unknown/damaged ledger yields honest absent/unavailable status while independent work continues.",
+          "Dormant project remains dormant and no storage is created by scan.",
+          "Pi new session can read retained state but cannot reuse an expired/revoked scoped grant.",
+          "Measure automatic scan work and host latency against actual startup budget."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "All supported packaged hosts expose equivalent state and recovery actions through their real event seams.",
+        "Automatic readers obey record/byte bounds and never label a partial scan complete.",
+        "No automatic task/issue/stage/cleanup/review effect runs at startup."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Disable notices while preserving explicit compatible recovery reads.",
+        "Do not delete ledger entries to silence a notice or restore old grants."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-15",
+      "title": "Qualify recovery interruptions, migration, concurrency and rollback",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F04",
+        "HOOK-B04"
+      ],
+      "baseline_machine_ids": [
+        "hooks:startup",
+        "hooks:work-owner",
+        "hooks:taskwrite",
+        "hooks:cleanup-journal"
+      ],
+      "existing_owner_paths": [
+        ".github/scripts/test_artifact_installed_host.py",
+        ".github/scripts/test_hooks_cold_install.py",
+        ".github/scripts/test_artifact_package.py",
+        "plugins/ca-pi/tools/test/setup-disposable-home.ts"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-13",
+        "HW-14",
+        "HW-26"
+      ],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Verification task; no independent new runtime authority or cleanup behavior.",
+      "implementation_plan": [
+        "Run the design failure matrix against canonical helper and installed candidate packages.",
+        "Exercise multiprocess locks/CAS, record-index transaction repair, exact-target reconciliation, per-item batch results, unknown schema, capacity bounds and tombstone dedup.",
+        "Verify older/no-ledger installs and downgrade preserve all unresolved records and target state.",
+        "Keep pending recovery, progress claims, native verification, publication and cleanup as separate facts."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [],
+        "proposed_test_paths": [
+          ".github/scripts/test_workflow_recovery_installed.py"
+        ],
+        "required_cases": [
+          "All interruption rows in workflow-recovery-design.md have observable target and ledger assertions.",
+          "Replay after settlement produces no duplicate local effect and never reruns an external effect.",
+          "Disk or notification failures do not globally block ordinary authorized work.",
+          "Test harness imports disposable home before code that can inspect auth; real credentials are never read."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Exact candidate, host/platform, test source commit, and pass/failure outcomes are attached.",
+        "No current acceptance gap is described as passed because a unit double succeeded.",
+        "Rollback procedure is executed in a disposable installation and retains pending state."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "Attach per-interruption ledger/target observations, installed package hashes, and measured scan bounds."
+      ],
+      "rollback": [
+        "Use the tested compatibility reader/export and disable new feature writes if rollout fails.",
+        "Do not drop local history or undo independently edited targets to make rollback look complete."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-16",
+      "title": "Correct persona/startup ownership and storage side-effect documentation",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F05",
+        "HOOK-B02"
+      ],
+      "baseline_machine_ids": [
+        "hooks:startup",
+        "hooks:persona",
+        "hooks:git-install",
+        "hooks:task-lock-exclusion"
+      ],
+      "existing_owner_paths": [
+        "core/surface/commands/init.md",
+        "README.md",
+        "plugins/ca/README.md",
+        "core/pysrc/session-start.py",
+        "core/pysrc/prompt-submit.py",
+        "core/pysrc/_githooks.py",
+        "core/pysrc/_taskexcludelib.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-01",
+        "HW-02"
+      ],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Documentation correction; do not move runtime behavior just to fit stale claims.",
+      "implementation_plan": [
+        "Describe per-turn prompt-submit persona composition/delivery separately from SessionStart mode cleanup, statusline repair, Git-hook install and briefing.",
+        "Correct .codearbiter-only/no-behavior claims to name actual Git-common/global owned effects where relevant.",
+        "Preserve the explicit-root passive inspection distinction and active-project initialization boundaries.",
+        "Include the new recovery runtime path only when HW-11 exists."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_mode_surface.py",
+          ".github/scripts/test_build_surface.py",
+          "plugins/ca/hooks/tests/test_session_start.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Canonical and generated docs identify the actual event owner and mode-independent guards.",
+          "Claims about dormant/active writes match representative observed startup branches.",
+          "No claim of released behavior appears without exact-artifact evidence."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Owner documentation and distributed surfaces make truthful activation/startup statements.",
+        "No behavioral activation or storage migration is hidden in a prose fix."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert factual text only if the corresponding runtime owner changes; preserve history of the corrected claim."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-17",
+      "title": "Document whole staged-candidate security evidence precisely",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F06",
+        "HOOK-B03"
+      ],
+      "baseline_machine_ids": [
+        "hooks:commit-gates",
+        "hooks:security-producers"
+      ],
+      "existing_owner_paths": [
+        "core/surface/commands/override.md",
+        "core/surface/includes/security-gate-record.md",
+        "core/pysrc/security-pass.py",
+        "core/pysrc/_sensitivelib.py",
+        "core/pysrc/_bashguardlib.py",
+        "core/pysrc/git-enforce.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Documentation and recovery-message correction; preserve the current full candidate/worktree binding.",
+      "implementation_plan": [
+        "Replace sensitive-lines-only invalidation wording with worktree identity, complete staged UTF8 diff binding, and sensitive diagnostics.",
+        "Explain that unrelated staged edits also invalidate the marker and that producer success does not itself prove semantic reviewer PASS.",
+        "Keep binary override, actual review result, attributed override and staging semantics distinct.",
+        "Ensure resubmission help routes to a current review/candidate rather than a freshness bypass."
+      ],
+      "preserved_invariants": [
+        "Mode-independent deterministic guards.",
+        "No marker equals proof of a reviewer decision without the owning workflow."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_hook_guards.py",
+          ".github/scripts/test_build_surface.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Sensitive candidate with current marker passes existing checks; unrelated staged edit invalidates the same marker.",
+          "Different worktree and altered sensitive diagnostics reject reuse.",
+          "No blanket statement says every commit -a is blocked; actual sensitive/absorbed-candidate behavior remains as implemented.",
+          "Actual denied override cannot be fixed by reformatting a packet."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "All help text predicts the same invalidation tuple enforced by Git and host guards.",
+        "No scope narrowing or new TTL is introduced as an undocumented convenience."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Retain enforced candidate binding; rollback of docs must follow source truth, not weaken checks."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-18",
+      "title": "Correct watch process and polling claims",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F07"
+      ],
+      "baseline_machine_ids": [],
+      "existing_owner_paths": [
+        "core/surface/commands/watch.md",
+        "core/surface/commands/pr.md"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Documentation correction; preserve watcher/timeout/cancel/merge behavior.",
+      "implementation_plan": [
+        "Describe one detached gh watch invocation that internally refreshes checks, with no repeated agent polling calls.",
+        "Verify the exact supported gh help and official command documentation before asserting a default interval.",
+        "Preserve no-auto-merge, red diagnosis behavior, branch-fix scope, auth failure and explicit/automatic watch opt-in differences."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_build_surface.py",
+          ".github/scripts/test_routing_and_cleanup_surface.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "All host renderings remove the server-side/no-polling assertion.",
+          "Green still offers merge rather than performing it; cancellation and timeout remain documented truthfully."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "The public claim distinguishes model calls from CLI refresh behavior without changing the command flow."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert wording only on supported gh behavior evidence; no watcher process behavior change is bundled."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-19",
+      "title": "Generate command signatures and Tribunal lens counts from owners",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F08"
+      ],
+      "baseline_machine_ids": [
+        "generator:catalog-graph",
+        "generator:public-catalog",
+        "generator:rendering"
+      ],
+      "existing_owner_paths": [
+        "core/surface/COMMANDS.md",
+        "core/surface/commands/release.md",
+        "core/surface/commands/tribunal.md",
+        "core/surface/skills/tribunal/SKILL.md",
+        "tools/build-surface.py",
+        "site/scripts/generator/host-command-catalog.ts"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Generated factual contract correction; no command grammar or release-target support is removed.",
+      "implementation_plan": [
+        "Define explicit owner metadata for supported release argument spelling/target grammar and active Tribunal lenses.",
+        "Generate catalog signatures/counts and site derivatives from metadata instead of independent manual claims.",
+        "Retain actual --dryrun spelling and numeric-sequence/SemVer target behavior unless a separately tested compatibility alias is intentionally added."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_command_catalog.py",
+          ".github/scripts/test_build_surface.py",
+          ".github/scripts/test_release_workflow.py",
+          "site/test/generator/host-command-catalog.test.ts",
+          "site/test/generator/command-catalog-discovery.test.ts"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Catalog count equals actual active owner lens set (13 at baseline).",
+          "Release grammar and argument hints match the owner including numeric targets.",
+          "Supported host views and compatibility routes are unchanged except corrected facts."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "A single owner fact regenerates every affected surface deterministically.",
+        "No stale summary is used as a reason to change implemented command semantics."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Keep compatible generated outputs and redirects when reverting generator metadata.",
+        "Do not delete a supported flag or route to restore an old summary."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-20",
+      "title": "Generate reviewer index summaries from selected disposition policy",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F08",
+        "W-F03"
+      ],
+      "baseline_machine_ids": [
+        "generator:public-catalog",
+        "generator:rendering"
+      ],
+      "existing_owner_paths": [
+        "core/surface/agents/INDEX.md",
+        "core/surface/agents/coverage-auditor.md",
+        "core/surface/agents/dependency-reviewer.md",
+        "core/surface/includes/reviewer-contract.md",
+        "tools/build-surface.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-09"
+      ],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Index accuracy correction with a scoped dependency on the separately selected HIGH policy.",
+      "implementation_plan": [
+        "Correct coverage summary so MEDIUM uncovered-source findings are not misrepresented as universal BLOCK; preserve HIGH threshold/critical-negative-path behavior.",
+        "Derive concise reviewer summaries from explicit owner metadata, retaining distinct severity and disposition if selected in HW-09.",
+        "Keep unresolved HIGH policy visible until chosen; command/lens corrections in HW-19 proceed independently."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_review_funnel.py",
+          ".github/scripts/test_build_surface.py"
+        ],
+        "proposed_test_paths": [
+          ".github/scripts/test_reviewer_catalog.py"
+        ],
+        "required_cases": [
+          "Coverage MEDIUM, HIGH missing critical negative evidence, no-tooling exemption and partial overall evidence map to truthful summaries.",
+          "Dependency maintenance and security dispositions match the selected HW-09 rule.",
+          "Rendered agent index cannot silently strengthen or weaken the owner body."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Index roles and gate summaries reflect the actual selected owner contract.",
+        "No reviewer behavior changes solely to make an old index line true."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert derived summaries with their selected policy owner metadata; retain historical verdicts."
+      ],
+      "adr_actions": [],
+      "coverage_scope": "Coverage-only summary correction may proceed before HW-09; definitive dependency HIGH summary waits for that scoped decision."
+    },
+    {
+      "id": "HW-21",
+      "title": "Align compatibility retirement metadata with the approved public rule",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "W-F09"
+      ],
+      "baseline_machine_ids": [
+        "generator:catalog-graph"
+      ],
+      "existing_owner_paths": [
+        "core/surface/command-routes.json",
+        "tools/build-surface.py",
+        "core/surface/includes/command-compatibility.md",
+        ".github/scripts/check_command_route_release_state.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Metadata/schema correction implementing the existing public major/1.0 floor plus separately approved named removal and fresh exact-release evidence; no route removal.",
+      "implementation_plan": [
+        "Replace the contradictory minor-release-with-changelog-notice vocabulary with a structured/closed representation of the actual rule.",
+        "Update schema validator, generated policy prose, release-state observer and fixtures together.",
+        "Preserve confirmed non-draft GitHub release as the clock start and preserve the named historical exception without generalizing it.",
+        "Require any future named removal decision separately; the requested major release alone does not satisfy it."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_command_route_compatibility.py",
+          ".github/scripts/test_command_route_release_state.py",
+          ".github/scripts/test_build_surface.py",
+          "site/test/generator/command-url-stability.test.ts"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Version floor without named approval is insufficient.",
+          "Draft/tag/source version without confirmed release evidence is insufficient.",
+          "Named approved removal affects only that route; unrelated aliases remain.",
+          "Current wrappers/grammars/URLs remain supported through this change."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Registry, validator, policy and release observer encode one unambiguous rule.",
+        "All currently supported aliases remain present unless another task carries a named user approval."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Retain a compatibility reader for previous metadata where needed; fail explicit retirement assessment rather than drop routes on unknown schema.",
+        "Rollback does not restore a looser hidden policy in only one consumer."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-22",
+      "title": "Correct and couple prune nudge configuration semantics",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "GEN-F01"
+      ],
+      "baseline_machine_ids": [
+        "generator:public-catalog",
+        "hooks:prune-execute"
+      ],
+      "existing_owner_paths": [
+        "site/scripts/generator/configuration-reference.ts",
+        "core/pysrc/_prunelib.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Documentation correction only: threshold is estimated avoidable context freed, not total model context.",
+      "implementation_plan": [
+        "Describe the actual context_bytes_freed token estimate predicate and current default.",
+        "Where practical expose the predicate/default fact through canonical generated metadata rather than a second hand-maintained semantic claim.",
+        "Preserve platform/host eligibility and recommendation timing."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          "site/test/generator/configuration-reference.test.ts",
+          ".github/scripts/test_prune_nudge.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Large total context but insufficient freed-context benefit does not satisfy the threshold.",
+          "Freed benefit at/below/above threshold follows the unchanged runtime comparator.",
+          "Generated description and default match the runtime owner."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "No output claims the threshold measures total model context.",
+        "Runtime decisions are unchanged by this documentation fix."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert metadata coupling without changing predicate; retain accurate generated wording."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-23",
+      "title": "Make hook extraction bounded, masked and honest about dynamic text",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "GEN-F02"
+      ],
+      "baseline_machine_ids": [
+        "generator:hook-extractor",
+        "generator:rendering"
+      ],
+      "existing_owner_paths": [
+        "site/scripts/generator/extract-hook-gates.ts",
+        "site/scripts/generator/render-hooks-reference.ts",
+        "core/pysrc/_bashguardlib.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Extractor correctness and public claim correction; extracted text does not become runtime authorization logic.",
+      "implementation_plan": [
+        "Apply lexical code masking to literal-tag extraction so comments/docstrings/examples are not treated as executable call sites.",
+        "Represent static fragments, unresolved dynamic/helper fragments, bounded variable resolution and skipped-call census explicitly.",
+        "Remove every-gate/never-drift runtime equivalence claims; expose omissions and source links in generated references.",
+        "If a typed gate registry is introduced, retain runtime source ownership and test generated adapter/registry equivalence at actual messages."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          "site/test/generator/extract-hook-gates.test.ts",
+          "site/test/generator/render-hooks-reference.test.ts"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Quoted/commented/docstring fake block calls are excluded.",
+          "Dynamic recovery suffix is marked unresolved or rendered from a real typed owner, never silently presented as full runtime text.",
+          "Variable assignment beyond current30-line window and unsupported expressions yield explicit gaps.",
+          "Real executable call attribution and gate ordering remain correct under unrelated line shifts."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "The reference truthfully distinguishes extraction coverage from actual runtime-message equivalence.",
+        "Known dynamic security recovery output is represented without a fabricated full message.",
+        "A static false-positive possibility is not described as an observed production failure without a reproducer."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Revert parser changes only with honest limitation text retained; do not reinstate unsupported completeness claims."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-24",
+      "title": "Reserve emitted slugs globally and preserve published URLs",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "GEN-B01"
+      ],
+      "baseline_machine_ids": [
+        "generator:discovery",
+        "generator:catalog-graph"
+      ],
+      "existing_owner_paths": [
+        "site/scripts/generator/assign-slugs.ts"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Bounded helper edge-case correction; actual production route impact must be measured before changing published assignments.",
+      "implementation_plan": [
+        "Track all emitted slugs, not independent counters for base names only.",
+        "Keep deterministic stable-input behavior and handle names that already end in numeric suffixes.",
+        "Compare old/new real generated catalogs and preserve redirects or stable pinned routes for any published URL change."
+      ],
+      "preserved_invariants": [
+        "Audit finding is a source-proven helper case; current production reachability was not demonstrated."
+      ],
+      "tests": {
+        "existing_test_paths": [
+          "site/test/generator/assign-slugs.test.ts",
+          "site/test/generator/command-url-stability.test.ts"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "foo,foo,foo-2 yields three distinct outputs.",
+          "Repeated names, numeric suffixes, slug normalization collisions and stable order remain deterministic.",
+          "Actual candidate catalog diff identifies whether any published route changes; if none, state no observed current route impact."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "No duplicate output slug for supported arbitrary input.",
+        "No previously published route disappears without compatible redirect/explicit policy."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Preserve any introduced redirects during rollback; do not orphan URLs by reverting only one catalog."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-25",
+      "title": "Verify optional context qualification manifest compatibility end to end",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-B05"
+      ],
+      "baseline_machine_ids": [
+        "hooks:native-client"
+      ],
+      "existing_owner_paths": [
+        "core/pysrc/_artifactlib.py",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "task_id": "DIST-M01",
+          "owner": "host_site_lifecycle",
+          "reason": "Owns SF04 shared supported optional-field release manifest decoder."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Cross-owner compatibility integration; the host manifest decoder is primary implementation owner.",
+      "implementation_plan": [
+        "Integrate DIST-M01 shared supported manifest schema with Python acceptance of five base fields or those plus context_qualification.",
+        "Define validation of the optional field at the proper owner instead of assuming the current Python loader validates its value.",
+        "Retain exact platform, binary magic, native_tested and digest checks, and distinguish missing/unsupported/invalid qualification."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_artifact_farm.py",
+          ".github/scripts/test_artifact_package.py",
+          ".github/scripts/test_artifact_bridge.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Valid five-field legacy and valid six-field qualified manifests pass the correct consumers.",
+          "Invalid optional value, unknown fields, wrong platform/digest/native_tested fail according to the selected closed schema.",
+          "Candidate qualification is verified against the exact artifact, not merely a field presence."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Python and farm accept the same supported valid manifest variants.",
+        "Optional presence does not imply qualification evidence was verified."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Keep legacy supported manifest decoding and qualification status truthful; do not strip fields to conceal incompatibility."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    },
+    {
+      "id": "HW-26",
+      "title": "Preserve Pi test qualification and credential-isolation boundaries",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [],
+      "baseline_machine_ids": [
+        "pi-qualification:runtime-discovery",
+        "pi-qualification:disposable-home"
+      ],
+      "existing_owner_paths": [
+        "plugins/ca-pi/tools/test/benchmark-boundary.ts",
+        "plugins/ca-pi/tools/test/live-pi-host.ts",
+        "plugins/ca-pi/tools/test/setup-disposable-home.ts",
+        "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+        "plugins/ca-pi/tools/test/security.test.ts"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [],
+      "external_dependencies": [
+        {
+          "task_id": "PI-D07",
+          "owner": "host_site_lifecycle",
+          "reason": "Exact-artifact functional authorship qualification for scoped delegated Pi children."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Qualification preservation/verification; these helper transitions must not be reclassified as installed product behavior.",
+      "implementation_plan": [
+        "Prove disposable-home preload for every new recovery/delegation test process before imports that can read auth.",
+        "Use dummy credentials and exact new temp roots; never inspect the operator auth store.",
+        "Record actual discovered Pi runtime version/package identity/digest at callers when those are qualification claims; PATH helper alone proves less.",
+        "Preserve benchmark100-measured/5-warmup ready/complete protocol and label fixture bridge/native functions honestly.",
+        "Document best-effort exit cleanup as possible test residue, not a live user cleanup guarantee."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          "plugins/ca-pi/tools/test/security.test.ts",
+          "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+          ".github/scripts/test_pi_security.py",
+          ".github/scripts/test_pi_package.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Home/auth variables point at disposable fixture before runtime access on supported platforms.",
+          "Missing/malformed runtime package and unsupported version/digest are not falsely counted as installed-host proof.",
+          "Benchmark measured sample count excludes5 warmups and preserves observed call counts.",
+          "Abrupt test termination can leave only the exact disposable root; no production credential path is read or removed."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "Every new installed-host claim records its exact candidate/runtime binding and actual observation.",
+        "Fixture-only passes remain separate from real host and release admission evidence.",
+        "No new defect claim is invented from these helpers alone."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state."
+      ],
+      "rollback": [
+        "Retain test isolation even if a new qualification feature is rolled back.",
+        "Clean only exact disposable test roots and never operator resources."
+      ],
+      "adr_actions": [],
+      "coverage_scope": "Benchmark protocol already belongs to release-ci C36; avoid duplicate state-family counting."
+    },
+    {
+      "id": "HW-27",
+      "title": "Hold the integrated hook/workflow candidate until behavior and artifacts agree",
+      "status": "ready-for-receiving-agent-design-and-implementation",
+      "original_finding_ids": [
+        "HOOK-F01",
+        "HOOK-F02",
+        "HOOK-F03",
+        "HOOK-F04",
+        "HOOK-F05",
+        "HOOK-B01",
+        "HOOK-B02",
+        "HOOK-B03",
+        "HOOK-B04",
+        "HOOK-B05",
+        "W-F01",
+        "W-F02",
+        "W-F03",
+        "W-F04",
+        "W-F05",
+        "W-F06",
+        "W-F07",
+        "W-F08",
+        "W-F09",
+        "GEN-F01",
+        "GEN-F02",
+        "GEN-B01"
+      ],
+      "baseline_machine_ids": [
+        "hooks:activation",
+        "hooks:host",
+        "hooks:mode",
+        "hooks:mode-audit",
+        "hooks:persona",
+        "hooks:startup",
+        "hooks:read-context",
+        "hooks:hook-admission",
+        "hooks:protected-state",
+        "hooks:shell-parser",
+        "hooks:commit-gates",
+        "hooks:security-producers",
+        "hooks:push",
+        "hooks:approval-single",
+        "hooks:approval-pair",
+        "hooks:prerequisite",
+        "hooks:reconciliation",
+        "hooks:reply-routing",
+        "hooks:authority-request",
+        "hooks:verifier",
+        "hooks:codex-review",
+        "hooks:claude-review",
+        "hooks:debug-handoff",
+        "hooks:native-client",
+        "hooks:authoring-route",
+        "hooks:context-writer",
+        "hooks:context-provenance",
+        "hooks:context-snapshot",
+        "hooks:context-scout",
+        "hooks:command-evidence",
+        "hooks:context-delivery",
+        "hooks:knowledge",
+        "hooks:work-owner",
+        "hooks:taskwrite",
+        "hooks:work-adoption",
+        "hooks:legacy-advisories",
+        "hooks:plan-file",
+        "hooks:append-conflict",
+        "hooks:legacy-context-recovery",
+        "hooks:adr-lifecycle",
+        "hooks:cleanup-eligibility",
+        "hooks:cleanup-journal",
+        "hooks:prune-plan",
+        "hooks:prune-execute",
+        "hooks:claude-accounting",
+        "hooks:session-accounting",
+        "hooks:pi-accounting",
+        "hooks:git-install",
+        "hooks:git-dispatch",
+        "hooks:task-lock-exclusion",
+        "hooks:advisory-runtime",
+        "hooks:update-notice",
+        "hooks:statusline-wiring",
+        "hooks:doctor",
+        "hooks:release-confirmation",
+        "hooks:tribunal-inventory",
+        "hooks:tribunal-run",
+        "hooks:tribunal-lock-leads",
+        "hooks:tribunal-usage",
+        "hooks:pi-python-bridge",
+        "hooks:pi-approval",
+        "hooks:codex-pretool",
+        "hooks:display-git-probes"
+      ],
+      "existing_owner_paths": [
+        "tools/build-surface.py",
+        ".github/scripts/test_build_surface.py",
+        ".github/scripts/test_hooks_cold_install.py",
+        ".github/scripts/test_artifact_package.py",
+        ".github/scripts/test_artifact_installed_host.py",
+        ".github/scripts/check_command_route_release_state.py"
+      ],
+      "proposed_new_paths": [],
+      "dependencies": [
+        "HW-01",
+        "HW-02",
+        "HW-03",
+        "HW-04",
+        "HW-05",
+        "HW-06",
+        "HW-07",
+        "HW-08",
+        "HW-09",
+        "HW-10",
+        "HW-11",
+        "HW-12",
+        "HW-13",
+        "HW-14",
+        "HW-15",
+        "HW-16",
+        "HW-17",
+        "HW-18",
+        "HW-19",
+        "HW-20",
+        "HW-21",
+        "HW-22",
+        "HW-23",
+        "HW-24",
+        "HW-25",
+        "HW-26"
+      ],
+      "external_dependencies": [
+        {
+          "task_id": "ROOT-INTEGRATION-AND-RELEASE",
+          "owner": "root",
+          "reason": "Resolve to parent corpus integration branch, whole-effort acceptance and major-release task IDs."
+        },
+        {
+          "task_id": "NATIVE-SMARTS-PROGRESS-EVIDENCE",
+          "owner": "native_states",
+          "reason": "Resolve to B+receiving-agent SMARTS decision and native task; not decided in this hook workstream."
+        }
+      ],
+      "blocked_by_decision": null,
+      "semantic_change_scope": "Integration/qualification gate for the held branch; no automatic publication or approval inference.",
+      "implementation_plan": [
+        "Consume the detailed original transition catalogs as the before-behavior inventory and map each changed family to its task.",
+        "Regenerate shared Python/host/surface/site artifacts and verify equality; do not patch generated copies independently.",
+        "Run focused regressions plus the required existing integration/package/host acceptance matrix for changed semantics.",
+        "Record unresolved scoped decisions honestly and complete them before claiming the full selected effort done; independent tasks can land on the held branch meanwhile.",
+        "Hand exact candidate evidence, migrations and rollback to the root major-release workflow; source tests do not count as publication/readback."
+      ],
+      "preserved_invariants": [],
+      "tests": {
+        "existing_test_paths": [
+          ".github/scripts/test_build_surface.py",
+          ".github/scripts/test_hooks_cold_install.py",
+          ".github/scripts/test_hook_guards.py",
+          ".github/scripts/test_artifact_package.py",
+          ".github/scripts/test_artifact_installed_host.py",
+          ".github/scripts/test_command_route_release_state.py"
+        ],
+        "proposed_test_paths": [],
+        "required_cases": [
+          "Changed hook states satisfy their new event/guard/effect contract; preserved safeguards remain effective.",
+          "Absent/dormant project, unsupported host/profile, closed schema, actual denial, stale evidence, untrusted execution and protected push/cleanup branches retain truthful refusal behavior.",
+          "Shared generated copies, installed helper resolution, package identity and target manifests agree.",
+          "No false completion, cleanup, release, or native verification claim from local recovery bookkeeping."
+        ],
+        "execution_state": "not run for this handoff; receiving agent must read test owners and execute the selected matrix"
+      },
+      "acceptance_criteria": [
+        "All27 tasks have evidence or an explicit approved exclusion; no unreviewed scope silently disappears.",
+        "No open HIGH disposition or progress/evidence policy is falsely called resolved.",
+        "Integration branch remains held until root whole-effort criteria and exact-artifact qualification pass.",
+        "Release/version/alias changes follow root selected policy and exact release evidence."
+      ],
+      "completion_evidence": [
+        "Record the exact implementation commit and any source drift from the audited baseline before making current-state claims.",
+        "List changed canonical owners and generated derivatives; retain an exact source/package distinction.",
+        "Attach focused meaningful test output and observed effect/failure evidence; an exit code alone is not proof of the intended target state.",
+        "The original audit records63 hook families/388 rows at its commit; this task does not assert every unchanged transition was newly executed.",
+        "List which branches were dynamically tested, statically revalidated, externally qualified, or remain unsupported."
+      ],
+      "rollback": [
+        "Use task-specific compatibility rollback without deleting records or overwriting independently edited targets.",
+        "If the integrated candidate fails a gate, keep it unmerged/unpublished and retain evidence for correction.",
+        "A rollback of publication, if needed later, belongs to the root release owner and does not rewrite immutable release history."
+      ],
+      "adr_actions": [],
+      "coverage_scope": null
+    }
+  ],
+  "finding_to_tasks": {
+    "HOOK-F01": [
+      "HW-01",
+      "HW-27"
+    ],
+    "HOOK-F02": [
+      "HW-02",
+      "HW-27"
+    ],
+    "HOOK-F03": [
+      "HW-03",
+      "HW-27"
+    ],
+    "HOOK-F04": [
+      "HW-04",
+      "HW-27"
+    ],
+    "HOOK-F05": [
+      "HW-05",
+      "HW-27"
+    ],
+    "HOOK-B01": [
+      "HW-07",
+      "HW-08",
+      "HW-27"
+    ],
+    "HOOK-B02": [
+      "HW-16",
+      "HW-27"
+    ],
+    "HOOK-B03": [
+      "HW-17",
+      "HW-27"
+    ],
+    "HOOK-B04": [
+      "HW-10",
+      "HW-11",
+      "HW-12",
+      "HW-13",
+      "HW-14",
+      "HW-15",
+      "HW-27"
+    ],
+    "HOOK-B05": [
+      "HW-25",
+      "HW-27"
+    ],
+    "W-F01": [
+      "HW-06",
+      "HW-27"
+    ],
+    "W-F02": [
+      "HW-07",
+      "HW-08",
+      "HW-27"
+    ],
+    "W-F03": [
+      "HW-09",
+      "HW-20",
+      "HW-27"
+    ],
+    "W-F04": [
+      "HW-10",
+      "HW-11",
+      "HW-12",
+      "HW-13",
+      "HW-14",
+      "HW-15",
+      "HW-27"
+    ],
+    "W-F05": [
+      "HW-16",
+      "HW-27"
+    ],
+    "W-F06": [
+      "HW-17",
+      "HW-27"
+    ],
+    "W-F07": [
+      "HW-18",
+      "HW-27"
+    ],
+    "W-F08": [
+      "HW-19",
+      "HW-20",
+      "HW-27"
+    ],
+    "W-F09": [
+      "HW-21",
+      "HW-27"
+    ],
+    "GEN-F01": [
+      "HW-22",
+      "HW-27"
+    ],
+    "GEN-F02": [
+      "HW-23",
+      "HW-27"
+    ],
+    "GEN-B01": [
+      "HW-24",
+      "HW-27"
+    ]
+  },
+  "baseline_machine_disposition": {
+    "hooks:activation": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Project activation, initialization and scaffold recovery",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:host": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Host selection, authenticated package identity and worktree roots",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-03"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:mode": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Session mode intent, backed effective mode and exact control tokens",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-01",
+        "HW-02"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:mode-audit": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Owed mode/dev audit rows and legacy session cleanup",
+      "transition_count": 8,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-01",
+        "HW-02"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:persona": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Persona delivery, deduplication and compaction generation",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-01",
+        "HW-02",
+        "HW-14",
+        "HW-16"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:startup": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Active-session startup, stage briefing and daily standup delivery",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-10",
+        "HW-11",
+        "HW-14",
+        "HW-15",
+        "HW-16"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:read-context": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Scoped read context injection, catalog generations and content authority",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:hook-admission": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Native tool guards, activation, opaque operations and block side effects",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:protected-state": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Protected project paths, helper ownership and expiring authorizations",
+      "transition_count": 7,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:shell-parser": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Shell mutation and Git intent classification",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:commit-gates": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Commit candidate staging, sensitive-content binding and migration proof",
+      "transition_count": 8,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-17"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:security-producers": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Security/migration marker production and attributed binary override",
+      "transition_count": 4,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-17"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:push": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Protected-ref and fast-forward Git push backstop",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:approval-single": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Single-artifact approval arm, observed reply and cancellation",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:approval-pair": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Paired spec/plan approval with durable submission recovery",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:prerequisite": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "User prerequisite arm, confirmation, capture and supersession",
+      "transition_count": 7,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:reconciliation": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Frozen reconciliation prompt and recoverable native mutation",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:reply-routing": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Human reply normalization, code routing and AskUserQuestion observation",
+      "transition_count": 7,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:authority-request": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Review/verifier request spool, terminal states and recovery",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-08"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:verifier": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Qualified command launch, output collection and host corroboration",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-04"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:codex-review": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Codex authority child launch, activity join, steering rejection and first final",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-08"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:claude-review": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Claude authority child pairing and independent review result",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-08"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:debug-handoff": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Stateless bounded debug packet validation",
+      "transition_count": 4,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-07"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:native-client": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Pinned native capability, bounded request execution and mutation recovery",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-11",
+        "HW-25"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:authoring-route": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Inline/legacy/native authoring selection and current acceptance reads",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:context-writer": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Assistive context preview, adoption, update and finalization",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:context-provenance": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Context coverage, source identity, baseline drift and heal eligibility",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:context-snapshot": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Bounded evidence membership, stable snapshots and dependency comparison",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:context-scout": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Scout attempt admission, transport completion, subdivision and deterministic join",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:command-evidence": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Declared command guidance, current execution binding and verification outcome",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:context-delivery": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Task context selection, actor delivery receipts and bounded delivery retry",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:knowledge": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Knowledge ownership, CAS edits, Markdown conversion and decomposition promotion",
+      "transition_count": 10,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-10",
+        "HW-12",
+        "HW-13"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:work-owner": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Work owner selection, durable identity and bounded context projection",
+      "transition_count": 10,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-10",
+        "HW-12",
+        "HW-13",
+        "HW-15"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:taskwrite": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Locked legacy task transition and archive-first recovery",
+      "transition_count": 8,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-12",
+        "HW-15"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:work-adoption": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Legacy board inventory preview and native work adoption",
+      "transition_count": 3,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:legacy-advisories": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Board drift, lexical intent coverage and post-write review reminders",
+      "transition_count": 7,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:plan-file": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Exact-byte legacy spec/plan compare-and-swap and truthful commit-point result",
+      "transition_count": 5,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-11"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:append-conflict": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Attributed append-only Git conflict union and rollback",
+      "transition_count": 5,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-06"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:legacy-context-recovery": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Fixed legacy code-map conflict inspection, selected side recovery and claim refresh",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:adr-lifecycle": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "ADR accepted obligations, implementation evidence and verified export eligibility",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:cleanup-eligibility": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Branch/worktree delivery proof, authorized scope and unique-loss classification",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:cleanup-journal": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Write-ahead deletion intent, guarded mutation and outcome reconciliation",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-15"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:prune-plan": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Transcript/Pi pruning policy, protected context and dry-run accounting",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:prune-execute": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Settled transcript admission, in-place write, backup restoration and cold-context nudge",
+      "transition_count": 8,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-22"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:claude-accounting": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Incremental usage evidence ingestion, replay, repricing and bounded catch-up",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:session-accounting": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Session start/retention and observational child display lifecycle",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:pi-accounting": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Pi ordered usage chunk acceptance and shard-first durable aggregation",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:git-install": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Shared Git shim installation, owned registry and rollback",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-16"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:git-dispatch": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Cross-host enforcer election and trusted executable negotiation",
+      "transition_count": 7,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:task-lock-exclusion": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Local task-lock exclusion transaction and ownership-safe cleanup",
+      "transition_count": 5,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-16"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:advisory-runtime": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Gate event logging, time-based stale-flow notice and babysit configuration",
+      "transition_count": 5,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:update-notice": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Per-host update cache, daily reservation and monotonic version merge",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:statusline-wiring": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Owned statusLine install, refresh, backup restoration and spinner side effects",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-05"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:doctor": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Health check aggregation and declared-versus-live capability observation",
+      "transition_count": 5,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-03"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:release-confirmation": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Release build-command digest and confirmation freshness",
+      "transition_count": 3,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:tribunal-inventory": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Read-only tribunal facts, host dispatch profile and unmeasured cost estimate",
+      "transition_count": 3,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:tribunal-run": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Immutable source binding, append-only cursor, resumability and follow-up completion",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:tribunal-lock-leads": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Tribunal stale-lock recovery, immutable leads and evidence-gated triage",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:tribunal-usage": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Host-specific observed usage extraction and partial aggregation",
+      "transition_count": 4,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:pi-python-bridge": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Closed Pi bridge routing, bounded hook execution and response translation",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-14"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:pi-approval": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Pi native-input approval handshake and exact pending-byte identity",
+      "transition_count": 3,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:codex-pretool": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Codex hook payload admission and patch-file operation parsing",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-14"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "hooks:display-git-probes": {
+      "baseline_catalogue": "audit-work/hooks.json",
+      "name": "Non-authoritative branch and dirty-state display fallback",
+      "transition_count": 3,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:markdown": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Source normalization, frontmatter and fenced Markdown scanner",
+      "transition_count": 6,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:discovery": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Plugin source discovery, names, slugs and host availability projection",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-24"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:catalog-graph": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Command discovery validation, command-skill pairing and legacy URL routing",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-19",
+        "HW-21",
+        "HW-24"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:curated-validation": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Curated framing shape, gate-row parser and command/flag drift attribution",
+      "transition_count": 8,
+      "treatment": "preserve-baseline-semantics-unless-an-explicit-other-workstream-task-supersedes-them",
+      "direct_tasks": [],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:hook-extractor": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Bounded Python call-site extraction and hook-reference event attribution",
+      "transition_count": 7,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-23"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:public-catalog": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Manual preview/configuration facts and generated public-source identity",
+      "transition_count": 4,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-19",
+        "HW-20",
+        "HW-22"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "generator:rendering": {
+      "baseline_catalogue": "audit-work/generator-extra.json",
+      "name": "Pure reference rendering, reader token safety and source embeds",
+      "transition_count": 6,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-19",
+        "HW-20",
+        "HW-23"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "pi-qualification:runtime-discovery": {
+      "baseline_catalogue": "audit-work/pi-qualification-extra.json",
+      "name": "Test-only installed Pi runtime and CLI discovery",
+      "transition_count": 4,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-26"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    },
+    "pi-qualification:disposable-home": {
+      "baseline_catalogue": "audit-work/pi-qualification-extra.json",
+      "name": "Test-only disposable home setup and process-exit cleanup",
+      "transition_count": 4,
+      "treatment": "change-or-integrate-only-through-listed-task",
+      "direct_tasks": [
+        "HW-26"
+      ],
+      "integration_owner": "HW-27",
+      "evidence_rule": "Retain source/event/guard/effect and reject/no-op distinctions from baseline; source coverage does not equal newly executed transition coverage."
+    }
+  },
+  "original_finding_evidence": {
+    "HOOK-F01": {
+      "id": "HOOK-F01",
+      "title": "Returning to an already delivered mode suppresses the current persona",
+      "classification": "confirmed implementation defect",
+      "evidence_level": "focused isolated runtime probe + implementation read",
+      "description": "Delivery is keyed by session, mode and compaction generation. In one session/generation, arbiter -> dangerous -> arbiter leaves the original arbiter tuple marked, so the final arbiter effective mode emits no arbiter persona after dangerous was injected.",
+      "observed": "Actual shared mode writes/audits and actual persona files: initial arbiter output10990 characters; dangerous7908; return to arbiter0. This does not disable deterministic tool/Git guards.",
+      "sources": [
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "_dedup_key",
+          "lines": "201-202",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "_already_injected",
+          "lines": "205-211",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "_inject_claude",
+          "lines": "373-392",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+        },
+        {
+          "path": "core/pysrc/_modelib.py",
+          "symbol": "flip",
+          "lines": "352-402",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py"
+        }
+      ],
+      "probes": [
+        "audit-work/probe_mode.py",
+        "audit-work/probe_mode_results.json"
+      ],
+      "recommendation": "Bind delivery to current successful mode transition epoch or last delivered mode/generation, with monotonic session identity; preserve repeated-event idempotency and independent safety injection."
+    },
+    "HOOK-F02": {
+      "id": "HOOK-F02",
+      "title": "Mode flip failure reports no change after raw state has already changed",
+      "classification": "confirmed outcome-reporting defect",
+      "evidence_level": "isolated injected append failure + implementation read",
+      "description": "flip writes raw mode before audit settlement. An audit append failure returns FLIP_FAILED; prompt text calls it a marker write error and says the session remains in its current mode. The raw mode can already be ops while effective mode falls back to arbiter because it is not ledger-backed.",
+      "observed": "With _append_override_line forced false: result failed, raw_mode ops, effective_mode arbiter, user_message says marker write error and remains in current mode. Owed audit recovery is implemented; failure is not evidence of total rollback.",
+      "sources": [
+        {
+          "path": "core/pysrc/_modelib.py",
+          "symbol": "flip",
+          "lines": "352-402",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py"
+        },
+        {
+          "path": "core/pysrc/_modelib.py",
+          "symbol": "ledger_backs",
+          "lines": "454-506",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_modelib.py"
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "_effective_mode",
+          "lines": "185-194",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "_flip_stderr_line",
+          "lines": "310-316",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+        }
+      ],
+      "probes": [
+        "audit-work/probe_mode.py",
+        "audit-work/probe_mode_results.json"
+      ],
+      "recommendation": "Return typed outcome carrying requested/raw/effective modes, marker commit and audit debt/retry state. Report partial completion honestly; preserve existing recovery and gate fail direction."
+    },
+    "HOOK-F03": {
+      "id": "HOOK-F03",
+      "title": "Pi doctor rejects the actual scoped package identity",
+      "classification": "confirmed implementation defect",
+      "evidence_level": "actual checkout payload checked through check_payload",
+      "description": "doctor.check_payload requires package.name == ca-pi; current plugins/ca-pi/package.json and PiHost identify @arbiterforge/ca-pi. It produces a reinstall failure for this otherwise present payload.",
+      "observed": "check_payload(PiHost) on this checkout reports payload version0.27.5 OK, invalid ca-pi discovery contract FAIL, and bridge/support scripts OK.",
+      "sources": [
+        {
+          "path": "core/pysrc/doctor.py",
+          "symbol": "check_payload",
+          "lines": "110-180",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/doctor.py"
+        },
+        {
+          "path": "plugins/ca-pi/hooks/_host.py",
+          "symbol": "module",
+          "lines": "1-123",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/hooks/_host.py"
+        },
+        {
+          "path": "plugins/ca-pi/package.json",
+          "symbol": "module",
+          "lines": "1-18",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/package.json"
+        }
+      ],
+      "probes": [
+        "audit-work/probe_diagnostics.py",
+        "audit-work/probe_diagnostics_results.json"
+      ],
+      "recommendation": "Use the actual canonical host/package identity shared with manifest generation and host resolver; retain exact extension/skill discovery validation."
+    },
+    "HOOK-F04": {
+      "id": "HOOK-F04",
+      "title": "Qualified npm workspace binding can exceed native completion consumer limit",
+      "classification": "confirmed producer reachability; cross-layer consumer mismatch validated by native agent",
+      "evidence_level": "actual Python producer probe; Go consumer static read by native_states",
+      "description": "The Python producer permits up to32 workspace manifests plus base launch files. Native observation schema permits37, qualified runner permits32 workspace manifests, but completionWorkspacesOnce rejects more than32 launch_files. A qualified operation can reach publication with a producer-valid binding the consumer refuses.",
+      "observed": "Using real npm resolution and temp Git project, without running test commands:30 workspaces ->32 launch files;31->33;32->34 on POSIX. Windows additional launch roles imply up to37 from source, not runtime-probed here.",
+      "sources": [
+        {
+          "path": "core/pysrc/_artifactauthoritylib.py",
+          "symbol": "_bind_commands",
+          "lines": "1362-1404",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactauthoritylib.py"
+        },
+        {
+          "path": "core/pysrc/_artifactauthoritylib.py",
+          "symbol": "_native_launch",
+          "lines": "1412-1452",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactauthoritylib.py"
+        },
+        {
+          "path": "core/pysrc/_artifactauthoritylib.py",
+          "symbol": "_npm_workspace_runner",
+          "lines": "2023-2078",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactauthoritylib.py"
+        }
+      ],
+      "cross_agent_sources": [
+        "native_states: observation/contract.go commandBindingSchema; evidence/runner_contract.go validateQualifiedBinding; evidence/completion_workspace.go completionWorkspacesOnce; use native ledger for exact paths/ranges"
+      ],
+      "probes": [
+        "audit-work/probe_launch_binding.py",
+        "audit-work/probe_launch_binding_results.json"
+      ],
+      "recommendation": "Define one versioned launch-binding bound/role contract, derive validators and boundary fixtures across Python/Go. Match accepted producer and completion sets without weakening file fingerprints."
+    },
+    "HOOK-F05": {
+      "id": "HOOK-F05",
+      "title": "Spinner uninstall restores backup over a user change made after install",
+      "classification": "confirmed ownership inconsistency",
+      "evidence_level": "isolated settings transformation probe + implementation read",
+      "description": "statusLine uninstall checks exact ownership before restoring. _uninstall_spinner_verbs restores whenever its backup key exists, even if current spinnerVerbs was changed by the user after installation.",
+      "observed": "Current verbs user changed after install plus prior backup becomes prior, losing the current choice.",
+      "sources": [
+        {
+          "path": "core/pysrc/wire-statusline.py",
+          "symbol": "cmd_uninstall",
+          "lines": "355-384",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+        },
+        {
+          "path": "core/pysrc/wire-statusline.py",
+          "symbol": "_uninstall_spinner_verbs",
+          "lines": "387-394",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/wire-statusline.py"
+        }
+      ],
+      "probes": [
+        "audit-work/probe_diagnostics.py",
+        "audit-work/probe_diagnostics_results.json"
+      ],
+      "recommendation": "Record exact installed spinner ownership value and restore backup only if current still equals it; otherwise preserve current custom state and remove obsolete backup metadata."
+    },
+    "HOOK-B01": {
+      "id": "HOOK-B01",
+      "title": "Debug validator rejection is stateless and does not prove authorization denial",
+      "classification": "implementation boundary for documentation reconciliation",
+      "evidence_level": "complete executable-source read",
+      "description": "_debughandofflib imports no filesystem/process/network facility and maintains no rejection ledger. Each CLI invocation independently validates shape/references/internal semantics. Exit2 includes correctable input failures; exit3 operational failures. Root audit should compare one-shot resubmission prose against this distinction.",
+      "sources": [
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "symbol": "module",
+          "lines": "1-767",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_debughandofflib.py"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "symbol": "main",
+          "lines": "62-81",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/debug-handoff.py"
+        }
+      ],
+      "recommendation": "Separate invalid transport/shape/reference input, unsupported causal evidence and denied authorization in the contract. Allow bounded correction of shape for the same authorized scope without silently widening authority; preserve substantive causal/regression requirements."
+    },
+    "HOOK-B02": {
+      "id": "HOOK-B02",
+      "title": "Per-turn prompt owns persona delivery; SessionStart owns startup side effects",
+      "classification": "implemented authority boundary",
+      "evidence_level": "complete executable-source read",
+      "description": "prompt-submit composes/dedups safety and mode persona, and PreCompact changes delivery generation. SessionStart does mode housekeeping/statusline repair before activation, installs Git backstop when active, then initialized briefing and detached refresh. Documentation claiming persona injection is owned solely by SessionStart is stale.",
+      "sources": [
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "module",
+          "lines": "1-554",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/prompt-submit.py"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "symbol": "main",
+          "lines": "1170-1364",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py"
+        }
+      ],
+      "recommendation": "Generate event-to-owner documentation from the implemented hook contract and retain a passive explicit-root inspection route for unfamiliar repos."
+    },
+    "HOOK-B03": {
+      "id": "HOOK-B03",
+      "title": "Security review marker binds the complete staged candidate, not just sensitive lines",
+      "classification": "implemented freshness boundary",
+      "evidence_level": "complete executable-source read",
+      "description": "The marker includes worktree identity, whole staged diff binding and sensitive diagnostics. Consumer requires all matching. Unrelated staged edits invalidate this proof. Producing the marker does not independently verify semantic reviewer PASS; the higher-level workflow owns that obligation.",
+      "sources": [
+        {
+          "path": "core/pysrc/security-pass.py",
+          "symbol": "module",
+          "lines": "1-204",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/security-pass.py"
+        },
+        {
+          "path": "core/pysrc/_sensitivelib.py",
+          "symbol": "staged_candidate_binding",
+          "lines": "369-373",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_sensitivelib.py"
+        },
+        {
+          "path": "core/pysrc/_bashguardlib.py",
+          "symbol": "_check_h09b_h10b_crypto_secret",
+          "lines": "2591-2689",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+        },
+        {
+          "path": "core/pysrc/git-enforce.py",
+          "symbol": "pre_commit",
+          "lines": "242-352",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/git-enforce.py"
+        }
+      ],
+      "recommendation": "Document the actual candidate boundary and generate recovery text from it; preserve complete-diff invalidation until an intentionally reviewed narrower evidence model exists."
+    },
+    "HOOK-B04": {
+      "id": "HOOK-B04",
+      "title": "No startup or knowledge backstop scans stranded terminal harvest residue",
+      "classification": "confirmed absence within inspected entrypoint/helper scope",
+      "evidence_level": "complete executable-source read of relevant runtime family",
+      "description": "SessionStart daily standup checks Git/task/provenance/update state, and knowledge.py handles selected native knowledge edits/conversion/promotion/staleness. Neither implements a durable scan for an unharvested terminal workflow obligation. Root prose audit owns whether such an obligation is promised.",
+      "sources": [
+        {
+          "path": "core/pysrc/session-start.py",
+          "symbol": "module",
+          "lines": "1-1385",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py"
+        },
+        {
+          "path": "core/pysrc/_standuplib.py",
+          "symbol": "module",
+          "lines": "1-242",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_standuplib.py"
+        },
+        {
+          "path": "core/pysrc/knowledge.py",
+          "symbol": "module",
+          "lines": "1-436",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/knowledge.py"
+        }
+      ],
+      "recommendation": "If harvest is mandatory, persist an explicit retryable per-workflow obligation and expose it in status/recovery; do not infer obligations from unrelated board prose or rerun successful external effects."
+    },
+    "HOOK-B05": {
+      "id": "HOOK-B05",
+      "title": "Native client accepts optional context qualification field",
+      "classification": "cross-owner compatibility evidence",
+      "evidence_level": "implementation read",
+      "description": "ArtifactClient._open_binary accepts either five release-manifest fields or those plus context_qualification. The farm consumer exact-five check found by host agent has a narrower acceptance set. Python method does not itself validate optional field value.",
+      "sources": [
+        {
+          "path": "core/pysrc/_artifactlib.py",
+          "symbol": "_open_binary",
+          "lines": "1056-1116",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_artifactlib.py"
+        }
+      ],
+      "recommendation": "Use one versioned manifest schema for producers and consumers, retaining explicit platform/native-tested/digest checks. Host/native ledgers own candidate qualification effects."
+    },
+    "W-F01": {
+      "id": "W-F01",
+      "severity": "medium",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Conflict command prescribes a broader stop than the assistive engine contract",
+      "detail": "The conflict command says all work stops when governing rules conflict. Current sprint/context guidance and ADR0043 describe refusal scoped to dependent work. These cannot both be a universal rule. Source does not implement a single dependency-aware conflict controller.",
+      "sources": [
+        {
+          "path": "core/surface/commands/conflict.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/SPRINT.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/skills/context-check/SKILL.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Choose and document the stop scope explicitly. Recommend stop affected authority/data dependencies, preserve independent read-only work, and keep genuine global host/user stops global. This is a policy decision, not a silent prose cleanup."
+    },
+    "W-F02": {
+      "id": "W-F02",
+      "severity": "medium",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Debug handoff treats a correctable packet error as a terminal one-shot boundary",
+      "detail": "The workflow forbids repairing and resubmitting any rejected packet. The validator is stateless and distinguishes malformed/invalid packets from internal I/O errors; it records no consumed one-shot capability. The prose therefore imposes an extra recovery policy beyond implementation.",
+      "sources": [
+        {
+          "path": "core/surface/skills/debug/SKILL.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/_debughandofflib.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/debug-handoff.py",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Separate invalid input, denied authority, stale binding and internal failure. Permit an explicitly corrected new input attempt where authority remains valid; retain the refusal for an unchanged denied request. Requires approved workflow-policy change."
+    },
+    "W-F03": {
+      "id": "W-F03",
+      "severity": "medium",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Maintenance severity and reviewer disposition conflict",
+      "detail": "The dependency reviewer can report HIGH maintenance risk while saying not to block on maintenance alone. The included reviewer contract says every HIGH is blocking and additions never replace that rule. This makes a correct verdict ambiguous for the reviewing agent and user.",
+      "sources": [
+        {
+          "path": "core/surface/agents/dependency-reviewer.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/includes/reviewer-contract.md",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Represent severity and disposition separately; document the explicit maintenance-only disposition exception or revise its severity. Generate the common verdict contract from the selected policy."
+    },
+    "W-F04": {
+      "id": "W-F04",
+      "severity": "medium",
+      "status": "source-confirmed recovery gap",
+      "title": "Terminal finding harvest has no implemented recovery for interruption before the terminal step",
+      "detail": "Several workflows harvest qualifying findings at completion. The knowledge helper and session/standup paths do not implement a durable pending-harvest backstop. An interrupted run can therefore leave eligible findings only in conversation; the source does not prove every such finding is lost.",
+      "sources": [
+        {
+          "path": "core/surface/includes/harvest.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/includes/knowledge.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/_knowledgelib.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/commands/standup.md",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Keep harvest opportunistic. If durable recovery is desired, record bounded pending candidates at discovery and settle/deduplicate on completion/resume. Register any new output with all native readers; do not introduce a new universal completion gate."
+    },
+    "W-F05": {
+      "id": "W-F05",
+      "severity": "medium",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "SessionStart persona documentation contradicts the prompt-submit owner",
+      "detail": "Init/porting language attributes persona injection to SessionStart. The implemented SessionStart path and ADR0030 place full composed persona delivery in UserPromptSubmit; a mode revisitation bug is documented separately in the hooks findings.",
+      "sources": [
+        {
+          "path": "core/surface/commands/init.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "README.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/prompt-submit.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Make prompt-submit the documented delivery owner and distinguish session setup, selected mode, committed mode and delivered persona."
+    },
+    "W-F06": {
+      "id": "W-F06",
+      "severity": "medium",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Sensitive-lines-only override wording understates the implemented candidate binding",
+      "detail": "The override surface describes an invalidation scope around sensitive lines. The security pass and binding helper retain full candidate/worktree/sensitive digests and hash the complete staged UTF8 diff. A user cannot reliably predict grant reuse from the narrower wording.",
+      "sources": [
+        {
+          "path": "core/surface/commands/override.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/security-pass.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/pysrc/_sensitivelib.py",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Document the exact binding tuple and invalidation event. Preserve current security semantics while deriving override help from the same binding definition."
+    },
+    "W-F07": {
+      "id": "W-F07",
+      "severity": "low",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Watch confuses absence of agent polling with absence of CLI polling",
+      "detail": "The watch command describes gh pr checks --watch as server-side blocking with no polling interval. The official gh command documents --interval with default10seconds. Waiting in one detached CLI invocation avoids model-driven polling, but the underlying CLI still refreshes periodically.",
+      "sources": [
+        {
+          "path": "core/surface/commands/watch.md",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Say one detached gh watch process with no repeated agent calls; preserve its timeout/cancel behavior. Correct the no-polling claim."
+    },
+    "W-F08": {
+      "id": "W-F08",
+      "severity": "low",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Command catalog and reviewer index drift from their owner bodies",
+      "detail": "COMMANDS.md calls Tribunal eleven-lens while the current owner/reference set contains thirteen. Its release signature uses --dry-run and SemVer-only language where the current owner uses --dryrun and supports numeric sequence targets. The agent index also presents coverage behavior more strongly than the coverage reviewer body does.",
+      "sources": [
+        {
+          "path": "core/surface/COMMANDS.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/commands/tribunal.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/skills/tribunal/SKILL.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/commands/release.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/agents/INDEX.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/agents/coverage-auditor.md",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Generate signatures, lens count and index descriptions from explicit owner metadata; do not change actual command spelling or verdict rules just to match stale summaries."
+    },
+    "W-F09": {
+      "id": "W-F09",
+      "severity": "medium",
+      "status": "source-confirmed documentation or policy contradiction",
+      "title": "Compatibility-removal metadata encodes a different policy than the public owner",
+      "detail": "command-routes.json removalRequires is minor-release-with-changelog-notice. build-surface.py enforces that literal vocabulary. The command compatibility policy describes a major/1.0 floor plus a separate approved removal decision and fresh evidence. The release-state observer does not enforce removalRequires. This is a dormant metadata/policy conflict, not proof of an unauthorized live alias removal.",
+      "sources": [
+        {
+          "path": "core/surface/command-routes.json",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "tools/build-surface.py",
+          "symbol": "Full source read"
+        },
+        {
+          "path": "core/surface/includes/command-compatibility.md",
+          "symbol": "Full source read"
+        },
+        {
+          "path": ".github/scripts/check_command_route_release_state.py",
+          "symbol": "Full source read"
+        }
+      ],
+      "recommendation": "Choose the approved retirement rule, give it one owner and generate both policy prose and accepted registry values. Preserve existing aliases until the separately approved removal conditions are met."
+    },
+    "GEN-F01": {
+      "id": "GEN-F01",
+      "classification": "confirmed static documentation contradiction",
+      "title": "Prune nudge threshold describes total context instead of freed context",
+      "description": "Configuration table says CODEARBITER_PRUNE_NUDGE_MIN_TOKENS sets minimum model-context size. Current nudge_decision compares estimated tokens from rec.context_bytes_freed to threshold. No runtime behavior change is recommended for this documentation correction.",
+      "sources": [
+        {
+          "path": "site/scripts/generator/configuration-reference.ts",
+          "symbol": "CONFIGURATION_ENTRIES",
+          "lines": "180-185",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/configuration-reference.ts"
+        },
+        {
+          "path": "core/pysrc/_prunelib.py",
+          "symbol": "nudge_decision",
+          "lines": "1173-1215",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_prunelib.py"
+        }
+      ],
+      "recommendation": "Describe freed avoidable context accurately and derive this predicate/default from an executable contract instead of maintaining a second semantic description."
+    },
+    "GEN-F02": {
+      "id": "GEN-F02",
+      "classification": "confirmed extractor limitation and overbroad generated claim",
+      "title": "Hook reference is a bounded static extraction, not all actual runtime message text",
+      "description": "Generated intro says it can never drift from what a hook prints. scanMessage drops variable/helper message suffixes, variable tag resolution is limited to30 lines, and skipped calls are not extracted. Current _bashguardlib security blocks append dynamic recovery strings. Literal-tag pass also omits codeMask test, so quoted/commented examples can be extracted as real calls; this latter false-positive possibility is static, not a demonstrated current site occurrence.",
+      "sources": [
+        {
+          "path": "site/scripts/generator/render-hooks-reference.ts",
+          "symbol": "renderHooksReference",
+          "lines": "153-165",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/render-hooks-reference.ts"
+        },
+        {
+          "path": "site/scripts/generator/extract-hook-gates.ts",
+          "symbol": "scanMessage",
+          "lines": "122-149",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+        },
+        {
+          "path": "site/scripts/generator/extract-hook-gates.ts",
+          "symbol": "extractFromFile",
+          "lines": "233-303",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/extract-hook-gates.ts"
+        },
+        {
+          "path": "core/pysrc/_bashguardlib.py",
+          "symbol": "_check_h09b_h10b_crypto_secret",
+          "lines": "2593-2695",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_bashguardlib.py"
+        }
+      ],
+      "recommendation": "Label static templates/omitted dynamic pieces and display extraction gaps; use a typed gate registry or robust AST extraction for canonical IDs/events/recovery while keeping actual runtime code authoritative."
+    },
+    "GEN-B01": {
+      "id": "GEN-B01",
+      "classification": "static helper edge case, current production reachability not demonstrated",
+      "title": "Slug suffix counts do not reserve all output slugs",
+      "description": "assignSlugs tracks each base independently. The input sequence foo,foo,foo-2 produces foo,foo-2,foo-2 by direct control-flow inspection. Current installed-source names were not evaluated for such a collision in this supplemental read.",
+      "sources": [
+        {
+          "path": "site/scripts/generator/assign-slugs.ts",
+          "symbol": "assignSlugs",
+          "lines": "10-28",
+          "reference": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/scripts/generator/assign-slugs.ts"
+        }
+      ],
+      "recommendation": "If arbitrary names remain supported, reserve emitted slugs globally and fail or consistently disambiguate collisions. Preserve previously published URL redirects when changing assignment."
+    }
+  },
+  "verification_boundaries": [
+    "No new tests or live-host operations were executed while writing this planning handoff.",
+    "Audit probes are commit-bound source reproductions; reuse them as initial regressions, not as released-artifact evidence.",
+    "POSIX launch count was probed; Windows37 is a source-derived supported bound until executed on its required qualification cell.",
+    "GEN-B01 production reachability was not demonstrated; compare actual generated routes before claiming user impact.",
+    "GEN-F02 static extraction does not prove equivalence to every runtime printed message.",
+    "Pi qualification helpers are test-only state; fixture bridge/benchmark results are not real-host security or release proof.",
+    "No edits to the codeArbiter repository are part of these handoff artifacts."
+  ]
+}

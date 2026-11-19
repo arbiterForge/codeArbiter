@@ -23,7 +23,7 @@
  * change the enforcement outcome the caller already decided. Callers keep their own fail
  * direction and emit only their own bounded diagnostic.
  */
-import { constants as fsConstants } from "node:fs";
+import { constants as fsConstants, type BigIntStats } from "node:fs";
 import { lstat, open, realpath } from "node:fs/promises";
 import { relative, resolve } from "node:path";
 
@@ -39,8 +39,8 @@ const AUDIT_STATE_DIRECTORY = ".codearbiter";
 export const MAX_AUDIT_LINE_BYTES = 2_048;
 
 export interface AuditSinkStatsPort {
-  readonly dev: number;
-  readonly ino: number;
+  readonly dev: number | bigint;
+  readonly ino: number | bigint;
   readonly nlink: number;
   readonly size: number;
   isDirectory(): boolean;
@@ -62,19 +62,47 @@ export interface AuditSinkIoPort {
   open(path: string, flags: number, mode?: number): Promise<AuditSinkHandlePort>;
 }
 
-export const NODE_AUDIT_SINK_IO: AuditSinkIoPort = Object.freeze({ realpath, lstat, open });
+function exactAuditStats(value: BigIntStats): AuditSinkStatsPort {
+  const size = Number(value.size);
+  const nlink = Number(value.nlink);
+  if (!Number.isSafeInteger(size) || !Number.isSafeInteger(nlink)) throw new Error("unsafe audit metadata");
+  return { dev: value.dev, ino: value.ino, size, nlink,
+    isDirectory: () => value.isDirectory(), isFile: () => value.isFile(),
+    isSymbolicLink: () => value.isSymbolicLink() };
+}
+
+// Default numeric Stats can round adjacent Windows file IDs to the same number.
+// Keep exact identities at both the pathname and opened-handle boundaries.
+export const NODE_AUDIT_SINK_IO: AuditSinkIoPort = Object.freeze({
+  realpath,
+  lstat: async (path: string) => exactAuditStats(await lstat(path, { bigint: true })),
+  open: async (path: string, flags: number, mode?: number) => {
+    const handle = await open(path, flags, mode);
+    return {
+      stat: async () => exactAuditStats(await handle.stat({ bigint: true })),
+      appendFile: async (data: string, options: { encoding: "utf8" }) => await handle.appendFile(data, options),
+      sync: async () => await handle.sync(), close: async () => await handle.close(),
+    };
+  },
+});
+
+function sameIdentity(left: number | bigint, right: number | bigint): boolean {
+  const exact = (value: number | bigint) => typeof value === "bigint"
+    ? value >= 0n : Number.isSafeInteger(value) && value >= 0;
+  return exact(left) && exact(right) && BigInt(left) === BigInt(right);
+}
 
 function sameAuditFile(left: AuditSinkStatsPort, right: AuditSinkStatsPort): boolean {
   return left.isFile() && right.isFile()
     && !left.isSymbolicLink() && !right.isSymbolicLink()
     && left.nlink === 1 && right.nlink === 1
-    && left.dev === right.dev && left.ino === right.ino;
+    && sameIdentity(left.dev, right.dev) && sameIdentity(left.ino, right.ino);
 }
 
 function sameAuditDirectory(left: AuditSinkStatsPort, right: AuditSinkStatsPort): boolean {
   return left.isDirectory() && right.isDirectory()
     && !left.isSymbolicLink() && !right.isSymbolicLink()
-    && left.dev === right.dev && left.ino === right.ino;
+    && sameIdentity(left.dev, right.dev) && sameIdentity(left.ino, right.ino);
 }
 
 async function openedAuditTarget(

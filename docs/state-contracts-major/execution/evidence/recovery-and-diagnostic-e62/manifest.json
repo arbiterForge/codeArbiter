@@ -1,0 +1,179 @@
+{
+  "format": "bounded-repair-evidence-retention/1",
+  "state": "Original source-fix receipts only; not a new test execution or ledger qualification",
+  "product_commits": {
+    "HW14": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+    "diagnostic_and_fixture": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20"
+  },
+  "epochs": {
+    "HW14_author_RED": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+    "HW14_Root_39_GREEN": {
+      "actual_head": "7105daba6e07ef96bc4c259709fa3af3ea674d74",
+      "state": "dirty reviewed six-file candidate; exact relevant final bytes subsequently committed b772",
+      "observed": {
+        "PASS": 39,
+        "seconds": 20.964,
+        "skip": 0
+      }
+    },
+    "fixture_author_RED": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+    "diagnostic_author_RED": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+    "diagnostic_fixture_Root_121_GREEN": {
+      "actual_head": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "state": "dirty reviewed eight-file candidate; exact relevant final bytes subsequently committed e62",
+      "observed": {
+        "PASS": 121,
+        "seconds": 41.681,
+        "skip": 0
+      }
+    },
+    "diagnostic_final_projection_GREEN": {
+      "actual_head": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "state": "final dict-length guard before e62 commit",
+      "PASS": 3,
+      "seconds": 0.118
+    }
+  },
+  "literal_source_subject_joins": [
+    {
+      "path": ".github/scripts/test_workflow_recovery.py",
+      "commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "sha256": "02969342b40c2f2e17ee68b8623aeb7cce5479deb012e0266450402772da77c7",
+      "join": "HW14 reviewed final subjects"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "sha256": "d31bed272a874df2ae07b1923aa02ef9038a75cf68f850cb9b13637f708c56c2",
+      "join": "HW14 reviewed final subjects"
+    },
+    {
+      "path": "core/pysrc/_workflowrecoverylib.py",
+      "commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "join": "HW14 reviewed final subjects"
+    },
+    {
+      "path": "plugins/ca-codex/hooks/_workflowrecoverylib.py",
+      "commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "join": "HW14 reviewed final subjects"
+    },
+    {
+      "path": "plugins/ca-pi/hooks/_workflowrecoverylib.py",
+      "commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "join": "HW14 reviewed final subjects"
+    },
+    {
+      "path": "plugins/ca/hooks/_workflowrecoverylib.py",
+      "commit": "b7729344550faf5f962fe82cc75ef6c2b1f129bb",
+      "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "join": "HW14 reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/major_readiness.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "83a5ccf5a201d9364acaf3873e4a7479307235603dea6a4622cf3d07456c54a8",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/retained_archive_cli_observation.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "7e15ec71286e7da515be115f3a39d52d4aba24ed58c18d8892cc741bf32aae0c",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/coordinate_codex_host.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "9273891e980c7501f374afb6880dbd7bc0f9daa99a69bc9b956140a960f5d68d",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/coordinate_pi_host.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "ccefae31968346bbbd2ce9341c162ccdb9905abc8f93b1a43d93bf6e6754eac6",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/test_major_readiness.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "ab43ae9d55da3a7b2568488ea258541e177f2b27a109714cf4c6fbb30d1e5773",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/test_retained_archive_cli_observation.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "27169fd622cb0bf4ec2ef1e3e3450b11af974599c5c32c0c9c562572fb138a9a",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": "CHANGELOG.md",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "725008d0c3de3fffbc49bc47252e4eeed9f6216f2e440054fbd7e704a4eb3c9c",
+      "join": "Diagnostic reviewed final subjects"
+    },
+    {
+      "path": ".github/scripts/test_workflow_recovery.py",
+      "commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+      "sha256": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f",
+      "join": "Fixture reviewed final subject"
+    }
+  ],
+  "physical_final_subjects_equal_e62": true,
+  "original_author_deliveries": [
+    {
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-HW14-dedup-test-31n6p4s6\\delivery.json",
+      "sha256": "53286f91236e46816dfd24192a088eed1030ad1aaaed50468cbaec060e042d31"
+    },
+    {
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-recovery-fixture-isolation-test\\delivery.json",
+      "sha256": "5ac1172d9c442a3b12d1d03718643c1492776eb2c4429a0e194641c66f1cbf53"
+    },
+    {
+      "from": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-upload-log-diagnostic-fix-9ekzo0ab\\delivery.json",
+      "sha256": "c6dcc8ed3a7c0248a6d3dac8cb2ae5114bcd85b8c06ad67d204bed6bf4c68052"
+    }
+  ],
+  "original_child_observer": "Fixture RED captures sys.pycache_prefix and no_user_site before project import; explicit Gov module identity, fixture HOME/USERPROFILE and credential key presence-only controls retained. Original observe-one.py bytes included in fixture RED bundle.",
+  "transport": {
+    "logs": "Lossless base64; decoded length/SHA and exact roundtrip verified for every member. No whitespace stripping.",
+    "decoded_scan": {
+      "exit_code": 0,
+      "findings": 0,
+      "report_sha256": "37517e5f3dc66819f61f5a7bb8ace1921282415f10551d2defa5c3eb0985b570",
+      "log_sha256": "de83cca42e8d8fe4eb26cb93887d01e1d7a5e20baa7fd38691c30abbe28bcc14"
+    },
+    "additional_original_document_envelopes": [
+      {
+        "retained_path": "diagnostic-isolation-source-guards.base64.json",
+        "original_name": "diagnostic-isolation-source-guards.json",
+        "sha256": "13d5eba94565c7a30e9ffe2e51244e57269b8f68bd1492a29f2d389409db8e42",
+        "reason": "Preserve exact original CRLF receipt without source normalization or whitespace suppression."
+      },
+      {
+        "retained_path": "hw14-author-delivery.base64.json",
+        "original_name": "hw14-author-delivery.json",
+        "sha256": "53286f91236e46816dfd24192a088eed1030ad1aaaed50468cbaec060e042d31",
+        "reason": "Preserve exact original CRLF receipt without source normalization or whitespace suppression."
+      },
+      {
+        "retained_path": "hw14-source-guards.base64.json",
+        "original_name": "hw14-source-guards.json",
+        "sha256": "96a4cd954c5aedafe6a7a35c043ee44847c345186da32fff15f180bb509f71b4",
+        "reason": "Preserve exact original CRLF receipt without source normalization or whitespace suppression."
+      }
+    ]
+  },
+  "limits": [
+    "No postcommit execution claim; later actual14/29 qualification packets remain separate.",
+    "No whole HW14, installed, model, provider or task qualification.",
+    "Original HTTP cause remains unproven; diagnostics only.",
+    "Original private receipts, source preimages and logs were not modified.",
+    "No source/index/ledger/ref/Gov write, test rerun or new runtime effect."
+  ],
+  "immutable_predecessor": {
+    "delivery_sha256": "4e398313b12667bd8b5584098f9204f4942c4bc0ad8aa78385952de560316a13",
+    "reason": "Three original JSON receipts use CRLF; retain exact original bytes through explicit envelopes instead of normalizing originals."
+  }
+}

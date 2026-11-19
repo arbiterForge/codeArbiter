@@ -71,6 +71,9 @@ export type NetPolicy = "offline" | (string & {});
  * an EXACT, recognized networked policy, never for an unrecognized string.
  */
 const NETWORKED_POLICIES: ReadonlySet<string> = new Set<string>();
+export function ordinaryNetworkCapability(requested:NetPolicy) {
+  return {requested,effective:"offline" as const,available:requested==="offline"};
+}
 
 /** Optional knobs for runContainer that the test harness / callers may set. */
 export type RunOptions = {

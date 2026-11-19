@@ -1,0 +1,132 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual Windows amd64 selected68 execution by /root/pi_program at committed38bf; SafeNode24.22.1/privateHOME and direct child exit0 retained."
+  },
+  "disposition_ids": [
+    "disposition:transitions:SX03:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/selected68-original-projection.json",
+      "sha256": "9413a2d95f717e531ef9928c507459acec4338d1d0e652e765c4fd04820fb66f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/original15-inputs.json",
+      "sha256": "0c6ef7d58307554d875c14cbf6b163283ecdf49f332e741c65c2d04e9f0872d8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/runtime-and-exit.json",
+      "sha256": "b1dd4eee9c7c0489956b600c68106ee6c482c5fa4b9adcf62dc60e956a3a0cbd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/observation.json",
+      "sha256": "7ac9b0d1cb19bf07d70d4a6afd00ebda4f564d7b173fba402279ccfa9df8dab3"
+    }
+  ],
+  "inputs": {
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/scripts/owned-output.test.ts": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/pagefind-build.test.ts": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+    "site/scripts/pagefind-build.ts": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+    "site/scripts/release-applicability.ts": "272fbf607aa1376f999545d3b7f287438a22dc5f85fed4d9ccaf433d6ad555d9",
+    "site/src/pages/release-applicability.json.ts": "3a126d7972292d19202519fc82646d7a9f9fdf96ff3bca3e18d2fe4d50785d2a",
+    "site/src/release-applicability-presentation.ts": "a94a1f1a1c0b0ea28d00a90e8e49b77ed13e96534ed1dd841644cd5d4d7f4732",
+    "site/test/release-applicability/presentation.test.ts": "b12e5cabdb69f1bada9d5b9a35fea9577c2bc7c5f9514f995326fe39fd7926c1",
+    "site/test/release-applicability/publication.test.ts": "15477eab3d6f5305e493b6388d12d3bd7db99d6e94e7445e22f0d6d98f383cdb",
+    "site/test/release-applicability/release-applicability.test.ts": "98ef3086438d07f8de16eaae3799e6247fc03f2e286928252b3befd2cc98905b",
+    "site/tsconfig.json": "2313012ec43d254daf80ac76385fc550e3a472aa6a96affe8b9e1d4e2dd225f4",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "scripts/owned-output.test.ts",
+        "scripts/pagefind-build.test.ts",
+        "test/release-applicability/publication.test.ts",
+        "test/release-applicability/release-applicability.test.ts",
+        "test/release-applicability/presentation.test.ts",
+        "-t",
+        "^(?:complete\\ search\\ bundle\\ publication\\ checks\\ JavaScript\\ syntax\\ without\\ executing\\ emitted\\ code|complete\\ search\\ bundle\\ publication\\ does\\ not\\ follow\\ an\\ existing\\ search\\-output\\ symlink|complete\\ search\\ bundle\\ publication\\ fails\\ closed\\ and\\ closes\\ the\\ service\\ on\\ create\\ failure|complete\\ search\\ bundle\\ publication\\ fails\\ closed\\ and\\ closes\\ the\\ service\\ on\\ index\\ failure|complete\\ search\\ bundle\\ publication\\ fails\\ closed\\ and\\ closes\\ the\\ service\\ on\\ serialize\\ failure|complete\\ search\\ bundle\\ publication\\ indexes\\ real\\ HTML\\ with\\ the\\ locked\\ engine\\ and\\ publishes\\ its\\ exact\\ complete\\ in\\-memory\\ output|complete\\ search\\ bundle\\ publication\\ is\\ wired\\ to\\ every\\ Astro\\ build\\ instead\\ of\\ an\\ optional\\ postbuild\\ command|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ \\.|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ \\.\\.|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ \\.\\./escape|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ /absolute|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ C:/escape|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ a/%2e%2e/b|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ a/\\.\\./escape|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ a//b|complete\\ search\\ bundle\\ publication\\ rejects\\ non\\-local\\ output\\ path\\ a\\\\b|complete\\ search\\ bundle\\ publication\\ rejects\\ the\\ observed\\ 32\\ KiB\\ incomplete\\-module\\ shape\\ and\\ preserves\\ the\\ prior\\ output|complete\\ search\\ bundle\\ publication\\ requires\\ unique\\ nonempty\\ assets,\\ the\\ module\\ and\\ valid\\ entry\\ metadata|complete\\ search\\ bundle\\ publication\\ waits\\ for\\ the\\ in\\-memory\\ result\\ and\\ closes\\ the\\ service\\ without\\ asking\\ it\\ to\\ write\\ files|complete\\ search\\ bundle\\ publication\\ writes\\ and\\ reads\\ back\\ every\\ byte,\\ replacing\\ only\\ the\\ previous\\ generated\\ search\\ output|deterministic\\ release\\ applicability\\ record\\ records\\ an\\ explicit\\ current\\-source\\ mismatch\\ without\\ throwing\\ or\\ calling\\ it\\ compatibility\\ \\(O\\-08\\)|deterministic\\ release\\ applicability\\ record\\ records\\ an\\ explicit\\ published\\-source\\ mismatch\\ without\\ throwing\\ or\\ calling\\ it\\ compatibility\\ \\(O\\-08\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ malformed\\ direct\\-hook\\ proof\\ evidence:\\ empty\\ evidence\\ kind\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ malformed\\ direct\\-hook\\ proof\\ evidence:\\ invalid\\ replay\\ digest\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ malformed\\ direct\\-hook\\ proof\\ evidence:\\ non\\-boolean\\ discovery\\ result\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ malformed\\ direct\\-hook\\ proof\\ evidence:\\ non\\-canonical\\ source\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ malformed\\ direct\\-hook\\ proof\\ evidence:\\ promoted\\ host\\ discovery\\ result\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ malformed\\ direct\\-hook\\ proof\\ evidence:\\ relabeled\\ evidence\\ kind\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ rejects\\ missing\\ latest\\-published\\ hook\\ bytes\\ \\(O\\-07\\)|deterministic\\ release\\ applicability\\ record\\ requires\\ the\\ replay\\ digest\\ to\\ match\\ both\\ current\\ and\\ latest\\-published\\ ca\\ source\\ bytes\\ \\(O\\-07\\)|documentation\\ build\\ identity\\ binds\\ a\\ GitHub\\ Actions\\ build\\ to\\ an\\ exact\\ 40\\-hex\\ GITHUB_SHA\\ equal\\ to\\ HEAD\\ \\(O\\-06\\)|documentation\\ build\\ identity\\ records\\ the\\ exact\\ local\\ HEAD\\ and\\ dirty\\ state\\ without\\ using\\ a\\ branch\\ name\\ \\(O\\-06\\)|documentation\\ build\\ identity\\ rejects\\ a\\ different\\ from\\ HEAD\\ GitHub\\ Actions\\ build\\ identity\\ \\(O\\-06\\)|documentation\\ build\\ identity\\ rejects\\ a\\ missing\\ GitHub\\ Actions\\ build\\ identity\\ \\(O\\-06\\)|documentation\\ build\\ identity\\ rejects\\ a\\ moving\\ or\\ malformed\\ local\\ HEAD\\ identity\\ \\(O\\-06\\)|documentation\\ build\\ identity\\ rejects\\ a\\ not\\ 40\\-hex\\ GitHub\\ Actions\\ build\\ identity\\ \\(O\\-06\\)|historical\\ release\\ applicability\\ reads\\ every\\ declared\\ manifest\\ at\\ its\\ receipt\\ commit\\ and\\ requires\\ exact\\ tag/version\\ equality\\ \\(O\\-03\\)|historical\\ release\\ applicability\\ rejects\\ a\\ historical\\ manifest\\ whose\\ version\\ does\\ not\\ exactly\\ match\\ its\\ selected\\ tag\\ \\(O\\-04\\)|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ keeps\\ public\\-hidden/missing\\ and\\ unavailable\\ observations\\ unknown|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ never\\ calls\\ an\\ offline\\ local\\ tag\\ or\\ historical\\ receipt\\ published|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ refuses\\ wrong\\ tag/source/payload\\ identity,\\ duplicate\\ rows\\ and\\ malformed\\ observations|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ retains\\ exact\\ observed\\ draft\\ state|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ retains\\ exact\\ observed\\ published\\ state|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ retains\\ exact\\ observed\\ tag\\-only\\ state|observed\\ publication\\ is\\ distinct\\ from\\ source\\ applicability\\ retains\\ source\\ matches\\ while\\ explicitly\\ exposing\\ unknown,\\ draft\\ or\\ published\\ state|original\\-publication\\ ledger\\ validation\\ rejects\\ a\\ numeric\\ prerelease\\ identifier\\ with\\ leading\\ zeroes\\ even\\ when\\ a\\ stable\\ tag\\ exists\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ commit\\ identity\\ mismatch\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ duplicate\\ JSON\\ keys\\ instead\\ of\\ accepting\\ the\\ last\\ value\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ extra\\ receipt\\ key\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ invalid\\ date\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ invalid\\ object\\ type\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ malformed\\ unselected\\ governed\\ tag\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ unexpected\\ top\\-level\\ key\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ uppercase\\ identity\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ wrong\\ namespaces\\ \\(O\\-02\\)|original\\-publication\\ ledger\\ validation\\ rejects\\ zero\\ identity\\ \\(O\\-02\\)|owned\\ generated\\ publication\\ refuses\\ a\\ linked\\ owner\\ before\\ touching\\ external\\ files|owned\\ generated\\ publication\\ refuses\\ a\\ second\\ writer\\ without\\ touching\\ its\\ marker|owned\\ generated\\ publication\\ restores\\ the\\ complete\\ old\\ output\\ after\\ a\\ late\\ rename\\ failure\\ and\\ reruns\\ deterministically|owned\\ generated\\ publication\\ retains\\ an\\ unusable\\ marker\\ if\\ recovery\\ also\\ fails|published\\ Pi\\ support\\ \\(\\#1071\\)\\ records\\ the\\ Pi\\ versions\\ the\\ selected\\ ca\\-pi\\ tag\\ supports,\\ read\\ at\\ that\\ tag's\\ commit|release\\ applicability\\ presentation\\ distinguishes\\ a\\ published\\-artifact\\ mismatch\\ from\\ a\\ current\\-source\\ mismatch\\ \\(O\\-13\\)|release\\ applicability\\ presentation\\ presents\\ the\\ exact\\ successful\\ applicability\\ claim\\ \\(O\\-13\\)|release\\ applicability\\ presentation\\ rejects\\ an\\ internally\\ inconsistent\\ applicability\\ claim\\ \\(O\\-13\\)|release\\ declaration\\ provenance\\ contract\\ rejects\\ divergent\\ governed\\ provenance\\-manifest\\ declaration\\ \\(O\\-03\\)|release\\ declaration\\ provenance\\ contract\\ rejects\\ duplicate\\ governed\\ provenance\\-manifest\\ declaration\\ \\(O\\-03\\)|release\\ declaration\\ provenance\\ contract\\ rejects\\ missing\\ governed\\ provenance\\-manifest\\ declaration\\ \\(O\\-03\\)|selectCurrentGovernanceReleases\\ selects\\ the\\ highest\\ stable\\ SemVer\\ independently\\ for\\ every\\ governance\\ host\\ \\(O\\-01\\))$",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-selected68-38bf-jn1x6li7\\original-vitest68.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 2.841457900009118,
+      "actual_selected": 68,
+      "filtered_unselected": 35,
+      "original_command_record_ref": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/runtime-and-exit.json"
+    }
+  ],
+  "scope": "Exact observed tag/source/version/draft identity distinguished from local tag/historical receipt;7actual assertions. No remote publication readback, full rendered endpoint or replay-digest qualification. Current successor renews only its listed finite accepted row claims using the actual68-name observation; old proof/raw objects are retained with original identities.",
+  "runtime": {
+    "node_executable_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "node_version": "v24.22.1",
+    "record": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/runtime-and-exit.json"
+  },
+  "limits": [
+    "Original local evidence; no hosted PR evidence relabeled.",
+    "Retained proof/raw paths become Git-authenticatable only after parent commits these exact metadata bytes.",
+    "No current production archive/installed/cohort/browser/live provider qualification.",
+    "This successor is current38bf local exact68 unit/component execution. Old94b/0830 raw epochs remain historical; no browser10, full Astro build, live external release, publication, native or installed-cohort qualification."
+  ],
+  "original_named_assertions": [
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability never calls an offline local tag or historical receipt published",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains exact observed published state",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains exact observed draft state",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains exact observed tag-only state",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability refuses wrong tag/source/payload identity, duplicate rows and malformed observations",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability keeps public-hidden/missing and unavailable observations unknown",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/test/release-applicability/publication.test.ts",
+      "name": "observed publication is distinct from source applicability retains source matches while explicitly exposing unknown, draft or published state",
+      "status": "passed"
+    }
+  ],
+  "execution_context": {
+    "source_before": "38bf279799fa8e7ab72148dce9cee85177664947",
+    "source_after": "38bf279799fa8e7ab72148dce9cee85177664947",
+    "15_declared_owning_inputs_immutable_physical_stable": true,
+    "runtime_record": "docs/state-contracts-major/execution/evidence/site-unit-current-38bf/runtime-and-exit.json",
+    "extra_source_owner_path": {
+      "path": "site/src/pages/release-applicability.json.ts",
+      "scope": "Source owner is bound; selected unit tests do not import/execute generated endpoint."
+    },
+    "claim": "Current exact selected assertion outcomes only. Historical producer/runtime context remains in original proof, not relabelled."
+  }
+}

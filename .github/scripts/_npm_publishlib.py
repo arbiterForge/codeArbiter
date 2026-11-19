@@ -23,6 +23,8 @@ import time
 import tarfile
 import importlib.util
 from pathlib import Path
+sys.path.insert(0, str(Path(__file__).resolve().parents[2] / 'core/pysrc'))
+from _artifactmanifestlib import parse_release_manifest
 
 
 PACKAGE = "@arbiterforge/ca-pi"
@@ -297,7 +299,7 @@ def verify_release_cohort(*, package_root: Path, stage_root: Path, cold_root: Pa
         prefix = prefixes[cold["host"]]
         manifest_name = prefix + "release.json"
         manifest_bytes = _archive_member_bytes(package_root / package["file"], manifest_name)
-        manifest = json.loads(manifest_bytes)
+        manifest = parse_release_manifest(manifest_bytes)
         context = manifest.get("context_qualification", {})
         context_entry = context.get(cold["platform"]) if isinstance(context, dict) else None
         if context_entry is not None and not isinstance(context_entry, dict):

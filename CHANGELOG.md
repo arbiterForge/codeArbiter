@@ -12,6 +12,93 @@ predate the plugin rewrite and are grouped by date.
 
 ## [Unreleased]
 
+## [4.0.0] - 2026-11-13
+
+### Changed
+
+- Run audit-log append tests with closed stdin and PowerShell prompts disabled. Capture errors in a temporary file so the timeout measures the shell's exit.
+- Use native PowerShell for original Windows isolation observations and record whether the owned audit append reached disk before a shell timeout.
+- Run the maintained statusline ownership, recovery and worktree boundary cases in the original isolated Hook suite.
+- Reuse the validated worktree for automatic recovery scans, avoiding a second Git process within the existing one-second deadline.
+- Retain exact original Python observations for six finite findings, including Pi payload identity and measurement refusal checks, with closed source and CI authority bindings.
+- Run the three new native-launch finding admission controls with their existing pure Hook owner while preserving the native producer split.
+- Report bounded setup phases when release guard tests time out, retaining their original deadlines and outcomes.
+- Collect finite Farm finding observations from the existing test run with exact source, named-case, upload and trusted-job bindings.
+- Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
+- Add closed original-observation mappings for seven finite Pi and Sandbox findings, retaining exact named selectors and existing job authority.
+- Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
+- Clarify initialization and Sandbox discovery owners; retain original review-policy evidence and select fast native-suite guards for every owned input.
+- Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
+- Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
+- Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.
+- Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
+- Preserve no-bytecode execution when SessionStart launches the detached updater.
+- Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.
+- Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
+- Refuse link-audit paths that escape the output directory, including Windows separators.
+- Require HTTPS for Pi provider endpoints outside literal loopback, including broker authorization and child-visible redirect downgrade refusal.
+- Extend native journal and schema qualification routes with required parent/child outcomes from every declared platform.
+- Reject ancestor/descendant transaction targets before staging and during journal validation; preserve valid disjoint path prefixes.
+- Require full original six-platform parent and child evidence for five additional journal/recovery routes, preserving all earlier native selections.
+- Retain bounded native-debugger setup phases, validated failure/detach fields and stopped-instruction offsets without exposing raw debugger data.
+- Give owned source-fixture Git commands a bounded 60-second setup allowance and worktree cleanup checks an explicit integration-test budget.
+- Keep once-only conformance observation and trusted producer predicates visible to workflow contract readers; align the Atlas control with its reviewed source base.
+
+- Join original native platform components and mapped-work source observations without duplicate test runs; preserve required child outcomes.
+
+- Carry authenticated preserved and inapplicable source outcomes alongside required runtime qualification; add bounded C33 and publisher observations.
+
+- Retain source-bound observations from original TypeScript and built-site browser commands; authenticate separate Docs evidence and prepare exact-tar Pages promotion under the existing main-only release boundary.
+
+- Retain authenticated source-input artifacts and original named Python test observations for six bounded software qualification cells; keep final trusted-run readiness separate.
+
+- Separate recorded work progress from derived dependency readiness and independently verified checks; retain stable identities, journals, user stops and later edits across supported schema upgrades.
+- Reconcile interrupted workflow and farm effects through their owning receipts; preserve primary failures when staging cleanup also fails and bound recovery reads before consuming content.
+- Deliver current mode, context, task discovery and corrected-review resubmission through shared canonical helpers and generated host surfaces.
+- Bind publication readiness to authenticated source, named test observations and retained package bytes. Keep incomplete qualification and publication authority distinct.
+- Explain the changed contracts in the workflow Atlas and preserve source-bound documentation, search and interrupted-output recovery.
+- Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
+- Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
+
+### Fixed
+
+- Pass the selected host Git identity to Farm's pinned native verifier so typed workspace checks run during admission.
+- Preview untyped native retirement history against its exact original HTML bytes while preserving independent work.
+- Keep the unsupported storage diagnostic buildable on platforms without the native system error definitions.
+- Select installed native binaries and dispatch requests using interpreter OS identity, avoiding Windows version-discovery shell commands while retaining native architecture and process guards.
+- Preserve original temporary-filesystem capabilities under isolated observers, enforce complete UTF-8 test identities, and detect directory-scoped knowledge drift.
+
+- Render knowledge path lists correctly while retaining exact validated legacy HTML reads.
+- Preserve source-byte equality across supported checkouts and correct workflow observation readers, source-binding validation and canonical debugger fixtures.
+
+- Preserve original multi-reporter qualification commands and bounded fixture diagnostics; capture timeout stacks with protected Windows inbox debugger libraries when the SDK is absent.
+
+- Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
+
+- Keep installed-host observers transparent to nested Git calls, preserve failed cold-check diagnostics, and disable Pi helper bytecode before package imports.
+- Preserve newer user spinner choices during rollback by keeping backups outside the legacy reader's restoration key and migrating older metadata without discarding its value.
+- Read authenticated Actions job logs through a bounded isolated HTTPS worker when an explicit environment token is available; strip credentials on redirects and retain closed failure reasons.
+- Retain closed upload-log command diagnostics for installed qualification failures without exposing response text or changing artifact checks.
+- Deduplicate delivered recovery fallback notices within each session while retaining notices whose delivery has not been recorded.
+- Reject invalid suite deadlines and unavailable interpreters before launch, and contradictory or zero-test unittest summaries even when the child exits successfully.
+- Track Python import-directory membership so shadow modules invalidate evidence while unread file content changes remain outside the declared scope.
+- Capture bounded Windows timeout stack projections through the typed SDK engine, verifying process identity, policy and detachment before reporting captured frames.
+- Retain bounded Windows process state and private stack projections after Pi RPC timeouts without changing the failed result or cleanup.
+- Read large CI change sets from event files and Git so integration qualification can start without exceeding process argument or environment limits.
+
+- Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
+
+- Respect late Claude sandbox cancellation before reporting readiness, with scoped cleanup and token-safe errors.
+- Keep observed Sandbox container IDs available for recovery when cancellation cleanup discovery fails.
+- Qualify native installations from their matching cold-package executions and refuse source-only test substitutes.
+- Honor late Sandbox creation cancellation and rebuild the shipped CLI with its cancellation checks.
+- Collect matching observed Pi RPC evidence before raw failures stop the qualification runner; retain its existing test limits.
+- Clarify prompt-submit persona ownership and keep cancelled or interrupted CI watches from being treated as green.
+- Classify malformed provider JSON at the transport boundary without hiding programmer errors.
+- Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
+- Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
+- Serialize Farm worktree administration across concurrent processes sharing a Git common directory. Bound contention and temporary exclusive-open denials, retain unknown lock owners and preserve primary failures when lock release cannot be verified.
+
 ## [3.8.9] - 2026-11-12
 
 ### Fixed

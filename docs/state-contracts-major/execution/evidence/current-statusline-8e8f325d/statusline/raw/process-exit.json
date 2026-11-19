@@ -1,0 +1,17 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-8e8f-channel-recovery-lc0n92_1\\statusline\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-8e8f-channel-recovery-lc0n92_1\\statusline"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-8e8f-channel-recovery-lc0n92_1\\statusline",
+  "exit_code": 0,
+  "timed_out": false,
+  "seconds": 1.2926385999890044,
+  "stdout_sha256": "0a17997454cf416583bd1bc95a657f6388238cf290331abc60ec7e5b9a47af29",
+  "stderr_sha256": "fc3d2b14d84d67e4d288a08619bd153fea731ef1e9eb2000a776a718a2582971"
+}

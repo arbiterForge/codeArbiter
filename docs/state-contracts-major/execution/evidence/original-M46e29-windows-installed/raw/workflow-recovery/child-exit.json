@@ -1,0 +1,33 @@
+{
+  "name": "workflow-recovery",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter\\.github\\scripts\\qualify_workflow_recovery_cohort.py",
+    "--cohort",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\packages\\artifact-package-cohort.json",
+    "--output",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\workflow-recovery-cohort.json",
+    "--trusted-source-commit",
+    "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "--trusted-workflow",
+    ".github/workflows/ci.yml",
+    "--trusted-workflow-run",
+    "43582198115",
+    "--release-package-stage",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\stage",
+    "--promotion-receipt-sha256",
+    "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\workflow-recovery\\work",
+  "timed_out": false,
+  "owned_child_pid": 43012,
+  "exit_code": 0,
+  "child_returncode_after_cleanup": 0,
+  "containment": "exited",
+  "elapsed_seconds": 29.78435360000003,
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "run_id": 43582198115,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "c5d1ea2e848402a98fcc3d85153c156163749910b8e2873f977070e71ad5e883"
+}

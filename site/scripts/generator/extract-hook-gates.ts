@@ -4,7 +4,10 @@
  *
  * Hooks are code, not prose (see the docs-site-overhaul spec, decision d): the
  * hooks reference page is generated from these call sites rather than
- * hand-transcribed, so it can never drift from what a hook actually prints.
+ * hand-transcribed. It is a BOUNDED STATIC extraction (HW-23, GEN-F02): it
+ * captures literal string fragments, names the run-time fragments it cannot
+ * resolve (`dynamic`), and reports unattributed calls (`skipped`). It does not
+ * prove equality with every message a hook prints at run time.
  *
  * `_hooklib.py` defines `block(tag, msg)` / `remind(tag, msg)` themselves —
  * those definition sites take `tag` as a parameter, never a string literal, so
@@ -23,7 +26,11 @@ export interface HookCallSite {
   kind: "block" | "remind";
   file: string;
   line: number;
+  /** Concatenated literal fragments of the message (the static template). */
   message: string;
+  /** Source text of each non-literal fragment (a variable or call such as
+   * `recovery` or `_read_err_hint()`) whose run-time text is NOT in `message`. */
+  dynamic: string[];
 }
 
 /** A `block()`/`remind()` call whose first argument was NOT a literal tag string. */
@@ -119,34 +126,67 @@ function consumeString(
  * `_read_err_hint()`) is walked over for correct paren-depth tracking but
  * contributes nothing to the message text.
  */
-function scanMessage(content: string, startIdx: number): { message: string; endIdx: number } {
+function scanMessage(
+  content: string,
+  startIdx: number,
+): { message: string; dynamic: string[]; endIdx: number } {
   let depth = 1;
   let i = startIdx;
   let message = "";
+  const dynamic: string[] = [];
+  let fragment = "";
+  const flush = () => {
+    const text = fragment.replace(/\s+/g, " ").trim();
+    if (text) dynamic.push(text.length > 80 ? `${text.slice(0, 77)}...` : text);
+    fragment = "";
+  };
   while (i < content.length && depth > 0) {
     const ch = content[i];
-    if (ch === '"' || ch === "'" || /[fFrRbBuU]/.test(ch)) {
+    if (depth === 1 && (ch === '"' || ch === "'" || /[fFrRbBuU]/.test(ch))) {
+      const strStart = matchStringStart(content, i);
+      if (strStart && !/[A-Za-z0-9_]/.test(fragment.slice(-1))) {
+        flush();
+        const { body, endIdx } = consumeString(content, i);
+        message += body;
+        i = endIdx;
+        continue;
+      }
+    }
+    if (depth > 1 && (ch === '"' || ch === "'")) {
       const strStart = matchStringStart(content, i);
       if (strStart) {
-        const { body, endIdx } = consumeString(content, i);
-        if (depth === 1) message += body;
+        const { endIdx } = consumeString(content, i);
+        fragment += content.slice(i, endIdx);
         i = endIdx;
         continue;
       }
     }
     if (ch === "(") {
       depth++;
+      fragment += ch;
       i++;
       continue;
     }
     if (ch === ")") {
       depth--;
+      if (depth > 0) fragment += ch;
       i++;
       continue;
     }
+    if (depth === 1 && (ch === "+" || ch === "," || ch === "\\")) {
+      flush();
+      i++;
+      continue;
+    }
+    if (depth === 1 && ch === "#") {
+      while (i < content.length && content[i] !== "\n") i++;
+      continue;
+    }
+    fragment += /\s/.test(ch) && depth === 1 ? " " : ch;
     i++;
   }
-  return { message, endIdx: i };
+  flush();
+  return { message, dynamic, endIdx: i };
 }
 
 const LITERAL_TAG_CALL_RE = /\b(block|remind)\(\s*"(H-\d+[a-z]?)"\s*,/g;
@@ -241,8 +281,11 @@ function extractFromFile(file: string, content: string): ExtractResult {
     const kind = m[1] as "block" | "remind";
     const tag = m[2];
     const matchStart = m.index;
+    // A mention inside a comment, docstring or string literal is an example,
+    // not an executable call site (HW-23): the same lexical mask as below.
+    if (!codeMask[matchStart]) continue;
     const argsStart = LITERAL_TAG_CALL_RE.lastIndex;
-    const { message, endIdx } = scanMessage(content, argsStart);
+    const { message, dynamic, endIdx } = scanMessage(content, argsStart);
     claimedSpans.push([matchStart, endIdx]);
     callSites.push({
       tag,
@@ -250,6 +293,7 @@ function extractFromFile(file: string, content: string): ExtractResult {
       file,
       line: lineOf(content, matchStart),
       message,
+      dynamic,
     });
     // scanMessage may have consumed past lastIndex (multi-line call); keep the
     // regex cursor from re-scanning inside the call we just extracted.
@@ -271,7 +315,7 @@ function extractFromFile(file: string, content: string): ExtractResult {
     if (tags === null) continue; // unresolvable — the skipped pass below reports it
     const kind = m[1] as "block" | "remind";
     const argsStart = VARIABLE_TAG_CALL_RE.lastIndex;
-    const { message, endIdx } = scanMessage(content, argsStart);
+    const { message, dynamic, endIdx } = scanMessage(content, argsStart);
     claimedSpans.push([matchStart, endIdx]);
     for (const tag of tags) {
       callSites.push({
@@ -280,6 +324,7 @@ function extractFromFile(file: string, content: string): ExtractResult {
         file,
         line: lineOf(content, matchStart),
         message,
+        dynamic,
       });
     }
     VARIABLE_TAG_CALL_RE.lastIndex = Math.max(VARIABLE_TAG_CALL_RE.lastIndex, endIdx);

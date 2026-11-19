@@ -1,0 +1,341 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+  ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+  ".github/scripts/release_source.py": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+  ".github/scripts/release_target.py": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+  ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+  "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C16",
+  "disposition:transitions:C16:01",
+  "disposition:transitions:C16:02",
+  "disposition:transitions:C16:05",
+  "disposition:transitions:C16:06"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C16",
+   "frozen_row_sha256": "315f50b7406981387488a9e4936172f6b287253ee79f09ab037ab9f4ac905933",
+   "clause_ids": [
+    "disposition:transitions:C16:01",
+    "disposition:transitions:C16:02",
+    "disposition:transitions:C16:03",
+    "disposition:transitions:C16:04",
+    "disposition:transitions:C16:05",
+    "disposition:transitions:C16:06"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 31,
+     "end": 127,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "7bfb37c0a57e90c19ab360a50343019bb52ecff051849a81fd3e58f5f8de50f1"
+    },
+    {
+     "path": ".github/scripts/release_source.py",
+     "start": 49,
+     "end": 119,
+     "file_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+     "span_sha256": "a3a9798357ecf5ee7a6da90bb8de273f565a76b651d8c871843c788306034260"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 36,
+     "end": 50,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "3c13a830af7ad322f0d5c2ebe95b33dcc00a25c49db7d6f732f4d61bdb0ea9fb"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 95,
+     "end": 127,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "143e38e014b3568e01e222882850738fef06a140e0bf2e0c66fa6a177b47dcff"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 171,
+     "end": 176,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "3c8ffa787b3e9e4e5a3a1addd7fdd88bcce0b439911cfc23e43e51ae131f1693"
+    },
+    {
+     "path": ".github/scripts/release_source.py",
+     "start": 49,
+     "end": 138,
+     "file_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+     "span_sha256": "c6416e3697124d54b3308c451469285a1784216fbe24670875f9b139ec0a9485"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 186,
+     "end": 278,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "7b6f398706d5ed91a28d9805fabe3d6a262454039e98f4f6271e3a19e410526c"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 155,
+     "end": 238,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "d8f229a04fee9e95eaf2501eff18b7afa546d3ba47f40c4cb8bffdde47476416"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 250,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "40193951520178fb2b7fcfed57ec2b2189e55b06259061e62891c48ed0ca432b"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 207,
+     "end": 256,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "0879dc931f237f89f01b9cfe9f5039800425d594b36df6e45831bad2f7584864"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 258,
+     "end": 275,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "430fc82e502547e75d231341164caea1677e668a3561d7ec600cecdf6f140dc6"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 334,
+     "end": 367,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "bf72d78a44364a2bc6cef19593be853235d08dd690339c4c4d2ede07ff1ad6c6"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 369,
+     "end": 419,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "c8aec0ebc571d459bb473f0bd28ee432d8745e2ab531330de5e7a52b7a3df9ce"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 421,
+     "end": 468,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "88f4397575abae2474b1dd24da4956f4028c216c961b107d37e5515e2348df6e"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 239,
+     "end": 256,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "064ac926a3f74a5d6b6e727d6ade7c091132e62c821f58e93c3f0851aa438fab"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 133,
+     "end": 222,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8c3592253f7932774fcc32b078e006534246a066f7f5d170487c5b66c5208981"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 253,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "99212c6b081b083f7f91d394f52012549d4f5a0892c368f788ccc3ffd93e03d8"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 281,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "a6b7184cc89a34158a3600f700360aeda31ff0aadd7742600df69ea0806a7e61"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:01",
+   "frozen_row_sha256": "0539bdf3e9496e3d4c0661b917d7c14d38e35de26a50d475d318b8e824009ee8",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 31,
+     "end": 127,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "7bfb37c0a57e90c19ab360a50343019bb52ecff051849a81fd3e58f5f8de50f1"
+    },
+    {
+     "path": ".github/scripts/release_source.py",
+     "start": 49,
+     "end": 119,
+     "file_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+     "span_sha256": "a3a9798357ecf5ee7a6da90bb8de273f565a76b651d8c871843c788306034260"
+    }
+   ],
+   "semantic_assessment": "Release preflight admits only the named successful same-repository main-push CI workflow_run or a main-only dispatch. It selects that event run/source, checks source ancestry, records artifact retention and detaches to the selected source.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:02",
+   "frozen_row_sha256": "5c275f35b9a2f321fe37869187727d11b3a38b0e2d0b0781b511dfb62b8cba71",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 36,
+     "end": 50,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "3c13a830af7ad322f0d5c2ebe95b33dcc00a25c49db7d6f732f4d61bdb0ea9fb"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 95,
+     "end": 127,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "143e38e014b3568e01e222882850738fef06a140e0bf2e0c66fa6a177b47dcff"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 171,
+     "end": 176,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "3c8ffa787b3e9e4e5a3a1addd7fdd88bcce0b439911cfc23e43e51ae131f1693"
+    },
+    {
+     "path": ".github/scripts/release_source.py",
+     "start": 49,
+     "end": 138,
+     "file_sha256": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+     "span_sha256": "c6416e3697124d54b3308c451469285a1784216fbe24670875f9b139ec0a9485"
+    }
+   ],
+   "semantic_assessment": "Manual dispatch explicitly selects the newest successful main-push CI source, possibly older than main HEAD. Optional approved expected-source/run must match exactly; summary shows source, build, main head/equality and retention. Missing retained hosted artifacts blocks that target.",
+   "intake_variances": [
+    "R-02 corrects the old current-head description while retaining useful original-run recovery. No later/older successful run silently substitutes when explicit expected identity is supplied."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:05",
+   "frozen_row_sha256": "a99aac728169c19662bdccfd5fabbcba6c2aec7dc8c74f851b39a8d1f9a38be1",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 207,
+     "end": 256,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "0879dc931f237f89f01b9cfe9f5039800425d594b36df6e45831bad2f7584864"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 258,
+     "end": 275,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "430fc82e502547e75d231341164caea1677e668a3561d7ec600cecdf6f140dc6"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 334,
+     "end": 367,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "bf72d78a44364a2bc6cef19593be853235d08dd690339c4c4d2ede07ff1ad6c6"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 369,
+     "end": 419,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "c8aec0ebc571d459bb473f0bd28ee432d8745e2ab531330de5e7a52b7a3df9ce"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 421,
+     "end": 468,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "88f4397575abae2474b1dd24da4956f4028c216c961b107d37e5515e2348df6e"
+    }
+   ],
+   "semantic_assessment": "Every target job serializes with cancel-in-progress:false and then freshly reads tags/releases before calling eligible with exact target/source. A completed publication becomes no-op; unavailable/conflicting observations do not authorize publication.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C16:06",
+   "frozen_row_sha256": "691e3b67747435e1bec8456224053cd8b3926754d732d6813979ab93132a23c9",
+   "witnesses": [
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 239,
+     "end": 256,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "064ac926a3f74a5d6b6e727d6ade7c091132e62c821f58e93c3f0851aa438fab"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 133,
+     "end": 222,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "8c3592253f7932774fcc32b078e006534246a066f7f5d170487c5b66c5208981"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 253,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "99212c6b081b083f7f91d394f52012549d4f5a0892c368f788ccc3ffd93e03d8"
+    },
+    {
+     "path": ".github/scripts/release_target.py",
+     "start": 281,
+     "end": 299,
+     "file_sha256": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+     "span_sha256": "a6b7184cc89a34158a3600f700360aeda31ff0aadd7742600df69ea0806a7e61"
+    }
+   ],
+   "semantic_assessment": "Only a true per-target recheck calls the composite with selected source/build and target-specific credentials. Composite planning refuses a present tag at another source, verifies cohort identity and invokes the marker-scoped major-readiness barrier before first effects.",
+   "intake_variances": [
+    "Q-02 adds a release-specific noncircular prepublication requirement while the integration marker exists; no actual readiness or publication is asserted here."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

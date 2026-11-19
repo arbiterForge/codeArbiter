@@ -1,0 +1,2714 @@
+[
+ {
+  "platform": "darwin/amd64",
+  "original_job_id": 133912282151,
+  "original_artifact_id": 14312265996,
+  "required_selector_count": 107,
+  "named_original_outcomes": [
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/html_spec_plan_identity",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/inactive_optional_malformed_is_isolated",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/legacy_duplicate_remains_error",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/unknown_representation_rejected",
+    "result": "passed"
+   }
+  ]
+ },
+ {
+  "platform": "darwin/arm64",
+  "original_job_id": 133912282083,
+  "original_artifact_id": 14311887093,
+  "required_selector_count": 107,
+  "named_original_outcomes": [
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/html_spec_plan_identity",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/inactive_optional_malformed_is_isolated",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/legacy_duplicate_remains_error",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/unknown_representation_rejected",
+    "result": "passed"
+   }
+  ]
+ },
+ {
+  "platform": "linux/amd64",
+  "original_job_id": 133912281980,
+  "original_artifact_id": 14311577690,
+  "required_selector_count": 107,
+  "named_original_outcomes": [
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/html_spec_plan_identity",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/inactive_optional_malformed_is_isolated",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/legacy_duplicate_remains_error",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/unknown_representation_rejected",
+    "result": "passed"
+   }
+  ]
+ },
+ {
+  "platform": "linux/arm64",
+  "original_job_id": 133912281985,
+  "original_artifact_id": 14312066527,
+  "required_selector_count": 107,
+  "named_original_outcomes": [
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/html_spec_plan_identity",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/inactive_optional_malformed_is_isolated",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/legacy_duplicate_remains_error",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/unknown_representation_rejected",
+    "result": "passed"
+   }
+  ]
+ },
+ {
+  "platform": "windows/amd64",
+  "original_job_id": 133912282061,
+  "original_artifact_id": 14312156528,
+  "required_selector_count": 107,
+  "named_original_outcomes": [
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/html_spec_plan_identity",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/inactive_optional_malformed_is_isolated",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/legacy_duplicate_remains_error",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/unknown_representation_rejected",
+    "result": "passed"
+   }
+  ]
+ },
+ {
+  "platform": "windows/arm64",
+  "original_job_id": 133912282001,
+  "original_artifact_id": 14311512768,
+  "required_selector_count": 107,
+  "named_original_outcomes": [
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteNewFailureAndUnknownReplaceOldSuccess",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteObservationCASReplayAndClosedShapes",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistivePrerequisiteReferencesHistoryAndInertHTML",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestAssistiveScopedFactsKeepIndependentWorkMoving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV1CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CaptureAndPublication",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCodexNativeV2CompletionCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewCanSupersedeStaleCompletedRun",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewNativeCapturePublicationAndScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewReplayRetainsExplicitSelectedReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCreateDoesNotShadowLegacy",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestDuplicateCanonicalAuthoritiesFailClosed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestLegacyReceiptIsInspectableButCannotConferAuthority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestMissingOrSkippedNamedTests",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteReplacesObservationWithoutLosingHistory",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestRetiringCriterionKeepsNestedCollectionKinds",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestClosedSchema",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestDraftIncompleteRecords",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestPlanGraphAndCoverage",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesGitDirectoryTaskPaths",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRefusesRuntimeMarkerInputs",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReadyRejectsRepositoryRelativeExcludesOutsideRoots",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestReviewNamedTestRequirementAtReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestRoleBoundReferences",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecBinding",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/validate:TestSpecReadiness",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/public-count",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateCatalogBoundsRefuseBeforeWriting/save-byte-bound",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/decomposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/knowledge",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/plan",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN04CreateInitialTypedStateAndDuplicateRefusals/spec",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/active-not-applicable",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/mandatory-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ActiveNotApplicableAndMandatoryDispositionRefuse/optional-disposition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/blank-resolution",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/dangling-reference",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07DecisionResolutionChangesReadinessWithoutApproving/resolved",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/invalid-partition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/missing-statement",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/ready-positive",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-criterion",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN07ReadyDiagnosticsAreCompleteDeterministicAndNonAuthorizing/uncovered-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/baseline",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/failed-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/missing-named-test",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/ordinary-prerequisite",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRefusesStaleBaselineAndEvidence/source-input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/ACCEPTED",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/DONE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/IN_PROGRESS",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/REVIEW",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ReceiptedReviewRetainsRefsAndScopeBaseline/STALE",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/empty-assessment",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/input",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileRejectsWrongBindingsWithoutWrites/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/missing",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10ScopeReconcileUpdatesBaselineAndPreservesEveryMemberHistory/stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-blocked",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/later-member-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-stale",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRefusesFailedMemberOrPriorScope/prior-unaccepted",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/later-scope",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/mixed",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN10StrictScopeAcceptanceRetainsEveryMemberReceipt/review",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/authority",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/changed-source",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/definition",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/missing-receipt-structural-refusal",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/stale-consumer-receipt",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestN12ReceiptedPrerequisiteRejectsWrongAuthorityAndStaleDefinitions/subject",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/html_spec_plan_identity",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/inactive_optional_malformed_is_isolated",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/legacy_duplicate_remains_error",
+    "result": "passed"
+   },
+   {
+    "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/repository:TestContextRepresentationBoundary/unknown_representation_rejected",
+    "result": "passed"
+   }
+  ]
+ }
+]

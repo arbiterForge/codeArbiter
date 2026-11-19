@@ -1,0 +1,13 @@
+{
+  "kind": "HANDOFF_DOCUMENT_QA",
+  "exact_transition_rows_and_cells_verified": 1748,
+  "scenario_rows": 31,
+  "finding_rows": 70,
+  "machine_accountability_rows": 287,
+  "rendered_tables": 316,
+  "unique_pinned_source_links_checked": 468,
+  "directory_sources_use_tree_links": 1,
+  "real_browser_visual_test": false,
+  "repository_head": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "repository_status_porcelain": ""
+}

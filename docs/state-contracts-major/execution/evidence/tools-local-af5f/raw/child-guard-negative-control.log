@@ -1,0 +1,32 @@
+ORIGINAL TEST WITH REMOVED GUARD (false green)
+test_failed_smarts_child_cannot_pass_from_plausible_output (measurement_contracts.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.004s
+
+OK
+
+FIXED TEST WITH REMOVED GUARD (RED)
+test_failed_smarts_child_cannot_pass_from_plausible_output (measurement_contracts_fixed.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output) ... FAIL
+
+======================================================================
+FAIL: test_failed_smarts_child_cannot_pass_from_plausible_output (measurement_contracts_fixed.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\.codex\worktrees\program-governance-prep\codeArbiter\tools\test_measurement_contracts.py", line 75, in test_failed_smarts_child_cannot_pass_from_plausible_output
+    self.assertEqual(exercise.main(), 1)
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=1)
+
+FIXED TEST WITH ACTUAL OWNER (GREEN)
+test_failed_smarts_child_cannot_pass_from_plausible_output (measurement_contracts_fixed.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output) ... ok
+
+----------------------------------------------------------------------
+Ran 1 test in 0.003s
+
+OK

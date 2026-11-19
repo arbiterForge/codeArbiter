@@ -74,10 +74,33 @@
 
 title = "codeArbiter hosted secret scan"
 
+[[allowlists]]
+description = """
+Public SHA-256 source fingerprint emitted by knowledge.py conversion in
+docs/state-contracts-major/execution/context-conversion/inventory.json at
+685b51f8412690d8b49a8c468455973785a281ac. It is deterministically derived
+from the five original Markdown Git blobs at 97e1ecac, with no secret input
+or access authority. The transient field is removed from current evidence;
+this exact value-only exception covers retained PR history. No path, commit,
+credential pattern, or other digest value is exempted.
+"""
+regexes = ['''\A6ec49a66722c9813c43b9f18feac6d2e637b00de4b34fa34ba0ebc2548c9930a\z''']
+
 [extend]
 # Start from gitleaks' full first-party ruleset. This file only ever SUBTRACTS
 # known-fake fixture literals from it; it never adds a rule of its own.
 useDefault = true
+
+[[allowlists]]
+description = """
+Public SHA-256 of the 76 JSON.stringify(DUMMY_AUTH) bytes defined in
+plugins/ca-pi/tools/test/setup-disposable-home.ts, retained as dummy_auth_sha256
+in docs/state-contracts-major/execution/evidence/hw26-owned-abrupt-ef63f8c3/evidence-proposal.json.
+It hashes the source's fixed dummy-disposable-home-not-a-credential fixture;
+no credential input or access authority is involved. Only this exact complete
+digest value is exempted. Every file and all other values remain scanned.
+"""
+regexes = ['''\Af4f8713476abb65177a0ca5df5e6e304da4917297f01ff9121c7276bb85c6143\z''']
 
 [[allowlists]]
 description = """
@@ -205,6 +228,15 @@ regexes = ['''\Ask-proj-ABCDEFGH12345678\z''']
 description = "Public hostapi.py SHA-256 recorded by the statusline documentation fixture (PR #847)"
 regexes = ['\Ac6d86b81be1ed7ef2046183b23643d7e1e018e6c41b75ae9205b4077be9b02be\z']
 
+# Public declaration-file digest retained by the major program's original Pi
+# source observation, not a credential. Verified against pi-api.d.ts at
+# 55509ec54327c61b94f6648aa21ac41452e0d28f. The adjacent API filename triggers
+# generic-api-key. Earlier commits retain this value, so waive only the exact
+# whole digest; every path and every other value remains scanned.
+[[allowlists]]
+description = 'Public plugins/ca-pi/tools/src/pi-api.d.ts SHA-256 retained in docs/state-contracts-major/execution/lanes/pi.json'
+regexes = ['\A12a560b01cb6efc93964f19eadb2c6561e1e2a97f50703803e4d55f26268b9f2\z']
+
 [[allowlists]]
 description = 'PR850 historical preparation: exact verified hostapi Git blob identity, not a credential'
 regexes = [ '''\Aa3a2ea319e044db4d53f5e3cc32f97429ba47dba\z''' ]
@@ -222,3 +254,132 @@ regexes = [
   '''\A\Q-----BEGIN PRIVATE KEY-----", "NOT_REAL_PRIVATE_MATERIAL".repeat(100),
       "-----END PRIVATE KEY-----\E\z'''
 ]
+
+# Exact public source SHA-256 values retained by the major qualification packet.
+# Each value matches its named Git blob at94b569fb51ab306ac187f60fe4e61cf0bef6992a.
+# API/auth/secret words in filenames caused generic-api-key false positives.
+# Preserve scans for every other value, path, commit and credential shape.
+[[allowlists]]
+description = "Public core/pysrc/hostapi.py SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4\z']
+
+[[allowlists]]
+description = "Public core/surface/agents/auth-crypto-reviewer.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\Ac8d4aae68642746dc19803bdd9bbe738c540dae33a72baeed39ee0b1ea3b1143\z']
+
+[[allowlists]]
+description = "Public core/surface/skills/tribunal/references/lenses/secrets-supply.md SHA-256 retained by source-bound major qualification evidence"
+regexes = ['\A0de0dd521693c80fba4ce695c290d08df1b73452632f19efb6f332a0f0518a0e\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca/hooks/tests/test_hostapi_loadhost.py at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A5d3c50033f29d6074441b8856df9444b9c06564038d62c6d4b1eb1da9abddcbc\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of .github/scripts/create_codex_distribution_token.py at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A5f760845201af63b144245fc9255aad5b01308b82c59918adea1d723b72020ba\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca/agents/auth-crypto-reviewer.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A76319a1e9f24e4730fb176272495e4cc4f965049e05087488562f0cf80f8a9dc\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca-pi/agents/auth-crypto-reviewer.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A9786c43e5ed3bb551e3a866fd160b4a6a6e54674313a32706e5f03f3adb6705e\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca/skills/tribunal/references/lenses/secrets-supply.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\A9f9aacfb2b2ee2e34cee71c4069fb925780a3a283623458229eb109fe848a536\z']
+
+[[allowlists]]
+description = """
+Public SHA-256 of plugins/ca-pi/routines/tribunal/references/lenses/secrets-supply.md at
+46e29a796e89e0eaa3250cf171e4c9bea97ac437, independently recomputed from the immutable Git blob.
+Retained by original-M Pi/native acceptance evidence under
+docs/state-contracts-major/execution/evidence/. This is a source-content
+fingerprint with no secret input or access authority; the filename caused
+the generic detector match. Only this exact value is exempted.
+"""
+regexes = ['\Ac3aaa89a68286cda575886cf71cafc4fb1e0786a58a19a8332008db918be7bfa\z']
+
+# Exact public source-file hashes retained by the S38 native runtime evidence.
+# Both are recomputed from committed source at c2cf0a18. No secret input,
+# credential authority, path exemption or general digest pattern is allowed.
+[[allowlists]]
+description = "Public source SHA-256 values for plugins/ca-codex/agents/auth-crypto-reviewer.md and plugins/ca-codex/routines/tribunal/references/lenses/secrets-supply.md, recorded by mapped-S38-current-native-c2cf0a18 runtime evidence"
+regexes = [
+  '''\Aea491e797261a42487cd9b42ee324c79b9394e6b2b26449eaa856f4b4118d1e2\z''',
+  '''\Ab0058695371f6c7dff1ab274283cfc2352fa5ece86aed537f99697af712b400d\z''',
+]
+
+# Exact public dependency-file hashes retained by the current Sandbox runtime
+# inventory. Values were recomputed from existing cached files; none is a key.
+[[allowlists]]
+description = "Public SHA-256 values for @babel/types toComputedKey.js and its source map, postcss tokenize.js, undici-types api.d.ts, and the locked Vitest cli-api chunk in current-local-2df/sandbox/runtime-members.json"
+regexes = [
+  '''\Ac54a9b025a4c5e7ec4c9b93e9f2b795aa8a6f928e0de1793590f012c78e01b46\z''',
+  '''\A177c3bd70b823195ac63ad1ab51bbb8babb97b98446b3171d17399a2fed7784f\z''',
+  '''\Addfcaaa01f5eac9e4e8652044df1401ce6cc70295fd3f9fbb214ca66fb2bec72\z''',
+  '''\A8aee8b6d4f9f62cf3776cda1305fb18763e2aade7e13cea5bbe699112df85214\z''',
+  '''\A222aa60f8555aea9311703c68edaaa8eba0888ea29bfb4a49b37f98e0811ee2d\z''',
+]
+
+# Verified public Git provenance in original PR1116-bbc6 failure diagnostics.
+[[allowlists]]
+description = "Exact public bbc6f39d PR head, three immutable Git blob OIDs and their independently recomputed SHA-256 source digests. The API_head/API_oid labels caused generic key detection; these identifiers carry no secret input or access authority. Only these seven complete values are exempted."
+regexes = [
+  '''\A1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810\z''',
+  '''\A2384ad748dcc9c96f79ae9e17230997e04910923\z''',
+  '''\A75965cb808c4022355b8235a321b117f075d6b5f\z''',
+  '''\Ab7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f\z''',
+  '''\Ab8ff83ebe880655e2e1cdf06a37ef7c569abe283\z''',
+  '''\Abbc6f39d688296e56ae6f3d5543e018f93288a7a\z''',
+  '''\Ad203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab\z''',
+]
+
+[[allowlists]]
+description = "Exact public PR1116 head f5dff55e, independently verified against the Git commit and live PR head. Retained original Linux progress and successful Windows diagnostic records label it API head; it is a public source identifier with no access authority. Only this complete value is exempted."
+regexes = ['''\Af5dff55e71530806c58a5dd6c352935d369ac5ae\z''']
+
+[[allowlists]]
+description = "Public SHA-256 of site/src/curated/agents/auth-crypto-reviewer.md at 00fd5fff, retained in original Docs test evidence"
+regexes = ['\A1c1eb80f37baaedbac7bab11fbf2a6d3aaa5b611766ff5f334fca4c42036ca60\z']
+
+[[allowlists]]
+description = "Public SHA-256 of site/src/curated/skills/secret-handling.md at 00fd5fff, retained in original Docs test evidence"
+regexes = ['\A9618d05e232a2630d19e34b41e6e1ddc9f3900fb629b9ef239be963c3778f61e\z']

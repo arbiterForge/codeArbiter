@@ -11,9 +11,10 @@ import type {
   CommandCatalogEntry,
   ExtensionContextPort,
   ParentPiPort,
+  PiFooterComponentPort,
 } from "../src/contracts.ts";
 import { installParent } from "../src/extension.ts";
-import { setArbiterStatus } from "../src/status.ts";
+import { PiFooterLifecycle, setArbiterStatus } from "../src/status.ts";
 
 type Handler = (event: Record<string, unknown>, context: ExtensionContextPort) => unknown;
 
@@ -289,6 +290,126 @@ describe("Pi keyed status lifecycle", () => {
 
     expect(host.footerCalls).toEqual([]);
     expect(metricLoads).toBe(0);
+  });
+
+
+  test("disposes the owned footer subscription once through the Pi replacement contract", async () => {
+    const cwd = await bareProject();
+    const host = new StatusHost(cwd, []);
+    const context = host.context(cwd, true, { interactive: true });
+    const footer = new PiFooterLifecycle(host, new StatusBridge(), async () => footerMetrics);
+    const changes = new Set<() => void>();
+    const calls: string[] = [];
+    let component: PiFooterComponentPort | undefined;
+    let releases = 0;
+    let renders = 0;
+    // Pi1.5's public interactive UI delegates setFooter to setExtensionFooter:
+    // dispose the old custom component, then install custom/native. This is a
+    // declared UI-port model, not an installed/rendered parent TUI assertion.
+    context.ui.setFooter = (factory) => {
+      component?.dispose?.();
+      component = factory?.({ requestRender: () => { renders += 1; } }, {}, {
+        getGitBranch: () => "main",
+        onBranchChange: (callback) => {
+          changes.add(callback);
+          return () => { releases += 1; changes.delete(callback); };
+        },
+      });
+      calls.push(factory === undefined ? "native" : "owned");
+    };
+
+    // A lifecycle which never installed a footer must not clear native UI.
+    footer.dispose();
+    expect(calls).toEqual([]);
+    await footer.start(context);
+    expect(footer.health()).toEqual({ expected: true, initialized: true });
+    expect(changes.size).toBe(1);
+    for (const changed of changes) changed();
+    expect(renders).toBe(1);
+    footer.dispose();
+    expect(calls).toEqual(["owned", "native"]);
+    expect(releases).toBe(1);
+    expect(changes.size).toBe(0);
+    expect(component).toBeUndefined();
+    expect(footer.currentTui()).toBeUndefined();
+    expect(footer.health()).toEqual({ expected: false, initialized: false });
+    for (const changed of changes) changed();
+    expect(renders).toBe(1);
+    footer.dispose();
+    expect(releases).toBe(1);
+    expect(calls).toEqual(["owned", "native"]);
+  });
+
+  test("does not clear another extension footer after its owned component was replaced", async () => {
+    const cwd = await bareProject();
+    const host = new StatusHost(cwd, []);
+    const context = host.context(cwd, true, { interactive: true });
+    const footer = new PiFooterLifecycle(host, new StatusBridge(), async () => footerMetrics);
+    let current: PiFooterComponentPort | undefined;
+    let released = 0;
+    let nativeRestores = 0;
+    // Exact documented/inspected Pi1.5 UI behavior: all extensions share this
+    // setter, which disposes the currently displayed custom component first.
+    context.ui.setFooter = (factory) => {
+      current?.dispose?.();
+      current = factory?.({ requestRender: () => undefined }, {}, {
+        getGitBranch: () => "main",
+        onBranchChange: () => () => { released += 1; },
+      });
+      if (factory === undefined) nativeRestores += 1;
+    };
+    await footer.start(context);
+    const foreign: PiFooterComponentPort = { render: () => ["other extension"], invalidate: () => undefined };
+    context.ui.setFooter(() => foreign);
+    expect(released).toBe(1);
+    expect(current).toBe(foreign);
+    expect(nativeRestores).toBe(0);
+
+    // A later Arbiter shutdown has lost ownership of this shared UI slot.
+    footer.dispose();
+    expect(current).toBe(foreign);
+    expect(nativeRestores).toBe(0);
+  });
+
+  test("stale and repeated component disposal cannot retire a newer footer generation", async () => {
+    const cwd = await bareProject();
+    const host = new StatusHost(cwd, []);
+    const context = host.context(cwd, true, { interactive: true });
+    const footer = new PiFooterLifecycle(host, new StatusBridge(), async () => footerMetrics);
+    let current: PiFooterComponentPort | undefined;
+    const changes = new Set<() => void>();
+    const calls: string[] = [];
+    let releases = 0;
+    context.ui.setFooter = (factory) => {
+      current?.dispose?.();
+      current = factory?.({ requestRender: () => undefined }, {}, {
+        onBranchChange: (callback) => {
+          changes.add(callback);
+          return () => { releases += 1; changes.delete(callback); };
+        },
+      });
+      calls.push(factory === undefined ? "native" : "owned");
+    };
+    await footer.start(context);
+    const oldComponent = current!;
+    // Reusing the same context object makes generation ownership discriminating.
+    await footer.start(context);
+    const replacement = current!;
+    expect(replacement).not.toBe(oldComponent);
+    expect(releases).toBe(1);
+    expect(changes.size).toBe(1);
+    oldComponent.dispose?.();
+    oldComponent.dispose?.();
+    expect(current).toBe(replacement);
+    expect(footer.health()).toEqual({ expected: true, initialized: true });
+    expect(releases).toBe(1);
+    expect(changes.size).toBe(1);
+    footer.dispose();
+    replacement.dispose?.();
+    expect(current).toBeUndefined();
+    expect(releases).toBe(2);
+    expect(changes.size).toBe(0);
+    expect(calls).toEqual(["owned", "native", "owned", "native"]);
   });
 
   test("a production metrics-loader failure restores native UI without aborting adapter activation", async () => {

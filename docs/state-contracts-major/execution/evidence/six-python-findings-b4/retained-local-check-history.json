@@ -1,0 +1,461 @@
+{
+  "captures": [
+    {
+      "phase": "six-profile-target-red",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-red.json",
+      "sha256": "f62edf24fe80a064ddc4eef04b892445c205ba254106b976f4ea386e45f63626",
+      "bytes": 816,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.2731430999992881,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 4817,\r\n   \"sha256\": \"b9874253ef03b27a572982dabd77711c19fb0a9c08019e72e029b72312707827\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-target-red",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-red.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-target-red",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-red.stderr",
+      "sha256": "b9874253ef03b27a572982dabd77711c19fb0a9c08019e72e029b72312707827",
+      "bytes": 4817,
+      "utf8_text": "test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) ... \r\n  test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) (profile='hooks-single-owner-findings-v1') ... FAIL\r\n  test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) (profile='impact-single-owner-findings-v1') ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) (profile='hooks-single-owner-findings-v1')\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 4103, in test_a_six_existing_single_owner_findings_have_closed_original_profiles\r\n    spec = owner.source_profile(profile)\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_qualification_report.py\", line 1623, in source_profile\r\n    require(type(profile) is str and profile in TS_PROFILE_PATHS, \"unknown source input profile\")\r\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_qualification_report.py\", line 46, in require\r\n    raise ValueError(reason)\r\nValueError: unknown source input profile\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 4105, in test_a_six_existing_single_owner_findings_have_closed_original_profiles\r\n    self.fail(\"actual source-profile boundary lacks the original single-owner finding route: \" + str(error))\r\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: actual source-profile boundary lacks the original single-owner finding route: unknown source input profile\r\n\r\n======================================================================\r\nFAIL: test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) (profile='impact-single-owner-findings-v1')\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 4103, in test_a_six_existing_single_owner_findings_have_closed_original_profiles\r\n    spec = owner.source_profile(profile)\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_qualification_report.py\", line 1623, in source_profile\r\n    require(type(profile) is str and profile in TS_PROFILE_PATHS, \"unknown source input profile\")\r\n    ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_qualification_report.py\", line 46, in require\r\n    raise ValueError(reason)\r\nValueError: unknown source input profile\r\n\r\nDuring handling of the above exception, another exception occurred:\r\n\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 4105, in test_a_six_existing_single_owner_findings_have_closed_original_profiles\r\n    self.fail(\"actual source-profile boundary lacks the original single-owner finding route: \" + str(error))\r\n    ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: actual source-profile boundary lacks the original single-owner finding route: unknown source input profile\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.002s\r\n\r\nFAILED (failures=2)\r\n"
+    },
+    {
+      "phase": "six-profile-target-green",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green.json",
+      "sha256": "2b86995deb65be6cfae8430dd0a145b168f4b3ede9695774205de9d7958316bc",
+      "bytes": 816,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.2164545999839902,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1480,\r\n   \"sha256\": \"20957d788c5c0957ec0babb823793a6608e86644ebe0fefba7328f0a0854e914\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-target-green",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-target-green",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green.stderr",
+      "sha256": "20957d788c5c0957ec0babb823793a6608e86644ebe0fefba7328f0a0854e914",
+      "bytes": 1480,
+      "utf8_text": "Traceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\run.py\", line 3, in <module>\r\n    p=P/'candidate/.github/scripts/test_major_qualification_report.py';spec=importlib.util.spec_from_file_location('major_report_candidate_tests',p);m=importlib.util.module_from_spec(spec);sys.modules[spec.name]=m;spec.loader.exec_module(m)\r\n                                                                                                                                                                                                                      ~~~~~~~~~~~~~~~~~~~~~~~^^^\r\n  File \"<frozen importlib._bootstrap_external>\", line 759, in exec_module\r\n  File \"<frozen importlib._bootstrap>\", line 491, in _call_with_frames_removed\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 17, in <module>\r\n    import major_qualification_report as owner\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\major_qualification_report.py\", line 2035, in <module>\r\n    'impact-single-owner-findings-v1': {\"paths\": Q02_SOURCE_PATHS | PYTHON_FINDING_PROFILES[\"hooks-single-owner-findings-v1\"][\"paths\"] | frozenset(['.codearbiter/context/code-map.html',\r\n                                                                    ^^^^^^^^^^^^^^^^^^^^^^^\r\nNameError: name 'PYTHON_FINDING_PROFILES' is not defined\r\n"
+    },
+    {
+      "phase": "six-profile-target-green-refined",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green-refined.json",
+      "sha256": "fe600061ca11ee03ce53cc2f3f9b5a90575223eeb96b5ec297d328295ab783d3",
+      "bytes": 816,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.22634439999819733,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 322,\r\n   \"sha256\": \"e5581e5f61241eace8957f5aefa9ee88e71758af00579938d8fd9c4f56f3039e\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-target-green-refined",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green-refined.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-target-green-refined",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-target-green-refined.stderr",
+      "sha256": "e5581e5f61241eace8957f5aefa9ee88e71758af00579938d8fd9c4f56f3039e",
+      "bytes": 322,
+      "utf8_text": "test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.000s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "six-profile-admission-green",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-admission-green.json",
+      "sha256": "e0cc8df179434e9f693eaab9e49eeb621693f74ebe1e1974af65fa0e50ffff48",
+      "bytes": 744,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.4154018000117503,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1453,\r\n   \"sha256\": \"5f309fcc4261c0b1c44e221d7720351d2955a2ab8315adaf3cd260328119b9c8\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-admission-green",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-admission-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-admission-green",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-admission-green.stderr",
+      "sha256": "5f309fcc4261c0b1c44e221d7720351d2955a2ab8315adaf3cd260328119b9c8",
+      "bytes": 1453,
+      "utf8_text": "test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) ... ok\r\ntest_b_complete_original_finite_compositions_and_policy_are_consumed (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_b_complete_original_finite_compositions_and_policy_are_consumed) ... ok\r\ntest_c_every_required_named_case_and_exact_single_owner_group_is_mandatory (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory) ... ok\r\ntest_d_original_source_script_profile_job_and_payload_never_cross_authority (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_d_original_source_script_profile_job_and_payload_never_cross_authority) ... ok\r\ntest_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit) ... ok\r\ntest_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.200s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "six-profile-final-admission-green",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-final-admission-green.json",
+      "sha256": "afe7d2ca570b1acbeb9969b78bfbfbfec93a148933343fc746870d4a104761a4",
+      "bytes": 744,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.4683089000172913,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1687,\r\n   \"sha256\": \"6dc9a8a763a3415fb8bc56d62c9afb2217a978d069b7b7b65822bff2a981918e\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-final-admission-green",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-final-admission-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-final-admission-green",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-final-admission-green.stderr",
+      "sha256": "6dc9a8a763a3415fb8bc56d62c9afb2217a978d069b7b7b65822bff2a981918e",
+      "bytes": 1687,
+      "utf8_text": "test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) ... ok\r\ntest_b_complete_original_finite_compositions_and_policy_are_consumed (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_b_complete_original_finite_compositions_and_policy_are_consumed) ... ok\r\ntest_c_every_required_named_case_and_exact_single_owner_group_is_mandatory (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory) ... ok\r\ntest_d_original_source_script_profile_job_and_payload_never_cross_authority (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_d_original_source_script_profile_job_and_payload_never_cross_authority) ... ok\r\ntest_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit) ... ok\r\ntest_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution) ... ok\r\ntest_g_final_reader_authenticates_each_original_upload_after_whole_run_success (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_g_final_reader_authenticates_each_original_upload_after_whole_run_success) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 7 tests in 0.202s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "pi-payload-predicate-owning",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\pi-payload-predicate-owning.json",
+      "sha256": "eb45226cb0e80d80b802a7995a86ae33dc51b34730a508f72a0afd98b5a4da5b",
+      "bytes": 747,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/candidate/.github/scripts/test_pi_payload_identity.py\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.2939845999935642,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 107,\r\n   \"sha256\": \"d0f9f12bb857698976426e92cf9a969e49c4058b08fdcbb0d91f51a5b653ea24\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "pi-payload-predicate-owning",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\pi-payload-predicate-owning.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "pi-payload-predicate-owning",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\pi-payload-predicate-owning.stderr",
+      "sha256": "d0f9f12bb857698976426e92cf9a969e49c4058b08fdcbb0d91f51a5b653ea24",
+      "bytes": 107,
+      "utf8_text": "....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.106s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "six-profile-real-source-green",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-green.json",
+      "sha256": "250bb6ee365e79facf79ac96942a199075a55223db6783048d54c8afd6e69e10",
+      "bytes": 819,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 17.740565299987793,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1343,\r\n   \"sha256\": \"59886ca5445a1f3c13a66bbe30b7f55dea9d6323a114492e2e8d7129582d5b5c\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-real-source-green",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-real-source-green",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-green.stderr",
+      "sha256": "59886ca5445a1f3c13a66bbe30b7f55dea9d6323a114492e2e8d7129582d5b5c",
+      "bytes": 1343,
+      "utf8_text": "test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once) ... ....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.068s\r\n\r\nOK\r\nERROR\r\n\r\n======================================================================\r\nERROR: test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 4351, in test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once\r\n    with self.assertRaises(ValueError):owner.source_payload_binding(repo,staged,profile)\r\n                                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAttributeError: module 'major_qualification_report' has no attribute 'source_payload_binding'\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 17.522s\r\n\r\nFAILED (errors=1)\r\n"
+    },
+    {
+      "phase": "six-profile-real-source-refined",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-refined.json",
+      "sha256": "238cbd8fa57305e661a8ff86538358f6d4e72ec040f88754960fb079425fa999",
+      "bytes": 817,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 17.66523720000987,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 436,\r\n   \"sha256\": \"08aa0d2fc5b847499980b6b31c80f5e2fc65f90566b6e9e91872e37202ba38fe\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "six-profile-real-source-refined",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-refined.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "six-profile-real-source-refined",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\six-profile-real-source-refined.stderr",
+      "sha256": "08aa0d2fc5b847499980b6b31c80f5e2fc65f90566b6e9e91872e37202ba38fe",
+      "bytes": 436,
+      "utf8_text": "test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once) ... ....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.035s\r\n\r\nOK\r\nok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 17.444s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "source-namespace-controls",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-namespace-controls.json",
+      "sha256": "f93d8e5b3086c9d11752023cf05dcb43de78240e6ea45cbdac3091470996a802",
+      "bytes": 1105,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests.test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources\",\r\n  \"BoundSourcePayloadTests.test_running_source_producer_never_reads_its_own_unavailable_job_log\",\r\n  \"BoundSourcePayloadTests.test_final_readiness_authenticates_both_original_source_and_report_uploads\",\r\n  \"BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 1.0064923999889288,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 4196,\r\n   \"sha256\": \"da60ca5fb3d2a61c7d7df8f42100c32c5183c028a65791b290abe24c1da34499\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "source-namespace-controls",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-namespace-controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "source-namespace-controls",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\source-namespace-controls.stderr",
+      "sha256": "da60ca5fb3d2a61c7d7df8f42100c32c5183c028a65791b290abe24c1da34499",
+      "bytes": 4196,
+      "utf8_text": "test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources) ... ok\r\ntest_running_source_producer_never_reads_its_own_unavailable_job_log (major_report_candidate_tests.BoundSourcePayloadTests.test_running_source_producer_never_reads_its_own_unavailable_job_log) ... ERROR\r\ntest_final_readiness_authenticates_both_original_source_and_report_uploads (major_report_candidate_tests.BoundSourcePayloadTests.test_final_readiness_authenticates_both_original_source_and_report_uploads) ... ok\r\ntest_source_binding_and_manifest_identity_fail_closed (major_report_candidate_tests.BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed) ... ERROR\r\n\r\n======================================================================\r\nERROR: test_running_source_producer_never_reads_its_own_unavailable_job_log (major_report_candidate_tests.BoundSourcePayloadTests.test_running_source_producer_never_reads_its_own_unavailable_job_log)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 894, in test_running_source_producer_never_reads_its_own_unavailable_job_log\r\n    with source_payload_fixture() as fixture:\r\n         ~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Python314\\Lib\\contextlib.py\", line 141, in __enter__\r\n    return next(self.gen)\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 839, in source_payload_fixture\r\n    target.write_bytes((owner.ROOT / relative).read_bytes())\r\n                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 777, in read_bytes\r\n    with self.open(mode='rb', buffering=0) as f:\r\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\r\n    return io.open(self, mode, buffering, encoding, errors, newline)\r\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\\\\candidate\\\\core\\\\surface\\\\skills\\\\tribunal\\\\references\\\\lenses\\\\migration.md'\r\n\r\n======================================================================\r\nERROR: test_source_binding_and_manifest_identity_fail_closed (major_report_candidate_tests.BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 977, in test_source_binding_and_manifest_identity_fail_closed\r\n    with source_payload_fixture() as fixture:\r\n         ~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Python314\\Lib\\contextlib.py\", line 141, in __enter__\r\n    return next(self.gen)\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_major_qualification_report.py\", line 839, in source_payload_fixture\r\n    target.write_bytes((owner.ROOT / relative).read_bytes())\r\n                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~^^\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 777, in read_bytes\r\n    with self.open(mode='rb', buffering=0) as f:\r\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\r\n    return io.open(self, mode, buffering, encoding, errors, newline)\r\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\\\\candidate\\\\core\\\\surface\\\\skills\\\\tribunal\\\\references\\\\lenses\\\\migration.md'\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.785s\r\n\r\nFAILED (errors=2)\r\n"
+    },
+    {
+      "phase": "legacy-source-controls-refined",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\legacy-source-controls-refined.json",
+      "sha256": "aa11a16f5192fed8f1483b23b2f0a815cba8c48f52762eede99e589b44e4e636",
+      "bytes": 888,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"BoundSourcePayloadTests.test_final_readiness_authenticates_both_original_source_and_report_uploads\",\r\n  \"BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 5.265408400009619,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 487,\r\n   \"sha256\": \"8eda28de67cd5325f90f9df9c006f7555dffc283cd8168ce9a01599465d57597\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "legacy-source-controls-refined",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\legacy-source-controls-refined.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "legacy-source-controls-refined",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\legacy-source-controls-refined.stderr",
+      "sha256": "8eda28de67cd5325f90f9df9c006f7555dffc283cd8168ce9a01599465d57597",
+      "bytes": 487,
+      "utf8_text": "test_final_readiness_authenticates_both_original_source_and_report_uploads (major_report_candidate_tests.BoundSourcePayloadTests.test_final_readiness_authenticates_both_original_source_and_report_uploads) ... ok\r\ntest_source_binding_and_manifest_identity_fail_closed (major_report_candidate_tests.BoundSourcePayloadTests.test_source_binding_and_manifest_identity_fail_closed) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 2 tests in 5.068s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "affected-impact-readers",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-impact-readers.json",
+      "sha256": "a234a7085e1a1379e7d3c5a4233f64ed2192599178d03f249b2a224c8abb8187",
+      "bytes": 1147,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_ci_impact\",\r\n  \"ReviewedPythonSourceEventGuardTest\",\r\n  \"WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group\",\r\n  \"WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input\",\r\n  \"WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy\",\r\n  \"ArtifactEngineCIContractTest.test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.23008159999153577,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 3592,\r\n   \"sha256\": \"b34459af0334b0dc0bdf714df6d281bc5b8bed3e1638344d9471e5bdc039c04c\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "affected-impact-readers",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-impact-readers.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "affected-impact-readers",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-impact-readers.stderr",
+      "sha256": "b34459af0334b0dc0bdf714df6d281bc5b8bed3e1638344d9471e5bdc039c04c",
+      "bytes": 3592,
+      "utf8_text": "test_exact_metadata_role_is_the_only_event_exemption (test_ci_impact.ReviewedPythonSourceEventGuardTest.test_exact_metadata_role_is_the_only_event_exemption) ... ok\r\ntest_unknown_metadata_name_or_reused_test_predicate_cannot_get_exemption (test_ci_impact.ReviewedPythonSourceEventGuardTest.test_unknown_metadata_name_or_reused_test_predicate_cannot_get_exemption) ... ok\r\ntest_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group (test_ci_impact.WorkflowContractTest.test_every_enforced_job_is_reachable_and_correctly_based_in_a_merge_group) ... ok\r\ntest_docs_pull_request_selection_covers_every_push_input (test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input) ... ERROR\r\ntest_docs_validation_triggers_never_grant_deploy (test_ci_impact.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy) ... ERROR\r\ntest_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard (test_ci_impact.ArtifactEngineCIContractTest.test_native_registry_and_every_owned_suite_edit_select_the_existing_fast_guard) ... ok\r\n\r\n======================================================================\r\nERROR: test_docs_pull_request_selection_covers_every_push_input (test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_ci_impact.py\", line 2291, in test_docs_pull_request_selection_covers_every_push_input\r\n    docs = DOCS_WORKFLOW.read_text(encoding=\"utf-8\")\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 787, in read_text\r\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\r\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\r\n    return io.open(self, mode, buffering, encoding, errors, newline)\r\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\\\\candidate\\\\.github\\\\workflows\\\\docs.yml'\r\n\r\n======================================================================\r\nERROR: test_docs_validation_triggers_never_grant_deploy (test_ci_impact.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_ci_impact.py\", line 2339, in test_docs_validation_triggers_never_grant_deploy\r\n    docs = DOCS_WORKFLOW.read_text(encoding=\"utf-8\")\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 787, in read_text\r\n    with self.open(mode='r', encoding=encoding, errors=errors, newline=newline) as f:\r\n         ~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n  File \"C:\\Python314\\Lib\\pathlib\\__init__.py\", line 771, in open\r\n    return io.open(self, mode, buffering, encoding, errors, newline)\r\n           ~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nFileNotFoundError: [Errno 2] No such file or directory: 'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\\\\candidate\\\\.github\\\\workflows\\\\docs.yml'\r\n\r\n----------------------------------------------------------------------\r\nRan 6 tests in 0.045s\r\n\r\nFAILED (errors=2)\r\n"
+    },
+    {
+      "phase": "affected-docs-policy-refined",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-docs-policy-refined.json",
+      "sha256": "5d597fe1469c12e5fbc1d0b26f200a86116db822ebb24af6faeb3b05d8af7385",
+      "bytes": 890,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_ci_impact\",\r\n  \"WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input\",\r\n  \"WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.19148509998922236,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 407,\r\n   \"sha256\": \"e127d1f59410dfb9ff6372bd1ab36c63e028414c705c647474985403dabc26a1\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "affected-docs-policy-refined",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-docs-policy-refined.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "affected-docs-policy-refined",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-docs-policy-refined.stderr",
+      "sha256": "e127d1f59410dfb9ff6372bd1ab36c63e028414c705c647474985403dabc26a1",
+      "bytes": 407,
+      "utf8_text": "test_docs_pull_request_selection_covers_every_push_input (test_ci_impact.WorkflowContractTest.test_docs_pull_request_selection_covers_every_push_input) ... ok\r\ntest_docs_validation_triggers_never_grant_deploy (test_ci_impact.WorkflowContractTest.test_docs_validation_triggers_never_grant_deploy) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 2 tests in 0.014s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "affected-integration-reader",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-integration-reader.json",
+      "sha256": "1f1902090ce5bee12c0cb9772d424bef4dada8e1b5e7d5eeda6d372f6706a47c",
+      "bytes": 856,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_state_contracts_integration\",\r\n  \"IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.18309350000345148,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 319,\r\n   \"sha256\": \"c27ec110a894a6993cc1ac07e4d4c2bdeeac1875daba389199152d5a335a6ae3\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "affected-integration-reader",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-integration-reader.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "affected-integration-reader",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\affected-integration-reader.stderr",
+      "sha256": "c27ec110a894a6993cc1ac07e4d4c2bdeeac1875daba389199152d5a335a6ae3",
+      "bytes": 319,
+      "utf8_text": "test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only (test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.016s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "strict-partition-owning",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\strict-partition-owning.json",
+      "sha256": "9619db93057ae939a68201751e912fc9b58dc34e4da183a56861db7a9c8f7cba",
+      "bytes": 896,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_hook_ci_partition\",\r\n  \"RecoveryContractTests\",\r\n  \"PartitionContractTests\",\r\n  \"SourceQualificationRoleTests\",\r\n  \"NpmRuntimeOwnerTests\",\r\n  \"SingleOwnerFindingWorkflowTests\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.23560089999227785,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 8435,\r\n   \"sha256\": \"0a9e15a6e7cae302a34d11f2d8f7dbc63f63d10ec6f33b4ae25aefd9655bbad6\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "strict-partition-owning",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\strict-partition-owning.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "strict-partition-owning",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\strict-partition-owning.stderr",
+      "sha256": "0a9e15a6e7cae302a34d11f2d8f7dbc63f63d10ec6f33b4ae25aefd9655bbad6",
+      "bytes": 8435,
+      "utf8_text": "test_current_recovery_qualifies_once_before_all_five_commands (test_hook_ci_partition.RecoveryContractTests.test_current_recovery_qualifies_once_before_all_five_commands) ... ok\r\ntest_recovery_preserves_budget_matrix_permissions_and_pins (test_hook_ci_partition.RecoveryContractTests.test_recovery_preserves_budget_matrix_permissions_and_pins) ... ok\r\ntest_recovery_qualification_cannot_move_repeat_or_be_conditional (test_hook_ci_partition.RecoveryContractTests.test_recovery_qualification_cannot_move_repeat_or_be_conditional) ... ok\r\ntest_recovery_refuses_ambient_reuse_and_qualification_bypass (test_hook_ci_partition.RecoveryContractTests.test_recovery_refuses_ambient_reuse_and_qualification_bypass) ... ok\r\ntest_recovery_requires_legal_fixed_sibling_environment (test_hook_ci_partition.RecoveryContractTests.test_recovery_requires_legal_fixed_sibling_environment) ... ok\r\ntest_recovery_requires_preparation_and_every_original_command (test_hook_ci_partition.RecoveryContractTests.test_recovery_requires_preparation_and_every_original_command) ... ok\r\ntest_valid_recovery_three_host_contract (test_hook_ci_partition.RecoveryContractTests.test_valid_recovery_three_host_contract) ... ok\r\ntest_budget_exception_cannot_change_host_partition_or_other_ceiling (test_hook_ci_partition.PartitionContractTests.test_budget_exception_cannot_change_host_partition_or_other_ceiling) ... ok\r\ntest_changed_native_toolchain_pin_fails (test_hook_ci_partition.PartitionContractTests.test_changed_native_toolchain_pin_fails) ... ok\r\ntest_changed_native_toolchain_version_fails (test_hook_ci_partition.PartitionContractTests.test_changed_native_toolchain_version_fails) ... ok\r\ntest_conditional_native_toolchain_fails (test_hook_ci_partition.PartitionContractTests.test_conditional_native_toolchain_fails) ... ok\r\ntest_current_job_environment_uses_only_legal_contexts (test_hook_ci_partition.PartitionContractTests.test_current_job_environment_uses_only_legal_contexts) ... ok\r\ntest_current_native_preparation_inputs_reach_hooks (test_hook_ci_partition.PartitionContractTests.test_current_native_preparation_inputs_reach_hooks) ... ok\r\ntest_current_windows_contract_budget_has_only_the_observed_exception (test_hook_ci_partition.PartitionContractTests.test_current_windows_contract_budget_has_only_the_observed_exception) ... ok\r\ntest_current_workflow_qualifies_one_shared_native_reader_before_contracts (test_hook_ci_partition.PartitionContractTests.test_current_workflow_qualifies_one_shared_native_reader_before_contracts) ... ok\r\ntest_deleted_contract_command_fails (test_hook_ci_partition.PartitionContractTests.test_deleted_contract_command_fails) ... ok\r\ntest_duplicated_contract_command_fails (test_hook_ci_partition.PartitionContractTests.test_duplicated_contract_command_fails) ... ok\r\ntest_extra_axis_fails (test_hook_ci_partition.PartitionContractTests.test_extra_axis_fails) ... ok\r\ntest_fail_fast_cannot_be_enabled (test_hook_ci_partition.PartitionContractTests.test_fail_fast_cannot_be_enabled) ... ok\r\ntest_guard_cannot_be_skipped (test_hook_ci_partition.PartitionContractTests.test_guard_cannot_be_skipped) ... ok\r\ntest_lost_gate_dependency_fails (test_hook_ci_partition.PartitionContractTests.test_lost_gate_dependency_fails) ... ok\r\ntest_lost_gate_result_fails (test_hook_ci_partition.PartitionContractTests.test_lost_gate_result_fails) ... ok\r\ntest_missing_full_history_fails (test_hook_ci_partition.PartitionContractTests.test_missing_full_history_fails) ... ok\r\ntest_missing_guard_keeps_bounded_contract_error (test_hook_ci_partition.PartitionContractTests.test_missing_guard_keeps_bounded_contract_error) ... ok\r\ntest_missing_hermetic_suite_fails (test_hook_ci_partition.PartitionContractTests.test_missing_hermetic_suite_fails) ... ok\r\ntest_missing_native_toolchain_fails (test_hook_ci_partition.PartitionContractTests.test_missing_native_toolchain_fails) ... ok\r\ntest_missing_partition_fails (test_hook_ci_partition.PartitionContractTests.test_missing_partition_fails) ... ok\r\ntest_missing_shared_native_preparation_fails (test_hook_ci_partition.PartitionContractTests.test_missing_shared_native_preparation_fails) ... ok\r\ntest_missing_tags_fails (test_hook_ci_partition.PartitionContractTests.test_missing_tags_fails) ... ok\r\ntest_repeated_plain_suite_fails (test_hook_ci_partition.PartitionContractTests.test_repeated_plain_suite_fails) ... ok\r\ntest_replaced_contract_command_fails (test_hook_ci_partition.PartitionContractTests.test_replaced_contract_command_fails) ... ok\r\ntest_shared_native_consumer_environment_is_required (test_hook_ci_partition.PartitionContractTests.test_shared_native_consumer_environment_is_required) ... ok\r\ntest_shared_native_output_cannot_move (test_hook_ci_partition.PartitionContractTests.test_shared_native_output_cannot_move) ... ok\r\ntest_shared_native_preparation_cannot_be_conditional (test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_be_conditional) ... ok\r\ntest_shared_native_preparation_cannot_precede_toolchain (test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_precede_toolchain) ... ok\r\ntest_shared_native_preparation_cannot_repeat (test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_repeat) ... ok\r\ntest_shared_native_preparation_cannot_reuse_parent_input (test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_reuse_parent_input) ... ok\r\ntest_shared_native_preparation_cannot_skip_tests (test_hook_ci_partition.PartitionContractTests.test_shared_native_preparation_cannot_skip_tests) ... ok\r\ntest_softened_check_fails (test_hook_ci_partition.PartitionContractTests.test_softened_check_fails) ... ok\r\ntest_timeout_ceiling_cannot_expand (test_hook_ci_partition.PartitionContractTests.test_timeout_ceiling_cannot_expand) ... ok\r\ntest_unassigned_contract_fails (test_hook_ci_partition.PartitionContractTests.test_unassigned_contract_fails) ... ok\r\ntest_valid_four_cell_contract (test_hook_ci_partition.PartitionContractTests.test_valid_four_cell_contract) ... ok\r\ntest_wrong_isolation_route_fails (test_hook_ci_partition.PartitionContractTests.test_wrong_isolation_route_fails) ... ok\r\ntest_wrong_windows_exclusion_fails (test_hook_ci_partition.PartitionContractTests.test_wrong_windows_exclusion_fails) ... ok\r\ntest_current_roles_keep_the_original_inventory_and_counts (test_hook_ci_partition.SourceQualificationRoleTests.test_current_roles_keep_the_original_inventory_and_counts) ... ok\r\ntest_exact_hw04_addition_preserves_all_prior_ordered_commands (test_hook_ci_partition.SourceQualificationRoleTests.test_exact_hw04_addition_preserves_all_prior_ordered_commands) ... ok\r\ntest_folded_scalar_keeps_every_interpolation_and_argument (test_hook_ci_partition.SourceQualificationRoleTests.test_folded_scalar_keeps_every_interpolation_and_argument) ... ok\r\ntest_q02_roles_refuse_changed_profile_payload_results_and_authority (test_hook_ci_partition.SourceQualificationRoleTests.test_q02_roles_refuse_changed_profile_payload_results_and_authority) ... ok\r\ntest_source_roles_cannot_change_guards_repeat_original_tests_or_forward_credentials (test_hook_ci_partition.SourceQualificationRoleTests.test_source_roles_cannot_change_guards_repeat_original_tests_or_forward_credentials) ... ok\r\ntest_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods (test_hook_ci_partition.NpmRuntimeOwnerTests.test_class_selection_is_disjoint_complete_and_preserves_all_twenty_one_methods) ... ok\r\ntest_full_runtime_producer_uses_each_pinned_native_runtime_once (test_hook_ci_partition.NpmRuntimeOwnerTests.test_full_runtime_producer_uses_each_pinned_native_runtime_once) ... ok\r\ntest_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes (test_hook_ci_partition.NpmRuntimeOwnerTests.test_runtime_owner_refuses_unpinned_repeated_conditional_or_incomplete_routes) ... ok\r\ntest_exact_six_source_owners_keep_original_invocations_and_closed_authority (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_exact_six_source_owners_keep_original_invocations_and_closed_authority) ... ok\r\ntest_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 54 tests in 0.161s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "measurement-owner-selection-red",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-red.json",
+      "sha256": "55e94d4d8f3ba6298fd685c99654e82980795b484c174db24466cb22a554e419",
+      "bytes": 852,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_hook_ci_partition\",\r\n  \"SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.08287959999870509,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1911,\r\n   \"sha256\": \"bd4123c1c10234f829bb9ea40ec88fdb212674a06ca461593c135d363eaadcb6\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "measurement-owner-selection-red",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-red.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "measurement-owner-selection-red",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-red.stderr",
+      "sha256": "bd4123c1c10234f829bb9ea40ec88fdb212674a06ca461593c135d363eaadcb6",
+      "bytes": 1911,
+      "utf8_text": "test_new_measurement_owner_and_actual_imports_select_its_required_hook_job (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_new_measurement_owner_and_actual_imports_select_its_required_hook_job (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_hook_ci_partition.py\", line 1105, in test_new_measurement_owner_and_actual_imports_select_its_required_hook_job\r\n    text=self.current();selected(text)\r\n                        ~~~~~~~~^^^^^^\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_hook_ci_partition.py\", line 1103, in selected\r\n    self.assertFalse([path for path in sorted(subjects) if not any(fnmatch.fnmatchcase(path,pattern) for pattern in patterns)],\r\n    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\n                     'new unfiltered owner or an actual imported subject skips its hook controls')\r\n                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\r\nAssertionError: ['tools/farm-first-pass.py', 'tools/live-smarts-exercise.py', 'tools/statusline-bench.py', 'tools/statusline-screenshot.py', 'tools/test_measurement_contracts.py'] is not false : new unfiltered owner or an actual imported subject skips its hook controls\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.004s\r\n\r\nFAILED (failures=1)\r\n"
+    },
+    {
+      "phase": "measurement-owner-selection-green",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-green.json",
+      "sha256": "dbafc10d1a18108133a3606f17b3a270a23b51ab80941ebe074f21ee989d993b",
+      "bytes": 851,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_hook_ci_partition\",\r\n  \"SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.07699249999132007,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 317,\r\n   \"sha256\": \"43a45c681b66dd0d642832ae388d3a725c51f27701c2f5568dfcbcec40b95f50\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "measurement-owner-selection-green",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "measurement-owner-selection-green",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\measurement-owner-selection-green.stderr",
+      "sha256": "43a45c681b66dd0d642832ae388d3a725c51f27701c2f5568dfcbcec40b95f50",
+      "bytes": 317,
+      "utf8_text": "test_new_measurement_owner_and_actual_imports_select_its_required_hook_job (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.010s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "final-profile-nine-controls",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-profile-nine-controls.json",
+      "sha256": "61d26b67b9dd508fc08891daaf912c98a88be7fb111ab7f1d29b9c2605ae3209",
+      "bytes": 744,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run.py\",\r\n  \"SingleOwnerPythonFindingProfileTests\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 18.579669800004922,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 2243,\r\n   \"sha256\": \"fdb82a3048a5f32997db50e17e791a41b2457c2704c7f89281ac3a362993a23d\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "final-profile-nine-controls",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-profile-nine-controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "final-profile-nine-controls",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\final-profile-nine-controls.stderr",
+      "sha256": "fdb82a3048a5f32997db50e17e791a41b2457c2704c7f89281ac3a362993a23d",
+      "bytes": 2243,
+      "utf8_text": "test_a_six_existing_single_owner_findings_have_closed_original_profiles (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_a_six_existing_single_owner_findings_have_closed_original_profiles) ... ok\r\ntest_b_complete_original_finite_compositions_and_policy_are_consumed (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_b_complete_original_finite_compositions_and_policy_are_consumed) ... ok\r\ntest_c_every_required_named_case_and_exact_single_owner_group_is_mandatory (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_c_every_required_named_case_and_exact_single_owner_group_is_mandatory) ... ok\r\ntest_d_original_source_script_profile_job_and_payload_never_cross_authority (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_d_original_source_script_profile_job_and_payload_never_cross_authority) ... ok\r\ntest_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_e_nested_refusal_examples_are_retained_but_grant_no_additional_credit) ... ok\r\ntest_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_f_filtered_and_foreign_observer_calls_refuse_before_any_original_execution) ... ok\r\ntest_g_final_reader_authenticates_each_original_upload_after_whole_run_success (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_g_final_reader_authenticates_each_original_upload_after_whole_run_success) ... ok\r\ntest_h_real_owned_source_payload_and_safe_original_identity_owner_run_once (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_h_real_owned_source_payload_and_safe_original_identity_owner_run_once) ... ....\r\n----------------------------------------------------------------------\r\nRan 4 tests in 0.058s\r\n\r\nOK\r\nok\r\ntest_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources (major_report_candidate_tests.SingleOwnerPythonFindingProfileTests.test_i_both_closed_physical_namespaces_refuse_missing_and_shadow_sources) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 9 tests in 18.376s\r\n\r\nOK\r\n"
+    },
+    {
+      "phase": "impact-role-reuse-red",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-red.json",
+      "sha256": "b9aeadfabade888da8f74fa6896715a8b8ca73b7bb712859e6090a171f19b77a",
+      "bytes": 866,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_hook_ci_partition\",\r\n  \"SingleOwnerFindingWorkflowTests.test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 1,\r\n \"elapsed_seconds\": 0.08077840000623837,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 1140,\r\n   \"sha256\": \"d25808e56b7fcd9b037a99bd8f77599c40fba00b53ca7c16f3101dbd8cec9bd8\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "impact-role-reuse-red",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-red.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "impact-role-reuse-red",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-red.stderr",
+      "sha256": "d25808e56b7fcd9b037a99bd8f77599c40fba00b53ca7c16f3101dbd8cec9bd8",
+      "bytes": 1140,
+      "utf8_text": "test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape) ... FAIL\r\n\r\n======================================================================\r\nFAIL: test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape)\r\n----------------------------------------------------------------------\r\nTraceback (most recent call last):\r\n  File \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\candidate\\.github\\scripts\\test_hook_ci_partition.py\", line 1114, in test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape\r\n    with self.assertRaises(ValueError):\r\n         ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^\r\nAssertionError: ValueError not raised\r\n\r\n----------------------------------------------------------------------\r\nRan 1 test in 0.003s\r\n\r\nFAILED (failures=1)\r\n"
+    },
+    {
+      "phase": "impact-role-reuse-green",
+      "kind": "receipt",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-green.json",
+      "sha256": "e626144f925c7f99765be9fda6b7950ba9430d268689ba2b4e9a6de9ba4a3eb5",
+      "bytes": 775,
+      "utf8_text": "{\r\n \"argv\": [\r\n  \"C:/Python314/python.exe\",\r\n  \"-I\",\r\n  \"-S\",\r\n  \"-B\",\r\n  \"-X\",\r\n  \"utf8\",\r\n  \"C:/Users/brenn/AppData/Local/Temp/ca-six-python-findings-3f5wzv0u/run-readers.py\",\r\n  \"test_hook_ci_partition\",\r\n  \"SingleOwnerFindingWorkflowTests\"\r\n ],\r\n \"cwd\": \"C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-six-python-findings-3f5wzv0u\",\r\n \"exit_code\": 0,\r\n \"elapsed_seconds\": 0.0999578999762889,\r\n \"streams\": {\r\n  \"stdout\": {\r\n   \"bytes\": 0,\r\n   \"sha256\": \"e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855\"\r\n  },\r\n  \"stderr\": {\r\n   \"bytes\": 778,\r\n   \"sha256\": \"8e612472040648751c6cec88e810b853ce33e57f7c8dcd4b9b3c63cdc2793c44\"\r\n  }\r\n },\r\n \"environment\": \"owned HOME/TEMP + credential-blind allowlist + private Git config; no provider/network/install command\"\r\n}\r\n"
+    },
+    {
+      "phase": "impact-role-reuse-green",
+      "kind": "stdout",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-green.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0,
+      "utf8_text": ""
+    },
+    {
+      "phase": "impact-role-reuse-green",
+      "kind": "stderr",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-six-python-findings-3f5wzv0u\\impact-role-reuse-green.stderr",
+      "sha256": "8e612472040648751c6cec88e810b853ce33e57f7c8dcd4b9b3c63cdc2793c44",
+      "bytes": 778,
+      "utf8_text": "test_exact_six_source_owners_keep_original_invocations_and_closed_authority (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_exact_six_source_owners_keep_original_invocations_and_closed_authority) ... ok\r\ntest_new_measurement_owner_and_actual_imports_select_its_required_hook_job (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_measurement_owner_and_actual_imports_select_its_required_hook_job) ... ok\r\ntest_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape (test_hook_ci_partition.SingleOwnerFindingWorkflowTests.test_new_source_roles_refuse_omission_repetition_filtered_commands_and_credential_escape) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 3 tests in 0.026s\r\n\r\nOK\r\n"
+    }
+  ],
+  "scope": "Actual RED/GREEN and refined setup history, complete raw local outputs; no original full represented suite or hosted qualification inferred."
+}

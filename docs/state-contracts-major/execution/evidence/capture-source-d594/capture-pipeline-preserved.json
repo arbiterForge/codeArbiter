@@ -1,0 +1,147 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/capture-hook-proof.ts": "d7dcde34689667eef70602be01aa8548a38564e168504a9a26bf62a63e60b287",
+    "site/scripts/capture/fixture.ts": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275",
+    "site/scripts/capture/harness.ts": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d",
+    "site/scripts/capture/normalize.ts": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+    "site/scripts/capture/py-runner.py": "5444e4fdd7eb605c7caed7cc9fb70a181abe55f58e65f56250b53d5d963efa30",
+    "site/scripts/capture/run.ts": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32",
+    "site/scripts/capture/targets.ts": "44c63c3ebd909eeffa46a172faaf47a4cc6992dcd11f6fb32576044310dfd9e1",
+    "site/scripts/capture/verify.ts": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S66:01",
+    "disposition:transitions:S66:02",
+    "disposition:transitions:S66:03",
+    "disposition:transitions:S66:04",
+    "disposition:transitions:S66:05",
+    "disposition:transitions:S66:06",
+    "disposition:transitions:S66:07",
+    "disposition:transitions:S66:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/capture-source-d594/inspection.json",
+      "sha256": "5e37324188d6806b25d927e1305c3c1253cda486a9d51b2ef4fba83c611ce0f6"
+    }
+  ],
+  "scope": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S66:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 20,
+          "end": 28,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+        }
+      ],
+      "semantic_assessment": "Wanted target IDs define retained JSON names; obsolete JSON files are pruned before generation. Non-JSON retained; later failures do not restore deleted assets.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:02",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/fixture.ts",
+          "start": 96,
+          "end": 147,
+          "file_sha256": "330eb3b4b057fee88d237d32933fa9cdac2128cf8bc8866eb010ad57e105b275"
+        }
+      ],
+      "semantic_assessment": "Prefixed owned OS-temp root resolves real spelling; project/home/tmp and explicit allowlisted hook environment are created. Trusted target setup initializes fixed example Git identity and files; success is conditional on these operations returning.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 65,
+          "end": 131,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+        }
+      ],
+      "semantic_assessment": "Explicit Python override alone, Windows python, POSIX python3 then python; only ENOENT retries next candidate.60-second process bound; missing side list/status/error refuses. Runner records in-process entry/registered/executed Python files; child process imports are explicitly unseen.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:04",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 151,
+          "end": 187,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+        }
+      ],
+      "semantic_assessment": "Requires declared process exit, selects fixed stream/file, normalizes paths/timestamps/commits/LF and refuses empty output or remaining fixture prefix. Output/argv and LF hashes for reported imports are recorded, not fabricated.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:05",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 30,
+          "end": 37,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+        }
+      ],
+      "semantic_assessment": "Each completed record serializes deterministically; absent/different UTF-8 bytes alone trigger write. Identical old bytes retained; later failure may leave earlier updates.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:06",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/harness.ts",
+          "start": 151,
+          "end": 190,
+          "file_sha256": "c24461ad291ce1567ccf2348655fd231ca86625a2b223615d54031d3a8a12f1d"
+        }
+      ],
+      "semantic_assessment": "After fixture acquisition, setup/execution/return is in try and finally invokes dispose. Owned prefix/direct-temp-parent deletion guard inspected; cleanup failures propagate, no successful physical removal inferred.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:07",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 46,
+          "end": 131,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        }
+      ],
+      "semantic_assessment": "Nonempty inventory and record id/tool/source list required; contained paths/canonical hashes/current LF digests and entry inclusion checked. Findings throw. Runner invokes freshness before hook proof; reported source set is not complete child-process membership.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    },
+    {
+      "cell": "disposition:transitions:S66:08",
+      "witnesses": [
+        {
+          "path": "site/scripts/capture/run.ts",
+          "start": 20,
+          "end": 40,
+          "file_sha256": "5b795d00f67bce0e1b8e3e5727642cef05499c250c7e6afa5f8617bfab928e32"
+        }
+      ],
+      "semantic_assessment": "Prune and captures/writes are sequential, then freshness and awaited proof generation. Exceptions stop without rollback or global success catch; partial earlier writes are allowed.",
+      "limits": "Conditional source-only capture controller/fixture/runner/freshness contract. Trusted target callbacks and returned outputs are inputs, not observed helper behavior. No actual capture/build/host discovery, complete subprocess imports, media encoding or physical cleanup acceptance. No whole-directory transaction."
+    }
+  ],
+  "excluded_cells": []
+}

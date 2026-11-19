@@ -1,0 +1,27 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_major_readiness.CompletedPopulationTest.test_complete_population_does_not_reopen_resolved_history_prose",
+    "test_major_readiness.CompletedPopulationTest.test_complete_reviewed_population_preserves_local_origin_and_non_circularity"
+  ],
+  "exit_code": 1,
+  "seconds": 13.091096699994523,
+  "before": {
+    "head": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+    "index": "7854d60dd3c9816666e5fad34f52599889434ea65be94e23e038ed2d592d69fe",
+    "files": {}
+  },
+  "after": {
+    "head": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+    "index": "7854d60dd3c9816666e5fad34f52599889434ea65be94e23e038ed2d592d69fe",
+    "files": {}
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "143009caaa768f7fc9f520bfe33165264b727963d094d7c1b7e8f1b53d494965"
+}

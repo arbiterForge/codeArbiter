@@ -1,0 +1,64 @@
+{
+  "source": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+  "seed_bindings": {
+    "p02": {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json",
+      "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+    },
+    "recovery": {
+      "path": "docs/state-contracts-major/execution/evidence/current-local-2df/proofs/recovery22-tested.json",
+      "sha256": "46e1d52e98ae991eb37670dc17502fcc68d82f5db8a9f0f8e5c8c6dbe3544cea"
+    },
+    "p02_start": {
+      "path": "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/run-start.json",
+      "sha256": "4f1a8b2723be28080c52d0c2b4007100aa8b9e2e92e77cf5dd89f4a614c3ac78"
+    }
+  },
+  "p02": [
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_stale_history_passes_integration_but_strict_publication_refuses",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_original_proof_passes_and_records_applicable",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_unavailable_current_input_is_unknown_not_passed_applicability",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_input_refuses_even_when_current_source_stale",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_changed_original_raw_proof_refuses_even_when_current_source_stale",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_hosted_claim_cannot_borrow_valid_local_raw_path",
+    "test_state_contracts_integration.IntegrationIntegrityTest.test_publication_rejects_hosted_identity_fields_on_local_raw_path",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_metadata_only_paths_select_integrity_without_full_hooks",
+    "test_state_contracts_integration.IntegrationWorkflowWiringTest.test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+  ],
+  "recovery": [
+    "test_workflow_recovery.RecoveryRuntimeTest.test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_blocking_decision_is_not_demoted_or_confirmed",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_deferred_decision_and_decline_commit_once_after_response_loss",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_linked_followup_uses_existing_fields_without_reopening_settled_history",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_post_commit_failure_reports_observed_record_without_false_no_effect",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_emitted_fallback_notice_is_deduplicated_per_session",
+    "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site"
+  ]
+}

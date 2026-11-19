@@ -1,0 +1,17 @@
+{
+  "source_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "findings": 25,
+  "tasks": 27,
+  "all_original_findings_mapped": true,
+  "all_existing_paths_present": true,
+  "local_dependency_graph_acyclic": true,
+  "all_named_external_task_ids_resolved": true,
+  "external_dependency_semantics": "kind labels distinguish hard interface, conditional namespace, contract coordination and downstream integration; HW-14 consumes Pi and must not become a reverse hard edge.",
+  "tests_run_for_handoff": false,
+  "repository_source_changed": false,
+  "artifact_hashes": {
+    "pi-delegation-design.md": "d49dd2a97befaea0f51c20393cdae62931a2ae3a16026868315e34a69304ce17",
+    "surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "surfaces-handoff-read-files.txt": "5b0abda5c28b5273bfc1b67abf9170665362d4bca65e30290267c866c547fccd"
+  }
+}

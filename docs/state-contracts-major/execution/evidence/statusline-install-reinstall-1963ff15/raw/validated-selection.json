@@ -1,0 +1,9 @@
+{
+  "ids": [
+    "__main__.PrivateInstallJourney.test_install_reinstall_user_takeover_and_restore_preserves_whole_settings",
+    "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+    "__main__.PrivateInstallJourney.test_install_refusals_preserve_existing_settings"
+  ],
+  "count": 3,
+  "no_original_test_methods_selected": true
+}

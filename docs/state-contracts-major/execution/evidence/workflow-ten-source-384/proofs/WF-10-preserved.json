@@ -1,0 +1,122 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal53clause/currentguidance/callee/baselineinspection; noexecution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/surface/agents/checkpoint-aggregator.md": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+  "core/surface/agents/verdict-aggregator.md": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+  "core/surface/commands/audit.md": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+  "core/surface/commands/checkpoint.md": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-10"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/source-bindings.json",
+   "sha256": "3103212963370e3d7c1ff6e84a8e3852e55a1401987e528dcd60b3e13d282cfc"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-ten-source-384/clause-inspection.json",
+   "sha256": "4f0a656b05f94b18669093b3387d1319b591ea56d809dba57a8211f2b2bade8f"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-10",
+   "frozen_row_sha256": "fe4c6d622e62a3771e4e62f594063cab9e93709a743be24fbcd9368b21b3c20b",
+   "clause_ids": [
+    "disposition:transitions:WF-10:01",
+    "disposition:transitions:WF-10:02",
+    "disposition:transitions:WF-10:03",
+    "disposition:transitions:WF-10:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/checkpoint.md",
+     "start": 8,
+     "end": 28,
+     "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+     "span_sha256": "069c0a266ddb5d2f4a7f02bda0ec8c9c45f7b723ac7f2421057057f4e6c07533"
+    },
+    {
+     "path": "core/surface/commands/checkpoint.md",
+     "start": 48,
+     "end": 53,
+     "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+     "span_sha256": "050c11e529faa1ef78c1b1e806428ad0bf3fb14b3873a272ad6ee81af255024f"
+    },
+    {
+     "path": "core/surface/agents/verdict-aggregator.md",
+     "start": 21,
+     "end": 33,
+     "file_sha256": "1f92df6a7fb86ad60245bccda53368a83a5457a2ef4d724c0ff86cab6e624d0f",
+     "span_sha256": "310a2497c88c16c708add9f26d849f3a088bf15beeff5f74ab3ea94cdb62920d"
+    },
+    {
+     "path": "core/surface/agents/checkpoint-aggregator.md",
+     "start": 12,
+     "end": 41,
+     "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+     "span_sha256": "4551ba2c4d0a81072fcd393c56373353bbbc1605dd1e87281053520d24e500a9"
+    },
+    {
+     "path": "core/surface/agents/checkpoint-aggregator.md",
+     "start": 43,
+     "end": 50,
+     "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+     "span_sha256": "3ad0b7c50227ac654644db2ac97a63e06de253cff80853d8b4e5c3672097cd7d"
+    },
+    {
+     "path": "core/surface/agents/checkpoint-aggregator.md",
+     "start": 114,
+     "end": 119,
+     "file_sha256": "af845aa3701b4def478c49cfa465d1039b6cdd62de0e881daee8ecd20c85214d",
+     "span_sha256": "fa06c8bf3c0c88a464e2225e534776c3473fdec9535a3675524a30467cb569bd"
+    },
+    {
+     "path": "core/surface/commands/checkpoint.md",
+     "start": 26,
+     "end": 35,
+     "file_sha256": "2b3212fe1e5e38af3dc135e32f700af2ef91600ce9d90802c2c8ac80d766f31e",
+     "span_sha256": "ed79e08403d21adc6fd36fc9c999da146495129ed71472aafea10ec4cf37500e"
+    },
+    {
+     "path": "core/surface/commands/audit.md",
+     "start": 13,
+     "end": 35,
+     "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+     "span_sha256": "5cb1a5f2dcfc865fb3142116e0f38451dfd920cfc2733a0e8a77cea84d389d77"
+    },
+    {
+     "path": "core/surface/commands/audit.md",
+     "start": 21,
+     "end": 45,
+     "file_sha256": "d25ae0768d05b039912e792606ddbbdfa4acb00f3d4dc0a68670ace4be4f1750",
+     "span_sha256": "3360674ceca418653c44142e5038b9b4e6583a1c3abeaf27a741e8d25adecb63"
+    }
+   ],
+   "semantic_assessment": "Everyliteralguard/effect/retryclause separatelymappedtoactualguidance/callee, includingnamedacceptedreplacementsandintakecorrections. No actualagentexecution, commandresult, taskcompletionoruniversalruntimeguard asserted.",
+   "limits": "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Source-only actualguidanceconformance withnamedacceptedchanges; notagent/tool/runtime/taskqualification.",
+ "limits": [
+  "Reasoned literal/current guidance conformance only: no agent dispatch, validator invocation, product test, runtime, commit, PR/API/provider/network effect or host/task/scenario/publication qualification.",
+  "CurrentPROGRAM/ADR43 acceptedassistive direction and scopedHW07/HW09/HW11-14/HW18 changes are explicit; no artifactcode/reviewerfleet/secondpermissionbarrier invented.",
+  "Real userstops/hostpermissions/security/source-store integrity/CAS/journal failures remain binding; source guidance or a validproof never grantsauthority.",
+  "Exactly54 currentPLANNED rowproposals;9advancededges untouched withfullhistory, allunrelated/WF02/WF03 records preserved.",
+  "Sourceepoch384269 isliteralinspectionbasis. Per-rowCAS bindsactualselectedrows, wholeledgerhashadvisoryonly. Rootalone owns strictprospectiveauthentication/adoption."
+ ]
+}

@@ -500,3 +500,61 @@ describe("#377 - a token-bearing box never runs NET_ADMIN without its firewall",
     expect(execArgv[execArgv.length - 1]).toBe(plan.firewallScript);
   });
 });
+
+
+describe("SBX-C03 late successful Claude start cancellation", () => {
+  const token = "DUMMY-LATE-CANCEL-TOKEN";
+  const id = "a".repeat(64);
+  const base = { image: "ca-sbx-claude:test", token, homeVolume: "owned-home" };
+  for (const scenario of [
+    { title: "offline run", policy: "offline", phase: "run", unknown: false },
+    { title: "Anthropic run before firewall", policy: "anthropic-only", phase: "run", unknown: false },
+    { title: "successful firewall", policy: "anthropic-only", phase: "firewall", unknown: false },
+    { title: "successful firewall with unavailable cleanup", policy: "anthropic-only", phase: "firewall", unknown: true },
+  ] as const) {
+    it(`refuses ready after ${scenario.title} and retains exact cleanup truth`, async () => {
+      const controller = new AbortController();
+      const calls: Array<{ args: string[]; signal?: AbortSignal; env?: NodeJS.ProcessEnv }> = [];
+      const dockerRun = async (args: string[], call?: { signal?: AbortSignal; env?: NodeJS.ProcessEnv }) => {
+        calls.push({ args, signal: call?.signal, env: call?.env });
+        if (args[0] === "run") {
+          if (scenario.phase === "run") controller.abort(new Error(`private reason ${token}`));
+          return { code: 0, stdout: `${id}\n`, stderr: "" };
+        }
+        if (args[0] === "exec") {
+          controller.abort(new Error(`private reason ${token}`));
+          return { code: 0, stdout: "", stderr: "" };
+        }
+        return { code: scenario.unknown ? 125 : 0, stdout: "", stderr: scenario.unknown ? token : "" };
+      };
+      const result = await runClaudeInside({ ...base, netPolicy: scenario.policy }, dockerRun, {
+        signal: controller.signal, env: { SAFE_MARKER: "kept", [TOKEN_ENV_VAR]: "ambient-dummy" },
+      }).then(value => ({ value, error: undefined }), error => ({ value: undefined, error }));
+      expect(result.value, "cancelled successful Docker observation must not become ready").toBeUndefined();
+      expect(result.error).toBeInstanceOf(Error);
+      expect(result.error).toMatchObject({
+        name: "ClaudeStartCancelledError", containerId: id, commandCode: 0, phase: scenario.phase,
+        cleanup: { containment: scenario.unknown ? "unknown" : "verified-absent",
+          removeCode: scenario.unknown ? 125 : 0, observationCode: scenario.unknown ? 125 : 0 },
+      });
+      expect(String(result.error)).toContain(id);
+      expect(String(result.error)).toContain(scenario.unknown ? "unknown" : "verified absent");
+      expect(String(result.error)).not.toContain(token);
+      expect(String(result.error)).not.toContain("private reason");
+      expect(result.error.cause).toBeUndefined();
+      expect(calls.map(c => c.args[0])).toEqual(scenario.phase === "run"
+        ? ["run", "rm", "ps"] : ["run", "exec", "rm", "ps"]);
+      expect(calls.at(-2)!.args).toEqual(["rm", "-f", id]);
+      expect(calls.at(-1)!.args).toEqual(["ps", "-a", "-q", "--no-trunc", "--filter", `id=${id}`]);
+      expect(calls[0]!.env?.[TOKEN_ENV_VAR]).toBe(token);
+      expect(calls[0]!.signal).toBe(controller.signal);
+      for (const call of calls.slice(1)) expect(call.env?.[TOKEN_ENV_VAR]).toBeUndefined();
+      for (const call of calls.slice(-2)) {
+        expect(call.signal).toBeUndefined();
+        expect(call.env?.SAFE_MARKER).toBe("kept");
+        expect(call.args.join(" ")).not.toContain(token);
+        expect(call.args).not.toContain("volume");
+      }
+    });
+  }
+});

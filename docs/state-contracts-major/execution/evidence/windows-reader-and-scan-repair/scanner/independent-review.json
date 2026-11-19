@@ -1,0 +1,86 @@
+{
+  "reviewer": "/root/pi_program; independent of /root/farm_sandbox_program author",
+  "roles": [
+    "auth-crypto-reviewer",
+    "security-reviewer",
+    "coverage-auditor"
+  ],
+  "verdict": "PASS",
+  "findings": [],
+  "subject": {
+    "candidate": "candidate-v1:e30328061c5c57a97d5c749de7204bd4044a5d9d1b572a6c4236213d2f26a778",
+    "head_observed": "142e072bf33d23124194bd7d8c153d29ab5c7844",
+    "staged_paths_and_sha256": {
+      "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca-codex/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca-pi/hooks/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "plugins/ca/hooks/tests/test_crypto_context.py": "b1817a36fec50f7b9810de90a729bb89add7ea0620f0322da017b92dc2653b72"
+    },
+    "join": "All five current and staged bytes independently matched author freeze; installed canonical candidate_scan independently returned exact candidate and only two expected crypto findings."
+  },
+  "policy": {
+    "format": "HTML; complete16CON+16NOTE previously read through installed knowledge.py by this reviewer; both policy and retained native packet hashes rechecked unchanged for this review",
+    "source_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "full_native_read_packet": "C:/Users/brenn/AppData/Local/Temp/ca-p02-independent-full-native-policy.json",
+    "packet_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "charters": [
+      "agents/auth-crypto-reviewer.md",
+      "agents/security-reviewer.md",
+      "agents/coverage-auditor.md",
+      "routines/crypto-compliance/SKILL.md",
+      "includes/reviewer-contract.md",
+      "includes/maturity-coverage.md"
+    ],
+    "installed_version": "ca-codex0.26.9"
+  },
+  "crypto_classification": {
+    "verdict": "PASS",
+    "findings": [
+      {
+        "path": "plugins/ca/hooks/tests/test_crypto_context.py",
+        "line": 502,
+        "digest": "path-v1:290fa91f5153c3c39f5d0b8f0c845c150231c3f875892e6287041f05bf94d701"
+      },
+      {
+        "path": "plugins/ca/hooks/tests/test_crypto_context.py",
+        "line": 504,
+        "digest": "path-v1:19d5d6917fb1ac92c99147b6d8347c20558f1232155a2ed9b54b0552bf41023e"
+      }
+    ],
+    "classification": "Two detector-oracle fixture references to key_type = RSA; no actual RSA key generation, encryption, signing, password derivation or new cryptographic operation. Existing unkeyed SHA256 public source/candidate identity framing unchanged; no authentication assertion from those hashes."
+  },
+  "secrets_classification": {
+    "verdict": "PASS",
+    "canonical_secret_findings": 0,
+    "analysis": "No new credential source, token literal, environment read, network sink, log/argv/prompt credential flow, TLS or provider changes. Root full staged file gitleaks PASS is retained parent evidence, not a reviewer rerun."
+  },
+  "source_review": [
+    "Complete canonical delta and generated-copy hash join inspected. Regexes and exemption paths unchanged. Nonmatching lines avoid unused line_digest only; actual crypto and secret matches retain one shared digest, crypto-before-secret finding order, path/row identity and existing span ordering.",
+    "The exact NAME/from guard is a necessary condition of the unchanged six-token start tuple. Same loop bounds and full token tuple, aliases, closing/tail checks, original source destination hash, row/context bindings, replacement-decoding refusal, cross-line unsupported refusal and whole staged candidate binding retained.",
+    "No marker creation/acceptance changes or relaxed fail-closed branch; all generated copies exactly canonical. Same installed producer and consumer API results. Existing review source/crypto algorithms preserved."
+  ],
+  "coverage": {
+    "verdict": "PASS_FOR_AFFECTED_PYTHON_CRITICAL_PATH; HOSTED_TIMING_PENDING",
+    "numeric_policy": "Current tech-stack declares no coverage tooling for Python hooks/build tools; direct unittest and behavioral evidence apply. No TypeScript numeric threshold substituted.",
+    "author_run": "40PASS once74.601s CPython3.14.6 Windows; 202 declared inputs identical before/after; fake home unchanged, ResourceWarning wrapper retained. Raw full40.stderr SHA3d5627375b6bb52ad39902c7fa65dc5f4ec035abae15892ec3e17674f564ed5c inspected.",
+    "independent_mechanical_checks": [
+      "All39 original test method ASTs exactly unchanged; only deterministic work oracle added.",
+      "All18 old/new vector objects independently equal across36 source/diff API observations including ordered findings, sorted digests and whole candidate; retained after vector owner SHA matches current source.",
+      "Every retained manifest file hash independently verified; author 202 input before/after packet hashes equal."
+    ],
+    "meaningful_assertions": [
+      "Final genuine work oracle RED40008 identity derivations with0findings ->GREEN0; positive actual finding remains exact path-v1 identity with1derivation.",
+      "Existing alias/multiline/comment/string/context-boundary tests, cross-file and cross-line borrowing refusal, invalid/lossy context refusal, destination/path binding, staged vs worktree separation and legacy marker refusal remain passed.",
+      "Whole staged candidate not only sensitive lines remains directly asserted. Original ordinary-context hook(timeout=3) assertions unchanged and local passed."
+    ],
+    "not_claimed": [
+      "No reviewer test/suite rerun.",
+      "Original hosted WindowsCPython3.15.2 three-second timeout not reproduced locally; new hosted exact-source acceptance remains pending.",
+      "Local profiler improvement is diagnostic work/timing evidence only, not hosted timing qualification or program completion."
+    ]
+  },
+  "evidence_packet": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-crypto-context-debug-8t6nzwbk",
+  "evidence_manifest_sha256": "a3379b275cf5a0838cf32e19d9f882a0ed7e29badc06139ca610d5094a9f0ec0",
+  "mutations": "Only this Temp review record written. No source/index/security-pass marker/commit/push changes and no tests rerun."
+}

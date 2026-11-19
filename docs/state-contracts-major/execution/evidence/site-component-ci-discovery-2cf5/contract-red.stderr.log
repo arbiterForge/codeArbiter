@@ -1,0 +1,19 @@
+test_component_suite_is_discovered_and_success_gates_pages_upload (site_ci_contract_owner.SiteBrowserPublicationWorkflowTest.test_component_suite_is_discovered_and_success_gates_pages_upload) ... FAIL
+
+======================================================================
+FAIL: test_component_suite_is_discovered_and_success_gates_pages_upload (site_ci_contract_owner.SiteBrowserPublicationWorkflowTest.test_component_suite_is_discovered_and_success_gates_pages_upload)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-site-component-discovery-2cf5\candidate\.github\scripts\test_ci_impact.py", line 3637, in test_component_suite_is_discovered_and_success_gates_pages_upload
+    self.assertEqual(scripts.get("test:components"),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     "playwright test --config=playwright.components.config.ts",
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                     "component specs are outside the production browser testDir")
+                     ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: None != 'playwright test --config=playwright.components.config.ts' : component specs are outside the production browser testDir
+
+----------------------------------------------------------------------
+Ran 1 test in 0.002s
+
+FAILED (failures=1)

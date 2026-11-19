@@ -1,0 +1,43 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "06b3b1c5b1955007d9e2cc3ed1ecb2cce4b91d7c2444f63b56b4bcd61c5a4a94",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S54:02",
+    "disposition:transitions:S54:03",
+    "disposition:transitions:S54:04",
+    "disposition:transitions:S54:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-010-inspection.json",
+      "sha256": "7b92b146d5371e40f8449e39b34b062e512bb89d102b83341a9ed0840eb11787"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+      "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-signal-entry-source-preserved.json",
+    "sha256": "afec2b75eef6464a5b325729c32926b273cc9a3ac953f2a8122a579f60cb49bd",
+    "source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-010-inspection.json",
+  "scope": "Finite declared guard, effect and retry source conformance with inherited limits.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ]
+}

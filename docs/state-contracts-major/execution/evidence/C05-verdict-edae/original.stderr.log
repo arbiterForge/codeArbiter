@@ -1,0 +1,16 @@
+test_every_passing_suite_is_reported_and_the_run_passes (test_run_concurrent_suites.ConcurrentSuitesTests.test_every_passing_suite_is_reported_and_the_run_passes) ... ok
+test_one_failing_suite_fails_the_run_and_is_named (test_run_concurrent_suites.ConcurrentSuitesTests.test_one_failing_suite_fails_the_run_and_is_named) ... ok
+test_a_suite_that_runs_no_tests_fails (test_run_concurrent_suites.ConcurrentSuitesTests.test_a_suite_that_runs_no_tests_fails) ... ok
+test_a_zero_exit_without_a_unittest_verdict_fails (test_run_concurrent_suites.ConcurrentSuitesTests.test_a_zero_exit_without_a_unittest_verdict_fails) ... ok
+test_suites_really_run_concurrently (test_run_concurrent_suites.ConcurrentSuitesTests.test_suites_really_run_concurrently) ... ok
+test_a_hung_suite_is_terminated_and_fails_with_its_output (test_run_concurrent_suites.ConcurrentSuitesTests.test_a_hung_suite_is_terminated_and_fails_with_its_output) ... ok
+test_interpreter_env_applies_to_following_suites_only (test_run_concurrent_suites.ConcurrentSuitesTests.test_interpreter_env_applies_to_following_suites_only) ... ok
+test_the_named_interpreter_actually_runs_the_suite (test_run_concurrent_suites.ConcurrentSuitesTests.test_the_named_interpreter_actually_runs_the_suite) ... ok
+test_invalid_invocations_are_refused_before_running_anything (test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_invocations_are_refused_before_running_anything) ... ok
+test_each_real_unittest_run_requires_a_positive_successful_summary (test_run_concurrent_suites.ConcurrentSuitesTests.test_each_real_unittest_run_requires_a_positive_successful_summary) ... ok
+test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch (test_run_concurrent_suites.ConcurrentSuitesTests.test_invalid_timeout_or_unavailable_interpreter_refuses_before_launch) ... ok
+
+----------------------------------------------------------------------
+Ran 11 tests in 3.785s
+
+OK

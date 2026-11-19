@@ -1,0 +1,50 @@
+test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) ... 
+  test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) (name='pi-qualification.json') ... FAIL
+  test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) (name='sandbox-qualification.json') ... FAIL
+  test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) (name='pi-sdk-qualification.json') ... FAIL
+test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name (test_major_qualification_report.QualificationOutputFilenameTests.test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name) ... FAIL
+
+======================================================================
+FAIL: test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) (name='pi-qualification.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_major_qualification_report.py", line 3259, in test_emit_refuses_noncanonical_report_names_before_metadata_or_write
+    self.assertEqual(code,1,'a valid emitter must refuse an archive basename its reader cannot consume')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : a valid emitter must refuse an archive basename its reader cannot consume
+
+======================================================================
+FAIL: test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) (name='sandbox-qualification.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_major_qualification_report.py", line 3259, in test_emit_refuses_noncanonical_report_names_before_metadata_or_write
+    self.assertEqual(code,1,'a valid emitter must refuse an archive basename its reader cannot consume')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : a valid emitter must refuse an archive basename its reader cannot consume
+
+======================================================================
+FAIL: test_emit_refuses_noncanonical_report_names_before_metadata_or_write (test_major_qualification_report.QualificationOutputFilenameTests.test_emit_refuses_noncanonical_report_names_before_metadata_or_write) (name='pi-sdk-qualification.json')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_major_qualification_report.py", line 3259, in test_emit_refuses_noncanonical_report_names_before_metadata_or_write
+    self.assertEqual(code,1,'a valid emitter must refuse an archive basename its reader cannot consume')
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : a valid emitter must refuse an archive basename its reader cannot consume
+
+======================================================================
+FAIL: test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name (test_major_qualification_report.QualificationOutputFilenameTests.test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-canonical-qualification-filename-fix-l8hj69go\candidate\.github\scripts\test_major_qualification_report.py", line 3307, in test_every_generic_ci_emit_upload_and_readback_uses_canonical_report_name
+    self.assertEqual(output.group(1).rsplit('/',1)[-1],'qualification.json',block.splitlines()[0])
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 'pi-qualification.json' != 'qualification.json'
+- pi-qualification.json
+? ---
++ qualification.json
+ : name: Emit original Pi source qualification report
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.033s
+
+FAILED (failures=4)

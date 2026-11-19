@@ -1,0 +1,960 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "accounting",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_colorlib.py": {
+      "source_sha256": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+      "baseline_sha256": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_fmtlib.py": {
+      "source_sha256": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+      "baseline_sha256": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    },
+    "core/pysrc/_ledgerlib.py": {
+      "source_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+      "baseline_sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_sessionlib.py": {
+      "source_sha256": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+      "baseline_sha256": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_subagentslib.py": {
+      "source_sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+      "baseline_sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_usagelib.py": {
+      "source_sha256": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+      "baseline_sha256": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:claude-accounting:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 222,
+          "end": 230,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 835,
+          "end": 943,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1128,
+          "end": 1150,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Parent+child discovery;8MiB/50000records/16sources render budget, parent share plus rotating child cursor fairness;20ms UI lock retains stale observation when busy; unavailable source retained honestly.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "f956314af16fb8f7a15c0b5e5342a0995b02235558a37e583588e40f9a54dcdc",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 573,
+          "end": 619,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 676,
+          "end": 786,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_usagelib.py",
+          "start": 282,
+          "end": 302,
+          "sha256": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5"
+        },
+        {
+          "path": "core/pysrc/_usagelib.py",
+          "start": 359,
+          "end": 385,
+          "sha256": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5"
+        }
+      ],
+      "conformance": "512byte offset fingerprints detect replay boundary; normalized request/message aliases coalesce max-joined facts, subtract old contribution then add current, so duplicate facts do not increment twice.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "6f3cbf4b71c14b3fcb4ae845280e3b966d5b4e7dd7c1eb653d5fb522dfe27a6e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 622,
+          "end": 693,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 887,
+          "end": 960,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Truncation/fingerprint mismatch removes prior source contribution and resets scan; missing unsettled source flags partial, settled vanished contribution retained.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "01fced6034bdbca73c6b2e4b683d34c5aed7e6d0d5f30590b4a73dd48d94a1a5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 706,
+          "end": 786,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 946,
+          "end": 960,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Incomplete final newline deferred;>4MiB record skipped without decoding, usage-bearing tail records oversized partial reason; incomplete JSON not measured zero.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "c46d3b0970ade6b3bd39c3d24f2868c1369209c74a841e81d12c0d7faebb5eb2",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 338,
+          "end": 351,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1153,
+          "end": 1185,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Malformed summary or inconsistent hot/partition sequence causes retained projection/evidence discard and source rebuild; no malformed total trusted.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "6acd51bc2a3120d6cf0e8f0f4d33026f4800ae3f74db3fe869c756d31221ae80",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:06",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 501,
+          "end": 542,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 642,
+          "end": 651,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 874,
+          "end": 878,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Registry version drift recomputes contribution valuation from retained normalized facts, retaining pricing reason counters; no source rescan or fabricated usage.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "adda3edf3d1404fbe0769e82868fde27d29453cafd213a4a18aea0ccfc62b29d",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:07",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 462,
+          "end": 490,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1192,
+          "end": 1202,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Write cold/hot evidence at new sequence before summary pointer; remove obsolete partitions only after summary write success; return can reflect transient current projection despite failed persistence.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "ab9ce8d7ab80b6fdc3fb6830b03c10b710b369b44a802747c6baf27cbcf47d10",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:claude-accounting:08",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 971,
+          "end": 984,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Finite nonnegative host observation sets latest and monotonic max; lower observation or later absence flags anomaly/missing; host field remains separate from token-priced totals.",
+      "machine_id": "hooks:claude-accounting",
+      "baseline_clause_sha256": "9518b6fce433fe24a379e7dce87add54c5c1c359fe1c799bbe4bb929d17a76d5",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "ledger_update",
+          "lines": "1128-1143"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ledger_update_unlocked",
+          "lines": "1153-1202"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_scan",
+          "lines": "706-786"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_ingest",
+          "lines": "573-619"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_load_summary",
+          "lines": "1091-1097"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_reprice",
+          "lines": "642-651"
+        }
+      ]
+    },
+    {
+      "id": "hooks:session-accounting:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_sessionlib.py",
+          "start": 31,
+          "end": 78,
+          "sha256": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1205,
+          "end": 1232,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Bounded<=64KiB matching session metadata read; millisecond epoch normalized, cache actual observed start; missing/unreadable remainsNone/fallback.",
+      "machine_id": "hooks:session-accounting",
+      "baseline_clause_sha256": "840de9f2ccff274711e50dc5361055c7ae48d0ba54486efb3ba7e0f52544ac99",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "persist_sess_start",
+          "lines": "1205-1219"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_prune_session",
+          "lines": "1084-1088"
+        },
+        {
+          "path": "core/pysrc/_sessionlib.py",
+          "symbol": "module",
+          "lines": "1-78"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "symbol": "module",
+          "lines": "1-185"
+        }
+      ]
+    },
+    {
+      "id": "hooks:session-accounting:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 77,
+          "end": 84,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1040,
+          "end": 1043,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1192,
+          "end": 1202,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "300s heartbeat-or-change persists summary; today retained-session path prunes inactive>36h; no all-time history claim.",
+      "machine_id": "hooks:session-accounting",
+      "baseline_clause_sha256": "6cfef63d6724b73ea6a2be14154130c8b333b0e09aefa892e9aa023d16b8216e",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "persist_sess_start",
+          "lines": "1205-1219"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_prune_session",
+          "lines": "1084-1088"
+        },
+        {
+          "path": "core/pysrc/_sessionlib.py",
+          "symbol": "module",
+          "lines": "1-78"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "symbol": "module",
+          "lines": "1-185"
+        }
+      ]
+    },
+    {
+      "id": "hooks:session-accounting:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1013,
+          "end": 1081,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Local today bucket sums retained evidence and reason/catching states; recent unmigrated legacy shards add partial reason; bounded retained view only.",
+      "machine_id": "hooks:session-accounting",
+      "baseline_clause_sha256": "eea23ca5feac18d2501347ff40d27f105c2490321ccfcd021ae5ade36605e489",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "persist_sess_start",
+          "lines": "1205-1219"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_prune_session",
+          "lines": "1084-1088"
+        },
+        {
+          "path": "core/pysrc/_sessionlib.py",
+          "symbol": "module",
+          "lines": "1-78"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "symbol": "module",
+          "lines": "1-185"
+        }
+      ]
+    },
+    {
+      "id": "hooks:session-accounting:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "start": 36,
+          "end": 39,
+          "sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "start": 91,
+          "end": 149,
+          "sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529"
+        }
+      ],
+      "conformance": "Mtime<=150s counts active; newest<=600s display candidates limited12 and rows4, unreadable skipped; labels/model from retained source summaries, UI only.",
+      "machine_id": "hooks:session-accounting",
+      "baseline_clause_sha256": "0996e22457d0e1c2c96c94a72014ad85318b89d6578f37d09db859ff05b524f4",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "persist_sess_start",
+          "lines": "1205-1219"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_prune_session",
+          "lines": "1084-1088"
+        },
+        {
+          "path": "core/pysrc/_sessionlib.py",
+          "symbol": "module",
+          "lines": "1-78"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "symbol": "module",
+          "lines": "1-185"
+        }
+      ]
+    },
+    {
+      "id": "hooks:session-accounting:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "start": 36,
+          "end": 39,
+          "sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "start": 113,
+          "end": 149,
+          "sha256": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529"
+        }
+      ],
+      "conformance": "150–600s remains recent display,>600s filtered; presentation scan does not delete ledger usage.",
+      "machine_id": "hooks:session-accounting",
+      "baseline_clause_sha256": "ecaf85d492f33d251c415477e446d49af5f649f618457b8b713c6ffd035d830b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "persist_sess_start",
+          "lines": "1205-1219"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_prune_session",
+          "lines": "1084-1088"
+        },
+        {
+          "path": "core/pysrc/_sessionlib.py",
+          "symbol": "module",
+          "lines": "1-78"
+        },
+        {
+          "path": "core/pysrc/_subagentslib.py",
+          "symbol": "module",
+          "lines": "1-185"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-accounting:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1278,
+          "end": 1433,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1664,
+          "end": 1689,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Closed<=256 ordered fact/chunk validation with numeric/timestamp/session and separated Claude/Pi paths; new chunk must start highWater+1; gaps/overlap advancement/corruption reject.",
+      "machine_id": "hooks:pi-accounting",
+      "baseline_clause_sha256": "87a02e0aaf9462fe2256ed3ad9b3c867136c0f701fa4179348e564886e30a840",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "pi_ledger_update",
+          "lines": "1632-1661"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_ledger_update_unlocked",
+          "lines": "1664-1689"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_normalize_chunk",
+          "lines": "1408-1433"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_finish_update",
+          "lines": "1612-1629"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-accounting:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1506,
+          "end": 1528,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1678,
+          "end": 1681,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Fully replayed chunk end<=stored highWater performs aggregate refresh only; facts<=water never added again.",
+      "machine_id": "hooks:pi-accounting",
+      "baseline_clause_sha256": "67bb380819729f5439233eee94eeebd7709fed23e43e4862df1b9b7ddb968200",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "pi_ledger_update",
+          "lines": "1632-1661"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_ledger_update_unlocked",
+          "lines": "1664-1689"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_normalize_chunk",
+          "lines": "1408-1433"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_finish_update",
+          "lines": "1612-1629"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-accounting:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1602,
+          "end": 1629,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1682,
+          "end": 1689,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "Persist session shard first, then retained aggregate snapshot; aggregate failure returns write_failed and acceptedThrough-1; retry same chunk sees shard highWater and avoids charge duplication.",
+      "machine_id": "hooks:pi-accounting",
+      "baseline_clause_sha256": "30585fd7b851b2c3e4ed3e1e7013bfd9eda25a7d1bdd365eba182250c81e4e2b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "pi_ledger_update",
+          "lines": "1632-1661"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_ledger_update_unlocked",
+          "lines": "1664-1689"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_normalize_chunk",
+          "lines": "1408-1433"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_finish_update",
+          "lines": "1612-1629"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-accounting:04",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1531,
+          "end": 1599,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "HOLD: retention256sessions/64days/currentfirst supported, but special/unsafe named shard types silently skip1547–1548 instead of reported corrupt; whole baseline promises corrupt/unsafe shards are reported.",
+      "machine_id": "hooks:pi-accounting",
+      "baseline_clause_sha256": "68a972a7541942b57d007387ac720fdacc5586e6ba2b89dc7b684ed72a356253",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "pi_ledger_update",
+          "lines": "1632-1661"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_ledger_update_unlocked",
+          "lines": "1664-1689"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_normalize_chunk",
+          "lines": "1408-1433"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_finish_update",
+          "lines": "1612-1629"
+        }
+      ]
+    },
+    {
+      "id": "hooks:pi-accounting:05",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "start": 1632,
+          "end": 1689,
+          "sha256": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580"
+        }
+      ],
+      "conformance": "HOLD: lock_failed/write_failed explicit and acceptedThrough-1 supported, but these pre/read-failure branches return default highWater-1, not prior accepted high-water promised by whole baseline; caller retry safety exists independently.",
+      "machine_id": "hooks:pi-accounting",
+      "baseline_clause_sha256": "61bc20fd1cf926f575103fdbd0a2aeff33e72203e730bc6a131a00d03418935c",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "pi_ledger_update",
+          "lines": "1632-1661"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_ledger_update_unlocked",
+          "lines": "1664-1689"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_normalize_chunk",
+          "lines": "1408-1433"
+        },
+        {
+          "path": "core/pysrc/_ledgerlib.py",
+          "symbol": "_pi_finish_update",
+          "lines": "1612-1629"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [
+    {
+      "id": "hooks:claude-accounting",
+      "constituents": [
+        "hooks:claude-accounting:01",
+        "hooks:claude-accounting:02",
+        "hooks:claude-accounting:03",
+        "hooks:claude-accounting:04",
+        "hooks:claude-accounting:05",
+        "hooks:claude-accounting:06",
+        "hooks:claude-accounting:07",
+        "hooks:claude-accounting:08"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    },
+    {
+      "id": "hooks:session-accounting",
+      "constituents": [
+        "hooks:session-accounting:01",
+        "hooks:session-accounting:02",
+        "hooks:session-accounting:03",
+        "hooks:session-accounting:04",
+        "hooks:session-accounting:05"
+      ],
+      "basis": "Every constituent whole obligation has supported source mapping in this cone; all machine cited owning inputs byte/mode equal to baseline."
+    }
+  ],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

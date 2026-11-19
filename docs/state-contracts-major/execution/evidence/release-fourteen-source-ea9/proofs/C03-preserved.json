@@ -1,0 +1,121 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+  ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C03",
+  "disposition:transitions:C03:01"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C03",
+   "frozen_row_sha256": "04d34d0cb06f13958a4cf6f58fa6fb0088ff464d553b2dfbd5dc1e99ebbf24d5",
+   "clause_ids": [
+    "disposition:transitions:C03:01",
+    "disposition:transitions:C03:02",
+    "disposition:transitions:C03:03",
+    "disposition:transitions:C03:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 85,
+     "end": 181,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "8414365329943f0093fb188be0a3ce1c8df41b4172b32d674823e10632e39949"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 184,
+     "end": 206,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "898a238138879f95ed57c188a63233f6cd2cd4663f6b05c91823a388975efde9"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 209,
+     "end": 235,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "1b58d920312ea87dc59f3fe9477ae3ed68da9f9372332b9d100fd6050d8e8ab4"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 57,
+     "end": 116,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "6e0323f165f260a0fd609ed4794cec00663f4cb72340f417e2404b3780347507"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 119,
+     "end": 140,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "50ca160cc9dc0b74e96d4677e78aac552f6503d783efeefe06c1d9d6124eebd1"
+    },
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 184,
+     "end": 235,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "54146510192353e324b2ff810b527f02cd551f4072befbbd0b8144be5a1386dd"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C03:01",
+   "frozen_row_sha256": "1357429cb1b8fc14070d514207485d58237b9f8bbbe4359e0df7c0b316ac27a9",
+   "witnesses": [
+    {
+     "path": ".github/scripts/ci20_native_binding.py",
+     "start": 85,
+     "end": 181,
+     "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+     "span_sha256": "8414365329943f0093fb188be0a3ce1c8df41b4172b32d674823e10632e39949"
+    }
+   ],
+   "semantic_assessment": "Only artifact-native-build stamps a candidate. Admission requires the repository/workflow-reference/run/attempt, exact checked-out source, no tracked diff, pinned native Go target/toolchain, module/tool digests, exact five-key candidate manifest and exact binary population. Metadata is exclusively created.",
+   "intake_variances": [
+    "The existing clean-checkout check is git diff HEAD for tracked state, not an untracked namespace or hostile-worktree guarantee. Workflow identity is the admitted workflow path/ref plus source/run fields, not a separately computed workflow-file hash."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

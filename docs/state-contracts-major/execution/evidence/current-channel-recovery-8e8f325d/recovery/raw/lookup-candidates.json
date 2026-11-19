@@ -1,0 +1,86 @@
+{
+  "check_state_contracts_integration": {
+    "candidates": [
+      ".github/scripts/check_state_contracts_integration.py",
+      "core/pysrc/check_state_contracts_integration.py"
+    ],
+    "present": [
+      ".github/scripts/check_state_contracts_integration.py"
+    ],
+    "absent": [
+      "core/pysrc/check_state_contracts_integration.py"
+    ]
+  },
+  "major_readiness": {
+    "candidates": [
+      ".github/scripts/major_readiness.py",
+      "core/pysrc/major_readiness.py"
+    ],
+    "present": [
+      ".github/scripts/major_readiness.py"
+    ],
+    "absent": [
+      "core/pysrc/major_readiness.py"
+    ]
+  },
+  "_boundedproc": {
+    "candidates": [
+      ".github/scripts/_boundedproc.py",
+      "core/pysrc/_boundedproc.py"
+    ],
+    "present": [
+      ".github/scripts/_boundedproc.py"
+    ],
+    "absent": [
+      "core/pysrc/_boundedproc.py"
+    ]
+  },
+  "_contextverificationlib": {
+    "candidates": [
+      ".github/scripts/_contextverificationlib.py",
+      "core/pysrc/_contextverificationlib.py"
+    ],
+    "present": [
+      ".github/scripts/_contextverificationlib.py"
+    ],
+    "absent": [
+      "core/pysrc/_contextverificationlib.py"
+    ]
+  },
+  "_immutable_git_blobs": {
+    "candidates": [
+      ".github/scripts/_immutable_git_blobs.py",
+      "core/pysrc/_immutable_git_blobs.py"
+    ],
+    "present": [
+      ".github/scripts/_immutable_git_blobs.py"
+    ],
+    "absent": [
+      "core/pysrc/_immutable_git_blobs.py"
+    ]
+  },
+  "_gitexec": {
+    "candidates": [
+      ".github/scripts/_gitexec.py",
+      "core/pysrc/_gitexec.py"
+    ],
+    "present": [
+      "core/pysrc/_gitexec.py"
+    ],
+    "absent": [
+      ".github/scripts/_gitexec.py"
+    ]
+  },
+  "_artifactmanifestlib": {
+    "candidates": [
+      ".github/scripts/_artifactmanifestlib.py",
+      "core/pysrc/_artifactmanifestlib.py"
+    ],
+    "present": [
+      "core/pysrc/_artifactmanifestlib.py"
+    ],
+    "absent": [
+      ".github/scripts/_artifactmanifestlib.py"
+    ]
+  }
+}

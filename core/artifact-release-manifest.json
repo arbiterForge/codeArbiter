@@ -1,0 +1,13 @@
+{
+  "contract": "codearbiter.native-manifest-contract/1",
+  "format": "codearbiter.artifact-release/0.1.0",
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "schema_version": "0.3.2",
+  "required": ["format", "version", "protocol", "schema_version", "binaries"],
+  "optional": ["context_qualification"],
+  "platforms": ["linux/amd64", "linux/arm64", "darwin/amd64", "darwin/arm64", "windows/amd64", "windows/arm64"],
+  "binary_fields": ["file", "sha256", "native_tested"],
+  "context_fields": ["source_commit", "workflow", "run_id", "binary_sha256", "observation_sha256", "module_sha256", "native_cases"],
+  "workflow": ".github/workflows/ci.yml",
+  "native_cases": ["TestContextBoundedRender", "TestContextDocumentContract", "TestContextMarkdownPreservation", "TestContextMutationAdmission", "TestContextRecoveryAndPaths", "TestContextRepresentationBoundary"]
+}

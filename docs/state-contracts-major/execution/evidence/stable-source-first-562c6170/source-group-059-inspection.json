@@ -1,0 +1,487 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-059",
+  "positive_input_join": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": {
+      "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+      "bytes": 6365,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+        "bytes": 6365
+      }
+    },
+    "core/pysrc/_appendonlyconflictlib.py": {
+      "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+      "bytes": 19780,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+        "bytes": 19780
+      }
+    },
+    "core/pysrc/_overrideappendlib.py": {
+      "sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+      "bytes": 6815,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+        "bytes": 6815
+      }
+    },
+    "core/pysrc/security-pass.py": {
+      "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+      "bytes": 9482,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "1510238a9d6e3c50c863c9b9232d2cf03e6166dac9d25cbb8eddad54839b2597",
+        "bytes": 9482
+      }
+    },
+    "core/surface/commands/override.md": {
+      "sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+      "bytes": 7769,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "17e627692ea9f4a8bac199de9a2c4bb45ce203edf15c5a5c74c537599b31ae7c",
+        "bytes": 7769
+      }
+    },
+    "core/surface/includes/security-gate-record.md": {
+      "sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+      "bytes": 2602,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "990bb1741a9fc2fc664a7a1ab0f4221b64d5d33c5deee1629616c521e9f7b3da",
+        "bytes": 2602
+      }
+    },
+    "core/surface/skills/crypto-compliance/SKILL.md": {
+      "sha256": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+      "bytes": 3662,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7491c22cd15c3622197e5be1aa6a95175be40782562977ce76624f1778553cbe",
+        "bytes": 3662
+      }
+    },
+    "core/surface/skills/secret-handling/SKILL.md": {
+      "sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+      "bytes": 6415,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "bc5008cb3aa7a6af8a5805b9040b813df69e4ee5f19b2bdaf36677f72a4c8ae7",
+        "bytes": 6415
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:WF-24",
+      "frozen_record": {
+        "machine_id": "WF-24",
+        "name": "Overrides and candidate-bound safety records",
+        "domain": "Workflow and resource contracts",
+        "kind": "model-guided",
+        "owner": "hooks-workflows",
+        "closure_task": "HW-27",
+        "task_ids": [
+          "HW-17",
+          "HW-27"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "HW-17"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 4,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "f21cc2219591abe12f728687a40b488a0e607a220eadb02cd6fb0239c1090d85",
+      "group": "source-group-059",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Overrides and candidate-bound safety records. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+          "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-24:01",
+      "frozen_record": {
+        "transition_id": "WF-24:01",
+        "machine_id": "WF-24",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Blocked action",
+          "event": "Request override",
+          "guard": "Exact gate/reason/operator and specific action known",
+          "to": "Audit append required",
+          "effects": "Append under lock before the bypass action.",
+          "failure_retry": "Audit-write failure forbids the bypass; an override is not a standing grant.",
+          "source": [
+            {
+              "path": "core/surface/commands/override.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+            },
+            {
+              "path": "core/surface/includes/security-gate-record.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+            },
+            {
+              "path": "core/surface/skills/crypto-compliance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/secret-handling/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+            }
+          ],
+          "transition_id": "WF-24:01"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8a357edde93538beba17a2887f7397ded9211b85c0b9518f97117f8c049bd25c",
+      "group": "source-group-059",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+          "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-24:02",
+      "frozen_record": {
+        "transition_id": "WF-24:02",
+        "machine_id": "WF-24",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Security-heavy finding",
+          "event": "Acknowledge override",
+          "guard": "User states the finding in own words and grants exact action",
+          "to": "Audited override candidate",
+          "effects": "Record actual acknowledgment and candidate binding through the approved producer.",
+          "failure_retry": "No self-approved independent PASS; ordinary override text cannot impersonate reviewer evidence.",
+          "source": [
+            {
+              "path": "core/surface/commands/override.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+            },
+            {
+              "path": "core/surface/includes/security-gate-record.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+            },
+            {
+              "path": "core/surface/skills/crypto-compliance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/secret-handling/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+            }
+          ],
+          "transition_id": "WF-24:02"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "80c9c81d2ada20cc0ceb45ecbe56ba285151d8175b8f13552ad7f4792963a2cc",
+      "group": "source-group-059",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+          "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-24:03",
+      "frozen_record": {
+        "transition_id": "WF-24:03",
+        "machine_id": "WF-24",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Sensitive staged change",
+          "event": "Independent gate review passes",
+          "guard": "Same worktree, full staged candidate and relevant digests",
+          "to": "Candidate-bound pass marker",
+          "effects": "Write the security/migration record only after actual passing review.",
+          "failure_retry": "New/unstaged/stale/other-worktree content is not covered. Override prose saying sensitive-lines-only is stale; actual writer binds complete candidate too.",
+          "source": [
+            {
+              "path": "core/surface/commands/override.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+            },
+            {
+              "path": "core/surface/includes/security-gate-record.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+            },
+            {
+              "path": "core/surface/skills/crypto-compliance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/secret-handling/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+            }
+          ],
+          "transition_id": "WF-24:03"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "9a569a44caa4b20f8411f728e07c2dcaf321df521683ef2dee93d6b8f96407d5",
+      "group": "source-group-059",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+          "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:WF-24:04",
+      "frozen_record": {
+        "transition_id": "WF-24:04",
+        "machine_id": "WF-24",
+        "owner": "hooks-workflows",
+        "baseline": {
+          "from": "Append-only log conflict",
+          "event": "Use conflict helper",
+          "guard": "Supported exact three-stage prefix/suffix shape",
+          "to": "Validated append union",
+          "effects": "Retain existing prefix, audit the repair and stage only the exact log.",
+          "failure_retry": "No general rewrite/truncation bypass from this narrow helper.",
+          "source": [
+            {
+              "path": "core/surface/commands/override.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/commands/override.md"
+            },
+            {
+              "path": "core/surface/includes/security-gate-record.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/includes/security-gate-record.md"
+            },
+            {
+              "path": "core/surface/skills/crypto-compliance/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/crypto-compliance/SKILL.md"
+            },
+            {
+              "path": "core/surface/skills/secret-handling/SKILL.md",
+              "symbol": "Complete workflow body",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/surface/skills/secret-handling/SKILL.md"
+            }
+          ],
+          "transition_id": "WF-24:04"
+        },
+        "task_ids": [
+          "HW-17",
+          "HW-27"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-29"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c1258038a94115d17ef025f100580f69763b1375a090cbd22f97ec0645549414",
+      "group": "source-group-059",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "B03-full-candidate-binary-binding"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-24-preserved.json",
+          "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "B03-full-candidate-binary-binding",
+      "paths": [
+        "core/pysrc/security-pass.py",
+        "core/pysrc/git-enforce.py",
+        "core/pysrc/_bashguardlib.py"
+      ],
+      "assessment": "Producer records full scan.candidate in addition to worktree and binary binding; both consumers require full candidate membership. New unrelated staged text therefore invalidates old binary approval. Attribution audit still precedes marker write; mixed sensitive text/binary refusal, read bounds, root/index identities and human/reviewer authority separation remain. All29 selected literal mode/commit/push/producer/override clauses were read; binary full-candidate strengthening agrees with their accepted scope."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

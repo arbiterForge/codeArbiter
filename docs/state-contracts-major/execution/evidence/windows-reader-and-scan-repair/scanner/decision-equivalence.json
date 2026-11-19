@@ -1,0 +1,8 @@
+{
+  "result": "PASSED",
+  "vectors": 18,
+  "public_API_observations": 36,
+  "before_sha256": "b1453295c93a42dc907fe2f4f6e6b5add4b390555277bf8739ce44a32b976c66",
+  "after_sha256": "bbc649498993986a4836306005ff5c90a48225c880c485cbe953150fb8249810",
+  "comparison": "Exact normalized result kind,crypto,ordered findings,sorted digests,staged candidate bytes equal for same-line/mixed secret,imports/aliases/tails/strings/comments/invalid/crossline controls"
+}

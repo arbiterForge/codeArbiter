@@ -21,6 +21,8 @@ from typing import NamedTuple
 
 
 REPO = Path(__file__).resolve().parents[2]
+sys.path.insert(0, str(REPO / "tools"))
+from command_compatibility import validate_removal_policy  # noqa: E402
 REGISTRY_PATH = Path("core/surface/command-routes.json")
 TARGETS = {
     "claude": {
@@ -37,6 +39,7 @@ TARGETS = {
     },
 }
 SEMVER = re.compile(r"^(0|[1-9]\d*)\.(0|[1-9]\d*)\.(0|[1-9]\d*)$")
+STABLE_TAG_VERSION = re.compile(r"(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)\.(0|[1-9][0-9]*)(?:\+[0-9A-Za-z-]+(?:\.[0-9A-Za-z-]+)*)?")
 HTTP_STATUS = re.compile(r"^HTTP/\S+\s+(\d{3})(?:\s|$)")
 COMMIT = re.compile(r"^[0-9a-f]{40}$")
 
@@ -93,6 +96,12 @@ def load_declarations(repo: Path) -> tuple[Declaration, ...]:
     compatibility = registry.get("compatibility") if isinstance(registry, dict) else None
     if not isinstance(compatibility, dict):
         raise ContractError("registry compatibility must be an object")
+    if set(compatibility) != {"clockStarts", "removalRequires", "targets"}:
+        raise ContractError("registry compatibility must contain exactly clockStarts, removalRequires and targets")
+    try:
+        validate_removal_policy(compatibility["removalRequires"])
+    except ValueError as error:
+        raise ContractError(str(error)) from error
     if compatibility.get("clockStarts") != "confirmed-non-draft-github-release":
         raise ContractError(
             "compatibility.clockStarts must be 'confirmed-non-draft-github-release'"
@@ -181,6 +190,7 @@ def classify_release_state(
     expected_tag: str,
     expected_version: str,
     evidence: object,
+    require_route_registry: bool = True,
 ) -> str:
     if not isinstance(evidence, dict):
         return "mismatch"
@@ -200,8 +210,9 @@ def classify_release_state(
     if (
         not isinstance(tag_commit, str)
         or COMMIT.fullmatch(tag_commit) is None
-        or evidence.get("tagContainsRegistry") is not True
-        or evidence.get("tagRegistryMatches") is not True
+        or (require_route_registry and (
+            evidence.get("tagContainsRegistry") is not True
+            or evidence.get("tagRegistryMatches") is not True))
         or evidence.get("tagManifestVersion") != expected_version
     ):
         return "mismatch"
@@ -213,12 +224,117 @@ def classify_release_state(
         return "mismatch"
     if release["draft"]:
         return "draft"
+    target = release.get("target_commitish")
+    # The tag's commit (read from Git) is the identity. A Release created
+    # against an existing tag records a branch name such as "main" as its
+    # mutable target_commitish; only a commit-shaped value can contradict it.
     if (
         release.get("tag_name") != expected_tag
-        or release.get("target_commitish") != tag_commit
+        or not isinstance(target, str)
+        or (COMMIT.fullmatch(target) is not None and target != tag_commit)
     ):
         return "mismatch"
     return "published"
+
+
+OBSERVATION_FORMAT = "codearbiter.route-publication-observation/0.1.0"
+
+
+def _release_for(expected_tag: str, exit_code: int, response: str,
+                 visibility: str) -> tuple[str, dict | None]:
+    """Map a Release list without inferring the absence of hidden drafts."""
+    state = classify_release_list(expected_tag, exit_code, response)
+    if state == "api-unavailable":
+        return "unavailable", None
+    if state == "missing":
+        return ("missing" if visibility == "draft-inclusive" else "unavailable"), None
+    if state == "mismatch":
+        return "mismatch", None
+    pages = json.loads(response)
+    release = next(r for page in pages for r in page if r["tag_name"] == expected_tag)
+    return "available", release
+
+
+def record_observations(repo: Path, declarations, exit_code: int, response: str, *,
+                        source: str, run_id: str, observed_at: str,
+                        visibility: str = "public") -> dict:
+    """Non-mutating observation of every declared first-containing Release.
+
+    Publication clocks start only from an observed non-draft Release. An
+    unreadable listing or absence from a draft-hidden public listing is
+    `api-unavailable` (unknown), never `published`, and
+    the record carries no removal authority: alias removal stays a separate,
+    explicitly approved decision (`compatibility.removalRequires`).
+    """
+    rows = []
+    for declaration in declarations:
+        lookup, release = _release_for(declaration.tag, exit_code, response, visibility)
+        evidence = collect_tag_evidence(repo, declaration)
+        if lookup == "mismatch":
+            state = "mismatch"
+        else:
+            evidence.update({"lookup": lookup, "release": release})
+            state = classify_release_state(expected_tag=declaration.tag,
+                                           expected_version=declaration.version,
+                                           evidence=evidence)
+        rows.append({
+            "target": declaration.target, "tag": declaration.tag,
+            "first_containing_version": declaration.version, "state": state,
+            "tag_commit": evidence.get("tagCommit") or None,
+            "release_id": release.get("id") if isinstance(release, dict) else None,
+            "release_draft": release.get("draft") if isinstance(release, dict) else None,
+        })
+    return {
+        "format": OBSERVATION_FORMAT, "observed_at": observed_at,
+        "source_commit": source, "workflow_run": run_id,
+        "release_visibility": visibility,
+        "clock_starts": "confirmed-non-draft-github-release",
+        "removal_authorization": "not-evaluated",
+        "observations": rows,
+    }
+
+
+def record_site_observations(repo: Path, exit_code: int, response: str, *, visibility: str) -> list[dict]:
+    """Observe each current stable Docs tag independently of the frozen route clock."""
+    rows = []
+    for target, config in TARGETS.items():
+        prefix = config["tagPrefix"]
+        result = _git(repo, "tag", "--list", "--sort=refname", prefix + "*", check=False)
+        stable = []
+        for tag in result.stdout.splitlines():
+            match = STABLE_TAG_VERSION.fullmatch(tag.removeprefix(prefix))
+            if tag.startswith(prefix) and match:
+                stable.append((tuple(map(int, match.groups())), tag))
+        if result.returncode or not stable:
+            continue
+        highest = max(version for version, _ in stable)
+        # Build metadata does not affect SemVer precedence. Resolve ties by
+        # the first Git refname, as the Docs tag selector also does.
+        tag = min(tag for version, tag in stable if version == highest)
+        version = tag.removeprefix(prefix)
+        ref = f"refs/tags/{tag}"
+        try:
+            commit = _git(repo, "rev-parse", "--verify", f"{ref}^{{commit}}").stdout.strip()
+        except subprocess.CalledProcessError:
+            continue
+        version_at_tag = None
+        try:
+            manifest = json.loads(_git(repo, "show", f"{commit}:{config['manifest'].as_posix()}").stdout)
+            if isinstance(manifest, dict):
+                version_at_tag = manifest.get("version")
+        except (subprocess.CalledProcessError, json.JSONDecodeError):
+            pass
+        lookup, release = _release_for(tag, exit_code, response, visibility)
+        evidence = {"tagExists": True, "tagCommit": commit, "tagManifestVersion": version_at_tag,
+                    "lookup": lookup, "release": release}
+        state = classify_release_state(expected_tag=tag, expected_version=version, evidence=evidence,
+                                       require_route_registry=False)
+        rows.append({
+            "target": target, "tag": tag, "version": version, "tag_commit": commit, "state": state,
+            "release_id": release.get("id") if isinstance(release, dict) else None,
+            "release_draft": release.get("draft") if isinstance(release, dict) else None,
+        })
+    return rows
 
 
 def _git(repo: Path, *args: str, check: bool = True) -> subprocess.CompletedProcess:
@@ -286,12 +402,21 @@ def _read_observation(evidence_dir: Path, target: str) -> tuple[str, dict | None
 
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument("mode", choices=("api-lookup", "declarations", "plan", "observe"))
+    parser.add_argument("mode", choices=("api-lookup", "declarations", "plan", "observe", "record"))
     parser.add_argument("--repo", type=Path, default=REPO)
     parser.add_argument("--evidence-dir", type=Path)
     parser.add_argument("--expected-tag")
     parser.add_argument("--api-response", type=Path)
     parser.add_argument("--api-exit", type=int)
+    parser.add_argument("--releases", type=Path, help="record: observed Release list")
+    parser.add_argument("--releases-exit", type=int, help="record: exit code of that listing")
+    parser.add_argument("--releases-visibility", choices=("public", "draft-inclusive"),
+                        default="public", help="record: visibility actually established by the reader")
+    parser.add_argument("--source", help="record: the observing workflow's source commit")
+    parser.add_argument("--run-id", default="", help="record: the observing workflow run")
+    parser.add_argument("--ci-run-id", help="record: selected original successful Core run ID")
+    parser.add_argument("--output", type=Path, help="record: observation JSON to write")
+    parser.add_argument("--summary", type=Path, help="record: Markdown summary to append")
     args = parser.parse_args(argv)
 
     if args.mode == "api-lookup":
@@ -314,11 +439,24 @@ def main(argv: list[str] | None = None) -> int:
         return 0
 
     repo = args.repo.resolve()
+    qualified_record = args.mode == "record" and args.ci_run_id is not None
+    if qualified_record:
+        if not re.fullmatch(r"[1-9][0-9]*", args.ci_run_id) or not re.fullmatch(r"[1-9][0-9]*", args.run_id):
+            parser.error("record requires positive release and selected Core run ids")
+        if args.source is None or COMMIT.fullmatch(args.source) is None:
+            parser.error("record requires --source as a full commit id")
+        if _git(repo, "rev-parse", "--verify", "HEAD").stdout.strip() != args.source:
+            parser.error("record checkout differs from the selected release source")
     try:
         declarations = load_declarations(repo)
     except ContractError as error:
-        print(f"command-route release contract: {error}", file=sys.stderr)
-        return 2
+        if not qualified_record:
+            print(f"command-route release contract: {error}", file=sys.stderr)
+            return 2
+        # A selected historical source may predate the clock declarations.
+        # Keep that role explicitly unknown while observing the Docs tags.
+        print("command-route publication declarations are unavailable for the selected source.", file=sys.stderr)
+        declarations = ()
 
     if args.mode == "plan":
         for declaration in declarations:
@@ -330,6 +468,38 @@ def main(argv: list[str] | None = None) -> int:
                 f"{declaration.target}: first-containing candidate {declaration.tag}; "
                 f"current manifest {declaration.manifest_version}"
             )
+        return 0
+    if args.mode == "record":
+        if args.releases is None or args.releases_exit is None or args.output is None:
+            parser.error("record requires --releases, --releases-exit and --output")
+        if args.source is None or COMMIT.fullmatch(args.source) is None:
+            parser.error("record requires --source as a full commit id")
+        try:
+            response = args.releases.read_text(encoding="utf-8")
+            exit_code = args.releases_exit
+        except OSError:
+            response, exit_code = "", 1
+        from datetime import datetime, timezone
+        document = record_observations(
+            repo, declarations, exit_code, response, source=args.source,
+            run_id=args.run_id, visibility=args.releases_visibility,
+            observed_at=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ"))
+        if qualified_record:
+            document["ci_run_id"] = args.ci_run_id
+            document["route_clock_status"] = "observed" if declarations else "declarations-unavailable"
+            document["site_observations"] = record_site_observations(repo, exit_code, response,
+                                                                     visibility=args.releases_visibility)
+        args.output.write_text(json.dumps(document, indent=2, sort_keys=True) + "\n",
+                               encoding="utf-8")
+        lines = [f"{row['target']}: {row['tag']}: {row['state']}"
+                 for row in document["observations"]]
+        print("\n".join(lines))
+        if args.summary:
+            with args.summary.open("a", encoding="utf-8") as stream:
+                stream.write("### Command-route publication observation\n\n"
+                             + "".join(f"- `{line}`\n" for line in lines)
+                             + "\nObservation only: it starts no removal and undoes nothing.\n")
+        # Observation never fails or reverses a settled publication.
         return 0
     if args.evidence_dir is None:
         parser.error("observe requires --evidence-dir")

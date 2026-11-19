@@ -1,0 +1,44 @@
+test_sandbox_retains_original_named_results_without_filtering_console_run (test_ci_impact.WorkflowContractTest.test_sandbox_retains_original_named_results_without_filtering_console_run) ... FAIL
+test_sandbox_uploads_source_bound_original_json_and_requires_presence (test_ci_impact.WorkflowContractTest.test_sandbox_uploads_source_bound_original_json_and_requires_presence) ... FAIL
+
+======================================================================
+FAIL: test_sandbox_retains_original_named_results_without_filtering_console_run (test_ci_impact.WorkflowContractTest.test_sandbox_retains_original_named_results_without_filtering_console_run)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-sandbox-result-transport-90gqbg21\.github\scripts\test_ci_impact.py", line 1102, in test_sandbox_retains_original_named_results_without_filtering_console_run
+    self.assertEqual(shlex.split(commands[0]), [
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "npm", "test", "--", "--reporter=default", "--reporter=github-actions", "--reporter=json",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json",
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+    ], "reporters may add transport, never a file/name filter or error suppression")
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Lists differ: ['npm', 'test'] != ['npm', 'test', '--', '--reporter=default', '--reporter[88 chars]son']
+
+Second list contains 5 additional elements.
+First extra element 2:
+'--'
+
+- ['npm', 'test']
++ ['npm',
++  'test',
++  '--',
++  '--reporter=default',
++  '--reporter=github-actions',
++  '--reporter=json',
++  '--outputFile.json=$RUNNER_TEMP/ca-sandbox-vitest.json'] : reporters may add transport, never a file/name filter or error suppression
+
+======================================================================
+FAIL: test_sandbox_uploads_source_bound_original_json_and_requires_presence (test_ci_impact.WorkflowContractTest.test_sandbox_uploads_source_bound_original_json_and_requires_presence)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-sandbox-result-transport-90gqbg21\.github\scripts\test_ci_impact.py", line 1114, in test_sandbox_uploads_source_bound_original_json_and_requires_presence
+    self.assertEqual(len(uploads), 1, "one original named-result upload required")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: 0 != 1 : one original named-result upload required
+
+----------------------------------------------------------------------
+Ran 2 tests in 0.010s
+
+FAILED (failures=2)

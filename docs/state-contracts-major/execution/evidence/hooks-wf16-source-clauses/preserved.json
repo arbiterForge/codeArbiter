@@ -1,0 +1,201 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "8a108552b83447f2170956dfe6aa8a99cfe4a3d3",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools bounded current source-clause inspection; not a runtime/installed or independentreview claim"
+  },
+  "inputs": {
+    "core/surface/agents/decision-challenger.md": "b85f3546772fe8556e8152a5a93f03b8ed5c061f4fcdba97e6cfc552ef1495b0",
+    "core/surface/agents/grader.md": "557fd0d4776e28bd618f673adfa90315305fda9da51ea7688f4be67a9444d162",
+    "core/surface/agents/scout.md": "5d909f099458dbb419e3fb76a20dfb48640a6329c1602c279f0e9fc370b0f605",
+    "core/surface/skills/decision-variance/SKILL.md": "be1d34c708e68689042ea1588f85ed800803ff8b9da6274f1ec307cf08c9089c",
+    "core/surface/skills/decision-variance/references/analysis.md": "88a23fda9b75d60e9d7132ee33233f2d798e46438364bf431cb5904594b66756",
+    "core/surface/includes/smarts/core.md": "2f11f99c70aa39ae541e376a1cc7571c7ee0bd636b10c9d19b2ba4b276969e95",
+    "core/surface/includes/smarts/lenses.md": "e0ac6e8a8e3579297bc10b61bd4fe1d60261b67f74b4700c5664186084e15f06",
+    "core/surface/includes/smarts/decision-log-format.md": "bbdca34a776b9c0c440df79d119f75eedf276aae6c8e6b12aa704e2e7d89c2c6",
+    "core/surface/skills/decision-lifecycle/SKILL.md": "a8f97f8e880d5aeeaa74e4cb259279212348616c61ba974501654d66600a5891",
+    "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+    "core/pysrc/knowledge.py": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+    "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "core/surface/arbiter.md": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+    "core/surface/includes/safety-core.md": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+    "core/surface/includes/routing-table.md": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+    "core/surface/commands/conflict.md": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+  },
+  "disposition_ids": [
+    "disposition:transitions:WF-16:01",
+    "disposition:transitions:WF-16:02",
+    "disposition:transitions:WF-16:03",
+    "disposition:transitions:WF-16:04",
+    "disposition:transitions:WF-16:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-wf16-source-clauses/raw/source-inspection.json",
+      "sha256": "7c3fc96bac68ea387309017d441f2ddd1cfedb6c3bf78919982ecff518cd8c28"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:WF-16:01",
+      "event_guard_effect": "Exact scoped sources first; full pass sources must be complete; evidence index classifies exactly five statuses while missing/unreadable inputs remain coverage gaps and same-level conflicts stay separate.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 13,
+          "end": 49
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 61,
+          "end": 68
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 13,
+          "end": 103
+        }
+      ],
+      "conformance_reason": "Preserved original comparison/unknown/source-identity instructions. Changed HTML context reader is an explicitly inspected information supplier, not permission; emptycurrentrecords/revisiondrift/errors refuse narrative instead of stale notes. No missing/unreadable result can be classified silent by these instructions.",
+      "unproved": "No claim an actual model searched completely, reader/native installed runtime is correct, or current project/scaffold/artifacts were observed."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:02",
+      "event_guard_effect": "Qualitative SMARTS/optional challenge produce strength-labeled report-only ready/partial/blocked recommendations; no recommendation creates a decision/file change.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 21,
+          "end": 49
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 94,
+          "end": 121
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 105,
+          "end": 148
+        },
+        {
+          "path": "core/surface/includes/smarts/core.md",
+          "start": 53,
+          "end": 137
+        },
+        {
+          "path": "core/surface/agents/scout.md",
+          "start": 53,
+          "end": 75
+        },
+        {
+          "path": "core/surface/agents/grader.md",
+          "start": 23,
+          "end": 59
+        },
+        {
+          "path": "core/surface/agents/decision-challenger.md",
+          "start": 12,
+          "end": 27
+        }
+      ],
+      "conformance_reason": "Same six lenses, verdict/Unknown semantics, nonnumeric preference/strength and optional read-only actor instructions. SMARTS core explicitly exempts decision-variance/grader/challenger from autonomous recorded-intent routing; recommendations remain information, not user choice/permission.",
+      "unproved": "No runtime/model quality, SMARTS scoring correctness, real actor dispatch, provider call, meaningful decision or actual downstream readiness claim."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:03",
+      "event_guard_effect": "Only specific attributable user choice reaches Phase4; append each decision immediately with exact section hash and implications; never batch implicitchoices.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 51,
+          "end": 86
+        },
+        {
+          "path": "core/surface/includes/smarts/decision-log-format.md",
+          "start": 1,
+          "end": 53
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 62,
+          "end": 77
+        }
+      ],
+      "conformance_reason": "Whole literal user-attribution/append-only/hash format and one-choice-per-entry instructions unchanged, still bounded by unchanged safety-core user-attributed ADR owner and append-only audit rules. Report-only returns before this phase, including all optional children.",
+      "unproved": "No actual user decision, physical consent, logappend/CAS/durability/error handling execution or created ADR is qualified from this source clause."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:04",
+      "event_guard_effect": "Before resume/append readcurrenttail and exact citedsection; uncertain append/advanced writer tail reconciles before retry; oldhistory neveredited and ratification/newsource appends forward Supersedes entry.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 70,
+          "end": 100
+        },
+        {
+          "path": "core/surface/includes/smarts/decision-log-format.md",
+          "start": 7,
+          "end": 13
+        },
+        {
+          "path": "core/surface/includes/smarts/decision-log-format.md",
+          "start": 47,
+          "end": 53
+        },
+        {
+          "path": "core/surface/skills/decision-variance/references/analysis.md",
+          "start": 62,
+          "end": 77
+        }
+      ],
+      "conformance_reason": "The actual normative resume/idempotent history rule is unchanged, not inferred from file equality alone. Changed scoped conflict routing preserves explicit unresolved choice and forbids recency-only resolution; it only allows independent work, not disputed appends.",
+      "unproved": "No OS process crash, append failure, concurrent writer/race, filesystem persistence, automation or model compliance was executed."
+    },
+    {
+      "cell": "disposition:transitions:WF-16:05",
+      "event_guard_effect": "An actual user-selected ADR change is forwarded to decision-lifecycle; varianceanalysis itself cannot manufacture accepted ADRs.",
+      "witnesses": [
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 28,
+          "end": 37
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 72,
+          "end": 86
+        },
+        {
+          "path": "core/surface/skills/decision-variance/SKILL.md",
+          "start": 102,
+          "end": 121
+        },
+        {
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "start": 7,
+          "end": 31
+        },
+        {
+          "path": "core/surface/skills/decision-lifecycle/SKILL.md",
+          "start": 96,
+          "end": 116
+        },
+        {
+          "path": "core/surface/includes/safety-core.md",
+          "start": 28,
+          "end": 34
+        }
+      ],
+      "conformance_reason": "Handoff owner/intent/attribution and no-created-authority rule remain exact. ADR authoring reference is explicitly downstream only after selected authorization; this proposal stops at the owner interface and does not qualify that writer.",
+      "unproved": "No ADR authored/accepted/superseded or lifecycle evidence sealed; downstream authoring marker, receipt, native authority or release behavior remain separate."
+    }
+  ],
+  "scope": "Only WF16 declared model-guided instruction event/guard/effect clauses preserved against frozenfd7; changedsharedguards examined explicitly. No equality-only runtime inference, tests, actualmodelchoice/logwrite/ADR/host acceptance.",
+  "baseline_source": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "dependency_boundary": "Direct referencedinstruction+changednarrative-read interface only. Full transitive executable/helper/native/host dependency closure is intentionally not claimed or qualified."
+}

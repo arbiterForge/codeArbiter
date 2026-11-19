@@ -1,0 +1,250 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual938-pass Windows owning Farm execution at69b09 plus declared author dirt later committed exactly as89d6; selected cases only, no run at89d6 or new run for this packet."
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "4f2c53b5fed25aa7d197d3cec9f1c97c552d4bb75a720b06984989b5749daafd",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "9f94cf106a986d4005ae7f838592e33441c7c670b52a11bf18c19dc0640604d2",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S25:07",
+    "disposition:transitions:S30:02",
+    "disposition:transitions:S30:04"
+  ],
+  "commands": [
+    {
+      "exit_code": 0,
+      "started_ms": 1794621020133,
+      "ended_ms": 1794621255897,
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:/Users/brenn/AppData/Local/Temp/ca-farm-fixture-alias-75a8f10e/qualified-coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json",
+      "sha256": "f20052903cb511ab27de1b830f970f70088d7c961a6c8334a1efeb191879865d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/clause-review.json",
+      "sha256": "242c6be5e0bb4fe2974d908e5bc7025bb82d55ff7d7c1ac14f505f982b11c02e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/execution-origin.json",
+      "sha256": "ac6722902480c95c6449b076c487a2bdfe2b545234695401ad9ab9d84b5bd616"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/source-trace.json",
+      "sha256": "8fe7620054c407c8be3814aba57ab11dc9e1b432f6c4771db10a102c5e71b668"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S25:07",
+      "frozen_contract": {
+        "event": "finally",
+        "guard": "every sample resource",
+        "to": "cleanup pending",
+        "effects": "Verify removal of every sample worktree and branch, even losing/cancelled samples.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "any sample outcome",
+        "transition_id": "S25:07"
+      },
+      "current_clause_review": "REMAPPED: every sample is accounted for. For known/verified containment, worktree and disposable branch cleanup are attempted despite prior failures; containment unknown records cleanup failure with attempts0 and deliberately retains worktree/branch without Git mutation. The frozen unconditional removal wording is not preserved.",
+      "classification": "REMAPPED_TESTED"
+    },
+    {
+      "cell": "disposition:transitions:S30:02",
+      "frozen_contract": {
+        "event": "registry absent and disk absent",
+        "guard": "both observed gone",
+        "to": "clean",
+        "effects": "Record verified cleanup; remove empty sample root where applicable.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "verified worktree/branch cleanup helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1700-2050"
+          }
+        ],
+        "from": "observing",
+        "transition_id": "S30:02"
+      },
+      "current_clause_review": "REMAPPED: both-gone admission requires a successful Git registry read, physical-ancestor-backed path comparisons proving no matching registration, and genuine lstat ENOENT. Alias lexical mismatch, unavailable canonicalization, EACCES/EIO and dangling links do not prove absence. Empty canary namespace rmdir remains separate and never erases an unknown cleanup result.",
+      "classification": "REMAPPED_TESTED"
+    },
+    {
+      "cell": "disposition:transitions:S30:04",
+      "frozen_contract": {
+        "event": "remaining resource or observation failed",
+        "guard": "attempts remain",
+        "to": "retry",
+        "effects": "Retry at bounded 150ms/300ms delays; registry observation failure treated as present.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "verified worktree/branch cleanup helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1700-2050"
+          }
+        ],
+        "from": "observing",
+        "transition_id": "S30:04"
+      },
+      "current_clause_review": "REMAPPED: bounded retries require a proven remaining registration or known-present resource. Registry-read/canonicalization/no-physical-ancestor unknown and filesystem unknown now refuse immediately without authorizing prune or another removal. A known registered+absent observation may have already authorized one prune before an unknown readback; that unknown authorizes no further action. Default150/300ms constants remain source facts, not newly measured wall-clock delays.",
+      "classification": "REMAPPED_TESTED"
+    }
+  ],
+  "selectors": [
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    },
+    {
+      "id": "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+      "original_result": "passed",
+      "raw_ref": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/raw/farm-observations.json"
+    }
+  ],
+  "limits": [
+    "Controlled filesystem-error observations with real temporary Git and Windows dangling junction; normal sample teardown and containment-unknown suppression use injected executor/Git seams.",
+    "Default retry delay values and registry-read-error fallback are inspected source, not new150/300ms clock or registry-I/O-injection executions.",
+    "Source/bundle canary cases corroborate known-gone namespace cleanup; unknown helper observations do not prove absence/presence or every caller-level host effect.",
+    "Shared static JSON capture timing and original execution/source history are retained exactly."
+  ]
+}

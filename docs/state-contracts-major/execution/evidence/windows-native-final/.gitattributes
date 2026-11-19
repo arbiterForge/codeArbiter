@@ -1,0 +1,2 @@
+# Original Windows observations retain their captured CRLF bytes and digests.
+*.json -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

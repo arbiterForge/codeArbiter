@@ -1,0 +1,24 @@
+test_redirected_descendant_is_gone_before_first_cwd_cleanup (test_artifact_authority_adapter.WindowsJobRundownTest.test_redirected_descendant_is_gone_before_first_cwd_cleanup) ... FAIL
+
+======================================================================
+FAIL: test_redirected_descendant_is_gone_before_first_cwd_cleanup (test_artifact_authority_adapter.WindowsJobRundownTest.test_redirected_descendant_is_gone_before_first_cwd_cleanup)
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-authority-job-debug-yg0uiv0g\immutable0830\.github\scripts\test_artifact_authority_adapter.py", line 6236, in test_redirected_descendant_is_gone_before_first_cwd_cleanup
+    self.assertEqual((state, first_error), (0, None),
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+        "rundown must precede first cleanup; no deletion retry")
+        ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: Tuples differ: (258, 32) != (0, None)
+
+First differing element 0:
+258
+0
+
+- (258, 32)
++ (0, None) : rundown must precede first cleanup; no deletion retry
+
+----------------------------------------------------------------------
+Ran 1 test in 0.055s
+
+FAILED (failures=1)

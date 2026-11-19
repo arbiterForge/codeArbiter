@@ -1,0 +1,99 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/scripts/academy_promotion.py": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3",
+    ".github/workflows/academy-promotion.yml": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C28:01",
+    "disposition:transitions:C28:02",
+    "disposition:transitions:C28:03",
+    "disposition:transitions:C28:04",
+    "disposition:transitions:C28:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/inspection.json",
+      "sha256": "0e80a53fd8c7ac14f17fe1b4ab3fa467597a83546beb2d99cdbe79fe13553a02"
+    }
+  ],
+  "scope": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C28:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/academy_promotion.py",
+          "start": 51,
+          "end": 229,
+          "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3"
+        }
+      ],
+      "semantic_assessment": "Exact preview-MAJOR.MINOR or bounded100x10 listed stable preview selection is validated. Bounded2MiB/30-second same-URL public reads bind published non-prerelease immutable release, annotated tag/peeled commit and manifest fetched at that commit. Available/runnable/guided arrays must be equal ordered unique nonempty; lower/current-without-allow refuses. This is source consistency under trusted API responses, not an observation of remote release.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/academy_promotion.py",
+          "start": 289,
+          "end": 329,
+          "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3"
+        }
+      ],
+      "semantic_assessment": "Allow-current comparison invokes exact submodule HEAD and test pinned-commit equality before up_to_date output. Workflow conditions skip apply/install/generate/test/typecheck when true. Same version with different source refuses rather than mutating immutable identity.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/academy_promotion.py",
+          "start": 241,
+          "end": 286,
+          "file_sha256": "c7eb43b933cc3fe57c4cae8616b261cb31ee7151d3378537e81106ad69760eb3"
+        }
+      ],
+      "semantic_assessment": "Apply requires a single consumer release matching expected_current and strict version advance; each contract release/fixture/commit replacement must have exactly one match. CLI verifies submodule exact candidate commit before updates. Two declared UTF-8 files are written sequentially; later I/O error can leave a partial disposable checkout and no branch/release is published.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:04",
+      "witnesses": [
+        {
+          "path": ".github/workflows/academy-promotion.yml",
+          "start": 57,
+          "end": 94,
+          "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b"
+        }
+      ],
+      "semantic_assessment": "Workflow source checks local annotated tag object and peeled commit then detached checkout; only a changed candidate installs locked site toolchain with ignore-scripts, generates inputs and invokes promotion consumer contract/typecheck. Any failed command fails its step; actual command execution/readback is outside source conformance.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    },
+    {
+      "cell": "disposition:transitions:C28:05",
+      "witnesses": [
+        {
+          "path": ".github/workflows/academy-promotion.yml",
+          "start": 103,
+          "end": 108,
+          "file_sha256": "f4e267cf4086bf1abdd46b805f079f10e69e2f5877c2138f88ff02d625d5882b"
+        }
+      ],
+      "semantic_assessment": "Workflow final conditional is schedule plus up_to_date not true and explicitly exits1 as pending-owner attention. Manual validation path records required governed promotion action without auto-push/release. This branch is not treated as candidate validation failure or actual scheduled observation.",
+      "limits": "Conditional source-only public metadata validation/disposable consumer updater and workflow instruction contract. No API calls, fetched metadata authenticity, actual submodule checkout/generation/tests/typecheck, promotion decision or publication. Annotated tag/local peel checks and least-privilege attention branch inspected."
+    }
+  ],
+  "excluded_cells": []
+}

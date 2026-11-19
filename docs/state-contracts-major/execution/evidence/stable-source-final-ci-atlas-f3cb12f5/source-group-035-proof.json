@@ -1,0 +1,59 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".github/workflows/ci.yml": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/artifact-coverage.py": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+  },
+  "disposition_ids": [
+    "disposition:machines:T02",
+    "disposition:transitions:T02:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-035-inspection.json",
+      "sha256": "5e78198bd2ffc816c435db6878617ec8824a79055683405c00e2b5269e3e081c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+      "sha256": "57979037453eb0d12da4cf4f48bf1cb03fde04d05850a1c24ced8d4ab852ab03"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/proofs/T02-preserved.json",
+    "sha256": "57979037453eb0d12da4cf4f48bf1cb03fde04d05850a1c24ced8d4ab852ab03",
+    "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-035-inspection.json",
+  "scope": "T02 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+  "limits": [
+    "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+    "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+    "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+    "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+    "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ]
+}

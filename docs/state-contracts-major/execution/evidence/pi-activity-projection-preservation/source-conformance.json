@@ -1,0 +1,42 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "disposition_ids": [
+    "disposition:transitions:S06:01",
+    "disposition:transitions:S06:02",
+    "disposition:transitions:S06:03",
+    "disposition:transitions:S06:04",
+    "disposition:transitions:S06:05"
+  ],
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/pi_program direct row-specific activity registry/projection and production lifecycle inspection; PR component observations supplemental only"
+  },
+  "inputs": {
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/src/sidebar-data.ts": "ca94f6acbe5b4a3bfb6ac1c259969fab39dac45e8fd9cf88e4874fcaaef70c47",
+    "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+    "plugins/ca-pi/tools/src/footer-state.ts": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+    "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+    "plugins/ca-pi/tools/src/plan-mode.ts": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+    "plugins/ca-pi/tools/src/sidebar.ts": "bae3d7312deace2ef5f955be4c150f5f6274510485eb9e5cf505cd5351615653",
+    "plugins/ca-pi/tools/test/activity.test.ts": "b17944eff2918308ba1d920894826391cc2a9ad2f06748d0443b588741a85ae5",
+    "plugins/ca-pi/tools/test/sidebar-data.test.ts": "6f3ffd142fce3ea2a402fcdc4fb45c08382902c88a4c4734e8b32f924965db9e"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-activity-projection-preservation/source-and-assertion-traces.json",
+      "sha256": "1ecad438c506660d94245d1c150737e05ff8745826b0c76d5113a3599603ffd7"
+    }
+  ],
+  "limits": [
+    "Source-clause PRESERVED only for five S06 transition rows; no whole-machine/task/finding/scenario closure.",
+    "Eight exact actual assertion bodies joined to original successful Ubuntu/Windows jobs at source3688. They remain component observations, not final hosted push-gate or installed UI qualification.",
+    "Parameterized34 selectors remain unmapped elsewhere. This packet uses nonparameterized bodies only.",
+    "Registry TTL/bounds/dispose are display-only; no cancellation, token retirement, permission or containment proof inferred.",
+    "Source-only branches and partial test support are called out per row; suite totals do not supply missing assertions.",
+    "Original installed3688 cold/RPC and old09038 TUI diagnostic remain separate scopes; neither is used to close these transition clauses."
+  ]
+}

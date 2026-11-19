@@ -1,0 +1,17 @@
+
+⎯⎯⎯⎯⎯⎯⎯ Failed Tests 1 ⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  cp.test.ts:362:3 > owned offline effect acceptance [docker] > retains real partial docker cp bytes after cancellation without rollback metadata
+AssertionError: copy completed/failed before partial bytes were observed; no qualifying partial oracle: expected 0 to be greater than 0
+ ❯ cp.test.ts:404:121
+    402|         stdoutSha256: createHash("sha256").update(result.stdout).diges…
+    403|         stderrSha256: createHash("sha256").update(result.stderr).diges…
+    404|       expect(observedPartial, "copy completed/failed before partial by…
+       |                                                                                                                         ^
+    405|       expect(result.code).not.toBe(0); expect(result.aborted).toBe(tru…
+    406|       expect(retained).toBeGreaterThan(0); expect(retained).toBeLessTh…
+ ❯ withOwnedOfflineEffect cp.test.ts:271:5
+ ❯ cp.test.ts:363:5
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/1]⎯
+

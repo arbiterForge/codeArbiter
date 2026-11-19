@@ -1,0 +1,147 @@
+{
+  "schema": "codearbiter.site-capture-refresh/1",
+  "source_commit": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+  "changed_files": [
+    {
+      "path": "site/src/assets/captures/context-scaffold-frontmatter.json",
+      "sha256": "8943b8782de68ac9fe2477a2d5538f179385cb4bee8294020afd00eb1d2d2c1d",
+      "old_source_sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "current_source_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "only_regenerated_source_binding_changed": true,
+      "output_exit_argv_other_sources_unchanged": true
+    },
+    {
+      "path": "site/src/assets/captures/override-gate-row.json",
+      "sha256": "672a0dddc0f326dd4692e0ce7e2f066469fc744f74bc3a464cb6aa3ddaaa3d22",
+      "old_source_sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "current_source_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "only_regenerated_source_binding_changed": true,
+      "output_exit_argv_other_sources_unchanged": true
+    },
+    {
+      "path": "site/src/assets/captures/override-security-row.json",
+      "sha256": "71c13302e09680a99b101452198913d54f029ff63be72cfed9f65fb514ac1ef8",
+      "old_source_sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "current_source_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "only_regenerated_source_binding_changed": true,
+      "output_exit_argv_other_sources_unchanged": true
+    },
+    {
+      "path": "site/src/assets/captures/statusline-refusal.json",
+      "sha256": "1b39577f0ef6f430b95ae97b8b414eb8b26a6440d840a9de03b51978520814f7",
+      "old_source_sha256": "de8b2255bad1a78f4779406e35114ebc596ee280912d3ba68e559a06da098458",
+      "current_source_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "only_regenerated_source_binding_changed": true,
+      "output_exit_argv_other_sources_unchanged": true
+    }
+  ],
+  "reproduction": "Hosted6083 site failure and actual current verify.ts both refused four stale _sensitivelib source bindings. No source guard change; actual npm run capture executed all four affected deterministic disposable fixtures.",
+  "capture_command": {
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+      "run",
+      "capture"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 6.890052799950354,
+    "stdout_sha256": "62315b8c06629861d28b980248865b9ea93beda963e6b629e7975aa4b8a658b8",
+    "stderr_sha256": "dc8fc8d034a5c92ec285674e51d65839178c022112cd3a1ff2096ba14f202be4"
+  },
+  "verification": [
+    {
+      "name": "fresh-verify",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "scripts/capture/verify.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 0.13927399995736778,
+      "stdout_sha256": "91f6e83213231dde4a7e6f7848e78b1dc942188b97afe5dc8e744468d77c1ca7",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "capture-tests",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "test/capture/capture-harness.test.ts",
+        "test/capture/stale-capture.test.ts",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\capture-tests-results.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 7.301623999956064,
+      "stdout_sha256": "c0dc634445c2ed5a3cbd1d85b660752218aa2dc1e1513977ee94c871fcdaac5b",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "gen-source",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "scripts/gen.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 3.5673277999740094,
+      "stdout_sha256": "d62b78b714bf324a1e9f3606414c6bf8a755b5ed72f86406baf1345b1bbd8b45",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "gen-atlas",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "scripts/generate-atlas.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 0.7629671000177041,
+      "stdout_sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "gen-diagrams",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "scripts/generate-diagrams.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 0.1801648000255227,
+      "stdout_sha256": "ef8d29d5c291fd1fc42d6913b252ef2f70dae251673ccdd2af22aed75df6dcd9",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "audit-diagrams",
+      "argv": [
+        "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+        "scripts/diagram-audit.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 0.14321020001079887,
+      "stdout_sha256": "c564af8b5fed8d995a4c57cc81a1675575ccdab85a6aa907ae88f747f83b4831",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "owning_tests": {
+    "methods": 52,
+    "failed": 0,
+    "pending": 0,
+    "raw_json_sha256": "7d8451e6e544a2c7ab4726b4664ca2c4871a97f30672b597e44320df02235233"
+  },
+  "generation": "Expanded exact declared npm gen script with same safeNode24.22.1 for each canonical tsx entry (gen.ts, generate-atlas.ts, generate-diagrams.ts, diagram-audit.ts). All pass; no additional site file drift. No alternative builder/guard bypass/fullsite/browser claim.",
+  "landing_proof": "Unchanged by normal capture owner; originalH03 replay exact same evidence, no render/media refresh.",
+  "diff_check": "PASS",
+  "no_source_fixture_or_guard_edits": true,
+  "no_index_metadata_or_marker_writes": true
+}

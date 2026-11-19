@@ -1,0 +1,77 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/crypto_evidence_review: literal50-clause Pi source/guard/effect/retry assessment;29eligible source-only proposals"
+ },
+ "inputs": {
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca-pi/tools/src/bridge.ts": "1cea9386c5e706cb0beb286f67f37f8e5cdfa84e43d71b7eecdc6efb597e4899",
+  "plugins/ca-pi/tools/src/command-ownership.ts": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+  "plugins/ca-pi/tools/src/native-plan.ts": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8",
+  "plugins/ca-pi/tools/src/plan-mode.ts": "1b7df3d367cc185484b3072329d9b6dbac162070e2f31dc52d5944dd2db0c754",
+  "plugins/ca-pi/tools/src/session-identity.ts": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc"
+ },
+ "disposition_ids": [
+  "disposition:transitions:S03:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/clause-inspection.json",
+   "sha256": "82e104d384721262ba0fe814724babeb4e90b94f5955bcf9f2a36995cd4f280f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/source-bindings.json",
+   "sha256": "104c1235e3632122d6dfcb6b2f7bf75b1d4ccd8105b4f56d2c96bb7c108650aa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:transitions:S03:07",
+   "frozen_row_sha256": "299d09c8a6df6e634fc4b6fdbcc3c2cafaf8126e5d2ed5b5041a6f3376a6d033",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 276,
+     "end": 321,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/native-plan.ts",
+     "start": 126,
+     "end": 154,
+     "file_sha256": "b638b19da6078d9f86281d900a05b53602e6b034cc8890fa221229655c6fdce8"
+    }
+   ],
+   "semantic_assessment": "Cancelled/timedout dialog, stale lease/session/trust/ownership or differing second hash/content returns refusal before approve/persist/owned replacement. Approval path only reads plan, so refused attempt preserves file/restrictions. Caller must reread/reconfirm; no silent approval/fallback from this branch.",
+   "limits": "Reasoned source conformance only. No execution, human confirmation, disk/process/network/installed success, test result, task/host qualification, or evidence-epoch renewal is asserted."
+  }
+ ],
+ "scope": "Source-only reasoned current S03 conformance under accepted task changes; no runtime/consent/provider/task outcome.",
+ "excluded_cells": [
+  "disposition:transitions:S03:01",
+  "disposition:transitions:S03:02",
+  "disposition:transitions:S03:03",
+  "disposition:transitions:S03:04",
+  "disposition:transitions:S03:05",
+  "disposition:transitions:S03:06",
+  "disposition:transitions:S03:08",
+  "disposition:transitions:S03:09",
+  "disposition:machines:S03"
+ ],
+ "limits": [
+  "Only4complete machines and25PLANNEDtransitions are proposed,29cells total; S03 machine/S03:03 stayPLANNED.",
+  "All24existingPRESERVEDtransition objects/evidence/history are retained exactly; no runtime proof refreshed.",
+  "PI-L01 persona retry and PI-L02 sidebar generation are named accepted task changes; historical defects are not represented as still current.",
+  "ADR0043 removes artifact authorization ceremony, not actual host operation permissions. PI-D02 explicitly reuses parent bridge/policy/confirmation/audit gate. No fabricated human consent or old artifact receipt is supplied.",
+  "ADR0049 changes external endpoint plain-HTTP allowance only; no provider transport/credential flow is tested or qualified here.",
+  "Conditional process-tree verified result/cached cleanup is source behavior, not evidence of actual OS process containment.",
+  "S03:03 is a bounded unproven durable-session-state join/ambiguous summary. Exact-symbol lookup is not a complete public-owner trace and does not establish a missing product feature."
+ ]
+}

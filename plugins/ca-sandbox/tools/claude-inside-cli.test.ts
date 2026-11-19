@@ -6,10 +6,9 @@
  * `sandbox.js` entirely. The skill told operators to call TypeScript that no
  * install contained.
  *
- * It ships as its own binary rather than a `sandbox` subcommand, because it
- * starts a container holding a LIVE OAuth token and the sandbox-claude-inside
- * skill's five BLOCK gates are what make that safe. A subcommand would let
- * anyone start a token-bearing box with one ungated command.
+ * It ships as a separate binary. Its skill guides five review phases; binary
+ * placement does not enforce them. The entry point and runtime retain their
+ * mechanical argument, token, co-mount, network and hardening guards.
  *
  * Everything here runs on injected deps. No docker, no real token.
  */
@@ -165,11 +164,14 @@ describe("#377 runClaudeInsideCli — the process contract", () => {
   });
 
   it("the usage text states that this is skill-gated, not a sandbox subcommand", async () => {
-    // The gating is a documented contract, not just an absent subcommand. If
-    // someone finds this binary directly, the text tells them what they are
-    // bypassing.
+    // Help distinguishes caller guidance from the guards actually implemented.
+    // Finding the binary directly does not establish completion of those phases.
     expect(usage()).toMatch(/sandbox-claude-inside/);
-    expect(usage()).toMatch(/BLOCK gates/);
+    expect(usage()).toMatch(/five agent-guided phases/);
+    expect(usage()).toMatch(/does not enforce those phases/);
+    expect(usage()).toMatch(/Machine guards validate arguments and environment-token presence/);
+    expect(usage()).toMatch(/token\/source co-mounts/);
+    expect(usage()).not.toMatch(/BLOCK gates/);
     expect(usage()).toMatch(new RegExp(TOKEN_ENV_VAR));
   });
 });

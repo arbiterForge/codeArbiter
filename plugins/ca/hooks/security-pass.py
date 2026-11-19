@@ -152,7 +152,7 @@ def main(argv=None):
         os.makedirs(marker_dir, exist_ok=True)
         marker = os.path.join(marker_dir, "security-gate-passed")
         write_text_atomic(marker, "\n".join(
-            (worktree_marker_binding(root), binding)) + "\n")
+            (worktree_marker_binding(root), scan.candidate, binding)) + "\n")
         print("binary security override recorded: exact staged candidate bound to "
               + os.path.relpath(marker, write_root))
         return
@@ -180,8 +180,8 @@ def main(argv=None):
     # marker, which the backstop would read as an unrecognized digest and force a
     # spurious gate re-run.
     write_text_atomic(marker, "\n".join(digests) + ("\n" if digests else ""))
-    print(f"security-gate pass recorded: {len(scan.digests)} sensitive line(s) "
-          f"bound to {os.path.relpath(marker, write_root)}")
+    print(f"security-gate pass recorded: exact staged candidate with {len(scan.digests)} "
+          f"sensitive line(s) bound to {os.path.relpath(marker, write_root)}")
 
 
 def run(host, argv=None):

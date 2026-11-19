@@ -1,0 +1,224 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ac9b184a662b24cef088db186eeef5defcc410ac",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound Pi structured role redaction source delta"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/src/audit-sink.ts": "118e24ae1be2ad4807801860dbb9fb7b953e0404d198124d4393cd575e49ed27",
+    "plugins/ca-pi/tools/src/background-jobs.ts": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9",
+    "plugins/ca-pi/tools/src/command-ownership.ts": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+    "plugins/ca-pi/tools/src/contracts.ts": "ba8cb4ff16968f1f2eaf74309939d56a06c7d230b050058f9f3a35b0460444d0",
+    "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+    "plugins/ca-pi/tools/src/native-background.ts": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad",
+    "plugins/ca-pi/tools/src/process-tree.ts": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51",
+    "plugins/ca-pi/tools/src/session-identity.ts": "310a9d6c005f73b0d7d54aeb3be067aece92d700371fae6db7681c6831ef8bdc",
+    "plugins/ca-pi/tools/src/tool-guard.ts": "83264907e94da2c32807216459d0ecfa50214130c93b0d39e8809390bb9a8141"
+  },
+  "disposition_ids": [
+    "disposition:machines:S05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-role-redaction-source-ac9b184a/source-inspection.json",
+      "sha256": "e306160f0a90f27027c4b3bd313747ddab5d801debc8c78d3f81a2d045075596"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S05-preserved.json",
+      "sha256": "4ec8f82dc73dcb23d9bf16faa5a9080e03094e8dc92051f89beeddd9594e0594"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/clause-inspection.json",
+      "sha256": "82e104d384721262ba0fe814724babeb4e90b94f5955bcf9f2a36995cd4f280f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/source-bindings.json",
+      "sha256": "104c1235e3632122d6dfcb6b2f7bf75b1d4ccd8105b4f56d2c96bb7c108650aa"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S05",
+      "frozen_row_sha256": "ad3676df6adfb7c59dde4f780a77828b44e0c0c7912f07a65de19056387fa7f9",
+      "clause_ids": [
+        "disposition:transitions:S05:01",
+        "disposition:transitions:S05:02",
+        "disposition:transitions:S05:03",
+        "disposition:transitions:S05:04",
+        "disposition:transitions:S05:05",
+        "disposition:transitions:S05:06",
+        "disposition:transitions:S05:07",
+        "disposition:transitions:S05:08",
+        "disposition:transitions:S05:09"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 118,
+          "end": 158,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 305,
+          "end": 341,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 769,
+          "end": 809,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 810,
+          "end": 849,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 329,
+          "end": 357,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "start": 916,
+          "end": 924,
+          "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 358,
+          "end": 388,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 859,
+          "end": 905,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 393,
+          "end": 409,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/process-tree.ts",
+          "start": 990,
+          "end": 1004,
+          "file_sha256": "c95c41d55cf73de5f4c4426228a42633d759203fc6ca0f590cfe884b33640f51"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 885,
+          "end": 914,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 159,
+          "end": 201,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 885,
+          "end": 905,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 125,
+          "end": 136,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 159,
+          "end": 198,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 128,
+          "end": 136,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 393,
+          "end": 411,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 811,
+          "end": 821,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 859,
+          "end": 882,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/native-background.ts",
+          "start": 267,
+          "end": 288,
+          "file_sha256": "7108750536f09a7924950ba934c2c88deb239b52e18216e8967cc8f1398d3bad"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/background-jobs.ts",
+          "start": 876,
+          "end": 882,
+          "file_sha256": "12d9b9d5e4dd2c71d5f5c9fe2a2009da49fc275fb8df3d4020b854493636ebb9"
+        }
+      ],
+      "semantic_assessment": "Every literal guard/effect/retry clause is separately mapped in the source inspection, including accepted task changes and residual limitations. Complete source-contract preservation only; no runtime/host/task qualification."
+    }
+  ],
+  "scope": "Source-only reasoned current S05 conformance under accepted task changes; no runtime/consent/provider/task outcome.",
+  "excluded_cells": [
+    "disposition:transitions:S05:01",
+    "disposition:transitions:S05:02",
+    "disposition:transitions:S05:03",
+    "disposition:transitions:S05:04",
+    "disposition:transitions:S05:05",
+    "disposition:transitions:S05:06",
+    "disposition:transitions:S05:07",
+    "disposition:transitions:S05:08",
+    "disposition:transitions:S05:09"
+  ],
+  "limits": [
+    "Only4complete machines and25PLANNEDtransitions are proposed,29cells total; S03 machine/S03:03 stayPLANNED.",
+    "All24existingPRESERVEDtransition objects/evidence/history are retained exactly; no runtime proof refreshed.",
+    "PI-L01 persona retry and PI-L02 sidebar generation are named accepted task changes; historical defects are not represented as still current.",
+    "ADR0043 removes artifact authorization ceremony, not actual host operation permissions. PI-D02 explicitly reuses parent bridge/policy/confirmation/audit gate. No fabricated human consent or old artifact receipt is supplied.",
+    "ADR0049 changes external endpoint plain-HTTP allowance only; no provider transport/credential flow is tested or qualified here.",
+    "Conditional process-tree verified result/cached cleanup is source behavior, not evidence of actual OS process containment.",
+    "S03:03 is a bounded unproven durable-session-state join/ambiguous summary. Exact-symbol lookup is not a complete public-owner trace and does not establish a missing product feature.",
+    "Scope is source conformance. The changed Pi runner and the reviewed C36 observations require their own exact runtime evidence."
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/pi-five-source-ad4101/proofs/S05-preserved.json",
+    "sha256": "4ec8f82dc73dcb23d9bf16faa5a9080e03094e8dc92051f89beeddd9594e0594",
+    "original_code": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+    "stored_at": "24ee1333a11f6ed07873f926c3593f56e879b4bb"
+  },
+  "changed_paths": [
+    "plugins/ca-pi/tools/src/contracts.ts"
+  ]
+}

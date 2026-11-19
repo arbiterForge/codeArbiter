@@ -1,0 +1,42 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "0c81b61ab4368ebc76efac10d4d0655b40bbb025",
+  "prior_source_commit": "155fe44bc67b0b6acbfee14415956777f0165a08",
+  "scope": "Atlas SX05 machine and six transitions, source conformance only",
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/execution-maps/atlas-command.ts": "3d1cd6e531497e69397bc44e6facb4dc6a68981cac98429e01708fbc9d94993e",
+    "site/scripts/execution-maps/atlas-model.ts": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+    "site/scripts/execution-maps/atlas-render.ts": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+    "site/scripts/execution-maps/atlas-theme.ts": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "site/scripts/execution-maps/atlas.ts": "f97f98230aac423bc2c6c7a381c31d2ef330d8a4a640951860d7c08dd676d573",
+    "site/scripts/generate-atlas.ts": "d4f474a61e0071dd261a6833595d219c459deb68d4fb03ed27ce93c57d235a68",
+    "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json": "51cfe697e1e167f829dfbe8604df40a138aa95118942fd88b8a60468f0f67122",
+    "site/scripts/execution-maps/atlas-assistive.test.ts": "9ecce3fb4a8a48510acfd8cc8f5ce99dfd7496414510fd1e70ed56926a786318"
+  },
+  "changed_catalog": {
+    "path": "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+    "previous_sha256": "67a57e321d2101d1f283309dd96b2efedadac20e577b1a7d197f363cb1f22baf",
+    "sha256": "51cfe697e1e167f829dfbe8604df40a138aa95118942fd88b8a60468f0f67122",
+    "exact_current_git_pins": {
+      "core/pysrc/_workflowrecoverylib.py": "c47fdcaa3087d3943a6380dca0c7ffd1df0fbe8c",
+      "core/pysrc/workflow-recovery.py": "9c9c3bbd421c8be604c2c3891b1fa8c58c394e7b"
+    }
+  },
+  "observation": "The reviewed catalog preserves its finite route IDs, node edges, original revision, loaders and generators. Two recovery identities and one scan summary change to describe the bounded child using its parent-validated worktree. All other scoped inputs match the original proof.",
+  "local_checks": {
+    "generator": {
+      "result": "PASS",
+      "sha256": "6e07cd390449af43e7498225baea4710d20885d3d2ae67d250a4f601c4dae46d"
+    },
+    "atlas_vitest": {
+      "result": "PASS",
+      "named_tests": 185,
+      "sha256": "3f3f9a34279b7764247290e615cf94e33124cc942889c645e5221c57d8a369dd"
+    }
+  }
+}

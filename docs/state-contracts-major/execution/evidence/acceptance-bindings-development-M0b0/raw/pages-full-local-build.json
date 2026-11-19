@@ -1,0 +1,35 @@
+{
+  "commands": [
+    {
+      "name": "declared-prebuild",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-run-complete-site-generator.py",
+        "ca-pages-public-metadata-prebuild-"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "seconds": 4.346,
+      "stdout_sha256": "ae45eb44c17a17655d3deac6beb298f6df84c8655a4bc6293834c9998af8ff35",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "declared-build",
+      "argv": [
+        "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\astro\\bin\\astro.mjs",
+        "build"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0,
+      "seconds": 40.637,
+      "stdout_sha256": "d67329031c82dbcb18df166baf236594b970d5144ec80c3012d3df30a8246862",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "subject": "actual existing prebuild+Astro build after public .gitignore removal",
+  "hosted_qualification": false
+}

@@ -1,0 +1,188 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "packaging_site_tools / actual local Windows amd64 / Python3.14 and Node24.22.1"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S65:05",
+    "disposition:transitions:S65:06",
+    "disposition:transitions:S65:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/site-correct-cwd-results.json",
+      "sha256": "be3f78e52dc101838378fc5410c4f9035fbbb6220b37b1a0c306530cb737826e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/site-correct-cwd.log",
+      "sha256": "29873575ac36c8df1fa06aefc41d7a3b18d48c3616a2214a52cdf1df66879a2c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-local-94b/raw/pagefind-publication-input-stability.json",
+      "sha256": "f79287cda8c291410bacc2fb9316fc2107fe53092a2fd6645d373d407382c300"
+    }
+  ],
+  "inputs": {
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/package.json": "3c00bebcf4d5796050692262ec2791f4ae367d8b450a650419e552a6162aac7c",
+    "site/scripts/owned-output.test.ts": "8d23c62e8900a5d7acdd4de4121ee39670ffa3886ea2c1296c2d7b799ede5775",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f",
+    "site/scripts/pagefind-build.test.ts": "9106dff87e4b00c138eab7570b458f8f05c90ba654c1e57f0a20cf913abecc03",
+    "site/scripts/pagefind-build.ts": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+    "site/vitest.config.ts": "a65a6dde53bb9bff5d5ee31569d97f2f76e3a6f51e672613d155e3121055ac59"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "node_modules/vitest/vitest.mjs",
+        "run",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-admissible-94b-3ov15tt3\\docs\\state-contracts-major\\execution\\evidence\\packaging-local-94b\\raw\\site-correct-cwd-results.json",
+        "scripts/owned-output.test.ts",
+        "scripts/pagefind-build.test.ts",
+        "test/release-applicability/publication.test.ts"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+      "exit_code": 0
+    }
+  ],
+  "scope": "Complete search-output replacement/rename failure and old-output restoration;20actual Pagefind assertions plus4owned publisher assertions. No live site deployment or other generator content acceptance.",
+  "runtime": {
+    "python_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "node_executable_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+    "node_version": "v24.22.1"
+  },
+  "limits": [
+    "Original local evidence; no hosted PR evidence relabeled.",
+    "Retained proof/raw paths become Git-authenticatable only after parent commits these exact metadata bytes.",
+    "No current production archive/installed/cohort/browser/live provider qualification."
+  ],
+  "original_named_assertions": [
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/owned-output.test.ts",
+      "name": "owned generated publication restores the complete old output after a late rename failure and reruns deterministically",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/owned-output.test.ts",
+      "name": "owned generated publication refuses a second writer without touching its marker",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/owned-output.test.ts",
+      "name": "owned generated publication refuses a linked owner before touching external files",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/owned-output.test.ts",
+      "name": "owned generated publication retains an unusable marker if recovery also fails",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication writes and reads back every byte, replacing only the previous generated search output",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects the observed 32 KiB incomplete-module shape and preserves the prior output",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication checks JavaScript syntax without executing emitted code",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path ../escape",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path /absolute",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path a/../escape",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path C:/escape",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path a\\b",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path a//b",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path a/%2e%2e/b",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path .",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication rejects non-local output path ..",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication requires unique nonempty assets, the module and valid entry metadata",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication does not follow an existing search-output symlink",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication waits for the in-memory result and closes the service without asking it to write files",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication fails closed and closes the service on create failure",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication fails closed and closes the service on index failure",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication fails closed and closes the service on serialize failure",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication indexes real HTML with the locked engine and publishes its exact complete in-memory output",
+      "status": "passed"
+    },
+    {
+      "file": "C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/site/scripts/pagefind-build.test.ts",
+      "name": "complete search bundle publication is wired to every Astro build instead of an optional postbuild command",
+      "status": "passed"
+    }
+  ]
+}

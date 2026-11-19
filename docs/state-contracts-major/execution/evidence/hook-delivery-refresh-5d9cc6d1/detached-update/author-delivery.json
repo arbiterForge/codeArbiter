@@ -1,0 +1,193 @@
+{
+ "schema": "codearbiter.private-fix-delivery/1",
+ "state": "IMPLEMENTED_FOCUSED_OWNING_GREEN",
+ "route": "ca-fix",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "finding": "DETACHED-UPDATE-NO-BYTECODE-01",
+ "source_epoch": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "subjects": {
+  "core/pysrc/session-start.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\original\\core\\pysrc\\session-start.py",
+    "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "bytes": 71640
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate\\core\\pysrc\\session-start.py",
+    "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+    "bytes": 71649
+   },
+   "original_git_oid": "9f14a960219746ec7632c2afbecf0238e215cc51",
+   "canonical_original_unchanged": true
+  },
+  "plugins/ca/hooks/tests/test_session_start.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\original\\plugins\\ca\\hooks\\tests\\test_session_start.py",
+    "sha256": "3fe29efdfacb0e207c33fecf36b53f7ef5cc51630be8163a4eb5fff14286e265",
+    "bytes": 68578
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate\\plugins\\ca\\hooks\\tests\\test_session_start.py",
+    "sha256": "3eca42c44bb7fea002d3f04e42e217d0053e3dc29febab40e86f939489217745",
+    "bytes": 71718
+   },
+   "original_git_oid": "f55d3187d094c4d21f83ce34d2e5c3baa687daa9",
+   "canonical_original_unchanged": true
+  },
+  "plugins/ca/hooks/session-start.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\original\\plugins\\ca\\hooks\\session-start.py",
+    "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "bytes": 71640
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate\\plugins\\ca\\hooks\\session-start.py",
+    "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+    "bytes": 71649
+   },
+   "original_git_oid": "9f14a960219746ec7632c2afbecf0238e215cc51",
+   "canonical_original_unchanged": true
+  },
+  "plugins/ca-codex/hooks/session-start.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\original\\plugins\\ca-codex\\hooks\\session-start.py",
+    "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "bytes": 71640
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate\\plugins\\ca-codex\\hooks\\session-start.py",
+    "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+    "bytes": 71649
+   },
+   "original_git_oid": "9f14a960219746ec7632c2afbecf0238e215cc51",
+   "canonical_original_unchanged": true
+  },
+  "plugins/ca-pi/hooks/session-start.py": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\original\\plugins\\ca-pi\\hooks\\session-start.py",
+    "sha256": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "bytes": 71640
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate\\plugins\\ca-pi\\hooks\\session-start.py",
+    "sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+    "bytes": 71649
+   },
+   "original_git_oid": "9f14a960219746ec7632c2afbecf0238e215cc51",
+   "canonical_original_unchanged": true
+  }
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate.patch",
+  "sha256": "d7053fab943deb0163baaabaea020324934c43e7b41ffb2338928a85ee54cdcd",
+  "bytes": 6872
+ },
+ "fix": "Shared detached update-refresh argv now explicitly includes -B. Docstring names exact launch. All other source code and existing tests preserved.",
+ "outcomes": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\outcomes.json",
+  "sha256": "98133c2097a9f5979fec1e938c0da81caecfb0822a8cc43963fc3a093bcc102a",
+  "bytes": 2571
+ },
+ "source_preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\source-preservation.json",
+  "sha256": "a50bc5e92b6adaa224694cdde9d14618040d666921d448910cc0c3dac70aecac",
+  "bytes": 1456
+ },
+ "dependencies": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\dependency-joins.json",
+  "sha256": "235fa908141c88de7156b4456c409e210cc6e0502165fe55ac544da97ca16a56",
+  "bytes": 4295
+ },
+ "preserved_persona_delivery": {
+  "path": "C:/Users/brenn/AppData/Local/Temp/ca-persona-record-failure-fix-rns65l7e/delivery.json",
+  "sha256": "d1299dfb6382fb92c1a5bf55b5c35836e35ea3a9c715f247b2bfb96c69058435"
+ },
+ "evidence": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\input-input.txt",
+   "sha256": "19f16fa016d9e9ec50fd234fc8d988d3709749c01e476c6eb6ca3a449657bb74",
+   "bytes": 9266
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\input-context.json",
+   "sha256": "96794fae979b4072801bf79a67b7832073ac48258a59542f7add870bb767d502",
+   "bytes": 15132
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\input-config.json",
+   "sha256": "aebfe49cae156185cc6bacb4b71679825758729b8b5648d2745ae06bab06eaca",
+   "bytes": 3055
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\candidate.patch",
+   "sha256": "d7053fab943deb0163baaabaea020324934c43e7b41ffb2338928a85ee54cdcd",
+   "bytes": 6872
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\red.json",
+   "sha256": "cd0c3e42fb60bf4212aafd46701493ff4d031c05e5a4fd001e7a633ee4b3da6a",
+   "bytes": 762
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\green.json",
+   "sha256": "899caf0a0f99567258cb1e572ab7fafb113d59f168402ef1d5db570e5ff52d83",
+   "bytes": 667
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\source-preservation.json",
+   "sha256": "a50bc5e92b6adaa224694cdde9d14618040d666921d448910cc0c3dac70aecac",
+   "bytes": 1456
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\dependency-joins.json",
+   "sha256": "235fa908141c88de7156b4456c409e210cc6e0502165fe55ac544da97ca16a56",
+   "bytes": 4295
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\owned-child-observations.json",
+   "sha256": "375d741219a980a7c2fc5b7c0075d5e1aa38fe4dec1c330523694228a4964884",
+   "bytes": 1915
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\outcomes.json",
+   "sha256": "98133c2097a9f5979fec1e938c0da81caecfb0822a8cc43963fc3a093bcc102a",
+   "bytes": 2571
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\run-owning.py",
+   "sha256": "eb68436baee777a52163689558fc7734d0e5d11950d72ba24343b252918dab45",
+   "bytes": 745
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\regression-original-red.py",
+   "sha256": "3eca42c44bb7fea002d3f04e42e217d0053e3dc29febab40e86f939489217745",
+   "bytes": 71718
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\red.stdout",
+   "sha256": "3d789291ed9a88334386e026f4721682182d3c1bdc46e5f922a750517ccc9f36",
+   "bytes": 940
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\red.stderr",
+   "sha256": "e27ecaf4fb9b355994e0cce96c129f3647a0009c84847642adaad9ec659a938b",
+   "bytes": 3340
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\green.stdout",
+   "sha256": "5539a5922b363b9d4d6d21b0e426565790daf3a60f3609c365e6798476477536",
+   "bytes": 829
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\logs\\green.stderr",
+   "sha256": "88e71faff9a708f7fdd64a10f2018ec39e7f6957c3cffd9186a62c240255b6d8",
+   "bytes": 1365
+  }
+ ],
+ "limits": [
+  "Original archive reportedly gained ten pyc members; this review did not reproduce that installed run or establish the detached child as its sole writer, since original detached PID/argv were not retained. Source defect and owned inert-child causal reproduction are confirmed separately.",
+  "Windows/Python owned child probe only; no real updater/network/provider/API/dependency/install/host/package qualification or Linux runtime replay. No immutable-inventory exclusion or weaker qualification guard introduced.",
+  "Only seven existing focused cases plus one new regression executed; all other old test bodies remain unchanged and unexecuted. Root owns canonical generation/adoption/independent review/staged gates/exact-head hosted qualification.",
+  "No global environment mutation; existing test module redirects its own isolated process home/state, and Popen wrapper changes only inert child environment. Production flags/null stdio/detachment/caller failure behavior preserved."
+ ]
+}

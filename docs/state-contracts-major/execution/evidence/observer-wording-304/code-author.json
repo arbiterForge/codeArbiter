@@ -1,0 +1,157 @@
+{
+ "schema": "codearbiter.private-hook-finding-candidate/1",
+ "status": "PRIVATE_TESTED_CANDIDATE_ROOT_INTEGRATION_PENDING",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_basis": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "registry_fix_source_basis": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "observed_seal_head": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "subjects": [
+  {
+   "path": ".github/major-qualification-policy.json",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\major-qualification-policy.json",
+   "preimage_sha256": "a56ec086f1c1b29206c3150fba29d11d18b2f3d44b2f4aeeee04e5fc12be27dc",
+   "preimage_bytes": 7975,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\major-qualification-policy.json",
+   "sha256": "68bb6a70f063b7fc4845eea1fbeaad5a8e49cb57d65a492c13f888e5f9f273dd",
+   "bytes": 8107,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/major-test-selections.json",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\major-test-selections.json",
+   "preimage_sha256": "68adda1f50b166aa2f1ff8bf1747e18f9b063d28b9aced774111a9515f044f85",
+   "preimage_bytes": 74167,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\major-test-selections.json",
+   "sha256": "8018ffd55e8c1fc8ba032d9086948dff35342df7f7fcdd750d6de7a2efc9fcb9",
+   "bytes": 75711,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/scripts/major_qualification_report.py",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\scripts\\major_qualification_report.py",
+   "preimage_sha256": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+   "preimage_bytes": 139525,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\scripts\\major_qualification_report.py",
+   "sha256": "441e325950b9bc49db3f31b03058d6fb6fdba1eb7b235404518f320f6a268270",
+   "bytes": 148755,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/scripts/major_readiness.py",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\scripts\\major_readiness.py",
+   "preimage_sha256": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+   "preimage_bytes": 82923,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\scripts\\major_readiness.py",
+   "sha256": "553e982cd23048aceec9d13573a74c99386e7da3583ebe7f7d20d9921ddff374",
+   "bytes": 83347,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/scripts/test_ci_impact.py",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\scripts\\test_ci_impact.py",
+   "preimage_sha256": "671118235de1877c4f8788b6da4d134db0019989c9a4fe105858bc37853504e1",
+   "preimage_bytes": 328129,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\scripts\\test_ci_impact.py",
+   "sha256": "47787578ca763283e20f4f7ca29e217045967d85f79fd4bafe98ffbf35b3c553",
+   "bytes": 330454,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/scripts/test_hook_ci_partition.py",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\scripts\\test_hook_ci_partition.py",
+   "preimage_sha256": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc",
+   "preimage_bytes": 48828,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\scripts\\test_hook_ci_partition.py",
+   "sha256": "eef56fd43a5d857c42cde7ef4d8a88c0835e7da92f4f9f87f37a3273bd88e5a4",
+   "bytes": 51198,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/scripts/test_major_qualification_report.py",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+   "preimage_sha256": "06d3be8d73964a7870f162456ac63a1af0ceb4d8a8375fc80487887a242017e4",
+   "preimage_bytes": 252474,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+   "sha256": "dc4f76eac220fd64014d3178360ffae5a59fce3362574e5c0b4e8cbf672d1906",
+   "bytes": 281156,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  },
+  {
+   "path": ".github/workflows/ci.yml",
+   "preimage_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preimages\\.github\\workflows\\ci.yml",
+   "preimage_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "preimage_bytes": 277146,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\candidate\\.github\\workflows\\ci.yml",
+   "sha256": "ca1b8a78a1a2fcb370e02b89a30c5fdc15089d0b98a273382ea17373d4fb2ddb",
+   "bytes": 279842,
+   "git_index_oid": null,
+   "transport": "candidate UTF-8 LF; physical predecessor retained losslessly"
+  }
+ ],
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\filemap.json",
+  "sha256": "73696630d4974b0d2f2ea4999b045c333dc19b3fc87cbeb042b2be43da1b8bcc",
+  "bytes": 5773
+ },
+ "source_joins": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\source-joins.json",
+  "sha256": "77201c03e951954e14ab9bb1c97b08438d1df137250d8ef3418dc541447f9c95",
+  "bytes": 48821
+ },
+ "checks": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\actual-checks.json",
+  "sha256": "bf887b2a126c4a57ffec2648f97e0b04895b1c050033409c616fd363edfdbad4",
+  "bytes": 22276
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\preservation.json",
+  "sha256": "223fb6678f77fb198109ec987846ebad9a5b74e7580eef38444322b0c88340cf",
+  "bytes": 687
+ },
+ "actual_original_observation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-hooks-finding-profile-q229st4y\\final-capture-successor-retained\\original-observation.json",
+  "sha256": "1b6eb92a9d1ccdf3e6077908d8ed49e4908aa5d31e13b0e99039e74abdb2058f",
+  "bytes": 3807,
+  "classification": "Actual unchanged 15-method original suite in owned private source fixture; not hosted/installed/model qualification."
+ },
+ "scope": {
+  "mapped_cells": [
+   "disposition:findings:W-F03"
+  ],
+  "selected_assertions": 6,
+  "original_script": ".github/scripts/test_review_funnel.py",
+  "unfiltered_original_methods": 15,
+  "job": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+  "profile": "hooks-finding-contracts-v1",
+  "input_members": 250,
+  "claim": "Finite declarative maintenance MEDIUM/security HIGH, four generated owner/index/triage/shared-rule conformance under accepted D-HIGH. Shared HW09/HW20/HW27 task links are not whole-task acceptance prerequisites or claims.",
+  "independent_repair": "Nine exact impact-filter subjects route their existing fast native registry guard. No native execution/membership relaxation."
+ },
+ "ci_semantics": {
+  "original_execution_once_per_matrix_cell": true,
+  "windows_contracts": "original unfiltered runpy TestResult observer replaces fallback only on this cell",
+  "other_cells": "unchanged original Python entry point",
+  "prepare_observe_tokenless": true,
+  "metadata_token_only_existing_emit": true,
+  "producer_phase": "Authenticated same-run source archive and completed upload step in active owning job; no self-completed log or whole-run requirement",
+  "final_reader_phase": "Original report/source uploader roles and hashes after trusted whole-run success; main/Q03 rules unchanged",
+  "required_future_check": "Affected exact-head hosted CI; current local fixtures do not qualify the integration/main/installed or model boundary"
+ },
+ "security_limits": [
+  "No canonical/index/ref/marker/ledger/progress writes",
+  "No real HOME/settings/Pi/SDK/native/Go/Node/provider/network/install effects",
+  "Only controlled Git and existing owned tiny Python fixture child effects; no new permissions/dependencies",
+  "No task/scenario/model/real-host promotion",
+  "Original source proofs unchanged; Root will truthfully handle affected source applicability after workflow edits"
+ ],
+ "history_retained": true,
+ "independent_review": "not self-approved; Root owns integration/review",
+ "patch_sha256": "21b615843f017b1a98ad8469bebef0bb468d43dc0f00fd04601003846ccc9cac"
+}

@@ -1,0 +1,28 @@
+# Handoff review ledger — source pin fd7eb34b2da439551443d09526ab48fd1d1bb9bf
+# Full prior runtime audit: audit-work/surfaces-read-files.txt and sandbox-workflows-read-files.txt.
+# This handoff performed no implementation tests and no source or remote mutations.
+FULL_REREAD	plugins/ca-pi/tools/src/child-extension.ts
+FULL_REREAD	plugins/ca-pi/tools/src/contracts.ts
+FULL_REREAD	plugins/ca-pi/tools/src/pi-api.d.ts
+FULL_REREAD	plugins/ca-pi/tools/src/audit-sink.ts
+FULL_REREAD	plugins/ca-pi/tools/src/path-boundary.ts
+FULL_REREAD	plugins/ca-pi/tools/src/compatibility.ts
+FULL_REREAD	plugins/ca-pi/tools/test/final-arguments-live.test.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/extension.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/dispatch.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/runner.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/tool-guard.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/policy.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/background-jobs.ts
+TARGETED_REREAD	plugins/ca-pi/tools/src/runtime-resolver.ts
+TARGETED_REREAD	plugins/ca-pi/tools/test/runner-isolation.test.ts:1480-1634
+TARGETED_REREAD	plugins/ca-pi/tools/test/tool-guard.test.ts:350-625,1630-1705
+TARGETED_REREAD	plugins/ca-pi/tools/test/dispatch.test.ts:1-210,487-550,652-817
+TARGETED_RECHECK	plugins/ca-pi/tools/src/process-tree.ts and windows-supervisor.ts — fd layout and managed spawn/cleanup signatures; full source in prior audit.
+PRIOR_FULL_ONLY	plugins/ca-pi/tools/src/child-env.ts and inference-broker.ts — credential/environment broker boundary; no new upstream API inferred.
+FULL_REREAD	plugins/ca-pi/tools/package.json
+FINDING_LEDGER_FULL	audit-work/surfaces.json findings SF01–SF16
+FINDING_LEDGER_FULL	audit-work/sandbox-workflows.json findings SW-F01–SW-F09
+INVENTORY_ONLY	Additional farm/sandbox/site test paths in task ledger were located for implementation targets; filenames do not prove present behavior coverage.
+COLLABORATION_CONTRACT	handoff-work/native-tasks.json NT-10; hooks-workflow-tasks.json HW-14/HW-21/HW-25; parent bookkeeping-owner and permission wording instructions.
+LIVE_METADATA_READ	handoff-work/live-github-observations.json — parent-observed main still pinned; exact released asset bytes were not fetched/qualified here.

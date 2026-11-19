@@ -144,6 +144,18 @@ that a yes to one action authorizes another.
    dedicated archive commit and the normal PR path.
    Do not stage journals, generated compatibility views, or unrelated work.
 
+7. **Interrupted workflow follow-ups** — resolve the installed
+   `hooks/workflow-recovery.py` from the same helper card and read `scan` only.
+   Present this page's pending, claimed and unavailable subset, its precise
+   reason, and any opaque continuation cursor. A partial scan is not a complete
+   backlog count. Never mine transcripts or run promotion, completion, review,
+   issue publication, staging, cleanup or transaction repair as part of this
+   read. A selected explicit resume belongs to `includes/harvest.md` under its
+   existing scoped confirmation or already valid sprint authority, with exact
+   operation/origin reconciliation before retry. A new session cannot reuse a
+   revoked child grant. Ledger/notification failure affects only that recovery
+   obligation; independent authorized work continues.
+
 Present a one-line summary of what was done and what was declined.
 
 ## When NOT to use

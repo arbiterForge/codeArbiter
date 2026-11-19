@@ -1,0 +1,260 @@
+{
+ "schema": "codearbiter.source13-ci-callsite-reinspection/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "scope": "Source-only current reinspection of13 existing PRESERVED cells. Four historical proof files remain untouched; no status/task/runtime epoch promotion.",
+ "proofs": [
+  {
+   "previous": {
+    "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C05-preserved.json",
+    "sha256": "ef6674be379f8939767d7f9c555135527d6b95c5e25aa93da45d9e0141fd34e8",
+    "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+    "reason": "Only the three optional Pi parent argument replacements changed the whole CI input; all owning literal spans and every other input remain byte-identical."
+   },
+   "current_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+   "cells": [
+    "disposition:machines:C05"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "literal_witnesses": [
+    {
+     "cell": "disposition:machines:C05",
+     "path": ".github/workflows/ci.yml",
+     "start": 1192,
+     "end": 1206,
+     "span_sha256": "20ba1652c3374dff763ed96767bc90d5bf59e0e4922684dc10f034713251ed51",
+     "literal_span_unchanged": true
+    }
+   ],
+   "semantic_assessments": [
+    {
+     "cell": "disposition:machines:C05",
+     "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+    }
+   ]
+  },
+  {
+   "previous": {
+    "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C09-preserved.json",
+    "sha256": "47207f0808f184177b4fea43498df0affa30b22cd2a893ba543c5537866c9987",
+    "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+    "reason": "Only the three optional Pi parent argument replacements changed the whole CI input; all owning literal spans and every other input remain byte-identical."
+   },
+   "current_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+   "cells": [
+    "disposition:machines:C09",
+    "disposition:transitions:C09:01",
+    "disposition:transitions:C09:02"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "literal_witnesses": [
+    {
+     "cell": "disposition:machines:C09",
+     "path": ".github/workflows/ci.yml",
+     "start": 2013,
+     "end": 2028,
+     "span_sha256": "19adff54d912eb2765eb7e80ddd9dfe588b3cbfc601ffb2d8b9f103722705b2a",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C09",
+     "path": ".github/workflows/ci.yml",
+     "start": 2167,
+     "end": 2168,
+     "span_sha256": "445820ca6b9027b64f443fcdc1b5fcc09790aad70b21110157582cd6c332e529",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C09",
+     "path": ".github/workflows/ci.yml",
+     "start": 2194,
+     "end": 2204,
+     "span_sha256": "d79349cf876139142d1edc6e71ea43c4448f9159a02ef6f377a224ecd749ca39",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C09",
+     "path": ".github/workflows/ci.yml",
+     "start": 2073,
+     "end": 2094,
+     "span_sha256": "25cd1aac8bf5d0ad3792e944f1af429c8045132d92695adeaf161c73672cf5ba",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C09",
+     "path": ".github/workflows/ci.yml",
+     "start": 2300,
+     "end": 2321,
+     "span_sha256": "6d102c9ac4a852173b284ca37e5b8778e90ef1cc1121860674b30710d8c28af0",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C09:02",
+     "path": ".github/workflows/ci.yml",
+     "start": 2013,
+     "end": 2028,
+     "span_sha256": "19adff54d912eb2765eb7e80ddd9dfe588b3cbfc601ffb2d8b9f103722705b2a",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C09:02",
+     "path": ".github/workflows/ci.yml",
+     "start": 2167,
+     "end": 2168,
+     "span_sha256": "445820ca6b9027b64f443fcdc1b5fcc09790aad70b21110157582cd6c332e529",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C09:02",
+     "path": ".github/workflows/ci.yml",
+     "start": 2194,
+     "end": 2204,
+     "span_sha256": "d79349cf876139142d1edc6e71ea43c4448f9159a02ef6f377a224ecd749ca39",
+     "literal_span_unchanged": true
+    }
+   ],
+   "semantic_assessments": [
+    {
+     "cell": "disposition:machines:C09",
+     "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+    },
+    {
+     "cell": "disposition:transitions:C09:01",
+     "assessment": "prepare requires supported host/output name and snapshot of a supported declared tree. snapshot derives tracked config/source paths from HEAD, validates exact supported Vitest include/exclude grammar, compares each declared file byte-for-byte with its committed blob and binds lockfile Vitest version and source digests; write_new uses exclusive output. The frozen dirty/unexpected guard means these declared inputs: the function does not enumerate arbitrary untracked files or prove a globally clean checkout. No stronger inventory or Windows junction guarantee is asserted."
+    },
+    {
+     "cell": "disposition:transitions:C09:02",
+     "assessment": "prepare --check recomputes the same complete declared snapshot and requires exact JSON equality to original provenance, then reads bounded blob/provenance and exclusively writes checked receipt containing both raw SHA256 digests. Changed declared source/config refuses, and an existing checked receipt cannot be silently rewritten. It binds output bytes without authenticating that tests passed or preventing forgery by a hostile writer."
+    }
+   ]
+  },
+  {
+   "previous": {
+    "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C10-preserved.json",
+    "sha256": "4746f53991bcb08db85554687c939e3a40aba93f22bc03935ae81c5f24324b92",
+    "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+    "reason": "Only the three optional Pi parent argument replacements changed the whole CI input; all owning literal spans and every other input remain byte-identical."
+   },
+   "current_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+   "cells": [
+    "disposition:machines:C10",
+    "disposition:transitions:C10:01",
+    "disposition:transitions:C10:02",
+    "disposition:transitions:C10:03"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "literal_witnesses": [
+    {
+     "cell": "disposition:machines:C10",
+     "path": ".github/workflows/ci.yml",
+     "start": 2420,
+     "end": 2437,
+     "span_sha256": "11c2c1a11567e95f5fbec66226801e4ce1c3c65e121cf3a6d76e3397e07a8b21",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:machines:C10",
+     "path": ".github/workflows/ci.yml",
+     "start": 2523,
+     "end": 2541,
+     "span_sha256": "5addc99b991af0745a49ce417e5f23506d096f4d48468413944fa4b3b5e7a0a7",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C10:02",
+     "path": ".github/workflows/ci.yml",
+     "start": 2420,
+     "end": 2437,
+     "span_sha256": "11c2c1a11567e95f5fbec66226801e4ce1c3c65e121cf3a6d76e3397e07a8b21",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C10:02",
+     "path": ".github/workflows/ci.yml",
+     "start": 2523,
+     "end": 2541,
+     "span_sha256": "5addc99b991af0745a49ce417e5f23506d096f4d48468413944fa4b3b5e7a0a7",
+     "literal_span_unchanged": true
+    },
+    {
+     "cell": "disposition:transitions:C10:03",
+     "path": ".github/workflows/ci.yml",
+     "start": 2523,
+     "end": 2541,
+     "span_sha256": "5addc99b991af0745a49ce417e5f23506d096f4d48468413944fa4b3b5e7a0a7",
+     "literal_span_unchanged": true
+    }
+   ],
+   "semantic_assessments": [
+    {
+     "cell": "disposition:machines:C10",
+     "assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+    },
+    {
+     "cell": "disposition:transitions:C10:01",
+     "assessment": "Static scanner enumerates non-fixture/non-node_modules *.test.ts except docker-gate.test.ts and recognizes supported double-quoted literal dockerGate names. Per-file repeated names collapse; cross-file shared names and wholly empty recognized population reject. Current recognized population is16 unique names in16 source files out of28 scanned files, each with one site. The audit malformed-declaration phrase is limited to this supported grammar/inventory; this regex is not a TypeScript parser and does not diagnose arbitrary syntactic calls. Actual supported declarations, not invented parser behavior, are preserved."
+    },
+    {
+     "cell": "disposition:transitions:C10:02",
+     "assessment": "recordLayer appends configured layer name only from beforeAll of a runnable gated suite; unavailable required Docker throws at module collection, while optional local mode skips without sentinel. Scanner requires nonempty declarations/sentinel and exact recorded-name set, then returns complete observed starts. Original CI sets required Docker/sentinel and runs npm test through its observer before scanner, so normal step sequencing supplies successful test-run prerequisite; sentinel alone proves starts, not independent finishes/containment."
+    },
+    {
+     "cell": "disposition:transitions:C10:03",
+     "assessment": "Missing/empty sentinel, missing recognized layer, unknown recorded layer or cross-file duplicate declaration returns nonzero with explicit layer errors. Recorded repeats collapse and do not supply proof of extra executions. Main preserves nonzero error exit. No skip is promoted to proof; actual Docker/runtime qualification requires separate original suite execution."
+    }
+   ]
+  },
+  {
+   "previous": {
+    "path": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+    "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07",
+    "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+    "reason": "Only the three optional Pi parent argument replacements changed the whole CI input; all owning literal spans and every other input remain byte-identical."
+   },
+   "current_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+   "cells": [
+    "disposition:machines:C06",
+    "disposition:transitions:C06:01",
+    "disposition:transitions:C06:02",
+    "disposition:transitions:C06:03",
+    "disposition:transitions:C06:04"
+   ],
+   "changed_inputs": [
+    ".github/workflows/ci.yml"
+   ],
+   "literal_witnesses": [],
+   "semantic_assessments": [
+    {
+     "cell": "disposition:machines:C06",
+     "assessment": "Complete current discovery/launch/settlement/measurement/join source contract with named corrected spawn-failure behavior; no process-tree or installed claim."
+    },
+    {
+     "cell": "disposition:transitions:C06:01",
+     "assessment": "Actual discoverable unique inventory and whole fixture classes own membership. Weight hints only balance; count1..32/nonempty/disjoint/completeness and exact orderedplanSHA256 remain. Declared CI calls four shards; source correction does not change discovery/selection."
+    },
+    {
+     "cell": "disposition:transitions:C06:02",
+     "assessment": "Run-all retains exact child argv/environment and common execution deadline, default2100seconds after launch. On later Popen or wait exception, attempt kill for every acquired direct child before a common5second wait pass; one cleanup failure cannot abandon later children. Wait-unconfirmed slots produce an explicit RuntimeError chained from the original failure. Temp cleanup failure adds a bounded note while preserving the original cause. Timeout path retains failingcode/log and bounds its post-kill wait, with separately bounded exception cleanup if it fails. No strict5secondtotalwall, descendant/process-tree or OS containment guarantee."
+    },
+    {
+     "cell": "disposition:transitions:C06:03",
+     "assessment": "Each child rediscovers/partitions and runs its exact selected population. TimedResult records observed outcomes and durations. Passing requires wasSuccessful, testsRun equals selected and substantive execution beyond skip/expectedFailure; raw timing is exclusive create. No supported skip is silently promoted to execution."
+    },
+    {
+     "cell": "disposition:transitions:C06:04",
+     "assessment": "Join rejects nonzero/missing/mismatched plans, duplicate/missing/foreign selected tests and nonpassing observations. Optional four-shard retention binds original timing/observation/argv, stable source/native context and exact exclusive output, descriptor last. Original real-four-child retention case passes on exact code bytes. This proof is source conformance; local inert/fixture tests do not qualify native targets or installed/wholeprogram outcomes."
+    }
+   ]
+  }
+ ],
+ "limits": [
+  "Every non-CI input is identical at the final code commit; all cited CI witness spans are identical at the same line ranges.",
+  "Only three independently reviewed optional Pi parent shell argument replacements differ in the entire CI file.",
+  "Earlier tests and observed process outcomes remain at their original epochs; these are source claims only."
+ ]
+}

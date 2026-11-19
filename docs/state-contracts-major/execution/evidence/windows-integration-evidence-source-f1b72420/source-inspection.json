@@ -1,0 +1,260 @@
+{
+  "schema": "codearbiter-source-only-delta-inspection/1",
+  "source": "f1b72420b3b761d09029e8b536eb7db65df1ee8f",
+  "source_tree": "9816342bfc56f7018b548906378515ef850f7ce8",
+  "base": "ea4f1ff4c93bb81c11942d2b0b79b69bbadc90dc",
+  "changed_source": [
+    {
+      "path": ".github/scripts/test_hook_ci_partition.py",
+      "before_sha256": "969f7312f896364cc0f43ba331d610e412d0ebad9b8530a8ba2c3b9e4dc52ac4",
+      "after_sha256": "aad128e8d0995046062d2bffaa16d3996836426c065917d564a3213a37473308"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "before_sha256": "8585d978e01f65c6f59b820cc2f9bc2e19b092ad5dc8b68632983ee02eca1a3c",
+      "after_sha256": "30d5cb480374a452b6664558b16c2a30c2aa6b39a23c10c3b2d3eba9d6813609"
+    },
+    {
+      "path": "plugins/ca/hooks/tests/test_protectedstatelib.py",
+      "before_sha256": "aff39f97515e7fceada86d4b8656c874bff67bf1b1c5a56d4ef19563d9d3cac6",
+      "after_sha256": "c4c7a3568118476b99fbffef9cb0d4648aab8717d2e75228c466433c2ae207f6"
+    }
+  ],
+  "workflow_scope": "Only the shell of the original Windows statusline isolation step changes from bash to pwsh. Restoring that one line restores every prior workflow byte, including the job guard, interpreter invocation, input paths, credentials and uploads.",
+  "test_scope": "The workflow contract pins the launcher and refuses Bash. Owned audit append timeouts retain their failure and report a bounded file-state category. Source dispositions here have the workflow as their only changed input.",
+  "reviewed_source_diff_sha256": "1b1a6c4978e5c7683e1470e2043f607901a5bbdf60b55e81a055a54c2a43e990",
+  "prior_observer_deltas": [
+    {
+      "base": "e74d184126f1aba6d0bbb5eaa9e780227b051865",
+      "paths": [
+        ".github/scripts/major_qualification_report.py"
+      ],
+      "sha256": "6b5715dd64c964c91811c194f244ec3b3cb11d568b5a9365558905c9776510dc"
+    },
+    {
+      "base": "04253aedfbd65761cdb816d814b38c49a122266f",
+      "paths": [
+        ".github/scripts/site_playwright_observation.py",
+        ".github/scripts/test_site_component_observation.py"
+      ],
+      "sha256": "f4891842dce75f0e86e7d1f707efec12cbad800f46da25693be0b1e2c586eeae"
+    }
+  ],
+  "mapped_work_scope": "C06's source test inventory, four-child runner, named metrics and complete-coverage join are unchanged. The standalone mapped observation now uses the run returned by the authenticated collector. No original test or artifact goes through a different gate.",
+  "docs_scope": "C29's original check, build, upload, final consumption and main deployment predicates stay in force. Active Docs producers accept five recognized pending states with an explicit null conclusion. Their exact active job and original successful upload are still required; final consumers still require complete success.",
+  "scopes": [
+    {
+      "predecessor": "github-read-transport-source-e74d1841/c06-preserved.json",
+      "cells": [
+        "disposition:machines:C06",
+        "disposition:transitions:C06:01",
+        "disposition:transitions:C06:02",
+        "disposition:transitions:C06:03",
+        "disposition:transitions:C06:04"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-03.json",
+      "cells": [
+        "disposition:machines:C32",
+        "disposition:transitions:C32:01",
+        "disposition:transitions:C32:02",
+        "disposition:transitions:C32:03",
+        "disposition:transitions:C32:04",
+        "disposition:transitions:C32:05",
+        "disposition:transitions:C32:06",
+        "disposition:transitions:C32:07"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-04.json",
+      "cells": [
+        "disposition:machines:C01",
+        "disposition:transitions:C01:01",
+        "disposition:transitions:C01:02",
+        "disposition:transitions:C01:03",
+        "disposition:transitions:C01:04",
+        "disposition:transitions:C01:05"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-05.json",
+      "cells": [
+        "disposition:machines:C02",
+        "disposition:transitions:C02:01",
+        "disposition:transitions:C02:02",
+        "disposition:transitions:C02:03",
+        "disposition:transitions:C02:04"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-06.json",
+      "cells": [
+        "disposition:machines:C04",
+        "disposition:transitions:C04:01",
+        "disposition:transitions:C04:02",
+        "disposition:transitions:C04:04",
+        "disposition:transitions:C04:05",
+        "disposition:transitions:C04:06",
+        "disposition:transitions:C04:07"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-07.json",
+      "cells": [
+        "disposition:machines:C13",
+        "disposition:transitions:C13:01",
+        "disposition:transitions:C13:02",
+        "disposition:transitions:C13:03",
+        "disposition:transitions:C13:04"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-08.json",
+      "cells": [
+        "disposition:machines:C15",
+        "disposition:transitions:C15:01",
+        "disposition:transitions:C15:02",
+        "disposition:transitions:C15:03"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-09.json",
+      "cells": [
+        "disposition:machines:SX04",
+        "disposition:transitions:SX04:01",
+        "disposition:transitions:SX04:02",
+        "disposition:transitions:SX04:03",
+        "disposition:transitions:SX04:04"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-10.json",
+      "cells": [
+        "disposition:machines:C05"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-11.json",
+      "cells": [
+        "disposition:machines:C09",
+        "disposition:transitions:C09:01",
+        "disposition:transitions:C09:02"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-12.json",
+      "cells": [
+        "disposition:machines:C10",
+        "disposition:transitions:C10:01",
+        "disposition:transitions:C10:02",
+        "disposition:transitions:C10:03"
+      ]
+    },
+    {
+      "predecessor": "original-owner-captures-source-56241415/proof-16.json",
+      "cells": [
+        "disposition:machines:T02",
+        "disposition:transitions:T02:02"
+      ]
+    },
+    {
+      "predecessor": "pages-retention-source-04253aed/original-owner-captures-source-56241415--proof-02.json",
+      "cells": [
+        "disposition:machines:C35"
+      ]
+    },
+    {
+      "predecessor": "pages-retention-source-04253aed/original-owner-captures-source-56241415--proof-13.json",
+      "cells": [
+        "disposition:findings:C-F03",
+        "disposition:machines:S48",
+        "disposition:machines:S77",
+        "disposition:transitions:S48:01",
+        "disposition:transitions:S48:02",
+        "disposition:transitions:S48:03",
+        "disposition:transitions:S48:04",
+        "disposition:transitions:S48:05",
+        "disposition:transitions:S48:08",
+        "disposition:transitions:S77:01",
+        "disposition:transitions:S77:02",
+        "disposition:transitions:S77:03",
+        "disposition:transitions:S77:04",
+        "disposition:transitions:S77:05",
+        "disposition:transitions:S77:06",
+        "disposition:transitions:S77:07",
+        "disposition:transitions:S77:08",
+        "disposition:transitions:S77:09",
+        "disposition:transitions:C05:02",
+        "disposition:transitions:C05:03",
+        "disposition:transitions:C15:04",
+        "disposition:transitions:C16:03",
+        "disposition:transitions:C17:01",
+        "disposition:transitions:C17:02",
+        "disposition:transitions:C17:03",
+        "disposition:transitions:C17:04",
+        "disposition:transitions:C17:05",
+        "disposition:transitions:C17:06",
+        "disposition:transitions:C17:07",
+        "disposition:transitions:C17:08",
+        "disposition:transitions:C17:09",
+        "disposition:transitions:C17:11",
+        "disposition:transitions:T01:01",
+        "disposition:transitions:T01:02",
+        "disposition:transitions:T01:03",
+        "disposition:transitions:T01:04",
+        "disposition:transitions:T01:05",
+        "disposition:transitions:SW01:02",
+        "disposition:transitions:SW01:03",
+        "disposition:transitions:SW01:04",
+        "disposition:transitions:SW01:05",
+        "disposition:transitions:SW01:06",
+        "disposition:transitions:SW01:07",
+        "disposition:transitions:SW01:08",
+        "disposition:transitions:SW01:09",
+        "disposition:transitions:SW01:10",
+        "disposition:transitions:SW01:11",
+        "disposition:transitions:SW01:12",
+        "disposition:transitions:SW01:13",
+        "disposition:transitions:SW01:14",
+        "disposition:transitions:SW01:15",
+        "disposition:transitions:SW01:17",
+        "disposition:transitions:SW01:18",
+        "disposition:transitions:SW01:19",
+        "disposition:transitions:SW01:20",
+        "disposition:transitions:SW01:21",
+        "disposition:transitions:SW01:22",
+        "disposition:transitions:SW01:23",
+        "disposition:transitions:SW01:24"
+      ]
+    },
+    {
+      "predecessor": "pages-retention-source-04253aed/original-owner-captures-source-56241415--proof-14.json",
+      "cells": [
+        "disposition:transitions:C15:05"
+      ]
+    },
+    {
+      "predecessor": "pages-retention-source-04253aed/original-owner-captures-source-56241415--proof-15.json",
+      "cells": [
+        "disposition:transitions:C35:01",
+        "disposition:transitions:C35:02",
+        "disposition:transitions:C35:03",
+        "disposition:transitions:C35:04"
+      ]
+    },
+    {
+      "predecessor": "pages-retention-source-04253aed/original-owner-captures-source-8bf4cfbe--proof-01.json",
+      "cells": [
+        "disposition:machines:C29",
+        "disposition:transitions:C29:01",
+        "disposition:transitions:C29:02",
+        "disposition:transitions:C29:03",
+        "disposition:transitions:C29:04",
+        "disposition:transitions:C29:05"
+      ]
+    }
+  ],
+  "status_changes": 0,
+  "tests_executed_by_this_inspection": 0
+}

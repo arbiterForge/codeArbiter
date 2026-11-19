@@ -1,0 +1,98 @@
+{
+  "format": "python-import-namespace-repair/1",
+  "source_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "executed_source_epoch": "HEAD4a81 plus final three-file working tree, subsequently committed byte-identically as8d04",
+  "subjects": [
+    {
+      "path": ".github/scripts/major_readiness.py",
+      "sha256": "5947a5ed0bd45dbe344c498f0b74ac6f6a0f4e8eba9fb3363e09c95227229595",
+      "bytes": 61396,
+      "physical_equals_index": true
+    },
+    {
+      "path": ".github/scripts/test_state_contracts_integration.py",
+      "sha256": "ac6b065613b7362d3de3864be219cf3e181e36321bfaf80348c2e59f11691943",
+      "bytes": 48849,
+      "physical_equals_index": true
+    },
+    {
+      "path": "CHANGELOG.md",
+      "sha256": "170d72fc68993c1ffaedcf1050c89995baed8bbdc39f285abb319ad6e877de31",
+      "bytes": 215375,
+      "physical_equals_index": true
+    }
+  ],
+  "staged_candidate": "candidate-v1:4d2de6cc9cb0e7d4478f5c036f121ecd01190c01e1f68ac8472915fb6c04a2cc",
+  "staged_patch_sha256": "5b7f6ed380f6c25b365467c1c27478a276bf7990c6576deaac15edb8d3896f71",
+  "tests": {
+    "initial_new_methods_RED": 4,
+    "ancestor_collision_RED": {
+      "named_methods": 1,
+      "assertion_failures": 6,
+      "seconds": 7.640685300000769
+    },
+    "final_new_methods_GREEN": {
+      "named_methods": 5,
+      "seconds": 29.859
+    },
+    "unaffected_legacy_GREEN_reused": {
+      "named_methods": 9,
+      "seconds": 14.695
+    },
+    "original_class_method_ASTs_unchanged": 46,
+    "python_syntax": "PASS2changedfiles"
+  },
+  "security_review": "PASS; one root/ancestor case collision finding resolved",
+  "full_staged_integrity": {
+    "result": "PASSED",
+    "seconds": 37.413,
+    "frozen": 105,
+    "advanced": 1309,
+    "APPLICABLE": 1084,
+    "STALE": 225,
+    "UNKNOWN": 0
+  },
+  "coverage_policy": "CTX-TECH-STACK#FACT-005: no coverage tooling for .github/scripts/*.py; direct unittest and behavioral checks, shared maturity exemption; no numeric metric claimed.",
+  "limits": [
+    "Scoped local source repair only; exact-head hosted CI remains required before merge.",
+    "The original six P02 candidates remain held until fresh execution under committed source and typed namespace evidence.",
+    "Parent1098 remains draft and unmerged to main; no publication authorized."
+  ],
+  "retained_files": [
+    {
+      "path": "ancestor-red.json",
+      "sha256": "a250d5c059db9cab18d7f490bc9afdaab7bfe254c3ce462e491ee6f3f25c0d8d",
+      "bytes": 4208
+    },
+    {
+      "path": "ancestor-source-freeze.json",
+      "sha256": "1acc2bb1bd284975cff1eed3ba140baaf75dad79eb877552ee955c33589dacf7",
+      "bytes": 2708
+    },
+    {
+      "path": "initial-red.json",
+      "sha256": "4d2206647222a731e688a07b1e37a0c615db9fe9968463ca9885d2cea20775b7",
+      "bytes": 4776
+    },
+    {
+      "path": "initial-source-freeze.json",
+      "sha256": "ac807f305ae8e3679b96d2252b2eac78d0272d059054971524d2b0a862a32b9d",
+      "bytes": 4755
+    },
+    {
+      "path": "logs.json",
+      "sha256": "c8a458d8044d73db1b565bcaf169d7f0449d4717c447ef52fb275fb4c743650e",
+      "bytes": 54620
+    },
+    {
+      "path": "peer-review.json",
+      "sha256": "d24018110f90e54ae0565537fdb784b76e94572c7a14046c6d06dc17a406a48a",
+      "bytes": 10380
+    },
+    {
+      "path": "staged-integrity.json",
+      "sha256": "c21d07a7e20ccc2373ea12b0da08a278d8d19b219d932eb83603b0bcb5e608de",
+      "bytes": 211581
+    }
+  ]
+}

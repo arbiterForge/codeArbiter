@@ -1,0 +1,131 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite all-clause site-machine source inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/src/components/CaTocList.astro": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+    "site/src/components/TableOfContents.astro": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+    "site/src/components/ThemeProvider.astro": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+    "site/src/components/ThemeSelect.astro": "1d23b1a99cef5d224e7bfc7423ae8b93a0aad07ff4801379492866fe58426d27"
+  },
+  "disposition_ids": [
+    "disposition:machines:S63"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/raw/S63-inspection.json",
+      "sha256": "1f06b903bc448fbad0d4f8da43c0864b1e7da872f565e05e69b6514cceac4f79"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+      "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+    }
+  ],
+  "scope": "Five-clause SOURCE-ONLY TOC/forced-dark conformance with existing S63:01 arbitrary-layout-observer correction retained; no new observer/theme feature or real layout/assistive acceptance.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S63",
+      "frozen_row_sha256": "123b5d8d0f0ac9954be8a2254ca01c764945b06957648d1dadfd8c1eac2a956d",
+      "assessment": "Five-clause SOURCE-ONLY TOC/forced-dark conformance with existing S63:01 arbitrary-layout-observer correction retained; no new observer/theme feature or real layout/assistive acceptance.",
+      "clauses": [
+        "disposition:transitions:S63:01",
+        "disposition:transitions:S63:02",
+        "disposition:transitions:S63:03",
+        "disposition:transitions:S63:04",
+        "disposition:transitions:S63:05"
+      ],
+      "witnesses": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "start": 1,
+          "end": 62,
+          "file_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "start": 1,
+          "end": 8463,
+          "file_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "start": 1,
+          "end": 6291,
+          "file_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "start": 1,
+          "end": 75131,
+          "file_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "docs/state-contracts-major/surfaces-tasks.json",
+          "start": 1,
+          "end": 2613,
+          "file_sha256": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/astro.config.mjs",
+          "start": 1,
+          "end": 231,
+          "file_sha256": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/src/components/CaTocList.astro",
+          "start": 1,
+          "end": 53,
+          "file_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "start": 1,
+          "end": 125,
+          "file_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/src/components/ThemeProvider.astro",
+          "start": 1,
+          "end": 19,
+          "file_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "role": "cited owner/callee or frozen governing contract"
+        },
+        {
+          "path": "site/src/components/ThemeSelect.astro",
+          "start": 1,
+          "end": 8,
+          "file_sha256": "1d23b1a99cef5d224e7bfc7423ae8b93a0aad07ff4801379492866fe58426d27",
+          "role": "cited owner/callee or frozen governing contract"
+        }
+      ],
+      "limits": [
+        "All existing edge rows, statuses, runtime proof references and epochs remain unchanged.",
+        "Reasoned source-only conformance includes explicitly named accepted changes/corrections; no fresh executed observation."
+      ]
+    }
+  ],
+  "limits": [
+    "No Q-01/task/scenario completion, installed/platform/model/user/browser/assistive/clipboard/print acceptance, publication or main readiness.",
+    "No whole-site atomicity, general filesystem cleanup guarantee, or arbitrary dynamic corpus admission.",
+    "Six existing unsupported analytical descriptions and four BUILD-G01 retired intermediates remain in their original NOT_APPLICABLE records; no new N/A or waiver."
+  ]
+}

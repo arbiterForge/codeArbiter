@@ -1,0 +1,22 @@
+{
+  "format": "codearbiter.private-runtime-delivery/1",
+  "state": "PASSED_SINGLE_CORRECTED_COPY_CASE",
+  "summary": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-copy-layer-run-lq82qixk\\actual-summary.json",
+    "sha256": "df90ada21527e64f44b756bd8db54d14caea624b50dd235edd86348e344dc1b4"
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-copy-layer-run-lq82qixk\\filemap.json",
+    "sha256": "b8c9c3b894c34d1fb7ce9b905a4cbf2a02af2dc4f572100d0c030b7bc5712d00"
+  },
+  "source_candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-copy-layer-successor-_xbccwuy\\candidate\\cp.test.ts",
+    "sha256": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+  },
+  "previous_history": {
+    "original_two_pass_and_tmpfs_failed_delivery": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-owned-effects-run-sbdvtkd_\\delivery.json",
+    "sha256": "0b8e04697e43f78db13bf11ae8b9614597f6593e844c55125dbd68fb4d587d68",
+    "interpretation": "Original two actual home/offline PASS remain their original file/runtime epoch. Original tmpfs copy code1/error text unknown is preserved; this is a separately authorized corrected source fixture, not a replay relabel."
+  },
+  "no_qualification_change": true
+}

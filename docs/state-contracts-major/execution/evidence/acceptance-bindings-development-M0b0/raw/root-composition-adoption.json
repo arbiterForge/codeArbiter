@@ -1,0 +1,76 @@
+{
+  "result": "APPLIED_COMPOSED_Q02_AND_HW04",
+  "source_head": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "original_q02_delivery_sha256": "d9ba6b3adc02f650ec069165d260cb5d46d7f34757b1c57e9d9974a76d57a22c",
+  "subjects": [
+    {
+      "path": ".github/scripts/major_qualification_report.py",
+      "base_sha256": "5dec64dc71e650b77587b496bc868d2c2403ba4ff14538b62040e2356e7c301d",
+      "ours_preimage_sha256": "5dec64dc71e650b77587b496bc868d2c2403ba4ff14538b62040e2356e7c301d",
+      "theirs_sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+      "sha256": "f27c884c3b970c4a8fd02b72ed5d8d915313a51254c8d27e6357c77d2a0cf669",
+      "bytes": 139419,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\candidate\\.github\\scripts\\major_qualification_report.py",
+      "method": "unchanged-base adoption"
+    },
+    {
+      "path": ".github/scripts/test_major_qualification_report.py",
+      "base_sha256": "aa93f66ce22c5170aba4bc4121d16493902a282c7c4e0c406716cf951c317a80",
+      "ours_preimage_sha256": "aa93f66ce22c5170aba4bc4121d16493902a282c7c4e0c406716cf951c317a80",
+      "theirs_sha256": "80f457af85ecabdf01727cddef50deb6b28f5ae70abf9d055038dfe141beac5b",
+      "sha256": "80f457af85ecabdf01727cddef50deb6b28f5ae70abf9d055038dfe141beac5b",
+      "bytes": 246510,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+      "method": "unchanged-base adoption"
+    },
+    {
+      "path": ".github/scripts/major_readiness.py",
+      "base_sha256": "86c228db98213273feb121ec581a98f41243deb3b6cab02fb5eea978ffa52c05",
+      "ours_preimage_sha256": "175a4198d0cb45de0e6b199e76b815e91e573b149f0ffacd601fe93db78d2b10",
+      "theirs_sha256": "5fc1a5e9088e6ebf8a5f2ddfce872111bc76c95ee277ec731a687ed3f14cfe0d",
+      "sha256": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+      "bytes": 82923,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\candidate\\.github\\scripts\\major_readiness.py",
+      "method": "conflict-free private three-way merge"
+    },
+    {
+      "path": ".github/workflows/ci.yml",
+      "base_sha256": "88b8154ad664c670f2111f045c14ffba259b50f5ec589062047f90695ab2dbf6",
+      "ours_preimage_sha256": "f36e3c38df2f84369fad9d4d31b98df31f3c530d31e567fce071bfce94eb4db3",
+      "theirs_sha256": "86505751ef9085417a0aa7c7999445705096a2294770292a406647797f0e496b",
+      "sha256": "860e6cd9a5bdc0d42060bdb61ce605d36a4495a5fcfec0f1a7ae528b66577dba",
+      "bytes": 275574,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\candidate\\.github\\workflows\\ci.yml",
+      "method": "conflict-free private three-way merge"
+    },
+    {
+      "path": ".github/major-test-selections.json",
+      "base_sha256": "fff83f896cf1e6a12e5d2fe0f71506f7e298a11ab78e3d524c1846ffcfcd7585",
+      "ours_preimage_sha256": "fff83f896cf1e6a12e5d2fe0f71506f7e298a11ab78e3d524c1846ffcfcd7585",
+      "theirs_sha256": "ed1c9170052201816d11ffb863db919bdb28fa797dff2adc462445aafa512d56",
+      "sha256": "ed1c9170052201816d11ffb863db919bdb28fa797dff2adc462445aafa512d56",
+      "bytes": 75180,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\candidate\\.github\\major-test-selections.json",
+      "method": "unchanged-base adoption"
+    },
+    {
+      "path": ".github/major-qualification-policy.json",
+      "base_sha256": "93d4061c9067e6fcc6ea4efe5b434067c15591e9ae2d28fdb618acfbfb31d98e",
+      "ours_preimage_sha256": "71c287edd8ebb92eac35314c40f0d23a73c3b63646e356af78ac54ceec8567d8",
+      "theirs_sha256": "19b6a68002654be4390ad02301fbd94dcef55f595d2e83aef41fa219c26a3531",
+      "sha256": "a56ec086f1c1b29206c3150fba29d11d18b2f3d44b2f4aeeee04e5fc12be27dc",
+      "bytes": 7975,
+      "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\candidate\\.github\\major-qualification-policy.json",
+      "method": "one parsed JSON addition; all existing rendered bytes retained"
+    }
+  ],
+  "qualification": false,
+  "resolved_conflicts": [
+    {
+      "path": ".github/major-qualification-policy.json",
+      "code": 1,
+      "merge_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-q02-hw04-composed-j1zhulgg\\4.conflict"
+    }
+  ],
+  "index_unchanged": true
+}

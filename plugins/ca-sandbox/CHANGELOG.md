@@ -9,6 +9,42 @@ All notable changes to the **ca-sandbox** plugin are recorded here. Format follo
 ### Fixed
 - Correct the marketplace description to explain the existing nixpacks and generated-Dockerfile build paths. Prepare the 0.1.7 metadata patch so marketplace installs receive the corrected description.
 
+## [0.2.0] - 2026-11-13
+
+### Added
+
+- Exercise real builder cache hits, manifest invalidation and concurrent cold misses through the existing Docker qualification owner; require immutable-image and runtime readback for each result.
+- Qualify owned Claude home persistence, hardened offline execution and retained partial bytes after interrupted copy through their original Sandbox test owner; retain the original failed copy fixture separately.
+- Add a trusted CI path that checks the retained Sandbox CLI's exec, copy-out and scoped destroy commands against its shipped package.
+- Add coverage for the CLI entrypoint's SIGINT handler, cancellation propagation and exit status.
+
+### Changed
+
+- Describe broad prune using separately captured container and volume discovery sets.
+- Document host build staging and the agent's role in Claude workflow phases; update the shipped usage text.
+- Reuse images through a V2 cache identity that includes the builder, target platform and effective build profile, then verify the cache label and immutable image ID. Temporary checkout names no longer change that identity.
+- Limit Nixpacks generation to explicit Node/Python, Go and bounded non-workspace Rust profiles with pinned image inputs, including Go/Rust runtime stages. Bound native manifest reads and include their observed inputs in cache identity. Refuse custom Nixpacks configuration and existing generated output before generation or cleanup can change those paths.
+- Report requested and effective network policies separately. Ordinary exploration remains offline.
+
+### Fixed
+
+- Correct the Sandbox skill catalog's Claude entrypoint and distinguish shell detach from explicit destruction.
+- Give installed users the bundled Node invocation and direct Claude-inside requests to the separate packaged routine.
+
+- Refuse Claude sandbox readiness after late cancellation and retain exact container cleanup results.
+- Retain the observed container ID in creation errors when cancellation cleanup cannot discover resources.
+- Honor cancellation observed after container start and run scoped compensation before returning a creation result.
+- Reject cancelled cached-image reuse after the awaited image identity check.
+- Seed copy qualification data on its owned volume and preserve primary failures if fixture cleanup also fails.
+- Compare complete container identities when checking cleanup ownership in shipped CLI qualification.
+- Refuse failed manifest, daemon and resource observations instead of treating them as absence. Failed or cancelled creation retains exact resource references when independent cleanup cannot confirm removal.
+- Report incomplete teardown observation when surviving Sandbox resources could not be counted.
+- Use bounded, cancellable process paths for clone and host staging, and report uncertain helper or staging cleanup.
+
+### Qualification pending
+
+- Installed Nixpacks and fallback two-create Docker checks, and an actual Windows WSL build, remain unqualified locally. Controlled subprocess tests do not replace those runtime checks.
+
 ## [0.1.10] - 2026-10-24
 
 ### Fixed

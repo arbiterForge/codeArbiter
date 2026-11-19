@@ -1,0 +1,132 @@
+[
+  {
+    "size_bytes": 1047,
+    "path": "artifact-manifest.test.ts",
+    "sha256": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd"
+  },
+  {
+    "size_bytes": 3879,
+    "path": "artifact-manifest.ts",
+    "sha256": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0"
+  },
+  {
+    "size_bytes": 21259,
+    "path": "exec.test.ts",
+    "sha256": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d"
+  },
+  {
+    "size_bytes": 16986,
+    "path": "exec.ts",
+    "sha256": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73"
+  },
+  {
+    "size_bytes": 5008,
+    "path": "farm-cleanup-observation.test.ts",
+    "sha256": "42db12b66d169916eb88f932bcfde2fea208c1ddd2f36116ad6bb632e4206be7"
+  },
+  {
+    "size_bytes": 14030,
+    "path": "farm-dist.test.ts",
+    "sha256": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257"
+  },
+  {
+    "size_bytes": 6130,
+    "path": "farm-recovery.test.ts",
+    "sha256": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead"
+  },
+  {
+    "size_bytes": 8863,
+    "path": "farm-recovery.ts",
+    "sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885"
+  },
+  {
+    "size_bytes": 57838,
+    "path": "farm-surface.test.ts",
+    "sha256": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00"
+  },
+  {
+    "size_bytes": 148623,
+    "path": "farm.js",
+    "sha256": "9999aecd40ec543d806b454aac2cbd54297f6d684e48548e2d102406532569c3"
+  },
+  {
+    "size_bytes": 151633,
+    "path": "farm.test.ts",
+    "sha256": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e"
+  },
+  {
+    "size_bytes": 199385,
+    "path": "farm.ts",
+    "sha256": "0c20d5f03483e24f50b27a660ced3e6da266fd6de71d20fe252c3555f5117670"
+  },
+  {
+    "size_bytes": 213351,
+    "path": "farm.unit.test.ts",
+    "sha256": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f"
+  },
+  {
+    "size_bytes": 52228,
+    "path": "mutation.test.ts",
+    "sha256": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e"
+  },
+  {
+    "size_bytes": 27098,
+    "path": "mutation.ts",
+    "sha256": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d"
+  },
+  {
+    "size_bytes": 64167,
+    "path": "package-lock.json",
+    "sha256": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05"
+  },
+  {
+    "size_bytes": 1024,
+    "path": "package.json",
+    "sha256": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972"
+  },
+  {
+    "size_bytes": 19000,
+    "path": "plan-contract.test.ts",
+    "sha256": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a"
+  },
+  {
+    "size_bytes": 6506,
+    "path": "plan.schema.json",
+    "sha256": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2"
+  },
+  {
+    "size_bytes": 16947,
+    "path": "redactor.test.ts",
+    "sha256": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d"
+  },
+  {
+    "size_bytes": 6993,
+    "path": "redactor.ts",
+    "sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03"
+  },
+  {
+    "size_bytes": 8583,
+    "path": "state-contracts.test.ts",
+    "sha256": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72"
+  },
+  {
+    "size_bytes": 421,
+    "path": "tsconfig.json",
+    "sha256": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e"
+  },
+  {
+    "size_bytes": 1152,
+    "path": "vitest.config.ts",
+    "sha256": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0"
+  },
+  {
+    "size_bytes": 24259,
+    "path": "worktree-fs.test.ts",
+    "sha256": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda"
+  },
+  {
+    "size_bytes": 8279,
+    "path": "worktree-fs.ts",
+    "sha256": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+  }
+]

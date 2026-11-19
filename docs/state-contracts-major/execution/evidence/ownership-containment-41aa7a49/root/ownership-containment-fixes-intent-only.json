@@ -1,0 +1,35 @@
+{
+  "result": "PASSED",
+  "scope": "Original release-owner intent/eligibility check only, with exact staged bytes and copied local tag refs. No pre-tag commands, network, publication or full program qualification.",
+  "source_commit": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+  "candidate_tree": "7c7c7e6b67273f6db0b9e19caccd03577c931a50",
+  "private_fixture_commit": "7931e5578d080d14bd5f549352d2a368a42f14e9",
+  "private_fixture_repo": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-intent-only-staged-fixture-n4q5s8c1",
+  "local_tags_copied": 554,
+  "targets": [
+    {
+      "target": "ca",
+      "version": "4.0.0",
+      "eligible": true
+    },
+    {
+      "target": "ca-codex",
+      "version": "0.30.0",
+      "eligible": true
+    },
+    {
+      "target": "ca-sandbox",
+      "version": "0.2.0",
+      "eligible": true
+    },
+    {
+      "target": "ca-pi",
+      "version": "0.30.0",
+      "eligible": true
+    }
+  ],
+  "seconds": 0.6261673000117298,
+  "root_state_unchanged": true,
+  "pre_tag_executed": false,
+  "publication": false
+}

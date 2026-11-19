@@ -1,0 +1,297 @@
+{
+ "schema": "codearbiter.private-docs-chore-delivery/1",
+ "state": "PRIVATE_CANDIDATE_REQUIRES_ROOT_REVIEW",
+ "actor": "/root/acceptance_security_review",
+ "entry_route": "ca-chore docs",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "observed_HEAD": "304ceff554bf1dc70afd7936898983e0d4fe076f",
+ "predecessor": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-six-successor-eiulfwhc\\delivery.json",
+  "sha256": "76d16ca9284a2c7d222754aa5ba43654663114a0f53a5f92fe87ddd14b6fcac3",
+  "bytes": 9817
+ },
+ "subjects": {
+  "plugins/ca-sandbox/COMMANDS.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca-sandbox\\COMMANDS.md",
+    "sha256": "41273c84591f22ec1c62c5983e8c5cb61747996a4698fa7eee53aaa7d432020e",
+    "bytes": 5815
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca-sandbox\\COMMANDS.md",
+    "sha256": "c6a80169f8e3bd107128ed3b097e59afaba272296c2ee00fc4d34b940002c63a",
+    "bytes": 5949
+   },
+   "preimage_git_oid": "f11e4fdd9950ddbf233f62f6eed786963fd6ac8e",
+   "preimage_git_sha256": "41273c84591f22ec1c62c5983e8c5cb61747996a4698fa7eee53aaa7d432020e",
+   "preimage_git_bytes": 5815,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca/README.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca\\README.md",
+    "sha256": "3e149cf4c54a070b08c69817884a02481b0acb46a3040f80691e29e5c64935f4",
+    "bytes": 4103
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca\\README.md",
+    "sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+    "bytes": 4128
+   },
+   "preimage_git_oid": "3d5a4a2c5626c586b814474da80def625601e483",
+   "preimage_git_sha256": "3e149cf4c54a070b08c69817884a02481b0acb46a3040f80691e29e5c64935f4",
+   "preimage_git_bytes": 4103,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "core/surface/commands/init.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\core\\surface\\commands\\init.md",
+    "sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+    "bytes": 8034
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\core\\surface\\commands\\init.md",
+    "sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+    "bytes": 8075
+   },
+   "preimage_git_oid": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
+   "preimage_git_sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+   "preimage_git_bytes": 8034,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca/commands/init.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca\\commands\\init.md",
+    "sha256": "10fab6054773e8250556d663d9f8b2606c1445e5b2dc8afaefffe1ded7136170",
+    "bytes": 7780
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca\\commands\\init.md",
+    "sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+    "bytes": 7821
+   },
+   "preimage_git_oid": "68cdcc1f5a1797f20ceba0e2da1b17c6f6070295",
+   "preimage_git_sha256": "10fab6054773e8250556d663d9f8b2606c1445e5b2dc8afaefffe1ded7136170",
+   "preimage_git_bytes": 7780,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca-codex/skills/ca-init/SKILL.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca-codex\\skills\\ca-init\\SKILL.md",
+    "sha256": "c8494d78bea8d7bdc8d9705bc98b310d340b357787e57e28fbe833f382077add",
+    "bytes": 7678
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca-codex\\skills\\ca-init\\SKILL.md",
+    "sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+    "bytes": 7719
+   },
+   "preimage_git_oid": "eccb9fab39ce5d952250850df21b9dac5a2db952",
+   "preimage_git_sha256": "c8494d78bea8d7bdc8d9705bc98b310d340b357787e57e28fbe833f382077add",
+   "preimage_git_bytes": 7678,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca-pi/skills/ca-init/SKILL.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca-pi\\skills\\ca-init\\SKILL.md",
+    "sha256": "40d05c09076e24bab24103442fa1cb7797449f17f4b1b5df7e91c0a5f15f3902",
+    "bytes": 7640
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca-pi\\skills\\ca-init\\SKILL.md",
+    "sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+    "bytes": 7681
+   },
+   "preimage_git_oid": "89a25f66c9d26d8fe86c15596a721f88c6b33239",
+   "preimage_git_sha256": "40d05c09076e24bab24103442fa1cb7797449f17f4b1b5df7e91c0a5f15f3902",
+   "preimage_git_bytes": 7640,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca-sandbox/commands/sandbox-destroy.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca-sandbox\\commands\\sandbox-destroy.md",
+    "sha256": "5119e80360fd5f219ed2f7067072a7b939bb06f1b2588ba092a426e71471cea1",
+    "bytes": 1225
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca-sandbox\\commands\\sandbox-destroy.md",
+    "sha256": "66ecbe3c76ca94a4e1b38256c37a6c64efa4c6964c246af9119f245389de7431",
+    "bytes": 1274
+   },
+   "preimage_git_oid": "a5b1910a83556b7e071d0d0e790577d6e05e5423",
+   "preimage_git_sha256": "1bbfb59fdfdc63881552f64ea4e1227a82349ddc99818b71ed37af2c9e8e1eb4",
+   "preimage_git_bytes": 1211,
+   "physical_raw_equal_to_git": false,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca-sandbox\\skills\\sandbox-lifecycle\\SKILL.md",
+    "sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+    "bytes": 5967
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca-sandbox\\skills\\sandbox-lifecycle\\SKILL.md",
+    "sha256": "5be31d7fc3f94142792563437adeb92b6a75dbe7fab0a8a40e50a271e22e34f9",
+    "bytes": 6047
+   },
+   "preimage_git_oid": "a2df3feb1c3ad14865e700c2992bec6eb5e68b2b",
+   "preimage_git_sha256": "0601714006da08b047514a1e76c83507f34a80c688b2afa615a1be84866133f4",
+   "preimage_git_bytes": 5967,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  },
+  "plugins/ca-sandbox/README.md": {
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\preimages\\plugins\\ca-sandbox\\README.md",
+    "sha256": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+    "bytes": 6255
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidates\\plugins\\ca-sandbox\\README.md",
+    "sha256": "1761ea9c07c32010f3c21e47d56a0faf50cc115da865a7238acc01f6f64fa38b",
+    "bytes": 6301
+   },
+   "preimage_git_oid": "f74a0a201d9e511986b5664707fee01621c67d16",
+   "preimage_git_sha256": "ab0b34e2a340141672d54176227b9cbd03db9595aafad2b782f920eab63adb5c",
+   "preimage_git_bytes": 6255,
+   "physical_raw_equal_to_git": true,
+   "physical_LF_equal_to_git": true
+  }
+ },
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sandbox-wording-final-successor-6b4yb_d5\\candidate.diff",
+  "sha256": "73d8441f268c513b60caa2a982db751efa3dec3a59cfe41260a36cd67e47f664",
+  "bytes": 10922
+ },
+ "source_joins": {
+  "plugins/ca-sandbox/tools/destroy.ts": {
+   "git_oid": "9458f56a96624f701bf7f09e52c12907cb14db47",
+   "sha256": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+   "bytes": 17156
+  },
+  "core/pysrc/init-codearbiter.py": {
+   "git_oid": "f10d1d619733dbf1e7bf8fe9bbdae21e613e38c4",
+   "sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+   "bytes": 27811
+  },
+  "core/pysrc/taskwrite.py": {
+   "git_oid": "2243e3bfed634f496c70f815c54d5208ed321032",
+   "sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+   "bytes": 22686
+  },
+  "core/pysrc/_hooklib.py": {
+   "git_oid": "ef7b48317f0875ac0dc0189326206f5fef8e3050",
+   "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "bytes": 49147
+  },
+  "core/pysrc/_taskexcludelib.py": {
+   "git_oid": "df2300611bfc7ca9aa945900d53c7b6c5032eda9",
+   "sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+   "bytes": 10102
+  },
+  "tools/build-surface.py": {
+   "git_oid": "b0d10f3626a6f351096e7819dfc386349048cf62",
+   "sha256": "70c572a415cf69d6955c4dac67ffa9c0120009807e2f55635c5430c0f962ba3a",
+   "bytes": 63143
+  },
+  "core/hosts.json": {
+   "git_oid": "2fc53a8b7ca7b0e5a656f5640d9662d798af8856",
+   "sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+   "bytes": 6084
+  },
+  "core/surface/commands/init.md": {
+   "git_oid": "924e3756b7c474c9d3c9efad43edd3f90b7a6525",
+   "sha256": "799248109c5e31c709a70278d8fe61a9c75749b2599abcd44c9bded49bc58fda",
+   "bytes": 8034
+  },
+  "tools/host_descriptors.py": {
+   "git_oid": "6d0d178b20a13168acdeb37674c39f3bb7eed3b4",
+   "sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+   "bytes": 15608
+  }
+ },
+ "projection_mapping": [
+  {
+   "host": "claude",
+   "source": "core/surface/commands/init.md",
+   "rule": {
+    "source_prefix": "commands/",
+    "output_pattern": "commands/{relative}",
+    "exclude": []
+   },
+   "destination": "plugins/ca/commands/init.md"
+  },
+  {
+   "host": "codex",
+   "source": "core/surface/commands/init.md",
+   "rule": {
+    "source_prefix": "commands/",
+    "output_pattern": "skills/ca-{name}/SKILL.md",
+    "exclude": [
+     "commands/prune.md",
+     "commands/statusline.md"
+    ],
+    "add_skill_frontmatter": true
+   },
+   "destination": "plugins/ca-codex/skills/ca-init/SKILL.md"
+  },
+  {
+   "host": "pi",
+   "source": "core/surface/commands/init.md",
+   "rule": {
+    "source_prefix": "commands/",
+    "output_pattern": "skills/ca-{name}/SKILL.md",
+    "exclude": [
+     "commands/plan.md",
+     "commands/statusline.md"
+    ],
+    "add_skill_frontmatter": true
+   },
+   "destination": "plugins/ca-pi/skills/ca-init/SKILL.md"
+  }
+ ],
+ "reasoned_changes": [
+  "SW03 table and teardown paragraph now state separate container/volume discovery sets and remove universal new-instance/global-start snapshot promise, matching destroy.ts312-320/329-338. Named destroy, explicit broad scope, cached-image retention and honest cleanup limits retained.",
+  "SW09 names initialization as ignore-rule owner (init-codearbiter.py470-496), while task writer retains only its OS-lock sidecar through shared _hooklib.acquire_lock. No startup/permission/enforcement behavior changes.",
+  "Correct the exact same static init ownership paragraph in its canonical template and the three descriptor-derived projections. Conditional/host token regions and every other byte are unchanged.",
+  "Same SW03 per-resource timing clarification applied to frozen command/lifecycle owners and Sandbox README50 parallel description. Final9files include the additional already-affected README sentence under Root explicit same-predicate scope; no other prose changed."
+ ],
+ "controls": [
+  "Two hand-authored predecessor candidates copied byte-identically.",
+  "For canonical init and each mapped output, replacing only the old static paragraph yields the candidate; no generator/helper/runtime invoked. Root build-surface --check after adoption will verify whole projection parity.",
+  "Pure literal replacement cannot alter behavior, dependency, command argument, policy gate or permission. No tests executed for prose.",
+  "Anti-slop copy self-audit over authored wording complete: concrete actor/actions, existing style, no separator dash or fabricated capability.",
+  "All canonical physical source preimages remain unchanged.",
+  "All six predecessor candidate bytes preserved exactly. Three added authored changes each reverse literally to their complete physical preimages.",
+  "sandbox-destroy.md physical preimage already uses CRLF (1225B), while304Git blob is LF (1211B); both identities recorded separately. Candidate preserves physical CRLF. No mutation or nonexistent raw equality claimed.",
+  "COMMANDS, destroy command, lifecycle skill and Sandbox README now explicitly describe separate container/volume discovery sets.",
+  "Root direct expanded authority includes all same-predicate affected prose. No runtime/generator/test/owner/scanner/API replay."
+ ],
+ "pending_scope_note": [],
+ "inputs": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\sandbox-wording-chore-successor-input.txt",
+   "sha256": "81679f0ffd147979ca54ffd15c5ca5eac75e40efe7c4c55ac86aafae6bcb9614",
+   "bytes": 20606
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\sandbox-wording-chore-successor-context.json",
+   "sha256": "80a0799d830fa5066b09769063acda6ebf1700ac05f6feede2304a6462786256",
+   "bytes": 15105
+  }
+ ],
+ "limits": [
+  "No source disposition/CAS or independent self-approval. SW9 proposal remains unsealed until actual corrected canonical epoch.",
+  "Root owns scans/review/generation check/commit; all writes are fresh private Temp."
+ ],
+ "delivery_kind": "one-final-prose-corrective-unit",
+ "count": 9
+}

@@ -1,0 +1,513 @@
+{
+  "schema": "codearbiter-original-assertion-extract/1",
+  "original_report_sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9",
+  "original_report_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\docs\\state-contracts-major\\execution\\evidence\\sandbox-builder-ef40\\raw\\coverage-tests.json",
+  "original_startTime": 1794612797807,
+  "extract_scope": "Exact actual assertion objects and UTF8 source ranges, not a rerun or manufactured current execution.",
+  "observations": [
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+      "status": "passed",
+      "source_byte_start": 75261,
+      "source_byte_end": 75631,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+        "status": "passed",
+        "title": "passes a per-call environment to the spawned Docker client",
+        "duration": 1.3910000000000196,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+      "status": "passed",
+      "source_byte_start": 75632,
+      "source_byte_end": 76002,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+        "status": "passed",
+        "title": "declares a default timeout, and it is finite and plausible",
+        "duration": 0.1975999999999658,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+      "status": "passed",
+      "source_byte_start": 76003,
+      "source_byte_end": 76392,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+        "status": "passed",
+        "title": "gives every declared operation a finite deadline, longest for builds",
+        "duration": 0.366299999999967,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+      "status": "passed",
+      "source_byte_start": 76393,
+      "source_byte_end": 76771,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+        "status": "passed",
+        "title": "passes the deadline through to the spawn, not merely stores it",
+        "duration": 17.818899999999985,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+      "status": "passed",
+      "source_byte_start": 76772,
+      "source_byte_end": 77165,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+        "status": "passed",
+        "title": "reports a timeout as a TYPED result, not an indistinguishable non-zero",
+        "duration": 30.64050000000003,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+      "status": "passed",
+      "source_byte_start": 77166,
+      "source_byte_end": 77527,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+        "status": "passed",
+        "title": "does not mark an ordinary docker failure as a timeout",
+        "duration": 0.37639999999998963,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+      "status": "passed",
+      "source_byte_start": 77528,
+      "source_byte_end": 77930,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+        "status": "passed",
+        "title": "escalates a timed-out exec: the container process is stopped, not orphaned",
+        "duration": 0.5074999999999932,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+      "status": "passed",
+      "source_byte_start": 77931,
+      "source_byte_end": 78274,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+        "status": "passed",
+        "title": "does not escalate when the exec merely fails",
+        "duration": 0.12719999999995935,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails",
+      "status": "passed",
+      "source_byte_start": 78275,
+      "source_byte_end": 78640,
+      "assertion": {
+        "ancestorTitles": [
+          "#394 \u2014 every docker invocation carries a finite deadline"
+        ],
+        "fullName": "#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails",
+        "status": "passed",
+        "title": "still returns a result when the escalation itself fails",
+        "duration": 0.12569999999999482,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable aborts a call that would otherwise run to its deadline (AC-1)",
+      "status": "passed",
+      "source_byte_start": 79005,
+      "source_byte_end": 79362,
+      "assertion": {
+        "ancestorTitles": [
+          "#479 \u2014 an in-flight docker call is cancellable"
+        ],
+        "fullName": "#479 \u2014 an in-flight docker call is cancellable aborts a call that would otherwise run to its deadline (AC-1)",
+        "status": "passed",
+        "title": "aborts a call that would otherwise run to its deadline (AC-1)",
+        "duration": 0.41720000000003665,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable kills the child rather than merely resolving around it (AC-1)",
+      "status": "passed",
+      "source_byte_start": 79363,
+      "source_byte_end": 79720,
+      "assertion": {
+        "ancestorTitles": [
+          "#479 \u2014 an in-flight docker call is cancellable"
+        ],
+        "fullName": "#479 \u2014 an in-flight docker call is cancellable kills the child rather than merely resolving around it (AC-1)",
+        "status": "passed",
+        "title": "kills the child rather than merely resolving around it (AC-1)",
+        "duration": 0.11919999999997799,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)",
+      "status": "passed",
+      "source_byte_start": 79721,
+      "source_byte_end": 80086,
+      "assertion": {
+        "ancestorTitles": [
+          "#479 \u2014 an in-flight docker call is cancellable"
+        ],
+        "fullName": "#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)",
+        "status": "passed",
+        "title": "refuses to spawn at all when the signal is ALREADY aborted (AC-1)",
+        "duration": 0.10929999999996198,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)",
+      "status": "passed",
+      "source_byte_start": 80087,
+      "source_byte_end": 80405,
+      "assertion": {
+        "ancestorTitles": [
+          "#479 \u2014 an in-flight docker call is cancellable"
+        ],
+        "fullName": "#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)",
+        "status": "passed",
+        "title": "types an abort apart from a timeout (AC-4)",
+        "duration": 28.483799999999974,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/deadline.test.ts:#479 \u2014 an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+      "status": "passed",
+      "source_byte_start": 80771,
+      "source_byte_end": 81162,
+      "assertion": {
+        "ancestorTitles": [
+          "#479 \u2014 an in-flight docker call is cancellable"
+        ],
+        "fullName": "#479 \u2014 an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+        "status": "passed",
+        "title": "stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+        "duration": 0.28860000000003083,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 offline (AC-08, solid default) detaches the container from all networking via --network none",
+      "status": "passed",
+      "source_byte_start": 114172,
+      "source_byte_end": 114538,
+      "assertion": {
+        "ancestorTitles": [
+          "applyNetworkPolicy \u2014 offline (AC-08, solid default)"
+        ],
+        "fullName": "applyNetworkPolicy \u2014 offline (AC-08, solid default) detaches the container from all networking via --network none",
+        "status": "passed",
+        "title": "detaches the container from all networking via --network none",
+        "duration": 1.1929999999999836,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 offline (AC-08, solid default) adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)",
+      "status": "passed",
+      "source_byte_start": 114539,
+      "source_byte_end": 114928,
+      "assertion": {
+        "ancestorTitles": [
+          "applyNetworkPolicy \u2014 offline (AC-08, solid default)"
+        ],
+        "fullName": "applyNetworkPolicy \u2014 offline (AC-08, solid default) adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)",
+        "status": "passed",
+        "title": "adds no NET_ADMIN/NET_RAW caps and no firewall script (nothing to allow)",
+        "duration": 0.15749999999997044,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 offline (AC-08, solid default) requires no post-start cut (it was never connected)",
+      "status": "passed",
+      "source_byte_start": 114929,
+      "source_byte_end": 115276,
+      "assertion": {
+        "ancestorTitles": [
+          "applyNetworkPolicy \u2014 offline (AC-08, solid default)"
+        ],
+        "fullName": "applyNetworkPolicy \u2014 offline (AC-08, solid default) requires no post-start cut (it was never connected)",
+        "status": "passed",
+        "title": "requires no post-start cut (it was never connected)",
+        "duration": 0.33559999999999945,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/network.test.ts:applyNetworkPolicy \u2014 unknown policy throws on an unrecognized policy",
+      "status": "passed",
+      "source_byte_start": 118305,
+      "source_byte_end": 118582,
+      "assertion": {
+        "ancestorTitles": [
+          "applyNetworkPolicy \u2014 unknown policy"
+        ],
+        "fullName": "applyNetworkPolicy \u2014 unknown policy throws on an unrecognized policy",
+        "status": "passed",
+        "title": "throws on an unrecognized policy",
+        "duration": 0.06520000000000437,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) is a detached run with the image and the sleep-infinity keep-alive command",
+      "status": "passed",
+      "source_byte_start": 119864,
+      "source_byte_end": 120230,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 isolation flags (AC-01)"
+        ],
+        "fullName": "buildRunArgs \u2014 isolation flags (AC-01) is a detached run with the image and the sleep-infinity keep-alive command",
+        "status": "passed",
+        "title": "is a detached run with the image and the sleep-infinity keep-alive command",
+        "duration": 1.5850000000000364,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) mounts the source volume at /work/repo via type=volume (never a bind)",
+      "status": "passed",
+      "source_byte_start": 120231,
+      "source_byte_end": 120588,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 isolation flags (AC-01)"
+        ],
+        "fullName": "buildRunArgs \u2014 isolation flags (AC-01) mounts the source volume at /work/repo via type=volume (never a bind)",
+        "status": "passed",
+        "title": "mounts the source volume at /work/repo via type=volume (never a bind)",
+        "duration": 0.45940000000001646,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) sets workdir, non-root user, read-only root, and a tmpfs /tmp",
+      "status": "passed",
+      "source_byte_start": 120589,
+      "source_byte_end": 120930,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 isolation flags (AC-01)"
+        ],
+        "fullName": "buildRunArgs \u2014 isolation flags (AC-01) sets workdir, non-root user, read-only root, and a tmpfs /tmp",
+        "status": "passed",
+        "title": "sets workdir, non-root user, read-only root, and a tmpfs /tmp",
+        "duration": 0.11750000000000682,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) drops all caps, blocks privilege escalation, and applies the resource caps",
+      "status": "passed",
+      "source_byte_start": 120931,
+      "source_byte_end": 121297,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 isolation flags (AC-01)"
+        ],
+        "fullName": "buildRunArgs \u2014 isolation flags (AC-01) drops all caps, blocks privilege escalation, and applies the resource caps",
+        "status": "passed",
+        "title": "drops all caps, blocks privilege escalation, and applies the resource caps",
+        "duration": 0.0736999999999739,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) labels the container ca.sandbox=1 for the lifecycle registry",
+      "status": "passed",
+      "source_byte_start": 121298,
+      "source_byte_end": 121637,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 isolation flags (AC-01)"
+        ],
+        "fullName": "buildRunArgs \u2014 isolation flags (AC-01) labels the container ca.sandbox=1 for the lifecycle registry",
+        "status": "passed",
+        "title": "labels the container ca.sandbox=1 for the lifecycle registry",
+        "duration": 0.03509999999999991,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 isolation flags (AC-01) NEVER passes --privileged and NEVER mounts the docker socket",
+      "status": "passed",
+      "source_byte_start": 121638,
+      "source_byte_end": 121977,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 isolation flags (AC-01)"
+        ],
+        "fullName": "buildRunArgs \u2014 isolation flags (AC-01) NEVER passes --privileged and NEVER mounts the docker socket",
+        "status": "passed",
+        "title": "NEVER passes --privileged and NEVER mounts the docker socket",
+        "duration": 0.07209999999997763,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) offline detaches the container from all networking",
+      "status": "passed",
+      "source_byte_start": 121978,
+      "source_byte_end": 122321,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam)"
+        ],
+        "fullName": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) offline detaches the container from all networking",
+        "status": "passed",
+        "title": "offline detaches the container from all networking",
+        "duration": 0.07220000000000937,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) a typo of 'offline' still gets --network none (fail closed)",
+      "status": "passed",
+      "source_byte_start": 122322,
+      "source_byte_end": 122684,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam)"
+        ],
+        "fullName": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) a typo of 'offline' still gets --network none (fail closed)",
+        "status": "passed",
+        "title": "a typo of 'offline' still gets --network none (fail closed)",
+        "duration": 0.047100000000000364,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) an unrecognized policy fails closed to --network none",
+      "status": "passed",
+      "source_byte_start": 122685,
+      "source_byte_end": 123034,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam)"
+        ],
+        "fullName": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) an unrecognized policy fails closed to --network none",
+        "status": "passed",
+        "title": "an unrecognized policy fails closed to --network none",
+        "duration": 0.17989999999997508,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    },
+    {
+      "id": "vitest:plugins/ca-sandbox/tools/run.test.ts:buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) refuses an empty image or volume name",
+      "status": "passed",
+      "source_byte_start": 123035,
+      "source_byte_end": 123351,
+      "assertion": {
+        "ancestorTitles": [
+          "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam)"
+        ],
+        "fullName": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) refuses an empty image or volume name",
+        "status": "passed",
+        "title": "refuses an empty image or volume name",
+        "duration": 0.5863000000000511,
+        "failureMessages": [],
+        "meta": {},
+        "tags": []
+      }
+    }
+  ]
+}

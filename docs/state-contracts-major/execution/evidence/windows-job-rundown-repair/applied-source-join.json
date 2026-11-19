@@ -1,0 +1,41 @@
+{
+  "observed_head": "4b2df3a14e4b5929b570c16cb1352e46d7abc82e",
+  "kind": "read-only literal current working-source join; not a new execution epoch",
+  "files": {
+    "core/pysrc/_artifactauthoritylib.py": {
+      "actual_working_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "head_git_sha256": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+      "frozen_after_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "working_equals_frozen_after": true,
+      "head_contains_after": false
+    },
+    ".github/scripts/test_artifact_authority_adapter.py": {
+      "actual_working_sha256": "defd1257be6b1a21044d243c5747ebd27cd8b6b1577f816f65646f1e72addb7f",
+      "head_git_sha256": "1dc1dbca736e398cecd080ebd86db8b2985e344ecdb2e8483daf76572e1a8640",
+      "frozen_after_sha256": "defd1257be6b1a21044d243c5747ebd27cd8b6b1577f816f65646f1e72addb7f",
+      "working_equals_frozen_after": true,
+      "head_contains_after": false
+    },
+    "plugins/ca/hooks/_artifactauthoritylib.py": {
+      "actual_working_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "head_git_sha256": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+      "frozen_after_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "working_equals_frozen_after": true,
+      "head_contains_after": false
+    },
+    "plugins/ca-codex/hooks/_artifactauthoritylib.py": {
+      "actual_working_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "head_git_sha256": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+      "frozen_after_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "working_equals_frozen_after": true,
+      "head_contains_after": false
+    },
+    "plugins/ca-pi/hooks/_artifactauthoritylib.py": {
+      "actual_working_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "head_git_sha256": "05098751d619dd1335c9ccb79ec1a22546c5c5c0d90cce0c0bf657d54e0ae50e",
+      "frozen_after_sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "working_equals_frozen_after": true,
+      "head_contains_after": false
+    }
+  }
+}

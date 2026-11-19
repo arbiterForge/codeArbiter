@@ -1,0 +1,159 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "Root: reinspection of unchanged owning literal spans after independently reviewed optional Pi observer argument repair; no runtime renewal"
+ },
+ "inputs": {
+  ".github/scripts/run_concurrent_suites.py": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614",
+  ".github/workflows/ci.yml": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/clause-inspection.json",
+   "sha256": "d596f289beda4dac2a82addbc95848d4038ed5f19242298e498e6a8bb2dbb4c1"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/source-bindings.json",
+   "sha256": "49eeb6dd181daa14b41a2a07cf97ff6b87625f1f785a1828e8b82165e91edb79"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/owner-baseline-current.diff",
+   "sha256": "ebb8d8870a2a601f4ad08ae4298d1aa9f76667e82022c68c45d60aaa9f90a47b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/reinspection.json",
+   "sha256": "ad167a3edc925f285d324314a0d9cbbdde1ad2874fea1cbbb54b96ee8676ee52"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C05",
+   "frozen_row_sha256": "2c9f2ffcc6d5570cb396da00e1c06cb3558cc4de5f279f6169625c4dfbce66c4",
+   "clause_ids": [
+    "disposition:transitions:C05:01",
+    "disposition:transitions:C05:02",
+    "disposition:transitions:C05:03",
+    "disposition:transitions:C05:04",
+    "disposition:transitions:C05:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 27,
+     "end": 55,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 93,
+     "end": 107,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 1192,
+     "end": 1206,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 58,
+     "end": 71,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 105,
+     "end": 119,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 58,
+     "end": 80,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 109,
+     "end": 119,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 27,
+     "end": 29,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 74,
+     "end": 90,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    },
+    {
+     "path": ".github/scripts/run_concurrent_suites.py",
+     "start": 93,
+     "end": 119,
+     "file_sha256": "bf1ea7abcfc00d25c8dbdb9135a42ec860e525a007ff61d024a766c037601614"
+    }
+   ],
+   "semantic_assessment": "All literal event/guard/effect/retry clauses map to current source and pinned baseline, with explicit intake scopes/previous strengthening above; only source contract is preserved, and any existing TESTED/PRESERVED edge rows remain unchanged."
+  }
+ ],
+ "scope": {
+  "source_only": true,
+  "families": [
+   "C05"
+  ],
+  "complete_machine": true,
+  "inspected_all_literal_clauses": [
+   "disposition:transitions:C05:01",
+   "disposition:transitions:C05:02",
+   "disposition:transitions:C05:03",
+   "disposition:transitions:C05:04",
+   "disposition:transitions:C05:05"
+  ],
+  "existing_advanced_rows_unchanged": [
+   "disposition:transitions:C05:01",
+   "disposition:transitions:C05:02",
+   "disposition:transitions:C05:03",
+   "disposition:transitions:C05:04",
+   "disposition:transitions:C05:05"
+  ],
+  "intake_variances": [
+   {
+    "id": "C05-PINNED-VERDICT-STRENGTHENING",
+    "cells": [
+     "C05:01",
+     "C05:04",
+     "C05:05"
+    ],
+    "classification": "PREVIOUS_IMPLEMENTED_STRENGTHENING_RETAINED",
+    "statement": "Pinned parse/main did not prevalidate finite timeout/available interpreter, and pinned verdict used last Ran plus any OK. Current source checks all summaries and admission; existing three TESTED rows and evidence are preserved exactly. This packet does not requalify tests."
+   }
+  ]
+ },
+ "limits": [
+  "Reasoned finite source guard/effect/retry conformance only. No actual suite/CI/Go/Docker/Vitest/installed/provider execution or success, runtime evidence epoch, task completion, human acceptance or publication qualification is asserted.",
+  "No canonical/index/ref/marker/ledger writes. These are proposals for Root compare-and-set adoption; no current staged candidate or security marker is fabricated.",
+  "Unkeyed source hashes/records provide cooperative source consistency, not adversarial authentication or observed execution."
+ ],
+ "revalidated_from": {
+  "path": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C05-preserved.json",
+  "sha256": "ef6674be379f8939767d7f9c555135527d6b95c5e25aa93da45d9e0141fd34e8",
+  "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+  "reason": "Only the three optional Pi parent argument replacements changed the whole CI input; all owning literal spans and every other input remain byte-identical."
+ }
+}

@@ -1,0 +1,95 @@
+{
+ "source_epoch": "41aa7a4995d88c1e680e2e5ed01b3a2eb5cf61ec",
+ "observed_head": "5d9cc6d134775d913ee71acaeecdcb1a2ff94021",
+ "files": {
+  "plugins/ca/hooks/tests/_helpers.py": {
+   "physical_sha256": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+   "physical_bytes": 7612,
+   "git_sha256": "0c4a113a663dab2b9a5c6dd8025378628007f75e4d681c38d98a517d362c6f42",
+   "git_bytes": 7612
+  },
+  "plugins/ca/hooks/hostapi.py": {
+   "physical_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "physical_bytes": 38083,
+   "git_sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+   "git_bytes": 38083
+  },
+  "plugins/ca/hooks/_host.py": {
+   "physical_sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "physical_bytes": 1689,
+   "git_sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+   "git_bytes": 1689
+  },
+  "plugins/ca/hooks/_hooklib.py": {
+   "physical_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "physical_bytes": 49147,
+   "git_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+   "git_bytes": 49147
+  },
+  "plugins/ca/hooks/_gitexec.py": {
+   "physical_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "physical_bytes": 24644,
+   "git_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+   "git_bytes": 24644
+  },
+  "plugins/ca/hooks/_durabilitylib.py": {
+   "physical_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+   "physical_bytes": 8561,
+   "git_sha256": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+   "git_bytes": 8561
+  },
+  "plugins/ca/hooks/_standuplib.py": {
+   "physical_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "physical_bytes": 9547,
+   "git_sha256": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+   "git_bytes": 9547
+  },
+  "plugins/ca/hooks/_taskboardlib.py": {
+   "physical_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "physical_bytes": 69125,
+   "git_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+   "git_bytes": 69125
+  },
+  "plugins/ca/hooks/_arbiterstatelib.py": {
+   "physical_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "physical_bytes": 14372,
+   "git_sha256": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+   "git_bytes": 14372
+  },
+  "plugins/ca/hooks/_provenancelib.py": {
+   "physical_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "physical_bytes": 76910,
+   "git_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+   "git_bytes": 76910
+  },
+  "plugins/ca/hooks/_knowledgelib.py": {
+   "physical_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "physical_bytes": 3073,
+   "git_sha256": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+   "git_bytes": 3073
+  },
+  "plugins/ca/hooks/_updatelib.py": {
+   "physical_sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+   "physical_bytes": 21120,
+   "git_sha256": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+   "git_bytes": 21120
+  },
+  "plugins/ca/hooks/_modelib.py": {
+   "physical_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "physical_bytes": 44894,
+   "git_sha256": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+   "git_bytes": 44894
+  }
+ },
+ "python": {
+  "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "executable": "C:\\Python314\\python.exe",
+  "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38"
+ },
+ "bootstrap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\run-owning.py",
+  "sha256": "eb68436baee777a52163689558fc7734d0e5d11950d72ba24343b252918dab45",
+  "bytes": 745
+ },
+ "scope": "Direct helper/fixture imports are read from unchanged canonical sources; only required5original subjects copied, no dependency tree/install/build. No claim of complete transitive runtime trace."
+}

@@ -1,0 +1,192 @@
+{
+  "schema": "codearbiter.private-test-change-delivery/1",
+  "source_epoch": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+  "scope": "Verification phase budgets only; two test files; no production changes",
+  "subjects": [
+    {
+      "path": ".github/scripts/test_npm_binding_observation.py",
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\.github\\scripts\\test_npm_binding_observation.py",
+      "preimage_sha256": "52672a6736ba467147070aec1cf42572d09579df97e29c47f214d2520797d34c",
+      "sha256": "618b9fce2dc364e2ea5adb4d27c08cf4fefed33f57ee46a751dfef22c050f957",
+      "bytes": 39035
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/delegation-journal.test.ts",
+      "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\plugins\\ca-pi\\tools\\test\\delegation-journal.test.ts",
+      "preimage_sha256": "3c9fe93d54d304bb5786f3402a19aa520a4df2ce1e389bb09e467c22331034ec",
+      "sha256": "1539c412f3fc61e905d878165259589af4c88bf5a3afe9d8dbe57a50d5496389",
+      "bytes": 12499
+    }
+  ],
+  "patch": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\changes.patch",
+    "sha256": "9eba7da189ce29fdbfc650c9131eccd64dd0960d96e913c49d8997c957c677c3"
+  },
+  "context": {
+    "input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\verification-phase-budget-input.txt",
+    "source": "actual f5 retained Linux phase observations; no production defect attribution"
+  },
+  "checks": [
+    {
+      "name": "python-original-unit-and-pure",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\run-owners.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo",
+      "outer_timeout_seconds": 180,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 16.46727419999661,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "e22f640fa5ee0a3b9819ee54fc09870ebd5de7287a0ffc91bf1175c5e0ad7290",
+      "stdout_bytes": 0,
+      "stderr_bytes": 3618
+    },
+    {
+      "name": "python-wiring-controls",
+      "argv": [
+        "C:/Python314/python.exe",
+        "-I",
+        "-S",
+        "-B",
+        "-X",
+        "utf8",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\run-wiring.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo",
+      "outer_timeout_seconds": 120,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 0.11897680000402033,
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "74603c34f28bec706e13769cf3f34f653895e6feff280778e5395ddb0ff6a88a",
+      "stdout_bytes": 0,
+      "stderr_bytes": 707
+    },
+    {
+      "name": "journal-vitest",
+      "argv": [
+        "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\plugins\\ca-pi\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "test/delegation-journal.test.ts",
+        "--coverage",
+        "--coverage.reportsDirectory",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\coverage",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\repo\\plugins\\ca-pi\\tools",
+      "outer_timeout_seconds": 180,
+      "exit_code": 0,
+      "timed_out": false,
+      "elapsed_seconds": 6.6714335000142455,
+      "stdout_sha256": "24f499516ba34273a30428b64ef20fca39a84c20f16f53da94c72cb9340dbb6f",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stdout_bytes": 471,
+      "stderr_bytes": 0
+    }
+  ],
+  "named_counts": {
+    "python_full_original_producer_plus_pure": {
+      "passed": 21,
+      "failed": 0,
+      "skipped": 0,
+      "unittest_seconds": 16.19
+    },
+    "unchanged_wiring_owner": {
+      "passed": 3,
+      "failed": 0,
+      "skipped": 0,
+      "unittest_seconds": 0.036
+    },
+    "journal": {
+      "total": 20,
+      "passed": 19,
+      "existing_windows_privilege_skip": 1,
+      "failed": 0,
+      "coverage": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\coverage",
+      "json": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json"
+    }
+  },
+  "budgets": {
+    "full_runtime_unit_child_seconds": 120,
+    "closed_progress_elapsed_max_ms": 120000,
+    "only_overfull_fixture_beforeEach_ms": 60000,
+    "original_overfull_body_ms": 5000
+  },
+  "limits": [
+    "The unit verification deadline intentionally changes from 30s to120s; no claim that its old deadline remains unchanged.",
+    "Producer embedded Go script and all original producer assertions/production full inventory, byte and race guards are unchanged; no parallel hashing/caching.",
+    "SDK/RPC and all other production timeouts unchanged.",
+    "Journal beforeEach runs real4097-file/batch64 preparation only for the exact original case title; shared owned-root cleanup and both original assertions retained.",
+    "The overfull Vitest duration5313.1615ms includes setup, not a separately measured body duration.",
+    "Local Windows Python3.14.6/Node24.22.1 checks do not establish hosted Linux3.14.10 cost/cause or guarantee future CI success.",
+    "Only reviewed existing dependencies used; no installs/provider/Pi/npm/native/Go execution. Original journal unit invokes Git only inside disposable fixture.",
+    "Private fixture uses existing node_modules junction plus private Vite cacheDir/coverage/output; canonical tracked source hashes stable.",
+    "No Root canonical/index/ref/marker/ledger changes."
+  ],
+  "raw_files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\results.json",
+      "sha256": "7f0ddfdf497d9b011e70681290bc4f639bf1ce3390ba2652903eaf2d1db8be79",
+      "bytes": 2648
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\source-joins.json",
+      "sha256": "3c11a74dc3808b78713d68933eafc7e24a6c657e1449a549c90073193ab8a35f",
+      "bytes": 2157
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\preservation.json",
+      "sha256": "0027dd63cda3f2f83986c9e98ba397ae9759cb6fdac69dda9b5e025c83393ab4",
+      "bytes": 604
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-results.json",
+      "sha256": "bebaab7efb444fb0b77160c8a438802b818f9777b2083f01096806a66d5cef5d",
+      "bytes": 2351367
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\run-checks.py",
+      "sha256": "96f32e8e3a3a3167d009228c2f2b9c2fee40547fb8dddf1fb7ea0e32beeb6738",
+      "bytes": 3890
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-vitest.stdout",
+      "sha256": "24f499516ba34273a30428b64ef20fca39a84c20f16f53da94c72cb9340dbb6f",
+      "bytes": 471
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\python-original-unit-and-pure.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\python-wiring-controls.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\journal-vitest.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "bytes": 0
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\python-original-unit-and-pure.stderr",
+      "sha256": "e22f640fa5ee0a3b9819ee54fc09870ebd5de7287a0ffc91bf1175c5e0ad7290",
+      "bytes": 3618
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-verification-phase-budgets-ciyjo5ju\\python-wiring-controls.stderr",
+      "sha256": "74603c34f28bec706e13769cf3f34f653895e6feff280778e5395ddb0ff6a88a",
+      "bytes": 707
+    }
+  ]
+}

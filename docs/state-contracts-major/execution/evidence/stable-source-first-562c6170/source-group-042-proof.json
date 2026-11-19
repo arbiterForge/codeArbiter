@@ -1,0 +1,49 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/codex-parity-fixture.py": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T05:02"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-042-inspection.json",
+      "sha256": "ef1976d62e5e63ac3dca70f74a7be45f9ca184792c87d40d55a1d4e8696470f9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+      "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+    "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-042-inspection.json",
+  "scope": "Only fixed init/add/fixture-commit failure propagation. No fixture creation, host discovery, enforcement parity or actual Git result.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ]
+}

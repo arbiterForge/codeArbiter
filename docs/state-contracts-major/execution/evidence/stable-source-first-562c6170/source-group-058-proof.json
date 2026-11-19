@@ -1,0 +1,67 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+    "core/surface/commands/init.md": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+    "core/surface/includes/artifacts.md": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+    "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+    "core/surface/skills/context-check/SKILL.md": "f9add66b35d19eea5592dabd4c1e29fa8a7df22a9a3a694577daa1b917937360",
+    "core/surface/skills/context-creation/SKILL.md": "37b97c41de90c7226c698e8011ef00cab60f1d03b5e744fc129d01eb85441bfd",
+    "core/surface/skills/context-creation/references/markdown-format.md": "29e7add1ba8884f1c80b357aed5b6c3ac88a4110f2bd72cdceee124e84c90477",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:machines:WF-17",
+    "disposition:transitions:WF-17:01",
+    "disposition:transitions:WF-17:02",
+    "disposition:transitions:WF-17:03",
+    "disposition:transitions:WF-17:04",
+    "disposition:transitions:WF-17:05",
+    "disposition:transitions:WF-17:06",
+    "disposition:transitions:WF-17:07",
+    "disposition:transitions:WF-17:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-058-inspection.json",
+      "sha256": "c486e2c914a76d11a34e45d65b81e5d28321d3aaac0170f39f3826a751554002"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+      "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/workflow-next-six-source-59/proofs/WF-17-preserved.json",
+    "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+    "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-first-562c6170/source-group-058-inspection.json",
+  "scope": "Source-only six-family assessment with precise format/authority/audited-write scopes; not task/runtime qualification.",
+  "limits": [
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact."
+  ],
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ]
+}

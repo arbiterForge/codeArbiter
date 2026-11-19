@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-machine61-9c1a-qs7lh6wx\\capture.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-machine61-9c1a-qs7lh6wx",
+  "exit_code": 0,
+  "seconds": 5.530391200009035,
+  "stdout_sha256": "944bc78134a3288ffb022004c52614305ab2d33735e157386f9e64b563f3a80f",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "execution_number": 1,
+  "credentialblind_supervisor": true
+}

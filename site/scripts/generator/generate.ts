@@ -1,4 +1,5 @@
-import { mkdirSync, writeFileSync, rmSync, existsSync, readFileSync } from "node:fs";
+import { commonOwner, publishOwnedFiles } from "../owned-output";
+import { existsSync, readFileSync } from "node:fs";
 import { dirname, join } from "node:path";
 import { collectSources } from "./collect-sources";
 import { collectLenses } from "./collect-lenses";
@@ -375,30 +376,10 @@ export function generate(
   // documentation), no slug dedup needed (slugs are unique file basenames).
   const lensPages = collectLenses(srcDir).map(renderLensPage);
 
-  // Clean prior output before writing: a stale file from a previous run (an
-  // old `-2` slug, a since-removed entity) must not survive a re-generate.
-  // Only the generated subtrees + index are removed — never the whole
-  // outDir, which may hold other content-collection files.
-  for (const typeDir of [...Object.values(TYPE_DIR), LENS_DIR]) {
-    rmSync(join(outDir, typeDir), { recursive: true, force: true });
-  }
-  rmSync(join(outDir, "index.md"), { force: true });
-
-  // Write one page per source under its type directory.
-  for (const page of pages) {
-    const dir = join(outDir, TYPE_DIR[page.type]);
-    mkdirSync(dir, { recursive: true });
-    writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
-  }
-
-  // Write one page per tribunal lens card.
-  if (lensPages.length > 0) {
-    const dir = join(outDir, LENS_DIR);
-    mkdirSync(dir, { recursive: true });
-    for (const page of lensPages) {
-      writeFileSync(join(dir, `${page.slug}.md`), page.markdown);
-    }
-  }
+  // Materialize the complete candidate before any owned output is replaced.
+  const output = new Map<string, string>();
+  for (const page of pages) output.set(join(outDir, TYPE_DIR[page.type], `${page.slug}.md`), page.markdown);
+  for (const page of lensPages) output.set(join(outDir, LENS_DIR, `${page.slug}.md`), page.markdown);
 
   // Index + sidebar. buildIndex gives the grouped, sorted structure (each item
   // already carrying its truncated description, and — per collection — a
@@ -470,10 +451,10 @@ export function generate(
     });
   }
 
-  mkdirSync(outDir, { recursive: true });
-  mkdirSync(dirname(resolvedSidebarPath), { recursive: true });
-  writeFileSync(join(outDir, "index.md"), indexContent);
-  writeFileSync(resolvedSidebarPath, JSON.stringify(sidebar, null, 2));
+  output.set(join(outDir, "index.md"), indexContent);
+  output.set(resolvedSidebarPath, JSON.stringify(sidebar, null, 2));
+  publishOwnedFiles(commonOwner([outDir, dirname(resolvedSidebarPath)]), "reference", output,
+    [...Object.values(TYPE_DIR), LENS_DIR].map(directory => join(outDir, directory)));
 
   return { pages, workflowPairs, lensPages, outDir, sidebarPath: resolvedSidebarPath };
 }

@@ -1,0 +1,409 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+  ".github/scripts/_npm_publishlib.py": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+  ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C18",
+  "disposition:transitions:C18:01",
+  "disposition:transitions:C18:02",
+  "disposition:transitions:C18:03",
+  "disposition:transitions:C18:04",
+  "disposition:transitions:C18:05",
+  "disposition:transitions:C18:06",
+  "disposition:transitions:C18:07",
+  "disposition:transitions:C18:08",
+  "disposition:transitions:C18:09"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C18",
+   "frozen_row_sha256": "a997ba3d82e511dc86febedbf839b03c4a0d8bc97a3a160420eca0bdf8349460",
+   "clause_ids": [
+    "disposition:transitions:C18:01",
+    "disposition:transitions:C18:02",
+    "disposition:transitions:C18:03",
+    "disposition:transitions:C18:04",
+    "disposition:transitions:C18:05",
+    "disposition:transitions:C18:06",
+    "disposition:transitions:C18:07",
+    "disposition:transitions:C18:08",
+    "disposition:transitions:C18:09"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 379,
+     "end": 404,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "b449d953c417e5c5d1a169dc261755e38a1990438aa48428d644bbe85486c716"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 392,
+     "end": 428,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "6ba03cbb9ab2dac050d78f1ccb946548d21473266719d2a49adbe493ac05fcf9"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 429,
+     "end": 450,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "4d3acfd727d1aeab290a4ca91b7b11dcc8e75b59c9ada0aa4d8d6142a8f601d8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 243,
+     "end": 250,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "cc66315853fae13d7fb697db143b7659f56a54cf3061ce6ae2d718f60f7bcac8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 486,
+     "end": 499,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a840e61211a856d7316752919fad07af74552e8ee40ddbc88899b4a0de220069"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 98,
+     "end": 131,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "b79adc2f87bfa36e6b8dd773b3ea6b44d9fe80829bdcb803e395a4a6f4a3363e"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 273,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "ecb7222a6e93ae35bb0f3349bc10bbbb1bf5e314fb23591c6492b4866aae4b88"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 453,
+     "end": 468,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "bd5af28f468622775b6b6edd6c0cf93bfab78247da9e2c360f17501efbaf65d5"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 369,
+     "end": 379,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "e18f841bcfcb4eac131fc28766944b599e15bccf1e93661279ff88f000f522f0"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 470,
+     "end": 505,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "2ec32454634d8f0658a413b30b8a72db3d1086daca8813f7a8fb5ffb378abdcb"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 732,
+     "end": 757,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "af6b7b2ef55e489ec0a9df556ea0ee5ebc42ace2077b697054875002fb003222"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 591,
+     "end": 707,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "93c3a28d10cd0e0d024649d58467647285961937a1765e23ed4d3346bf6603bf"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 465,
+     "end": 562,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "16436e9aca2e8e734dc69f0198d18426982dea999980c1ff2dacbf1f9436de00"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 799,
+     "end": 930,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "a2aeab260c924fe690c67158d04cae4c52efafec36729a3a3edf3ebcf7cd8b20"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 422,
+     "end": 468,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "649a8066dfa2e89b7c19bb321bf91493b76d2791d9ff464487c2e547e4cf90b8"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:01",
+   "frozen_row_sha256": "84fc4aa45ad6590c11b91c16bec2845cf275101ef3215cd629d34f3c68123558",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 379,
+     "end": 404,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "b449d953c417e5c5d1a169dc261755e38a1990438aa48428d644bbe85486c716"
+    }
+   ],
+   "semantic_assessment": "A nonzero lookup is absence only when parsed JSON error.code is E404 and the finite extracted error-code set is exactly E404. Other failures do not authorize publish.",
+   "intake_variances": [
+    "The classifier checks the exact E404 shape/code, not an independently authenticated package identity inside the error text. Success identity is checked separately."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:02",
+   "frozen_row_sha256": "89be25f8c2191c7befc97b8741f579a5a3ae2a8cf1bbe430f34a7c9efb43d013",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 392,
+     "end": 428,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "6ba03cbb9ab2dac050d78f1ccb946548d21473266719d2a49adbe493ac05fcf9"
+    }
+   ],
+   "semantic_assessment": "Declared retryable npm network/rate/server codes, or a bounded recognized429/5xx status without conflicting npm codes, raise RegistryUnavailable. Other malformed/nonretryable failures raise ValueError.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:03",
+   "frozen_row_sha256": "1f3d09cdcd07ce5049e40cb175df6e7dc75fdc4bca79f5af84fbb7e001a72ccf",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 429,
+     "end": 450,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "4d3acfd727d1aeab290a4ca91b7b11dcc8e75b59c9ada0aa4d8d6142a8f601d8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 243,
+     "end": 250,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "cc66315853fae13d7fb697db143b7659f56a54cf3061ce6ae2d718f60f7bcac8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    }
+   ],
+   "semantic_assessment": "Successful lookup requires exact requested version/integrity and the trusted registry attestation URL/SLSA metadata to return present. This state skips duplicate publish but is followed by independent npm signature/provenance verification.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:04",
+   "frozen_row_sha256": "ff7b073a42dfabd57ade2691a5683b35000e32a456e7bb5593c75e3e4c516abc",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 429,
+     "end": 450,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "4d3acfd727d1aeab290a4ca91b7b11dcc8e75b59c9ada0aa4d8d6142a8f601d8"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 486,
+     "end": 499,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "a840e61211a856d7316752919fad07af74552e8ee40ddbc88899b4a0de220069"
+    }
+   ],
+   "semantic_assessment": "Exact version/integrity without valid attestation metadata returns present-unattested only when require_attestation is explicitly false. Default/initial lookup rejects; the post-publish polling caller permits pending metadata without weakening integrity.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:05",
+   "frozen_row_sha256": "6a2b97b91eca4a13170861861dd31f422a3006eae0acbc3898cd35dd663f78c1",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 98,
+     "end": 131,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "b79adc2f87bfa36e6b8dd773b3ea6b44d9fe80829bdcb803e395a4a6f4a3363e"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 273,
+     "end": 286,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "ecb7222a6e93ae35bb0f3349bc10bbbb1bf5e314fb23591c6492b4866aae4b88"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 453,
+     "end": 468,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "bd5af28f468622775b6b6edd6c0cf93bfab78247da9e2c360f17501efbaf65d5"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 369,
+     "end": 379,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "e18f841bcfcb4eac131fc28766944b599e15bccf1e93661279ff88f000f522f0"
+    }
+   ],
+   "semantic_assessment": "Pi publish uses reviewed pinned npm CLI, exact tarball, ignore-scripts/provenance/public flags and declared OIDC job permission. Both pre-effect and publish invocation require GITHUB_SHA==SOURCE_COMMIT. No static npm token fallback is passed in this lane.",
+   "intake_variances": [
+    "ADR0044 account-side trusted-publisher configuration and actual hosted OIDC success remain external qualification, not proven by source."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:06",
+   "frozen_row_sha256": "39e2ac1d9003b016dfad79cd6d60cd3ca009e6c4513a88c2c9155abc50cff511",
+   "witnesses": [
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 470,
+     "end": 505,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "2ec32454634d8f0658a413b30b8a72db3d1086daca8813f7a8fb5ffb378abdcb"
+    },
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 732,
+     "end": 757,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "af6b7b2ef55e489ec0a9df556ea0ee5ebc42ace2077b697054875002fb003222"
+    }
+   ],
+   "semantic_assessment": "Readback polls absent/unavailable/present-unattested at15second intervals against the configured600second evidence deadline, with immediate integrity/identity refusal; each lookup/signature call also has its own bound. The deadline is checked after a lookup, not a strict total wall-clock cap.",
+   "intake_variances": [
+    "No finite poll configuration proves actual registry availability or that all work finishes within600 wall seconds."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:07",
+   "frozen_row_sha256": "d3b60465589b9a7e038d7c47a4dd36f62e3ce05b32372e7b694d1409c52ff660",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 591,
+     "end": 707,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "93c3a28d10cd0e0d024649d58467647285961937a1765e23ed4d3346bf6603bf"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    }
+   ],
+   "semantic_assessment": "Signature verification uses a new temporary package/config/cache and removes npm-config/token variables before ignore-scripts install and audit-signatures. Both subprocesses have60second bounds. Exact one verified package and one SLSA bundle, with no invalid/missing items, are required; active Pi signature failure has no internal retry.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:08",
+   "frozen_row_sha256": "06f2ca18695c6637cf02c7e3db353e75c911b16841b7ef1568ec911847fe4519",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 465,
+     "end": 562,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "16436e9aca2e8e734dc69f0198d18426982dea999980c1ff2dacbf1f9436de00"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 500,
+     "end": 504,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "4ad652554df1ae302d99418bd7134d38aee3c1018ef0cce23bc51546b8c5ea12"
+    }
+   ],
+   "semantic_assessment": "Bounded provenance metadata must contain exactly one SLSA statement, exact tarball SHA512 subject, approved repository/main workflow and source commit, and GitHub-hosted builder. Active Pi disables continuation and supplies only release workflow paths; crypto verification remains with npm.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C18:09",
+   "frozen_row_sha256": "834a39473337f775e7c38dde2e2a35d4339633fc20c5999a9cf779400c771844",
+   "witnesses": [
+    {
+     "path": ".github/scripts/_npm_publishlib.py",
+     "start": 799,
+     "end": 930,
+     "file_sha256": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+     "span_sha256": "a2aeab260c924fe690c67158d04cae4c52efafec36729a3a3edf3ebcf7cd8b20"
+    },
+    {
+     "path": ".github/actions/publish-target/action.yml",
+     "start": 422,
+     "end": 468,
+     "file_sha256": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+     "span_sha256": "649a8066dfa2e89b7c19bb321bf91493b76d2791d9ff464487c2e547e4cf90b8"
+    }
+   ],
+   "semantic_assessment": "Dormant Codex npm prepare/verify entrypoints keep exact metadata/cohort/source/registry identity gates. Their presence does not create an active publication lane: current release composite routes Codex through Git distribution and Pi through npm.",
+   "intake_variances": [
+    "ADR0040 defers Codex npm. No helper invocation, registry publication or account readiness is established here."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

@@ -1,0 +1,213 @@
+--- baseline/core/surface/agents/dependency-reviewer.md
++++ current/core/surface/agents/dependency-reviewer.md
+@@ -51,14 +51,21 @@
+ 
+ ### 3. Maintenance signal
+ 
+-Evaluate last release date, archived/abandoned status, and unanswered critical/security issues. Flag as **HIGH** when the package is unmaintained. Do not block on maintenance alone — surface for user evaluation.
++Evaluate last release date, archived/abandoned status, and unanswered critical/security issues.
++
++- **Maintenance-only risk is MEDIUM** (non-blocking): an unmaintained, archived or abandoned
++  package with no security finding is flagged **MEDIUM** and surfaced for user evaluation. This is
++  the one severity rule for maintenance (D-HIGH, B 2026-11-12); it is not a non-blocking HIGH.
++- **Mixed maintenance + security keeps the security severity**: an unpatched vulnerability, an
++  unanswered security issue, or an ownership/takeover signal is reported at its own severity
++  (HIGH or CRITICAL), and that finding blocks like any other HIGH.
+ 
+ ### 4. Known CVEs
+ 
+ Run the audit command from `tech-stack.md` against the new dependency.
+ 
+-- **BLOCK on any known CRITICAL CVE** absent a documented justification in `security-controls.md`.
+-- Flag HIGH CVEs for user evaluation.
++- **BLOCK on any known CRITICAL or HIGH CVE** absent a documented justification in
++  `security-controls.md`. HIGH has one meaning everywhere: it blocks.
+ 
+ ### 5. Supply-chain posture
+ 
+@@ -66,7 +73,7 @@
+ - Dependency tree unusually large or deep for the stated purpose?
+ - Typosquatting risk (name near a popular package)?
+ 
+-Flag suspicious install scripts as **HIGH**.
++Flag suspicious install scripts as **HIGH** (blocking).
+ 
+ ## Findings Format
+ 
+@@ -81,9 +88,9 @@
+ ```
+ ### License: <SPDX> — PASS | BLOCK
+ ### Provenance: <registry/source> — PASS | BLOCK
+-### Maintenance signal: <last release, archived> — PASS | FLAG
++### Maintenance signal: <last release, archived> — PASS | FLAG (MEDIUM)
+ ### Known CVEs: N critical, N high — PASS | BLOCK
+-### Supply chain: <install script: yes/no; notes> — PASS | FLAG
++### Supply chain: <install script: yes/no; notes> — PASS | BLOCK
+ ```
+ 
+ and the gate-status BLOCK arm worded `BLOCK (N CRITICAL, N HIGH; do not install)` — an install,
+--- baseline/core/surface/commands/doctor.md
++++ current/core/surface/commands/doctor.md
+@@ -49,7 +49,7 @@
+    Pi bash wrapper. The exact shared-core `[H-03]` block is healthy and cannot stage files; execution
+    or a different block is unhealthy. This self-test does not traverse Pi's active dispatcher. Do not
+    rerun or respell it.
+-4. Its `active-dispatch` row remains degraded because supported Pi 1.1.0 public extension
++4. Its `active-dispatch` row remains degraded because supported Pi 1.5.0 public extension
+    APIs cannot submit that deterministic call through the active dispatcher. PI-AC-28 remains blocked
+    until supported-version real-host promotion/CI evidence closes the gap.
+ 5. Resolve Python once, run `{{PLUGIN_ROOT}}/hooks/doctor.py`, and present its mechanical report
+--- baseline/core/surface/commands/status.md
++++ current/core/surface/commands/status.md
+@@ -70,6 +70,15 @@
+ 5. **Overrides since last checkpoint** — entries in `{{PROJECT_DIR}}/.codearbiter/overrides.log`
+    newer than the marker in `{{PROJECT_DIR}}/.codearbiter/last-checkpoint`.
+ 6. **Current branch** — from git.
++7. **Interrupted workflow follow-ups** — resolve the installed
++   `hooks/workflow-recovery.py` using the helper card above, then run `scan`.
++   Report pending, claimed and unavailable entries from this bounded page.
++   A `partial` result is a lower bound with an opaque cursor; offer selected
++   further pages rather than claiming a complete backlog count. An absent
++   ledger means no registered obligations, not that historical work completed.
++   Unreadable, unknown-version or interrupted state stays unavailable with its
++   reason and explicit recovery route. Status never invokes `repair`, `resume`,
++   promotion, completion, staging, issue publication, or a notice-marker write.
+ 
+ ## Output
+ 
+@@ -84,6 +93,7 @@
+ Open tasks:       N
+ Open questions:   N ([CONFIRM-NN] unresolved)
+ Overrides since last checkpoint: N
++Workflow recovery: <this page's pending/claimed/unavailable; complete/partial/unavailable>
+ ```
+ 
+ No specs and no plans → `Pipelines: none`.
+--- baseline/core/surface/includes/command-compatibility.md
++++ current/core/surface/includes/command-compatibility.md
+@@ -10,10 +10,10 @@
+ registry declaration and matching payload version.
+ A tag alone, a draft, unavailable API evidence, or any tag/Release/payload mismatch does not start a
+ clock. Published releases ca 2.16.0, ca-codex 0.8.0, and ca-pi 0.9.0 predate this registry and do not
+-contain the compatibility metadata. ca retains these routes through every 2.x release, with no removal
+-before a separately approved 3.0.0. ca-codex and ca-pi retain them through every later 0.x release,
+-with no removal before a separately approved 1.0.0. Passing a version floor never authorizes removal:
+-removal needs a new governed decision and fresh compatibility evidence.
++contain the compatibility metadata.
++
++{{FACT:compatibility-removal-rule}}
++
+ ## Explicitly retired capability: skill authoring
+ 
+ The maintainer explicitly approved removal of `new-skill` and `skill-author` on
+--- baseline/core/surface/includes/farm.md
++++ current/core/surface/includes/farm.md
+@@ -421,3 +421,15 @@
+ or an unreadable replacement test cannot be repaired by another model call. The task retains its actual
+ attempt, written-file and known-usage evidence, without commit or acceptance bypass.
+ This does not add process resume, a provider fallback or a new approval checkpoint.
++
++
++### Effect recovery and new attempts
++
++Run identities are exclusive. An existing `FARM_RUN_ID` is refused before any stream is truncated. A fresh run also refuses an existing integration branch, task branch or worktree; it never force-resets or pre-cleans another run's resources. A new author attempt needs an explicit new run identity, unused task/resource identities and a distinct integration branch where the previous one still exists.
++
++Exit 3 means report publication failed; completed author commits and integration effects may already exist. Inspect `.farm/runs/<run-id>/effects/` and run `node "{{PLUGIN_ROOT}}/tools/farm.js" --recover-receipt <run-id>` from the same repository with the same `FARM_REPORT_DIR`. This path observes recorded branch/commit/tree identities, writes an independent recovered receipt and never calls an author, resets refs, deletes worktrees or replaces the original stream/report. Unknown or changed identities remain unknown. Cleanup and report publication are independent from observed merge success; an incomplete cleanup cannot become recovered green.
++
++Gate reports preserve command exit, timeout and containment independently. Unverified process-tree cleanup stops reset/retry on the affected worktree; ordinary nonzero gate failures and verified-clean timeouts keep their retry policy. Failed or malformed Git drift observations are unavailable after bounded read-only retry and cannot authorize dependent mutation. Independent task resources retain their own outcomes.
++
++
++Effect journals have their own `artifacts.effects.complete` and `errors` fields. A journal publication failure keeps receipt debt visible, drains independently running tasks, and exits 3 even when the final report JSON/Markdown can still be written. Streaming completeness remains a separate observation in `artifacts.stream`; a complete JSONL is not relabeled incomplete because a different receipt failed. Inspect/recover retained identities before choosing any new author attempt.
+--- baseline/core/surface/includes/pi-host-notes.md
++++ current/core/surface/includes/pi-host-notes.md
+@@ -63,6 +63,23 @@
+ - Author and reviewer work uses fresh child Pi processes through
+   `codearbiter_dispatch`. Single, chain, and parallel modes share bounded depth,
+   concurrency, timeout, cancellation, output, and process-tree cleanup.
++- Author children request exact `write`, `edit`, and `bash` operations from the
++  interactive parent. The parent checks current trust, mode, lifecycle, source
++  ownership, tool policy and any required consent before executing each request.
++  This trusted-host profile does not confine project commands at the operating
++  system level. Reviewer children remain read-only; a child judgment is separate
++  from the parent's observed effects.
++- Delegation records survive in the Git-common journal, but authority does not
++  survive a parent restart. Reconcile unknown outcomes before a new operation;
++  never replay an old grant. An unverified process stop holds affected resources,
++  while independent authorized work can continue. Missing parent UI, revoked
++  authority, unavailable executor, unknown journal state and unverified cleanup
++  remain distinct degraded reasons. Neither a handshake nor the private artifact
++  approval prompt proves author capability or installed-host qualification.
++- Registered workflow follow-ups have a separate bounded recovery notice. A
++  generic child report without the parent's exact producer/work context reports
++  `durable:false`; retained report text is not a durable recovery obligation.
++  Status and notices do not promote work or restore permission.
+ - `/ca-sprint --farm` remains Feature Forge `preview`. Pi's parent calls the one
+   checked-in `plugins/ca/tools/farm.js` contract. No Pi-specific farm engine is
+   shipped, and ordinary child environments never receive `FARM_API_KEY`.
+@@ -87,7 +104,11 @@
+   operator-launched Pi CLI, imported module, package root, and reported version.
+   It does not prove publisher authenticity. Verify the source separately with
+   `pi list` and `pi config`.
+-- The supported promotion target is exact Pi 1.1.0. The package is
++- Source and fixture tests establish only their observed paths. Final package
++  qualification also needs the exact installed runtime/package, real parent
++  interaction and resulting target readback; source-only success is not a
++  released or fully qualified author workflow.
++- The supported promotion target is exact Pi 1.5.0. The package is
+   published as `npm:@arbiterforge/ca-pi` on every `ca-pi-v*` tag (ADR-0029);
+   the pinned Git tag remains the reproducible install. A Pi-native embedded
+   farm worker is a future spike, not an installed dependency.
+--- baseline/core/surface/includes/security-gate-record.md
++++ current/core/surface/includes/security-gate-record.md
+@@ -24,7 +24,12 @@
+ AND matches the exact staged candidate being committed. There is no time window: a pass stays
+ valid only while that complete staged diff remains byte-for-byte the independently reviewed
+ candidate. Any added, removed, moved, or changed row blocks, so a pass recorded for one diff cannot
+-launder a later, different change.
++launder a later, different change. That includes an unrelated staged edit to a non-sensitive file:
++the binding is the whole staged candidate, not only its sensitive lines. A commit form that can
++absorb unstaged content (for example `git commit -a`) is blocked only when the candidate touches a
++guarded pattern; stage the reviewed candidate explicitly and commit that. The producer's success
++records the outcome of the review you performed; it does not itself prove a semantic reviewer PASS,
++and a binary override, an attributed `/override`, and a reviewer PASS stay distinct records.
+ 
+ On any BLOCK, self-review, unreadable candidate, stale result, or wrong-worktree result, do **not**
+ record the pass — the commit stays blocked until the finding is resolved and the independent gate
+--- baseline/core/surface/skills/subagent-driven-development/references/farm-dispatch.md
++++ current/core/surface/skills/subagent-driven-development/references/farm-dispatch.md
+@@ -93,10 +93,14 @@
+ startup on `cannot lock ref 'refs/heads/farm/integration'`.
+ 
+ Exit code 0 = all green; exit code 2 = some tasks escalated, blocked, or the run was aborted;
+-**exit code 3 = the run's authoritative, run-scoped report could not be published in full.** Exit 3 is a
++**exit code 3 = the run's authoritative effect/report receipts could not be published in full.** Exit 3 is a
+ RECEIPT failure, not a task failure — the tasks may all have been green — and it means this run's
+-durable record is missing or incomplete. Treat the run as unverified and re-dispatch; do not accept
+-tasks off a run that exited 3. Inspect `.farm/runs/<run-id>/` for whatever did land before discarding.
++receipt is missing or incomplete. Preserve completed commits/merges and inspect `.farm/runs/<run-id>/effects/`.
++Run `node <plugin>/tools/farm.js --recover-receipt <run-id>` from the same repository/report root.
++This reconciles exact recorded Git identities and writes a separate recovered receipt without invoking an
++author, resetting refs or deleting resources. Unknown effects/cleanup remain unknown. Do not automatically
++redispatch or discard completed work after exit 3. A new author attempt needs an explicit new run and
++unused task/worktree/branch identities; existing runs and resources are refused rather than pre-cleaned.
+ 
+ A failure to refresh the top-level **latest** pointer is *not* exit 3 — that pointer is explicitly
+ non-authoritative. The run settles on its task outcome and prints a `WARNING:` naming what could not be
+@@ -112,8 +116,8 @@
+ ## Step 2.5 — Circuit-breaker abort
+ 
+ If `farm-report.json` has `aborted: true`, the dispatcher tripped its escalation-rate breaker — the
+-chosen model is likely not capable of this slice. This is a hard-gate surface: STOP and tell the user,
+-recommending the premium path or a different `FARM_MODEL`. Do not silently re-dispatch every task to
++recorded escalation threshold was reached. Inspect task-level causes and tell the user what was observed.
++A breaker trip alone establishes neither model incapability nor a premium dispatch or cost. Do not silently re-dispatch every task to
+ premium Phase 2 (that defeats the backend's purpose and hides a bad signal).
+ 
+ ## Step 2.6 — Streaming consumption contract
+@@ -166,3 +170,6 @@
+ 
+ Gate: every task is green AND passed Phases 3–5, or was re-dispatched via premium Phase 2 and accepted.
+ No task advances to commit-gate while any sibling is unresolved.
++
++
++Effect-receipt debt is reported as `artifacts.effects.complete: false`; it does not discard completed task outcomes or terminate independent in-flight work. The scheduler drains those tasks and preserves their observed commits/results before returning receipt failure. Read `artifacts.stream.complete` independently: effect-journal failure does not imply missing stream lines. Final report files may exist even when effect publication remains incomplete.

@@ -1,0 +1,11 @@
+{
+  "state": "CAPTURE_SEALED_RELEASE_SOURCE_HOLD",
+  "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+  "exit_code": 0,
+  "seconds": 1.2419933000055607,
+  "PASS": 67,
+  "positive_inputs": 29,
+  "runtime_records": 1905,
+  "source_tree": "75c056788eae3c323d76add34ec9742f2214f119",
+  "HEAD_index_source_runtime_namespaces_stable": true
+}

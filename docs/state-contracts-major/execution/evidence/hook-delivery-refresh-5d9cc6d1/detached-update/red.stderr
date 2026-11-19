@@ -1,0 +1,41 @@
+test_detached_refresh_does_not_write_installed_bytecode (test_session_start.TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode)
+The detached interpreter needs its own no-bytecode flag, not ours. ... 
+  test_detached_refresh_does_not_write_installed_bytecode (test_session_start.TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode) (oracle='interpreter flag')
+The detached interpreter needs its own no-bytecode flag, not ours. ... FAIL
+  test_detached_refresh_does_not_write_installed_bytecode (test_session_start.TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode) (oracle='installed inventory')
+The detached interpreter needs its own no-bytecode flag, not ours. ... FAIL
+
+======================================================================
+FAIL: test_detached_refresh_does_not_write_installed_bytecode (test_session_start.TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode) (oracle='interpreter flag')
+The detached interpreter needs its own no-bytecode flag, not ours.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-detached-update-bytecode-fix-3uh3ltcl\candidate\plugins\ca\hooks\tests\test_session_start.py", line 1445, in test_detached_refresh_does_not_write_installed_bytecode
+    self.assertTrue(report["dont_write_bytecode"],
+    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+                    "detached Python lost no-bytecode protection")
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: False is not true : detached Python lost no-bytecode protection
+
+======================================================================
+FAIL: test_detached_refresh_does_not_write_installed_bytecode (test_session_start.TestSpawnBackgroundUpdateRefresh.test_detached_refresh_does_not_write_installed_bytecode) (oracle='installed inventory')
+The detached interpreter needs its own no-bytecode flag, not ours.
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-detached-update-bytecode-fix-3uh3ltcl\candidate\plugins\ca\hooks\tests\test_session_start.py", line 1448, in test_detached_refresh_does_not_write_installed_bytecode
+    self.assertEqual(after, before, "detached import mutated the installed payload")
+    ~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+AssertionError: {'hoo[181 chars]2032', 'hooks/__pycache__/bytecode_fixture.cpy[77 chars]953'} != {'hoo[181 chars]2032'}
+- {'hooks/__pycache__/bytecode_fixture.cpython-314.pyc': '2cd2d68c792e257ab3f20ff14dafe5eedff5590e463432833b44c6d84775b953',
+-  'hooks/bytecode_fixture.py': 'ef1e9d26465de68e130033eba397547c9f4bb184ab95f3dee5214759adb8e568',
+? ^
+
++ {'hooks/bytecode_fixture.py': 'ef1e9d26465de68e130033eba397547c9f4bb184ab95f3dee5214759adb8e568',
+? ^
+
+   'hooks/update-refresh.py': 'bf803f694716c32e7a90a921f533c965ceb7b355f7e589901b557b27ed8f2032'} : detached import mutated the installed payload
+
+----------------------------------------------------------------------
+Ran 1 test in 0.054s
+
+FAILED (failures=2)

@@ -1,0 +1,13 @@
+{
+  "format": "codearbiter.artifact-release/0.1.0",
+  "version": "0.1.0",
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "schema_version": "0.3.2",
+  "binaries": {
+    "windows/amd64": {
+      "file": "ca-artifact-windows-amd64.exe",
+      "sha256": "f9749e71484d2fcffd5b69908f288ccea6cab18ceb85667202980e52e75f40c8",
+      "native_tested": true
+    }
+  }
+}

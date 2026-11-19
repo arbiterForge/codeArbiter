@@ -1,0 +1,80 @@
+{
+  "format": "source-report-and-audit-development/1",
+  "execution_controller_head": "10087c10259df0ea2662329b0c06396cf7e7cb97",
+  "source_semantics": "Uncommitted proposed source is bound by actual per-file candidate/working-tree hashes; no claim that this modified code is the immutable10087 tree.",
+  "receipts": [
+    {
+      "kind": "audit_target_red",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-installed-audit-platform-test-r7sfs0p3/delivery.json",
+      "sha256": "be68e27126ab6323422f418ed52034657e732907c751a8bc0f1f3f96e9f8b23b",
+      "bytes": 6295
+    },
+    {
+      "kind": "audit_three_green",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-audit-platform-green-j0eb28mc/result.json",
+      "sha256": "fe486689e691ad8b3f2053061321633202b39c4096e74d50b956729f1b0c5011",
+      "bytes": 1713
+    },
+    {
+      "kind": "producer_delivery",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-six-producer-9srdlumh\\delivery.json",
+      "sha256": "eb0d36fa54165de885985da655ca6dd13f310b6786c137f58f2058e367f0d10a",
+      "bytes": 6522
+    },
+    {
+      "kind": "producer_compatibility",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-python-six-producer-9srdlumh\\delivery-addendum.json",
+      "sha256": "71200aa6abc3a76ca298c7a44cc6c6c476ba882101f2fe6d9f9a4cb4d169fe41",
+      "bytes": 2157
+    },
+    {
+      "kind": "component_four",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-four-component-executed-delivery-21fyiw2p/delivery.json",
+      "sha256": "b3a5b455032fc62b6d1aaba75de2053a1f8ff5537207cdba752065fddd132046",
+      "bytes": 2765
+    },
+    {
+      "kind": "component_types",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-four-component-owning-tsc-yh7c2z5h/delivery.json",
+      "sha256": "45faf32f3b93e7054c7cb27e79a6b60ae9ae2e8c62677f14c3ce374a629d6b22",
+      "bytes": 3402
+    },
+    {
+      "kind": "component_fullfiles",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-four-component-fullfiles-qp5ao5w6/delivery.json",
+      "sha256": "9e6ddca8a26bb595f2d64f1834052e96fa09e301214f1a2eb054e3a8de733229",
+      "bytes": 9606
+    },
+    {
+      "kind": "working_source_pre_tag",
+      "private_receipt": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\qualification-pretag.json",
+      "sha256": "c816d4f75b2afebade4310f115608da5b1dcbd2760fae00adfe11bd6dd08ab18",
+      "bytes": 6532
+    },
+    {
+      "kind": "original_failed_10087",
+      "private_receipt": "C:/Users/brenn/AppData/Local/Temp/ca-PR1114-10087c-watch-af_ybia5/terminal-failure-receipt.json",
+      "sha256": "c43135cdc3204b285963ed5706574b516e82797ba5e9727a4491b219c975c408",
+      "bytes": 19119
+    }
+  ],
+  "observed_checks": {
+    "source_report_ordinary_tests": 39,
+    "excluded_unchanged_native_method": 1,
+    "readiness_and_git_compatibility_tests": 88,
+    "audit_pure_methods": 3,
+    "component_intended_fullfile_tests": 59,
+    "component_incidental_sibling_tests": 17,
+    "component_typecheck_projects": 2,
+    "working_source_pre_tag_targets": 4
+  },
+  "bounds": [
+    "These counts are separate inspected runs, not a claimed unique summed population.",
+    "Audit target reproduced331 controlled dynamic probes and the original closed RecursionError category. sys.platform avoids discovery inside the guard; unknown-process/network/escape and Darwin hash/mode controls pass. Original hosted OS-probe occurrence remains UNKNOWN.",
+    "Source-test profile is exactly176 committed input paths; prepare/observe are tokenless and original two Python entrypoints execute once. Producer uses current numeric job/completed upload-step metadata without its own unavailable log; final readiness authenticates both original source/report uploader logs and final whole-success trust.",
+    "New canonical local-read Git environment removes metadata credentials and environment-config injection; existing ordinary Git/hook defaults remain unchanged. Three host copies match; actual88 compatibility tests pass.",
+    "Original component setup/leaf-resolution failure and incidental17 sibling selections are retained; no test/config weakening or false RED.",
+    "No ledger/status/task/native/installed/user/model/publication promotion. Final source freshness renewal and a successful trusted normal run remain required."
+  ],
+  "primary_runtime_source": "https://raw.githubusercontent.com/python/cpython/v3.14.10/Lib/platform.py"
+}

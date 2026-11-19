@@ -7,22 +7,25 @@ Each script runs as its own process with the inherited environment, so
 fixtures stay isolated while the runner's cores are used. A script after
 `--interpreter-env VAR` runs under the interpreter named by that environment
 variable (for example the locked conformance virtualenv). Every suite's full
-output is printed as its own group. The run fails unless every suite exits 0,
-reports `OK` and ran at least one test; a suite that exceeds the timeout is
+output is printed as its own group. The run fails unless every suite exits 0
+and each observed unittest run reports `OK` and ran at least one test;
+a suite that exceeds the timeout is
 terminated and reported with its partial output.
 """
 from __future__ import annotations
 
 import concurrent.futures
+import math
 import os
 from pathlib import Path
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
 
 RAN = re.compile(r"(?m)^Ran (\d+) tests? in ")
-RESULT_OK = re.compile(r"(?m)^OK(?: \(.*\))?\s*$")
+RESULT = re.compile(r"(?m)^(OK|FAILED)(?: \([^\r\n]*\))?[ \t]*\r?$")
 TIMEOUT_SECONDS = float(os.environ.get("CONCURRENT_SUITE_TIMEOUT_SECONDS", "1800"))
 
 
@@ -72,17 +75,30 @@ def problems(code: int, output: str) -> list[str]:
     found = []
     if code != 0:
         found.append(f"exited {code}")
-    ran = RAN.findall(output)
-    if not ran or int(ran[-1]) == 0:
+    ran = list(RAN.finditer(output))
+    if not ran or any(int(summary.group(1)) == 0 for summary in ran):
         found.append("ran no tests")
-    if not RESULT_OK.search(output):
-        found.append("did not report OK")
+    verdicts = list(RESULT.finditer(output))
+    # A script can execute several unittest runners and still exit zero after
+    # a failure. Every count must have its own following successful verdict;
+    # an earlier OK cannot qualify a later failure or missing verdict.
+    if (not ran or len(verdicts) != len(ran)
+            or any(verdict.group(1) != "OK" or verdict.start() < summary.end()
+                   or (index + 1 < len(ran) and verdict.end() > ran[index + 1].start())
+                   for index, (summary, verdict) in enumerate(zip(ran, verdicts)))):
+        found.append("did not report OK for every unittest summary")
     return found
 
 
 def main(argv: list[str]) -> int:
     try:
         suites = parse(argv)
+        if not math.isfinite(TIMEOUT_SECONDS) or TIMEOUT_SECONDS <= 0:
+            raise ValueError("suite timeout must be finite and positive")
+        unavailable = sorted({interpreter for interpreter, _ in suites
+                              if shutil.which(interpreter) is None})
+        if unavailable:
+            raise ValueError(f"suite interpreters not available: {unavailable}")
     except ValueError as error:
         print(f"concurrent suites: {error}", flush=True)
         return 2

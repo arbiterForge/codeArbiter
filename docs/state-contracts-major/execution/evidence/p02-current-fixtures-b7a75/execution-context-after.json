@@ -1,0 +1,40 @@
+{
+  "HEAD": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "tracked_status": " M docs/state-contracts-major/execution/coverage-ledger.json\n M docs/state-contracts-major/execution/progress.json\n",
+  "progress.json": {
+    "working": {
+      "sha256": "f3e732fedac19e1cf04d7397df91740f44c51db9071957b9e02abfca0f7001e9",
+      "size_bytes": 157671,
+      "new_transition_rows": 47
+    },
+    "fixture_immutable_Git": {
+      "sha256": "8fe7d4f0404bcb575f0ea1fb546d7f2daaaac682df21a79850ea11958c31785e",
+      "size_bytes": 153744,
+      "new_transition_rows": 44
+    }
+  },
+  "coverage-ledger.json": {
+    "working": {
+      "sha256": "04b3be8782457fdb2a014ec9ebc0295b015118f3602cd383b18057487697eafc",
+      "size_bytes": 785930,
+      "added_transition_count": 47,
+      "all_group_counts": {
+        "findings": 70,
+        "machines": 287,
+        "transitions": 1748,
+        "added_transitions": 47
+      }
+    },
+    "fixture_immutable_Git": {
+      "sha256": "4399180728e0a057107c7cd401910705a2750fdbd4256b54ea1fa38d879c7e41",
+      "size_bytes": 687435,
+      "added_transition_count": 44,
+      "all_group_counts": {
+        "findings": 70,
+        "machines": 287,
+        "transitions": 1748,
+        "added_transitions": 44
+      }
+    }
+  }
+}

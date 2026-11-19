@@ -1,0 +1,29 @@
+{
+  "schema": "codearbiter-introduced-transition-proposal/1",
+  "state": "PROPOSED_TEMP_ONLY",
+  "source_commit": "89d6f9cf29c03a955f40904bbffbe61dfe668a5c",
+  "transitions": [
+    {
+      "transition_id": "FARM-REGISTRATION-OBSERVATION:01",
+      "owner": "farm",
+      "machine_id": "S30",
+      "task_ids": [
+        "FARM-R01"
+      ],
+      "treatment": "INTRODUCED_REGISTRATION_OBSERVATION_REFUSAL",
+      "contract": {
+        "from": "owned removal attempted; registry comparison/readback pending",
+        "event": "Git registry read or physical identity observation unavailable",
+        "guard": "stillRegistered returns null: nonzero list result, canonicalization EACCES/EIO/other failure, or no successful physical-ancestor observation",
+        "to": "cleanup unverified",
+        "effects": "Return ok:false at the current attempt with bounded registration-unavailable diagnostic. Unknown never authorizes subsequent prune/removal or a false absence claim. A prior proven registered+genuine-absent observation may already have authorized one prune before readback becomes unknown.",
+        "failure_retry": "Stop this cleanup attempt without another destructive retry; preserve unresolved ownership and independent work/receipt outcomes. No author invocation or schema/API change."
+      },
+      "source_refs": [
+        "89d6f9cf29c03a955f40904bbffbe61dfe668a5c:plugins/ca/tools/farm.ts#samePath/stillRegistered/removeWorktreeVerified"
+      ],
+      "component_scope": "Farm registration/owned-path identity; real local Windows Git/junction controls and injected observation failures, not a real unmount or cross-platform qualification.",
+      "rationale": "Analytical edge for the new internal null/physical-ancestor guard. It complements the existing filesystem-unknown refusal; it does not add a runtime operation, native/public schema, workflow or authority."
+    }
+  ]
+}

@@ -365,6 +365,11 @@ describe("#455 loopback inference broker", () => {
     await broker.close();
     await expect(fetch(`${baseUrl}/chat/completions`, { method: "POST", body: "{}" })).rejects.toThrow();
     await expect(broker.close()).resolves.toBeUndefined();
+    const { InferenceBrokerError } = await loadImplementation();
+    expect(() => broker.authorize({
+      nonce: NONCE_A, baseUrl: "https://api.example/v1", credential: PLANTED_UPSTREAM_LITERAL,
+      containsSensitiveValue: containsPlantedValue,
+    })).toThrow(InferenceBrokerError);
   });
 
   test("refuses an upstream authority that is not a bare credential-free endpoint", async () => {
@@ -688,4 +693,107 @@ describe("#455 loopback inference broker", () => {
     ]);
     for (const error of socketErrors) expect(error.code).toBe("ECONNRESET");
   });
+
+  test("ADR-0049 refuses direct HTTP authority outside the existing literal loopback", async () => {
+    const { InferenceBrokerError } = await loadImplementation();
+    for (const baseUrl of [
+      "http://gateway.example/v1",
+      "http://10.0.0.1/v1",
+      "http://192.168.1.20/v1",
+      "http://169.254.1.1/v1",
+      "http://0.0.0.0/v1",
+      "http://localhost:8931/v1",
+      "http://127.0.0.1.example:8931/v1",
+      "http://127.1:8931/v1",
+      "http://2130706433:8931/v1",
+      "http://0x7f000001:8931/v1",
+      "http://127%2e0%2e0%2e1:8931/v1",
+      "http://127.0.0.2:8931/v1",
+    ]) {
+      const broker = await brokerFor(NONCE_A);
+      expect(() => broker.authorize({
+        nonce: NONCE_A, baseUrl, credential: PLANTED_UPSTREAM_LITERAL,
+        containsSensitiveValue: containsPlantedValue,
+      })).toThrow(InferenceBrokerError);
+      // A refused authority leaves the actual local listener unauthorized. It
+      // must never fall back to the built-in catalog or contact the input URL.
+      const response = await fetch(`${broker.baseUrl}/chat/completions`, {
+        method: "POST", headers: { Authorization: `Bearer ${broker.token}` }, body: "{}",
+      });
+      expect(response.status).toBe(503);
+      const body = await response.text();
+      expect(body).toContain("codeArbiter inference broker");
+      for (const value of [baseUrl, PLANTED_UPSTREAM_LITERAL, broker.token]) expect(body).not.toContain(value);
+      await broker.close();
+    }
+  });
+
+  test("ADR-0049 retains HTTPS authority and the actual numeric loopback exception", async () => {
+    const broker = await brokerFor(NONCE_A);
+    // Admission only: .example names are never resolved or requested here.
+    for (const baseUrl of [
+      "https://gateway.example/v1",
+      "https://my-resource.openai.azure.com/openai/deployments/GPT4-Prod",
+      "https://gateway.ai.cloudflare.com/v1/Acct123/My-Gateway/openai",
+      "http://127.0.0.1:8931/v1",
+    ]) {
+      expect(() => broker.authorize({
+        nonce: NONCE_A, baseUrl, credential: PLANTED_UPSTREAM_LITERAL,
+        containsSensitiveValue: containsPlantedValue,
+      })).not.toThrow();
+    }
+  });
+
+  test("ADR-0049 refuses child-visible external HTTP downgrade before exposing Location or body", async () => {
+    for (const status of [301, 302, 303, 307, 308]) {
+      for (const location of ["http://downgrade.example/v1", "//downgrade.example/v1"]) {
+      const upstream = await startRawUpstream((_request, response) => {
+        response.writeHead(status, { Location: location, "Content-Type": "text/plain" });
+        response.end("controlled redirect body must not cross");
+      });
+      openUpstreams.push(upstream.server);
+      const broker = await brokerFor(NONCE_A, upstream.baseUrl);
+      const response = await fetch(`${broker.baseUrl}/chat/completions`, {
+        method: "POST", headers: { Authorization: `Bearer ${broker.token}` }, body: "{}",
+        // This observation never follows a relayed Location on the old source.
+        // It therefore cannot contact the .example target while proving RED.
+        redirect: "manual",
+      });
+      expect(upstream.requests).toBe(1);
+      // Relative-to-origin URLs inherit the CHILD response's HTTP scheme,
+      // rather than the operator upstream's potentially HTTPS scheme.
+      expect(new URL(location, broker.baseUrl).protocol).toBe("http:");
+      expect(response.status).toBe(502);
+      expect(response.headers.get("location")).toBeNull();
+      const body = await response.text();
+      expect(body).toContain("codeArbiter inference broker");
+      expect(body.length).toBeLessThanOrEqual(256);
+      for (const value of [location, "controlled redirect body", PLANTED_UPSTREAM_LITERAL, broker.token]) {
+        expect(body).not.toContain(value);
+      }
+      await broker.close();
+      }
+    }
+  });
+
+  test("ADR-0049 preserves existing HTTPS and harmless relative redirect responses", async () => {
+    for (const location of ["https://redirect.example/v1", "/v1/next", "next"]) {
+      const payload = "ordinary redirect response";
+      const upstream = await startRawUpstream((_request, response) => {
+        response.writeHead(302, { Location: location, "Content-Type": "text/plain" });
+        response.end(payload);
+      });
+      openUpstreams.push(upstream.server);
+      const broker = await brokerFor(NONCE_A, upstream.baseUrl);
+      const response = await fetch(`${broker.baseUrl}/chat/completions`, {
+        method: "POST", headers: { Authorization: `Bearer ${broker.token}` }, body: "{}", redirect: "manual",
+      });
+      expect(upstream.requests).toBe(1);
+      expect(response.status).toBe(302);
+      expect(response.headers.get("location")).toBe(location);
+      expect(await response.text()).toBe(payload);
+      await broker.close();
+    }
+  });
+
 });

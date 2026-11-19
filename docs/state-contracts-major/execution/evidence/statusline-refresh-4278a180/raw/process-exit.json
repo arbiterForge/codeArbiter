@@ -1,0 +1,16 @@
+{
+  "argv": [
+    "C:/Python314/python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-successor-tgna0199\\run-selected.py",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-successor-tgna0199"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-statusline-refresh-successor-tgna0199",
+  "exit_code": 0,
+  "seconds": 0.6087136999994982,
+  "stdout_sha256": "8aeb5864576af0c48a71f6837cbdf18c0ab7cd775abf0cc42ea0e200e147b398",
+  "stderr_sha256": "e585af2ff6dca2b4850d1d3e2dca04d65df051480a109dcd95f78a447b551693"
+}

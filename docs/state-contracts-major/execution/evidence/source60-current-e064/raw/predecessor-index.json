@@ -1,0 +1,371 @@
+{
+  "proofs": [
+    {
+      "leaf": "old-proof-01.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+      "sha256": "7c282a3da04c46ebfaa2815dd96fb74ec7d16ab51bfe24cc849feb4671e46e76",
+      "original_source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+      "transport_sha256": "9ebab322041bf8c570398913790f9a12320de24132692196cab689f80e0157ab"
+    },
+    {
+      "leaf": "old-proof-02.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+      "sha256": "b40b72a1f5042ac35939d784bf2f7248049e32c0b72e363504f7b263191e7a2e",
+      "original_source_commit": "31e200feffac4179cf6782b70a5c683a436b345d",
+      "transport_sha256": "715b3daf046cdb9dc9672d2def7364f8e67060d4f984ca3e774b4a7d15ecd89f"
+    },
+    {
+      "leaf": "old-proof-03.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+      "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c",
+      "original_source_commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+      "transport_sha256": "b5a9f000e995ac68eff18de944e7221dc09ac2b99b1c69ec8ec977bb0ac67041"
+    },
+    {
+      "leaf": "old-proof-04.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+      "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+      "original_source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+      "transport_sha256": "38dbb60b1295459490b6d73827cbed1263357f0b444e8a2976fa617796dda98f"
+    },
+    {
+      "leaf": "old-proof-05.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "sha256": "8457d9c426be7d0783eb02da9aad8ce3f28dd8b96b893bb2c9d36e44ee5696d7",
+      "original_source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+      "transport_sha256": "bc9989c49b75715d6f33a7c20dddab1a72b5dd694e3513e6b4037480dc2603f5"
+    },
+    {
+      "leaf": "old-proof-06.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "sha256": "195c9076bed95d272c360b2deb2244422974258a4f51aa91dbb38a574bcade4f",
+      "original_source_commit": "7fc1ea8ce8cf9b9b7108aeaff522ac9d080c7383",
+      "transport_sha256": "93d77356797a6708bc1be930ee4bdf8ceff03d4685464ab546d1ca9b7b386ed6"
+    },
+    {
+      "leaf": "old-proof-07.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "sha256": "8a9931380882e91b25d1ea4155f48de82017a94b18284689be75e3be4985cea2",
+      "original_source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "transport_sha256": "6f4c72f12226e548f7dd26f894bb0563aafde95d273a0dbd4afdd6b930bbe54d"
+    },
+    {
+      "leaf": "old-proof-08.json",
+      "original_path": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+      "sha256": "1c6366f58abc34737f3c1093657a0dc8012d8d833cbbb8de0e67b95e47c02651",
+      "original_source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "transport_sha256": "4da6308662c9008d8e39ddb62e0f792ec1f6b953b1a928defde2ab3a029ce16c"
+    }
+  ],
+  "original_raw_refs_authenticated": [
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/status-owner-result.json",
+      "sha256": "cd083c4f5643a38278f96b4e1d76c14db0aebf5b6d3e8c361113172230a5803b",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/required-policy-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/source-decision-reconciliation.json",
+      "sha256": "0771e674c70da32b660ed704e9c3f679f16d3b677cbd9ecbf69ba818c10c4128",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+      "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/status-owner-result.json",
+      "sha256": "cd083c4f5643a38278f96b4e1d76c14db0aebf5b6d3e8c361113172230a5803b",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/retired-advisory-pretag.json",
+      "path": "docs/state-contracts-major/execution/evidence/adr48-policy-reconciliation-31e/source-decision-reconciliation.json",
+      "sha256": "0771e674c70da32b660ed704e9c3f679f16d3b677cbd9ecbf69ba818c10c4128",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/inspection.json",
+      "sha256": "77f5d617c5e85ee9becc6fe2ef42d6a1e8b6367a7feae47ee3fe56916bfe1cd6",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/source-joins.json",
+      "sha256": "ebbe4af65cb5c9feb18592adb9d3e63fbde8252b56157e1a7ce6e7cf48aaaf6b",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/action-step-comparison.json",
+      "sha256": "086e4707589fcb3340b25731e5272724431127d25dcd424258b4f0c0a94d9f29",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/frozen-11-rows.json",
+      "sha256": "cf0f38b363ef13a1c67e13735589b64cf236457d7eac8a837ea4696b0cb3f9c2",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/input-binding-and-definitions.json",
+      "sha256": "970cd32020cd9141aba16f9b495c0dba83e7a0e9086241b853e3e5b52dc1446f",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/inspection.json",
+      "sha256": "2c3902f29f6d4f6ede26aee2732c2150c9997f7dab5cc63699a8f8f45a0f0429",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/original-6fe-marketplace-excerpt.json",
+      "sha256": "80e2baf1bea8e97734979e6d443aa6565b88ecb403b1993fb30255c5c9a23b54",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/original-channel-runtime-source-join.json",
+      "sha256": "8436519e770a2e0b69887431b64f3bfe6678a5f4ba636e78175f3359020c458a",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/receipt-shell-final-trace.json",
+      "sha256": "07b2d5a733480d4d0bb8e2b2e02a32f1575794a1933b32144d07521690ea3c12",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/receipt-shell-final.json",
+      "sha256": "b74dd90ced2cb0588572dbcb98549c85cb6a77ede124bd05994da6402dc2255a",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/receipt-shell-final.stderr",
+      "sha256": "2f9ab16b7e3b4b20cb5d82b551fba965177f49fe8e809fd445dafb5f31765b34",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/raw/receipt-shell-preservation.json",
+      "sha256": "91299ce021fac3fde6be6ba553049013dbb29df3d72abf171a78bced73663798",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/named-results.json",
+      "sha256": "4e93ffd578a4c3d966b9945ccd6aef63d592dd9ddc71be000bb9313449f59caa",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/release-family-preserved-9e3b2ea5/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/release-receipt-current-74057/raw/command.json",
+      "sha256": "618130214c7aeac817f0263111eadd3eb999d4be0949d456387d3fd889ce441d",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+      "sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-command-result.json",
+      "sha256": "70ba8d527e49901a8da14843feb818ffc58afb58cbac8236d6d0e4a68860c976",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-run-start.json",
+      "sha256": "63b5cd45e07c861694e5c10d69f30c717f7fcbf54deccc5287ef791380061118",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-selection.json",
+      "sha256": "de51e9e33a747bec8715722e5a90aaed0b1d1876724752c8c1caa5a0b239b635",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/execution-origins.json",
+      "sha256": "c4d6240a13cb20f64a643d5ff4d3593e78d6921b56c72fc3496b1957f512bbee",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-actual-vitest-exit.json",
+      "sha256": "dbef206991ff4fde1a31f991058d45d9b1e38c2fbd2b6edd6e9b25a3b93b58e5",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-actual-vitest-result.json",
+      "sha256": "6f482e8e83fbb8b6d24afc4cb263594156c5adee210fa889cce3b93ed9fdac0c",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-delivery-vitest-successor.json",
+      "sha256": "2088cd0c55cfed91eb7712f8f24d860d471346d008965023ba0cb9499d95c550",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/sandbox-vitest-verify.config.mjs",
+      "sha256": "97e3476639d5a5d3583c50255c7eb8e4220e6f3132162848f27b90651fe4766e",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/raw/source-input-join.json",
+      "sha256": "c0f2c6e7be9efd2bc7ef4ee480070699a776130dbd605bac412d04622a2864be",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+      "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/post-intake-deltas-9e3b2ea5/sandbox-cache-cancel-tested.json",
+      "sha256": "23af831046adc0cade86896e2914df97dcae411297131aeb9658006a0b7c03cc",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/raw/final-cancel-id-GREEN.json",
+      "sha256": "1958bddf98e9dbaf02b50247423fff055e6c36b42a68f3084964c20414e78fdd",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/raw/final-cancel-id-command.json",
+      "sha256": "0d1d184f190a5cd183298cce79a99c8c16c0067e82e39e13167f8e25ec0b7fb9",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/raw/final-cancel-id.stdout",
+      "sha256": "b55532240ea91ccecc84875a8f4cad91ca965cca239f5bea531971d563d6f103",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/raw/final-cancel-id.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/raw/final-cancel-id-coverage.json",
+      "sha256": "0e3504b3df9e0329e2b40c06cdff62d813190e1728c4e040c9d7b29daaadf04f",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/raw/final-cancel-id-preservation.json",
+      "sha256": "0be094e04f12779407ee586b39d3663e4a27d3447586e69041e6e85c1a0be628",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/input-join.json",
+      "sha256": "1146ff244acf80d99c9d4ff091f14d53bb40b09d29ec5d0c20372fc8a129a119",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-S48-current-7fc1ea8c/source-inspection.json",
+      "sha256": "74e819bdc041438ea0cc413f6ea893df069863250522bdb4f45d58c4029850de",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/impact-planner-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/inspection.json",
+      "sha256": "0e80a53fd8c7ac14f17fe1b4ab3fa467597a83546beb2d99cdbe79fe13553a02",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    },
+    {
+      "owning_proof": "docs/state-contracts-major/execution/evidence/tooling18-split-d594/concurrent-direct-child-preserved.json",
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56",
+      "retained_at_commit": "e0642aeb4b708ca5e62831638adb548b000f8bca",
+      "reuse": "Existing immutable raw history only; not copied into new nested paths or re-executed."
+    }
+  ],
+  "transport": "New containers UTF8/LF; original bytes including CRLF preserved losslessly and original refs remain unchanged."
+}

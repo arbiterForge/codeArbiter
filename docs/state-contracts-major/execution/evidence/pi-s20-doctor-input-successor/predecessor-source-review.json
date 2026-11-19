@@ -1,0 +1,340 @@
+{
+  "state": "FRESH_FINITE_SOURCE_REVIEW_HISTORICAL_COMPONENT_SUPPORT_NOT_INSTALLED_QUALIFICATION",
+  "reviewer": "/root/pi_program",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "source_join": {
+    "plugins/ca-pi/tools/src/command-ownership.ts": {
+      "current_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/src/commands.ts": {
+      "current_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/src/notices.ts": {
+      "current_sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/src/path-boundary.ts": {
+      "current_sha256": "1cee1fe111e84b87930e58833e7ad6e749e2f12a966367dddb321c9f81801d1e",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/src/redaction.ts": {
+      "current_sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca/tools/redactor.ts": {
+      "current_sha256": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/src/contracts.ts": {
+      "current_sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": false
+    },
+    "plugins/ca-pi/tools/src/extension.ts": {
+      "current_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": false
+    },
+    "plugins/ca-pi/tools/test/commands.test.ts": {
+      "current_sha256": "5a831ecae4a0613808d5fb5c95687ed5dd8a8a42fe61189dc85ea1c5686ecdf3",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/test/notices.test.ts": {
+      "current_sha256": "c192dd669a18b1dbcbc5b09d3581112c21587cf102b87028b51917a0d81eccd9",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/test/setup-disposable-home.ts": {
+      "current_sha256": "768c65b5a03877e16ba9a81f758ccaf8173f28363573aafcd85dab1cc4be6e53",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/tools/vitest.config.ts": {
+      "current_sha256": "bea41c8f465ce1a6f78de62b8a85e560ee03214c6ede6ee5309f1600f8222e9d",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca/hooks/secret-detection-corpus.json": {
+      "current_sha256": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": true
+    },
+    "plugins/ca-pi/generated/command-catalog.json": {
+      "current_sha256": "4fc24af4e491ea49ca0442f407efa84361a2c7bad93d89efaeb4ddd34febf944",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": false
+    },
+    "plugins/ca-pi/package.json": {
+      "current_sha256": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+      "run_source_bytes_equal": true,
+      "frozen_baseline_equal": false
+    }
+  },
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S20:01",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "register command",
+        "guard": "catalog/skill/extension canonical ownership exact",
+        "to": "owned",
+        "effects": "Register only eligible surfaced commands; preserve native replacements.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+            "symbol": "ownership inspection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+            "lines": "1-201"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/commands.ts",
+            "symbol": "command adapters",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+            "lines": "1-129"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/notices.ts",
+            "symbol": "deduplicated notices",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+            "lines": "1-81"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/doctor.ts",
+            "symbol": "doctor facts and outcome",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+            "lines": "1-502"
+          }
+        ],
+        "from": "unregistered",
+        "transition_id": "S20:01"
+      },
+      "contract_sha256": "71a284a7fd334e201d7dcbc9bd96a7717910d6f5384c0a15db5e6d8689a84452",
+      "inspected_source_clauses": "commandCatalogEntries closes keyed catalog/visibility/workflow/alias closure; registerAliases validates each admitted own skill path. Ownership checks require canonical declared extension and skill files, reject missing/duplicate/foreign/suffixed owners. Native plan/jobs use their separately owned controllers and are not claimed executed by ordinary alias expansion.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 116,
+          "end": 193,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+          "start": 38,
+          "end": 201,
+          "file_sha256": "2d2024b57f32b47d42b785afe8a44624b2f67513a9697cd8e18c4e684b7021e6"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/commands.ts",
+          "start": 78,
+          "end": 129,
+          "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases expands only the generated in-package skill through the public API and preserves args",
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases fails visibly instead of reading a missing or out-of-package skill",
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases rechecks complete ownership inside an alias and sends nothing after a late collision"
+      ],
+      "limits": "Generated package fixture command catalog and fake ParentPiPort component only. No proof of actual installed complete command population or native lifecycle execution."
+    },
+    {
+      "cell": "disposition:transitions:S20:03",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "read succeeds",
+        "guard": "valid body",
+        "to": "prompt queued",
+        "effects": "sendUserMessage as follow-up; this queues workflow text rather than executing its claimed lifecycle.",
+        "failure_retry": "No post-await lease recheck at this adapter boundary; source ownership was checked before await.",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+            "symbol": "ownership inspection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+            "lines": "1-201"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/commands.ts",
+            "symbol": "command adapters",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+            "lines": "1-129"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/notices.ts",
+            "symbol": "deduplicated notices",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+            "lines": "1-81"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/doctor.ts",
+            "symbol": "doctor facts and outcome",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+            "lines": "1-502"
+          }
+        ],
+        "from": "invocation loading",
+        "transition_id": "S20:03"
+      },
+      "contract_sha256": "43b575c81c66134930f331970a21d634d4a49d74c7fc7d2fa96e1c890d85c6e9",
+      "inspected_source_clauses": "Strictly decoded owned skill body is frontmatter-stripped and rejects closing skill injection before nativeSkillExpansion. After optional generated content resolves, sendUserMessage(...,{deliverAs:followUp}) queues content; no workflow action is executed here. No post-await lease/ownership recheck exists in this unchanged adapter; the frozen failure_retry limitation is explicitly retained.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/commands.ts",
+          "start": 45,
+          "end": 129,
+          "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases expands only the generated in-package skill through the public API and preserves args"
+      ],
+      "limits": "Actual component captures exact skill envelope/args/followUp only. Not workflow completion, plan approval, current-lease continuation, user consent or host UI proof."
+    },
+    {
+      "cell": "disposition:transitions:S20:04",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "read/ownership failure",
+        "guard": "guard fails",
+        "to": "degraded",
+        "effects": "Report actionable command failure and retain degraded flag; no workflow prompt success.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+            "symbol": "ownership inspection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+            "lines": "1-201"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/commands.ts",
+            "symbol": "command adapters",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+            "lines": "1-129"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/notices.ts",
+            "symbol": "deduplicated notices",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+            "lines": "1-81"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/doctor.ts",
+            "symbol": "doctor facts and outcome",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+            "lines": "1-502"
+          }
+        ],
+        "from": "invocation loading",
+        "transition_id": "S20:04"
+      },
+      "contract_sha256": "229b9b5b105a8642becba631599d028a388c457deefcc6234f623c9690f58879",
+      "inspected_source_clauses": "Entry ownership, fallback identity, canonical in-package path, symlink/regular file/UTF8/closing-tag checks throw into one catch. Catch sets retained commandInvocationDegraded callback/status and notifies /ca-doctor; no sendUserMessage in refusal path. Parent installs callback retaining degraded state.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/commands.ts",
+          "start": 96,
+          "end": 129,
+          "file_sha256": "4abab741132cfa844ec4de89ade8f117bc248a90972797dda3f53718efa8c6d8"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 627,
+          "end": 639,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases fails visibly instead of reading a missing or out-of-package skill",
+        "vitest:plugins/ca-pi/tools/test/commands.test.ts:generated Pi command aliases rechecks complete ownership inside an alias and sends nothing after a late collision"
+      ],
+      "limits": "Named tests prove missing/injected/outside path and late collision send nothing and notify. Retained degraded parent callback control flow is inspected source; not every filesystem failure injected."
+    },
+    {
+      "cell": "disposition:transitions:S20:05",
+      "proposed_status": "PRESERVED",
+      "frozen_clause": {
+        "event": "append notice",
+        "guard": "normalized rule/body ID not already present",
+        "to": "same + notice",
+        "effects": "Deduplicate owned notice identity; bounded 16KiB projection.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-pi/tools/src/command-ownership.ts",
+            "symbol": "ownership inspection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/command-ownership.ts",
+            "lines": "1-201"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/commands.ts",
+            "symbol": "command adapters",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/commands.ts",
+            "lines": "1-129"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/notices.ts",
+            "symbol": "deduplicated notices",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/notices.ts",
+            "lines": "1-81"
+          },
+          {
+            "path": "plugins/ca-pi/tools/src/doctor.ts",
+            "symbol": "doctor facts and outcome",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-pi/tools/src/doctor.ts",
+            "lines": "1-502"
+          }
+        ],
+        "from": "any notice set",
+        "transition_id": "S20:05"
+      },
+      "contract_sha256": "f9b855b16bd8f548ff40cf689df563fd2527cf71d2add9678ea8305282490876",
+      "inspected_source_clauses": "Notice/warn only. Normalize/redact body and rule, hash rule+NUL+body, require owned version/id/text marker for duplicate identity. Exact duplicate adds nothing; changed same-rule and distinct context remain separate. Code-point-safe UTF8 projection caps entire owned block at16000 bytes including marker/truncation text.",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/notices.ts",
+          "start": 1,
+          "end": 81,
+          "file_sha256": "48fa54e675837ad0b06ea68e053d72cce734294131eb72b144de608d5f4e697c"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/redaction.ts",
+          "start": 1,
+          "end": 96,
+          "file_sha256": "661a80a80cf818ddc7e8c088d7ede3ccd4e5e1a572c9b799e2e5aa3e61ab6742"
+        }
+      ],
+      "component_support_selectors": [
+        "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices deduplicates exact identities but retains same-rule changes and distinct read contexts",
+        "vitest:plugins/ca-pi/tools/test/notices.test.ts:Pi governed result notices redacts at the boundary and caps the complete owned block at 16000 UTF-8 bytes"
+      ],
+      "limits": "Actual component tests assert dedup differences, redaction and UTF8 cap. Content projection only, no shared recovery settlement, grant, or independent UI delivery assertion."
+    }
+  ],
+  "withheld": [
+    {
+      "id": "S20:02",
+      "reason": "Frozen live-entry lease/bounded UTF8-read wording is not established by the ordinary alias adapter: ownership only, strictUtf8 whole readFileSync. Trace maintained acceptance/caller/package-read trust separately; no inferred defect or source edit."
+    },
+    {
+      "id": "S20:06",
+      "reason": "Doctor-production group not reviewed by this packet."
+    },
+    {
+      "id": "S20",
+      "reason": "No whole-machine preservation while02/06 remain open."
+    }
+  ],
+  "unrelated_conflict": "S10/S11 endpoint ADR/CON004 decision remains pending; no endpoint/method/body/token semantics assessed or changed here.",
+  "actual_new_checks": "Only literal immutable-Git/source/AST-body hash comparisons and finite source inspection. No tests, package replay, artifact download, host effects or source/index/ledger writes."
+}

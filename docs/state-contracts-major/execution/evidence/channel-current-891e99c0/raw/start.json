@@ -1,0 +1,75 @@
+{
+  "source_commit": "891e99c0a139b510eb8fb175886f6044b4c8d4a8",
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-channel-current-891e-yaorda9_\\observe-channel.py"
+  ],
+  "semantic_test_selection": [
+    "test_marketplace_git_channels.ClaudeChannelTests.test_channel_carries_the_native_payload_under_the_git_subdir_path",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_channel_refuses_to_roll_back",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_newer_version_advances_as_a_descendant",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_package_without_native_payload_is_refused",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_push_response_loss_recovers_only_by_readback_without_repush",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_readback_finds_the_promotion_after_the_channel_moved_on",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_readback_never_pushes",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_rerun_with_identical_inputs_is_a_no_op",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_same_version_with_different_bytes_is_refused",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_unknown_current_channel_version_cannot_advance",
+    "test_marketplace_git_channels.ClaudeChannelTests.test_version_must_match_the_qualified_manifest",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_default_git_mode_pins_the_channel_to_the_immutable_dist_tag",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_git_mode_needs_no_npm_package",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_readback_finds_the_channel_promotion_after_a_newer_release",
+    "test_marketplace_git_channels.CodexGitChannelTests.test_readback_refuses_a_distribution_tag_the_channel_never_promoted",
+    "test_marketplace_git_channels.UncertainPushTests.test_conflicting_or_unobservable_readback_never_retries"
+  ],
+  "environment": {
+    "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+    "GIT_OPTIONAL_LOCKS": "0",
+    "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-channel-current-891e-yaorda9_\\home",
+    "PATH": "C:/Program Files/Git/cmd;C:/Windows/System32",
+    "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+    "PYTHONDONTWRITEBYTECODE": "1",
+    "PYTHONIOENCODING": "utf-8",
+    "SYSTEMROOT": "C:\\WINDOWS",
+    "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+    "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-channel-current-891e-yaorda9_\\home",
+    "WINDIR": "C:\\WINDOWS"
+  },
+  "runtime": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "runtime_executable_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "inputs_before": {
+    "physical": {
+      ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+      "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+    },
+    "immutable_Git": {
+      ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+      "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21"
+    }
+  },
+  "index_sha256_before": "63b2ef06b3470768008665cb337fca33df1730772fc89c154c8d5d597f0fdb29",
+  "observer_sha256": "759f0b491f7c3fb235a0db845e802f4a7d8eb6243e66645bd6bef7f6f2262cee"
+}

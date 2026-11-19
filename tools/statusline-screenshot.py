@@ -20,6 +20,7 @@ reconstruction is available); session age falls back to the mock transcript's fi
 timestamp (no session metadata exists for the mock id).
 """
 import datetime
+import hashlib
 import html
 import json
 import os
@@ -28,6 +29,7 @@ import subprocess
 import sys
 import tempfile
 import time
+from owned_output import publish_files
 
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 SL = os.path.join(ROOT, "plugins", "ca", "hooks", "statusline.py")
@@ -39,126 +41,150 @@ def iso(ts):
         "%Y-%m-%dT%H:%M:%S.000Z")
 
 
-scratch = tempfile.mkdtemp(prefix="ca-shot-")
+def render_statusline(entry, payload, env):
+    result = subprocess.run([sys.executable, entry], input=json.dumps(payload).encode(),
+                            capture_output=True, env=env, timeout=30)
+    if result.returncode != 0:
+        raise ValueError('statusline renderer failed; illustration not produced')
+    text = result.stdout.decode('utf-8', 'strict')
+    if not re.sub(r'\x1b\[[0-9;]*m', '', text).strip():
+        raise ValueError('statusline renderer returned empty output')
+    return text
 
 
-def write_tx(path, turns, prefix):
-    """A mock transcript: one assistant usage record per turn, no conversation."""
-    with open(path, "w", encoding="utf-8") as f:
-        for k, (off, i, cw, cr, out) in enumerate(turns):
-            f.write(json.dumps({
-                "type": "assistant", "timestamp": iso(now - off * 60), "requestId": f"{prefix}{k}",
-                "message": {"model": "claude-opus-4-8", "usage": {
-                    "input_tokens": i, "cache_read_input_tokens": cr,
-                    "cache_creation_input_tokens": cw,
-                    "cache_creation": {"ephemeral_5m_input_tokens": cw, "ephemeral_1h_input_tokens": 0},
-                    "output_tokens": out}}}) + "\n")
+def main():
+    with tempfile.TemporaryDirectory(prefix='ca-shot-') as scratch:
+        def write_tx(path, turns, prefix):
+            """A mock transcript: one assistant usage record per turn, no conversation."""
+            with open(path, "w", encoding="utf-8") as f:
+                for k, (off, i, cw, cr, out) in enumerate(turns):
+                    f.write(json.dumps({
+                        "type": "assistant", "timestamp": iso(now - off * 60), "requestId": f"{prefix}{k}",
+                        "message": {"model": "claude-opus-4-8", "usage": {
+                            "input_tokens": i, "cache_read_input_tokens": cr,
+                            "cache_creation_input_tokens": cw,
+                            "cache_creation": {"ephemeral_5m_input_tokens": cw, "ephemeral_1h_input_tokens": 0},
+                            "output_tokens": out}}}) + "\n")
 
 
-tx = os.path.join(scratch, "tx.jsonl")
-write_tx(tx, [  # (offset_min, input, cache_write_5m, cache_read, output)
-    (62, 800, 6000, 20000, 1800),
-    (44, 1500, 10000, 35000, 2800),
-    (20, 2000, 16000, 48000, 4200),
-    (3, 1200, 13000, 60000, 4400),
-], "r")
+        tx = os.path.join(scratch, "tx.jsonl")
+        write_tx(tx, [  # (offset_min, input, cache_write_5m, cache_read, output)
+            (62, 800, 6000, 20000, 1800),
+            (44, 1500, 10000, 35000, 2800),
+            (20, 2000, 16000, 48000, 4200),
+            (3, 1200, 13000, 60000, 4400),
+        ], "r")
 
-# An earlier session today, rendered once through the real ledger first, so
-# "Today" > "Session" from genuine reconstructed state (never a hand-built ledger).
-earlier = os.path.join(scratch, "earlier.jsonl")
-write_tx(earlier, [(300, 4000, 40000, 90000, 9000), (240, 3000, 30000, 150000, 8000),
-                   (90, 5000, 50000, 200000, 8000)], "e")
-ledp = os.path.join(scratch, "ledger.json")
+        # An earlier session today, rendered once through the real ledger first, so
+        # "Today" > "Session" from genuine reconstructed state (never a hand-built ledger).
+        earlier = os.path.join(scratch, "earlier.jsonl")
+        write_tx(earlier, [(300, 4000, 40000, 90000, 9000), (240, 3000, 30000, 150000, 8000),
+                           (90, 5000, 50000, 200000, 8000)], "e")
+        ledp = os.path.join(scratch, "ledger.json")
 
-payload = {
-    "session_id": "demo-shot", "transcript_path": tx,
-    "model": {"display_name": "Opus 4.8", "id": "claude-opus-4-8"},
-    "effort": {"level": "high"},
-    "context_window": {"used_percentage": 41, "context_window_size": 1000000},
-    "cost": {"total_cost_usd": 4.20, "total_lines_added": 312, "total_lines_removed": 47},
-    "workspace": {"current_dir": ROOT.replace("\\", "/"),
-                  "repo": {"owner": "arbiterForge", "name": "codeArbiter"}},
-    "rate_limits": {"five_hour": {"used_percentage": 22, "resets_at": int((now + 1.8 * 3600) * 1000)},
-                    "seven_day": {"used_percentage": 31, "resets_at": int((now + 3.2 * 86400) * 1000)}},
-}
-env = dict(os.environ, CODEARBITER_LEDGER=ledp, CODEARBITER_WIDTH="118", PYTHONUTF8="1")
-subprocess.run([sys.executable, SL], capture_output=True, env=env, input=json.dumps(
-    {"session_id": "earlier-am", "transcript_path": earlier}).encode())
-ansi = subprocess.run([sys.executable, SL], input=json.dumps(payload).encode(),
-                      capture_output=True, env=env).stdout.decode("utf-8", "replace")
+        payload = {
+            "session_id": "demo-shot", "transcript_path": tx,
+            "model": {"display_name": "Opus 4.8", "id": "claude-opus-4-8"},
+            "effort": {"level": "high"},
+            "context_window": {"used_percentage": 41, "context_window_size": 1000000},
+            "cost": {"total_cost_usd": 4.20, "total_lines_added": 312, "total_lines_removed": 47},
+            "workspace": {"current_dir": ROOT.replace("\\", "/"),
+                          "repo": {"owner": "arbiterForge", "name": "codeArbiter"}},
+            "rate_limits": {"five_hour": {"used_percentage": 22, "resets_at": int((now + 1.8 * 3600) * 1000)},
+                            "seven_day": {"used_percentage": 31, "resets_at": int((now + 3.2 * 86400) * 1000)}},
+        }
+        env = dict(os.environ, CODEARBITER_LEDGER=ledp, CODEARBITER_WIDTH="118", PYTHONUTF8="1")
+        render_statusline(SL, {"session_id": "earlier-am", "transcript_path": earlier}, env)
+        ansi = render_statusline(SL, payload, env)
 
-# --- ANSI (truecolor SGR) -> HTML spans ---
-SGR = re.compile(r"\033\[([0-9;]*)m")
+        # --- ANSI (truecolor SGR) -> HTML spans ---
+        SGR = re.compile(r"\033\[([0-9;]*)m")
 
 
-def line_html(s):
-    cur = {"fg": None, "bg": None, "b": False, "d": False}
-    out, buf = [], ""
+        def line_html(s):
+            cur = {"fg": None, "bg": None, "b": False, "d": False}
+            out, buf = [], ""
 
-    def style():
-        st = []
-        if cur["fg"]: st.append(f"color:{cur['fg']}")
-        if cur["bg"]: st.append(f"background:{cur['bg']}")
-        if cur["b"]: st.append("font-weight:700")
-        if cur["d"]: st.append("opacity:.62")
-        return ";".join(st)
+            def style():
+                st = []
+                if cur["fg"]: st.append(f"color:{cur['fg']}")
+                if cur["bg"]: st.append(f"background:{cur['bg']}")
+                if cur["b"]: st.append("font-weight:700")
+                if cur["d"]: st.append("opacity:.62")
+                return ";".join(st)
 
-    def flush():
-        nonlocal buf
-        if buf:
-            out.append(f'<span style="{style()}">{html.escape(buf)}</span>')
-            buf = ""
+            def flush():
+                nonlocal buf
+                if buf:
+                    out.append(f'<span style="{style()}">{html.escape(buf)}</span>')
+                    buf = ""
 
-    i, n = 0, len(s)
-    while i < n:
-        m = SGR.match(s, i)
-        if m:
+            i, n = 0, len(s)
+            while i < n:
+                m = SGR.match(s, i)
+                if m:
+                    flush()
+                    parts = (m.group(1) or "0").split(";")
+                    j = 0
+                    while j < len(parts):
+                        p = parts[j] or "0"
+                        if p == "0": cur = {"fg": None, "bg": None, "b": False, "d": False}
+                        elif p == "1": cur["b"] = True
+                        elif p == "2": cur["d"] = True
+                        elif p == "38" and parts[j+1:j+2] == ["2"]:
+                            cur["fg"] = f"rgb({parts[j+2]},{parts[j+3]},{parts[j+4]})"; j += 4
+                        elif p == "48" and parts[j+1:j+2] == ["2"]:
+                            cur["bg"] = f"rgb({parts[j+2]},{parts[j+3]},{parts[j+4]})"; j += 4
+                        j += 1
+                    i = m.end()
+                else:
+                    buf += s[i]; i += 1
             flush()
-            parts = (m.group(1) or "0").split(";")
-            j = 0
-            while j < len(parts):
-                p = parts[j] or "0"
-                if p == "0": cur = {"fg": None, "bg": None, "b": False, "d": False}
-                elif p == "1": cur["b"] = True
-                elif p == "2": cur["d"] = True
-                elif p == "38" and parts[j+1:j+2] == ["2"]:
-                    cur["fg"] = f"rgb({parts[j+2]},{parts[j+3]},{parts[j+4]})"; j += 4
-                elif p == "48" and parts[j+1:j+2] == ["2"]:
-                    cur["bg"] = f"rgb({parts[j+2]},{parts[j+3]},{parts[j+4]})"; j += 4
-                j += 1
-            i = m.end()
-        else:
-            buf += s[i]; i += 1
-    flush()
-    return "".join(out)
+            return "".join(out)
 
 
-body = "\n".join(line_html(ln) for ln in ansi.splitlines())
-doc = f"""<!doctype html><html><head><meta charset="utf-8"><style>
- html,body{{margin:0;background:#08080c}}
- .wrap{{display:inline-block;padding:22px 24px;background:#0d0d13;border-radius:10px}}
- pre{{margin:0;white-space:pre;font-size:15px;line-height:1.32;letter-spacing:0;
-   font-family:'Cascadia Mono','Cascadia Code','Consolas','DejaVu Sans Mono',monospace;
-   color:#e8e8f0;-webkit-font-smoothing:antialiased}}
-</style></head><body><div class="wrap"><pre>{body}</pre></div></body></html>"""
-htmlp = os.path.join(scratch, "shot.html")
-open(htmlp, "w", encoding="utf-8").write(doc)
+        body = "\n".join(line_html(ln) for ln in ansi.splitlines())
+        doc = f"""<!doctype html><html><head><meta charset="utf-8"><style>
+         html,body{{margin:0;background:#08080c}}
+         .wrap{{display:inline-block;padding:22px 24px;background:#0d0d13;border-radius:10px}}
+         pre{{margin:0;white-space:pre;font-size:15px;line-height:1.32;letter-spacing:0;
+           font-family:'Cascadia Mono','Cascadia Code','Consolas','DejaVu Sans Mono',monospace;
+           color:#e8e8f0;-webkit-font-smoothing:antialiased}}
+        </style></head><body><div class="wrap"><pre>{body}</pre></div></body></html>"""
+        htmlp = os.path.join(scratch, "shot.html")
+        with open(htmlp, "w", encoding="utf-8") as html_file:
+            html_file.write(doc)
 
-default_out = os.path.join(ROOT, "site", "public", "diagrams", "statusline.png")
-os.makedirs(os.path.dirname(default_out), exist_ok=True)
-outp = os.environ.get("SHOT_OUT", default_out)
-from playwright.sync_api import sync_playwright
-with sync_playwright() as p:
-    b = p.chromium.launch()
-    pg = b.new_context(device_scale_factor=2).new_page()
-    pg.goto("file:///" + htmlp.replace("\\", "/"))
-    pg.wait_for_timeout(250)
-    pg.query_selector(".wrap").screenshot(path=outp)
-    b.close()
+        default_out = os.path.join(ROOT, "site", "public", "diagrams", "statusline.png")
+        outp = os.environ.get("SHOT_OUT", default_out)
+        from playwright.sync_api import sync_playwright
+        with sync_playwright() as p:
+            b = p.chromium.launch()
+            try:
+                pg = b.new_context(device_scale_factor=2).new_page()
+                pg.goto("file:///" + htmlp.replace("\\", "/"))
+                pg.wait_for_timeout(250)
+                staged = os.path.join(scratch, "shot.png")
+                pg.query_selector(".wrap").screenshot(path=staged)
+                with open(staged, 'rb') as image:
+                    data = image.read()
+                if not data.startswith(b"\x89PNG\r\n\x1a\n") or len(data) <= 8:
+                    raise ValueError('browser did not produce a nonempty PNG')
+                outp = os.path.abspath(outp)
+                output_root = os.path.dirname(outp)
+                os.makedirs(output_root, exist_ok=True)
+                with open(SL, 'rb') as renderer_source:
+                    renderer_hash = hashlib.sha256(renderer_source.read()).hexdigest()
+                record = json.dumps({'kind':'illustration',
+                    'data':'synthetic transcripts and payload; actual renderer',
+                    'source_sha256':renderer_hash}, sort_keys=True).encode('utf-8')
+                publish_files(output_root, 'statusline-illustration', {outp:data, outp+'.json':record})
 
-for f in (tx, ledp, htmlp):
-    try: os.remove(f)
-    except OSError: pass
-try: os.rmdir(scratch)
-except OSError: pass
-print(f"wrote {os.path.relpath(outp, ROOT)}")
+            finally:
+                b.close()
+        print(f'wrote {os.path.relpath(outp, ROOT)}')
+    return 0
+
+
+if __name__ == '__main__':
+    raise SystemExit(main())

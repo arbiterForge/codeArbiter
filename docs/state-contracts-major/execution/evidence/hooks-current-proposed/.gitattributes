@@ -1,0 +1,2 @@
+# Preserve original observed evidence bytes and hashes.
+* -text whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol

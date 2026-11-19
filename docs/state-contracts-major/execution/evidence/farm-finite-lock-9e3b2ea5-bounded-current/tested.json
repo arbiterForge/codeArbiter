@@ -1,0 +1,300 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/sandbox_qualification; finite current guard/effect/retry and original named-path applicability joins"
+  },
+  "inputs": {
+    "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.test.ts": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm.js": "bac2ae71c9371b36f8291a60d4190d91b358ce88df9d81e69c1c9651f67cad24",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "0dda0868c34a6ddaf70edd3fc9bfaf1edb0d8746b40d3f4b92b8eb28c5283f88",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/plan-contract.test.ts": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+    "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+    "plugins/ca/tools/farm-dist.test.ts": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+    "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+    "plugins/ca/tools/state-contracts.test.ts": "01e536885cc3d51c97fa378c0e8368cdf8454c73e1c1ea24af325b2eaeeace69",
+    "plugins/ca/tools/.env.example": "753100c15653ae97e5971f72cce14be88ebdc56b62b5286998d748da26024d11",
+    "plugins/ca/tools/artifact-manifest.test.ts": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd",
+    "plugins/ca/tools/farm-cleanup-observation.test.ts": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+    "plugins/ca/tools/farm-interruption.test.ts": "e6b2346fd4bfdbadf58512421e455f65c35f7c1f7d0285cf820886da90dd56ef",
+    "plugins/ca/tools/farm-recovery.test.ts": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead",
+    "plugins/ca/tools/farm-surface.test.ts": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+    "plugins/ca/tools/redactor.test.ts": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d",
+    "plugins/ca/tools/farm-registry-lock.test.ts": "d6f199817ec65626d3e369225d3c84a30a46a3297ef7d72fc6f8ed3f2875ca93",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "plugins/ca/hooks/secret-detection-corpus.json": "3c13059896890da1ecc5c55dde0460877ddee96bcc2c6ec256bb3235495bc88d"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S22:01",
+    "disposition:transitions:S23:02",
+    "disposition:transitions:S23:03",
+    "disposition:transitions:S23:04",
+    "disposition:transitions:S23:05",
+    "disposition:transitions:S23:06",
+    "disposition:transitions:S23:09",
+    "disposition:transitions:S23:10",
+    "disposition:transitions:S23:11",
+    "disposition:transitions:S23:12",
+    "disposition:transitions:S24:01",
+    "disposition:transitions:S24:04",
+    "disposition:transitions:S24:05",
+    "disposition:transitions:S24:06",
+    "disposition:transitions:S24:07",
+    "disposition:transitions:S24:08",
+    "disposition:transitions:S24:09",
+    "disposition:transitions:S24:10",
+    "disposition:transitions:S24:11",
+    "disposition:transitions:S24:12",
+    "disposition:transitions:S24:13",
+    "disposition:transitions:S24:14",
+    "disposition:transitions:S25:01",
+    "disposition:transitions:S25:07",
+    "disposition:transitions:S26:03",
+    "disposition:transitions:S29:02",
+    "disposition:transitions:S29:03",
+    "disposition:transitions:S29:05",
+    "disposition:transitions:S30:02",
+    "disposition:transitions:S30:03",
+    "disposition:transitions:S30:04",
+    "disposition:transitions:S30:05",
+    "disposition:transitions:S31:06",
+    "disposition:transitions:S32:01",
+    "disposition:transitions:S32:02",
+    "disposition:transitions:S32:03",
+    "disposition:transitions:S32:04",
+    "disposition:transitions:S32:07",
+    "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01",
+    "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01",
+    "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/current-selected-observations.json",
+      "sha256": "182047ac98d237197618836b154679b1e14829b57e8544a0c1535a04e5ef37f1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/execution-origin.json",
+      "sha256": "0e358b797f3e876d03c4dd08b5e6d89818bfdf68339861352ca6243f2c6a89fa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/scoped-clause-delta.json",
+      "sha256": "3f4862f8871b1e17c807682e73a09c3120db8bed3dbda95f365d28abfa0ca501"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/raw/selected-named-observations.json",
+      "sha256": "9ba86136b2d49dc599cacb783f37420d0a40c97d65c9b4d71750db10c62095d4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/execution-origins.json",
+      "sha256": "c9b9e4e096ebaf6d203a34af09fa4dc4cdfa5f7e52fdc96fe3b048e46af66ac3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/source-clause-catalog.json",
+      "sha256": "444ae0dd6cc088826de5802d552220b80bb40c2ea3be1953910a5390451d1a8a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/input-cones.json",
+      "sha256": "ae0a3897b943158cca7b3079573e24559ab4d17c1422235968335c1704c51c0e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/after.json",
+      "sha256": "127a827f01fb60e9d3fb19d3bd0d19a396d042986bc8626dc56fa72b7cff0f53"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/before.json",
+      "sha256": "9f98dfa4887b4135c9721c1c23f27bf8f9c34d0b8bfafe73b1def8745b27534a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/characterization-three.json",
+      "sha256": "a5a24d6bb6750789953c33fa6fdcd065556521821ddef34488bbde121e359e23"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/commands.json",
+      "sha256": "2c65dbc614963896982cd7786769e423159f0e8787c9397d07dae8d3619c7ca4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/context-after-run-check.json",
+      "sha256": "cdea818c3e5929888f2393c0198893106f80dc6c63826c36bab97fc3248362e1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/delivery.txt",
+      "sha256": "2ed62e3fb6a9bdbf08d322d2c86595ad8abc702552c93d0ab5c99848106c544c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/final-three.json",
+      "sha256": "4bf34629675837fc1e8dcddda499bb05fcaa53dd077e06d37eec55cf3c674687"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/missing-final-report-negative.json",
+      "sha256": "3eadc9106389a3ee4428fbf0f8a39f8548b3d03e84453add5172364c3dae4768"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/obligations.json",
+      "sha256": "60f5593e1789e0965a190d2a10bfcf491dd6be093803542f4245f86c830e3780"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/observe.py",
+      "sha256": "7783393ceae12f88c1198ea557653e5769c6e56ba7376ee2337a6fd3a3bf4394"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/source-freeze.json",
+      "sha256": "228bb8c39a07d7de84f125a2662e316baaea140e9cfe7f0cc1f08e12d98967a5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/typecheck.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-outer-error-5768/raw/typecheck.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/introduced-late-drift-edge.json",
+      "sha256": "6f1450da8b43d0999a8877ec5b51e388e7683206b290af4af0ee0edc54244fb9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/red-tests.json",
+      "sha256": "56d8639a75ad577c56818bce5421f0eae4cd765883e3ac779e1c785b3dee9abd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/red-result.json",
+      "sha256": "392172c620d8baa2e3d9cb9100db0408585d4a788383b89f4a1c3c3461e74913"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/green-tests.json",
+      "sha256": "98d7876f0cd7b0a48cff3c2adfcea78e36c57fb85bbea096c5ae5db7d3f311af"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm63-late-drift-successors/raw/green-result.json",
+      "sha256": "7d04f50369d481e5a26efd84138ac772da01afec07d1fb5496a3b84baa34c6f1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/current-clause-map.json",
+      "sha256": "7789517bb9955c1e81fed3b4a9474a66bdbb77fc030355db6ba7b943a4dc21e1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/input-join.json",
+      "sha256": "42603a6a6fd78957e7b7e822e9a45a28d42f2026dcb2964232f862dacef6ffc7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/lock-original-facts.json",
+      "sha256": "131e58d4a219699200f21b674dba2716bae92eedcb7c5baf0fe5081122c1a19b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/function-delta.json",
+      "sha256": "b45223eee40f159c5511c01c4c102c53fc8a4cf058f408b59b8fe2d723157ee4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-finite-lock-9e3b2ea5-bounded-current/specific-delta-joins.json",
+      "sha256": "9396b04098748306caf88be44f32336d53897e046a828cb6e75df2a1d4e03d2e"
+    }
+  ],
+  "commands": [
+    {
+      "mode": "coverage",
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:/Program Files/nodejs/node_modules/npm/bin/npm-cli.js",
+        "run",
+        "coverage",
+        "--",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\coverage-tests.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+      "started_utc": "2026-11-14T02:57:42.795034+00:00",
+      "finished_utc": "2026-11-14T03:02:06.211665+00:00",
+      "seconds": 263.4215792999603,
+      "exit_code": 0,
+      "before_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "after_HEAD": "0ea1984c0d9a823a7198cdccd09dd45e2a4d2aca",
+      "full_input_count": 29,
+      "input_changes": [],
+      "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+      "node_version": "v24.22.1",
+      "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+    },
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-interruption.test.ts",
+        "--testNamePattern",
+        "real outer branch-creation failure|unblocked real post-merge hook control",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\final-three.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-outer-failure-acceptance-8c90psyy\\candidate\\plugins\\ca\\tools",
+      "exit_code": 0
+    },
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\overlay\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-registry-lock.test.ts",
+        "farm.test.ts",
+        "farm.unit.test.ts",
+        "-t",
+        "#397:|#515 worktree registry serialization|cross-process Farm worktree administration",
+        "--maxWorkers=1",
+        "--coverage",
+        "--coverage.reporter=json",
+        "--coverage.reporter=text-summary",
+        "--coverage.reportsDirectory=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-coverage",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\final-focused.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-registry-lock-u9wil_k6\\overlay\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "seconds": 12.583219299907796,
+      "node_executable_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "node_version": "v24.22.1",
+      "stdout_sha256": "6021dffd3719137523362416d04b894e69c72095d166384f6e0ab2ce63fb8820",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\overlay\\plugins\\ca\\tools\\node_modules\\vitest\\vitest.mjs",
+        "run",
+        "farm-registry-lock.test.ts",
+        "--reporter=json",
+        "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\seven.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-lock-fixture-portability-fi9naqqs\\overlay\\plugins\\ca\\tools",
+      "exit_code": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "seconds": 4.826452600071207,
+      "stdout_sha256": "eaaf516462768059bec20625a1e7235a41cbe4a147eee39d41e3e02b964fec33",
+      "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "scope": "Exactly existing finite classifications with full per-row original assertions/limits and current compositional joins. All runtime commands/outcomes are retained original events, never new executions. Current source/bundle lock guard has real retained15 and portable7 controls; no full-module count used as blanket evidence.",
+  "nonclaims": [
+    "No whole106 renewal; eight mixed records excluded.",
+    "No unchecked hosted union, installed, live provider, same-user hostile-race, crash completion or whole-task qualification."
+  ]
+}

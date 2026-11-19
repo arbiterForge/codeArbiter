@@ -1,0 +1,294 @@
+{
+  "result": "SOURCE_REVALIDATED_WITH_REUSED_INDEPENDENT_REVIEWS",
+  "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+  "cells": {
+    "disposition:machines:C05": {
+      "section": "machines",
+      "id": "C05",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C05-preserved.json",
+            "sha256": "ef6674be379f8939767d7f9c555135527d6b95c5e25aa93da45d9e0141fd34e8"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C05-preserved.json"
+    },
+    "disposition:machines:C09": {
+      "section": "machines",
+      "id": "C09",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C09-preserved.json",
+            "sha256": "47207f0808f184177b4fea43498df0affa30b22cd2a893ba543c5537866c9987"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json"
+    },
+    "disposition:transitions:C09:01": {
+      "section": "transitions",
+      "id": "C09:01",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C09-preserved.json",
+            "sha256": "47207f0808f184177b4fea43498df0affa30b22cd2a893ba543c5537866c9987"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json"
+    },
+    "disposition:transitions:C09:02": {
+      "section": "transitions",
+      "id": "C09:02",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C09-preserved.json",
+            "sha256": "47207f0808f184177b4fea43498df0affa30b22cd2a893ba543c5537866c9987"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json"
+    },
+    "disposition:machines:C10": {
+      "section": "machines",
+      "id": "C10",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C10-preserved.json",
+            "sha256": "4746f53991bcb08db85554687c939e3a40aba93f22bc03935ae81c5f24324b92"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json"
+    },
+    "disposition:transitions:C10:01": {
+      "section": "transitions",
+      "id": "C10:01",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C10-preserved.json",
+            "sha256": "4746f53991bcb08db85554687c939e3a40aba93f22bc03935ae81c5f24324b92"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json"
+    },
+    "disposition:transitions:C10:02": {
+      "section": "transitions",
+      "id": "C10:02",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C10-preserved.json",
+            "sha256": "4746f53991bcb08db85554687c939e3a40aba93f22bc03935ae81c5f24324b92"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json"
+    },
+    "disposition:transitions:C10:03": {
+      "section": "transitions",
+      "id": "C10:03",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+            "ref": "docs/state-contracts-major/execution/evidence/ci-six-source-384269dc/proofs/C10-preserved.json",
+            "sha256": "4746f53991bcb08db85554687c939e3a40aba93f22bc03935ae81c5f24324b92"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json"
+    },
+    "disposition:machines:C06": {
+      "section": "machines",
+      "id": "C06",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+            "ref": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+            "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json"
+    },
+    "disposition:transitions:C06:01": {
+      "section": "transitions",
+      "id": "C06:01",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+            "ref": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+            "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json"
+    },
+    "disposition:transitions:C06:02": {
+      "section": "transitions",
+      "id": "C06:02",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+            "ref": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+            "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json"
+    },
+    "disposition:transitions:C06:03": {
+      "section": "transitions",
+      "id": "C06:03",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+            "ref": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+            "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json"
+    },
+    "disposition:transitions:C06:04": {
+      "section": "transitions",
+      "id": "C06:04",
+      "before": {
+        "owner": "release-and-tooling",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+            "ref": "docs/state-contracts-major/execution/evidence/c06-current-source/proof.json",
+            "sha256": "98fcbaa79b03bb6bd44a8b082e63d951c047f7f2f5bc022238fa3f9305c53e07"
+          }
+        ]
+      },
+      "proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json"
+    }
+  },
+  "paths": [
+    "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/reinspection.json",
+    "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C05-preserved.json",
+    "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+    "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C10-preserved.json",
+    "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C06-preserved.json"
+  ],
+  "ledger_sha256": "5277fbd9ddffa09ee1020efb5d45c198ab5839cfe66f7a2670175f8d73399884",
+  "runtime_epoch_renewal": false,
+  "review_reuse": {
+    "reason": "Every cited CI span and every non-CI input is byte-identical. Existing clause peer verdicts remain applicable to those claims; current three-line CI delta has its separate independent security review. No new semantic assertion or runtime epoch is introduced.",
+    "ci_delta_review": "../pi-installed-setup-repairs/darwin-reader-security-admission.json",
+    "clause_reviews": "development.json#reviews",
+    "new_standalone_peer_verdict": false
+  }
+}

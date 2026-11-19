@@ -124,9 +124,10 @@ func commandBindingSchema(qualified bool) map[string]any {
 	if qualified {
 		properties := model.M(contract["properties"])
 		properties["collector_profile"] = map[string]any{"enum": model.List("python-unittest-text/0.1.0", "codearbiter-named-lines/0.1.0", "vitest-verbose/0.1.0", "playwright-json/0.1.0", "exit-only/0.1.0")}
-		// Nested native npm has four launch files, one root manifest, and at most
-		// 32 inspected workspace manifests. Role-specific limits remain below.
-		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(37), "items": launchFileSchema()}
+		// MaxLaunchFiles: five singleton launch roles plus at most
+		// MaxWorkspaceManifests inspected workspace manifests. Role-specific
+		// limits are enforced by validateQualifiedBinding.
+		properties["launch_files"] = map[string]any{"type": "array", "minItems": int64(1), "maxItems": int64(MaxLaunchFiles), "items": launchFileSchema()}
 		contract["required"] = append(model.A(contract["required"]), "collector_profile", "launch_files")
 	}
 	return contract
@@ -233,7 +234,7 @@ func observationSchema(format string, current bool) map[string]any {
 	base := map[string]any{
 		"format": map[string]any{"const": format}, "kind": map[string]any{"enum": model.List("approval", "prerequisite", "verification", "spec_review", "quality_review", "reconciliation", "farm_authorization", "context_approval")},
 		"subject": subjectSchema(), "context_ref": text(), "context_sha256": hash(), "payload_sha256": hash(),
-		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", "host-user-context-preview/0.1.0", PairProfile, LegacySMARTSProfile, SMARTSProfileV2)},
+		"producer_profile": map[string]any{"enum": model.List("declared-command/0.1.0", QualifiedCommandProfile, CodexReviewProfile, ClaudeReviewProfile, "host-user-prompt/0.1.0", "host-user-context-preview/0.1.0", PairProfile, LegacySMARTSProfile, SMARTSProfileV2, SMARTSProfileV3)},
 		"producer_run_id":  text(), "producer_result_sha256": hash(),
 	}
 	required := []string{"format", "kind", "subject", "context_ref", "context_sha256", "payload_sha256", "producer_profile", "producer_run_id", "producer_result_sha256"}

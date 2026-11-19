@@ -1,0 +1,96 @@
+{
+  "route": "ca-debug/return-to-fix",
+  "finding": "Shared source cleanliness can reuse a stat cache produced under a different normalization policy",
+  "original_hosted": {
+    "source": "1984510402d8f662d27e6ecd5f3186da9bf71978",
+    "job_id": 133212952151,
+    "log_path": "C:/Users/brenn/AppData/Local/Temp/ca-PR1115-198451-watch-jtopdkza/failed-job-133212952151.log",
+    "log_sha256": "fe2a6bf915f94ff810c3e3da769beb80ca8c6accd3a3cb662300211e27d830ad",
+    "observed": "Expected dirty-source ValueError absent after clean-status and CRLF-byte assertions"
+  },
+  "local_original_target": "Exact existing method ran first and PASSED once, 0.889s; not labeled a local failure reproduction",
+  "demonstrated": [
+    "Separate owned CRLF fixture first warmed status using its private autocrlf=true configuration",
+    "Observer policy then had GLOBAL=nul, NOSYSTEM=1, CONFIG_COUNT absent; actual-index status remained empty",
+    "Unchanged production reports.source_identity returned clean=true and owner._source_snapshot accepted the checkout",
+    "Fresh owned index populated by read-tree HEAD under the same private policy reported two tracked modifications",
+    "Same physical worktree bytes were preserved; LF checkout was clean with actual and fresh indices",
+    "A real owned staged-index change was independently detected by production in both cases"
+  ],
+  "causal_source": [
+    {
+      "path": ".github/scripts/major_qualification_report.py",
+      "symbol": "source_identity",
+      "lines": [
+        106,
+        115
+      ],
+      "fact": "Uses git status against the existing index only; Git may trust its cached stat information rather than renormalize tracked content after the policy switch"
+    },
+    {
+      "path": ".github/scripts/retained_archive_cli_observation.py",
+      "symbol": "_source_snapshot",
+      "lines": [
+        404,
+        419
+      ],
+      "fact": "Accepts reports.source_identity clean flag before literal positive inputs; the fixture CRLF example/site paths are outside its literal positive closure"
+    },
+    {
+      "path": "core/pysrc/_gitexec.py",
+      "symbol": "local_read_git_env",
+      "lines": [
+        68,
+        90
+      ],
+      "fact": "Preserves protected file config but strips injected CONFIG_COUNT and root selectors; no ambient config injection was observed"
+    }
+  ],
+  "confirmed_scope": "Actual shared production cleanliness predicate false acceptance under explicitly warmed owned index/config transition. Original hosted index internals were not retained, so no claim of its exact index bytes or timing.",
+  "smallest_regression": {
+    "suggested_owner": ".github/scripts/test_retained_archive_cli_observation.py::CheckoutPolicyCharacterizationTests",
+    "name": "test_source_identity_rechecks_foreign_policy_stat_cache_and_preserves_real_staged_guard",
+    "construction": "Reuse actual observer_checkout_fixture; set owned tracked-file mtimes to an earlier fixed instant to avoid racy-Git content fallback, then warm the actual owned index/status under the explicit private autocrlf=true config. Assert physical CRLF and original normalized-clean status; switch through actual private_environment and call unmodified source_identity/_source_snapshot.",
+    "target_assertion": "CRLF checkout must be clean=false / snapshot refuse despite warm old index; current code demonstrably accepts this path. Do not make the test pass by flushing its index only.",
+    "negative_controls": [
+      "Equivalent fresh LF checkout stays clean and source-positive hashes exact",
+      "Real staged-index change remains refused even if a separate HEAD-based worktree index is clean",
+      "Untracked unknown additions, modified tracked files, conflict/rename and index/source drift refuse; existing exact output/native-lock exceptions remain unchanged",
+      "Actual real-index bytes and worktree bytes remain unchanged across inspection"
+    ],
+    "not_executed": "Named regression is proposed only; fixed-mtime deterministic seeding has not been executed. No automatic repeat of the original target."
+  },
+  "minimal_framework_fix_proposal": {
+    "owner": ".github/scripts/major_qualification_report.py::source_identity (shared all source observers)",
+    "steps": [
+      "Pin actual HEAD and tree once, and retain a separate actual-index-versus-HEAD staged/conflict guard; do not substitute a fresh HEAD index for this check",
+      "Build an exclusive owned temporary index outside the checkout using read-tree of the pinned HEAD under the same credential-blind local policy; disable only cache-sharing/fsmonitor optimizations for this owned read if required so no real index or shared-index state is written",
+      "Read worktree/untracked status against the fresh owned index, forcing actual current-policy comparison rather than trusting cached stats from another policy",
+      "Apply existing profile-specific exact untracked/native-lock exceptions unchanged; preserve protected file-based safe.directory/config, root binding, no credentials and no environment-config injection",
+      "Recheck real HEAD/index stability, retain actual positive physical-byte checks, then destroy only the owned temporary index; errors and races remain refusals"
+    ],
+    "required_design_checks": [
+      "Explicit safe private-index seam must not allow ambient GIT_INDEX_FILE to redirect repository identity",
+      "No mutation of user index, metadata locks, worktree or global configuration",
+      "Output paths remain owned and bounded, no network/filter/helper execution expansion",
+      "Source checkout diagnostic must use the same fresh status result or closed projection so it does not falsely retain an empty original-index status after refusal"
+    ],
+    "not_implemented": true,
+    "not_acceptable": [
+      "Fixture-only cache flush",
+      "Post-checkout file normalization",
+      "Ignoring dirty tracked paths",
+      "Dropping the actual staged-index guard",
+      "Claiming an ambient GIT_CONFIG_COUNT leak"
+    ]
+  },
+  "execution": {
+    "controller_duration_seconds": 2.42540690000169,
+    "controller_exit_code": 0,
+    "source_tool_before_after_stable": true,
+    "original_target_runs": 1,
+    "owned_comparison_fixtures": 2,
+    "no_go_node_native_sdk_provider": true,
+    "canonical_writes": false
+  }
+}

@@ -1,0 +1,45 @@
+{
+ "schema":"bounded-original-native-transport-diagnosis/1",
+ "source_commit":"a7135d312e6f861703f14683f422d1f435260ebf",
+ "run_id":44011128754,
+ "job_id":133798231805,
+ "artifact_id":14297887125,
+ "pid":4260,
+ "original_archive_sha256":"65a0626424d2187ed0475765c91f2283feeff2f3edfe5cd5a69598479f066b1c",
+ "facts":{
+  "node_handle_before":"running",
+  "node_handle_after":"running",
+  "shutdown_trace":null,
+  "scripted_rpc_collection":"complete",
+  "records":57,
+  "eof_closed":true,
+  "process_exited":false,
+  "stdin_closed_elapsed_ms":3483,
+  "shutdown_timeout_elapsed_ms":33490,
+  "debugger_status":"transport_failed",
+  "debugger_profile":"sdk-v1",
+  "last_phase":"worker-transport",
+  "failure_kind":"os-error",
+  "native_capture_elapsed_ms":5002,
+  "debugger_elapsed_ms":4934,
+  "worker_milestones":null,
+  "thread_count":0,
+  "frame_count":0
+ },
+ "source_trace":[
+  {"path":".github/scripts/_windows_rpc_timeout.py","lines":"285-299","observation":"worker-transport is assigned only after Popen returned, duplicate-query handle close, full encoded request write, and stdin close. A spawn failure would retain worker-launch instead. temporarilySuspends=true is set after Popen, not proof of attachment."},
+  {"path":".github/scripts/_windows_rpc_timeout.py","lines":"213-251","observation":"_collect catches ordinary loop exceptions without retaining subtype or operation, and polls/waits/kills the owned worker during cleanup. Most caught loop errors become transport, while an exception escaping cleanup can reach the outer handler."},
+  {"path":".github/scripts/_windows_rpc_timeout.py","lines":"299-324","observation":"After phase worker-transport, the outer handler can also receive a TemporaryDirectory context-exit error. _failure_kind reduces OSError to os-error and does not retain errno/winerror or the exact boundary."},
+  {"path":".github/scripts/_windows_rpc_timeout.py","lines":"325-346","observation":"Final owned-worker cleanup separately classifies cleanup_unknown if its own operations raise. The actual status transport_failed supplies no evidence of a final-cleanup exception."}
+ ],
+ "actual_missing_observations":["OSError subtype/errno/winerror","exact operation: pipe peek/read, poll/wait, or temporary-root cleanup","owned debugger PID/return code at that operation","whether any worker bytes were retained before refusal"],
+ "bounded_improvement_proposal":{
+  "scope":"diagnostics only, not a native-exit repair",
+  "operation_enum":["worker-launch","request-write","request-close","pipe-peek","pipe-read","worker-poll","worker-wait","temporary-root-cleanup","worker-final-cleanup"],
+  "fields":["allowlisted operation","bounded integer errno/winerror when present","allowlisted exception category","owned worker spawned/exited/returncode observations","bounded collected byte count"],
+  "preserve":["original primary failure and deadline","capture/worker budgets","no unexpected SDK output or exception text","no paths/argv/environment/raw addresses","owned worker cleanup and target separation"],
+  "tests_needed":"inert operation-specific OSError/cleanup controls, preserving the original primary error and privacy/size/deadline controls"
+ },
+ "disposition":"UNRESOLVED_NATIVE_EXIT_CAUSE; CONFIRMED_DIAGNOSTIC_LOSS",
+ "limits":["No original JS reallyExit-entry observation exists for failed PID4260.","No debugger attachment or stack was captured; warmups and other PIDs do not establish a cause.","No local/hosted subject execution, retry, cancellation, source changes, or qualification promotion."]
+}

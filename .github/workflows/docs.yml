@@ -18,7 +18,9 @@ name: Deploy docs
 # green and no `Site |` check among them. Same defect class as #384.
 on:
   push:
-    branches: [main]
+    # P-01: the integration branch validates the site graph; deploy stays
+    # main-only through the deploy job's refs/heads/main condition.
+    branches: [main, major/state-contracts]
     paths:
       - "site/**"
       - "plugins/ca/**" # the reference is generated from the plugin, so rebuild when it changes
@@ -41,8 +43,35 @@ on:
       - ".github/workflows/ci.yml"
       - ".github/scripts/validate_codex_plugin.py"
       - "core/artifacts/internal/authority/receipt.go"
+      # The Docs producer and its controls need a same-source validation run.
+      - ".github/scripts/site_vitest_observation.py"
+      - ".github/scripts/site_component_observation.py"
+      - ".github/scripts/test_site_component_observation.py"
+      - ".github/scripts/test_site_vitest_observation.py"
+      - ".github/scripts/site_playwright_observation.py"
+      - ".github/scripts/test_site_playwright_observation.py"
+      - ".github/scripts/major_readiness.py"
+      - ".github/scripts/major_qualification_report.py"
+      - ".github/scripts/major_native_observation.py"
+      - ".github/scripts/test_major_native_observation.py"
+      - ".github/scripts/mapped_work_observation.py"
+      - ".github/scripts/test_artifact_conformance.py"
+      - "tools/go_test_parallel.py"
+      - ".github/scripts/test_go_test_parallel.py"
+      - ".github/scripts/pages_readiness.py"
+      - ".github/scripts/docs_release_publication.py"
+      - ".github/scripts/test_docs_release_publication.py"
+      - ".github/scripts/_boundedproc.py"
+      - ".github/scripts/_contextverificationlib.py"
+      - ".github/scripts/_immutable_git_blobs.py"
+      - ".github/scripts/ci20_native_binding.py"
+      - "core/pysrc/_gitexec.py"
+      - ".github/major-qualification-policy.json"
+      - ".github/major-test-selections.json"
+      - ".github/integration-candidate.json"
+      - "docs/state-contracts-major/**"
   pull_request:
-    branches: [main]
+    branches: [main, major/state-contracts]
     paths:
       - "site/**"
       - "plugins/ca/**"
@@ -52,6 +81,11 @@ on:
       - ".github/published-tags.json"
       - ".codearbiter/release-targets.md"
       - ".github/workflows/docs.yml"
+      # R-05 (C-F05): the voice gate and its detector select PR validation
+      # too; validation inputs equal the push list (test_ci_impact pins it).
+      # Deploy rights still come only from the deploy job's main-only guard.
+      - ".github/scripts/check_site_voice.py"
+      - "core/pysrc/_sloplib.py"
       - ".github/scripts/npm_audit_gate.py"
       - "plugins/ca-pi/tools/src/compatibility.ts"
       - "plugins/ca-pi/package.json"
@@ -59,6 +93,33 @@ on:
       - ".github/workflows/ci.yml"
       - ".github/scripts/validate_codex_plugin.py"
       - "core/artifacts/internal/authority/receipt.go"
+      # Match the push producer/control input set; this grants no deploy right.
+      - ".github/scripts/site_vitest_observation.py"
+      - ".github/scripts/site_component_observation.py"
+      - ".github/scripts/test_site_component_observation.py"
+      - ".github/scripts/test_site_vitest_observation.py"
+      - ".github/scripts/site_playwright_observation.py"
+      - ".github/scripts/test_site_playwright_observation.py"
+      - ".github/scripts/major_readiness.py"
+      - ".github/scripts/major_qualification_report.py"
+      - ".github/scripts/major_native_observation.py"
+      - ".github/scripts/test_major_native_observation.py"
+      - ".github/scripts/mapped_work_observation.py"
+      - ".github/scripts/test_artifact_conformance.py"
+      - "tools/go_test_parallel.py"
+      - ".github/scripts/test_go_test_parallel.py"
+      - ".github/scripts/pages_readiness.py"
+      - ".github/scripts/docs_release_publication.py"
+      - ".github/scripts/test_docs_release_publication.py"
+      - ".github/scripts/_boundedproc.py"
+      - ".github/scripts/_contextverificationlib.py"
+      - ".github/scripts/_immutable_git_blobs.py"
+      - ".github/scripts/ci20_native_binding.py"
+      - "core/pysrc/_gitexec.py"
+      - ".github/major-qualification-policy.json"
+      - ".github/major-test-selections.json"
+      - ".github/integration-candidate.json"
+      - "docs/state-contracts-major/**"
   # The release workflow pushes governance tags AFTER main's own docs build ran,
   # and the site derives each host's latest release from those tags, so rebuild
   # main once a release run finishes. Most release runs publish nothing; that
@@ -70,6 +131,11 @@ on:
     types: [completed]
     branches: [main]
   workflow_dispatch:
+    inputs:
+      qualified_core_run_id:
+        description: "Later Q03: transfer the exact Pages tar from verified same-source main readiness; no rebuild"
+        required: false
+        type: string
 
 # Least-privilege: only the deploy job needs pages/id-token:write, granted at
 # job level below. The build job - which runs on PRs, including forks - stays
@@ -94,7 +160,11 @@ jobs:
   # error would ship silently. Runs on the same site/** + plugins/ca/** triggers
   # as build; a red test here fails the workflow.
   site-check:
+    if: github.event_name != 'workflow_dispatch' || inputs.qualified_core_run_id == ''
     name: Site | [Test] - Generator
+    permissions:
+      contents: read
+      actions: read
     runs-on: ubuntu-latest
     defaults:
       run:
@@ -104,11 +174,24 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # release applicability validates historical manifests and proof bytes
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.23.4 # Astro 7.4.2 requires Node >=22.23.4
           cache: npm
           cache-dependency-path: site/package-lock.json
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Test separate Docs authority and exact Pages transfer
+        run: python -B ../.github/scripts/test_site_playwright_observation.py
+      - name: Test original Docs source authority
+        run: python -B ../.github/scripts/test_site_vitest_observation.py
+      - name: Test separate release publication readback
+        run: python -B ../.github/scripts/test_docs_release_publication.py
+      - name: Identify source qualification mode
+        id: docs-source-mode
+        run: echo "active=${{ hashFiles('.github/integration-candidate.json') != '' }}" >> "$GITHUB_OUTPUT"
       - name: Install deps
         run: npm ci
       - name: Audit (CVE gate - fail on HIGH)
@@ -119,14 +202,24 @@ jobs:
         # gates in ci.yml; --omit=dev scopes it to what the built site actually
         # ships, keeping routine Astro/vitest dev advisories non-blocking.
         # The JSON report is judged by npm_audit_gate.py, which fails on every
-        # HIGH+ finding except a GHSA recorded in site/audit-exceptions.json
-        # with a dated backstop (see security-controls.md). No pipefail: npm
+        # HIGH+ finding except a current approval for the exact advisory and
+        # lockfile. Keep the default shell pipeline: npm
         # exits 1 whenever it reports anything, and the gate decides.
-        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --audit-level=high
+        run: npm audit --omit=dev --json | python ../.github/scripts/npm_audit_gate.py --exceptions audit-exceptions.json --scope production --audit-level=high
         env:
           NPM_CONFIG_LOGLEVEL: http
+      - name: Read the original release publication observation
+        if: github.event_name == 'workflow_run' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B ../.github/scripts/docs_release_publication.py
+          --event "$GITHUB_EVENT_PATH" --repo ..
+          --output "$RUNNER_TEMP/route-publication-observation.json"
       - name: Generate release applicability
         run: npm run gen
+        env:
+          CODEARBITER_PUBLICATION_OBSERVATION: ${{ runner.temp }}/route-publication-observation.json
       - name: Typecheck
         run: npm run typecheck
       - name: Enforce site/VOICE.md punctuation (issue #338)
@@ -168,8 +261,25 @@ jobs:
               "inputs": {p.as_posix(): hashlib.sha256(p.read_bytes()).hexdigest() for p in paths},
           }
           (evidence / "source.json").write_text(json.dumps(source, indent=2) + "\n", encoding="utf-8")
+      - name: Prepare original Docs source-test inputs
+        if: ${{ steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        run: |
+          mkdir "$RUNNER_TEMP/docs-site-source"
+          python -B ../.github/scripts/site_vitest_observation.py prepare-source --repo .. \
+            --output "$RUNNER_TEMP/docs-site-source/source-inputs"
       - name: Test with coverage
-        run: npm run coverage
+        id: docs-source-tests
+        env:
+          DOCS_SOURCE_OBSERVE: ${{ steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        run: |
+          if [ "$DOCS_SOURCE_OBSERVE" = true ]; then
+            python -B ../.github/scripts/site_vitest_observation.py observe --repo .. \
+              --source-payload "$RUNNER_TEMP/docs-site-source/source-inputs" \
+              --raw-results "$RUNNER_TEMP/docs-site-source/primary-vitest.json" \
+              --output "$RUNNER_TEMP/docs-site-source/observation.json"
+          else
+            npm run coverage
+          fi
       - name: Retain numeric site coverage summary
         id: coverage-summary
         shell: python
@@ -206,7 +316,51 @@ jobs:
           if-no-files-found: ignore
           retention-days: 5
 
+      - name: Upload original Docs source-test inputs
+        if: ${{ !cancelled() && steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-site-vitest-findings
+          path: ${{ runner.temp }}/docs-site-source/source-inputs
+          include-hidden-files: true
+          overwrite: false
+          if-no-files-found: error
+          retention-days: 14
+      - name: Emit original Docs source-test qualification
+        id: docs-source-report
+        if: ${{ success() && steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python -B ../.github/scripts/site_vitest_observation.py emit --repo .. \
+            --observation "$RUNNER_TEMP/docs-site-source/observation.json" \
+            --output "$RUNNER_TEMP/docs-site-source/docs-site-test-qualification.json"
+      - name: Upload Docs source-test qualification report
+        if: ${{ success() && steps.docs-source-report.outputs.job_id != '' }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-docs-site-test-qualification-${{ steps.docs-source-report.outputs.job_id }}
+          path: ${{ runner.temp }}/docs-site-source/docs-site-test-qualification.json
+          overwrite: false
+          if-no-files-found: error
+          retention-days: 14
+      - name: Retain original Docs source-test observation
+        if: ${{ !cancelled() && steps.docs-source-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: docs-site-source-observation
+          path: ${{ runner.temp }}/docs-site-source/observation.json
+          overwrite: false
+          if-no-files-found: ignore
+          retention-days: 14
+
   build:
+    if: github.event_name != 'workflow_dispatch' || inputs.qualified_core_run_id == ''
+    permissions:
+      contents: read
+      actions: read
+    outputs:
+      program_candidate: ${{ steps.program-mode.outputs.active }}
     name: Site | [Build] - Astro Pages
     runs-on: ubuntu-latest
     defaults:
@@ -217,15 +371,32 @@ jobs:
         with:
           submodules: recursive
           fetch-depth: 0 # release applicability validates historical manifests and proof bytes
+          persist-credentials: false
       - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
         with:
           node-version: 22.23.4 # Astro 7.4.2 requires Node >=22.23.4; the action defaults to 20
           cache: npm
           cache-dependency-path: site/package-lock.json
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Identify program qualification mode
+        id: program-mode
+        run: echo "active=${{ hashFiles('.github/integration-candidate.json') != '' }}" >> "$GITHUB_OUTPUT"
       - name: Install deps
         run: npm ci
+      - name: Read the original release publication observation
+        if: github.event_name == 'workflow_run' && github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B ../.github/scripts/docs_release_publication.py
+          --event "$GITHUB_EVENT_PATH" --repo ..
+          --output "$RUNNER_TEMP/route-publication-observation.json"
       - name: Build
         run: npm run build # prebuild regenerates the reference from plugins/ca/**
+        env:
+          CODEARBITER_PUBLICATION_OBSERVATION: ${{ runner.temp }}/route-publication-observation.json
       - name: Link audit
         run: npm run link-audit # post-build dangling-link gate (AC-2/AC-4)
       - name: Record runner Chrome version
@@ -233,9 +404,67 @@ jobs:
         # The npm lockfile does not authenticate browser bytes.
         # No exact hosted Chrome version is claimed; this log records the observed one.
         run: google-chrome --version
+      - name: Validate component capture contract
+        run: python -B ../.github/scripts/test_site_component_observation.py
+      - name: Prepare original component source-test inputs
+        id: component-source
+        if: steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref)
+        run: >-
+          python -B ../.github/scripts/site_component_observation.py prepare-source --repo ..
+          --output "$RUNNER_TEMP/component-source-inputs"
+      - name: Browser component acceptance
+        id: component-gate
+        env:
+          COMPONENT_PROGRAM_OBSERVE: ${{ steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        run: |
+          if [ "$COMPONENT_PROGRAM_OBSERVE" = true ]; then
+            python -B ../.github/scripts/site_component_observation.py observe --repo .. \
+              --source-payload "$RUNNER_TEMP/component-source-inputs" \
+              --browser-binary /opt/google/chrome/chrome \
+              --output "$RUNNER_TEMP/component-observation.json"
+          else
+            npm run test:components
+          fi
+      - name: Upload original component source-test inputs
+        if: steps.component-source.outcome == 'success' && steps.component-gate.outcome == 'success' && steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-source-inputs-site-components
+          path: ${{ runner.temp }}/component-source-inputs/
+          include-hidden-files: true
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
+      - name: Emit component source-test qualification report
+        id: component-report
+        if: steps.component-source.outcome == 'success' && steps.component-gate.outcome == 'success' && steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B ../.github/scripts/site_component_observation.py emit --repo ..
+          --observation "$RUNNER_TEMP/component-observation.json"
+          --output "$RUNNER_TEMP/component-qualification.json"
+      - name: Upload component source-test qualification report
+        if: steps.component-report.outcome == 'success' && steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref)
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-docs-component-qualification-${{ steps.component-report.outputs.job_id }}
+          path: ${{ runner.temp }}/component-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
       - name: Browser publication gate
         id: browser-gate
-        run: npm run test:browser
+        env:
+          DOCS_PROGRAM_OBSERVE: ${{ steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        run: |
+          if [ "$DOCS_PROGRAM_OBSERVE" = true ]; then
+            python -B ../.github/scripts/site_playwright_observation.py observe --repo .. \
+              --browser-binary /opt/google/chrome/chrome \
+              --output "$RUNNER_TEMP/docs-browser-observation.json"
+          else
+            npm run test:browser
+          fi
       - name: Retain browser review evidence
         # Preserve completed captures even if a later browser assertion fails.
         # This does not turn a failed browser gate into a publishable build.
@@ -258,13 +487,47 @@ jobs:
         uses: actions/upload-pages-artifact@fc324d3547104276b827a68afc52ff2a11cc49c9 # v5.0.0
         with:
           path: site/dist
+          retention-days: 14
+
+
+      - name: Emit Docs qualification report
+        id: docs-report
+        if: steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref)
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B ../.github/scripts/site_playwright_observation.py emit --repo ..
+          --observation "$RUNNER_TEMP/docs-browser-observation.json"
+          --output "$RUNNER_TEMP/docs-qualification.json"
+      - name: Retain Docs qualification diagnostics
+        # Original inputs and safe source coordinates survive a refused report.
+        # This artifact grants no qualification or deployment authority.
+        if: ${{ !cancelled() && steps.browser-gate.outcome == 'success' && steps.program-mode.outputs.active == 'true' && github.event_name == 'push' && contains(fromJSON('["refs/heads/main","refs/heads/major/state-contracts"]'), github.ref) }}
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: site-qualification-diagnostics
+          path: |
+            ${{ runner.temp }}/docs-browser-observation.json
+            ${{ runner.temp }}/docs-qualification.json.refusal.json
+          if-no-files-found: error
+          retention-days: 5
+          overwrite: false
+      - name: Upload Docs qualification report
+        if: steps.docs-report.outcome == 'success'
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: major-docs-qualification-${{ steps.docs-report.outputs.job_id }}
+          path: ${{ runner.temp }}/docs-qualification.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
 
   deploy:
     name: Site | [Deploy] - GitHub Pages
     needs: [build, site-check] # never publish a build whose tests/typecheck are red
     # Allowlisted events on main only - pull_request builds are validation-only, and
     # a new trigger never gains deploy rights by default.
-    if: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main'
+    if: contains(fromJSON('["push","workflow_run","workflow_dispatch"]'), github.event_name) && github.ref == 'refs/heads/main' && needs.build.outputs.program_candidate != 'true' && inputs.qualified_core_run_id == ''
     runs-on: ubuntu-latest
     permissions:
       contents: read
@@ -275,5 +538,77 @@ jobs:
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
       - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1
+
+  # Qualification Docs completes without deployment while Core waits for it.
+  # A later explicit main dispatch verifies full readiness, stages original tar
+  # bytes, and uploads them into this run because deploy-pages is current-run only.
+  qualified-pages:
+    name: Site | [Prepare] - Qualified Pages
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.qualified_core_run_id != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7.1.0
+        with:
+          python-version: "3.14"
+      - name: Verify readiness and stage the original qualified tar
+        env:
+          GH_TOKEN: ${{ github.token }}
+          QUALIFIED_CORE_RUN_ID: ${{ inputs.qualified_core_run_id }}
+        run: >-
+          python -B .github/scripts/site_playwright_observation.py prepare-promotion
+          --source "$GITHUB_SHA" --core-run-id "$QUALIFIED_CORE_RUN_ID"
+          --output "$RUNNER_TEMP/qualified-pages"
+      - name: Upload the exact qualified Pages tar
+        # Same immutable nested uploader and tar role as upload-pages-artifact.
+        uses: actions/upload-artifact@bbbca2ddaa5d8feaa63e36b76fdaad77386f024f
+        with:
+          name: github-pages
+          path: ${{ runner.temp }}/qualified-pages/artifact.tar
+          if-no-files-found: error
+          compression-level: 0
+          overwrite: false
+          retention-days: 14
+
+      - name: Read back the exact qualified Pages transfer
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: >-
+          python -B .github/scripts/site_playwright_observation.py verify-transfer
+          --lineage "$RUNNER_TEMP/qualified-pages-lineage.json"
+          --output "$RUNNER_TEMP/qualified-pages-readback.json"
+      - name: Retain qualified Pages transfer lineage
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7.0.2
+        with:
+          name: qualified-pages-transfer-${{ github.run_id }}
+          path: |
+            ${{ runner.temp }}/qualified-pages-lineage.json
+            ${{ runner.temp }}/qualified-pages-readback.json
+          if-no-files-found: error
+          retention-days: 14
+          overwrite: false
+
+  deploy-qualified:
+    name: Site | [Deploy] - Qualified GitHub Pages
+    needs: qualified-pages
+    if: github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main' && inputs.qualified_core_run_id != ''
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy original qualified Pages bytes
         id: deployment
         uses: actions/deploy-pages@368f82528645a54fb793d4d04e342629a3f51346 # v5.0.1

@@ -1,0 +1,197 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "38bf279799fa8e7ab72148dce9cee85177664947",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original committed-source Windows Chrome isolated-component10 observation"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "site/src/components/Search.astro": "42f38941ddb082f392b9802af212a00f1fbc7ae6debcde02173eb8ecd1a4a183",
+    "site/src/components/SplashDocsRail.astro": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+    "site/test/components/lifecycle.spec.ts": "70466c0be7d9fc0ea94dac7b882b7eb5d3c04cd65cd30621f27a4192189c3317",
+    "site/test/components/search-boundaries.spec.ts": "f5a1b2777d28ddde8823d0ca634179daa990691dba20ca0045a163243ba92afd",
+    "site/playwright.components.config.ts": "7020bb513095c3a3bbb5c9e1029ab84ce0420b1ed9dff075dd3b0948c37f09ff",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js",
+        "--silent",
+        "run",
+        "test:components",
+        "--",
+        "--reporter=json",
+        "--output=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\playwright-output"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-component10-committed-38bf2797-pibgvl8d\\site",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/raw/start.json",
+      "sha256": "ad731ddc8bb44fcaf6fc2343ca8505d4c6cf41680841ccc95b43e7b7f0177dce"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/raw/result.json",
+      "sha256": "4dd5a7ee1775fe1e86ecdefad4b416886a227f6f06e0e893baa6a0bebc0394a0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/raw/original-report.json",
+      "sha256": "9e90b7c750930225a7edddd426ae431b35e0d025ea32ba1ecde096569983d30f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-component-current-38bf/raw/observe_committed.py",
+      "sha256": "ad902ff0de82b4570136f346541ccfc920ac1abfca6379b5da9d009352b0d091"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S55:07",
+    "disposition:transitions:S55:09",
+    "disposition:transitions:S62:05",
+    "disposition:findings:SF11",
+    "disposition:findings:SF16",
+    "disposition:transitions:S55:03",
+    "disposition:transitions:S55:04",
+    "disposition:transitions:S55:11"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S55:07",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data"
+      ],
+      "assertion_scope": "Actual component query rejection and lazy result-data rejection show explicit error/retry, preserve the typed query, recover one result, then permit ArrowDown option selection.",
+      "limits": [
+        "Accepted SITE-U01 replaces historical unhandled/stale rejection with current error/retry state."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:09",
+      "observed_named_cases": [
+        "search recovers expansion"
+      ],
+      "assertion_scope": "Actual failed expansion keeps the first8 results and exposes enabled retry; retry resolves all10 results.",
+      "limits": [
+        "Accepted SITE-U01 catches expansion rejection and restores retry eligibility; controlled Pagefind provider only."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S62:05",
+      "observed_named_cases": [
+        "drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+      ],
+      "assertion_scope": "The same actual custom element disconnects/reconnects3 times. Each single opener click opens rather than double-toggling; Escape closes, background aria-hidden returns to its prior value and opener focus returns.",
+      "limits": [
+        "Opener/Escape observable lifetime only; no claim every close-control handler count or production layout was independently measured."
+      ]
+    },
+    {
+      "cell": "disposition:findings:SF11",
+      "observed_named_cases": [
+        "search recovers query",
+        "search recovers data",
+        "search recovers expansion",
+        "search recovers stale"
+      ],
+      "assertion_scope": "Browser execution of actual Search markup/script observes query/data rejection recovery, expansion retry with old results retained, and an older rejected query never replacing newer successful results.",
+      "limits": [
+        "Component-only fixture and controlled Pagefind responses; no real search-index or production-page claim."
+      ]
+    },
+    {
+      "cell": "disposition:findings:SF16",
+      "observed_named_cases": [
+        "drawer reconnect owns exactly one set of opener, close and keyboard listeners"
+      ],
+      "assertion_scope": "Real browser connection callbacks on the same actual drawer component retain usable single-click opener and Escape behavior across3 reconnections, with background aria and focus restoration.",
+      "limits": [
+        "Known duplicated-toggle risk is exercised; full production DOM/CSS, all close/focus-trap branches and installed host behavior remain separate."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:03",
+      "observed_named_cases": [
+        "module failure retains query and retries a cache-busted import"
+      ],
+      "assertion_scope": "Actual HTTP503 import rejection shows error and retained query with no options; focus then render does not re-request the failed module before explicit retry.",
+      "limits": [
+        "Browser network fixture, not production Pagefind index."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:04",
+      "observed_named_cases": [
+        "module failure retains query and retries a cache-busted import"
+      ],
+      "assertion_scope": "User Retry requests exact cache-busted module URL ?retry=1; same query resolves visible result and ArrowDown selection.",
+      "limits": [
+        "Only one failed import followed by one successful explicit retry."
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S55:11",
+      "observed_named_cases": [
+        "pending query cannot reopen search after clear",
+        "pending query cannot reopen search after Escape",
+        "pending query cannot reopen search after outside",
+        "disconnect cancels pending render and releases shortcut until reconnect"
+      ],
+      "assertion_scope": "Empty/Escape/outside/disconnect close the actual component, clear active option/expanded state, and late pending success cannot reopen or replace retained ready results. Connected closes permit fresh search. Disconnected Ctrl+K is not canceled; reconnect restores shortcut focus and fresh search.",
+      "source_clause_conformance": "Each corresponding close/disconnect branch clears debounce and increments latest before closing; disconnectedCallback removes document click/window shortcut handlers. Finite source inspected directly; no equality-only preservation claim.",
+      "limits": [
+        "No direct timer-cancellation instrumentation or listener-count assertion; pending-response/shortcut ownership effects observed.",
+        "No production layout/CSS or actual Pagefind index."
+      ]
+    }
+  ],
+  "execution_context": {
+    "actual_HEAD_before": "38bf279799fa8e7ab72148dce9cee85177664947",
+    "actual_HEAD_after": "38bf279799fa8e7ab72148dce9cee85177664947",
+    "actual_index_before": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual_index_after": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "source_input_count": 7,
+    "runtime_file_count": 8,
+    "runtime_before": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js": "3ce7cba6f5128dd5f54c98b6a5036b0f850496878cc2e21044b675fe3c594e3e",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "runtime_after": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npm-cli.js": "3ce7cba6f5128dd5f54c98b6a5036b0f850496878cc2e21044b675fe3c594e3e",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\package.json": "822ef7ca6452205657b6288b066481ecf508bfbf43455d715cf7d3ec457561e6",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\lib\\typescript.js": "3ae902c92cc44dace175c0e69e13a4b0899f6983c6121d76b9ab8dd5795e7675"
+    },
+    "exact_Git_Temp_sources_before_after_equal": true,
+    "Gov_physical_hashes": "Separately retained; executing sources are exact immutable Git copies in Temp.",
+    "private_HOME_initialized_before_browser": true,
+    "node_version": "v24.22.1",
+    "npm_version": "11.16.0",
+    "actual_named_pass": 10,
+    "seconds_wall": 11.565069437026978,
+    "seconds_Playwright": 7.077876999999999
+  },
+  "scope": "Same actual Search/Drawer component scripts and markup, explicit committed test:components package script/config, real installed Chrome and controlled Pagefind fixture.",
+  "limits": [
+    "No production Astro page/build/CSS, actual Pagefind index/ranking or browser-DLL/OS-wide identity claim.",
+    "No installed host, TUI, native/package/cohort, provider, external network or publication acceptance.",
+    "Original five-case6d4 and new overlay5768 observations remain unchanged history; this run is a genuinely new ten-case observation justified by package input change."
+  ]
+}

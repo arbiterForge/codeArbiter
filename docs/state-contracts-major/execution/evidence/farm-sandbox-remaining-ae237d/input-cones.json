@@ -1,0 +1,2602 @@
+{
+  "farm-input-config": {
+    "seeds": [
+      "plugins/ca/tools/farm-dist.test.ts",
+      "plugins/ca/tools/farm.test.ts",
+      "plugins/ca/tools/farm.unit.test.ts",
+      "plugins/ca/tools/plan-contract.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-dist.test.ts": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/plan-contract.test.ts": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+      "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm-dist.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-dist.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-dist.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/plan-contract.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/plan-contract.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/plan-contract.test.ts",
+        "to": "plugins/ca/tools/package-lock.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/plan-contract.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-scheduler": {
+    "seeds": [
+      "plugins/ca/tools/farm.test.ts",
+      "plugins/ca/tools/farm.unit.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-finalization": {
+    "seeds": [
+      "plugins/ca/tools/farm.test.ts",
+      "plugins/ca/tools/farm.unit.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-candidate-and-retry": {
+    "seeds": [
+      "plugins/ca/tools/farm-surface.test.ts",
+      "plugins/ca/tools/farm.test.ts",
+      "plugins/ca/tools/farm.unit.test.ts",
+      "plugins/ca/tools/worktree-fs.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm-surface.test.ts": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+      "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/package-lock.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/worktree-fs.test.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/worktree-fs.test.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/worktree-fs.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/worktree-fs.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-commit-and-integration": {
+    "seeds": [
+      "plugins/ca/tools/farm-surface.test.ts",
+      "plugins/ca/tools/farm.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm-surface.test.ts": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+      "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-surface.test.ts",
+        "to": "plugins/ca/tools/package-lock.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-command-outcomes": {
+    "seeds": [
+      "plugins/ca/tools/exec.test.ts",
+      "plugins/ca/tools/farm.unit.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.test.ts": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/exec.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/exec.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-stale-registration": {
+    "seeds": [
+      "plugins/ca/tools/farm-cleanup-observation.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-cleanup-observation.test.ts": "94a8a8518fee61114de0d45c5da609fcb53360bd123cd14b1709d58619a1c60c",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm-cleanup-observation.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "farm-detached-canary": {
+    "seeds": [
+      "plugins/ca/tools/farm.test.ts",
+      "plugins/ca/tools/farm.unit.test.ts"
+    ],
+    "inputs": {
+      "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "plugins/ca/tools/__fixtures__/simple.plan.json": "b5ed11c42bb99a3cc0105f4788e814e59077814cc9f4430e60aa65962102bd82",
+      "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+      "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+      "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+      "plugins/ca/tools/farm.js": "d9e199f83d29d6be6e85d4b05baca80dbcdc9800457fe5b2335f480517320123",
+      "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+      "plugins/ca/tools/farm.ts": "fb5ea9ffce3c4b495825b2c44e5b72196be6d8370badd7ca417886db83a5ffe6",
+      "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+      "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+      "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+      "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+      "plugins/ca/tools/plan.schema.json": "a3895346ec5344049bc77ff92765640aa3ec2362bf30a7cb8f41a408b4b7c0a2",
+      "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+      "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+      "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+      "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/farm.js",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.test.ts",
+        "to": "plugins/ca/tools/__fixtures__/simple.plan.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.unit.test.ts",
+        "to": "plugins/ca/tools/plan.schema.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/farm-recovery.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/artifact-manifest.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/mutation.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/farm.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/redactor.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/worktree-fs.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/mutation.ts",
+        "to": "plugins/ca/tools/farm.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca/tools/artifact-manifest.ts",
+        "to": "core/artifact-release-manifest.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "sandbox-client-and-required-gate": {
+    "seeds": [
+      "plugins/ca-sandbox/tools/deadline.test.ts"
+    ],
+    "inputs": {
+      "plugins/ca-sandbox/tools/deadline.test.ts": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+      "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+      "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+      "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/deadline.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "sandbox-cache-builder-guards": {
+    "seeds": [
+      "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+      "plugins/ca-sandbox/tools/builder-observation.test.ts",
+      "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+      "plugins/ca-sandbox/tools/state-contracts.test.ts"
+    ],
+    "inputs": {
+      "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+      "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+      "plugins/ca-sandbox/tools/builder-observation.test.ts": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+      "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+      "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+      "plugins/ca-sandbox/tools/create.ts": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+      "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+      "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+      "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+      "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+      "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+      "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build-pinned-base.test.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/builder-observation.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/builder-observation.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/destroy.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/destroy.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/dephash.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/dephash.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/package-lock.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/destroy.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/destroy.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/network.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/network.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/registry.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/registry.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "sandbox-cli-dispatch": {
+    "seeds": [
+      "plugins/ca-sandbox/tools/cli.test.ts"
+    ],
+    "inputs": {
+      "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+      "plugins/ca-sandbox/tools/cli.test.ts": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+      "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+      "plugins/ca-sandbox/tools/create.ts": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+      "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+      "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+      "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+      "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+      "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca-sandbox/tools/cli.test.ts",
+        "to": "plugins/ca-sandbox/tools/cli.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.test.ts",
+        "to": "plugins/ca-sandbox/tools/cli.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/destroy.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/cp.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/destroy.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/cp.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/dephash.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/dephash.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/package-lock.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/destroy.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/destroy.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/registry.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/registry.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "sandbox-copy-contract": {
+    "seeds": [
+      "plugins/ca-sandbox/tools/cli.test.ts",
+      "plugins/ca-sandbox/tools/cp.test.ts"
+    ],
+    "inputs": {
+      "plugins/ca-sandbox/tools/build.ts": "14f0bada473d9fab480ab56ad7527e12a8dde2f8ce02cb985c2755a20d774ea2",
+      "plugins/ca-sandbox/tools/cli.test.ts": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+      "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+      "plugins/ca-sandbox/tools/cp.test.ts": "3741020ad0375ed4723ec8dcae667c9d30074e368582827ae6d3f149b4002623",
+      "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+      "plugins/ca-sandbox/tools/create.ts": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+      "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+      "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+      "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+      "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+      "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+      "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+      "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+      "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca-sandbox/tools/cli.test.ts",
+        "to": "plugins/ca-sandbox/tools/cli.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.test.ts",
+        "to": "plugins/ca-sandbox/tools/cli.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.test.ts",
+        "to": "plugins/ca-sandbox/tools/cp.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.test.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.test.ts",
+        "to": "plugins/ca-sandbox/tools/cp.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.test.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/destroy.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/cp.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/create.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/destroy.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/exec.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/cp.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cli.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/cp.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/dephash.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/build.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/dephash.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/create.ts",
+        "to": "plugins/ca-sandbox/tools/package-lock.json",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/destroy.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/destroy.ts",
+        "to": "plugins/ca-sandbox/tools/registry.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/exec.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/registry.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/registry.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/build.ts",
+        "to": "plugins/ca-sandbox/tools/package.json",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  },
+  "sandbox-token-guard-software": {
+    "seeds": [
+      "plugins/ca-sandbox/tools/claude-inside.test.ts"
+    ],
+    "inputs": {
+      "plugins/ca-sandbox/tools/claude-inside.test.ts": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+      "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+      "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+      "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+      "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+      "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+      "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+      "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+      "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+      "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+      "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+    },
+    "edges": [
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/network.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/docker-gate.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/network.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.test.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/network.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/network.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/run.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/claude-inside.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-module"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/mounts.ts",
+        "kind": "literal-resource-conservative"
+      },
+      {
+        "from": "plugins/ca-sandbox/tools/run.ts",
+        "to": "plugins/ca-sandbox/tools/docker.ts",
+        "kind": "literal-resource-conservative"
+      }
+    ],
+    "limits": "Whole source files and transitive literal imports/resources plus owning package/lock/config. File-name strings conservatively included. Node builtins/locked tool runtime remain declared runtime prerequisites; generated in-test fixture bytes are bound by whole test files. No native engine execution is claimed by these selectors."
+  }
+}

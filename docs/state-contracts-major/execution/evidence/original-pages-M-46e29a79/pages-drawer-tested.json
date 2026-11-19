@@ -1,0 +1,212 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Root-dispatched reviewed Temp controller; actual Windows Chrome original authenticated docs-M Pages observation"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "site/src/components/SplashDocsRail.astro": "9f76985828efd12dd6856a8d2b5bf69538c3c10c19fbe7edca02ed614042dd1e",
+    "site/src/components/Sidebar.astro": "a54128245544db02d33311ea2aa7332728a01c8ab030d0bd739331592aa07a37",
+    "site/src/components/SidebarSublist.astro": "97444c48961f678f8eaf37e30701971c4d403265bfbab4f15f56555e6257b703",
+    "site/src/components/ArbiterIcon.astro": "8bfc315085c0438eaf953cbffb0f5b898317cc5ca644f82b335ebdfb42d5fbb5",
+    "site/src/components/Header.astro": "2e5238b10b3ace1e52559f26d23fcac7abbe23fb5bd3876b53c38bba18e89d44",
+    "site/src/components/Search.astro": "d273babc0f168c60fb6748c922cf5b6be29dacdad6c46f018cc0c473a227c36e",
+    "site/src/content/docs/index.mdx": "3ce34aa128affae4510cb09d30fb90c4018eed0750fe6d727cf2cce387e10954",
+    "site/src/styles/theme.css": "d3c37e032f05ffed5a5fc6c7e884bdd73275d47f4891ab6b86a500325d0abe4a",
+    "site/src/styles/landing.css": "cad948dddb4a01e627ded4a7c510e52d45ed36692b7226ae37a2651eb8da0b1c",
+    "site/astro.config.mjs": "20d9902155edc22090f5d4929b8643684dc7d0ffa8e306158ee28bafe899e47f",
+    "site/base.mjs": "16dffd9508277355c801e56cff1d8c49bbb26f809b6b279d799aaae5c7e78931",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/scripts/journey-navigation.ts": "b5c9278f378c0f70d3c29c90497af6442df3f587986185ed0e300a81435a161a",
+    "site/scripts/reference-sidebar.ts": "b6b3875ed71cac42e42ed073026476e66d79ce131829f5f7a9be929d3f8a5fe9",
+    "site/scripts/generator/plugin-workflow-pairs.ts": "d0e9d560816f9b9d7614fd05c66aa8857d6baac239a2a46f512fbeb191738d81",
+    "site/scripts/pagefind-build.ts": "ad1fbe88782aa8927024d7a405f4dd8244b79219ea4947415f4e66f512995b97",
+    ".github/workflows/docs.yml": "38e7ba00eaac7069573dedcfdc44552426370a1293d3b91935dc7a638c495ac7",
+    ".github/scripts/major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\browser.cjs",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-l7falj9l\\observation-giqgm6q0\\browser-input.json"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller",
+      "exit_code": 0
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/original-browser-result.json",
+      "sha256": "ab6b14f9822028ed535aa280fef30a4ab6975613aa522d4265f37e7cbc30b632"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/original-controller-result.json",
+      "sha256": "e2a9e94a7ce32768c174356c7cb4efedd2e21aa035b765b60f8422e973d6937a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/original-browser-input.json",
+      "sha256": "29c90173201e946172a52900f7705d670502218040b9de0e34bdaf734926ffd2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/tooling-pages_readiness.py",
+      "sha256": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/tooling-controller.py",
+      "sha256": "ab80681ff7b2d6a62d0121ea9aeeddff28f377b1c24b5b8ba7a5d581cf5b8512"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/tooling-browser.cjs",
+      "sha256": "ee9e1c525a72835b0dc09094dff5639e29df4c165e93d15a79e792bf7004fd03"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-pages-M-46e29a79/raw/origin-projection.json",
+      "sha256": "bedda51941c73999b84565daa7c9869f858abb9fcf69a3162a707ebeeadc4492"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S62:01",
+    "disposition:transitions:S62:02",
+    "disposition:transitions:S62:03",
+    "disposition:transitions:S62:04",
+    "disposition:transitions:S62:05",
+    "disposition:findings:SF16",
+    "disposition:machines:S62"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S62:01",
+      "observed_named_cases": [
+        "original built drawer restores seeded state after Escape",
+        "original built backdrop restores seeded state",
+        "original built drawer traps forward and reverse boundary focus",
+        "original built detached drawer releases Escape and initialized marker"
+      ],
+      "assertion_scope": "Opener activation in the original mobile built DOM sets expanded/aria-hidden/dialog visibility, removes drawer inert, saves clip overflow then locks body overflow, locks eight existing background nodes and moves initial focus into the drawer. Escape and real Tab handling are independently executed below."
+    },
+    {
+      "cell": "disposition:transitions:S62:02",
+      "observed_named_cases": [
+        "original built drawer restores seeded state after Escape",
+        "original built backdrop restores seeded state",
+        "original built drawer traps forward and reverse boundary focus"
+      ],
+      "assertion_scope": "Actual Escape and the sole real close/backdrop button restore exact prior inert plus absent/false aria-hidden values on all eight seeded backgrounds, original body overflow clip, drawer inert/aria-hidden, hidden layer, collapsed opener, absent dialog role and opener focus."
+    },
+    {
+      "cell": "disposition:transitions:S62:03",
+      "observed_named_cases": [
+        "original built drawer traps forward and reverse boundary focus"
+      ],
+      "assertion_scope": "On 192 eligible targets in the actual built tray, real Tab from last wraps to first and Shift+Tab from first wraps to last; then Escape restores prior state."
+    },
+    {
+      "cell": "disposition:transitions:S62:04",
+      "observed_named_cases": [
+        "original built detached drawer releases Escape and initialized marker"
+      ],
+      "assertion_scope": "After real disconnect while open, the captured native AbortSignal is aborted, initialized marker absent, Escape dispatch produces zero removed-handler invocations, exact background/overflow restored and focus is not left in the detached subtree."
+    },
+    {
+      "cell": "disposition:transitions:S62:05",
+      "observed_named_cases": [
+        "original built detached drawer releases Escape and initialized marker"
+      ],
+      "assertion_scope": "Same real element is removed/reinserted; exactly one new document Escape registration is observed initially, opener/open/Escape work, later disconnect aborts it, and reinserting again restores working open/close. The existing current component proof separately retains repeated local-toggle cardinality coverage."
+    },
+    {
+      "cell": "disposition:findings:SF16",
+      "observed_named_cases": [
+        "original built detached drawer releases Escape and initialized marker"
+      ],
+      "assertion_scope": "Actual built same-element reconnection, native listener cancellation and no detached Escape invocation strengthen the corrected listener-lifetime observation. Preserve the existing component repeated-toggle proof rather than infer arbitrary reconnection counts from one production run."
+    },
+    {
+      "cell": "disposition:machines:S62",
+      "observed_named_cases": [
+        "original built drawer restores seeded state after Escape",
+        "original built backdrop restores seeded state",
+        "original built drawer traps forward and reverse boundary focus",
+        "original built detached drawer releases Escape and initialized marker"
+      ],
+      "assertion_scope": "Finite five-edge drawer contract is jointly covered by the four named original-built cases above, plus retained component repeated-toggle coverage for S62:05. No whole-site/task/platform claim."
+    }
+  ],
+  "execution_context": {
+    "product_source_M": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+    "product_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+    "normal_docs_run_R": 43582198099,
+    "original_pages_artifact_id": 14108783544,
+    "original_browser_artifact_id": 14107944699,
+    "original_build_job_id": 132409108684,
+    "tooling_Q": {
+      "base_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "local_actual_HEAD": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+      "controller_source_commit": null,
+      "controller_epoch": "Temp reviewed content-addressed tooling, not productM",
+      "content_sha256": "0a6911eb4bdd7b9e636ea1d57667d9b428fce1547e59835796e9031928c232ec",
+      "sources": {
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\major_readiness.py": "a636eb4e73d1097735b810f1057cacb65f63e36e146ce36193687d3520ffe6fc",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pages-admission-bf2f\\candidate\\.github\\scripts\\pages_readiness.py": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\controller.py": "ab80681ff7b2d6a62d0121ea9aeeddff28f377b1c24b5b8ba7a5d581cf5b8512",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-pages-M-controller\\browser.cjs": "ee9e1c525a72835b0dc09094dff5639e29df4c165e93d15a79e792bf7004fd03"
+      }
+    },
+    "runtime_before": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Users\\brenn\\AppData\\Local\\Microsoft\\WinGet\\Links\\gh.exe": "4cb5ff2afa351c890ae55b2f1fbf4f4a43f6a1e0ab20dfb0567a593bf9cee9ff",
+      "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b"
+    },
+    "runtime_after": {
+      "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+      "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe": "46461accbdc87dc88a5bdd6d611be095dd6147db009863d794f742ca90662efa",
+      "C:\\Users\\brenn\\AppData\\Local\\Microsoft\\WinGet\\Links\\gh.exe": "4cb5ff2afa351c890ae55b2f1fbf4f4a43f6a1e0ab20dfb0567a593bf9cee9ff",
+      "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\@playwright\\test\\package.json": "5587f932b8979b6889654b60e3c28aeb7ca0abbac00eec8c176c939a16149536",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright\\package.json": "8bc2ddebe8d9b051b9ecb87d62c6c63877e59d08617f32c3215681ca8bb70998",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\playwright-core\\package.json": "f061c58427e47e843e26d201f0a57076c734e57c734ecbbd87d4a23b7a20db9b"
+    },
+    "source_Q_before_after_equal": true,
+    "runtime_before_after_equal": true,
+    "admitted_and_served_member_manifest_equal": true,
+    "admitted_and_served_member_count": 465,
+    "responses_checked_against_admitted_manifest": 110,
+    "original_acquisition_sha256": "08b3aeb473c19219963ae1ef32e546f976a98ca3f07d17f76caf792fc3dfbeb9",
+    "original_CI_browser": "157.0.8103.50",
+    "local_browser": "156.0.8078.80",
+    "seconds_wall": 3.561069800052792,
+    "actual_named_pass": 5,
+    "server_cleanup_confirmed": true,
+    "browser_cleanup": "closed",
+    "timed_out": false,
+    "containment": "exited"
+  },
+  "scope": "Finite original-built mobile drawer contract S62, preserving narrower existing component history; actual Pagefind smoke retained without new Search disposition.",
+  "limits": [
+    "Local headless Chrome 156.0.8078.80, Windows/amd64, mobile viewport 390x844 only; no platform/browser union or full WCAG claim.",
+    "Original normal docs build at immutable M, successfully authenticated original uploads and exact 465-member static dataset. No publication/deployed-domain/current-main claim.",
+    "DOM setup intentionally seeds body overflow/inert/aria-hidden; bounded document registration instrumentation preserves the actual native AbortSignal. No fake HTML/Pagefind or component fixture.",
+    "Inputs are a finite drawer/page/locked-tool dependency scope, not a complete generic site build dependency membership protocol. A future rebuilt site requires its own authenticated artifact/byte observation; owner-byte equality alone is insufficient.",
+    "Temp tooling Q is content-addressed and retained separately, controller_source_commit null. Its source is not claimed to exist in product Git M.",
+    "Real Pagefind index bytes, query and keyboard UI navigation passed case5 as smoke. No new S55 cells, ranking/comprehensive-index requirement or full SITE-U01 qualification inferred.",
+    "No native/host/cohort/provider/user-consent/TUI or release qualification. Original private job log/acquisition/ZIP are not copied to repository evidence."
+  ]
+}

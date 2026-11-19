@@ -1,0 +1,29 @@
+{
+  "schema": "exact-normal-integration-terminal/1",
+  "recorded_utc": "2026-11-16T08:55:19.784375+00:00",
+  "expected_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "ci": {
+    "id": 43829498560,
+    "head_sha": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "event": "push",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "path": ".github/workflows/ci.yml",
+    "head_branch": "major/state-contracts"
+  },
+  "docs": {
+    "id": 43829498531,
+    "head_sha": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "event": "push",
+    "run_attempt": 1,
+    "status": "completed",
+    "conclusion": "failure",
+    "path": ".github/workflows/docs.yml",
+    "head_branch": "major/state-contracts"
+  },
+  "watch_exit": 1,
+  "verdict": "BLOCK",
+  "qualification": false,
+  "limits": "Original push source only, parentPR runs at same source excluded. No retry/cancel/merge/publication/source/ref changes. Whole successful run is eligibility, not yet actual cohort authentication."
+}

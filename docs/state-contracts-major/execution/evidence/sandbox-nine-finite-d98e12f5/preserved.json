@@ -1,0 +1,225 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d98e12f51d409cfd3cdb8c06b82e02eee0e3da61",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/sandbox_qualification; exact finite guard/effect/retry source acceptance successor"
+  },
+  "inputs": {
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "7c75389558766cf58fe32473909dd8627faafce5161ea0d54c69355dd577a0da",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "d2b55475e25a3f1f51230c7dcd2b3fe6d03492c1e6d47ba7477d6091b412c65c",
+    "plugins/ca-sandbox/tools/exec.test.ts": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+    "plugins/ca-sandbox/tools/network.test.ts": "34ed7a925f8d3f7668530646a4c700f3d9dcef987af39d8e0e3adf99a6093529",
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": "f2a7ded3f8238006f614978c7c92f9c6964ee3d55d158a323d4eedb653a8a078",
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "b40ae21eec8ff1bfaa707e827627fad2d0ef4f8505491ad7b52055295a5e5727",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e",
+    "plugins/ca-sandbox/tools/sandbox.js": "14f8d8eddae773dddc14aced4d3f37eaa2058244e5acbddc99a27c0ad2190c7f",
+    "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md": "67064779a9c2079db862fdf162b9c38bef6254147bf8a06e1a259d9ea8edab01",
+    "plugins/ca-sandbox/README.md": "b024372b828c7281a68ff7a4542ba20405a356449147e50ad346c5d59f624c8d",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+    "plugins/ca-sandbox/tools/build.test.ts": "e79aa3aaaafef020f138b0fc38bd886e0abde639ae789c8f7fb95f67c3cc6ae9",
+    "plugins/ca-sandbox/tools/build.ts": "cde16ff0d637a5e62b83bd9e73a174dbf298f5d7b739bd8f67cfe12df0e06c39",
+    "plugins/ca-sandbox/tools/builder-observation.test.ts": "109d50e185da073a98b858ce57f9419686f3bd32af5d50e0ec58c93ff4d60c7c",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/cli-resolve.test.ts": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+    "plugins/ca-sandbox/tools/cli.test.ts": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/cp.test.ts": "3741020ad0375ed4723ec8dcae667c9d30074e368582827ae6d3f149b4002623",
+    "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+    "plugins/ca-sandbox/tools/create-partial-compensation.test.ts": "3739126a37ab70b71b9c4bbb254f127dcf0608ee71a5f40a79dab1d72e94ea4e",
+    "plugins/ca-sandbox/tools/create.test.ts": "1d8ac64567ff99b60563ac8529bace3b85ee6b68bda0e8131adcde1c01b1ebad",
+    "plugins/ca-sandbox/tools/create.ts": "6b4801a9f3af26ffaeaca8d6fcfd35bcf3e7e15aaed5e616ce5df11fe9a96346",
+    "plugins/ca-sandbox/tools/dephash.test.ts": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+    "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+    "plugins/ca-sandbox/tools/docker-gate.test.ts": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+    "plugins/ca-sandbox/tools/installed-bundle.test.ts": "b8b0f75e1c2cb5ec9324fca7a276e548b6dcf419619a94c375582a72a7acaee2",
+    "plugins/ca-sandbox/tools/layering.test.ts": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+    "plugins/ca-sandbox/tools/lifecycle.test.ts": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+    "plugins/ca-sandbox/tools/mounts.test.ts": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+    "plugins/ca-sandbox/tools/multistack.test.ts": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+    "plugins/ca-sandbox/tools/native-build-inputs.test.ts": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+    "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+    "plugins/ca-sandbox/tools/run.test.ts": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+    "plugins/ca-sandbox/tools/smoke.test.ts": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+    "plugins/ca-sandbox/tools/smoke.ts": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+    "plugins/ca-sandbox/tools/supply-chain.test.ts": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+    "plugins/ca-sandbox/tools/teardown.test.ts": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+    "plugins/ca-sandbox/tools/claude-inside.js": "2d8ee2e5b55c5d55bc09777a88d9c91598059dd9f6537e04f8c9d02321dadba6"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S47:05",
+    "disposition:transitions:S50:02",
+    "disposition:transitions:S50:03",
+    "disposition:transitions:S50:04",
+    "disposition:transitions:S50:05",
+    "disposition:transitions:S50:06",
+    "disposition:transitions:S51:03",
+    "disposition:transitions:S51:04",
+    "disposition:transitions:S51:06",
+    "disposition:machines:S47",
+    "disposition:machines:S50",
+    "disposition:machines:S51"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-vitest.json",
+      "sha256": "37a14d4040d0eea6cf4bcd6aae4d65bec8413b87b6d4dcf359814500094c3bd1"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED-exit.json",
+      "sha256": "2db0d8d5a6b160fdcff59119484d1cea61611ac284186d9949913ecea09e60d5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED.stdout",
+      "sha256": "366457b09968925ca8dda12fead12baceeb7c3c23fb2db76e36505272cea3556"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-RED.stderr.json",
+      "sha256": "a886d6857a22fb01d8fc0f0f221ee8a073f3c3956e5a671e112ca1c3a6a3695c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-vitest.json",
+      "sha256": "58f8411aee99aa729d7a8d1490b2bd8da844861493c479dfa3eee49928799640"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN-exit.json",
+      "sha256": "62c80b7fd328fb175cd097777fe5e3107c0d9f330846183c538f1701e092abb5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN.stdout",
+      "sha256": "467dabcfbe462e797d000e6dddc0021c9699ca9d4c9be274feb0f685f29e5b8b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-GREEN.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-changed-coverage.json",
+      "sha256": "d42c78259dee4744a3d4c92e0519cc005df8f7313ae3487238dc90a199cf1581"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.json",
+      "sha256": "719d22b2c9ff6e7edde7d44280830022e7d4c4c723f4b5bd2a64a3f6ab32faa4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.stdout",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-typecheck-GREEN.stderr",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-preservation.json",
+      "sha256": "cfb71ee2d07bf6f29ef4b9ef4685360419d0fe858cc4f9580eece524e933b775"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-freeze.json",
+      "sha256": "b55da4920015ba0e8260fd3a75e96648152c827f5dc8ad1b9b31fdf103e5b911"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-delivery.json",
+      "sha256": "b06ba81554b4ad2dfa4cf993549db230afa5aad6e1188c1a93f553f9c60c5aaf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-vitest.config.mjs",
+      "sha256": "98f52963d3744921ecb712908ed4cc0933c5ab9c06837c48eedada3263db7b5a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/claude-late-cancel-tsconfig-checked.json",
+      "sha256": "bdc5df264528dccf38c41e12cd19b19346b7fbeb6b1c3c8422d1b08edd64611a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/raw/deadline16-original.json",
+      "sha256": "6018e7bd02fc32815be01f3ff18f9d7f3d310791797acf69654abc781c74c497"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/conformance-89d6-successors/sandbox4-preserved.json",
+      "sha256": "37220fe9efd2f0ac9a69ae959366669da374c4bbe85f503723fee387ebf1e416",
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-client-and-required-gate-tested.json",
+      "sha256": "095bd66e4908b23b1e29b4d250a04623d322702c4708f3c28f5e3c9f15e096f2",
+      "original_commit": "6a636870bc23f5079700faf58a234d19f6823eca"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sandbox-token-guard-software-tested.json",
+      "sha256": "f86b07554467fb8664b087113e825076890178737e4c46f7f645cd73b2971869",
+      "original_commit": "ef40ab5f33f4430a3650c225909801094acabbb4"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/sandbox17-tested.json",
+      "sha256": "634805d2db4407a9eea12d5fb1f50b79cd2b6c7010e7142abb2e65342db1fb1f",
+      "original_commit": "142e072bf33d23124194bd7d8c153d29ab5c7844"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-builder-ef40/raw/coverage-tests.json",
+      "sha256": "e973bb859cd16a5ab30b05d3c0a575bfadfa0b3468b33331bc6541f4a1e0a7c9"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-selected44-142e072b/raw/original-vitest.json",
+      "sha256": "9065bf7641e65fc9c3ee79419e9ee6dcaeb244dad51f31e702aefe6399b66dbd"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/delivery.json",
+      "sha256": "3d64d554c137a6d28abfff9f81f5b6ca6b5a0046d791505f34af197b0c17594c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/preserved.json",
+      "sha256": "90dfe83325ae9fe7d9678712566b7f91220696a2d18d4635c6728cd44bf11c19"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/source-inspection.json",
+      "sha256": "1c4ae14839eb4c6262579e7ef4342a78dd21f3596e74fb33b5cf4474fefd4c70"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/input-join.json",
+      "sha256": "5d2968b00dcffe547296bedf348e813333ee8d56e681f429ec11f07531c735b6"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/prior/cas-proposal.json",
+      "sha256": "54891e36cf537b1286399ae762c0c670ea03e60d34f42bfa975dcf8d4bac85c5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/original-observations.json",
+      "sha256": "4f0a2c1d7f066b57b9a0cc422232f0cb7ad92c968095a9ddf16e4bd866078d90"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/input-join.json",
+      "sha256": "06f801a2d66848a60970625b696c62bbe0cef08c1a58a6c76fe1de28f779b927"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/sandbox-nine-finite-d98e12f5/source-inspection.json",
+      "sha256": "3c8defb47bd21f5698d1b2989019e4ecb984ccedc033b46527a88faa4edf5ba1"
+    }
+  ],
+  "scope": "Nine previouslyPLANNED Sandbox clauses and finite completeS47/S50/S51 source machines. Existing related activeTESTED/PRESERVED row histories are untouched; no historical test is relabelled as rerun. S51 late-success cancellation specificsourcegap nowclosed by actualcommitted code plus exact43GREEN/4RED.",
+  "limits": [
+    "No new execution in successor.",
+    "No installed/liveDocker/networkenforcement/provider/model/physicalconsent/scenario/task/publication qualification.",
+    "Root rebuilt Claude bundle is literalcommitted inventory only, not new shippedCLI runtime evidence.",
+    "Whole-machinePRESERVED means finite complete source guard/effect/retry conformance, not every interleaving or whole-runtime acceptance.",
+    "Original frozen105 intake and all unselected evidence/history remain untouched.",
+    "Root stores original RED stderr as lossless UTF8 JSON text to retain its exact terminal blank line; original bytes/hash remain explicit and reconstructable. No raw observation or source claim changed."
+  ]
+}

@@ -239,6 +239,12 @@ classification, as with the legacy board archive. Do not run
 
 On any blocking finding, unstage the affected files, surface the finding, and STOP. An out-of-scope change that should not be lost gets an inline `[NEEDS-TRIAGE]` marker before it is set aside.
 
+At that discovery, use `${CLAUDE_PLUGIN_ROOT}/includes/harvest.md` to durably register
+the sanitized candidate with `source.workflow: commit-gate:set-aside`, its exact
+extractor origin suffix, stable workflow/work run and current source fingerprint.
+Do not wait until Phase 7 to capture it. A registration failure is
+`durable:false`, not an invented obligation or a stop on unrelated authorized work.
+
 **Stakes:** name what the finding would have cost if committed — a leaked credential is live the moment it lands and must be rotated; a scope-creep file ships untested behavior the review waved through. State that consequence on a credential or scope finding, not just "out of scope."
 
 Gate: the diff is clean — zero blocking findings.
@@ -246,6 +252,11 @@ Gate: the diff is clean — zero blocking findings.
 ## Phase 7 — Selective stage · gate: BLOCK
 
 **First, run the follow-up harvest — before staging anything.** Run the follow-up harvest (`${CLAUDE_PLUGIN_ROOT}/includes/harvest.md`) over any Phase 6 `[NEEDS-TRIAGE]` set-asides — promote discovered work through the selected owner (legacy `open-tasks.md` or native work HTML) and decisions to `open-questions.md`. Running this before the commit means raised work is staged and rides the work commit in the same payload.
+
+Use the registered exact candidates, reconcile unknown outcomes by exact
+operation/origin before retry, and retain per-item target readback. Promotion
+still occurs here under the existing scoped confirmation or sprint authority;
+early local capture does not stage work or remove branch contingency.
 
 **Atomicity rule:** a raised task riding the work commit is a **contingent default** — if the PR/branch is abandoned, the selected owner's additions are abandoned with it (self-correcting, ADR-0008). A follow-up that **must survive** PR abandonment is filed as a **GitHub issue**, not local work.
 

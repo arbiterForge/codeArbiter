@@ -1,0 +1,419 @@
+{
+  "method": "__main__.PrivateInstallJourney.test_legacy_source_and_cache_reinstall_preserves_original_backup",
+  "observations": [
+    {
+      "phase": "source-recognized-legacy-preserves-original-backup",
+      "actual": {
+        "statusLine": {
+          "type": "command",
+          "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+          "padding": 0
+        },
+        "_codearbiterStatuslineBackup": {
+          "type": "command",
+          "command": "private-original-source",
+          "padding": 8,
+          "extra": {
+            "keep": [
+              1,
+              2
+            ]
+          }
+        },
+        "spinnerVerbs": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsOwned": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsBackupV2": {
+          "mode": "append",
+          "verbs": [
+            "private-original-spinner"
+          ]
+        },
+        "nested": {
+          "preserve": "source"
+        },
+        "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\""
+      },
+      "expected": {
+        "statusLine": {
+          "type": "command",
+          "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+          "padding": 0
+        },
+        "_codearbiterStatuslineBackup": {
+          "type": "command",
+          "command": "private-original-source",
+          "padding": 8,
+          "extra": {
+            "keep": [
+              1,
+              2
+            ]
+          }
+        },
+        "spinnerVerbs": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsOwned": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsBackupV2": {
+          "mode": "append",
+          "verbs": [
+            "private-original-spinner"
+          ]
+        },
+        "nested": {
+          "preserve": "source"
+        },
+        "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\""
+      },
+      "whole_object_equal": true
+    },
+    {
+      "phase": "cache-recognized-legacy-preserves-original-backup",
+      "actual": {
+        "statusLine": {
+          "type": "command",
+          "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+          "padding": 0
+        },
+        "_codearbiterStatuslineBackup": {
+          "type": "command",
+          "command": "private-original-cache",
+          "padding": 8,
+          "extra": {
+            "keep": [
+              1,
+              2
+            ]
+          }
+        },
+        "spinnerVerbs": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsOwned": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsBackupV2": {
+          "mode": "append",
+          "verbs": [
+            "private-original-spinner"
+          ]
+        },
+        "nested": {
+          "preserve": "cache"
+        },
+        "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\""
+      },
+      "expected": {
+        "statusLine": {
+          "type": "command",
+          "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+          "padding": 0
+        },
+        "_codearbiterStatuslineBackup": {
+          "type": "command",
+          "command": "private-original-cache",
+          "padding": 8,
+          "extra": {
+            "keep": [
+              1,
+              2
+            ]
+          }
+        },
+        "spinnerVerbs": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsOwned": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "_codearbiterSpinnerVerbsBackupV2": {
+          "mode": "append",
+          "verbs": [
+            "private-original-spinner"
+          ]
+        },
+        "nested": {
+          "preserve": "cache"
+        },
+        "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\""
+      },
+      "whole_object_equal": true
+    },
+    {
+      "phase": "near-match-foreign-live-choice-replaces-obsolete-backup",
+      "actual": {
+        "statusLine": {
+          "type": "command",
+          "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+          "padding": 0
+        },
+        "_codearbiterStatuslineBackup": {
+          "type": "command",
+          "command": "\"python\" \"C:\\tools\\statusline.py\"",
+          "padding": 9,
+          "extra": {
+            "foreign": true
+          }
+        },
+        "spinnerVerbs": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "nested": {
+          "preserve": true
+        },
+        "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+        "_codearbiterSpinnerVerbsBackupV2": {
+          "mode": "append",
+          "verbs": [
+            "private-current-spinner"
+          ]
+        },
+        "_codearbiterSpinnerVerbsOwned": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        }
+      },
+      "expected": {
+        "statusLine": {
+          "type": "command",
+          "command": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+          "padding": 0
+        },
+        "_codearbiterStatuslineBackup": {
+          "type": "command",
+          "command": "\"python\" \"C:\\tools\\statusline.py\"",
+          "padding": 9,
+          "extra": {
+            "foreign": true
+          }
+        },
+        "spinnerVerbs": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        },
+        "nested": {
+          "preserve": true
+        },
+        "_codearbiterStatuslineOwner": "\"python\" \"C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-software54-current-7ac-pioovu01\\statusline\\profile\\tmp\\statusline-owned-4stjpu_c\\.claude\\plugins\\cache\\codearbiter\\ca\\9.9.9\\hooks\\statusline.py\"",
+        "_codearbiterSpinnerVerbsBackupV2": {
+          "mode": "append",
+          "verbs": [
+            "private-current-spinner"
+          ]
+        },
+        "_codearbiterSpinnerVerbsOwned": {
+          "mode": "replace",
+          "verbs": [
+            "Deliberating",
+            "Weighing the evidence",
+            "Consulting precedent",
+            "Reviewing the docket",
+            "Summoning the council",
+            "In chambers",
+            "Examining exhibits",
+            "Drafting the ruling",
+            "Calling order",
+            "Overruling prior context",
+            "Sustaining the objection",
+            "Issuing findings",
+            "Cross-examining the codebase",
+            "Invoking arbitration",
+            "Rendering judgment"
+          ]
+        }
+      },
+      "whole_object_equal": true
+    }
+  ]
+}

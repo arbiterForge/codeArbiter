@@ -1,0 +1,30 @@
+{
+  "repo": "arbiterForge/codeArbiter",
+  "run_id": 43651146996,
+  "run_head": "c2cf0a18b020ef426d7df94f70fe9770fa102c32",
+  "run_attempt": 1,
+  "job_id": 132619714103,
+  "job_conclusion": "success",
+  "artifact_id": 14136630659,
+  "archive_sha256": "2b75cff99223c2a1dd0c833df8214de6059b9e2f5a67b5c135aa602c7565517e",
+  "members": [
+    "artifact-candidate/ca-artifact-windows-amd64.exe",
+    "artifact-candidate/release.json",
+    "ci20-native-tested.json",
+    "native-observation.json",
+    "native-tests.json"
+  ],
+  "candidate_identity": {
+    "manifest_sha256": "b3dbea9eedb2917c07272ab20ec24116f424ee610bbfa3cd2b3eaf75f941417c",
+    "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070"
+  },
+  "scope": "Authentic successful tested-input job, not final release/installed qualification; overall run status remains separate",
+  "actual_checkout_source": "3d37c675d065c0be50b23b3612d01f431ba130ec",
+  "actual_checkout_tree": "7a21f4467de761d3f8ece1a73c6ae5f51b515557",
+  "source_tree_equal_target_c2": true,
+  "module_sha256": "f79741ca03192962140efae78835b72d09c3eaf6167ea09d8b9fe6904b4495cf",
+  "native_tested_input": true,
+  "full_module_selected": 482,
+  "full_module_observed": 482,
+  "upload_attribution": "PASS maintained major_readiness.validate_upload exact named step plus original retained log id/digest"
+}

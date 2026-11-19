@@ -1,0 +1,14 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl\\run-owning.py"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-detached-update-bytecode-fix-3uh3ltcl",
+ "exit_code": 0,
+ "elapsed_seconds": 0.38399719999870285,
+ "production_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+ "test_sha256": "3eca42c44bb7fea002d3f04e42e217d0053e3dc29febab40e86f939489217745",
+ "stdout_sha256": "5539a5922b363b9d4d6d21b0e426565790daf3a60f3609c365e6798476477536",
+ "stderr_sha256": "88e71faff9a708f7fdd64a10f2018ec39e7f6957c3cffd9186a62c240255b6d8"
+}

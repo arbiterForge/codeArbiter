@@ -1,0 +1,61 @@
+{
+  "kind": "PRIVATE_MINIMAL_OVERLAP_FIX_ACTUAL_GREEN",
+  "source_epoch": "bb66e3fca9fa0b87b5a983ccd1e930b691f22861",
+  "subjects": [
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "preimage_sha256": "24d2865db16d21f6f420336de0745fbed2191c51433c4e6bc19a25fce32bb9ef",
+      "candidate_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+      "kind": "minimal_shared_guard"
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_boundary_test.go",
+      "preimage": "ABSENT_IN_BB66",
+      "candidate_sha256": "ce4e049057c729a209375e19596fbfa18d33960e4b00683d2fc50bff39ba7b30",
+      "kind": "unchanged_formatted_actual_RED_test"
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_denial_unix_test.go",
+      "preimage": "ABSENT_IN_BB66",
+      "candidate_sha256": "b86ae151a3a826c21fa70a415d1089525a5652889d144df9b36fce28f4847cef",
+      "kind": "unchanged_formatted_actual_RED_test"
+    },
+    {
+      "path": "core/artifacts/internal/store/journal_contract_denial_windows_test.go",
+      "preimage": "ABSENT_IN_BB66",
+      "candidate_sha256": "63414ff54ccba5ee28580f81d0d88a616c3205267e78e305804560b15968c8a1",
+      "kind": "unchanged_formatted_actual_RED_test"
+    }
+  ],
+  "files": {
+    "actual-result.json": "0840014546c0c09f78cd5be4dd9f25ed1d709e5a5075cfb1e766c6d24547cd26",
+    "actual.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "actual.stdout.jsonl": "d3852a3af759e6f33ea6a645cfb358a0e99014b490e3bfb9da1d7c3954214784",
+    "after.json": "54d8f3b508a5e15f2800db94a484c8827e37ae8fdc040c543a578499077b1bd4",
+    "authorization-delta.json": "a1213a7b7e9093eb22dd8f7e710f2a6d90ba73f601461e3588747b55dde74e4c",
+    "before.json": "54d8f3b508a5e15f2800db94a484c8827e37ae8fdc040c543a578499077b1bd4",
+    "compiler-build-trace.json": "5f1c505d9164735e884bdbe3803ca5318e68b1543f936c3babee570bcf67d3f6",
+    "controller-after.json": "163c0a820ae892cd990656226265677f95f7fa8c2a5f222e9201da9a5c4b58a6",
+    "controller.json": "cec206574268f0007904fce6bd4ccbb3579b77aae3998d7d49ad620f34d7c046",
+    "environment.json": "b0dccf4fd700af05613689dc9584d17968087ad49c0d0daf8a5b260653d148e6",
+    "execution-start.json": "0e15e91a3a94e651b89df8dcbec2fe9383098ebff979a66ef62f9d4b139e548b",
+    "format-record.json": "64f81d40d1b5b506e8db92fa8d28c6258cd34dcb560164d8954f0fe73426122d",
+    "freeze.json": "ebcb80b20016306a8a01434add39b487bf6062ac3231177b8a0fbd6d8c2578f9",
+    "gofmt.stderr": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "gofmt.stdout": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "production-overlay.json": "e38e90a831182e97fe4534757a9b1031355973cbf77dc1f641234411b62711f9",
+    "proposal.patch": "c28da2ff7c9d2074b6bf642f95aea7d767aaea64921004f2226b00cc6ad2156c",
+    "red-cache-origin.json": "c32419e0a447df2d67bd9b96bf7a4ac2b7803863b4fadc5f3f324bd49c8f13a8",
+    "result-and-scope.json": "e87e9ecca28a8ab58fe5f0903128352b3e756a80c98010d3a1ebefb5b52395af",
+    "run_once.py": "3850b11787820ee93043aff92a18200580ab8dd3c9e3830cba957d1ec81a2ce5",
+    "seal.py": "f6c333502540d7b3d4c174766552d19ca439e5c6ecdde7c67dd3a13c82d2a5e0",
+    "stability.json": "7926dcd74b3e9c0a4ba40a3c6e212e52a61a4cfe797a4c1f5e5630b64e6841e0",
+    "summary.json": "30434bdf6ac4cfaa8cfcbf3b08c9f4f69c68ef8dc8c614d6e1605135dd3334d8",
+    "tests-only.patch": "ba47059075960e384c8c790dc5640b9a6d6b5a3f0e23999ea45e7a790171b554",
+    "transaction-only.patch": "219558988171b915eade142d0f73eac0813b9a87e81794d65577544ac762a6a0"
+  },
+  "actual_go_run_count_this_successor": 1,
+  "original_red_preserved": true,
+  "canonical_writes": false,
+  "qualification": false
+}

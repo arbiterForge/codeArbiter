@@ -1,0 +1,104 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root: literal9clause workflow source assessment with accepted PROGRAM/ADR0043 deltas"
+ },
+ "inputs": {
+  "core/surface/commands/conflict.md": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+  "core/surface/includes/safety-core.md": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+  "core/surface/SPRINT.md": "d3d469e9f741985493a1a391d1d9239a59f6995acd1c2b45463a2978c5146aa6",
+  "core/surface/commands/feature.md": "3d930a47301161c9e6afb522881f1e14a853c5f10469bcd5f8c3dde8b400a916",
+  "core/surface/skills/brainstorming/SKILL.md": "77f658b30ac9842b0f052ff16563075142d0ab25ac5a0bf895072c40dcd64c2b",
+  "core/surface/skills/writing-plans/SKILL.md": "7284798238e8f98fdd47b8e9ef4a7d9b6dc0e88f36e21e26a27606287df60bf7",
+  "core/surface/skills/executing-plans/SKILL.md": "099cbe0fbddb5bde99e77b5eefaf5cb567563e6d6cbea1768fd3ab0290fa6c61",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-02",
+  "disposition:transitions:WF-02:02"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/clause-inspection.json",
+   "sha256": "f7e1074cadb48ea49ae4bac66f790dc1770f45471b0f2f594b285072b6ec9628"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/workflow-entry-source-384269/source-bindings.json",
+   "sha256": "4d65db1b63fb692a3eca9704439c4bb3e1b4604e5b8141e846f22e42ae9a8990"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-02",
+   "frozen_row_sha256": "c410c8f6350fa6e49eccd0c7359eae4130e5260d42939ae97e65021874bbaf8a",
+   "clause_ids": [
+    "disposition:transitions:WF-02:01",
+    "disposition:transitions:WF-02:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 8,
+     "end": 28,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    },
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 76,
+     "end": 81,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    },
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 25,
+     "end": 28,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    },
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 70,
+     "end": 81,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    }
+   ],
+   "semantic_assessment": "Complete current guidance source consistency, including accepted scoped-conflict and assistive-engine changes; all literal guards/effects/retry bounds are separately assessed.  No observed runtime/task/host result claimed."
+  },
+  {
+   "cell": "disposition:transitions:WF-02:02",
+   "frozen_row_sha256": "a2ec64012794ee80ab3205a3a106a1f626dd7b59fefbdd24fcca1a7f4cffd9e9",
+   "clause_ids": [
+    "disposition:transitions:WF-02:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 25,
+     "end": 28,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    },
+    {
+     "path": "core/surface/commands/conflict.md",
+     "start": 70,
+     "end": 81,
+     "file_sha256": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736"
+    }
+   ],
+   "semantic_assessment": "Actual user resolution permits only affected work to resume from its suspension point. Record the ruling; document update occurs only if authorized. Resolution neither grants unrelated changes nor erases prior history/denials. No response, recency or orchestrator preference substitutes for the user; independently authorized work never needed this unrelated ruling. No observed runtime/task/host result claimed."
+  }
+ ],
+ "scope": "Guidance source-only conformance, no agent execution or runtime/host/task promotion",
+ "limits": [
+  "Workflow templates prescribe agent behavior; source review is not evidence that any host/agent actually executed the protocol.",
+  "Small-lane analytical shorthand is interpreted against the exact pinned/current two-implementation-files-plus-tests rule.",
+  "No frozen input, existing advanced row, runtime epoch or task status is changed."
+ ]
+}

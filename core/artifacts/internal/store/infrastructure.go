@@ -162,11 +162,29 @@ func (f *FS) PutContextToken(sha string, b []byte) error {
 	return f.createOrCompare(meta+"/context-tokens/"+sha+".json", b, 0600)
 }
 
+// derivedKinds is the closed set of reserved output directories PutDerived may
+// write. Every consumer that recognizes reserved outputs (evidence snapshot and
+// normalized completion) must validate each of these; a test enforces that.
+var derivedKinds = []string{"farm-bindings", "farm-seals", "farm-markers", "evidence-contexts", "context-previews"}
+
+// DerivedKinds returns a copy of the closed derived-output directory set.
+func DerivedKinds() []string { return append([]string{}, derivedKinds...) }
+
+func derivedKind(kind string) bool {
+	for _, k := range derivedKinds {
+		if k == kind {
+			return true
+		}
+	}
+	return false
+}
+
 // PutDerived records immutable, content-addressed execution metadata. Its
-// allowlist is closed: farm receipts and engine-owned evidence contexts only;
-// canonical planning authority remains in the HTML pair.
+// allowlist is closed: farm receipts, engine-owned evidence contexts and
+// ordinary context previews only; canonical planning authority remains in the
+// HTML pair. Callers validate the record's own format before writing it.
 func (f *FS) PutDerived(kind, sha string, b []byte) error {
-	if (kind != "farm-bindings" && kind != "farm-seals" && kind != "farm-markers" && kind != "evidence-contexts" && kind != "context-previews") || !digest(sha) || canonical.BytesHash(b) != sha || len(b) > canonical.MaxBytes {
+	if !derivedKind(kind) || !digest(sha) || canonical.BytesHash(b) != sha || len(b) > canonical.MaxBytes {
 		return fault.New("INVALID_OUTPUT", "invalid content-addressed derived receipt")
 	}
 	return f.createOrCompare(meta+"/"+kind+"/"+sha+".json", b, 0600)

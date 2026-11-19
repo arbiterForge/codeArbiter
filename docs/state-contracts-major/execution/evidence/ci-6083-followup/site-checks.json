@@ -1,0 +1,84 @@
+[
+  {
+    "name": "fresh-verify",
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+      "scripts/capture/verify.ts"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 0.13927399995736778,
+    "stdout_sha256": "91f6e83213231dde4a7e6f7848e78b1dc942188b97afe5dc8e744468d77c1ca7",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "capture-tests",
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+      "run",
+      "test/capture/capture-harness.test.ts",
+      "test/capture/stale-capture.test.ts",
+      "--reporter=json",
+      "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-capture-refresh-gfzfrvpr\\capture-tests-results.json"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 7.301623999956064,
+    "stdout_sha256": "c0dc634445c2ed5a3cbd1d85b660752218aa2dc1e1513977ee94c871fcdaac5b",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "gen-source",
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+      "scripts/gen.ts"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 3.5673277999740094,
+    "stdout_sha256": "d62b78b714bf324a1e9f3606414c6bf8a755b5ed72f86406baf1345b1bbd8b45",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "gen-atlas",
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+      "scripts/generate-atlas.ts"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 0.7629671000177041,
+    "stdout_sha256": "e8ddf6b29d472ddb79cccf6bf6de9d1429aaa41bf9bacb5f0373b86d4b378b0e",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "gen-diagrams",
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+      "scripts/generate-diagrams.ts"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 0.1801648000255227,
+    "stdout_sha256": "ef8d29d5c291fd1fc42d6913b252ef2f70dae251673ccdd2af22aed75df6dcd9",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+    "name": "audit-diagrams",
+    "argv": [
+      "C:/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+      "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\tsx\\dist\\cli.mjs",
+      "scripts/diagram-audit.ts"
+    ],
+    "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site",
+    "exit_code": 0,
+    "seconds": 0.14321020001079887,
+    "stdout_sha256": "c564af8b5fed8d995a4c57cc81a1675575ccdab85a6aa907ae88f747f83b4831",
+    "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  }
+]

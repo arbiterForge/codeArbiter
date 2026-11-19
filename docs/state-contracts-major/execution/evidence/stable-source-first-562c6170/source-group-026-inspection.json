@@ -1,0 +1,3845 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-026",
+  "positive_input_join": {
+    "core/artifacts/internal/authority/receipt.go": {
+      "sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+      "bytes": 23009,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+        "bytes": 23009
+      }
+    },
+    "core/artifacts/internal/observation/contract.go": {
+      "sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+      "bytes": 36597,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+        "bytes": 36597
+      }
+    },
+    "core/artifacts/internal/operations/capture_export.go": {
+      "sha256": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479",
+      "bytes": 7764,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479",
+        "bytes": 7764
+      }
+    },
+    "core/artifacts/internal/operations/context_authority.go": {
+      "sha256": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+      "bytes": 13681,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+        "bytes": 13681
+      }
+    },
+    "core/artifacts/internal/operations/engine.go": {
+      "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+      "bytes": 22281,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+        "bytes": 22281
+      }
+    },
+    "core/artifacts/internal/operations/evidence_context.go": {
+      "sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+      "bytes": 9736,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+        "bytes": 9736
+      }
+    },
+    "core/artifacts/internal/operations/lifecycle.go": {
+      "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+      "bytes": 16746,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+        "bytes": 16746
+      }
+    },
+    "core/artifacts/internal/operations/migration.go": {
+      "sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+      "bytes": 8477,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+        "bytes": 8477
+      }
+    },
+    "core/artifacts/internal/operations/mutations.go": {
+      "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+      "bytes": 17923,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+        "bytes": 17923
+      }
+    },
+    "core/artifacts/internal/operations/protocol.go": {
+      "sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+      "bytes": 30110,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+        "bytes": 30110
+      }
+    },
+    "core/artifacts/internal/operations/sprint.go": {
+      "sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+      "bytes": 17978,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+        "bytes": 17978
+      }
+    },
+    "core/artifacts/internal/operations/work.go": {
+      "sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "bytes": 30899,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+        "bytes": 30899
+      }
+    },
+    "core/artifacts/internal/operations/work_coordination.go": {
+      "sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "bytes": 16268,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+        "bytes": 16268
+      }
+    },
+    "core/artifacts/internal/operations/work_effects.go": {
+      "sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+      "bytes": 13995,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+        "bytes": 13995
+      }
+    },
+    "core/artifacts/internal/operations/work_project.go": {
+      "sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "bytes": 12280,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+        "bytes": 12280
+      }
+    },
+    "core/artifacts/internal/operations/work_transition_map.go": {
+      "sha256": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+      "bytes": 6971,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+        "bytes": 6971
+      }
+    },
+    "core/artifacts/internal/read/read.go": {
+      "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+      "bytes": 15094,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+        "bytes": 15094
+      }
+    },
+    "core/artifacts/internal/render/render.go": {
+      "sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+      "bytes": 18629,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+        "bytes": 18629
+      }
+    },
+    "core/artifacts/internal/repository/catalog.go": {
+      "sha256": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+      "bytes": 6203,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+        "bytes": 6203
+      }
+    },
+    "core/artifacts/internal/schema/knowledge.schema.json": {
+      "sha256": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+      "bytes": 7485,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+        "bytes": 7485
+      }
+    },
+    "core/artifacts/internal/store/infrastructure.go": {
+      "sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+      "bytes": 7709,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+        "bytes": 7709
+      }
+    },
+    "core/artifacts/internal/store/transaction.go": {
+      "sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+      "bytes": 20687,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+        "bytes": 20687
+      }
+    },
+    "core/artifacts/internal/validate/knowledge.go": {
+      "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+      "bytes": 3292,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+        "bytes": 3292
+      }
+    },
+    "core/artifacts/internal/validate/validate.go": {
+      "sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+      "bytes": 21322,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+        "bytes": 21322
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    }
+  },
+  "current_input_membership": [],
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:N15",
+      "frozen_record": {
+        "machine_id": "N15",
+        "name": "Immutable observation, source, event and receipt chain",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-04",
+          "NT-11",
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [
+          "NT-04",
+          "NT-11"
+        ],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 4,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/capture_export.go"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-05"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "5bbd87a60e200f287431bb98ee8712e897e9421a82cfb9da1cf97920011bfc30",
+      "group": "source-group-026",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Immutable observation, source, event and receipt chain. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:N26",
+      "frozen_record": {
+        "machine_id": "N26",
+        "name": "Paired legacy spec/plan migration and conservative rollback",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-05",
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [
+          "NT-05"
+        ],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 3,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/migration.go"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-06"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "917b49e3c4bf9816cd9ed38fb4561b47ce122d95c43a3ce9af8b96068b1b62a8",
+      "group": "source-group-026",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Paired legacy spec/plan migration and conservative rollback. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:N32",
+      "frozen_record": {
+        "machine_id": "N32",
+        "name": "GitHub Project item and field effect",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 5,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_project.go"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "02ed58c4f714842df7631fccc088a826c779cdb47179ab48425cada1b8db159e",
+      "group": "source-group-026",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of GitHub Project item and field effect. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:N33",
+      "frozen_record": {
+        "machine_id": "N33",
+        "name": "Mapped local-to-remote coordination",
+        "domain": "Native artifact engine",
+        "kind": "implemented",
+        "owner": "native",
+        "closure_task": "NT-12",
+        "task_ids": [
+          "NT-12"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 11,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "e78806e6c373c66e88991ba449893b4c80be3a115720f5915010e9a07752c9d4",
+      "group": "source-group-026",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Mapped local-to-remote coordination. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N04:04",
+      "frozen_record": {
+        "transition_id": "N04:04",
+        "machine_id": "N04",
+        "owner": "native",
+        "baseline": {
+          "from_state": "candidate files",
+          "from": "candidate files",
+          "event": "catalog scan",
+          "guard": "unique ID; correct directory/kind; no same-slug HTML+Markdown",
+          "to": "valid catalog or invalid or ambiguous",
+          "effects": "Spec and plan directories remain strict on catalog scans; optional kinds read only when active.",
+          "failure_retry": "One invalid strict spec/plan can reject unrelated catalog-based operation; selected work avoids broad catalog.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/repository/catalog.go",
+              "symbol": "scanContracts",
+              "lines": [
+                55
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/repository/catalog.go"
+            }
+          ],
+          "transition_id": "N04:04"
+        },
+        "task_ids": [
+          "NT-05",
+          "NT-09",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-06",
+          "SEQ-07"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "2c619c0f75748be2cea95724fa68d62582398320428cdb3384bc1aa8d4810487",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N05:04",
+      "frozen_record": {
+        "transition_id": "N05:04",
+        "machine_id": "N05",
+        "owner": "native",
+        "baseline": {
+          "from_state": "approved",
+          "from": "approved",
+          "event": "approval chain unavailable or subject changes",
+          "guard": "on authority inspection",
+          "to": "approved but evidence stale/unverified",
+          "effects": "Expose derived authority status without rewriting stored progress.",
+          "failure_retry": "Strict authority consumers reject; ordinary progress can remain available.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/authority/receipt.go",
+              "symbol": "Approved",
+              "lines": [
+                336
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/authority/receipt.go"
+            }
+          ],
+          "transition_id": "N05:04"
+        },
+        "task_ids": [
+          "NT-09",
+          "NT-11",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-07"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "ba422eb1fd1163b8c71ca614eee0a1107016138ed84fb97434258c03d76fbe6c",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N15:01",
+      "frozen_record": {
+        "transition_id": "N15:01",
+        "machine_id": "N15",
+        "owner": "native",
+        "baseline": {
+          "from_state": "absent",
+          "from": "absent",
+          "event": "evidence-context / sprint context",
+          "guard": "exact selected subject + inputs; activity-specific guards",
+          "to": "context retained",
+          "effects": "Create immutable context describing exact subject/prompt/review material; no progress change.",
+          "failure_retry": "Stale or mismatched subject rejects.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/evidence_context.go",
+              "symbol": "evidenceContext",
+              "lines": [
+                16
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/evidence_context.go"
+            }
+          ],
+          "transition_id": "N15:01"
+        },
+        "task_ids": [
+          "NT-04",
+          "NT-11",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-05"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "da7838ac9aa0d361cb97f58ae7eee2ac6645e17cc114f27d96c5693b33814501",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N15:02",
+      "frozen_record": {
+        "transition_id": "N15:02",
+        "machine_id": "N15",
+        "owner": "native",
+        "baseline": {
+          "from_state": "observed authority source",
+          "from": "observed authority source",
+          "event": "capture-observation / specialized capture",
+          "guard": "closed producer profile, exact context/source/subject/version/identity correspondence",
+          "to": "event then receipt retained",
+          "effects": "Store immutable event then receipt; no automatic approval/task acceptance.",
+          "failure_retry": "Interrupted between writes can retry same content hashes; legacy raw capture cannot mint current authority.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/capture_export.go",
+              "symbol": "capture",
+              "lines": [
+                26
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/capture_export.go"
+            }
+          ],
+          "transition_id": "N15:02"
+        },
+        "task_ids": [
+          "NT-04",
+          "NT-11",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-05"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "695b3cac941af8d356b0030c2812ee4f96ff76a35aebb3fa071d62c6ebfa7f74",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N15:03",
+      "frozen_record": {
+        "transition_id": "N15:03",
+        "machine_id": "N15",
+        "owner": "native",
+        "baseline": {
+          "from_state": "receipt retained",
+          "from": "receipt retained",
+          "event": "Inspect",
+          "guard": "all retained hashes/schemas/chains valid",
+          "to": "historical or current inventory",
+          "effects": "Read historical v0.1 evidence without relabeling current.",
+          "failure_retry": "Missing/tampered chain rejects inspection.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/authority/receipt.go",
+              "symbol": "Inspect",
+              "lines": [
+                136
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/authority/receipt.go"
+            }
+          ],
+          "transition_id": "N15:03"
+        },
+        "task_ids": [
+          "NT-04",
+          "NT-11",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-05"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "dafeadbe835b8c2ce8e75111e74dd9063a562ba62dc19e37b81e1f4141f29437",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N15:04",
+      "frozen_record": {
+        "transition_id": "N15:04",
+        "machine_id": "N15",
+        "owner": "native",
+        "baseline": {
+          "from_state": "receipt retained",
+          "from": "receipt retained",
+          "event": "Load / strict consume",
+          "guard": "current formats/profile/subject correspond exactly",
+          "to": "current valid or stale/invalid",
+          "effects": "Validate actual evidence links, not actor text/comments.",
+          "failure_retry": "Historical authority rejected; actual host/user permission remains separate.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/authority/receipt.go",
+              "symbol": "Load",
+              "lines": [
+                255
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/authority/receipt.go"
+            }
+          ],
+          "transition_id": "N15:04"
+        },
+        "task_ids": [
+          "NT-04",
+          "NT-11",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-05"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "476e6dd20e78f5312021124850294818a3a7c2313faab069b73adf46881077f5",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N20:01",
+      "frozen_record": {
+        "transition_id": "N20:01",
+        "machine_id": "N20",
+        "owner": "native",
+        "baseline": {
+          "from_state": "unread/partial page",
+          "from": "unread/partial page",
+          "event": "contextual read",
+          "guard": "whole record fits budget; exact selection/vector/manifest/budget for continuation",
+          "to": "partial page or completed delivery",
+          "effects": "Return whole records; persist page token or context ticket in infrastructure.",
+          "failure_retry": "Invalid cursor/oversize refuses; not a side-effect-free read.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/read/read.go",
+              "symbol": "Page",
+              "lines": [
+                320
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go"
+            }
+          ],
+          "transition_id": "N20:01"
+        },
+        "task_ids": [
+          "NT-06",
+          "NT-09",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-07"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5731fa717496383a6623a5407e0e1f814ca9d73eaa27fec64ec80c59440621b3",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N20:02",
+      "frozen_record": {
+        "transition_id": "N20:02",
+        "machine_id": "N20",
+        "owner": "native",
+        "baseline": {
+          "from_state": "partial page/completed delivery",
+          "from": "partial page/completed delivery",
+          "event": "contributing model/evidence changes",
+          "guard": "vector/manifest mismatch on resume",
+          "to": "stale cursor",
+          "effects": "Refuse continuation under old identity.",
+          "failure_retry": "Restart coherent read; ticket grants no permission or comprehension.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/read/read.go",
+              "symbol": "Page",
+              "lines": [
+                320
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/read/read.go"
+            }
+          ],
+          "transition_id": "N20:02"
+        },
+        "task_ids": [
+          "NT-06",
+          "NT-09",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31",
+          "SEQ-07"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "222379606d12e9efbcdd56ab1e81ea27b1998e294cae59e15375ed8473c41d57",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N25:01",
+      "frozen_record": {
+        "transition_id": "N25:01",
+        "machine_id": "N25",
+        "owner": "native",
+        "baseline": {
+          "from_state": "any basis",
+          "from": "any basis",
+          "event": "record.update basis",
+          "guard": "source-observed requires source_refs; valid record",
+          "to": "requested basis",
+          "effects": "Persist provenance classification, not authenticated truth.",
+          "failure_retry": "Missing source or invalid references rejects; no automatic trust promotion.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/validate/knowledge.go",
+              "symbol": "knowledgeStructure",
+              "lines": [
+                13
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+            }
+          ],
+          "transition_id": "N25:01"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "27ef7ece76b6c205096f5aefecd5b7f58f23894a7f85d7af8c51318cf4d5524b",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N25:04",
+      "frozen_record": {
+        "transition_id": "N25:04",
+        "machine_id": "N25",
+        "owner": "native",
+        "baseline": {
+          "from_state": "command unrun/reported-pass/reported-fail",
+          "from": "command unrun/reported-pass/reported-fail",
+          "event": "record.update command.run_state",
+          "guard": "command shape valid",
+          "to": "requested reported state",
+          "effects": "Record caller statement; native engine never executes stored command or synthesizes receipt.",
+          "failure_retry": "This is descriptive knowledge, independent from task-check or strict verification.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/validate/knowledge.go",
+              "symbol": "knowledgeStructure",
+              "lines": [
+                13
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/validate/knowledge.go"
+            }
+          ],
+          "transition_id": "N25:04"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "abd4d1b5869d6418f350dce1fb8a247cfe151ba07088906008e122b42daf92be",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N26:01",
+      "frozen_record": {
+        "transition_id": "N26:01",
+        "machine_id": "N26",
+        "owner": "native",
+        "baseline": {
+          "from_state": "legacy pair",
+          "from": "legacy pair",
+          "event": "migration-preview",
+          "guard": "caller typed spec+plan; every source line covered exactly once; active mapping targets",
+          "to": "preview",
+          "effects": "Return exact source/target/hash map and semantic_mapping_verified=false; old approvals historical.",
+          "failure_retry": "Missing/overlap lines, invalid binding, reserved provenance IDs reject.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/migration.go",
+              "symbol": "migration",
+              "lines": [
+                26
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/migration.go"
+            }
+          ],
+          "transition_id": "N26:01"
+        },
+        "task_ids": [
+          "NT-05",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-06"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d3a5943cd1a6ed2b7a5e6e82f45fa8f49032cb5f729ad229353407478ec591fa",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N26:02",
+      "frozen_record": {
+        "transition_id": "N26:02",
+        "machine_id": "N26",
+        "owner": "native",
+        "baseline": {
+          "from_state": "preview",
+          "from": "preview",
+          "event": "migration-apply",
+          "guard": "preview hash still exact; mapping attestation supplied",
+          "to": "HTML draft pair",
+          "effects": "Atomic create HTML pair+delete Markdown; revision1 draft; preserve exact old bytes and mapping history.",
+          "failure_retry": "No transfer of old approval/status claims; prepared tx recover.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/migration.go",
+              "symbol": "migrate",
+              "lines": [
+                146
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/migration.go"
+            }
+          ],
+          "transition_id": "N26:02"
+        },
+        "task_ids": [
+          "NT-05",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-06"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "32a68efbc3741ae706781c83535c5ea7b9fb62fd3f6a5fd576ccfc8ecb5c4521",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N26:03",
+      "frozen_record": {
+        "transition_id": "N26:03",
+        "machine_id": "N26",
+        "owner": "native",
+        "baseline": {
+          "from_state": "HTML draft pair",
+          "from": "HTML draft pair",
+          "event": "migration-rollback",
+          "guard": "specific committed migration journal; current after bytes exactly cutover",
+          "to": "rolled back legacy",
+          "effects": "New journal restores Markdown and deletes introduced HTML.",
+          "failure_retry": "Any intervening candidate edit refuses rollback; original committed tx remains history.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/store/transaction.go",
+              "symbol": "RollbackMigration",
+              "lines": [
+                565
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/store/transaction.go"
+            }
+          ],
+          "transition_id": "N26:03"
+        },
+        "task_ids": [
+          "NT-05",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-06"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "01cbe2bfb33f329cc97451befbf66100ff64b5ec1b2ee82aa1bcdbe443de1594",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N29:01",
+      "frozen_record": {
+        "transition_id": "N29:01",
+        "machine_id": "N29",
+        "owner": "native",
+        "baseline": {
+          "from_state": "queued",
+          "from": "queued",
+          "event": "work-update start",
+          "guard": "CAS and valid native owner",
+          "to": "active",
+          "effects": "Set start date; atomically stage mapped external desire if configured.",
+          "failure_retry": "Any other source state rejects duplicate start.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work.go",
+              "symbol": "workUpdate",
+              "lines": [
+                731
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+            }
+          ],
+          "transition_id": "N29:01"
+        },
+        "task_ids": [
+          "NT-07",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "868d1cd5fdfe78345a6886ba06ca07bbeb487720324f406c5e2da5c08fd1e14c",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N29:02",
+      "frozen_record": {
+        "transition_id": "N29:02",
+        "machine_id": "N29",
+        "owner": "native",
+        "baseline": {
+          "from_state": "queued or active",
+          "from": "queued or active",
+          "event": "work-update complete",
+          "guard": "CAS",
+          "to": "complete",
+          "effects": "Set complete date; checks remain unknown; stage mapped desire.",
+          "failure_retry": "Does not assert tests, accepted plan, merged PR or delivered release.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work.go",
+              "symbol": "workUpdate",
+              "lines": [
+                731
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+            }
+          ],
+          "transition_id": "N29:02"
+        },
+        "task_ids": [
+          "NT-07",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d46f6802283401d4394a6869bbeee68604817acaf101dddc0abf65bddb17367d",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N29:03",
+      "frozen_record": {
+        "transition_id": "N29:03",
+        "machine_id": "N29",
+        "owner": "native",
+        "baseline": {
+          "from_state": "complete",
+          "from": "complete",
+          "event": "work-update reopen",
+          "guard": "CAS",
+          "to": "active",
+          "effects": "Clear completion date; ensure started date; stage mapped reopen desire.",
+          "failure_retry": "Other source state rejects.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work.go",
+              "symbol": "workUpdate",
+              "lines": [
+                731
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+            }
+          ],
+          "transition_id": "N29:03"
+        },
+        "task_ids": [
+          "NT-07",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c13f02b36e5b9daa4a0884045c02143253344b3867238724a3576c071c67ed2d",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N29:04",
+      "frozen_record": {
+        "transition_id": "N29:04",
+        "machine_id": "N29",
+        "owner": "native",
+        "baseline": {
+          "from_state": "any nonarchived",
+          "from": "any nonarchived",
+          "event": "work-update archive",
+          "guard": "CAS",
+          "to": "archived",
+          "effects": "Archive local work; no mapped lifecycle action (only start/complete/reopen map).",
+          "failure_retry": "No unarchive operation; archived remains archived under progress commands.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work.go",
+              "symbol": "workUpdate",
+              "lines": [
+                731
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+            }
+          ],
+          "transition_id": "N29:04"
+        },
+        "task_ids": [
+          "NT-07",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e66084e5f56a1904224e32e92fd7df574c7d0553d7af42b7958610bdf2ac11e5",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N29:05",
+      "frozen_record": {
+        "transition_id": "N29:05",
+        "machine_id": "N29",
+        "owner": "native",
+        "baseline": {
+          "from_state": "any valid work state",
+          "from": "any valid work state",
+          "event": "rename / attach / set-cycle",
+          "guard": "valid fields/companion identity; CAS",
+          "to": "same lifecycle state",
+          "effects": "Update descriptive/cycle references without inventing progress/check results.",
+          "failure_retry": "Broken selected attachments refuse.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work.go",
+              "symbol": "workUpdate",
+              "lines": [
+                731
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+            }
+          ],
+          "transition_id": "N29:05"
+        },
+        "task_ids": [
+          "NT-07",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5a8160913b9de01608bebc06e4604f5c6660dc1f324d7ae69c65f625105e0325",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N29:06",
+      "frozen_record": {
+        "transition_id": "N29:06",
+        "machine_id": "N29",
+        "owner": "native",
+        "baseline": {
+          "from_state": "any work/delivery state",
+          "from": "any work/delivery state",
+          "event": "observe-delivery",
+          "guard": "validated repository/PR URL/number/time/state",
+          "to": "same work state + latest open/closed/merged observation",
+          "effects": "Persist observed delivery independently of complete/check status.",
+          "failure_retry": "A merged PR never auto-completes work or marks tests passed.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work.go",
+              "symbol": "workUpdate",
+              "lines": [
+                731
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work.go"
+            }
+          ],
+          "transition_id": "N29:06"
+        },
+        "task_ids": [
+          "NT-07",
+          "NT-12"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "89ae86cc2bcfc5d3c12f3ba0c845f25c1b3d060f3b1a98ffc8f5ce5dd5e00ac7",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N32:01",
+      "frozen_record": {
+        "transition_id": "N32:01",
+        "machine_id": "N32",
+        "owner": "native",
+        "baseline": {
+          "from_state": "absent",
+          "from": "absent",
+          "event": "stage add-item",
+          "guard": "verified synchronized bound issue; current Project config",
+          "to": "pending add_item",
+          "effects": "Freeze target issue and Project generation; no network send.",
+          "failure_retry": "Existing effect or missing verified issue refuses.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_project.go",
+              "symbol": "workProjectMutation",
+              "lines": [
+                111
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_project.go"
+            }
+          ],
+          "transition_id": "N32:01"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "fa2cff7e5c5d2c47dd9f48311eb90f3a4f3efae778fe983f08e06c69ea4e7d0f",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N32:02",
+      "frozen_record": {
+        "transition_id": "N32:02",
+        "machine_id": "N32",
+        "owner": "native",
+        "baseline": {
+          "from_state": "synchronized/conflict or unsent mapped pending",
+          "from": "synchronized/conflict or unsent mapped pending",
+          "event": "stage field",
+          "guard": "same verified issue/item; field/desired and explicit expected option including null",
+          "to": "pending set_single_select",
+          "effects": "Freeze compare-observed baseline; manual supersedes mapping; clear prior observation.",
+          "failure_retry": "Invalid item/generation or unknown attempted effect refuses.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_project.go",
+              "symbol": "workProjectMutation",
+              "lines": [
+                111
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_project.go"
+            }
+          ],
+          "transition_id": "N32:02"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "b594792de53197a62586ee1e8b094e33a15f2d14fa1e14fef4c2202448717a00",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N32:03",
+      "frozen_record": {
+        "transition_id": "N32:03",
+        "machine_id": "N32",
+        "owner": "native",
+        "baseline": {
+          "from_state": "pending",
+          "from": "pending",
+          "event": "claim",
+          "guard": "attempt ID; exact generation; mapped readiness and timing if mapped",
+          "to": "outcome_unknown",
+          "effects": "Persist intent uncertainty before adapter mutation.",
+          "failure_retry": "Duplicate uncertain claim refuses; manual Project sync-now retains independent timing semantics.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_project.go",
+              "symbol": "workProjectMutation",
+              "lines": [
+                111
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_project.go"
+            }
+          ],
+          "transition_id": "N32:03"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8ef5ebe8cc7aee4da851587e5a662c8f41f9bb2fa1eec7149e3ac6d696637f0e",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N32:04",
+      "frozen_record": {
+        "transition_id": "N32:04",
+        "machine_id": "N32",
+        "owner": "native",
+        "baseline": {
+          "from_state": "outcome_unknown",
+          "from": "outcome_unknown",
+          "event": "record",
+          "guard": "exact attempt+remote item; field readback equals desired for set action",
+          "to": "synchronized",
+          "effects": "Record item identity/current field outcome; update mapped coordination.",
+          "failure_retry": "Mismatched readback rejects; no assumed success from mutation request alone.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_project.go",
+              "symbol": "workProjectMutation",
+              "lines": [
+                111
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_project.go"
+            }
+          ],
+          "transition_id": "N32:04"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "378e542ee421f564d5d206c3083e1a5819671a64f483d0ce99a1fd19a4f44634",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N32:05",
+      "frozen_record": {
+        "transition_id": "N32:05",
+        "machine_id": "N32",
+        "owner": "native",
+        "baseline": {
+          "from_state": "pending/outcome_unknown set-field",
+          "from": "pending/outcome_unknown set-field",
+          "event": "conflict",
+          "guard": "proper attempt; observed option differs both expected and desired",
+          "to": "conflict",
+          "effects": "Record observed option; mapped desire waits manual reconciliation.",
+          "failure_retry": "No overwrite or compensating request launched.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_project.go",
+              "symbol": "workProjectMutation",
+              "lines": [
+                111
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_project.go"
+            }
+          ],
+          "transition_id": "N32:05"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1b3ed170b9b7463d89f0d66521ac3d9e09753d02511b4948e40d29e734011ac6",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:01",
+      "frozen_record": {
+        "transition_id": "N33:01",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "any prior coordination",
+          "from": "any prior coordination",
+          "event": "start/complete/reopen with enabled map",
+          "guard": "valid current map generations",
+          "to": "new transition and target-specific states",
+          "effects": "Freeze desired issue/Project targets, deterministic transition ID, prior superseded transition, stage eligible effects in same local transaction.",
+          "failure_retry": "Optional provider invalidity is represented unavailable/binding_changed; unexpected I/O aborts local transaction.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:01"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "85f45acec812a0d350aaa10cd517ffd8530ad8a48f680d959026de50fa881205",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:02",
+      "frozen_record": {
+        "transition_id": "N33:02",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "existing desired coordination",
+          "from": "existing desired coordination",
+          "event": "local transition with disabled map",
+          "guard": "map disabled",
+          "to": "paused",
+          "effects": "Preserve desired target/history, mark paused; no automatic send.",
+          "failure_retry": "No implied cancellation of already claimed unknown effect.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:02"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c3152f304459e9ae06748a1beb047dcd2efcc1527283e165b7385f667067c665",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:03",
+      "frozen_record": {
+        "transition_id": "N33:03",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "any prior target",
+          "from": "any prior target",
+          "event": "new mapping has null target",
+          "guard": "old mapped pending intent is unclaimed and matches old map/transition",
+          "to": "none",
+          "effects": "Retire only safe unsent mapped effect back to observed synchronized baseline; retain superseded IDs.",
+          "failure_retry": "Unknown/manual/foreign-generation effects preserved for reconciliation.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "retireUnsentMappedEffect",
+              "lines": [
+                227
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:03"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "53fa954fc3c2c9668ebb12e5a83fa9dd23a1cd7cf7582c61f35d342055fcffd5",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:04",
+      "frozen_record": {
+        "transition_id": "N33:04",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "issue target desired",
+          "from": "issue target desired",
+          "event": "stageMappedIssue",
+          "guard": "provider mismatch or unavailable",
+          "to": "binding_changed",
+          "effects": "Expose stalled mapping; retain desired outcome.",
+          "failure_retry": "No remote retargeting.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "stageMappedIssue",
+              "lines": [
+                264
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:04"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "622db343d14f5ab6de88b08b30994af5e4d5ef25f2e33156f186f39bbbd2d6b9",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:05",
+      "frozen_record": {
+        "transition_id": "N33:05",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "issue target desired",
+          "from": "issue target desired",
+          "event": "stageMappedIssue",
+          "guard": "no verified issue",
+          "to": "waiting_binding",
+          "effects": "Retain predecessor create intent where present.",
+          "failure_retry": "Claimed unknown ->waiting_reconciliation; manual pending/conflict ->waiting_manual; stale mapped generation ->binding_changed.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:05"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d1bbc6ae65d39e8ba50d9a6fe742612c7f5229147cee9b9a8cd2e3eee7320fb7",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:06",
+      "frozen_record": {
+        "transition_id": "N33:06",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "verified issue synchronized",
+          "from": "verified issue synchronized",
+          "event": "stageMappedIssue",
+          "guard": "current binding/map",
+          "to": "pending",
+          "effects": "Stage status update even if previous observed state equals desire, requiring fresh readback.",
+          "failure_retry": "Does not accept stale recorded equality as current provider truth.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:06"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "a9716b52489348016d768c390d1e7fe33012029dd68ebebaf91b088a02dc9dea",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:07",
+      "frozen_record": {
+        "transition_id": "N33:07",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "Project target desired",
+          "from": "Project target desired",
+          "event": "stageMappedProject",
+          "guard": "no item/current issue binding",
+          "to": "waiting_binding",
+          "effects": "Retain desire until item verified.",
+          "failure_retry": "Changed config ->binding_changed; unknown ->waiting_reconciliation; manual/conflict ->waiting_manual.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "stageMappedProject",
+              "lines": [
+                324
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:07"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "6515bbc6b565b2236b086ced81fd4efa66421ab8b881c6265333d887dbc30303",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:08",
+      "frozen_record": {
+        "transition_id": "N33:08",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "synchronized Project add_item",
+          "from": "synchronized Project add_item",
+          "event": "stageMappedProject",
+          "guard": "field option not yet observed",
+          "to": "awaiting_observation",
+          "effects": "Require explicit current field baseline before staging desired value.",
+          "failure_retry": "No invented null baseline.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:08"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "be604452233456fb9c9278a46964e4d2f608f162657161db8d82d61d581f9f7b",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:09",
+      "frozen_record": {
+        "transition_id": "N33:09",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "known verified Project baseline",
+          "from": "known verified Project baseline",
+          "event": "stageMappedProject",
+          "guard": "field/current option or original expected baseline known",
+          "to": "pending",
+          "effects": "Stage mapped set_single_select intent with expected option.",
+          "failure_retry": "External race still handled by readback/conflict.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:09"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3058789bfbcea74980cb801a7c8712a1056aca915b2f626f17a74a0577374e70",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:10",
+      "frozen_record": {
+        "transition_id": "N33:10",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "waiting_binding/reconciliation/observation",
+          "from": "waiting_binding/reconciliation/observation",
+          "event": "work-coordinate-resume",
+          "guard": "same saved transition/current enabled map; exact work CAS; optional observed item/option only allowed first baseline",
+          "to": "pending / updated wait state",
+          "effects": "Retry staging saved desires, never creates new semantic local transition.",
+          "failure_retry": "COORDINATION_WAITING if no execution change; refuses arbitrary supplied baseline.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "workCoordinateResume",
+              "lines": [
+                57
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:10"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "db5ceb3faaf656bb868dafc972933fca507fab6222f18a5c4a511c1da82ad772",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:N33:11",
+      "frozen_record": {
+        "transition_id": "N33:11",
+        "machine_id": "N33",
+        "owner": "native",
+        "baseline": {
+          "from_state": "mapped pending",
+          "from": "mapped pending",
+          "event": "claim then record/conflict",
+          "guard": "same exact transition/intent identity",
+          "to": "waiting_reconciliation then synchronized/waiting_manual",
+          "effects": "Coordination reflects effect machine progress.",
+          "failure_retry": "Unknown attempt remains explicitly uncertain, not retried automatically.",
+          "source": [
+            {
+              "path": "core/artifacts/internal/operations/work_coordination.go",
+              "symbol": "coordinateWorkTransition",
+              "lines": [
+                150
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/work_coordination.go"
+            }
+          ],
+          "transition_id": "N33:11"
+        },
+        "task_ids": [
+          "NT-12"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "df76a21ce584691b15e778f69ff7933c7ab2cc009e5fc28c1c86d09eca22ade5",
+      "group": "source-group-026",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "native-render-legacy-profile",
+        "transaction-target-components"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+          "sha256": "ea2446fa717e5e80c47784622c668a55c36a5ed9932df926954bf9d8c92daa35",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/artifacts/internal/repository/catalog.go",
+      "old_span": [
+        55,
+        178
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "75654ffdbf9b994caf3b7608aea28e87399c1ff9d596f829b5ad87b0ecbd1523",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          55,
+          178
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          55,
+          178
+        ]
+      ],
+      "actual0ef_file_sha256": "86624df536e1fb3ead9437febe8f7b9e242a7da46167a15f76996b7061e8e727",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/engine.go",
+      "old_span": [
+        182,
+        267
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "f2bfeaf3648761922d9424cecacd360f932333031a5a35b5ccbe8f8cfd4ddc93",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          182,
+          267
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          182,
+          267
+        ]
+      ],
+      "actual0ef_file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        258,
+        334
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "ce7e1294c6b175b453dce7c461bb090061b86d499a43933bf49819e7c0dfce23",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          258,
+          334
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          258,
+          334
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/authority/receipt.go",
+      "old_span": [
+        336,
+        374
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "284d0900d1a516028bd292b272eceffd96e91541a5f5e6db701ebf9480602dff",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          336,
+          374
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          336,
+          374
+        ]
+      ],
+      "actual0ef_file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/authority/receipt.go",
+      "old_span": [
+        255,
+        298
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "e3046bc027c6f602657a52b628f94d6ded20313915dd588778138bb7531154b4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          255,
+          298
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          255,
+          298
+        ]
+      ],
+      "actual0ef_file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/evidence_context.go",
+      "old_span": [
+        16,
+        195
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "3e1ab11358c3aa2c8d5dda55de2fb85e2453eb12aabfe6dc6f08c1b6c4b4d4ad",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          16,
+          195
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          16,
+          195
+        ]
+      ],
+      "actual0ef_file_sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/evidence_context.go",
+      "old_span": [
+        197,
+        245
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "5343f325e523aaeb650382f1b5b59b0a4c34cc7a9b96af77afff790e7f8ec291",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          197,
+          245
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          197,
+          245
+        ]
+      ],
+      "actual0ef_file_sha256": "23375b83a286417fc34e7228e032360fbc439a71c08c40b0797fff6f64a3abcd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/sprint.go",
+      "old_span": [
+        65,
+        135
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "de40ee0ec09c6f3f4f3b20beb49e82bb33316a9277aaff72f0a486ad53a1c0c3",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          65,
+          135
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          65,
+          135
+        ]
+      ],
+      "actual0ef_file_sha256": "e2a7d07fb30fc640a052f5e738aa54b0f6fc637e77c013ff6096e19548057436",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/lifecycle.go",
+      "old_span": [
+        14,
+        45
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "1a9dc3ab9434efc45eba704e7fe2ce1fd1152a796ab46bf8cb483538d43b6ded",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          14,
+          45
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          14,
+          45
+        ]
+      ],
+      "actual0ef_file_sha256": "f2733f681dd9d6271138dcdde23e9cd84d09c9947c28eb94d7489054b69eb362",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/store/infrastructure.go",
+      "old_span": [
+        148,
+        215
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "5fd47d0fc049cd32b8624d44a252aa7dedac4bd6684f065a41684f0f3c524371",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          148,
+          215
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          148,
+          215
+        ]
+      ],
+      "actual0ef_file_sha256": "d6b6a81415a6b1da916b8e862ea17f8b83eb92c836a501d80a5e004e77677328",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/capture_export.go",
+      "old_span": [
+        26,
+        142
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "76fb1d777862cc31ab1fafe4f01544b63f61ecaed78763b05a86a448bb8d167b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          26,
+          142
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          26,
+          142
+        ]
+      ],
+      "actual0ef_file_sha256": "850ee6ce3b2ace09cea3cba2ffaaa1364552f829436be42a13d8556f52c84479",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/context_authority.go",
+      "old_span": [
+        220,
+        257
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "2862119f1e850755b41174da03182fe26b3d7bcb5b36d36286ae6ed37942b6d4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          220,
+          257
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          220,
+          257
+        ]
+      ],
+      "actual0ef_file_sha256": "a28f2baab110fa1231215be6d2f43613d1f0d835c645afd8559d1907bbaee083",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/observation/contract.go",
+      "old_span": [
+        338,
+        449
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "857a7e7a8c5b7e40bce1d763caca5d4f6e0270c0d0f096b4c6e07ed404c92c40",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          338,
+          449
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          338,
+          449
+        ]
+      ],
+      "actual0ef_file_sha256": "0c3996eb62a798f4b2d1405f85966fa49f7b1a9f7f62802497d654d46ef003ca",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/authority/receipt.go",
+      "old_span": [
+        136,
+        253
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "49c30825024cbd13f15ea8826d0128e43bc44e1cbe3a05a9defc5332b97be2c4",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          136,
+          253
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          136,
+          253
+        ]
+      ],
+      "actual0ef_file_sha256": "ca238dd369aad9f62a1d57c2405a3b2ddb2eac8c753c0ef552f88f9ffc0ef694",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/read/read.go",
+      "old_span": [
+        320,
+        381
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "7bae8c3292b5bddd06ebee74a2030bbbb1acea5a22a5cedff8f867b526b5a671",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          320,
+          381
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          320,
+          381
+        ]
+      ],
+      "actual0ef_file_sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/read/read.go",
+      "old_span": [
+        27,
+        195
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "c03a35072ceb5bc25206c8c1c1b0a3a487ec1d1872dd6bdec4b86b61ee1fa3a5",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          27,
+          195
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          27,
+          195
+        ]
+      ],
+      "actual0ef_file_sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/validate/knowledge.go",
+      "old_span": [
+        13,
+        77
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "591931620ccce9e18fd5fe2f4f7c9be39f27150cf77c9892b2c41bc72c482d21",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          13,
+          77
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          13,
+          77
+        ]
+      ],
+      "actual0ef_file_sha256": "49939ddf0aab44e9b2ce84b67648a0984a5d5cb14f86507ed1051ea478706609",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/validate/validate.go",
+      "old_span": [
+        97,
+        121
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "4a409935d796bb5d26bc4ca7c0acce5a40ceef64e8d5d32d1c52573b98c84011",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          97,
+          121
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          97,
+          121
+        ]
+      ],
+      "actual0ef_file_sha256": "a08f8769393e8fa6f468b9557d6006393c5cc1adc6a317a2be80e2a5fcc61c56",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/mutations.go",
+      "old_span": [
+        279,
+        297
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "93618b6bc73d95e0635c372def6571707f6d8861b4d4f85697a12ac7e9d99fd6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          279,
+          297
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          279,
+          297
+        ]
+      ],
+      "actual0ef_file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/render/render.go",
+      "old_span": [
+        50,
+        62
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          50,
+          62
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          50,
+          62
+        ]
+      ],
+      "actual0ef_file_sha256": "4df5683211a7478872695377155492b77b1d816b31425cfc52c7e0f0e5a5ca99",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/mutations.go",
+      "old_span": [
+        396,
+        410
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "b1905540b4f4ec9b0eaf3454fc05b665436a59d40d78d16c78603806ebcf6171",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          396,
+          410
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          396,
+          410
+        ]
+      ],
+      "actual0ef_file_sha256": "55b954e73dfc8c2562ce02ae117aaea85761e17d408089ec05d98ea00fd3c8af",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/schema/knowledge.schema.json",
+      "old_span": [
+        207,
+        253
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "d8db438e55d7a0bafafe21a78c72136f26984299f92ce2ca231476bfc797b128",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          207,
+          253
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          207,
+          253
+        ]
+      ],
+      "actual0ef_file_sha256": "29f6a16e9b0b2e494bf89d67a8c7ea3846d6ee424d9d7c72adbf8b51af724101",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/migration.go",
+      "old_span": [
+        26,
+        145
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "34da53f4e293728ce260a63f8f5deb2daa1e38adc1cc3de0f74022a5e1b9e4e2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          26,
+          145
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          26,
+          145
+        ]
+      ],
+      "actual0ef_file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/migration.go",
+      "old_span": [
+        146,
+        184
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "70f5488da1cd560bda51e08a68165565935a5ec65fc38dde5b5eebe485e7c563",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          146,
+          184
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          146,
+          184
+        ]
+      ],
+      "actual0ef_file_sha256": "e1f9f5a36117e5e64f5511106e10d7447d00408cd36bdeb76aad8d220d3cca45",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "old_span": [
+        258,
+        409
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "25811cd096838ebb1dbfbf0681f46b000558412f2d7cf15357b73d24ff551a8c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          268,
+          419
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          268,
+          419
+        ]
+      ],
+      "actual0ef_file_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "old_span": [
+        565,
+        616
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "f0293c48e500955482ddbe1458e9198ea52bf50c3358a0f3a6e6ee7dc6bcb468",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          575,
+          626
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          575,
+          626
+        ]
+      ],
+      "actual0ef_file_sha256": "ab6ae0757fe7532a43d57d2c2fb92605afc9605d72d3358607611d342d37fd83",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        731,
+        850
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          731,
+          850
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          731,
+          850
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        788,
+        792
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "33838235df57f4390886a59e25781b5ea00b24dacb77f6b542c60c6072708aa0",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          788,
+          792
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          788,
+          792
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        150,
+        223
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "8c372496d9ff13572506b604822e78011e2ae1df16b73f82940663843f3a97e2",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          150,
+          223
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          150,
+          223
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        793,
+        797
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "997e8ca9f6aea69c1ea8dea804f2fefb49bfa7066f0fac8b895bc43d1ae3f936",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          793,
+          797
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          793,
+          797
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        798,
+        805
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "d0c8873825791f5e25a5db15aeb3e927874604d64152688fa77b64d236432ea3",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          798,
+          805
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          798,
+          805
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        806,
+        810
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "66b7bbca2ef553d172c0f6cffc671366ae2c3f777857777ecdeefc917e405123",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          806,
+          810
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          806,
+          810
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        751,
+        791
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "e4806c2fff2bf9fd24555cfccddd6030b87423d4820f2f5f90789e8dd22661fb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          751,
+          791
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          751,
+          791
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work.go",
+      "old_span": [
+        811,
+        828
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "b2cc972d5c50b1ea97372ecad176d709dc87ffb6f57763e205c2507d7fa29ecc",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          811,
+          828
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          811,
+          828
+        ]
+      ],
+      "actual0ef_file_sha256": "511dabc1b5956ce0729e32b301e7fef98569a3a2ec8d927d28c8c0ce0c5496e3",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        111,
+        142
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "095c15b3bd6da4d4703031d72bfd0bd68d4afe0cc401de43254d155a1fa6b730",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          111,
+          142
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          111,
+          142
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        143,
+        151
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "9b104b0f21368658ae931ef6ff2f7910dd75b11e821c86b5b3e9c675726f49e3",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          143,
+          151
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          143,
+          151
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        24,
+        55
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "e8904b9c5b2efd51496a58c680dc626eca788e9cbfb0290158b6bf5e08ccf6c9",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          24,
+          55
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          24,
+          55
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        255,
+        271
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "a570aeffc54c611db569b49ec87d91520fbdca1f9faab934003c6abeae9761d7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          255,
+          271
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          255,
+          271
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        152,
+        175
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "2ad8a1656da7c8191d3a0de3c81a4e2d7fc03b5d89c07886f364fc2a74325c9e",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          152,
+          175
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          152,
+          175
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/protocol.go",
+      "old_span": [
+        316,
+        354
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "082e5bf0afc23580fc53ed649e9d1b20fd47e6a3695428c675a4aae26e979a07",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          316,
+          354
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          316,
+          354
+        ]
+      ],
+      "actual0ef_file_sha256": "bc1c453d055afa61127c5445ae9cd15263e90c6311d9ecc6eda27558fa97464b",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        176,
+        208
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "a30f6146d39abeda453df7a3224c83e4b42cf0ca8a78ce993bf94ddea64f41f6",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          176,
+          208
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          176,
+          208
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        16,
+        53
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "3b7d857961313232955374fc967c704ad4b2d54e2a7f97e30b31f6025d0e3f4a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          16,
+          53
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          16,
+          53
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        209,
+        232
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "1f0f05cf6c110eabeba1e73a8ef7d0228b36be36f3773a32cbfb76646f2819de",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          209,
+          232
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          209,
+          232
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_project.go",
+      "old_span": [
+        233,
+        254
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "dfdc73ec5f149a5b2645608e715a3a1dc938111e962fa3492ecb3068eb342074",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          233,
+          254
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          233,
+          254
+        ]
+      ],
+      "actual0ef_file_sha256": "5f10e2e7d314385d7c1a21501b95080d89c062f7929d0867b184a9481c5edf0e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_transition_map.go",
+      "old_span": [
+        39,
+        80
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "2c3175c4f7c4be8b8506bba0d1d27f67d100876b9602b902f7050cd77c2b0867",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          39,
+          80
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          39,
+          80
+        ]
+      ],
+      "actual0ef_file_sha256": "7dcf9a9fb84c003945aba31a705dd3e15c7a2937c5ae2e6c2cf1a75475aa8d19",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        182,
+        197
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "250404113ac68911c58d79d87818d6bac96a660ce97128946e7df7a3ae2349d7",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          182,
+          197
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          182,
+          197
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        227,
+        252
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "1db21e8c6ecb08a0a9951543458d47e64eb9c3c068ee8dbfbf1c4ea0664f3584",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          227,
+          252
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          227,
+          252
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        264,
+        322
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "f89b97c09dc6b4391699fcc1d65366cd9ca60945faa44389aad6a1adb0d8f952",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          264,
+          322
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          264,
+          322
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_effects.go",
+      "old_span": [
+        24,
+        51
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "492665faea504a0dd0408dec2c4789b9e5f05ec12ea92b8df56c5f5cdd0f35f5",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          24,
+          51
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          24,
+          51
+        ]
+      ],
+      "actual0ef_file_sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        324,
+        388
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "dae616f90407ba7d77d8585a51175d7b2dc52be77ca51a956a032532582f0f7c",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          324,
+          388
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          324,
+          388
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_coordination.go",
+      "old_span": [
+        57,
+        146
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "973f718a7460d8c587d7f7b3eecc5e8f019571aefe553c8ec9876d25443b2d6a",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          57,
+          146
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          57,
+          146
+        ]
+      ],
+      "actual0ef_file_sha256": "90d1dc63dce04d7e059ceb116609ad4dffe17257646e057e2d8a107fd1854afd",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/artifacts/internal/operations/work_effects.go",
+      "old_span": [
+        207,
+        295
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "block_sha256_LF": "35641eb894055065bcdd059be3f6d7a975226d3726cccf37aa155c502409cf8d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          207,
+          295
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/native35-source-d594c913/preserved.json",
+      "actual0ef_spans": [
+        [
+          207,
+          295
+        ]
+      ],
+      "actual0ef_file_sha256": "036bbf127d5c6ffa4dfd841e087a935fc568d28e9a8b1e37551009e233c9031e",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "native-render-legacy-profile",
+      "paths": [
+        "core/artifacts/internal/render/render.go"
+      ],
+      "assessment": "New writes always use corrected paths rendering; Parse compares complete bytes against corrected render or one exact historical paths-list profile after validating the same model/integrity. There is no arbitrary HTML/DOM/model-only acceptance or read-time rewrite. Explicit finite read-compatibility scope must replace any old one-profile description; old authority formats remain historical, not freshly trusted."
+    },
+    {
+      "id": "transaction-target-components",
+      "paths": [
+        "core/artifacts/internal/store/transaction.go"
+      ],
+      "assessment": "Case-insensitive component-prefix collision checks now reject equal and ancestor/descendant target sets both in journal validation and Commit preflight. Existing distinct valid targets, closed journal identity, operation replay/recovery and honest uncertain-acknowledgment contracts remain. This is intentional strengthened refusal, not an inferred global atomic rollback or malicious-filesystem guarantee."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

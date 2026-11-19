@@ -1,0 +1,142 @@
+{
+ "kind": "PRIVATE_FINITE_FINDING_MAPPING_PROPOSAL_NOT_QUALIFICATION",
+ "source_epoch": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "observed_HEAD_at_seal": "2ed6575320cc49b57186b997ed119789f7a754aa",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "subjects": [
+  {
+   "path": ".github/scripts/major_qualification_report.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\preimages\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "441e325950b9bc49db3f31b03058d6fb6fdba1eb7b235404518f320f6a268270",
+    "bytes": 148755
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\candidate\\.github\\scripts\\major_qualification_report.py",
+    "sha256": "808864be72c140cd415034e52b07ccc28377cec28807738194372e0edbdd6919",
+    "bytes": 156946
+   },
+   "git_index_oid": null,
+   "git_epoch_ls_tree": "100644 blob abbd102bfb28182389ae1dd1fa7755784a47ceb1\t.github/scripts/major_qualification_report.py",
+   "canonical_unchanged_at_seal": true
+  },
+  {
+   "path": ".github/scripts/test_major_qualification_report.py",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\preimages\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "dc4f76eac220fd64014d3178360ffae5a59fce3362574e5c0b4e8cbf672d1906",
+    "bytes": 281156
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\candidate\\.github\\scripts\\test_major_qualification_report.py",
+    "sha256": "b173063f620b9da69bce5b44b0684ad813542392a92a5f2f76296c07f1fb4b21",
+    "bytes": 299815
+   },
+   "git_index_oid": null,
+   "git_epoch_ls_tree": "100644 blob 7f5cb0296bdef45ce84bf52ec82881044072e446\t.github/scripts/test_major_qualification_report.py",
+   "canonical_unchanged_at_seal": true
+  },
+  {
+   "path": ".github/major-test-selections.json",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\preimages\\.github\\major-test-selections.json",
+    "sha256": "8018ffd55e8c1fc8ba032d9086948dff35342df7f7fcdd750d6de7a2efc9fcb9",
+    "bytes": 75711
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\candidate\\.github\\major-test-selections.json",
+    "sha256": "7291e89ee5f035aceedd77b4f7567611b92769d6b41f0ab323c4f914160336e7",
+    "bytes": 86958
+   },
+   "git_index_oid": null,
+   "git_epoch_ls_tree": "100644 blob 7f260b750f33403fbb47def71c95e2813a688444\t.github/major-test-selections.json",
+   "canonical_unchanged_at_seal": true
+  },
+  {
+   "path": ".github/major-qualification-policy.json",
+   "preimage": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\preimages\\.github\\major-qualification-policy.json",
+    "sha256": "68bb6a70f063b7fc4845eea1fbeaad5a8e49cb57d65a492c13f888e5f9f273dd",
+    "bytes": 8107
+   },
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\candidate\\.github\\major-qualification-policy.json",
+    "sha256": "cd30bfc62d2545a714e9e8d05fca58d048d988f9eeb910aa4bf6de9eb9babe66",
+    "bytes": 8656
+   },
+   "git_index_oid": null,
+   "git_epoch_ls_tree": "100644 blob 7bf4092bc3ad022c1a0dc927f1d52439a0e7acb1\t.github/major-qualification-policy.json",
+   "canonical_unchanged_at_seal": true
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\candidate.patch",
+  "sha256": "d07962875f1873be13efb3848b87fd1ebc21543541c03c8329144e796a138612",
+  "bytes": 50316
+ },
+ "matrix": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\finite-finding-matrix.json",
+  "sha256": "f2956f4cfb6baa013f231651aa4e5e7195d1fad6b18142cac201a0fd44fa1c2e",
+  "bytes": 66153
+ },
+ "source_joins": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\source-joins.json",
+  "sha256": "f1a30d8ea47c159646016c2ecdd856461ab52650113aa60a71936960457476c6",
+  "bytes": 10657
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\preservation.json",
+  "sha256": "aa218441435b92d3f1b23893c012ea1928dc3d5ad204ee5418237fbbd507333c",
+  "bytes": 757
+ },
+ "history": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\retained-history.json",
+  "sha256": "d78fc12a6f7c3935755e5b31cdafe350b0cb94cfe0f421290f0662833e127228",
+  "bytes": 2516
+ },
+ "checks": {
+  "initial_proper_RED": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\red.json",
+   "sha256": "b1158415f3de9fc70cc5a20cd53a8c387c11823869d57c0eeb8950dda57def40",
+   "bytes": 1126
+  },
+  "initial_new_controls_GREEN": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\green.json",
+   "sha256": "a6d79acf4416dee4e109baab3c2b1076d408113042dbd3039f290fb05ffebebd",
+   "bytes": 1050
+  },
+  "unchanged_legacy_controls_GREEN_predecessor_bound": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\legacy.json",
+   "sha256": "484f99919df5e418127d4765f9d6d44955cbe1fbfdeca11ac65af0902aaef934",
+   "bytes": 1260
+  },
+  "successor_proper_overflow_RED": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\overflow-red.json",
+   "sha256": "c1e0a32d0fb32a4a05d298b23a90cb805693b4af293d72459ec402f7dd2cbc9a",
+   "bytes": 1132
+  },
+  "final_5_new_controls_GREEN": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-seven-routes-3n6e3rh7\\seven-green.json",
+   "sha256": "34e8af1b7ef427dc3342749b229e4410b1396e1f840d07419bbfd33b9877f8d3",
+   "bytes": 1046
+  }
+ },
+ "results": {
+  "final_new_controls": 5,
+  "final_exit_code": 0,
+  "final_seconds": 8.91787609999301,
+  "legacy_controls_passed_on_six_map_predecessor": 4,
+  "mapped_finding_count": 7,
+  "required_unique_selectors": 38
+ },
+ "limits": [
+  "Only bounded Python admission/configuration controls were executed; TS/Vitest/Docker/Pi/native/browser/provider/API/install/ZIP acquisition were not executed. In-memory ZIP fixtures are existing pure authenticated-payload seams.",
+  "Actual original once-only CI observations remain required; source profiles, upload roles, source closure, producer-time/final trust phases, main-only publication, native40/installed13 and all old selectors are unchanged.",
+  "No whole linked task, machine, model, installed host, human consent, scenario, ledger or runtime epoch credit.",
+  "SF12 is declarative unavailable/legacy-private matrix plus synthetic exact dialog controls, not production doctor or host-observed approval.",
+  "SF10 maps finite injected-observation truthfulness; no universal cleanup or real daemon outage claim.",
+  "Old map SF09 unlocated statement corrected from actual existing current source, not a new runtime observation.",
+  "Root owns independent review, integration, changelog and actual hosted qualification; no canonical/index/ref/marker writes by this author."
+ ],
+ "git_index_oid": null
+}

@@ -1,0 +1,68 @@
+[
+  {
+    "job_id": 133769377295,
+    "run_id": 44002348079,
+    "api_head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+    "attempt": 1,
+    "checkout_sources": [
+      {
+        "log_line": 735,
+        "checkout_commit": "b337c1c1d5db74916b56f91af77f80c864ae3867"
+      }
+    ],
+    "progress_reports": [
+      {
+        "log_line": 934,
+        "record": {
+          "completed_bytes": 284807532,
+          "completed_files": 4736,
+          "directories": 346,
+          "discovered_files": 8125,
+          "elapsed_ms": 29412,
+          "entries": 8469,
+          "format": "codearbiter.npm-producer-progress/1",
+          "links": 0,
+          "phase": "runtime-before-hashing",
+          "runtime_ordinal": 1
+        },
+        "status": "recorded"
+      }
+    ],
+    "log_sha256": "3332005209d3b2dd94930f2dc0def499141bcfc2048280c1edfd7f03bbd8f43b",
+    "raw_bytes": 86697,
+    "limits": "Actual producer30s timeout before nativebuild. Last passive record is not a full inner stack or independently proven cause."
+  },
+  {
+    "job_id": 133769376972,
+    "run_id": 44002348079,
+    "api_head": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+    "attempt": 1,
+    "checkout_sources": [
+      {
+        "log_line": 735,
+        "checkout_commit": "b337c1c1d5db74916b56f91af77f80c864ae3867"
+      }
+    ],
+    "progress_reports": [
+      {
+        "log_line": 934,
+        "record": {
+          "completed_bytes": 262876529,
+          "completed_files": 3968,
+          "directories": 346,
+          "discovered_files": 8125,
+          "elapsed_ms": 30010,
+          "entries": 8469,
+          "format": "codearbiter.npm-producer-progress/1",
+          "links": 0,
+          "phase": "runtime-after-hashing",
+          "runtime_ordinal": 2
+        },
+        "status": "recorded"
+      }
+    ],
+    "log_sha256": "eda4d2fd8b45dc0cfb2d33c55b789a7304ff7ec95d84411b1cf103b04c3066bb",
+    "raw_bytes": 86779,
+    "limits": "Actual producer30s timeout before nativebuild. Last passive record is not a full inner stack or independently proven cause."
+  }
+]

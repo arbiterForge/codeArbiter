@@ -1,0 +1,95 @@
+{
+ "scope": "Python shared reader only, private overlay",
+ "original_RED": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\red.json",
+  "sha256": "d412513f900f10ed4b00ebae1f27582dac688026632c83225c8974a8e6dbdb32",
+  "bytes": 722
+ },
+ "original_RED_raw": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\red.stderr",
+   "sha256": "15062b8cac82acaa7001e18b613aa4c056245f9feb67b259356af1c54ecbb8b6",
+   "bytes": 3029
+  }
+ ],
+ "final_GREEN": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\green.json",
+  "sha256": "30f13ab16e891a5c861686e28f9910a0d24be6222e87b04dd2fe7aacc0697b1e",
+  "bytes": 468
+ },
+ "final_GREEN_raw": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\green.stderr",
+   "sha256": "5e97d575212ae9687827918f2827d117d90c7c97db16ac4527aceab99b34fc8d",
+   "bytes": 2528
+  }
+ ],
+ "owning_suite": "15 tests, 0 skipped, PASS; seven original tests plus eight new tests",
+ "preservation": {
+  "production_AST_only_read_and_two_stdlib_imports": true,
+  "all_original_test_method_AST_unchanged": 8,
+  "new_named_methods": [
+   "test_nonregular_archive_and_replay_refuse_before_read",
+   "test_reader_closes_descriptor_on_acquisition_validation_or_read_error",
+   "test_reader_preserves_optional_size_utf8_and_regular_controls",
+   "test_reader_rejects_acquisition_identity_drift_without_read",
+   "test_reader_rejects_link_before_open",
+   "test_reader_rejects_reparse_metadata_before_open",
+   "test_reader_requests_safe_available_flags_and_bounded_read",
+   "test_replay_regular_snapshots_keep_exact_request_and_optional_absence"
+  ],
+  "original_RED_method_AST_unchanged": true,
+  "full_original_test_AST_unchanged_after_removing_new_imports_and_methods": true,
+  "all_unchanged_dependency_bytes": 18
+ },
+ "syntax": "Built-in compile of both final subjects PASS without bytecode writes; no separate Python linter declared by scoped context",
+ "whitespace": {
+  "changed_added_lines_no_trailing_whitespace": "PASS",
+  "scoped_git_no_index_check": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\scoped-diff-check.json",
+   "sha256": "c94ab586badb178b0c914ea57349d136748bbec73597bbc8604acb9aa41c25ea",
+   "bytes": 885
+  },
+  "interpretation": "Exact tool exit1 retained with empty diagnostics; no claim that exit0 occurred."
+ },
+ "coverage": {
+  "classification": "Maintained Python no-tooling exemption; meaningful direct owning tests, no numeric percentage invented",
+  "typed_source": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\tech-stack-coverage-records.json",
+   "sha256": "1419e36fc6f5aa432afc650109829576e3e09ea34131b886f0848ceb4bae7493",
+   "bytes": 11317
+  },
+  "record": "CTX-TECH-STACK/FACT-005 and NOTE-005",
+  "quote": "There is **no coverage tooling for the Python hooks or build tools**\n(`core/pysrc/*.py`, `plugins/*/hooks/*.py`, `.github/scripts/*.py`, `tools/*.py`).\nThose surfaces use direct unittest and behavioral checks, not TypeScript\ninstrumentation. The shared maturity policy owns the no-tooling exemption and\nits citation requirements; this sentence identifies the exact exempt surface.\nGo native statements are not the no-tooling exemption."
+ },
+ "retained_nonproduct_trial": {
+  "receipt": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\trial1-green.json",
+   "sha256": "2fe26db83d0881989fc2357e585d1ec42d654b5649e0f44fb3ede76019fdf652",
+   "bytes": 469
+  },
+  "raw": [
+   {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\trial1-green.stdout",
+    "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+    "bytes": 0
+   },
+   {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\trial1-green.stderr",
+    "sha256": "dc6dd60876e5c16ec14b1fc958a4ee9ec95d8188a5511b98bcf45f67ff0b1f61",
+    "bytes": 8334
+   }
+  ],
+  "explanation": "New identity-drift fixture tried replacing/removing an already open CRT descriptor on Windows; sharing denial and fixture cleanup error. Corrected only new fixture to mutate after reader lstat but before open. Production unchanged between trial and final GREEN."
+ }
+}

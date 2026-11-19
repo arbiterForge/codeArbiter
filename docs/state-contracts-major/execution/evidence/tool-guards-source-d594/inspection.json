@@ -1,0 +1,319 @@
+{
+  "schema": "codearbiter.compact-source-clause-inspection/1",
+  "actor": "/root/packaging_site_tools",
+  "subject_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "current_git_checked": "9ab2be5e14cf8c2001d392dd3436d9ed3caf3efd",
+  "mode": "SOURCE_CLAUSE_ONLY_NO_EXECUTION",
+  "rows": [
+    {
+      "cell": "disposition:transitions:C08:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/_context_fixturelib.py",
+          "start": 37,
+          "end": 196,
+          "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+        }
+      ],
+      "semantic_assessment": "Closed catalog/case/task/oracle fields, finite counts and byte bounds, known setup/kind/tag values, safe path and collision checks, exact UTF-8 content hashes and canonical fixture/oracle digests are checked before returning the description. JSON loading rejects duplicate keys, nonfinite numbers and invalid UTF-8. Unknown case is refused by materialize.",
+      "limits": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established."
+    },
+    {
+      "cell": "disposition:transitions:C08:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/_context_fixturelib.py",
+          "start": 225,
+          "end": 287,
+          "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+        }
+      ],
+      "semantic_assessment": "Materialize revalidates supplied catalog/content hashes before effects; requires exactly one selected case and a new destination under an existing caller-trusted parent; checks destination/ancestors for links/reparse points. Fixed bounded Git commands construct committed/unborn/detached/linked/sparse arrangements, then declared staged/working edits; evaluator is sibling to solver. Existing/linked paths and failed setup stop; partial owned placement can remain. No second concurrent-source CAS is claimed.",
+      "limits": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established."
+    },
+    {
+      "cell": "disposition:transitions:C08:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/_context_fixturelib.py",
+          "start": 260,
+          "end": 296,
+          "file_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df"
+        }
+      ],
+      "semantic_assessment": "Every fixed Git call uses check=True and 20-second timeout; failed commands cannot reach the return. Successful path records identities/oracle outside solver, obtains no-follow regular-file snapshot and returns solver/evaluator/task/setup/files. Snapshot refuses links/reparse/nonregular files; failure can leave owned partial output and caller must use a fresh destination. This is returned fixture-placement evidence, not independent verification of solver confinement.",
+      "limits": "Source-only cooperative trusted-parent fixture placement contract. Validation is at entry; no concurrent hostile mutation or host/solver confinement, actual Git layout execution, evaluator execution, credential isolation or installed acceptance is established."
+    },
+    {
+      "cell": "disposition:transitions:C09:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 216,
+          "end": 309,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Verify admits only exact present-host triples of provenance JSON, checked JSON and blob, rejects unexpected/missing entries and recomputes snapshot plus blob/provenance hashes. Normalize requires unique known host and identical commit/tree/Vitest/source/config maps; exactly one admitted host produces PARTIAL and a fresh normalized output directory.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C09:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 107,
+          "end": 258,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Both distinct expected hosts must each pass closed triples/identity checks; bounded flatted decoding validates references/depth/cycles, source paths, coverage map/count keys and locations; layout mismatch refuses. Host count two produces UNION only after normalization under identical declared source identities.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C09:05",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 285,
+          "end": 309,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Verify checks exact available triple filenames, rejects unexpected entries and explicitly refuses no complete hosts before creating output. Thus an empty merge input cannot pass this function; workflow-level subsequent handling is not observed.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C09:06",
+      "witnesses": [
+        {
+          "path": ".github/scripts/coverage_union.py",
+          "start": 148,
+          "end": 309,
+          "file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+        }
+      ],
+      "semantic_assessment": "Negative counts are admitted only for the specified implicit-else placeholder; combination preserves any positive hit instead of letting negative artifacts cancel it. Destination must not exist and files use exclusive create. Writes are sequential and can leave partial scratch output on I/O failure; exception prevents a successful result, with no atomic multi-file publication claim.",
+      "limits": "Source-only closed receipt/coverage graph consistency and scratch-output control flow. Conditional on declared tracked source/config snapshot; unkeyed digests are not authenticated execution. No actual Vitest host run, complete untracked membership guard, Windows junction containment or measured coverage result."
+    },
+    {
+      "cell": "disposition:transitions:C03:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 119,
+          "end": 206,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Verify restricts consumers to declared bridge/authority/engine jobs; recomputes source/run/workflow/toolchain/native-platform/module and candidate-byte identity. Only same-run positive producer attempt not later than current is substituted; complete dictionary must match. A mismatch throws before restoring only the verified POSIX binary execute bit.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:C03:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 209,
+          "end": 235,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Recorded verification is final-issuer-only, closed record fields; source/run/workflow/module/platform/toolchain/manifest/binary identities must match and native Go digest must be canonical hex. Same-run earlier attempt may be reused. No foreign binary execution occurs in recorded(), and this remains recorded producer data rather than a new native run.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:C03:04",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 67,
+          "end": 116,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Candidate root must be an unlinked directory with exactly release.json and the exact platform binary. Manifest is bounded duplicate-free JSON with exact five fields and compatible advertised versions; platform entry is exact and native_tested is literal True, filename/digest exact. Leaf symlink/reparse/nonregular/oversize inputs and changed bytes throw; this does not assert all ancestor links are rejected.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:C04:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/ci20_native_binding.py",
+          "start": 264,
+          "end": 276,
+          "file_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f"
+        }
+      ],
+      "semantic_assessment": "Bounded duplicate-free needs JSON requires the exact seven declared stage names, each dictionary with result success, and changes.outputs.artifacts literal true. Missing/extra/duplicate/skipped/cancelled/failed stage or no artifact selection refuses; no omission-based pass.",
+      "limits": "Source-only declared consumer/issuer and candidate identity refusal rules. No actual CI authentication, native execution, platform result, full checkout cleanliness, ancestor-link containment or whole pipeline readiness. Shared module framing inspected after extraction; no claim that source identity proves tests ran."
+    },
+    {
+      "cell": "disposition:transitions:T02:01",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 94,
+          "end": 139,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Collect checks target equals supported local Go/host platform and expected platform, refuses output inside module or an existing output, hashes bounded regular module bytes excluding .git and discovers package inventory before creating output. Offline Go environment and fixed atomic coverpkg command are constructed; no run is made by this inspection.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:03",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 197,
+          "end": 240,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Successful unit output must validate atomic profile/source bounds. Optional integration profiles require exact sidecar shape, source/platform/toolchain/profile digest, and all source bytes are rehashed before exclusive metadata.json is written last. Foreign/malformed/stale data or source drift raises; earlier partial owned output can remain without completed metadata.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:04",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 184,
+          "end": 194,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Integration sidecar creation compares original source identity to current whole module, local native platform/toolchain and valid atomic profile, then returns bound profile SHA and identity. Digests are unkeyed consistency checks; actual prior binary exercise is caller responsibility.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:05",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Summarize requires unique supported expected platforms, finite threshold, exact source/toolchain/packages/unit command, exact unit/integration file inventory and digest, valid bounded profiles and shared instrumentation layouts. Statement-count conflicts and final source drift refuse. Covered blocks are unioned by hit, not suite totals.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:06",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "After profile/identity validation, missing expected platform yields PARTIAL with exact present/missing lists; CLI accepts only COLLECTED or COMPLETE and therefore returns nonzero. Absent platform contributes no claimed execution.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:07",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "With platform population complete, require-integration checks each executable package has a covered integration block and emits MISSING_INTEGRATION plus missing platform details; unit-only data cannot satisfy this branch and CLI returns nonzero.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:08",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 326,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Only after required populations complete, achieved statement percentage is compared to the caller finite minimum; lower value yields BELOW_MINIMUM and nonzero CLI. No built-in workflow threshold or execution is asserted.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    },
+    {
+      "cell": "disposition:transitions:T02:09",
+      "witnesses": [
+        {
+          "path": "tools/artifact-coverage.py",
+          "start": 250,
+          "end": 358,
+          "file_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287"
+        }
+      ],
+      "semantic_assessment": "Complete requested populations and absent/met threshold yield COMPLETE with statement totals/coverage and explicit lines/branches not_measured. CLI returns zero only this/collect success. Report format is a metric, not a native qualification receipt.",
+      "limits": "Source-only bounded coverage collector/summarizer control flow. Source identity is a physical whole-module map, not an immutable Git or authenticated execution proof. No Go command, integration exercise, native/hosted qualification, achieved percentage or platform coverage is observed; caller supplies threshold."
+    }
+  ],
+  "holds": {
+    "C03:01": "run_identity uses tracked git diff only, so complete dirty-checkout rejection exceeds inspected guard; untracked additions are not checked.",
+    "C04:04": "Controller delegation was inspected, but full edge also depends on builder/context validation and successful-only workflow receipt upload. Do not assert entire edge from caller source alone or bind changing CI cone as current.",
+    "C09:01": "Tracked snapshot comparison does not establish general unexpected/untracked input rejection; regular() checks symlinks but not all Windows junction ancestors.",
+    "C09:02": "Snapshot equality checks declared tracked/config/source map only; broader source/config membership drift and untracked additions are outside this finite check.",
+    "T02:02": "Timeout escapes subprocess.run before unit.log publication, so frozen available-log retention for timeout is stronger than current body. Nonzero exit does retain captured log."
+  },
+  "dependency_assessments": {
+    "context-fixture": "stdlib only; fixed command/data construction inspected. Caller trusted parent/cooperative mutation assumption explicit.",
+    "coverage-union": "stdlib only; decoder, bounded file reads and graph normalizer inspected. Snapshot is tracked selection, not complete runtime membership.",
+    "native-binding": "hash_go_module shared function and extracted framing manually inspected. Imported manifest module retained as source dependency; no receipt authenticity inferred.",
+    "artifact-coverage": "stdlib only; whole physical module framing, parsers and fixed command construction inspected. No module corpus or Go executable is qualified by source reading."
+  },
+  "input_joins": {
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "d594_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "d594_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "d594_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/_context_fixturelib.py": {
+      "d594_sha256": "189a9886823c17ef1235213049c2301941dc2113e562e3a571c4e4c1c21849df",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/coverage_union.py": {
+      "d594_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/ci20_native_binding.py": {
+      "d594_sha256": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "d594_sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "d594_sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    },
+    "tools/artifact-coverage.py": {
+      "d594_sha256": "d3a4168bee2f23c60721304d787ea73425b31ae9e819cdfb1d01993a8e799287",
+      "immutable_9ab_equal": true,
+      "physical_equal_now": true
+    }
+  },
+  "machines_promoted": [],
+  "tasks_promoted": []
+}

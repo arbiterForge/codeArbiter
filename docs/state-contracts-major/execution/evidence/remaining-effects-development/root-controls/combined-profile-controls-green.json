@@ -1,0 +1,65 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_site_playwright_observation",
+    "test_major_native_observation",
+    "test_major_qualification_report.SdkPythonSourceProfileTests",
+    "test_major_qualification_report.SandboxOwnedEffectsRoutingTests",
+    "test_major_qualification_report.VitestSourceProducerTests.test_closed_profiles_stage_exact_consumed_members_and_admit_only_four_cells",
+    "test_ci_impact.SdkFooterSourceWorkflowTests"
+  ],
+  "exit_code": 0,
+  "seconds": 24.836722699998063,
+  "before": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/major-qualification-policy.json": "cca98f4aa4efb1c59c433cd981254f12281700a90958f927f3b1d23a57f54c22",
+      ".github/major-test-selections.json": "fff83f896cf1e6a12e5d2fe0f71506f7e298a11ab78e3d524c1846ffcfcd7585",
+      ".github/scripts/major_native_observation.py": "2d3d842b7e0e3387076a2a99e646820a6551922f3a4a7b87029acff578c4070e",
+      ".github/scripts/major_qualification_report.py": "2d01a07572df34a944b04625946f3a1efb7ebb2cbfd30972c073867d2969c952",
+      ".github/scripts/major_readiness.py": "86c228db98213273feb121ec581a98f41243deb3b6cab02fb5eea978ffa52c05",
+      ".github/scripts/site_playwright_observation.py": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+      ".github/scripts/test_ci_impact.py": "aa65bcd487e6a16e023371b83f2a37018804513ddd4297a88fac57d1f0b5a0ee",
+      ".github/scripts/test_major_native_observation.py": "8d2f292c61fbaa6c52f2a71e0f07b7d81699baf5f2f4c6ede00bb76ad5af0fc7",
+      ".github/scripts/test_major_qualification_report.py": "9267a3a23649cfe8dd9fc3ae6b042a73d3b8cafc46c88797b6eeff8f41911ed6",
+      ".github/scripts/test_pi_package.py": "4c5b9e0ce55f3063a5238b63e98512d020f39919a5a918b223b59c0c0bbcae3c",
+      ".github/scripts/test_site_playwright_observation.py": "d35809ea055901da37db10bf5c8c8271c18e043b14595bcf32aecd2b58396db1",
+      ".github/workflows/ci.yml": "0fd11f9634bc608a3cc05e9e80e3cde9a9b28e44b7adf299ac64ec82c7612e09",
+      ".github/workflows/docs.yml": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+      "docs/state-contracts-major/execution/CHECKPOINT.md": "33762b4c4be1f568c9d422248c7a5e1f4f7d3e83a99c39ff01c180fad5c1e557",
+      "docs/state-contracts-major/execution/progress.json": "3274aeb369dc8c005179a2799b1a888aba82fd4be11769f62a97060d3ffae3ce",
+      "plugins/ca-sandbox/tools/cp.test.ts": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+    }
+  },
+  "after": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/major-qualification-policy.json": "cca98f4aa4efb1c59c433cd981254f12281700a90958f927f3b1d23a57f54c22",
+      ".github/major-test-selections.json": "fff83f896cf1e6a12e5d2fe0f71506f7e298a11ab78e3d524c1846ffcfcd7585",
+      ".github/scripts/major_native_observation.py": "2d3d842b7e0e3387076a2a99e646820a6551922f3a4a7b87029acff578c4070e",
+      ".github/scripts/major_qualification_report.py": "2d01a07572df34a944b04625946f3a1efb7ebb2cbfd30972c073867d2969c952",
+      ".github/scripts/major_readiness.py": "86c228db98213273feb121ec581a98f41243deb3b6cab02fb5eea978ffa52c05",
+      ".github/scripts/site_playwright_observation.py": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+      ".github/scripts/test_ci_impact.py": "aa65bcd487e6a16e023371b83f2a37018804513ddd4297a88fac57d1f0b5a0ee",
+      ".github/scripts/test_major_native_observation.py": "8d2f292c61fbaa6c52f2a71e0f07b7d81699baf5f2f4c6ede00bb76ad5af0fc7",
+      ".github/scripts/test_major_qualification_report.py": "9267a3a23649cfe8dd9fc3ae6b042a73d3b8cafc46c88797b6eeff8f41911ed6",
+      ".github/scripts/test_pi_package.py": "4c5b9e0ce55f3063a5238b63e98512d020f39919a5a918b223b59c0c0bbcae3c",
+      ".github/scripts/test_site_playwright_observation.py": "d35809ea055901da37db10bf5c8c8271c18e043b14595bcf32aecd2b58396db1",
+      ".github/workflows/ci.yml": "0fd11f9634bc608a3cc05e9e80e3cde9a9b28e44b7adf299ac64ec82c7612e09",
+      ".github/workflows/docs.yml": "166bb867925020a386ad4a313835f964e6165af6342699c064a9b65a25368b3c",
+      "docs/state-contracts-major/execution/CHECKPOINT.md": "33762b4c4be1f568c9d422248c7a5e1f4f7d3e83a99c39ff01c180fad5c1e557",
+      "docs/state-contracts-major/execution/progress.json": "3274aeb369dc8c005179a2799b1a888aba82fd4be11769f62a97060d3ffae3ce",
+      "plugins/ca-sandbox/tools/cp.test.ts": "92ebf2fb32b66df2c75e4e62b137deae868aa153cc3ef58fd85520c42c477180"
+    }
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ad0b3fc971c74b8c3991aa442d14f22f422e72948e4ef20df10da1ea5d1cda74"
+}

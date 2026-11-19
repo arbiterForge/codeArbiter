@@ -1,0 +1,38 @@
+{
+  "schema": "private-native-cli37-unit-delivery/1",
+  "source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "actual_head_at_copy": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "paths": [
+    "core/artifacts/cmd/ca-artifact/cli_boundary_contract_test.go"
+  ],
+  "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-cli37-unit-x83u2ntp\\candidate\\core\\artifacts\\cmd\\ca-artifact\\cli_boundary_contract_test.go",
+  "candidate_sha256": "6d998a59593e736901895a5fe16b233bf56c4be4b88b696704a516805f1fcd4d",
+  "patch_sha256": "ae730056cb7384fa7bd032c67dae559b3ab532ee2bd6a60b6b02fb15987a4b73",
+  "recipe_fragment_sha256": "af7c15e2f90ed2065368accdada77bc7899cba540d8b4751ca32056e9f7e8ac7",
+  "filemap_sha256": "c4aa2a6b2b1d949f7ac9a59c53f0697af57859c238da4e57f2c5341c305bc24c",
+  "actual_command": [
+    "C:/Program Files/Go/bin/go.exe",
+    "test",
+    "-json",
+    "./cmd/ca-artifact",
+    "-run",
+    "^(TestN37CLIValidDecodeOnceAndCommittedOutputFailure)$",
+    "-count=1",
+    "-timeout=75s",
+    "-failfast"
+  ],
+  "actual_exit_code": 0,
+  "actual_duration_seconds": 5.416443699999945,
+  "tests": {
+    "parents_pass": 1,
+    "children_pass": 10,
+    "skip": 0
+  },
+  "test_invocations": 1,
+  "characterization_not_product_bug": true,
+  "all_existing_module_bytes_unchanged": true,
+  "runtime_unchanged": true,
+  "canonical_writes": false,
+  "qualification": false,
+  "N_F08_still_held": true
+}

@@ -63,6 +63,23 @@ file maps those actions to Pi's extension API.
 - Author and reviewer work uses fresh child Pi processes through
   `codearbiter_dispatch`. Single, chain, and parallel modes share bounded depth,
   concurrency, timeout, cancellation, output, and process-tree cleanup.
+- Author children request exact `write`, `edit`, and `bash` operations from the
+  interactive parent. The parent checks current trust, mode, lifecycle, source
+  ownership, tool policy and any required consent before executing each request.
+  This trusted-host profile does not confine project commands at the operating
+  system level. Reviewer children remain read-only; a child judgment is separate
+  from the parent's observed effects.
+- Delegation records survive in the Git-common journal, but authority does not
+  survive a parent restart. Reconcile unknown outcomes before a new operation;
+  never replay an old grant. An unverified process stop holds affected resources,
+  while independent authorized work can continue. Missing parent UI, revoked
+  authority, unavailable executor, unknown journal state and unverified cleanup
+  remain distinct degraded reasons. Neither a handshake nor the private artifact
+  approval prompt proves author capability or installed-host qualification.
+- Registered workflow follow-ups have a separate bounded recovery notice. A
+  generic child report without the parent's exact producer/work context reports
+  `durable:false`; retained report text is not a durable recovery obligation.
+  Status and notices do not promote work or restore permission.
 - `/ca-sprint --farm` remains Feature Forge `preview`. Pi's parent calls the one
   checked-in `plugins/ca/tools/farm.js` contract. No Pi-specific farm engine is
   shipped, and ordinary child environments never receive `FARM_API_KEY`.
@@ -87,6 +104,10 @@ file maps those actions to Pi's extension API.
   operator-launched Pi CLI, imported module, package root, and reported version.
   It does not prove publisher authenticity. Verify the source separately with
   `pi list` and `pi config`.
+- Source and fixture tests establish only their observed paths. Final package
+  qualification also needs the exact installed runtime/package, real parent
+  interaction and resulting target readback; source-only success is not a
+  released or fully qualified author workflow.
 - The supported promotion target is exact Pi 1.5.0. The package is
   published as `npm:@arbiterforge/ca-pi` on every `ca-pi-v*` tag (ADR-0029);
   the pinned Git tag remains the reproducible install. A Pi-native embedded

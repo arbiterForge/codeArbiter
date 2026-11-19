@@ -1,0 +1,67 @@
+{
+ "original_proper_RED": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-finding-prerequisite-b_o1vbd2\\final-target-red.json",
+  "sha256": "a63c37b97363c21e0b0f7216771462a8685f11ab5abd1b8051456b0ac22f3f9d",
+  "bytes": 1385
+ },
+ "RED_reuse": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\red-reuse.json",
+  "sha256": "72f8acb1b4c677d845eac8e99a835d321c057151a7a65f6cf83b932c58d73297",
+  "bytes": 588
+ },
+ "actual_runs": {
+  "criterion-green": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-green.json",
+   "sha256": "36bfb6ff403d96afcf009b7eda103df80933f590abed1029bbfcb63b3e10859b",
+   "bytes": 1797
+  },
+  "criterion-fixture-green": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\criterion-fixture-green.json",
+   "sha256": "7c6a6a8b5968d172131ccfd95c90266199035e7224aead749a67ffcaf9049557",
+   "bytes": 1797
+  },
+  "farm-controls": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-controls.json",
+   "sha256": "d9f9804474346b3b53ffb7b499d537b78659aeaacd13dd1e847e853c42722930",
+   "bytes": 1712
+  },
+  "affected-legacy": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-legacy.json",
+   "sha256": "450a09859500bdb03d318c2ef21bae5a2bbd4655df92827c52d6ae10b49e06f3",
+   "bytes": 2175
+  },
+  "affected-fixture-successor": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\affected-fixture-successor.json",
+   "sha256": "7bd314edaa698735af70cfe102dd67ca30064b4a17435e2b557b2f4ae03ab8d1",
+   "bytes": 1892
+  },
+  "farm-source-byte-policy": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy.json",
+   "sha256": "843040677ecd6232f2aedb4c0ae1eb2379ace649e19184ad9ab7e5ef43f89b01",
+   "bytes": 1780
+  },
+  "farm-source-byte-policy-green": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-green.json",
+   "sha256": "e0b9ed29c28e4aeb43dd3f4705340f08d65f09e4d2916a79b382df38a8273c63",
+   "bytes": 1870
+  },
+  "farm-source-byte-policy-final-green": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\farm-source-byte-policy-final-green.json",
+   "sha256": "ff00323029c17f1f9eae971852e0652ac3815bdd61b1f6446a9a3a0d43beb9cf",
+   "bytes": 1869
+  },
+  "attribute-readback": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-findings-implementation-60oxsduv\\attribute-readback.json",
+   "sha256": "56a6e69771fc4fb70c1658cf034a17095c07d0e740c4fad610a17a306fca39eb",
+   "bytes": 2411
+  }
+ },
+ "passed_purposes": {
+  "new_Farm_class": 5,
+  "affected_existing_distinct": 14,
+  "affected_existing_results": "First14 had12PASS+2scratch_missing_source_ERROR; corrected same2PASS, no other purposes repeated.",
+  "old_source_byte_policy_new_Farm_iteration": 1,
+  "final_attribute_primitive": "All47eol=lf, ordinaryCRLF+legacyrawCRLF and source/index immutability asserted by original unchanged test."
+ },
+ "honesty": "No full-module/suite or native/Node/npm/Vitest/provider runtime claim. Attributes finalization followed actual2REDs, same unchanged Farm iterationGREEN. Earlier5new/14existing results precede final attribute-only change; no blind repeat."
+}

@@ -1,0 +1,160 @@
+{
+ "schema": "codearbiter.private-source-independent-review/1",
+ "verdict": "PASS",
+ "reviewer": "/root/ci_repair_review",
+ "author": "/root (current source reinspection successor)",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "observed_current_head": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\delivery.json",
+  "sha256": "19811ba0180c650afb54933616d80dabb45a3405195af9ed3e301572885dd21c"
+ },
+ "full_subjects": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\adoption-filemap.json",
+   "sha256": "689b4bbacc5468a1bdf4641307dcc5c4ec3f2f50bcac43b25963b4306e6dc31f",
+   "bytes": 3218,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\cas-proposal.json",
+   "sha256": "23fd755f37359d8c7ecf0f6c2d0fc04b4020279372aad4e48a22d07b41976042",
+   "bytes": 46146,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46",
+   "bytes": 108291,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\clauses.json",
+   "sha256": "7cea91c50aa3993fcf7c0af1040c0ac558a2915360afc265944d0ea2a65015ff",
+   "bytes": 74840,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe",
+   "bytes": 2162,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d",
+   "bytes": 8270,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\SX06-preserved.json",
+   "sha256": "d7f28cbb76e452e3f2df570f53a6581f87df61fca2aa82680c8d12790fb4d3a0",
+   "bytes": 15693,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\T05-preserved.json",
+   "sha256": "e270ce6afaa11554672094b230232770095a6a9c5d9fd9347b8d9a1338bad084",
+   "bytes": 6580,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\WF-31-preserved.json",
+   "sha256": "042a664da591c88ccf3406800f3f48902714062e8b4e037abd867614fef9a0ad",
+   "bytes": 25701,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\WF-33-preserved.json",
+   "sha256": "6983233664aec603703ca73b5ab53d3afb0a830a5a9252a8e422479bd16ef67c",
+   "bytes": 26398,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\proofs\\WF-34-preserved.json",
+   "sha256": "25da441acf4199afcba2fbf0e6c79462b06ad3229827669b88f9031556edd9cd",
+   "bytes": 21900,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-current-source-as9rosa4\\source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9",
+   "bytes": 35429,
+   "binding": "PRIVATE_PROPOSAL_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "findings": [],
+ "scope": "Narrow independent changed-owner/current-witness reinspection; unaffected original26-clause source review f883 and exact mode code closure1be5 explicitly reused. This does not review the reviewer\u2019s own generator packet.",
+ "reuse": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-repaired22-root-binding-review-gae69c82\\review.json",
+   "sha256": "f8838947db795cf1bce27ddd8f4c7c3c42aa1bdeda8e3b5578a1509ab15c7f0e",
+   "scope": "Original independent source26 clauses/22proposals/9advanced; unaffected17cells unchanged."
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mode-exit-guidance-independent-closure-5492y33s\\review.json",
+   "sha256": "1be5e14be90ffa1688c4350dbc5203af268908ca54f2c65a8eb9cafdb906096d",
+   "scope": "Exact1988 mode implementation, pair/retry/guidance behavior and explicit crash/denial/concurrency limits."
+  }
+ ],
+ "verified": {
+  "sealed_subjects": 12,
+  "adoption_files": 9,
+  "current_source_inputs": 51,
+  "baseline_bindings": 27,
+  "only_changed_positive": [
+   "core/pysrc/_modelib.py"
+  ],
+  "literal_frozen_clauses": 26,
+  "whole_row_CAS": 22,
+  "advanced_whole_rows_unchanged": 9,
+  "unchanged_non_WF33_clause_rows": 22,
+  "witness_hash_checks": 268,
+  "all_proof_IDs_exactly_CAS_IDs": true,
+  "changed_function_bounds": {
+   "_mode_audit_line": [
+    333,
+    354
+   ],
+   "flip_outcome": [
+    398,
+    446
+   ],
+   "_flip": [
+    473,
+    508
+   ],
+   "_settle_dev_close": [
+    785,
+    888
+   ]
+  },
+  "expanded_audit_helpers": [
+   "_mode_audit_line",
+   "_settle_dev_close"
+  ]
+ },
+ "current_WF33_review": [
+  "WF33:01/02 retain persona versus actual host/hook authority. Verified raw marker and ledger backing govern nondefault composition; mode selection never grants OS containment or changes Pi trust/plan policy. New pair/replay limits do not strengthen badge observations into settlement proof.",
+  "WF33:03 keeps emitted A-to-B-to-A last-mode/generation delivery semantics; update/removal double denial remains explicit. The current mode addition records attributable exit plus entry, uses distinct event identity and settles pending enter before accepting older backing as noop.",
+  "WF33:04 generation-based persona refresh still confers no new approval, completion or authority. Source-only repair assessment retains no universal compaction/durable recovery promise.",
+  "Current mode spans now cover complete changed owner functions and audit pair settlement helper rather than stale offsets. Their actual1988 bytes match retained independent closure."
+ ],
+ "limits": [
+  "Source/AST/hash/read-only Git metadata only; no tests/runtime/owner/API/network/native/install/provider effects or Root/index/ref/marker/ledger writes.",
+  "Original runtime/evidence epochs remain unchanged; source-only PRESERVED is not TESTED, task/scenario/human/installed/publication acceptance. Strict prospective owner admission remains Root-owned.",
+  "Marker-before-journal crash gap, dual-storage denial, shared queue race/caps/tail bounds, legacy backing and persona failure limits remain explicit; no unconditional durability or redelivery guarantee."
+ ]
+}

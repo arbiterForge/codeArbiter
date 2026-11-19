@@ -1,0 +1,160 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/acceptance_security_review: finite accepted normative text and actual owner assessment; private author proposal"
+  },
+  "inputs": {
+    "core/pysrc/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_taskexcludelib.py": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+    "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+    "core/pysrc/session-start.py": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/surface/commands/init.md": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/finding-dispositions.json": "de8506e391821b5658d41aff80ff53e985e755d60efd5769c53f41bf05962237",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "plugins/ca-codex/skills/ca-init/SKILL.md": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+    "plugins/ca-pi/skills/ca-init/SKILL.md": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+    "plugins/ca/README.md": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+    "plugins/ca/commands/init.md": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d"
+  },
+  "disposition_ids": [
+    "disposition:findings:SW-F09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-clause-assessment.json",
+      "sha256": "c893cd7fc0de73642e06fe2b3c7e9d8ce610cef875372bfbbf420068f41f3d01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/source-bindings.json",
+      "sha256": "7d5438daf15ececf16de433cdfa69a7ce00b310d4940b6a085f4966e23f54a41"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/source65-sw9-2ed65753/sw9-baseline-current-joins.json",
+      "sha256": "cb225ccdf9601fa6599f05889add061750b06de9739f6488d10bf69e7792b235"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:findings:SW-F09",
+      "frozen_row_sha256": "bc1a3321fb26caa939338866e01a8f62a4f121dc60d1dd918805946e24288a09",
+      "clause_ids": [
+        "SW-F09:1",
+        "SW-F09:2",
+        "SW-F09:3",
+        "SW-F09:4",
+        "SW-F09:5"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca/README.md",
+          "start": 18,
+          "end": 36,
+          "file_sha256": "16d4da3aaca07d3f244aee9305c55f004a87e7180a6524c1daa42eaeaf4be7dc",
+          "span_sha256": "34ca723171824ac95eaec350a2f82a9832fe0640ee863edcd214b1965b1757e2"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 414,
+          "end": 470,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "span_sha256": "b59d280c98a0ab73cecee1a07554d72684a6371f131493c1c5014e8429639071"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "start": 1217,
+          "end": 1275,
+          "file_sha256": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+          "span_sha256": "9e87d94c0286dd16cb1a7fbd4228e06ff359b5bcf06260634183eb20ffe162d4"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1070,
+          "end": 1122,
+          "file_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+          "span_sha256": "fc713589881361fb4d6f6a632fdd334312479f0fa214509dddd50892f1b24ab5"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "start": 1140,
+          "end": 1243,
+          "file_sha256": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+          "span_sha256": "f17d448a5bb02314e918c5c44cc0480502c06f0653b175405e8acfe89846ae36"
+        },
+        {
+          "path": "core/pysrc/init-codearbiter.py",
+          "start": 470,
+          "end": 503,
+          "file_sha256": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+          "span_sha256": "e1d4958ac1a710bcbe32cc73ac681905fdf286821a471a54bfcfee23808b17df"
+        },
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "start": 147,
+          "end": 223,
+          "file_sha256": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+          "span_sha256": "3f0657e66f69cfa5b48c9ff2782ab3b10584e6b1463a859279df04b103729fb1"
+        },
+        {
+          "path": "core/pysrc/taskwrite.py",
+          "start": 334,
+          "end": 365,
+          "file_sha256": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+          "span_sha256": "6a7e32686045dd2db12257bdb676134f0fd26a41401bc4f8a6d50ff8415eeb02"
+        },
+        {
+          "path": "core/pysrc/_hooklib.py",
+          "start": 508,
+          "end": 561,
+          "file_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+          "span_sha256": "66fe5a8670a1abe4ab99651faf92f7a50657271613930e9ff6d22c74c6a53a15"
+        },
+        {
+          "path": "core/surface/commands/init.md",
+          "start": 18,
+          "end": 26,
+          "file_sha256": "2f7f9e13e5e7e69e7fa59c49c58ca6f590abf7bebc38e52ccc14b6aa46960a66",
+          "span_sha256": "ed32078219935916983b8f6ded21b1dbafc5f4475b26fa4db2da3bab06c7a725"
+        },
+        {
+          "path": "plugins/ca/commands/init.md",
+          "start": 18,
+          "end": 26,
+          "file_sha256": "4e3d44ded87b249119396d69782c01ed87a9ae1a45e5c6e819c5b09a1ec8c25d",
+          "span_sha256": "ed32078219935916983b8f6ded21b1dbafc5f4475b26fa4db2da3bab06c7a725"
+        },
+        {
+          "path": "plugins/ca-codex/skills/ca-init/SKILL.md",
+          "start": 18,
+          "end": 26,
+          "file_sha256": "33a4e86f860825a2c7dfc85c62bfe10ae73a429bb22f9db3316ffcfabc618ccb",
+          "span_sha256": "f6ac406ef35bcaf6f2ba58350e5a9ec46be4ad6f17953d0989055121dba6bbe6"
+        },
+        {
+          "path": "plugins/ca-pi/skills/ca-init/SKILL.md",
+          "start": 18,
+          "end": 26,
+          "file_sha256": "a4fa01cfc484cc3463f21bbcc5f61d06c0f1a4ee26525c89c2faae2ce2d4c2da",
+          "span_sha256": "f6ac406ef35bcaf6f2ba58350e5a9ec46be4ad6f17953d0989055121dba6bbe6"
+        }
+      ],
+      "semantic_assessment": "Activation gates governed repository effects after narrow pre-activation maintenance; opted-in Git/common bookkeeping and init-owned exclusion writes extend beyond .codearbiter without new permission."
+    }
+  ],
+  "scope": "Only this finite normative finding at actual source; the frozen diagnosis is corrected by the explicitly narrowed accepted contract.",
+  "accepted_contract_note": "Activation gates governed repository effects after narrow pre-activation maintenance; opted-in Git/common bookkeeping and init-owned exclusion writes extend beyond .codearbiter without new permission.",
+  "limits": [
+    "Reasoned source guard/effect/retry or finite normative-text conformance only, not observed execution.",
+    "No tests, native/SDK/Pi/Docker/browser/provider/API/network/install or original-owner replay was performed.",
+    "No TESTED/runtime epoch, whole linked task, installed package, model behavior, human acceptance, final-main or publication qualification.",
+    "Existing storage denial, cooperative concurrency, per-resource acquisition, unsupported grammar and platform limits remain; no global atomicity, durability or adversarial attestation.",
+    "Private proposal only. Root owns adoption, original strict authentication, independent review and canonical/index/ref/marker writes."
+  ]
+}

@@ -211,8 +211,38 @@ def main():
         reason = result.stderr.strip() or "Blocked by codeArbiter policy"
         print(json.dumps({"decision": "block", "reason": reason}))
         return 0
-    sys.stdout.write(result.stdout)
+    output = result.stdout
+    recovery_notice = None
+    recovery_root = None
+    recovery_session = None
+    if result.returncode == 0 and active:
+        # Only add context after the owning guard passed. Never synthesize an
+        # allow verdict, modify a block, or repair/promote recovery targets here.
+        try:
+            import _workflowrecoverylib
+            from _hooklib import project_root
+            payload = json.loads(raw)
+            recovery_root = project_root()
+            recovery_session = payload.get("session_id")
+            offered = _workflowrecoverylib.presentation(recovery_root, recovery_session)
+            envelope = json.loads(output) if output.strip() else {}
+            if offered["text"] and isinstance(envelope, dict) and envelope.get("decision") != "block":
+                specific = envelope.get("hookSpecificOutput", {})
+                if (isinstance(specific, dict) and specific.get("permissionDecision") != "deny"
+                        and specific.get("hookEventName") in (None, "PreToolUse")
+                        and isinstance(specific.get("additionalContext", ""), str)):
+                    specific = dict(specific, hookEventName="PreToolUse",
+                        additionalContext="\n".join(value for value in (specific.get("additionalContext", ""), offered["text"]) if value))
+                    envelope["hookSpecificOutput"] = specific
+                    output = json.dumps(envelope)
+                    recovery_notice = offered
+        except Exception:
+            pass  # Preserve the actual guard's verdict/output on notice failure.
+    sys.stdout.write(output)
+    sys.stdout.flush()
     sys.stderr.write(result.stderr)
+    if recovery_notice is not None:
+        _workflowrecoverylib.record_notice_emitted(recovery_root, recovery_session, recovery_notice["fingerprint"])
     return result.returncode
 
 

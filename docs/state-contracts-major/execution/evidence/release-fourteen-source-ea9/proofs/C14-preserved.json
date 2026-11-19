@@ -1,0 +1,234 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+  ".github/scripts/integration_candidate.py": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+  ".github/scripts/payload_scope.py": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+  ".github/scripts/payload_version_gate.py": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+  "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C14",
+  "disposition:transitions:C14:02",
+  "disposition:transitions:C14:03",
+  "disposition:transitions:C14:04",
+  "disposition:transitions:C14:05"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C14",
+   "frozen_row_sha256": "2b305ff4d7d3c58b4a4ff581c4e1ac054615a7239bb6ebe59cc803938abae0ac",
+   "clause_ids": [
+    "disposition:transitions:C14:01",
+    "disposition:transitions:C14:02",
+    "disposition:transitions:C14:03",
+    "disposition:transitions:C14:04",
+    "disposition:transitions:C14:05"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_scope.py",
+     "start": 43,
+     "end": 96,
+     "file_sha256": "e4cb1fc915489df8c642ae13d38e3f8c1b9dfba94f511ac8a72f5481de08cbea",
+     "span_sha256": "c919526fd8d08c578b26f4eac82966f293c631e9f2eff17234a04e2f0c99df4e"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 212,
+     "end": 225,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "2da5ff832f57f2120cdf2f695c7d2dc810d4881d011262f8c931e04b33e0c833"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 305,
+     "end": 323,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "ed34fab56dcf797d4d70703f6c3005b2127caf758960dd6b9269fd5b93a3a547"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 154,
+     "end": 205,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "139d6868b31115e550eb224cd36bc2903c592dc2a0a09e94deba4fab94d8f233"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 227,
+     "end": 252,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "676176728ee0ba4a6d36f5bbc77d9c8f3ccb645bbaf2a4766aea5e52cdf71314"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 254,
+     "end": 302,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "1d180b589667ed75c1d7b0676eaa929992ea06fbbda0aab40c6489d26a46869e"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 305,
+     "end": 359,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "be09b8e572806bd3311a3bd8f9a8e800403c67210e7b49eac529a8f68e29449b"
+    },
+    {
+     "path": ".github/scripts/integration_candidate.py",
+     "start": 61,
+     "end": 119,
+     "file_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+     "span_sha256": "30e9454fbb64aabb34979b33e036b3996b18e87101c08d20dfd870ed43fef5b0"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 327,
+     "end": 355,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "50e9b6c8342d6fd09734d36203102207642f6b44787fcd579dde4478f08d5d7d"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:02",
+   "frozen_row_sha256": "9cb66695711d94c5f53c27d3d3fe866601d273a6eaeac04217d97c87aaae56b7",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 212,
+     "end": 225,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "2da5ff832f57f2120cdf2f695c7d2dc810d4881d011262f8c931e04b33e0c833"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 305,
+     "end": 323,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "ed34fab56dcf797d4d70703f6c3005b2127caf758960dd6b9269fd5b93a3a547"
+    }
+   ],
+   "semantic_assessment": "After resolving the base, unchanged shipped payload exits success without requiring a version increment or publishing anything. Integration-candidate mode similarly measures from its declared baseline.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:03",
+   "frozen_row_sha256": "6fbc4d0ce7d3f20d5c23f30d9b1128eb5e18dabcc17863d6f99599da06152186",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 154,
+     "end": 205,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "139d6868b31115e550eb224cd36bc2903c592dc2a0a09e94deba4fab94d8f233"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 227,
+     "end": 252,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "676176728ee0ba4a6d36f5bbc77d9c8f3ccb645bbaf2a4766aea5e52cdf71314"
+    }
+   ],
+   "semantic_assessment": "Changed payload requires a usable strict-SemVer current version. Only a genuinely absent base manifest permits first introduction; present-but-unreadable/malformed/no-version base data now fails.",
+   "intake_variances": [
+    "R-06/C-F07 replaces the old base_version(None) conflation with explicit absent/valid/invalid states. The compatibility base_version reader remains but the gate does not use None as admission."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:04",
+   "frozen_row_sha256": "3e59f8a73a383d236941e082b37d930d83f80cea0f3da06b0e75a54b52e3f03c",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 254,
+     "end": 302,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "1d180b589667ed75c1d7b0676eaa929992ea06fbbda0aab40c6489d26a46869e"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 305,
+     "end": 359,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "be09b8e572806bd3311a3bd8f9a8e800403c67210e7b49eac529a8f68e29449b"
+    },
+    {
+     "path": ".github/scripts/integration_candidate.py",
+     "start": 61,
+     "end": 119,
+     "file_sha256": "9ab38e8706167714514d1e18f4b609901c88a84673de55ea53de271c13b60b3b",
+     "span_sha256": "30e9454fbb64aabb34979b33e036b3996b18e87101c08d20dfd870ed43fef5b0"
+    }
+   ],
+   "semantic_assessment": "Ordinary changed payload must strictly advance the valid base, derive one unambiguous declared namespace and use an absent tag. Integration mode requires the exact declared candidate to advance recorded baseline and current main, with the same unspent namespace check.",
+   "intake_variances": [
+    "P-01 integration candidate version ownership is an explicit additional route, not a weakening of main/release version spending."
+   ],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:C14:05",
+   "frozen_row_sha256": "61346657e2fa2e1a6152950ad1e770c1dc38545a13fc6d9b7ae9ba9cecc1c8bb",
+   "witnesses": [
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 254,
+     "end": 302,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "1d180b589667ed75c1d7b0676eaa929992ea06fbbda0aab40c6489d26a46869e"
+    },
+    {
+     "path": ".github/scripts/payload_version_gate.py",
+     "start": 327,
+     "end": 355,
+     "file_sha256": "713ab821fedf797cc0be4b2fee335d1c71a18ef6a6104503d4e7388eea9868d5",
+     "span_sha256": "50e9b6c8342d6fd09734d36203102207642f6b44787fcd579dde4478f08d5d7d"
+    }
+   ],
+   "semantic_assessment": "Same/lower version, malformed/missing namespace, collision or existing target tag returns blocking diagnostics. An absent tag does not rescue a version already carrying changed payload on the base; integration errors also remain blocking.",
+   "intake_variances": [],
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

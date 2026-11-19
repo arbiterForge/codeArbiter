@@ -1,0 +1,604 @@
+{
+  "schema": "original-hosted-farm-manifest-selectors/1",
+  "source_commit": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+  "source_tree": "0a8bd97f59d7baa4705b2985f8c4412fb2488dd2",
+  "attempt": {
+    "id": 44289274017,
+    "head_sha": "00fd5fff97189598083e762e9c54fba8b01c1f62",
+    "head_branch": "major/state-contracts",
+    "event": "push",
+    "path": ".github/workflows/ci.yml",
+    "run_attempt": 1,
+    "run_started_at": "2026-11-18T10:51:14Z",
+    "status": "completed",
+    "conclusion": "success"
+  },
+  "owners": {
+    "farm": {
+      "artifacts": {
+        "report": {
+          "id": 14423200314,
+          "name": "major-qualification-134750078603",
+          "sha256": "71a38b1ff7768e9eaaeabf12ab676e34196f3d0bb70c1e96216d15748516a8ee",
+          "bytes": 3565,
+          "step": "Upload major qualification report"
+        },
+        "source": {
+          "id": 14421654313,
+          "name": "major-source-inputs-farm-dispatcher",
+          "sha256": "965d4c92edbde45c57a614b96ac8ab570fa8cbb08b3549d9a62ba0b86b03e627",
+          "bytes": 625823,
+          "step": "Upload Farm source-test inputs"
+        },
+        "observation": {
+          "id": 14422646766,
+          "name": "farm-source-observations-00fd5fff97189598083e762e9c54fba8b01c1f62-44289274017-1",
+          "sha256": "fa4c6b6f5767f37c36bebd3e665c4d922a1b075eaa35b1e4bf7565120156562d",
+          "bytes": 24795,
+          "step": "Retain original Farm source-test observation"
+        },
+        "original-results": {
+          "id": 14421809311,
+          "name": "farm-vitest-00fd5fff97189598083e762e9c54fba8b01c1f62-44289274017-1",
+          "sha256": "d02e06d754d6061e78e44a5474eb2e37cbf8bec3f36a57f2f8c88f2a679912b2",
+          "bytes": 41954,
+          "step": "Preserve original Farm named test results"
+        }
+      },
+      "job_log_sha256": "0a17d7857fe3cb5e8ce5c350908bc2d4ff9c34bbcd619526f8cbfe566e5f7859",
+      "selectors": [
+        {
+          "cell": "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: linked checkouts cannot overlap the shared administration boundary",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: linked checkouts cannot overlap the shared administration boundary"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:02",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: a foreign lock refuses without running the callback or changing bytes",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: a foreign lock refuses without running the callback or changing bytes",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:03",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:04",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: linked checkouts cannot overlap the shared administration boundary",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: replacement ownership is retained and primary errors release the owned lock",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: linked checkouts cannot overlap the shared administration boundary",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: replacement ownership is retained and primary errors release the owned lock",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:05",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration bundle: replacement ownership is retained and primary errors release the owned lock",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: replacement ownership is retained and primary errors release the owned lock",
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-COMMON-REGISTRY-LOCK:06",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-registry-lock.test.ts:cross-process Farm worktree administration source: unknown common directory, foreign ownership and failed release refuse conservatively"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-PRESTAGE-DRIFT:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage clean drift controls dependent mutations",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage dirty drift controls dependent mutations",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 fresh pre-stage unavailable drift controls dependent mutations"
+          ]
+        },
+        {
+          "cell": "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S22:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests completes two tasks green when API returns valid file blocks",
+            "vitest:plugins/ca/tools/plan-contract.test.ts:#412 parsePlan \u2014 rejects malformed plans before any field access accepts a minimal valid plan and returns it"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:02",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:03",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests serializes scope-overlapping tasks so the second inherits the first's merged change (AC-06)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not let a failed prerequisite's dependent block independent work",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not reserve a dependent's file ahead of its higher-ID prerequisite",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching makes progress for every three-task DAG order and two-file scope assignment",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching neither mutates written dependencies nor its scheduler inputs",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching preserves existing ID ordering through overlapping ready chains",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching requires every predecessor to be green and permits empty scopes",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching reserves all running scopes while allowing unrelated ready work",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching selects compatible ready tasks in stable lexical order"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:04",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests HTTP transport lifecycle via bundle continues independently eligible work while leaving a deferred prerequisite unaccepted",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests HTTP transport lifecycle via source continues independently eligible work while leaving a deferred prerequisite unaccepted",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not let a failed prerequisite's dependent block independent work",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching does not reserve a dependent's file ahead of its higher-ID prerequisite",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching makes progress for every three-task DAG order and two-file scope assignment",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching neither mutates written dependencies nor its scheduler inputs",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching preserves existing ID ordering through overlapping ready chains",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching requires every predecessor to be green and permits empty scopes",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching reserves all running scopes while allowing unrelated ready work",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:dependency-ready scope batching selects compatible ready tasks in stable lexical order"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:05",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:06",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests reliability-013: every dispatched task appears in farm-report.json with a status after a breaker abort, none vanish"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:09",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a run publishes its receipts under a run-scoped directory and still exposes the latest convenience copies",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests completes two tasks green when API returns valid file blocks"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:10",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) FARM-R01 journal publication failure drains independent tasks and retains their real outcomes",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests escalates with gate failure note after maxRetries exceeded",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:11",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S23:12",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (bundle)",
+            "vitest:plugins/ca/tools/farm-interruption.test.ts:FARM-R01 real outer branch-creation failure preserves operator refs and publishes interrupted receipt (source)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests refuses reused Git resources without discarding prior branches or evidence",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 exclusive identities preserve evidence under a same-ID race"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:04",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests best-of-N (FARM_SAMPLES>1) draws N samples in real isolated worktrees, accepts a green one, and cleans up scratch worktrees",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests escalates with 'drift:' note when worker writes outside filesInScope",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) lets a compliant worker through the sweep (in-scope file, no escape)",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a multiply-linked existing destination",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:05",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause lets a CLEAN sample win when a SIBLING sample tampered with the test",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause reports a sample that tampered with the test",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status does NOT call it tampering when the hash was UNREADABLE before the worker ran",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status names the tampered test path when the test hash moves under the worker",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-high process outcome (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-high process outcome (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-low process outcome (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects failed-low process outcome (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-decoy process outcome (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-decoy process outcome (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-only process outcome (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects stderr-only process outcome (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects timeout-score process outcome (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests mutation evidence respects timeout-score process outcome (source)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) lets a compliant worker through the sweep (in-scope file, no escape)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not try a sibling after the task's immutable test changes"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:06",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause lets a CLEAN sample win when a SIBLING sample tampered with the test",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:best-of-N sample failures each surface their own cause reports a sample that tampered with the test",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status does NOT call it tampering when the hash was UNREADABLE before the worker ran",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status names the tampered test path when the test hash moves under the worker",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) escalates a worker that writes OUTSIDE the worktree, bypassing runWorker's inline guard",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) escalates a worker that writes the read-only test.path, bypassing runWorker's inline guard",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer rejects a multiply-linked existing destination",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+            "vitest:plugins/ca/tools/worktree-fs.test.ts:symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:07",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status retries ONCE on drift, naming the offending paths in the next prompt"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:08",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates on the FIRST drift when there are no retries to spend",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates on the SECOND drift even with retries left \u2014 the latch, not the counter",
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates with the comma-joined drift list, in order, once the retry is spent"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:09",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.unit.test.ts:attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 bounded read-only retry accepts only a successful current observation",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R03 refuses unknown Git drift instead of inventing a clean observation"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:10",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries retains ordinary custom-worker retries when no disposition was returned"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:11",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 1 deferred sample(s)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:transport deferral preserves task retry boundaries does not start another authoring round after 2 deferred sample(s)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:12",
+          "selectors": [
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:13",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:Post-apply containment sweep \u2014 task-level enforcement for ANY worker (D6) lets a compliant worker through the sweep (in-scope file, no escape)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S24:14",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-surface.test.ts:runTask escalations are distinguished by note, not just by status escalates after the last attempt carrying only the FIRST line of the prior failure",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S25:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests best-of-N (FARM_SAMPLES>1) draws N samples in real isolated worktrees, accepts a green one, and cleans up scratch worktrees",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S25:07",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S26:03",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests completes two tasks green when API returns valid file blocks",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests serializes scope-overlapping tasks so the second inherits the first's merged change (AC-06)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S29:02",
+          "selectors": [
+            "vitest:plugins/ca/tools/exec.test.ts:run() \u2014 a child killed by a signal reports code 1 when the close event carries no exit code",
+            "vitest:plugins/ca/tools/exec.test.ts:run() \u2014 stream capture captures stderr separately from stdout and merges both into `out`",
+            "vitest:plugins/ca/tools/exec.test.ts:treeKill() \u2014 the tree cannot be confirmed gone reports ok:false naming the process group when SIGKILL leaves a live member"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S29:03",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#395 \u2014 timeout kills and VERIFIES the whole child process tree leaves NO grandchild behind \u2014 the tree is verified gone before run() resolves",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#395 \u2014 timeout kills and VERIFIES the whole child process tree reports an UNVERIFIED cleanup distinctly from an ordinary timeout",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#395 \u2014 timeout kills and VERIFIES the whole child process tree resolves taskkill absolutely from SystemRoot (an unqualified name is a PATH hazard)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#395 \u2014 timeout kills and VERIFIES the whole child process tree treeKill resolves a verification result instead of firing and forgetting",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) disables the timeout when timeoutMs is 0/omitted (git-style calls are unbounded)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) does NOT time out a fast command and reports its real exit code",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) kills a hung command after the timeout and tags the result timedOut",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) runGate (real) returns {ok:false} on a non-zero exit and {ok:true} on success",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:T-06 run() wall-clock timeout (reliability-001) runGate surfaces a killed hung command as a gate failure (scheduler can finalize)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S29:05",
+          "selectors": [
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 gate retains executor outcome instead of flattening code 125 into test failure",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 preserves failed containment and admits no reset or second author",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S30:02",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S30:03",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S30:04",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts actual Git removal and verified absence through an admitted alias",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps a registry comparison unknown when no physical ancestor can be observed",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EACCES canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps alias registration EIO canonicalization unknown without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry observation unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation keeps unavailable registry readback unknown without another destructive attempt",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses cleanup success through an admitted alias while a locked missing worktree remains registered",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R02 uncontained sample setup retains scratch resources without authoring or reset"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S30:05",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation accepts ENOENT only after real Git removal and an absent registration",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation does not mistake a dangling directory link for an absent owned path",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EACCES with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with absent Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation refuses EIO with retained Git registration without prune or destructive retry",
+            "vitest:plugins/ca/tools/farm-cleanup-observation.test.ts:worktree cleanup filesystem observation retains known-present paths and the existing bounded retry policy"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S31:06",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #387: a green run whose farm-report.json cannot be published exits non-zero and never claims a Report path",
+            "vitest:plugins/ca/tools/farm.test.ts:farm artifact publication (#397 / #387) #397: a failed report publication leaves the previous run's complete report intact \u2014 never a truncated one",
+            "vitest:plugins/ca/tools/state-contracts.test.ts:FARM-R01 reconciles a post-merge crash in real Git without changing a ref or calling an author"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S32:01",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary freezes its base before entitlement probes can move the named ref (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary freezes its base before entitlement probes can move the named ref (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary rejects an unresolved base before model requests (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary rejects an unresolved base before model requests (source)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S32:02",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements drops a 401 candidate with a distinct entitlement note and keeps an entitled one",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements drops a candidate whose probe exceeds the per-candidate wall-clock cap (no hang)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements keeps every candidate when none returns 401",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:#93 screenEntitlements treats a non-401 error status as a survivor (let the canary judge capability)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe distinguishes a real 401 response from a network throw (both map to a status, not an exception)",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe rejects a direct external-http probe before fetch",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe sends the Bearer apiKey header and a minimal POST body naming the model",
+            "vitest:plugins/ca/tools/farm.unit.test.ts:coverage-003 (#183) makeEntitlementProbe the AbortController-driven timeout actually fires and maps to status 0, bounded by timeoutMs"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S32:03",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S32:04",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests failed canary cleans its own scratch without creating integration (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests failed canary cleans its own scratch without creating integration (source)"
+          ]
+        },
+        {
+          "cell": "disposition:transitions:S32:07",
+          "selectors": [
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=1 (source)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (bundle)",
+            "vitest:plugins/ca/tools/farm.test.ts:farm.ts smoke tests canary isolates every model and preserves existing refs, samples=2 (source)"
+          ]
+        }
+      ]
+    },
+    "manifest": {
+      "artifacts": {
+        "report": {
+          "id": 14422573659,
+          "name": "major-qualification-134750078427",
+          "sha256": "fd55d07fc2f08475773fc5f093b1ae9d9acc4f8387641e4b8a092d768ea4208e",
+          "bytes": 80050,
+          "step": "Upload major qualification report"
+        },
+        "source": {
+          "id": 14423132435,
+          "name": "major-source-inputs-hooks-single-owner",
+          "sha256": "de14a76f2c25c6e7190eaff32e804291f2c96a0861898fbd5bc5cca1622db27e",
+          "bytes": 4359071,
+          "step": "Upload single-owner hook source-test inputs"
+        },
+        "observation": {
+          "id": 14423271574,
+          "name": "python-source-observations-00fd5fff97189598083e762e9c54fba8b01c1f62-44289274017-1",
+          "sha256": "5004024ea434924d11045133ad473e5c6725269e3223e1218f6f1e2b2263b3f2",
+          "bytes": 27481,
+          "step": "Retain original Python source-test observations"
+        }
+      },
+      "job_log_sha256": "6e20d11815f1bad8b3ab90e3bbc2474687233879db9c9284f02eaaf9c8b4d026",
+      "selectors": [
+        {
+          "cell": "disposition:transitions:hooks:native-client:02",
+          "selectors": [
+            "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation",
+            "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source",
+            "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing",
+            "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_shared_declarations_and_negative_cases"
+          ]
+        }
+      ]
+    }
+  }
+}

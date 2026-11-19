@@ -1,0 +1,458 @@
+{
+  "state": "TEMP_FIX_AUTHOR_FREEZE_PENDING_INDEPENDENT_REVIEW_AND_ROOT_DELIVERY",
+  "task_id": "PI-S18-OWNERSHIP-FIX",
+  "actor": "/root/pi_program backend-author",
+  "actual_base_source": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+  "source_epoch": "Literalce3 production closure copied toTemp; source/test WIP overlay, not a run on future commit.",
+  "paths": {
+    "plugins/ca-pi/tools/src/status.ts": {
+      "before_sha256": "1da0c505e08f3ffef152161a345d3854c6f9af2e6ac373a6d8a3ec359ecacf93",
+      "after_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+      "proposed_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools\\src\\status.ts"
+    },
+    "plugins/ca-pi/tools/test/status.test.ts": {
+      "before_sha256": "98be82bb6fdb0489cd5f7cf7fd3c3ad4e5ec377f52a097cb1359229d916d0ad6",
+      "after_sha256": "6d7d95a8d25a0e043848d56788eb2376915f6f4e5cf7d739b6277c4883ddadb9",
+      "proposed_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools\\test\\status.test.ts"
+    }
+  },
+  "patch_sha256": "f0a629953a47fd558c059910e7b0a08b2a8a8f117e7cc33396bafd481463fae5",
+  "bug_origin": {
+    "handoff": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\debug-handoff.json",
+    "sha256": "45381931107aa3855efac7f935369469c7fd83efccb048fce778931a222f0355",
+    "validated": true,
+    "original_red": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\diagnosis-red-with-positive-control.json",
+    "original_red_sha256": "f1134f5366b233f8bcd96b2745ada783845d9986860ef5f03e4721d19d7b513b",
+    "exact_regression_name_and_body_unchanged": true
+  },
+  "actor_checks": {
+    "GovHEAD_before": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+    "tracked_dirty_before": false,
+    "code_map_html_sha256": "022077571bdd0f9590667e52bbca8825f3800dba072b94d70fd7d19a54db3715",
+    "code_map_owner_read": "Installed knowledge.py read code-map COMP-033 COMP-034 NOTE-005 succeeded.",
+    "policy_html_sha256": "8630d1cad36de7b06a0a9360beea27a48b1642cc05a4547362a25ec8c9ec491e",
+    "reused_complete32record_policy_packet_sha256": "02e5e721b039df9a54686cc9ec82b8b6baedacff8f78cbfac4da2caec7b382ec",
+    "package_declaration_sha256": "083e139a7a805f183e63e8be50e8ce7908d0c4748fe1ed474ee198734efaf560",
+    "host_interface_source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\host-interface-source.json",
+    "work_identity": "Retained Root task PI-S18-OWNERSHIP-FIX;Root owns metadata writer."
+  },
+  "implementation": "Each installed component has an identity and idempotent disposal closure. Only a callback matching live component/context/generation retires ownership and advances generation; it never calls the shared UI setter. Lifecycle dispose clears token before restoring native if still owned. Factory also checks generation. Stale/duplicate callbacks cannot retire a new owner and subscription disposes once.",
+  "original_test_bodies_unchanged": true,
+  "candidate_input_count": 140,
+  "candidate_changes": [
+    "plugins/ca-pi/tools/src/status.ts",
+    "plugins/ca-pi/tools/test/status.test.ts"
+  ],
+  "all_other_inputs_stable": true,
+  "commands": {
+    "commands": [
+      {
+        "label": "target-green",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/status.test.ts",
+          "-t",
+          "does not clear another extension footer after its owned component was replaced",
+          "--reporter=json",
+          "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\target-green.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 1.3321570000844076
+      },
+      {
+        "label": "focused-green",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/status.test.ts",
+          "-t",
+          "does not clear another extension footer after its owned component was replaced|disposes the owned footer subscription once through the Pi replacement contract|stale and repeated component disposal cannot retire a newer footer generation|shutdown during a deferred metrics load prevents every later activation and footer side effect|a replacement session wins while the prior deferred metrics load cannot resurrect|serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work|lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "--reporter=json",
+          "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\focused-green.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 1.2549813999794424
+      },
+      {
+        "label": "typecheck",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/typescript/bin/tsc",
+          "--noEmit"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 2.23204400006216
+      },
+      {
+        "label": "owning-status-coverage",
+        "argv": [
+          "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+          "node_modules/vitest/vitest.mjs",
+          "run",
+          "test/status.test.ts",
+          "--coverage",
+          "--coverage.include=src/status.ts",
+          "--coverage.reporter=json-summary",
+          "--coverage.reporter=text-summary",
+          "--coverage.reportsDirectory=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\coverage",
+          "--reporter=json",
+          "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\owning-status-coverage.json"
+        ],
+        "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\candidate\\plugins\\ca-pi\\tools",
+        "exit_code": 0,
+        "seconds": 2.512094400008209
+      }
+    ],
+    "environment_keys": [
+      "APPDATA",
+      "COMSPEC",
+      "HOME",
+      "LOCALAPPDATA",
+      "NO_COLOR",
+      "PATH",
+      "PATHEXT",
+      "SYSTEMROOT",
+      "TEMP",
+      "TMP",
+      "USERPROFILE",
+      "WINDIR",
+      "XDG_CACHE_HOME",
+      "XDG_CONFIG_HOME"
+    ],
+    "node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9"
+  },
+  "actual_observations": [
+    {
+      "raw": "target-green.json",
+      "passed": 1,
+      "failed": 0,
+      "unselected": 40,
+      "actual_named": [
+        {
+          "name": "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+          "status": "passed",
+          "duration_ms": 3.4904999999999973
+        }
+      ]
+    },
+    {
+      "raw": "focused-green.json",
+      "passed": 7,
+      "failed": 0,
+      "unselected": 34,
+      "actual_named": [
+        {
+          "name": "Pi keyed status lifecycle disposes the owned footer subscription once through the Pi replacement contract",
+          "status": "passed",
+          "duration_ms": 2.5862999999999374
+        },
+        {
+          "name": "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+          "status": "passed",
+          "duration_ms": 0.6829999999999927
+        },
+        {
+          "name": "Pi keyed status lifecycle stale and repeated component disposal cannot retire a newer footer generation",
+          "status": "passed",
+          "duration_ms": 1.2566000000000486
+        },
+        {
+          "name": "Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "status": "passed",
+          "duration_ms": 5.177900000000022
+        },
+        {
+          "name": "Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+          "status": "passed",
+          "duration_ms": 34.57630000000006
+        },
+        {
+          "name": "Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+          "status": "passed",
+          "duration_ms": 137.32299999999998
+        },
+        {
+          "name": "Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "status": "passed",
+          "duration_ms": 34.79359999999997
+        }
+      ]
+    },
+    {
+      "raw": "owning-status-coverage.json",
+      "passed": 41,
+      "failed": 0,
+      "unselected": 0,
+      "actual_named": [
+        {
+          "name": "Pi keyed status lifecycle reports only bounded live footer and background health across session modes",
+          "status": "passed",
+          "duration_ms": 84.58669999999995
+        },
+        {
+          "name": "Pi keyed status lifecycle installs the rich footer globally for an interactive plain repository",
+          "status": "passed",
+          "duration_ms": 30.12379999999996
+        },
+        {
+          "name": "Pi keyed status lifecycle installs the rich footer globally for an interactive dormant repository",
+          "status": "passed",
+          "duration_ms": 28.458600000000047
+        },
+        {
+          "name": "Pi keyed status lifecycle installs the rich footer globally for an interactive untrusted enabled repository",
+          "status": "passed",
+          "duration_ms": 2.951400000000035
+        },
+        {
+          "name": "Pi keyed status lifecycle installs the rich footer globally for an interactive trusted enabled repository",
+          "status": "passed",
+          "duration_ms": 34.39060000000006
+        },
+        {
+          "name": "Pi keyed status lifecycle renders current session activity immediately and clears the registry on shutdown",
+          "status": "passed",
+          "duration_ms": 30.430600000000027
+        },
+        {
+          "name": "Pi keyed status lifecycle does not install footer UI in JSON mode",
+          "status": "passed",
+          "duration_ms": 1.1195000000000164
+        },
+        {
+          "name": "Pi keyed status lifecycle does not install footer UI in RPC mode",
+          "status": "passed",
+          "duration_ms": 1.0638999999999896
+        },
+        {
+          "name": "Pi keyed status lifecycle does not install footer UI in print mode",
+          "status": "passed",
+          "duration_ms": 0.9172999999999547
+        },
+        {
+          "name": "Pi keyed status lifecycle disposes the owned footer subscription once through the Pi replacement contract",
+          "status": "passed",
+          "duration_ms": 0.86749999999995
+        },
+        {
+          "name": "Pi keyed status lifecycle does not clear another extension footer after its owned component was replaced",
+          "status": "passed",
+          "duration_ms": 0.627399999999966
+        },
+        {
+          "name": "Pi keyed status lifecycle stale and repeated component disposal cannot retire a newer footer generation",
+          "status": "passed",
+          "duration_ms": 0.8179999999999836
+        },
+        {
+          "name": "Pi keyed status lifecycle a production metrics-loader failure restores native UI without aborting adapter activation",
+          "status": "passed",
+          "duration_ms": 7.698100000000068
+        },
+        {
+          "name": "Pi keyed status lifecycle shutdown during a deferred metrics load prevents every later activation and footer side effect",
+          "status": "passed",
+          "duration_ms": 2.2112999999999374
+        },
+        {
+          "name": "Pi keyed status lifecycle a replacement session wins while the prior deferred metrics load cannot resurrect",
+          "status": "passed",
+          "duration_ms": 30.094799999999964
+        },
+        {
+          "name": "Pi keyed status lifecycle restores Pi's native footer on session shutdown",
+          "status": "passed",
+          "duration_ms": 27.58330000000001
+        },
+        {
+          "name": "Pi keyed status lifecycle renders through Pi's authoritative width primitives and unsubscribes branch updates",
+          "status": "passed",
+          "duration_ms": 30.576700000000073
+        },
+        {
+          "name": "Pi keyed status lifecycle fatal factory registration restores native state and publishes a bounded diagnosis",
+          "status": "passed",
+          "duration_ms": 1.2341000000001259
+        },
+        {
+          "name": "Pi keyed status lifecycle missing interactive footer UI fails soft with the bounded doctor direction",
+          "status": "passed",
+          "duration_ms": 1.0321999999998752
+        },
+        {
+          "name": "Pi keyed status lifecycle keeps governance bridge reads trust-gated in plain repositories",
+          "status": "passed",
+          "duration_ms": 28.88220000000001
+        },
+        {
+          "name": "Pi keyed status lifecycle keeps governance bridge reads trust-gated in untrusted enabled repositories",
+          "status": "passed",
+          "duration_ms": 2.5683000000001357
+        },
+        {
+          "name": "Pi keyed status lifecycle keeps governance bridge reads trust-gated in trusted enabled repositories",
+          "status": "passed",
+          "duration_ms": 32.978399999999965
+        },
+        {
+          "name": "Pi keyed status lifecycle retains the last valid usage snapshot while retrying the exact first unacknowledged range",
+          "status": "passed",
+          "duration_ms": 94.16149999999993
+        },
+        {
+          "name": "Pi keyed status lifecycle limits startup accounting to one 256-entry bridge range",
+          "status": "passed",
+          "duration_ms": 29.213400000000092
+        },
+        {
+          "name": "Pi keyed status lifecycle serializes same-session refreshes so overlapping events neither duplicate nor roll back cursor work",
+          "status": "passed",
+          "duration_ms": 58.3424
+        },
+        {
+          "name": "Pi keyed status lifecycle lets a replacement session refresh immediately while stale completion remains unable to mutate it",
+          "status": "passed",
+          "duration_ms": 109.47270000000003
+        },
+        {
+          "name": "Pi keyed status lifecycle returns a nonempty bounded ASCII fallback even when both injected width functions throw",
+          "status": "passed",
+          "duration_ms": 32.0942
+        },
+        {
+          "name": "Pi keyed status lifecycle retains a valid cached update fact across later usage-only refreshes",
+          "status": "passed",
+          "duration_ms": 57.80950000000007
+        },
+        {
+          "name": "Pi keyed status lifecycle hides an already-read governance snapshot immediately when Pi trust is withdrawn",
+          "status": "passed",
+          "duration_ms": 31.051400000000058
+        },
+        {
+          "name": "Pi keyed status lifecycle setArbiterStatus composes through only the codearbiter key",
+          "status": "passed",
+          "duration_ms": 0.20869999999990796
+        },
+        {
+          "name": "Pi keyed status lifecycle retains status through end, retry, and compaction and clears only when settled",
+          "status": "passed",
+          "duration_ms": 2.8092999999998938
+        },
+        {
+          "name": "Pi keyed status lifecycle session shutdown is the only non-settled lifecycle clear",
+          "status": "passed",
+          "duration_ms": 2.6118000000001302
+        },
+        {
+          "name": "Pi keyed status lifecycle a never-published dormant lifecycle remains status-silent through shutdown",
+          "status": "passed",
+          "duration_ms": 0.9559999999999036
+        },
+        {
+          "name": "Pi keyed status lifecycle failed activation clears its unhealthy status on a dormant start and on shutdown",
+          "status": "passed",
+          "duration_ms": 3.639199999999846
+        },
+        {
+          "name": "Pi keyed status lifecycle agent work and settling never erase a persistent command-ownership degradation",
+          "status": "passed",
+          "duration_ms": 2.6748999999999796
+        },
+        {
+          "name": "Pi keyed status lifecycle a late alias collision becomes the persistent baseline through agent_settled",
+          "status": "passed",
+          "duration_ms": 6.332900000000109
+        },
+        {
+          "name": "Pi keyed status lifecycle an explicit alias degradation in a bare repo clears on session shutdown",
+          "status": "passed",
+          "duration_ms": 4.540400000000091
+        },
+        {
+          "name": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: trusted refresh collects facts once and the render shows repository and dirty marker",
+          "status": "passed",
+          "duration_ms": 1.3164999999999054
+        },
+        {
+          "name": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: an untrusted project never invokes the collector and stays branch-only",
+          "status": "passed",
+          "duration_ms": 1.1567999999999756
+        },
+        {
+          "name": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: facts collected under trust never render after trust is withdrawn",
+          "status": "passed",
+          "duration_ms": 1.0780999999999494
+        },
+        {
+          "name": "footer git-facts lifecycle (spec pi-footer-parity-gaps O-3/O-4) O-3: a failing collector degrades to the branch-only segment without breaking the box",
+          "status": "passed",
+          "duration_ms": 1.1213000000000193
+        }
+      ]
+    }
+  ],
+  "coverage": {
+    "scope": "Only touched src/status.ts under full owning status.test file, not globalPi or hostunion",
+    "summary": {
+      "lines": {
+        "total": 133,
+        "covered": 126,
+        "skipped": 0,
+        "pct": 94.73
+      },
+      "statements": {
+        "total": 161,
+        "covered": 147,
+        "skipped": 0,
+        "pct": 91.3
+      },
+      "functions": {
+        "total": 27,
+        "covered": 21,
+        "skipped": 0,
+        "pct": 77.77
+      },
+      "branches": {
+        "total": 101,
+        "covered": 92,
+        "skipped": 0,
+        "pct": 91.08
+      },
+      "branchesTrue": {
+        "total": 0,
+        "covered": 0,
+        "skipped": 0,
+        "pct": "Unknown"
+      }
+    }
+  },
+  "preserved_packets": [
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-disposal-5s8eo5h7",
+    "C:/Users/brenn/AppData/Local/Temp/ca-pi-doctor-aggregate-yfb1_rma"
+  ],
+  "pending": [
+    "Independent scoped source/test review before Root integration",
+    "Supported bundle owner regeneration later; no generated artifact manually changed",
+    "Actual post-integration source cone binding/isolation selection at Root timing",
+    "Original rawEOF and finalinstalled acceptance remain separate/unresolved"
+  ],
+  "non_actions": [
+    "No Gov/index/ledger/marker/commit/push",
+    "No endpoint/ADR/permission/confirmation change",
+    "No provider/dependency/native build/installed replay",
+    "No real/renderedTUI or human consent claim"
+  ],
+  "limits": [
+    "Windows amd64 admittedNode24.22.1 only; public UI contract is inspectedPi1.5 source model.",
+    "Owner lines/branches exceed70percent; no updated global adapter percentage or supported-host union inferred.",
+    "Only actual named outcomes; no whole task/machine/platform qualification."
+  ]
+}

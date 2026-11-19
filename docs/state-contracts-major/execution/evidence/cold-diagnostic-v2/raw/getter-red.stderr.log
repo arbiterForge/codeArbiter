@@ -1,0 +1,66 @@
+test_v2_custom_context_failure_keeps_closed_cli_output (test_artifact_package.ColdFailureDiagnosticTests.test_v2_custom_context_failure_keeps_closed_cli_output) ... 
+  test_v2_custom_context_failure_keeps_closed_cli_output (test_artifact_package.ColdFailureDiagnosticTests.test_v2_custom_context_failure_keeps_closed_cli_output) (field='failure_record') ... ERROR
+  test_v2_custom_context_failure_keeps_closed_cli_output (test_artifact_package.ColdFailureDiagnosticTests.test_v2_custom_context_failure_keeps_closed_cli_output) (field='code') ... ERROR
+
+======================================================================
+ERROR: test_v2_custom_context_failure_keeps_closed_cli_output (test_artifact_package.ColdFailureDiagnosticTests.test_v2_custom_context_failure_keeps_closed_cli_output) (field='failure_record')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_installed_host.py", line 1535, in run_cli
+    return main()
+  File "C:\Python314\Lib\unittest\mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\unittest\mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\unittest\mock.py", line 1241, in _execute_mock_call
+    raise effect
+test_artifact_package.PrivateFixtureValueError: PrivateFixtureValue-primary
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_package.py", line 2358, in test_v2_custom_context_failure_keeps_closed_cli_output
+    self.assertEqual(INSTALLED_HOST.run_cli(), 1)
+                     ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_installed_host.py", line 1539, in run_cli
+    json.dump(failure_record(error, phase=_FAILURE_PHASE), sys.stderr,
+              ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_installed_host.py", line 345, in failure_record
+    nested = getattr(error, "failure_record", None)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_package.py", line 2344, in private_getter
+    raise ValueError("PrivateFixtureValue-property")
+ValueError: PrivateFixtureValue-property
+
+======================================================================
+ERROR: test_v2_custom_context_failure_keeps_closed_cli_output (test_artifact_package.ColdFailureDiagnosticTests.test_v2_custom_context_failure_keeps_closed_cli_output) (field='code')
+----------------------------------------------------------------------
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_installed_host.py", line 1535, in run_cli
+    return main()
+  File "C:\Python314\Lib\unittest\mock.py", line 1176, in __call__
+    return self._mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\unittest\mock.py", line 1180, in _mock_call
+    return self._execute_mock_call(*args, **kwargs)
+           ~~~~~~~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^
+  File "C:\Python314\Lib\unittest\mock.py", line 1241, in _execute_mock_call
+    raise effect
+test_artifact_package.PrivateFixtureValueError: PrivateFixtureValue-primary
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_package.py", line 2358, in test_v2_custom_context_failure_keeps_closed_cli_output
+    self.assertEqual(INSTALLED_HOST.run_cli(), 1)
+                     ~~~~~~~~~~~~~~~~~~~~~~^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_installed_host.py", line 1539, in run_cli
+    json.dump(failure_record(error, phase=_FAILURE_PHASE), sys.stderr,
+              ~~~~~~~~~~~~~~^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_installed_host.py", line 364, in failure_record
+    candidate = getattr(cause, "code", None)
+  File "C:\Users\brenn\AppData\Local\Temp\ca-cold-diagnostics-getter-dg_l5aem\.github\scripts\test_artifact_package.py", line 2344, in private_getter
+    raise ValueError("PrivateFixtureValue-property")
+ValueError: PrivateFixtureValue-property
+

@@ -1,0 +1,74 @@
+{
+  "schema": "codearbiter.native-source-clause-inspection/1",
+  "inspection_candidate": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+  "original_runtime_source": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "observer": "/root/packaging_site_tools",
+  "full349closure_receipt": "input-binding.json",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:N38:02",
+      "proposed_status": "PRESERVED",
+      "observed_assertions": [],
+      "inspected_source_clauses": "validateEntry closes kind-specific key sets; fact state only observed/inferred/proposed and constraint-reference status only existing_applicable/observed_upstream/proposed_adoption. refs and relative scope validation precede return. No route grants approval from declared status.",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/contextdocument/contract.go",
+          "start": 177,
+          "end": 295,
+          "file_sha256": "62d24a2193b7a68a659c3f3beaa8d09b34ac03d165e781aae20939d8ad2ca84a"
+        }
+      ],
+      "limits": "Finite source-contract conformance only; no assertion all state variants or authenticity/source revalidation executed.",
+      "contract_sha256": "3d5d3ee1d38a9ee77aee600a83a163833beb76dbd8567c15df3c21533f9d0218"
+    },
+    {
+      "cell": "disposition:transitions:N38:03",
+      "proposed_status": "PRESERVED",
+      "observed_assertions": [],
+      "inspected_source_clauses": "parseProvenanceV2 requires exact claim/review keys; state only unreviewed/reviewed/identity_acknowledged; reviewed requires safe nonempty reference. ApplyOrdinary separately calls ValidateCurrentEvidence before mutation; reference label is not authority.",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/contextdocument/operations.go",
+          "start": 199,
+          "end": 283,
+          "file_sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f"
+        },
+        {
+          "path": "core/artifacts/internal/contextdocument/operations.go",
+          "symbol": "ApplyOrdinary",
+          "file_sha256": "68e53440d35b83b7ec0f382bec5623232a514eed2704ac8241322a30f45edb8f"
+        }
+      ],
+      "limits": "Finite source clause preserved; no independent review authentication, model quality or runtime matrix of all semantic-review state variants.",
+      "contract_sha256": "fc9c6554394b2c0df08b9bdc6ec9d40976f28dd10eba321d7f141e062905594c"
+    },
+    {
+      "cell": "disposition:transitions:N36:03",
+      "proposed_status": "PRESERVED",
+      "observed_assertions": [],
+      "inspected_source_clauses": "Each Run calls openStore and defers Close; Open allocates a fresh newMemo per FS and no Run handle escapes. completionWorkspaceKey is explicitly an operation-memo key; normalized reuse is conditional on no intervening catalog/output write, not automatically invalidated by every arbitrary caller. Reusing completion consumers operate before publication. No daemon/global cross-operation trust cache exists.",
+      "witnesses": [
+        {
+          "path": "core/artifacts/internal/operations/engine.go",
+          "start": 78,
+          "end": 155,
+          "file_sha256": "7a227941034c9d3903036c5f5769bf7dee8f60cefae969af060661764a4b9e01"
+        },
+        {
+          "path": "core/artifacts/internal/store/fs_portable.go",
+          "start": 24,
+          "end": 73,
+          "file_sha256": "5c0ba079432d6e7c8c422c5145b9f715cc017848fd88dc5f23282a99351e6be9"
+        },
+        {
+          "path": "core/artifacts/internal/evidence/completion_workspace.go",
+          "symbol": "completionWorkspaceKey",
+          "file_sha256": "e9c84c68692521f2d316c26e47158345ffd35fd9cf23f4df307a14679f145e05"
+        }
+      ],
+      "limits": "Operation ownership/lifetime source contract only; Close does not promise synchronous erasure of an externally retained FS pointer. No timing/memory-retention or cross-process runtime claim.",
+      "contract_sha256": "868a16961af8d696263e052134f45aa4a662edd3b71991fabd5c9a2c3da843fd"
+    }
+  ],
+  "method": "Read actual complete owning function clauses; checked349 original inputs match a203 Git/current Git/current worktree. No tests/builds performed."
+}

@@ -1,0 +1,218 @@
+{
+ "schema": "codearbiter.private-fix-delivery/1",
+ "state": "PRIVATE_TESTED_CANDIDATE_FOR_ROOT_REVIEW",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_epoch": "9bc844c61d4ef05ec16796a9671628913f10a5a6",
+ "full_subjects": [
+  {
+   "path": "site/scripts/execution-maps/atlas-model.ts",
+   "preimage_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+   "preimage_bytes": 10617,
+   "preimage_git_oid": "9740530273a057f1f7163eea90f989c3d9a6f880",
+   "preimage_git_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-model.ts",
+    "sha256": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+    "bytes": 10780
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-render.ts",
+   "preimage_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+   "preimage_bytes": 14537,
+   "preimage_git_oid": "9c730c30a9b906b1565671a8bdc766bc9e747300",
+   "preimage_git_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-render.ts",
+    "sha256": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+    "bytes": 14581
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-model.test.ts",
+   "preimage_sha256": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+   "preimage_bytes": 6860,
+   "preimage_git_oid": "e1f6a428bfb1a24051ebc9abeb623cbb40f82d42",
+   "preimage_git_sha256": "14515f51917d04cb9d13556bfe8d10569ba1d243a575eefdbc5c3e586b55da17",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-model.test.ts",
+    "sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada",
+    "bytes": 8791
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  },
+  {
+   "path": "site/scripts/execution-maps/atlas-data/major-state-contracts-update.json",
+   "preimage_sha256": "fdd954593068ff836ae8dc231f858e9d68dd771f88f0467185340eb5d587bf06",
+   "preimage_bytes": 21566,
+   "preimage_git_oid": "2bb5c23f265d2a2da436965191b869219b02d940",
+   "preimage_git_sha256": "fdd954593068ff836ae8dc231f858e9d68dd771f88f0467185340eb5d587bf06",
+   "candidate": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture\\site\\scripts\\execution-maps\\atlas-data\\major-state-contracts-update.json",
+    "sha256": "62b14434c430453951747519def5a7c3a0efe11d137ce3b809b280654f28fbeb",
+    "bytes": 21915
+   },
+   "binding": "PRIVATE_CANDIDATE_NOT_STAGED",
+   "git_index_oid": null
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\candidate.patch",
+  "sha256": "609f724f9976ee4a044c7a6bedc02317739aa6690868e7a9e4de96e568a479a8",
+  "bytes": 8291
+ },
+ "filemap": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\filemap.json",
+  "sha256": "0169209c6ba6f06b1c7d9628c48f9e85fba96b98bb19eb2b55c1ad08ec67129c",
+  "bytes": 1982
+ },
+ "preservation_and_results": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\preservation-and-results.json",
+  "sha256": "d1259cb2ba93770679c2053fa716c2c29f51882defdb9d60f2490da084ed14c3",
+  "bytes": 9186
+ },
+ "coverage_boundary": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\coverage-boundary.json",
+  "sha256": "60767d94fc276cc7a9083b33e76709514fa32a1f380c8a52398396517edf689c",
+  "bytes": 1951
+ },
+ "evidence_inventory": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-inputs.json",
+   "sha256": "93b65c7149928ed377562160352863acad62eb6b1eac5bd055c70feaa26f1de0",
+   "bytes": 3689
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\new-regressions.txt",
+   "sha256": "69eb7f21fcb62a6aab158ce706fed027eab591a05e85ac2e77ab794a4b68fb3a",
+   "bytes": 1912
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\vitest.config.mjs",
+   "sha256": "5b3976700d8a8bf394552530a5c44900f08930d9c8671f9c9e80ffb97d28ad81",
+   "bytes": 518
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\tsconfig.json",
+   "sha256": "fd3111d3ffedf4f30c0a30ceb834a773ea168aac197a23c3d7780fc2397c8b0c",
+   "bytes": 695
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-render-red.json",
+   "sha256": "ff0626787245d8a6b7b3b09d8e0e8a1284c5ac476f130932f31a337fb0d81abd",
+   "bytes": 1110
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-render-red.stdout",
+   "sha256": "b660f2f37479eae85cf8d32d3d0f4dd7ba87ab53851057764cc75cc8e8b26ac1",
+   "bytes": 125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-render-red.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-render-red.named.json",
+   "sha256": "38e924bbcd4758756cf719f12498645a0101ba8eebb4ce76812621db427e0b93",
+   "bytes": 6706
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-shape-red.json",
+   "sha256": "f6d7d25242d1226293aadb60dd649797c9ed2d0b548e66b2a5c871ce9fc09a2e",
+   "bytes": 858
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-shape-red.stdout",
+   "sha256": "54e1dfca6a5c27365d0dc5e91dc72bbc22115ef617db1a4be208ec9a13b485a4",
+   "bytes": 124
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-shape-red.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-shape-red.named.json",
+   "sha256": "da87a9846ec6235b15028bf26df887ef5cde6e7b388b07a2dbb19b6108025cd8",
+   "bytes": 6705
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\owning-green.json",
+   "sha256": "e2624b678879da80492709b67e9509abdae648581cb69b545a901778034f6351",
+   "bytes": 954
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\owning-green.stdout",
+   "sha256": "d04ac9c009a01d80abd2ce373d8218d612afb5648770f29d3b83a0988079bb7c",
+   "bytes": 440
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\owning-green.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\owning-green.named.json",
+   "sha256": "bd045b93a3dfbc829cf72ec824c0239927aaa9c41890553c824e5b028a3ac5f0",
+   "bytes": 79646
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\typecheck.json",
+   "sha256": "834a02242e5bef6ec21364e9594f5bcc949e5d5a849020dd995211be0e78e9ee",
+   "bytes": 614
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\typecheck.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\typecheck.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\loader.json",
+   "sha256": "22d4eb154ecdec562b556ff3c889c2936dfabe643f3a20688d64db869e44d9de",
+   "bytes": 760
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\loader.stdout",
+   "sha256": "1334db2b25da1709fb625871b625c1c9beb6578a3d55ab461b9ad845f2280cf5",
+   "bytes": 1026
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\loader.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\loader-readback.ts",
+   "sha256": "5d71da4fcd97d4cf32f845e2f56e5708b99decd12581a7404336be25e1efdccc",
+   "bytes": 6360
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\current-inventory.json",
+   "sha256": "6184b953b77644b2eea970d7185660933eaa3ff0cf4edc6fa62e1d6eaa240225",
+   "bytes": 26155
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\current-inventory.json.render.json",
+   "sha256": "c17b2bfb8cb7b0fce5b204915f5900193560f8874fa4ba6a5f4e7eb78560b31e",
+   "bytes": 348
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\coverage\\coverage-summary.json",
+   "sha256": "e4a150b9b28ba615e7b3759f25ad065cb476b5ac26b53c4b8f88d8d31ab5112c",
+   "bytes": 1098
+  }
+ ],
+ "result": "Proper original-render RED, optional-shape RED, unchanged tests plus both regressions14PASS; strict scoped TS PASS; unchanged Atlas source loader and118 current bindings PASS; exact current owner URL9bc verified.",
+ "review_boundary": "Author implementation only; Root independently reviews final4. No canonical adoption or CI/runtime qualification."
+}

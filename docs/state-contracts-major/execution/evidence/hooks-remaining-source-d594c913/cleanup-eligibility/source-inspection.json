@@ -1,0 +1,322 @@
+{
+  "schema": "codearbiter-source-clause-inspection/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "control_cone": "cleanup-eligibility",
+  "method": "Read actual baseline guard/effect/retry and frozen owning source control paths; verify exact owner byte/mode identity separately; inspect scoped dependency boundaries. No test execution.",
+  "limits": "Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "source_inputs": {
+    "core/pysrc/_cleanuplib.py": {
+      "source_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+      "baseline_sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "cited-owning-source"
+    },
+    "core/pysrc/_hooklib.py": {
+      "source_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "baseline_sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "byte_equal": true,
+      "source_mode": "100644",
+      "baseline_mode": "100644",
+      "role": "scoped-witness-or-direct-dependency"
+    }
+  },
+  "rows": [
+    {
+      "id": "hooks:cleanup-eligibility:01",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 177,
+          "end": 348,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        }
+      ],
+      "conformance": "Exact candidate ancestor in authorized repo OR MERGED PR exact head/base repo and retained landing ancestor proves delivery; tree equality only corroborates.",
+      "machine_id": "hooks:cleanup-eligibility",
+      "baseline_clause_sha256": "1697ff37d00f3c7c5d561d928aefed0ce953f3d7aa418f07f24713604a758163",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "evaluate_merge_proof",
+          "lines": "230-348"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "make_decision",
+          "lines": "902-913"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "scope_covers",
+          "lines": "916-938"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "required_confirmation_count",
+          "lines": "941-968"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "classify_worktree_loss_surface",
+          "lines": "1414-1480"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "validate_resource_path",
+          "lines": "1504-1553"
+        }
+      ]
+    },
+    {
+      "id": "hooks:cleanup-eligibility:02",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 1414,
+          "end": 1480,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        }
+      ],
+      "conformance": "Dirty/untracked/ignored/locked/current/nested inputs cause retain; unreadable or missing classification evidence explicitly read_error+retain rather than safe inference.",
+      "machine_id": "hooks:cleanup-eligibility",
+      "baseline_clause_sha256": "e6029193371b7fb8b5483063c5e6b75d617c544387c2169d91d5a8e414535593",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "evaluate_merge_proof",
+          "lines": "230-348"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "make_decision",
+          "lines": "902-913"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "scope_covers",
+          "lines": "916-938"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "required_confirmation_count",
+          "lines": "941-968"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "classify_worktree_loss_surface",
+          "lines": "1414-1480"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "validate_resource_path",
+          "lines": "1504-1553"
+        }
+      ]
+    },
+    {
+      "id": "hooks:cleanup-eligibility:03",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 902,
+          "end": 913,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        }
+      ],
+      "conformance": "Closed decision outcome validation; error marks blocks_operation true; eligible/excluded/unique-loss/unknown remain explicit decision data, no automatic deletion.",
+      "machine_id": "hooks:cleanup-eligibility",
+      "baseline_clause_sha256": "b8cd04d8a2d199aa3f1a91f31d82f4ef8e99ee8b574ff96bcd70950205c21cc6",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "evaluate_merge_proof",
+          "lines": "230-348"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "make_decision",
+          "lines": "902-913"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "scope_covers",
+          "lines": "916-938"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "required_confirmation_count",
+          "lines": "941-968"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "classify_worktree_loss_surface",
+          "lines": "1414-1480"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "validate_resource_path",
+          "lines": "1504-1553"
+        }
+      ]
+    },
+    {
+      "id": "hooks:cleanup-eligibility:04",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 916,
+          "end": 938,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        }
+      ],
+      "conformance": "Only declared authorization source, exact repository, resource kind and listed member cover scope; uncovered returnsFalse and no broad inferred authority.",
+      "machine_id": "hooks:cleanup-eligibility",
+      "baseline_clause_sha256": "55a4f5733addc43d613c4b39431528e8652aba6c9295e2d116cdc3b6a187493b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "evaluate_merge_proof",
+          "lines": "230-348"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "make_decision",
+          "lines": "902-913"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "scope_covers",
+          "lines": "916-938"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "required_confirmation_count",
+          "lines": "941-968"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "classify_worktree_loss_surface",
+          "lines": "1414-1480"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "validate_resource_path",
+          "lines": "1504-1553"
+        }
+      ]
+    },
+    {
+      "id": "hooks:cleanup-eligibility:05",
+      "decision": "PRESERVED",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 941,
+          "end": 968,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        }
+      ],
+      "conformance": "Recognized prior scope removes duplicate base confirmation; unresolved unique loss still adds exactly one distinct confirmation.",
+      "machine_id": "hooks:cleanup-eligibility",
+      "baseline_clause_sha256": "b72b3c97a67ed66793bcc71232eaee43fee8fc0ca1cd2d064ecd2e1ae9bb895b",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "evaluate_merge_proof",
+          "lines": "230-348"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "make_decision",
+          "lines": "902-913"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "scope_covers",
+          "lines": "916-938"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "required_confirmation_count",
+          "lines": "941-968"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "classify_worktree_loss_surface",
+          "lines": "1414-1480"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "validate_resource_path",
+          "lines": "1504-1553"
+        }
+      ]
+    },
+    {
+      "id": "hooks:cleanup-eligibility:06",
+      "decision": "HOLD",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 1414,
+          "end": 1480,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "start": 1504,
+          "end": 1553,
+          "sha256": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c"
+        }
+      ],
+      "conformance": "HOLD: validate_resource_path proves only exact canonical allowlist member and rejects root allowlist; it has no current-worktree argument. Separate loss classifier reports current/retain, but this module has no joined worktree deletion adapter enforcing that entire guard.",
+      "machine_id": "hooks:cleanup-eligibility",
+      "baseline_clause_sha256": "e84f8d4c65d6635f0466c9a833a45146440cf7b53314c69576a65c214d404842",
+      "baseline_span_refs": [
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "evaluate_merge_proof",
+          "lines": "230-348"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "make_decision",
+          "lines": "902-913"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "scope_covers",
+          "lines": "916-938"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "required_confirmation_count",
+          "lines": "941-968"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "classify_worktree_loss_surface",
+          "lines": "1414-1480"
+        },
+        {
+          "path": "core/pysrc/_cleanuplib.py",
+          "symbol": "validate_resource_path",
+          "lines": "1504-1553"
+        }
+      ]
+    }
+  ],
+  "aggregate_machines": [],
+  "context_reuse": {
+    "actor_context_sha256": "adf6ff38e30365d88f7033c87bc91d4266ddcde117765c285d68c9e9fc5ded5e",
+    "actor_delivery_plan_sha256": "809ba5b9648ddd4e86235232380598c993c5a973b136d7f3abaa8001fc8549cf",
+    "claim": "Actual installed composer output reused; delivery file is advisory preparation plan, not invented host receipt."
+  }
+}

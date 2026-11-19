@@ -14,19 +14,17 @@ import re
 import stat
 import sys
 from typing import NamedTuple
+sys.path.insert(0, str(Path(__file__).resolve().parents[1] / 'core/pysrc'))
+from _artifactmanifestlib import CONTRACT as MANIFEST_CONTRACT, validate_release_manifest
 
-SCHEMA_VERSION = "0.3.2"
-PROTOCOL = "codearbiter.artifact-api/0.1.0"
+SCHEMA_VERSION = MANIFEST_CONTRACT["schema_version"]
+PROTOCOL = MANIFEST_CONTRACT["protocol"]
 PROMOTION_FORMAT = "codearbiter.artifact-promotion/0.1.0"
 NATIVE_TESTS = [
     'artifact-bridge', 'artifact-conformance', 'artifact-native', 'artifact-package',
     'go-test', 'go-vet',
 ]
-CONTEXT_NATIVE_CASES = [
-    'TestContextBoundedRender', 'TestContextDocumentContract',
-    'TestContextMarkdownPreservation', 'TestContextMutationAdmission',
-    'TestContextRecoveryAndPaths', 'TestContextRepresentationBoundary',
-]
+CONTEXT_NATIVE_CASES = MANIFEST_CONTRACT["native_cases"]
 
 
 class VerifiedPromotionPayload(NamedTuple):
@@ -113,6 +111,7 @@ def load_payload(source: Path):
                        for field in ('observation_sha256', 'module_sha256'))
                 or record['native_cases'] != CONTEXT_NATIVE_CASES):
             raise ValueError('context qualification binding is invalid')
+    validate_release_manifest(manifest)
     return manifest_bytes,payload
 
 

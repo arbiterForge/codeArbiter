@@ -1,0 +1,55 @@
+{
+  "format": "runtime-records-combined-nine-transport-delivery/1",
+  "state": "READY_FOR_ROOT_FINAL_ADMISSION",
+  "candidate": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\filemap.json",
+    "sha256": "23618daff4e77a9aa966783ee19f8df5391824bfe86007ced3aa3f489dfa28a6",
+    "bytes": 8277
+  },
+  "proposal": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\combined-nine-cas.json",
+    "sha256": "ca90d2ef848b30c58d4456c5c39880e5eecb984783852003dbbb1f4e426d0d6d",
+    "bytes": 28493
+  },
+  "owner_authentication": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\owner-authentication-nine.json",
+    "sha256": "e7018ce8c0c6474a0c0e5c7f3bb35ade6bfd586d17b43a65a9ad1726f9fcc30f",
+    "bytes": 6305
+  },
+  "root_replacements": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\root-owned-replacements.json",
+    "sha256": "7365c6cdc82b0b386fb1a668ea456b50df2d4d0f5e18b768fa930ce743fc999d",
+    "bytes": 9490
+  },
+  "roundtrip": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\transport-roundtrip.json",
+    "sha256": "fe89f7370bb56d6cea69f8efaf381de257c7497984ac3774c30a9488c5fbe0d1",
+    "bytes": 2452
+  },
+  "scanner": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\gitleaks-result.json",
+    "sha256": "ce39368143e8d843ba47a36fb5e263f561245518920a05156f8aba90bcac8711",
+    "bytes": 714
+  },
+  "new_proofs": {
+    "docs/state-contracts-major/execution/evidence/p02-six-python-8d04/integration-fixtures.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\new-files\\docs\\state-contracts-major\\execution\\evidence\\p02-six-python-8d04\\integration-fixtures.json",
+      "sha256": "10e764886ab6f3b957a3e28610b8f7f54ff391fd70d3052844630e3f73d08dff"
+    },
+    "docs/state-contracts-major/execution/evidence/C05-verdict-edae/C05-three-tested.json": {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-runtime-records-transport-edae\\new-files\\docs\\state-contracts-major\\execution\\evidence\\C05-verdict-edae\\C05-three-tested.json",
+      "sha256": "ecb7c77394454862c8ba3c515339f3bbefeed4971f7903d420d32ff1a1bde017"
+    }
+  },
+  "actual_results": {
+    "four_exact_original_document_byte_roundtrips": true,
+    "runtime_records_per_document": 1905,
+    "all_four_maps_identical": true,
+    "strict_owner_checks": 9,
+    "gitleaks_findings": 0,
+    "tests_rerun": 0,
+    "owned_replacements": 10
+  },
+  "limits": "No Gov/index/source/test/config writes; original epochs, seven raw absences, two namespace declarations, lossless C05stdout and histories retained. Final full staged P02/admission is Root-owned."
+}

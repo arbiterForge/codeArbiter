@@ -1,0 +1,51 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-pi-d07-minted-group-successor-njz_0g22\\\\candidate\\\\.github\\\\scripts');suite=unittest.defaultTestLoader.loadTestsFromNames(['test_pi_parent_tui_observation.OwnedProcessCleanupTests']);r=unittest.TextTestRunner(verbosity=2).run(suite);raise SystemExit(0 if r.wasSuccessful() and not r.skipped else 1)"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate",
+  "exit_code": 0,
+  "duration_seconds": 0.10718439999618568,
+  "env_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+  ],
+  "before": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\pi_parent_tui_observation.py": "49323466cbad2a56baf22ed45c90155a6ed8ea1b82cae8c3b333d416f7d8742a",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\observe_pi_installed_rpc.py": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\coordinate_pi_host.py": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\workflows\\ci.yml": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f"
+  },
+  "after": {
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\pi_parent_tui_observation.py": "49323466cbad2a56baf22ed45c90155a6ed8ea1b82cae8c3b333d416f7d8742a",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\test_pi_parent_tui_observation.py": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+    "C:\\Python314\\python.exe": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\observe_pi_installed_rpc.py": "a6c39dbe21070ad71aee019812a9b118ce1fb0eca1a020fe656f01352a1b9bc1",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\scripts\\coordinate_pi_host.py": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-d07-minted-group-successor-njz_0g22\\candidate\\.github\\workflows\\ci.yml": "91d451a6d56da6378d153899ee1ad890e048ea4e57c83cced0d06de1d22ef77f"
+  },
+  "source_tool_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "2d70b3005a1125e9c7abcc4513e476dc911286a52b0370d0059e90ec6988a222"
+}

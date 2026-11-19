@@ -1,0 +1,123 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal80-clause Release/CI current/pinned source inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  ".github/scripts/check_tag_immutability.py": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+  ".github/scripts/reconcile_tag_receipt.py": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C20"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/source-bindings.json",
+   "sha256": "e0d46104538361ca98ef02148b9cc499edce928cdd83f1a936277f2a7a8e1425"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-fourteen-source-ea9/clause-inspection.json",
+   "sha256": "d838b0dd41af96e04fadb1d976401b69f67c12e69c7e2c4e5c01a1d1cfa61140"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C20",
+   "frozen_row_sha256": "ebbc45d348e073487143a6b870005ccceb611246cfb3936aa9916c44ddd78951",
+   "clause_ids": [
+    "disposition:transitions:C20:01",
+    "disposition:transitions:C20:02",
+    "disposition:transitions:C20:03",
+    "disposition:transitions:C20:04"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 1,
+     "end": 7,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "f2d5372fe0153536c0c9468c2da28af9daf1ce385d982bd8718710404ab64111"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 26,
+     "end": 143,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "93a6980575e88436d1e70f94a4f4b5a66d4836878206a3e2ca16b1f56422ce6f"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 184,
+     "end": 212,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "6e07bdda7c07f841b2b4c3391d2b8c43d7650f489f458630076b8766df7ed475"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 189,
+     "end": 205,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "b2dd0946e03df767fbb3fcba02f1171eb60dcd1c11805a033a8e28f5c708e9e3"
+    },
+    {
+     "path": ".github/scripts/check_tag_immutability.py",
+     "start": 228,
+     "end": 283,
+     "file_sha256": "862a1b3ef2d0f171172c5e3f11856f96bfc8b234dc7b4c1110c75182d84d4d31",
+     "span_sha256": "99cad1fe93abc39f062ade106db13f134aac682580844fb5e3e9f30b09dd52c1"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 66,
+     "end": 95,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "7fcc1d3d5e203ddaa95fa0c98ee14e1d574c71ba0cce421a297bfbfc582bc468"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 214,
+     "end": 222,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "44aba0688d5cd2daf9118ab210f613ab334e7ffd98a715cfdb3a35b53e65c247"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 146,
+     "end": 162,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "65033c21fda54d5e31920f66c11cd2cf4c8f9259c558aba846491e7a3097dc97"
+    },
+    {
+     "path": ".github/scripts/reconcile_tag_receipt.py",
+     "start": 184,
+     "end": 230,
+     "file_sha256": "e0455c5a550b45ff127aebbd835d54ae3a1b3841fcf869c9082c99c30eef2722",
+     "span_sha256": "5c229748488278c8821c7d256b6f4979263b61df68db42b8933810215ecf4e0a"
+    }
+   ],
+   "semantic_assessment": "Every literal clause is assessed in shared source inspection, including retained advanced rows. Current supported guards/effects/retry paths and named accepted repairs are mapped; analytical baseline defects/overstatements are not claimed preserved. Existing advanced N/A/status/evidence histories are untouched. No runtime or whole-task acceptance follows.",
+   "limits": "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification."
+  }
+ ],
+ "scope": "Current source-only Release/CI preservation and explicit accepted repair deltas; no hosted/publication/account/installed qualification.",
+ "limits": [
+  "Source conformance only; no hosted CI, runtime/native/installed/OS, account configuration, task/scenario, human/model or publication qualification.",
+  "PROGRAM current source and accepted task direction govern. All frozen clauses remain literal; named accepted repairs/intake variances are explicit, not failed tests relabeled N/A.",
+  "No automatic task, runtime epoch, installed capability, actual hosted/platform, release/account or public-readback qualification follows from source PRESERVED.",
+  "Only14 selected machines and their48 still-PLANNED transitions are proposed; all32 advanced transitions and every other row/history remain untouched. C05-C10 are excluded.",
+  "No canonical/index/ref/marker/ledger/status/progress writes, runtime tests, provider/API/network calls, builds, installs or review fleet. Root owns independent review and strict prospective admission."
+ ]
+}

@@ -17,6 +17,7 @@ import {
   buildCloneArgs,
   buildCpHelperCreateArgs,
   createSandbox,
+  CreateFailure,
   APP_DIR,
 } from "./create.ts";
 import type { CloneResult } from "./create.ts";
@@ -169,6 +170,131 @@ describe("createSandbox failure teardown — containers before volume (reliabili
 // await prune() purely because it carries the ca.sandbox=1 label, even though it is
 // not a registered sandbox object.
 // --------------------------------------------------------------------------
+describe("final create cancellation", () => {
+  function fixture(abortOnRun: boolean, cleanupFails = false) {
+    const controller = new AbortController();
+    const reason = new Error("cancelled during final run observation");
+    const id = "final-run-cancel";
+    const containerId = "a".repeat(64);
+    const volume = "ca-sbx-vol-" + id;
+    const imageId = "sha256:" + "b".repeat(64);
+    const calls: { args: string[]; signal?: AbortSignal }[] = [];
+    let containerPresent = false;
+    let volumePresent = false;
+    const dockerRun = async (args: string[], call?: { signal?: AbortSignal }) => {
+      calls.push({ args: [...args], signal: call?.signal });
+      if (args[0] === "volume" && args[1] === "create") {
+        volumePresent = true;
+        return { code: 0, stdout: volume, stderr: "" };
+      }
+      if (args[0] === "run") {
+        containerPresent = true;
+        if (abortOnRun) controller.abort(reason);
+        return { code: 0, stdout: containerId + "\n", stderr: "" };
+      }
+      if (args[0] === "ps")
+        return { code: 0, stdout: containerPresent ? containerId + "\n" : "", stderr: "" };
+      if (args[0] === "rm") {
+        if (!cleanupFails) containerPresent = false;
+        return { code: cleanupFails ? 1 : 0, stdout: "", stderr: cleanupFails ? "removal denied" : "" };
+      }
+      if (args[0] === "volume" && args[1] === "rm") {
+        if (!cleanupFails) volumePresent = false;
+        return { code: cleanupFails ? 1 : 0, stdout: "", stderr: cleanupFails ? "volume retained" : "" };
+      }
+      if (args[0] === "volume" && args[1] === "ls")
+        return { code: 0, stdout: volumePresent ? volume + "\n" : "", stderr: "" };
+      throw new Error("unexpected final-create fixture operation: " + args.join(" "));
+    };
+    const pending = createSandbox("https://example.invalid/repo.git", {
+      id, signal: controller.signal, dockerRun,
+      cloneRepo: async () => 0,
+      buildImage: async () => ({ tag: "ca-sbx:v2-final-run", imageId, reused: true,
+        built: false, builder: "nixpacks" as const, notes: [] }),
+    });
+    return { pending, calls, controller, reason, id, containerId, volume, imageId };
+  }
+
+  it("createSandbox cancellation during successful run observation refuses success and compensates owned resources", async () => {
+    const f = fixture(true);
+    await expect(f.pending).rejects.toMatchObject({ name: "CreateFailure", cause: f.reason,
+      id: f.id, volumeName: f.volume, cleanup: { verified: true, containers: [], volume: f.volume } });
+    expect(await f.pending.catch(error => error)).toBeInstanceOf(CreateFailure);
+    const cleanup = f.calls.filter(c => c.args[0] === "ps" || c.args[0] === "rm" ||
+      (c.args[0] === "volume" && c.args[1] !== "create"));
+    expect(cleanup.every(c => c.signal === undefined)).toBe(true);
+    expect(cleanup.map(c => c.args)).toEqual([
+      ["ps", "-a", "-q", "--no-trunc", "--filter", "label=" + SANDBOX_LABEL, "--filter", "label=" + idLabel(f.id)],
+      ["rm", "-f", f.containerId], ["volume", "rm", "-f", f.volume],
+      ["ps", "-a", "-q", "--no-trunc", "--filter", "label=" + SANDBOX_LABEL, "--filter", "label=" + idLabel(f.id)],
+      ["volume", "ls", "-q", "--filter", "name=^" + f.volume + "$"],
+    ]);
+  });
+
+  it("createSandbox final cancellation retains unknown cleanup without false success", async () => {
+    const f = fixture(true, true);
+    await expect(f.pending).rejects.toMatchObject({ name: "CreateFailure", cause: f.reason,
+      id: f.id, volumeName: f.volume,
+      cleanup: { verified: false, containers: [f.containerId], volume: f.volume } });
+    const failure = await f.pending.catch(error => error);
+    expect(failure.cleanup.failures).toContain("resource absence not verified");
+    expect(f.calls.filter(c => c.args[0] === "rm").map(c => c.args)).toEqual([["rm", "-f", f.containerId]]);
+    expect(f.calls.filter(c => c.args[0] === "ps" || c.args.includes("rm")).every(c => c.signal === undefined)).toBe(true);
+  });
+
+  it("createSandbox final cancellation retains known container identity when discovery is unavailable", async () => {
+    const controller = new AbortController();
+    const reason = new Error("cancelled after observed container start");
+    const id = "known-container-recovery";
+    const volume = "ca-sbx-vol-" + id;
+    const containerId = "c".repeat(64);
+    const foreignId = "d".repeat(64);
+    const calls: { args: string[]; signal?: AbortSignal }[] = [];
+    const pending = createSandbox("https://example.invalid/repo.git", {
+      id, signal: controller.signal, cloneRepo: async () => 0,
+      buildImage: async () => ({ tag: "ca-sbx:v2-known-container", reused: true,
+        built: false, builder: "nixpacks" as const, notes: [] }),
+      dockerRun: async (args, call) => {
+        calls.push({ args: [...args], signal: call?.signal });
+        if (args[0] === "volume" && args[1] === "create")
+          return { code: 0, stdout: volume, stderr: "" };
+        if (args[0] === "run") {
+          controller.abort(reason);
+          return { code: 0, stdout: containerId + "\n", stderr: "" };
+        }
+        if (args[0] === "ps")
+          return { code: 1, stdout: foreignId + "\n", stderr: "discovery unavailable" };
+        return { code: 1, stdout: "", stderr: "cleanup unavailable" };
+      },
+    });
+    await expect(pending).rejects.toMatchObject({ name: "CreateFailure", cause: reason,
+      id, volumeName: volume, createdContainerId: containerId,
+      cleanup: { verified: false, containers: [], volume } });
+    const failure = await pending.catch(error => error);
+    expect(failure.message).toContain("created-container=" + containerId);
+    expect(failure.message).not.toContain(foreignId);
+    expect(calls.filter(c => c.args[0] === "rm")).toEqual([]);
+    const cleanup = calls.filter(c => c.args[0] === "ps" || (c.args[0] === "volume" && c.args[1] !== "create"));
+    expect(cleanup.every(c => c.signal === undefined)).toBe(true);
+    expect(cleanup.map(c => c.args)).toEqual([
+      ["ps", "-a", "-q", "--no-trunc", "--filter", "label=" + SANDBOX_LABEL, "--filter", "label=" + idLabel(id)],
+      ["volume", "rm", "-f", volume],
+      ["ps", "-a", "-q", "--no-trunc", "--filter", "label=" + SANDBOX_LABEL, "--filter", "label=" + idLabel(id)],
+      ["volume", "ls", "-q", "--filter", "name=^" + volume + "$"],
+    ]);
+  });
+
+  it("createSandbox successful un-aborted run preserves image identity without compensation", async () => {
+    const f = fixture(false);
+    await expect(f.pending).resolves.toMatchObject({ id: f.id, volumeName: f.volume,
+      containerId: f.containerId, imageId: f.imageId,
+      network: { requested: "offline", effective: "offline", available: true } });
+    expect(f.calls.filter(c => c.args[0] === "run")[0].args).toContain(f.imageId);
+    expect(f.calls.map(c => c.args[0] === "volume" ? c.args.slice(0, 2).join(" ") : c.args[0]))
+      .toEqual(["volume create", "run"]);
+  });
+});
+
 const d = dockerGate("create");
 
 d("orphaned helper containers [docker] — await prune() reclaims them (reliability-015)", async () => {

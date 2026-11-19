@@ -1,0 +1,12 @@
+test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target (test_work_github.GithubWorkTest.test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target) ... ok
+test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target (test_work_github.GithubWorkTest.test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target) ... ok
+test_mapped_preclaim_programmer_error_is_not_swallowed (test_work_github.GithubWorkTest.test_mapped_preclaim_programmer_error_is_not_swallowed) ... ok
+test_mapped_partial_issue_success_does_not_repeat_when_project_fails (test_work_github.GithubWorkTest.test_mapped_partial_issue_success_does_not_repeat_when_project_fails) ... ok
+test_mapped_issue_noop_reads_remote_and_repeated_sync_detects_drift (test_work_github.GithubWorkTest.test_mapped_issue_noop_reads_remote_and_repeated_sync_detects_drift) ... ok
+test_mapped_project_noop_reads_remote_and_repeated_sync_detects_drift (test_work_github.GithubWorkTest.test_mapped_project_noop_reads_remote_and_repeated_sync_detects_drift) ... ok
+test_transport_refuses_unlisted_token_destinations (test_work_github.GithubWorkTest.test_transport_refuses_unlisted_token_destinations) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 67.142s
+
+OK

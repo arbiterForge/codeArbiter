@@ -1,0 +1,58 @@
+{
+ "schema": "lossless-original-benchmark-capture-manifest/1",
+ "source_commit": "1e84bccf58cc28f8b590a81b5783f9a0051fa80a",
+ "source_tree": "f89aed4b91f5ed757d72b1cb6cffdf7edacde471",
+ "origin": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-1e84-exact-pi-benchmark-ll08l9pl\\capture",
+ "members": [
+  {
+   "name": "config.json",
+   "bytes": 3174,
+   "sha256": "4c512b5e5c34a80197b0caee0dc24b95a1871e74f40a09dc143e46b0f6a1a7c4"
+  },
+  {
+   "name": "run-start.json",
+   "bytes": 2288098,
+   "sha256": "6878f9632846fda0e81f8db87a6b29a737538b82963b159f4038abb1ba029024"
+  },
+  {
+   "name": "after-snapshot.json",
+   "bytes": 2181013,
+   "sha256": "34bbfad01cb999c531fc20aa780be88a6b34c3529d5b24f6e447d1def9ed6286"
+  },
+  {
+   "name": "boundary-observation.json",
+   "bytes": 7166,
+   "sha256": "225d70fcc264ded6110f82df3769eab1432998b925971f7061fa122bac80093b"
+  },
+  {
+   "name": "process-exit.json",
+   "bytes": 487,
+   "sha256": "d4c1576d11d0ccbba5c1a38bf36f39ae07f5002330c3bbd1e3a432d81f25372f"
+  },
+  {
+   "name": "run-result.json",
+   "bytes": 15204,
+   "sha256": "881dbb3b92c373dd57a5d7c4a427095c8ee0986550f68068249ed60506fd86d0"
+  },
+  {
+   "name": "capture-complete.json",
+   "bytes": 413,
+   "sha256": "82810976cb057d7d42182f5a00c67ca4eda77107ca860a6923f959ad0428b0c5"
+  },
+  {
+   "name": "original.stdout.log",
+   "bytes": 445,
+   "sha256": "4fdf77186466f82734fa65be9a98c9ade0509bc37463a3eb427ad25be6460e6c"
+  },
+  {
+   "name": "original.stderr.log",
+   "bytes": 0,
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  {
+   "name": "observer/sitecustomize.py",
+   "bytes": 2907,
+   "sha256": "15e8a12075f90afeadcfc5d3ab6ae170e6c3e2b7dcac43c3146adba67e4950d6"
+  }
+ ]
+}

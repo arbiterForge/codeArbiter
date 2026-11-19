@@ -1,0 +1,85 @@
+{
+  "schema": "codearbiter-native-whole-clause-assertion-map/1",
+  "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31",
+  "transition_id": "N10:02",
+  "complete_frozen_contract": {
+    "transition_id": "N10:02",
+    "machine_id": "N10",
+    "owner": "native",
+    "baseline": {
+      "from_state": "any task",
+      "from": "any task",
+      "event": "task-reconcile with receipt",
+      "guard": "current reconciliation receipt exact input/task/target; REVIEW additionally TaskFresh",
+      "to": "PENDING/REVIEW/BLOCKED",
+      "effects": "Append evidence/reason; target other than REVIEW transitively invalidates dependents.",
+      "failure_retry": "Invalid receipt/input/claim rejects all changes.",
+      "source": [
+        {
+          "path": "core/artifacts/internal/operations/lifecycle.go",
+          "symbol": "progress",
+          "lines": [
+            278
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/artifacts/internal/operations/lifecycle.go"
+        }
+      ],
+      "transition_id": "N10:02"
+    },
+    "task_ids": [
+      "NT-09",
+      "NT-11",
+      "NT-12"
+    ],
+    "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+    "proposed_composed_scenario_ids": [
+      "SEQ-07"
+    ],
+    "verification_status": "NOT_RUN",
+    "evidence": [],
+    "candidate_transition": null,
+    "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+  },
+  "accepted_intentional_change": {
+    "ref": ".codearbiter/decisions/0046-independent-progress-derived-evidence.md",
+    "sha256": "cc7095de44805dc12ea45bd4f3b329eb46bbb5c23463a87813a8046d26eb811d",
+    "decision_id": "D-PROGRESS",
+    "choice": "B",
+    "meaning": "Former destructive dependent invalidation is intentionally replaced by preserved independent progress/check history and derived readiness. The frozen intake is unchanged; this proof does not claim the old destructive effect remains."
+  },
+  "mapping": [
+    {
+      "clause": "from any task; optional current receipt path",
+      "source": "lifecycle.go252-260 and378-408",
+      "runtime": "Authentic reconciliation receipt created by real native evidence-context and capture-observation/load owners; all three admitted target outputs exercised. Receipt-specific branch has no predicate on prior progress state; tests start from REVIEW, no exhaustive state cross-product is claimed."
+    },
+    {
+      "clause": "current reconciliation receipt exact input/task/target",
+      "runtime": "subject/input/definition/target failures; capture-input-binding and capture-task-binding refuse at the earlier production capture owner. No hand-forged admitted receipt bypasses that check."
+    },
+    {
+      "clause": "REVIEW additionally TaskFresh",
+      "runtime": "REVIEW succeeds with current verification/spec-review receipts, rejects missing or stale evidence with current reconciliation observation."
+    },
+    {
+      "clause": "PENDING/REVIEW/BLOCKED; append evidence/reason",
+      "runtime": "All three outputs, exact selected-only receipt append and requested reason; unrelated receipt never attached. Exact replay appends nothing and stale CAS changes no retained bytes."
+    },
+    {
+      "clause": "candidate dependent effect under accepted D-PROGRESS=B",
+      "runtime": "Both dependent recorded progress records, complete task-check history and normative requirements remain equal; non-REVIEW selects ProgressVersion."
+    },
+    {
+      "clause": "invalid receipt/input/claim rejects all changes",
+      "runtime": "Real current native owner refuses foreign/stale/mismatched claims; snapshots of all retained .codearbiter files are identical on refusals. This is representative finite boundary coverage, not a claim every malformed serialization or OS failure was executed."
+    }
+  ],
+  "actual_population": {
+    "parent_tests": 2,
+    "leaf_subcases": 11,
+    "named_pass_events_including_parents": 13,
+    "skips": 0,
+    "platform": "windows/amd64"
+  },
+  "qualification_limit": "Native engine semantics using synthetic host observations. Actual user approval, installed-host policy, physical UI, whole NT09/NT11/NT12 tasks, six-platform and program/publication remain separate."
+}

@@ -1,0 +1,21 @@
+{
+  "phase": "red",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,sys.argv[1]);s=unittest.defaultTestLoader.loadTestsFromNames(sys.argv[2:]);r=unittest.TextTestRunner(verbosity=2).run(s);raise SystemExit(not(r.wasSuccessful() and not r.skipped))",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "test_release_workflow.BashDiscoveryTest"
+  ],
+  "returncode": 1,
+  "supervisor_seconds": 0.2051105999853462,
+  "source_sha256": "5c8d52c1c3f7ecdc7097b4c590485dd2714bc72045bcbc23dd6503866a88975c",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "5dc8eb3c29eef454ffd7cd13545ec8f5772de5e8d019b31f392c493dc5d5d1e0",
+  "scope": "Real owned inert UCRT64 bin/internal discovery fixtures; GREEN also5 original real-Bash shell cases. No actual local UCRT64 Git install or original hosted execution claim."
+}

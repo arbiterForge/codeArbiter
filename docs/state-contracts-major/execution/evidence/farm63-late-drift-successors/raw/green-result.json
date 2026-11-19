@@ -1,0 +1,25 @@
+{
+  "mode": "green",
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "state-contracts.test.ts",
+    "-t",
+    "fresh pre-stage",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-prestage-drift-x5dm7eaw\\green-tests.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\plugins\\ca\\tools",
+  "started_utc": "2026-11-14T02:55:58.628955+00:00",
+  "finished_utc": "2026-11-14T02:55:59.593546+00:00",
+  "seconds": 0.9646063999971375,
+  "exit_code": 0,
+  "before_HEAD": "f4dde0ed232a38c10f270d8fe999c3646cf282f8",
+  "after_HEAD": "f4dde0ed232a38c10f270d8fe999c3646cf282f8",
+  "full_input_count": 29,
+  "input_changes": [],
+  "safe_node": "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "node_version": "v24.22.1",
+  "source_epoch": "Actual HEAD plus recorded working edits, not a clean committed-source execution."
+}

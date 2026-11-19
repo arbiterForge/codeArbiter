@@ -70,6 +70,15 @@ The orchestrator reads and presents:
 5. **Overrides since last checkpoint** — entries in `{{PROJECT_DIR}}/.codearbiter/overrides.log`
    newer than the marker in `{{PROJECT_DIR}}/.codearbiter/last-checkpoint`.
 6. **Current branch** — from git.
+7. **Interrupted workflow follow-ups** — resolve the installed
+   `hooks/workflow-recovery.py` using the helper card above, then run `scan`.
+   Report pending, claimed and unavailable entries from this bounded page.
+   A `partial` result is a lower bound with an opaque cursor; offer selected
+   further pages rather than claiming a complete backlog count. An absent
+   ledger means no registered obligations, not that historical work completed.
+   Unreadable, unknown-version or interrupted state stays unavailable with its
+   reason and explicit recovery route. Status never invokes `repair`, `resume`,
+   promotion, completion, staging, issue publication, or a notice-marker write.
 
 ## Output
 
@@ -84,6 +93,7 @@ Pipelines:
 Open tasks:       N
 Open questions:   N ([CONFIRM-NN] unresolved)
 Overrides since last checkpoint: N
+Workflow recovery: <this page's pending/claimed/unavailable; complete/partial/unavailable>
 ```
 
 No specs and no plans → `Pipelines: none`.

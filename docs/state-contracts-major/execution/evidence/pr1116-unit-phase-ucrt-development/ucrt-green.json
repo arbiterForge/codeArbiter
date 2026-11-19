@@ -1,0 +1,23 @@
+{
+  "phase": "green",
+  "argv": [
+    "C:/Python314/python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,sys.argv[1]);s=unittest.defaultTestLoader.loadTestsFromNames(sys.argv[2:]);r=unittest.TextTestRunner(verbosity=2).run(s);raise SystemExit(not(r.wasSuccessful() and not r.skipped))",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+    "test_release_workflow.BashDiscoveryTest",
+    "test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit",
+    "test_release_workflow.ReceiptShellBoundaryTest"
+  ],
+  "returncode": 0,
+  "supervisor_seconds": 10.4239385999972,
+  "source_sha256": "25663e5b265c928927e2425286471ba4cfee31fd4b56b935c8c13f4ac7595501",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "1b0abfd7ca8b299ef7a3330a89d652d1f84350ac9499298629aa4fea54381882",
+  "scope": "Real owned inert UCRT64 bin/internal discovery fixtures; GREEN also5 original real-Bash shell cases. No actual local UCRT64 Git install or original hosted execution claim."
+}

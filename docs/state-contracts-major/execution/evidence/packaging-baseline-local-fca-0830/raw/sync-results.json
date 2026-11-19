@@ -1,0 +1,47 @@
+{
+  "source_after": "0830b95752a05343563be027e513a2845a6c57df",
+  "inputs_after": {
+    ".github/scripts/test_sync_core.py": "5c5639db228ffe01aa909b22d6a8595de470c2f3b38a1ca22050e9d2ca3a1d00",
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601"
+  },
+  "seconds": 0.1910424999659881,
+  "testsRun": 7,
+  "named_results": [
+    {
+      "id": "test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_sync_core.TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_sync_core.TestCheckMode.test_check_passes_when_in_sync",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_sync_core.TestCheckMode.test_check_fails_on_modified_vendored_copy",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_sync_core.TestCheckMode.test_check_fails_on_missing_vendored_file",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_sync_core.TestCheckMode.test_check_never_writes_when_drifted",
+      "result": "PASSED"
+    },
+    {
+      "id": "test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy",
+      "result": "PASSED"
+    }
+  ],
+  "success": true,
+  "imported_repository_modules": [
+    ".github/scripts/test_sync_core.py",
+    "tools/host_descriptors.py",
+    "tools/owned_output.py"
+  ]
+}

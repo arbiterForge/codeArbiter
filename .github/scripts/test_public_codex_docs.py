@@ -815,8 +815,9 @@ class PublicCodexDocsTest(unittest.TestCase):
 
     def test_project_context_assigns_kernel_and_adapter_ownership(self):
         """Project context assigns canonical source and adapter ownership."""
-        context = (ROOT / ".codearbiter" / "CONTEXT.md").read_text(encoding="utf-8")
-        tech_stack = (ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        context = context_text("project")
+        tech_stack = context_text("tech-stack")
 
         self.assertIn("canonical governance kernel", context)
         self.assertIn("Claude Code adapter", context)

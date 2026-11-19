@@ -1,0 +1,30 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "test_site_playwright_observation.DocsAuthorityTests.test_workflow_retains_original_observation_after_report_refusal"
+  ],
+  "exit_code": 1,
+  "seconds": 0.16237779999210034,
+  "before": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/scripts/test_site_playwright_observation.py": "0ff7add36b9bee945c85301c358194eadd1a7c62c719d874d150a4da4da7e011"
+    }
+  },
+  "after": {
+    "head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "index": "0e5b15f5cdd62703f0928bf750a85e5daf43b557a4d975dcd58ada9491479b5f",
+    "files": {
+      ".github/scripts/test_site_playwright_observation.py": "0ff7add36b9bee945c85301c358194eadd1a7c62c719d874d150a4da4da7e011"
+    }
+  },
+  "source_and_index_stable": true,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "f446f379799ca961f8926f3d0fcad2bf0da5adac068163d17785bfc784bf5c1a"
+}

@@ -44,7 +44,7 @@ def fixture_commands(fixtures_only):
         # Preserve every package case while keeping costly real shutdown proofs
         # in bounded commands. Each partition retains the same 180-second cap.
         *[[python, ".github/scripts/test_pi_package.py", "--platform-partition", partition]
-          for partition in ("package", "rpc", "shutdown", "publish")],
+          for partition in ("package", "rpc", "rpc-observed", "shutdown", "publish")],
         # The real-host package fixture owns a Git daemon, temp repository, and
         # external Pi loader. Give it a fresh Vitest process so the platform
         # rerun cannot inherit state from the process-tree fixture files.
@@ -137,6 +137,58 @@ class PlatformContractFixtures(unittest.TestCase):
                 for method in methods:
                     self.assertTrue(any(case.endswith("." + method) for case in partition_ids[partition]), method)
 
+    def test_raw_rpc_precedes_observed_companions_and_either_failure_blocks(self):
+        name = "platform_observed_order_package_tests"
+        spec = importlib.util.spec_from_file_location(name, ROOT / ".github/scripts/test_pi_package.py")
+        module = importlib.util.module_from_spec(spec)
+        companions = {
+            "test_real_rpc_shutdown_probe_uses_the_same_enforcement_failure_fixture":
+                "test_real_rpc_enforcement_registration_failure_stays_fail_closed",
+            "test_real_rpc_shutdown_probe_uses_the_same_native_read_context_fixture":
+                "test_real_rpc_native_read_context_is_model_visible_once",
+        }
+        with mock.patch.dict(sys.modules, {name: module}):
+            spec.loader.exec_module(module)
+            for fixtures_only in (True, False):
+                for failed_partition in ("rpc", "rpc-observed"):
+                    with self.subTest(fixtures_only=fixtures_only, failed_partition=failed_partition):
+                        dispatched, observed = [], []
+
+                        def execute(command, **kwargs):
+                            dispatched.append(command)
+                            self.assertEqual(kwargs["timeout"], 180)
+                            if len(command) == 4 and command[2] == "--platform-partition":
+                                partition = command[-1]
+                                for case in module.platform_package_suites()[partition]:
+                                    if case._testMethodName in companions:
+                                        result = unittest.TestResult()
+                                        case.run(result)
+                                        self.assertTrue(result.wasSuccessful(), result.errors + result.failures)
+                                if partition == failed_partition:
+                                    return subprocess.CompletedProcess(command, 7, "", "owned partition failure")
+                            return subprocess.CompletedProcess(command, 0, "", "")
+
+                        def observe_original(case, fixture):
+                            self.assertEqual(fixture.__name__, companions[case._testMethodName])
+                            observed.append(case._testMethodName)
+
+                        with (mock.patch.object(sys.modules[__name__], "resolve_executable", return_value=pathlib.Path(sys.executable)),
+                              mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER", mock.Mock(is_file=mock.Mock(return_value=True))),
+                              mock.patch.object(module.PiPackageTests, "_observe_original_rpc_fixture_shutdown", autospec=True, side_effect=observe_original),
+                              mock.patch.object(subprocess, "run", side_effect=execute),
+                              mock.patch("sys.stdout", new_callable=io.StringIO) as output,
+                              mock.patch("sys.stderr", new_callable=io.StringIO) as errors):
+                            self.assertEqual(run_contract(None, fixtures_only), 7)
+                        self.assertCountEqual(observed, [] if failed_partition == "rpc" else companions)
+                        self.assertCountEqual([case._testMethodName for case in module.platform_package_suites()["rpc-observed"]], companions)
+                        partitions = [command[-1] for command in dispatched if len(command) == 4 and command[2] == "--platform-partition"]
+                        self.assertEqual(partitions, ["package", "rpc"] if failed_partition == "rpc" else ["package", "rpc", "rpc-observed"])
+                        self.assertEqual(dispatched[-1][-1], failed_partition)
+                        report = [json.loads(line) for line in output.getvalue().splitlines()][-1]
+                        self.assertEqual(report["command"], "test_pi_package.py[" + failed_partition + "]")
+                        self.assertEqual(report["result"], "failed")
+                        self.assertIn("owned partition failure", errors.getvalue())
+
     def test_partition_failure_and_timeout_stop_the_aggregate_with_bounded_diagnostics(self):
         commands = [[sys.executable, ".github/scripts/test_pi_package.py", "--platform-partition", "shutdown"],
                     [sys.executable, "must-not-run.py"]]
@@ -165,6 +217,27 @@ class PlatformContractFixtures(unittest.TestCase):
                 if isinstance(result, subprocess.TimeoutExpired):
                     self.assertEqual(report["timeoutSeconds"], 180)
                     self.assertIn("\ufffdlast test diagnostic", errors.getvalue())
+
+    def test_native_reader_preparation_precedes_and_is_shared_by_bounded_children(self):
+        order = []
+        payload = ROOT / "test-owned-native-reader"
+        commands = [[sys.executable, "first.py"], [sys.executable, "second.py"]]
+        def prepare():
+            order.append("prepare")
+            return payload
+        def execute(command, **kwargs):
+            order.append(command[-1])
+            self.assertEqual(kwargs["env"]["ARTIFACT_TEST_INSTALLATION"], str(payload))
+            self.assertEqual(kwargs["timeout"], PLATFORM_COMMAND_TIMEOUT_SECONDS)
+            return subprocess.CompletedProcess(command, 0, "", "")
+        with (mock.patch.object(sys.modules[__name__], "prepare_context_reader", side_effect=prepare),
+              mock.patch.object(sys.modules[__name__], "fixture_commands", return_value=commands),
+              mock.patch.object(sys.modules[__name__], "PI_TOOLS_VITEST_LAUNCHER",
+                                mock.Mock(is_file=mock.Mock(return_value=True))),
+              mock.patch.object(subprocess, "run", side_effect=execute),
+              mock.patch("sys.stdout", new_callable=io.StringIO)):
+            self.assertEqual(run_contract(None, False, prepare_reader=True), 0)
+        self.assertEqual(order, ["prepare", "first.py", "second.py"])
 
     def test_platform_aggregate_executes_each_required_command_once(self):
         for fixtures_only in (True, False):
@@ -234,7 +307,8 @@ class PlatformContractFixtures(unittest.TestCase):
         })
 
     def test_tech_stack_declares_the_pi_tools_install_an_aggregate_prerequisite(self):
-        tech_stack = (ROOT / ".codearbiter" / "tech-stack.md").read_text(encoding="utf-8")
+        from project_knowledge import context_text
+        tech_stack = context_text("tech-stack")
         self.assertIn(
             "The Pi tools install is an aggregate prerequisite: "
             "`npm --prefix plugins/ca-pi/tools ci --ignore-scripts`.",
@@ -348,7 +422,23 @@ class PlatformContractFixtures(unittest.TestCase):
         self.assertLess(budget_ms, PLATFORM_COMMAND_TIMEOUT_SECONDS * 1_000)
 
 
-def run_contract(pi_version, fixtures_only):
+def prepare_context_reader():
+    """Build/verify the native reader once, outside bounded command partitions.
+
+    This is a repository-test prerequisite, not installed Pi qualification.
+    Each child still verifies its copied payload through the native client.
+    """
+    import test_artifact_authoring
+    import _knowledgelib
+    if _knowledgelib.context_format(str(ROOT)) != "html":
+        return None
+    from project_knowledge import _installation
+    installation = _installation()
+    test_artifact_authoring.ArtifactClient(ROOT, installation).call("capabilities")
+    return installation
+
+
+def run_contract(pi_version, fixtures_only, *, prepare_reader=False):
     policy = None if pi_version is None else version_policy(pi_version)
     if policy is not None:
         pi = resolve_executable("pi")
@@ -371,6 +461,10 @@ def run_contract(pi_version, fixtures_only):
 
     environment = os.environ.copy()
     environment.update({"PYTHONUTF8": "1", "PYTHONIOENCODING": "utf-8"})
+    if prepare_reader:
+        installation = prepare_context_reader()
+        if installation is not None:
+            environment["ARTIFACT_TEST_INSTALLATION"] = str(installation)
     for index, command in enumerate(fixture_commands(fixtures_only), start=1):
         label = pathlib.Path(command[1] if len(command) > 1 else command[0]).name
         if len(command) == 4 and command[2] == "--platform-partition":
@@ -422,7 +516,7 @@ def main():
     if not result.wasSuccessful():
         return 1
     if args.fixtures_only or args.pi_version is not None:
-        return run_contract(args.pi_version, args.fixtures_only)
+        return run_contract(args.pi_version, args.fixtures_only, prepare_reader=True)
     return 0
 
 

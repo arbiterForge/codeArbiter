@@ -1,0 +1,1210 @@
+{
+  "format": "codearbiter.site-machine-source-inspection/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine": "S61",
+  "full_frozen_machine": {
+    "machine_id": "S61",
+    "name": "Site workflow atlas view, route, node, zoom, print and export",
+    "domain": "Pi, farm, sandbox, site and packaging",
+    "kind": "implemented",
+    "owner": "site",
+    "closure_task": "Q-01",
+    "task_ids": [
+      "Q-01"
+    ],
+    "explicit_machine_task_ids": [],
+    "source_intersection_task_ids": [],
+    "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "status": "NOT_RUN",
+    "transition_count": 13,
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts"
+    ],
+    "proposed_composed_scenario_ids": [],
+    "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+    "evidence": []
+  },
+  "assessment": "Thirteen-clause SOURCE-ONLY Atlas client conformance with existing S61:10/:11 print-description corrections retained. Valid rendered model is a precondition; no SVG geometry/browser/print/dialog/user acceptance.",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:S61:01",
+      "baseline": {
+        "event": "setup",
+        "guard": "valid rendered atlas structure",
+        "to": "connected/view loaded",
+        "effects": "Abort prior listeners, register current lifecycle; clone selected pristine SVG and initialize controls.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "connect/reconnect",
+        "transition_id": "S61:01"
+      },
+      "frozen_row_sha256": "2b4034b6b56fdc4c627e3a816c6e33a13ee3290c00172d5f992ae3b6012d213a",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "f397167cc7d0afef261bad8280941a0c8b8555d562d4fb79aaf282ad907d2934",
+      "current_contract_note": "Source-clause-only; Connect aborts old listeners/disconnects old observer, creates a new controller, collects required DOM/templates, resets route and clones the first selected pristine SVG; incomplete queried markup throws. Metadata/DOM availability is a precondition, not an executed build claim. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "Connect aborts prior owned work, reads admitted metadata/templates, creates fresh controls/observer ownership and initializes a known first SVG view.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 36,
+          "end": 73,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 261,
+          "end": 296,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 337,
+          "end": 350,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "start": 7,
+          "end": 10,
+          "file_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "start": 47,
+          "end": 49,
+          "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:01",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 36,
+                "end": 73,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 261,
+                "end": 296,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 337,
+                "end": 350,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/components/WorkflowAtlas.astro",
+                "start": 7,
+                "end": 10,
+                "file_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e"
+              },
+              {
+                "path": "site/scripts/execution-maps/atlas-render.ts",
+                "start": 47,
+                "end": 49,
+                "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+              }
+            ],
+            "semantic_assessment": "Connect aborts old listeners/disconnects old observer, creates a new controller, collects required DOM/templates, resets route and clones the first selected pristine SVG; incomplete queried markup throws. Metadata/DOM availability is a precondition, not an executed build claim.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "2b4034b6b56fdc4c627e3a816c6e33a13ee3290c00172d5f992ae3b6012d213a",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:02",
+      "baseline": {
+        "event": "switch view",
+        "guard": "known view",
+        "to": "new view loaded",
+        "effects": "Clone pristine SVG, clear selected node, reset fit; preserve eligible route selection.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "view loaded",
+        "transition_id": "S61:02"
+      },
+      "frozen_row_sha256": "22e360e09399b60025277496031eade88921aeeb88fb048066574b1fe025ace9",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "ff5bfbeea6e12c4e0f637305482442b2558e1025e802524b5501da5d9c2d4bf9",
+      "current_contract_note": "Source-clause-only; Known view+template required; unknown returns. Switching increments navigation revision, clears selected node, clones template, updates pressed/view state and attempts width fit then highlight/details while retaining current route. Printing suppresses fit separately. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "A known view with a matching template installs a pristine clone, clears stale node selection, and fits while preserving a valid selected route.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 337,
+          "end": 350,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:02",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 337,
+                "end": 350,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Known view+template required; unknown returns. Switching increments navigation revision, clears selected node, clones template, updates pressed/view state and attempts width fit then highlight/details while retaining current route. Printing suppresses fit separately.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "22e360e09399b60025277496031eade88921aeeb88fb048066574b1fe025ace9",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:03",
+      "baseline": {
+        "event": "choose route",
+        "guard": "known route",
+        "to": "route selected",
+        "effects": "Highlight route; clear node inspection; update accessible route description.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "view loaded",
+        "transition_id": "S61:03"
+      },
+      "frozen_row_sha256": "ba2ae4a53da095ad9e9adcef976fc9de58b147422b9067edddb2f44edc2718b9",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "758984e0a9dc2b44d749f069da14b43902e65f7324e37fb98882c4f559cc2049",
+      "current_contract_note": "Source-clause-only; choose maps only declared commands to a route (unknown clears), clears node selection, reflects selector/highlight and cloned accessible inspector with related-view buttons/not-drawn notice; no external tool or stored approval is generated. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "A known route drives highlights and description; route switching clears node inspection, and unknown route input clears rather than invents metadata.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 353,
+          "end": 420,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:03",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 353,
+                "end": 420,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "choose maps only declared commands to a route (unknown clears), clears node selection, reflects selector/highlight and cloned accessible inspector with related-view buttons/not-drawn notice; no external tool or stored approval is generated.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "ba2ae4a53da095ad9e9adcef976fc9de58b147422b9067edddb2f44edc2718b9",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:04",
+      "baseline": {
+        "event": "select node",
+        "guard": "node metadata available",
+        "to": "node inspected",
+        "effects": "Show source/evidence/description panel and aria selection.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "view loaded/route selected",
+        "transition_id": "S61:04"
+      },
+      "frozen_row_sha256": "3560146e9743225ab5d3cb897786f8c99ab80c7d5e2f3336fd05b2b747d7be09",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "4f7a14ee14c36466b2662f6f16a1d7ebe4830875e4a8477741d06e7d4bbfbeb0",
+      "current_contract_note": "Source-clause-only; Click/Enter/Space on non-link data-node calls inspect only when ID exists in active view; selection increments revision and updates selected/dim classes, aria-pressed and inspector. Unknown node is ignored. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "Only known nodes in the active view can populate metadata/aria selection and inspector content.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 160,
+          "end": 178,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 365,
+          "end": 386,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 422,
+          "end": 430,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:04",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 160,
+                "end": 178,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 365,
+                "end": 386,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 422,
+                "end": 430,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Click/Enter/Space on non-link data-node calls inspect only when ID exists in active view; selection increments revision and updates selected/dim classes, aria-pressed and inspector. Unknown node is ignored.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "3560146e9743225ab5d3cb897786f8c99ab80c7d5e2f3336fd05b2b747d7be09",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:05",
+      "baseline": {
+        "event": "zoom/drag",
+        "guard": "scale clamp 0.1..2; admitted pointer",
+        "to": "manual viewport",
+        "effects": "Update transform; capture/release pointer; manual mode suppresses automatic fit.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "any viewport",
+        "transition_id": "S61:05"
+      },
+      "frozen_row_sha256": "b88f724a86720166139b17191116582ae1bc04e9b7dab9b1748942c0abd3b417",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "4ed5c63eef439fb043a8137829c9fd7ec6889078ab07e0eb7d08669a089566c1",
+      "current_contract_note": "Source-clause-only; Finite scale clamps to0.1..2; admitted primary mouse blank-stage pointer captures drag and pointer end/cancel/lost capture clears it. Zoom/manual mode suppresses automatic fit; scaling uses SVG dimensions/scroll offsets rather than inventing a live CSS-transform result. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "Finite zoom is clamped to0.1..2; blank-stage dragging owns pointer capture and releases it on end/cancel/loss. Manual geometry blocks automatic fitting.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 111,
+          "end": 114,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 180,
+          "end": 223,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 261,
+          "end": 273,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 307,
+          "end": 324,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:05",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 111,
+                "end": 114,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 180,
+                "end": 223,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 261,
+                "end": 273,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 307,
+                "end": 324,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Finite scale clamps to0.1..2; admitted primary mouse blank-stage pointer captures drag and pointer end/cancel/lost capture clears it. Zoom/manual mode suppresses automatic fit; scaling uses SVG dimensions/scroll offsets rather than inventing a live CSS-transform result.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "b88f724a86720166139b17191116582ae1bc04e9b7dab9b1748942c0abd3b417",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:06",
+      "baseline": {
+        "event": "fit width/all",
+        "guard": "container geometry available",
+        "to": "fit viewport",
+        "effects": "Calculate viewport scale/translation; resize schedules coalesced recompute only outside manual/printing modes.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "any viewport",
+        "transition_id": "S61:06"
+      },
+      "frozen_row_sha256": "cfa834ec173072919028c4902317d3710d13f08e60235dd25aca011e48410bb7",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "e270eb908c9683543161c62b37c19cc7bba548be96c31c5338699f7983a14da3",
+      "current_contract_note": "Source-clause-only; Fit requires active view, nonzero stage width and no printOpen; computes width/all geometry scale then resets scroll. ResizeObserver coalesces one deferred recompute and rechecks manual/print mode at execution before fitting. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "Fit-width/all use available stage geometry; ResizeObserver work is frame-coalesced and only auto-fits before manual override and outside printing.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 261,
+          "end": 275,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 327,
+          "end": 335,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:06",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 261,
+                "end": 275,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 327,
+                "end": 335,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Fit requires active view, nonzero stage width and no printOpen; computes width/all geometry scale then resets scroll. ResizeObserver coalesces one deferred recompute and rechecks manual/print mode at execution before fitting.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "cfa834ec173072919028c4902317d3710d13f08e60235dd25aca011e48410bb7",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:07",
+      "baseline": {
+        "event": "fragment route/node link",
+        "guard": "safe known alias/fragment",
+        "to": "navigation pending",
+        "effects": "Advance navigation revision, switch relevant view and defer focus/scroll.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "any view",
+        "transition_id": "S61:07"
+      },
+      "frozen_row_sha256": "e458227ce3a505f0ee31656758c3656943a0ed3d41ad2178496874d05c08b5e6",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "b4b50fae3a74035a2d1eb8edaa3de38595c881b30362aeb01d00c138fb75edbc",
+      "current_contract_note": "Source-clause-only; Only ordinary noncancelled same-document/fragment links with bounded decodable known reading target, command, view alias or node are followed. Valid target selects relevant view/route/node and defers scrolling/focus under revision guard; no history write. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. Invalid hashes are remembered but are not a universal revision invalidation guarantee.",
+      "guard_effect_retry_assessment": "Safe aliases/fragments resolve declared commands/nodes/views, switch views as necessary and defer focus under a revision guard.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 129,
+          "end": 158,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 445,
+          "end": 538,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:07",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 129,
+                "end": 158,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 445,
+                "end": 538,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Only ordinary noncancelled same-document/fragment links with bounded decodable known reading target, command, view alias or node are followed. Valid target selects relevant view/route/node and defers scrolling/focus under revision guard; no history write.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. Invalid hashes are remembered but are not a universal revision invalidation guarantee.",
+            "frozen_row_sha256": "e458227ce3a505f0ee31656758c3656943a0ed3d41ad2178496874d05c08b5e6",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:08",
+      "baseline": {
+        "event": "animation frame",
+        "guard": "same revision; not repeated already-followed link",
+        "to": "view selected/focused",
+        "effects": "Apply final selection/focus; older revisions are dropped.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "navigation pending",
+        "transition_id": "S61:08"
+      },
+      "frozen_row_sha256": "bcdb1f7b29b4e7cf59e3e8c973d9c8cadfaa1ca00857fefae63d92389fd2509b",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "9d9b1da4e5a031f662c2444e61879f1c4bb74c0ad8b98bc031c3fe6e88b231b8",
+      "current_contract_note": "Source-clause-only; Deferred work requires connected element/nonaborted captured controller and unchanged navigationRevision; native repeated matching pending/already-followed hashes are suppressed so they cannot redo older accepted route selection. Explicit clicks can intentionally follow the same fragment again. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. This is the actual revision predicate, not proof that every invalid hash advances a revision.",
+      "guard_effect_retry_assessment": "Repeated native follow for the same pending fragment is suppressed; newer revisions invalidate older deferred work, while an explicit same-link click can intentionally repeat.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 44,
+          "end": 53,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 224,
+          "end": 241,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 465,
+          "end": 475,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 522,
+          "end": 537,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:08",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 44,
+                "end": 53,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 224,
+                "end": 241,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 465,
+                "end": 475,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 522,
+                "end": 537,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Deferred work requires connected element/nonaborted captured controller and unchanged navigationRevision; native repeated matching pending/already-followed hashes are suppressed so they cannot redo older accepted route selection. Explicit clicks can intentionally follow the same fragment again.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. This is the actual revision predicate, not proof that every invalid hash advances a revision.",
+            "frozen_row_sha256": "bcdb1f7b29b4e7cf59e3e8c973d9c8cadfaa1ca00857fefae63d92389fd2509b",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:09",
+      "baseline": {
+        "event": "open source dialog",
+        "guard": "source metadata present",
+        "to": "source dialog",
+        "effects": "Open dialog; maintain focus and close controls.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "node inspected",
+        "transition_id": "S61:09"
+      },
+      "frozen_row_sha256": "ee7cb89e9e1e9b3cd524b8c011dee23caa8e6b4931397abfdff5356ab5476326",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "f31811972fad6daed2548012996ff8ff3c9a53d7fc3fb95c7fe36acc3eae254f",
+      "current_contract_note": "Source-clause-only; Sources action calls native dialog.showModal; explicit close and dialog-backdrop click call close. Renderer supplies actual dialog/close button. Focus behavior delegates to native modal dialog, not an independently tested custom focus trap. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "Sources use the native dialog API with close/backdrop handling; browser-native dialog focus behavior is delegated, not independently proven.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 118,
+          "end": 123,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 256,
+          "end": 260,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "start": 49,
+          "end": 49,
+          "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:09",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 118,
+                "end": 123,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 256,
+                "end": 260,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/scripts/execution-maps/atlas-render.ts",
+                "start": 49,
+                "end": 49,
+                "file_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438"
+              }
+            ],
+            "semantic_assessment": "Sources action calls native dialog.showModal; explicit close and dialog-backdrop click call close. Renderer supplies actual dialog/close button. Focus behavior delegates to native modal dialog, not an independently tested custom focus trap.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "ee7cb89e9e1e9b3cd524b8c011dee23caa8e6b4931397abfdff5356ab5476326",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:10",
+      "baseline": {
+        "event": "beforeprint",
+        "guard": "not already printing",
+        "to": "printing",
+        "effects": "Save interactive state, reveal print-relevant view/details and fit for print.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "any view",
+        "transition_id": "S61:10"
+      },
+      "frozen_row_sha256": "5bd75cd295eb99a9edea7e7e6f24ba3f73b10d6befaa66e373f6411a782410f5",
+      "current_edge_status": "NOT_APPLICABLE",
+      "current_edge_row_sha256": "f3aeb1d9d3cc5a5f67c357f522e8b9509a6f8824684325f2b3f38c4b67af1b96",
+      "current_contract_note": "Analytical audit description correction only: A beforeprint general interactive-state snapshot and fit of the canvas for print. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: Reentrant beforeprint saves reading.open and opens static reading; CSS hides controls/frame/dialog/downloads and prints the complete static reading edition. It does not fit the interactive canvas or snapshot general selection/viewport.",
+      "guard_effect_retry_assessment": "Existing analytical correction retained: beforeprint saves reading.open and opens static reading. Print CSS hides interactive canvas/controls/dialog/downloads and displays complete static reading; it does not snapshot selection/viewport or fit.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "start": 92,
+          "end": 92,
+          "file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-10-not-applicable.json",
+          "proof_sha256": "5e0632ac6fa5f47dd09190e5cb97364b6fd5e68215dc9d9a7b9e65e7058e5d32",
+          "mapping": {
+            "cell": "disposition:transitions:S61:10",
+            "unsupported_contract": "A beforeprint general interactive-state snapshot and fit of the canvas for print.",
+            "actual_owner_contract": "Reentrant beforeprint saves reading.open and opens static reading; CSS hides controls/frame/dialog/downloads and prints the complete static reading edition. It does not fit the interactive canvas or snapshot general selection/viewport.",
+            "whole_clause_nonapplicability": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+            "frozen_row_sha256": "5bd75cd295eb99a9edea7e7e6f24ba3f73b10d6befaa66e373f6411a782410f5",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 242,
+                "end": 255,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/styles/workflow-atlas.css",
+                "start": 92,
+                "end": 92,
+                "file_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+              }
+            ]
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:11",
+      "baseline": {
+        "event": "afterprint/disconnect",
+        "guard": "print backup exists",
+        "to": "restored interactive state",
+        "effects": "Restore previous selections/details/viewport and clear backup.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "printing",
+        "transition_id": "S61:11"
+      },
+      "frozen_row_sha256": "9a18f99b6334e0a69c22c7d98b8134f9fa2350933cddc1ba65880cc38cfabe50",
+      "current_edge_status": "NOT_APPLICABLE",
+      "current_edge_row_sha256": "7714474d0e9645c35397e2654e539f64b864bc09605279787e45c534c704db10",
+      "current_contract_note": "Analytical audit description correction only: An afterprint/disconnect general selections/details/viewport restoration from a print backup. The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior. Actual supported owner contract: afterprint/disconnect restores reading.open and clears that backup; selection/zoom/viewport are left unmodified by printing. Disconnect separately aborts listeners/frames/observer/export work. No general print-state restoration exists.",
+      "guard_effect_retry_assessment": "Existing analytical correction retained: afterprint/disconnect restore reading.open and clear its backup. Selection/viewport are not print-mutated; disconnect separately performs its actual cleanup.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 242,
+          "end": 255,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 299,
+          "end": 305,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-11-not-applicable.json",
+          "proof_sha256": "16b5cc21caf103922b7752832e3150be5cd7a706abc61b1f7d6342921943c917",
+          "mapping": {
+            "cell": "disposition:transitions:S61:11",
+            "unsupported_contract": "An afterprint/disconnect general selections/details/viewport restoration from a print backup.",
+            "actual_owner_contract": "afterprint/disconnect restores reading.open and clears that backup; selection/zoom/viewport are left unmodified by printing. Disconnect separately aborts listeners/frames/observer/export work. No general print-state restoration exists.",
+            "whole_clause_nonapplicability": "The literal composite was never implemented or declared by the baseline owner. No accepted SITE-U01/U02/BUILD-G01 task advertises this additional feature. The analytical summary overstates the actual owner contract; correcting it does not retire supported concrete behavior.",
+            "frozen_row_sha256": "9a18f99b6334e0a69c22c7d98b8134f9fa2350933cddc1ba65880cc38cfabe50",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 242,
+                "end": 255,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              },
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 299,
+                "end": 305,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ]
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:12",
+      "baseline": {
+        "event": "export SVG",
+        "guard": "pristine selected SVG available",
+        "to": "export pending",
+        "effects": "Create downloadable Blob URL from pristine SVG, trigger download, revoke URL after 1s.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "view loaded",
+        "transition_id": "S61:12"
+      },
+      "frozen_row_sha256": "b90a352ceb33a8ed875613dfe0be25c3957898d99503e093724ebd36ba62de9d",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "91e9c632f52eef32df127f03723d22fac67f3f225fe286d7af0ee1198c963d4f",
+      "current_contract_note": "Source-clause-only; Export serializes the pristine selected template SVG as XML, creates SVG Blob URL, clicks a download link and schedules owned URL revocation after1000ms; absent template SVG returns. Current live zoom/selection styles are not serialized. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+      "guard_effect_retry_assessment": "Export serializes a pristine SVG template into a Blob, creates an owned download URL and revokes it after the bounded timer; it does not export the mutated interaction clone.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 541,
+          "end": 560,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:12",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 541,
+                "end": 560,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Export serializes the pristine selected template SVG as XML, creates SVG Blob URL, clicks a download link and schedules owned URL revocation after1000ms; absent template SVG returns. Current live zoom/selection styles are not serialized.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation.",
+            "frozen_row_sha256": "b90a352ceb33a8ed875613dfe0be25c3957898d99503e093724ebd36ba62de9d",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S61:13",
+      "baseline": {
+        "event": "disconnect",
+        "guard": "component removed",
+        "to": "disconnected",
+        "effects": "Abort listeners, restore print state, release pointer, close dialog, revoke owned URLs and invalidate navigation work.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/workflow-atlas.ts",
+            "symbol": "custom atlas runtime",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/workflow-atlas.ts",
+            "lines": "1-565"
+          },
+          {
+            "path": "site/src/components/WorkflowAtlas.astro",
+            "symbol": "atlas DOM contract",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/WorkflowAtlas.astro",
+            "lines": "1-10"
+          }
+        ],
+        "from": "connected",
+        "transition_id": "S61:13"
+      },
+      "frozen_row_sha256": "33ff2779abfb50ffcf77781d24a712c43d221cc83e3af3f831f7d71f4e8db692",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "732673d2e179dac593513ee6c7961ba963a3a5c0bb1e83aa4e2532539672dca9",
+      "current_contract_note": "Source-clause-only; Disconnect restores only saved reading.open if present then aborts controller; abort clears pending links/hash, cancels owned frames, disconnects observer, releases held pointer capture, clears dragging/resize, revokes each download URL and closes dialog. Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. Print selection/viewport backups are not claimed; those frozen print clauses are held.",
+      "guard_effect_retry_assessment": "Disconnect restores reading state, aborts listeners/frames, disconnects ResizeObserver, releases held pointer capture, revokes owned URLs, closes the dialog and invalidates deferred navigation.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "start": 280,
+          "end": 305,
+          "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+          "proof_sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+          "mapping": {
+            "cell": "disposition:transitions:S61:13",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/workflow-atlas.ts",
+                "start": 280,
+                "end": 305,
+                "file_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e"
+              }
+            ],
+            "semantic_assessment": "Disconnect restores only saved reading.open if present then aborts controller; abort clears pending links/hash, cancels owned frames, disconnects observer, releases held pointer capture, clears dragging/resize, revokes each download URL and closes dialog.",
+            "limits": "Conditional valid-rendered-Atlas client source only. No build/source-freshness, real browser geometry/focus/pointer/download/print or whole-machine observation. Print selection/viewport backups are not claimed; those frozen print clauses are held.",
+            "frozen_row_sha256": "33ff2779abfb50ffcf77781d24a712c43d221cc83e3af3f831f7d71f4e8db692",
+            "scope": "SOURCE_CLAUSE_ONLY"
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    }
+  ],
+  "input_join_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+    "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+  },
+  "existing_conformance_reuse": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/atlas-client-preserved.json",
+      "sha256": "f750ba2e310cafb217ca48032d7621d632d176cc201feed1cf7084a7d9808dad",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-model.ts",
+          "recorded_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+          "actual_sha256": "d115a011e2fcf583cc84635a1f7ade1e10c9d55c388a6e6b9b743bf5250e8909",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-render.ts",
+          "recorded_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+          "actual_sha256": "fd35a1c59c8ae5b5e6e25523c946b315dc30dc212be4542ce516bee66b3e7438",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/atlas-theme.ts",
+          "recorded_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+          "actual_sha256": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "recorded_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "actual_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "recorded_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "actual_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-10-not-applicable.json",
+      "sha256": "5e0632ac6fa5f47dd09190e5cb97364b6fd5e68215dc9d9a7b9e65e7058e5d32",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "recorded_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "actual_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "recorded_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "actual_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "recorded_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "actual_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "equal": true
+        }
+      ]
+    },
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-six-baseline-corrections-74057/S61-11-not-applicable.json",
+      "sha256": "16b5cc21caf103922b7752832e3150be5cd7a706abc61b1f7d6342921943c917",
+      "source_commit": "74057c377ae7934fe7074443b7ab71f378798ef2",
+      "result": "NOT_APPLICABLE",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/PROGRAM.md",
+          "recorded_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "actual_sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/WorkflowAtlas.astro",
+          "recorded_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "actual_sha256": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/workflow-atlas.ts",
+          "recorded_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "actual_sha256": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/workflow-atlas.css",
+          "recorded_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "actual_sha256": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c",
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "accepted_changes": "BUILD-G01 replaces delete-first with complete staged owned publication for S64/S67. Existing analytical corrections stay exactly as committed. gen.ts now forwards skipped-call-site annotations; serial stage ordering is unchanged.",
+  "dependency_boundary": "Conditional control flow given valid declared DOM/content/model inputs; no particular corpus, generated build or external Academy checkout was admitted or executed.",
+  "observation": "Source inspection/hash comparison only. No tests, validators, browser, commands under test, build, runtime, network or provider were executed."
+}

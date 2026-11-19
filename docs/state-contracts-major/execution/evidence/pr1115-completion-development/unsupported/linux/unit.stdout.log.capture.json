@@ -1,0 +1,7 @@
+{
+  "schema": "literal-utf8-development-capture/1",
+  "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit.stdout.log",
+  "original_sha256": "96e0bf49d5da978f142e9d9085dcef65136c2e82128180a5b9ea155148ff8e08",
+  "original_bytes": 129,
+  "utf8_text": "=== RUN   TestUnsupportedBackendOpenRefusesWithoutEffects\n--- PASS: TestUnsupportedBackendOpenRefusesWithoutEffects (0.02s)\nPASS\n"
+}

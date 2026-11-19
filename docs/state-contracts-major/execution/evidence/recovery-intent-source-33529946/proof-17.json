@@ -1,0 +1,59 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "33529946a2dd18c7a4ea5cd75140227ec7bb5650",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound recovery root, independent cold setup, unchanged prior source scopes"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    "core/pysrc/_workflowrecoverylib.py": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "plugins/ca-codex/hooks/_host.py": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+    "plugins/ca-codex/hooks/pre-tool-adapter.py": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+    "plugins/ca/hooks/_host.py": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b"
+  },
+  "disposition_ids": [
+    "disposition:machines:hooks:codex-pretool",
+    "disposition:transitions:hooks:codex-pretool:01",
+    "disposition:transitions:hooks:codex-pretool:02",
+    "disposition:transitions:hooks:codex-pretool:03",
+    "disposition:transitions:hooks:codex-pretool:04",
+    "disposition:transitions:hooks:codex-pretool:05",
+    "disposition:transitions:hooks:codex-pretool:06"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-intent-source-33529946/source-delta-review.json",
+      "sha256": "e2d9524a82f02903493339d64c4d1c4c6afe67a4c02f4b5eb1f3b3e97cbe6bae"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-codex-pretool-preserved.json",
+      "sha256": "e29e127cb6cbb1983da99013e9aa2c264df90ca83ca7f943fb5f68447570ff4a"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/proofs/hooks-codex-pretool-preserved.json",
+    "sha256": "e29e127cb6cbb1983da99013e9aa2c264df90ca83ca7f943fb5f68447570ff4a",
+    "original_code": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+    "stored_at": "05e73c5c2501c71d069304c1a6b1b8cd5ae9a706"
+  },
+  "scope": "hooks:codex-pretool finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+  "changed_paths": [
+    "core/pysrc/_workflowrecoverylib.py"
+  ],
+  "limits": [
+    "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+    "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+    "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved.",
+    "Current source refinement preserves all prior finite owner and guard clauses; no new runtime claims are part of this proof.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ]
+}

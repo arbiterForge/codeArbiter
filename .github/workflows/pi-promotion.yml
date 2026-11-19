@@ -110,6 +110,15 @@ jobs:
           python .github/scripts/pi_host_locks.py install --version ${{ needs.resolve.outputs.baseline }} --prefix "$RUNNER_TEMP/pi-host-baseline"
           export PATH="$RUNNER_TEMP/pi-host-baseline/node_modules/.bin:$PATH"
           python .github/scripts/pi_promotion.py help > "$RUNNER_TEMP/baseline-help.json"
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Prepare the source-tested installed knowledge writer
+        shell: bash
+        run: python .github/scripts/pi_promotion.py contract --id toolchain-install --state "$CA_PI_RECEIPT_STATE" -- python tools/build-artifacts.py --output plugins/ca/helpers/artifacts
       - name: Capture the exact candidate graph without executing it
         shell: bash
         run: |
@@ -192,6 +201,15 @@ jobs:
         run: |
           python .github/scripts/pi_host_locks.py capture --version ${{ needs.resolve.outputs.candidate }} --output .github/fixtures/pi-hosts/${{ needs.resolve.outputs.candidate }}
           # The PENDING_REVIEW graph is inert data; no repository credential is present during resolution.
+      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+        with:
+          go-version: "1.27.1"
+          check-latest: false
+          cache: false
+          go-download-base-url: https://go.dev/dl
+      - name: Prepare the source-tested installed knowledge writer
+        shell: bash
+        run: python tools/build-artifacts.py --output plugins/ca/helpers/artifacts
       - name: Create the deterministic promotion branch contents
         shell: bash
         run: |
@@ -202,9 +220,13 @@ jobs:
           npm --prefix plugins/ca-pi/tools ci --ignore-scripts
           npm --prefix plugins/ca-pi/tools run build
           python .github/scripts/check_docs_contract.py
-          git add -- plugins/ca-pi core .github/fixtures/pi-hosts .github/scripts/pi_host_locks.py .github/scripts/test_host_descriptors.py .github/scripts/test_pi_child_live.py .github/scripts/test_pi_package.py .github/scripts/test_pi_platform_contract.py .github/scripts/test_public_pi_docs.py .github/scripts/test_verify_pi_support.py .github/scripts/verify_pi_support.py README.md docs site package.json .codearbiter/specs/pi-support.md .codearbiter/specs/ci-impact-selection.md .codearbiter/tech-stack.md
+          knowledge_path="$(python -c 'import sys; sys.path.insert(0, "core/pysrc"); import _knowledgelib; print(_knowledgelib.narrative_path(".", "tech-stack"))')"
+          git add -- plugins/ca-pi core .github/fixtures/pi-hosts .github/scripts/pi_host_locks.py .github/scripts/test_host_descriptors.py .github/scripts/test_pi_child_live.py .github/scripts/test_pi_package.py .github/scripts/test_pi_platform_contract.py .github/scripts/test_public_pi_docs.py .github/scripts/test_verify_pi_support.py .github/scripts/verify_pi_support.py README.md docs site package.json .codearbiter/specs/pi-support.md .codearbiter/specs/ci-impact-selection.md "$knowledge_path"
+          # Native payload and runtime bookkeeping are local execution inputs,
+          # never part of the promotion commit or verification snapshot.
+          test -z "$(git diff --cached --name-only -- plugins/ca/helpers/artifacts .codearbiter/.artifacts)"
           git diff --quiet
-          test -z "$(git ls-files --others --exclude-standard)"
+          test -z "$(git ls-files --others --exclude-standard -- . ':(exclude)plugins/ca/helpers/artifacts/**' ':(exclude).codearbiter/.artifacts/**')"
           git diff --cached --check
           git -c user.name='github-actions[bot]' -c user.email='41898282+github-actions[bot]@users.noreply.github.com' commit -m "chore(pi): promote ${{ needs.resolve.outputs.candidate }}"
       - name: Push the promotion branch and open the draft PR

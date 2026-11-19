@@ -228,17 +228,19 @@ const overviewHref = `${basePath}/overview/`;
         if (event.key === "Escape" && !layer.hidden) closeDrawer();
       };
 
+      const listeners = new AbortController();
+      const listenerOptions = { signal: listeners.signal };
       opener.addEventListener("click", () => {
         layer.hidden ? openDrawer() : closeDrawer();
-      });
+      }, listenerOptions);
       closeControls.forEach((control) =>
-        control.addEventListener("click", () => closeDrawer()),
+        control.addEventListener("click", () => closeDrawer(), listenerOptions),
       );
-      tray.addEventListener("keydown", trapFocus);
-      document.addEventListener("keydown", handleEscape);
+      tray.addEventListener("keydown", trapFocus, listenerOptions);
+      document.addEventListener("keydown", handleEscape, listenerOptions);
 
       this.cleanup = () => {
-        document.removeEventListener("keydown", handleEscape);
+        listeners.abort();
         if (!layer.hidden) closeDrawer({ restoreFocus: false });
       };
     }

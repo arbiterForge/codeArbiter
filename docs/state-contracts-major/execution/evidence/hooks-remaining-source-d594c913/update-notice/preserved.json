@@ -1,0 +1,35 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/qualification_review: bounded source-clause inspection; no runtime execution"
+  },
+  "inputs": {
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/update-refresh.py": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c"
+  },
+  "disposition_ids": [
+    "disposition:transitions:hooks:update-notice:01",
+    "disposition:transitions:hooks:update-notice:02",
+    "disposition:transitions:hooks:update-notice:03",
+    "disposition:transitions:hooks:update-notice:04",
+    "disposition:transitions:hooks:update-notice:05",
+    "disposition:transitions:hooks:update-notice:06",
+    "disposition:machines:hooks:update-notice"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/update-notice/source-inspection.json",
+      "sha256": "ed20b453c0fbdeebb1975af586aa1d73ace74f5e6fa796b41d0e1410d0f36627"
+    }
+  ],
+  "scope": "update-notice: 6 whole transition clauses and 1 complete constituent machines; Finite source guard/effect/retry conformance at the frozen source commit only. No runtime, host/package qualification, model compliance, task/scenario, provider/authentication, physical consent, endpoint policy, publication or whole-program readiness claim. HOLD rows receive no ledger mutation.",
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/hooks-remaining-source-d594c913/update-notice/source-inspection.json",
+  "dependency_boundary": "Inputs pin actual current dependencies at named caller boundaries; equality applies to cited owners, not blanket equivalence of changed dependency behavior. Each raw row states exact mapping and explicit HOLDs."
+}

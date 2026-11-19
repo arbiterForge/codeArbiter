@@ -1,0 +1,1505 @@
+{
+  "repository": "arbiterForge/codeArbiter",
+  "commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "scope": "Final independent sandbox workflow prose and Claude README supplement",
+  "machines": [
+    {
+      "id": "SW01",
+      "name": "Sandbox command routing and five-phase operator workflow",
+      "kind": "model-guided",
+      "explicitness": "Explicit five-phase BLOCK instructions; implicit command handoff and lifetime rules. No durable workflow-state record identified in these prose files.",
+      "state_storage": "Conversation-level phase, requested source/policy/box ID, external driver observations and explicit keep-volume choice; runtime states remain owned by S47\u2013S54",
+      "states": [
+        "routed",
+        "preflight blocked",
+        "policy chosen",
+        "clone/build requested",
+        "isolation awaiting inspection",
+        "box reported",
+        "interaction",
+        "exit disposition conflicting",
+        "teardown requested",
+        "failed cleanup",
+        "cleanup observed"
+      ],
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/INDEX.md",
+          "symbol": "command-to-skill routing",
+          "lines": [
+            1,
+            10
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/INDEX.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Pre-flight",
+          "lines": [
+            12,
+            20
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 1",
+          "lines": [
+            20,
+            31
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 2 prerequisite",
+          "lines": [
+            33,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "Pre-flight flow",
+          "lines": [
+            21,
+            24
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 1 policy",
+          "lines": [
+            24,
+            31
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 1 acknowledgement",
+          "lines": [
+            26,
+            31
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "credential route",
+          "lines": [
+            27,
+            31
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 2 clone/build",
+          "lines": [
+            33,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "cache expectation",
+          "lines": [
+            37,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 3",
+          "lines": [
+            43,
+            53
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "inspect and report",
+          "lines": [
+            28,
+            33
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+          "symbol": "resolve existing box",
+          "lines": [
+            15,
+            22
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+          "symbol": "shell hard gates",
+          "lines": [
+            36,
+            43
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+          "symbol": "shell exit",
+          "lines": [
+            19,
+            22
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "Phase 5 trigger",
+          "lines": [
+            65,
+            74
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-exec.md",
+          "symbol": "exec flow and output gate",
+          "lines": [
+            16,
+            43
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-exec.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-cp.md",
+          "symbol": "copy flow and gate",
+          "lines": [
+            16,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-cp.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "hard rules",
+          "lines": [
+            76,
+            87
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "destroy flow",
+          "lines": [
+            15,
+            29
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "prune selection",
+          "lines": [
+            12,
+            18
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "retention",
+          "lines": [
+            19,
+            27
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "cleanup result contract",
+          "lines": [
+            23,
+            51
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "teardown completion claim",
+          "lines": [
+            69,
+            74
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "routed",
+          "from_state": "routed",
+          "event": "load command and lifecycle owner",
+          "guard": "one of five namespaced sandbox commands invoked",
+          "to": "preflight",
+          "effects": "Load invoked command body and sandbox-lifecycle instructions; catalog prescribes lazy routing rather than bulk context loading.",
+          "failure_retry": "Missing owner/prerequisite sources instruct STOP; no fallback workflow is defined.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/INDEX.md",
+            "symbol": "command-to-skill routing",
+            "lines": [
+              1,
+              10
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/INDEX.md"
+          }
+        },
+        {
+          "from": "preflight",
+          "from_state": "preflight",
+          "event": "inspect required driver sources",
+          "guard": "mount/run/network source files accessible at plugin root",
+          "to": "preflight grounded",
+          "effects": "Read actual mount, isolation and network seams before choosing operations.",
+          "failure_retry": "If files cannot be read, STOP and surface gap; source comments alone do not prove live container state.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Pre-flight",
+            "lines": [
+              12,
+              20
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "preflight",
+          "from_state": "preflight",
+          "event": "Docker admission",
+          "guard": "docker info returns nonzero",
+          "to": "preflight blocked",
+          "effects": "Report Docker unavailable and do not clone/build.",
+          "failure_retry": "Repair availability and retry admission; no guessed capability.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 1",
+            "lines": [
+              20,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "preflight",
+          "from_state": "preflight",
+          "event": "nixpacks prerequisite evaluation",
+          "guard": "nixpacks absent",
+          "to": "preflight blocked",
+          "effects": "Command and skill prescribe STOP plus install hint.",
+          "failure_retry": "Conflicts with documented and implemented Node/Python fallback; SW-F01.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 2 prerequisite",
+            "lines": [
+              33,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "preflight",
+          "from_state": "preflight",
+          "event": "missing source",
+          "guard": "create request has no URL/local path",
+          "to": "awaiting source",
+          "effects": "Ask for the source; do not choose a repository on user\u2019s behalf.",
+          "failure_retry": "Continue only with named source.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox.md",
+            "symbol": "Pre-flight flow",
+            "lines": [
+              21,
+              24
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+          }
+        },
+        {
+          "from": "preflight",
+          "from_state": "preflight",
+          "event": "select ordinary policy",
+          "guard": "named source and reachable Docker; no user policy selected",
+          "to": "policy chosen: offline",
+          "effects": "Prescribe offline default; clone-then-cut or allowlist require named selection.",
+          "failure_retry": "Do not infer broader egress. Ordinary driver currently stays offline even for declared richer policy; SW-F05.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 1 policy",
+            "lines": [
+              24,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "policy selection",
+          "from_state": "policy selection",
+          "event": "select allowlist",
+          "guard": "explicit selection and user acknowledges experimental status",
+          "to": "policy chosen: experimental allowlist",
+          "effects": "Label experimental each time and retain explicit acknowledgement requirement from skill.",
+          "failure_retry": "Without acknowledgement phase remains BLOCK. This is model-guided permission instruction, not proof runtime implements ordinary allowlist.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 1 acknowledgement",
+            "lines": [
+              26,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "policy chosen",
+          "from_state": "policy chosen",
+          "event": "--with-claude requested",
+          "guard": "explicit option; never ordinary default",
+          "to": "Claude-inside workflow handoff",
+          "effects": "Route to separate sandbox-claude-inside owner and its token/source separation rules.",
+          "failure_retry": "Do not combine token and untrusted-source volume or start credential path implicitly.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "credential route",
+            "lines": [
+              27,
+              31
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "policy chosen",
+          "from_state": "policy chosen",
+          "event": "clone/build instruction",
+          "guard": "phase 1 gates passed; no credential path bypass",
+          "to": "clone/build requested",
+          "effects": "Invoke createSandbox/build owner; require source volume at /work/repo and dependencies at /deps.",
+          "failure_retry": "No hand-rolled docker run or source-over-dependency mount; failed build blocks next phase.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 2 clone/build",
+            "lines": [
+              33,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "clone/build requested",
+          "from_state": "clone/build requested",
+          "event": "unchanged dependency hash",
+          "guard": "skill presumes stable repo/hash tag and existing image",
+          "to": "cache reuse prescribed",
+          "effects": "Prescribe no rebuild and identical tag.",
+          "failure_retry": "Existing S49/SF08 shows create uses random temporary basename in tag; this is a documented promise, not current achieved cross-create reuse.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "cache expectation",
+            "lines": [
+              37,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "image available",
+          "from_state": "image available",
+          "event": "start isolated run",
+          "guard": "driver runContainer and mount builder used; declared isolation set retained",
+          "to": "isolation awaiting inspection",
+          "effects": "Prescribe no bind/socket/privileged mode, non-root/read-only root/no-new-privileges/resource limits and labeled resources.",
+          "failure_retry": "Missing required isolation rejects run; this prose does not specify compensation after a failed inspect.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 3",
+            "lines": [
+              43,
+              53
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "isolation awaiting inspection",
+          "from_state": "isolation awaiting inspection",
+          "event": "docker inspect",
+          "guard": "no bind mount/socket and Privileged is false",
+          "to": "box reported",
+          "effects": "Report sandbox ID and interaction commands.",
+          "failure_retry": "Any forbidden property is a non-overridable rejection described as a driver bug.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox.md",
+            "symbol": "inspect and report",
+            "lines": [
+              28,
+              33
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+          }
+        },
+        {
+          "from": "box reported",
+          "from_state": "box reported",
+          "event": "shell/exec/copy target resolution",
+          "guard": "running ca.sandbox=1 container matching supplied ID exists",
+          "to": "interaction admitted",
+          "effects": "Select existing box; add no mount/socket/privilege.",
+          "failure_retry": "Absent or stopped box => STOP; no implicit creation.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+            "symbol": "resolve existing box",
+            "lines": [
+              15,
+              22
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+          }
+        },
+        {
+          "from": "interaction admitted",
+          "from_state": "interaction admitted",
+          "event": "shell",
+          "guard": "non-root interactive shell at /work/repo",
+          "to": "interactive session",
+          "effects": "Attach shell without root elevation, writable-root remount or new resources.",
+          "failure_retry": "Interactive terminal limitations/failure are not further specified by prose.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+            "symbol": "shell hard gates",
+            "lines": [
+              36,
+              43
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+          }
+        },
+        {
+          "from": "interactive session",
+          "from_state": "interactive session",
+          "event": "shell exit under command body",
+          "guard": "normal shell session closes",
+          "to": "box remains running",
+          "effects": "Return to host; sandbox-shell explicitly says box lives until sandbox-destroy.",
+          "failure_retry": "Contradicts lifecycle\u2019s session-close teardown trigger; do not silently choose either disposition.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+            "symbol": "shell exit",
+            "lines": [
+              19,
+              22
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+          }
+        },
+        {
+          "from": "interactive session",
+          "from_state": "interactive session",
+          "event": "session close under lifecycle owner",
+          "guard": "close of interactive session treated as exit",
+          "to": "teardown requested",
+          "effects": "Lifecycle prescribes destroying container and default source volume on close.",
+          "failure_retry": "Contradicts command body\u2019s persistent box; SW-F02 requires one owner-defined lifetime.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "Phase 5 trigger",
+            "lines": [
+              65,
+              74
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "interaction admitted",
+          "from_state": "interaction admitted",
+          "event": "exec request",
+          "guard": "argv after --; existing running labeled box",
+          "to": "command result reported",
+          "effects": "Invoke execInSandbox and report real exitCode, separated stdout/stderr and truncated flag.",
+          "failure_retry": "Nonzero may not be collapsed into success. Runtime interruption/overflow containment is separately S52/SF09.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-exec.md",
+            "symbol": "exec flow and output gate",
+            "lines": [
+              16,
+              43
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-exec.md"
+          }
+        },
+        {
+          "from": "interaction admitted",
+          "from_state": "interaction admitted",
+          "event": "copy-out request",
+          "guard": "container source and explicit host destination",
+          "to": "copy result reported",
+          "effects": "Invoke cpOut/docker cp outward and report destination.",
+          "failure_retry": "Host-inbound copy/mount or writable host path for container is prohibited by instruction; no claim of transactional copy rollback.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-cp.md",
+            "symbol": "copy flow and gate",
+            "lines": [
+              16,
+              41
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-cp.md"
+          }
+        },
+        {
+          "from": "interaction",
+          "from_state": "interaction",
+          "event": "request elevation, host bind/socket or token/source co-mount",
+          "guard": "request would violate structural boundary",
+          "to": "rejected interaction",
+          "effects": "Prescribe refusal rather than changing isolation or routing around mount builder.",
+          "failure_retry": "Use allowed operation/source-only or token-only workflow; no override path provided.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "hard rules",
+            "lines": [
+              76,
+              87
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        },
+        {
+          "from": "box reported/interaction",
+          "from_state": "box reported/interaction",
+          "event": "destroy specific ID",
+          "guard": "explicit single-box request",
+          "to": "teardown requested",
+          "effects": "Route to destroySandbox for selected container and its named volume.",
+          "failure_retry": "Command also lists an unqualified prune step/global-empty invariant; runtime S53 distinguishes targets from unrelated objects. SW-F03.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "destroy flow",
+            "lines": [
+              15,
+              29
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        },
+        {
+          "from": "labeled residues or boxes",
+          "from_state": "labeled residues or boxes",
+          "event": "explicit --prune or no-ID invocation",
+          "guard": "sweep operation selected",
+          "to": "global labeled sweep requested",
+          "effects": "Find and reclaim ca.sandbox=1 resources by label, never other objects.",
+          "failure_retry": "Do not infer this broad sweep from a different operation\u2019s failure or a request naming only one box.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "prune selection",
+            "lines": [
+              12,
+              18
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        },
+        {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "--keep-volume",
+          "guard": "explicit retention requested",
+          "to": "volume retained",
+          "effects": "Remove container while retaining selected volume and cached images.",
+          "failure_retry": "Retained selected volume is intentional; persistence choice does not authorize other leftover resources.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "retention",
+            "lines": [
+              19,
+              27
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        },
+        {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "removal/discovery/final verification failure",
+          "guard": "driver failure/remaining targeted object returned",
+          "to": "failed cleanup",
+          "effects": "Name leftovers, surface failure and nonzero outcome; do not stop remaining independent removal attempts.",
+          "failure_retry": "Retry/re-observe existing target identities; runtime S53 owns bounded details and verified absence.",
+          "source": {
+            "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+            "symbol": "cleanup result contract",
+            "lines": [
+              23,
+              51
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+          }
+        },
+        {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "observed absence and no removal errors",
+          "guard": "scope empty excluding explicit kept volumes/images",
+          "to": "cleanup observed",
+          "effects": "Report resources removed and intentional retained resources.",
+          "failure_retry": "Documentation\u2019s global-zero wording must be narrowed to selected scope for single-ID destroy; no automatic unrelated-box cleanup.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+            "symbol": "teardown completion claim",
+            "lines": [
+              69,
+              74
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+          }
+        }
+      ],
+      "notes": "These are instructions to the host model. Docker process, image, mount, network, copy and destroy mechanics are not recounted as new machines; see S47\u2013S54. Conflicting instruction edges are preserved explicitly rather than reconciled by assumption."
+    },
+    {
+      "id": "SW02",
+      "name": "Claude-inside credential workflow and five BLOCK phases",
+      "kind": "model-guided",
+      "explicitness": "Explicit five-phase BLOCK instructions; implicit command handoff and lifetime rules. No durable workflow-state record identified in these prose files.",
+      "state_storage": "Conversation-level gate evidence, policy/image/token-source declarations, home-volume choice and external runtime observations; no phase-completion receipt consumed by the separate CLI",
+      "states": [
+        "routed",
+        "required evidence unavailable",
+        "posture chosen",
+        "image qualified by instruction",
+        "token source checked",
+        "launch requested",
+        "live auth proof requested",
+        "ready",
+        "teardown requested",
+        "credential volume retained/removed"
+      ],
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "required project-relative sources",
+          "lines": [
+            16,
+            28
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "separate binary claim",
+          "lines": [
+            30,
+            45
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "Phase 1",
+          "lines": [
+            51,
+            67
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "Phase 2",
+          "lines": [
+            69,
+            90
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "base update",
+          "lines": [
+            85,
+            90
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "Phase 3",
+          "lines": [
+            92,
+            109
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "home persistence",
+          "lines": [
+            103,
+            109
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "Phase 4",
+          "lines": [
+            111,
+            125
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "auth proof gate",
+          "lines": [
+            127,
+            130
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "symbol": "runClaudeInsideCli",
+          "lines": [
+            139,
+            181
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "Phase 5",
+          "lines": [
+            132,
+            145
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "explicit credential retention",
+          "lines": [
+            136,
+            145
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "cleanup confirmation",
+          "lines": [
+            139,
+            145
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "restart semantics",
+          "lines": [
+            103,
+            105
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        }
+      ],
+      "transitions": [
+        {
+          "from": "routed",
+          "from_state": "routed",
+          "event": "preflight references",
+          "guard": "consumer PROJECT_DIR has both named sandbox spike files and ADR 0007",
+          "to": "preflight evidence read",
+          "effects": "Read those exact project-relative files before proceeding.",
+          "failure_retry": "Missing required file instructs STOP. Skill supplies no packaged-reference fallback; SW-F07.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "required project-relative sources",
+            "lines": [
+              16,
+              28
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "routed",
+          "from_state": "routed",
+          "event": "invoke separate driver",
+          "guard": "operator follows prescribed skill route",
+          "to": "workflow gate pending",
+          "effects": "Use separate claude-inside.js entrypoint rather than sandbox subcommand.",
+          "failure_retry": "Binary separation is routing/discoverability, not mechanical verification that five prose phases occurred; SW-F08.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "separate binary claim",
+            "lines": [
+              30,
+              45
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "preflight evidence read",
+          "from_state": "preflight evidence read",
+          "event": "choose posture",
+          "guard": "named offline or anthropic-only policy and explicit token-only boundary",
+          "to": "posture chosen",
+          "effects": "Default offline; label Anthropic-only experimental; state that this box carries token and no untrusted source.",
+          "failure_retry": "Wide-open/third policy rejected; token+source request stops and must be split into distinct boxes.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 1",
+            "lines": [
+              51,
+              67
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "posture chosen",
+          "from_state": "posture chosen",
+          "event": "build or reuse image",
+          "guard": "pinned Claude CLI SemVer, DISABLE_AUTOUPDATER=1, reviewed digest-pinned node base",
+          "to": "image qualified by instruction",
+          "effects": "Prescribe image construction and version/base inspection through driver builder.",
+          "failure_retry": "Floating CLI/base fails model-guided gate; arbitrary --image acceptance is not evidence of completed qualification.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 2",
+            "lines": [
+              69,
+              90
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "image definition changes",
+          "from_state": "image definition changes",
+          "event": "change base digest",
+          "guard": "reviewed dependency change selected",
+          "to": "requalification requested",
+          "effects": "Prescribe digest resolution and credential-boundary/isolation-suite rerun.",
+          "failure_retry": "Previous Spike/ADR is historical evidence; does not automatically qualify changed image.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "base update",
+            "lines": [
+              85,
+              90
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "image qualified by instruction",
+          "from_state": "image qualified by instruction",
+          "event": "source credential",
+          "guard": "approved-store OAuth token available in scoped environment; no argv/bind/log/prompt exposure",
+          "to": "token source checked",
+          "effects": "Pass CLAUDE_CODE_OAUTH_TOKEN by environment only.",
+          "failure_retry": "Do not invent missing token or store approval; --token/source-volume flags are separately rejected by actual CLI.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 3",
+            "lines": [
+              92,
+              109
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "token source checked",
+          "from_state": "token source checked",
+          "event": "choose home persistence",
+          "guard": "HOME backed by named volume, not host bind",
+          "to": "home volume selected",
+          "effects": "Prescribe writable in-container home and retention across restart when same volume reused.",
+          "failure_retry": "Persistence description does not establish an observed authenticated session; no live host was exercised in this audit.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "home persistence",
+            "lines": [
+              103,
+              109
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "posture/image/token checks satisfied",
+          "from_state": "posture/image/token checks satisfied",
+          "event": "launch",
+          "guard": "builder-generated argv; no sourceVolume; named policy and isolation requirements",
+          "to": "launch requested",
+          "effects": "Invoke buildClaudeRunArgs/runClaudeInside with token-only home volume; offline or experimental firewall policy.",
+          "failure_retry": "Co-mount rejection is structural; additional phase evidence remains model-guided.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 4",
+            "lines": [
+              111,
+              125
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "launch requested",
+          "from_state": "launch requested",
+          "event": "dummy-token qualification",
+          "guard": "instruction requires a real Invalid bearer token 401 before real credential use",
+          "to": "live auth proof requested",
+          "effects": "Prescribe observing auth-boundary failure with dummy credentials.",
+          "failure_retry": "Offline default cannot itself make a network request; the text does not specify how offline launch and prior/networked qualification evidence are separated. Do not silently weaken isolation to satisfy proof.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "auth proof gate",
+            "lines": [
+              127,
+              130
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "live proof/invariants accepted by operator",
+          "from_state": "live proof/invariants accepted by operator",
+          "event": "proceed with use",
+          "guard": "all model-guided gates judged satisfied",
+          "to": "ready",
+          "effects": "Report usable token-only box according to driver outcome.",
+          "failure_retry": "Actual separate CLI validates arguments/token presence and calls runtime; it does not receive a five-phase completion record.",
+          "source": {
+            "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+            "symbol": "runClaudeInsideCli",
+            "lines": [
+              139,
+              181
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+          }
+        },
+        {
+          "from": "ready",
+          "from_state": "ready",
+          "event": "teardown",
+          "guard": "operation/session ends",
+          "to": "teardown requested",
+          "effects": "Prescribe remove container and default removal of credential home volume.",
+          "failure_retry": "Runtime S51 cleanup/unknown rules must be observed; a failed remove cannot be described as destroyed.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "Phase 5",
+            "lines": [
+              132,
+              145
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "explicit recorded --keep-volume choice",
+          "guard": "retention deliberately selected and recorded",
+          "to": "credential volume retained",
+          "effects": "Keep named home volume; remove container; identify retained credential-bearing resource.",
+          "failure_retry": "Prose does not define the durable record format; do not fabricate one or treat default retention as authorized.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "explicit credential retention",
+            "lines": [
+              136,
+              145
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "teardown requested",
+          "from_state": "teardown requested",
+          "event": "default cleanup completes",
+          "guard": "container/credential volume absent in selected scope",
+          "to": "credential volume removed",
+          "effects": "Report verified absence and retained cached images only.",
+          "failure_retry": "Unknown/failing observation blocks success. Global-label wording should not authorize removal of other unrelated active boxes.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "cleanup confirmation",
+            "lines": [
+              139,
+              145
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        },
+        {
+          "from": "retained credential volume",
+          "from_state": "retained credential volume",
+          "event": "new token-only container on same volume",
+          "guard": "explicit subsequent run passes posture/image/token gates again",
+          "to": "persistence reused",
+          "effects": "Instruction expects retained home state/session to be available after restart.",
+          "failure_retry": "Existing volume does not waive token/source separation or current policy admission.",
+          "source": {
+            "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+            "symbol": "restart semantics",
+            "lines": [
+              103,
+              105
+            ],
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+          }
+        }
+      ],
+      "notes": "The CLI does enforce argument grammar, environment-only token input and no source-volume flag; runtime enforces actual co-mount/isolation controls. Store approval, qualification provenance, phase completion and keep-volume recording are not established solely by placing the executable in a separate file. This classification preserves actual hard stops without adding a new authority mechanism."
+    }
+  ],
+  "findings": [
+    {
+      "id": "SW-F01",
+      "severity": "medium",
+      "status": "documentation conflict with audited implementation",
+      "title": "Sandbox preflight instructions refuse a dependency configuration that README and driver support",
+      "claim": "sandbox.md and lifecycle hard rules require nixpacks on PATH and STOP if absent. README explicitly allows Node/Python Dockerfile fallback, matching audited S49 fallback behavior. Following the installed workflow can unnecessarily block a supported create.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "preflight",
+          "lines": [
+            21,
+            24
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "nixpacks stop",
+          "lines": [
+            37,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "hard prerequisite",
+          "lines": [
+            87,
+            87
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "fallback support",
+          "lines": [
+            11,
+            24
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/build.ts",
+          "symbol": "buildImage; audited S49",
+          "lines": [
+            1,
+            616
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/build.ts"
+        }
+      ],
+      "recommendation": "Derive host prerequisites and supported fallback coverage from one driver capability contract. Preserve a hard failure for unsupported stacks; do not require nixpacks when the selected stack has a verified fallback."
+    },
+    {
+      "id": "SW-F02",
+      "severity": "medium",
+      "status": "direct contradiction between fully read command and skill",
+      "title": "The same shell exit means persistent box in one owner and teardown in another",
+      "claim": "sandbox-shell explicitly leaves the box running after shell exit until sandbox-destroy. lifecycle Phase 5 and hard rules trigger teardown when the interactive session closes. An agent following both has no unambiguous next action and could delete work the shell command said would persist.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-shell.md",
+          "symbol": "exit cleanly",
+          "lines": [
+            19,
+            22
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-shell.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "teardown trigger",
+          "lines": [
+            65,
+            74
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "tear down on exit",
+          "lines": [
+            84,
+            84
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        }
+      ],
+      "recommendation": "Define shell detach versus sandbox destruction as separate events in one lifecycle owner. Preserve current runtime behavior until an intentional lifetime decision is approved; do not add automatic destructive teardown as a documentation cleanup."
+    },
+    {
+      "id": "SW-F03",
+      "severity": "medium",
+      "status": "instruction scope conflict with audited target-aware cleanup",
+      "title": "Single-box destroy prose drifts into a global prune and global-empty postcondition",
+      "claim": "The destroy command accepts an explicit box ID but its flow then says prune remaining labeled objects and its hard gate demands zero plugin-labeled containers/volumes. Audited S53 deliberately freezes selected targets and does not retroactively treat unrelated/new resources as failure. Label ownership is broader than the operation\u2019s selected instance.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "destroy flow",
+          "lines": [
+            15,
+            29
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox-destroy.md",
+          "symbol": "global-empty wording",
+          "lines": [
+            40,
+            51
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox-destroy.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "zero labeled objects",
+          "lines": [
+            74,
+            74
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/destroy.ts",
+          "symbol": "targeted destroy and explicit prune; S53",
+          "lines": [
+            1,
+            381
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/destroy.ts"
+        }
+      ],
+      "recommendation": "Specify a frozen operation target set. A named destroy verifies that instance; explicit prune/no-ID selects the broad labeled set. Report other active boxes separately and never broaden cleanup merely to satisfy global-empty wording."
+    },
+    {
+      "id": "SW-F04",
+      "severity": "medium",
+      "status": "public storage claim contradicted by audited host staging",
+      "title": "Sandbox docs omit the temporary host copy of cloned source",
+      "claim": "sandbox.md and lifecycle say cloned code is never on the host filesystem; README says the cloned repo lives inside the container. Audited S48 create copies the checkout from the source volume into a newly named host temp directory for build analysis, then removes it in finally. This contradicts storage-location wording; it does not by itself show that the runtime container has a host bind mount.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "source location claim",
+          "lines": [
+            8,
+            11
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "never host clone claim",
+          "lines": [
+            33,
+            39
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "repo location claim",
+          "lines": [
+            3,
+            6
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/create.ts",
+          "symbol": "defaultBuildImage host temp copy; S48",
+          "lines": [
+            1,
+            480
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/create.ts"
+        }
+      ],
+      "recommendation": "State runtime mount isolation separately from host-side build staging, including temp location/lifetime/cleanup observations. Keep the no-bind/socket/privileged invariants; do not claim zero host source bytes while staging is implemented."
+    },
+    {
+      "id": "SW-F05",
+      "severity": "medium",
+      "status": "advertised transition unavailable in current ordinary runtime",
+      "title": "Ordinary sandbox allowlist selection is described as applied although its run path stays offline",
+      "claim": "Command/skill/README offer ordinary allowlist policy and lifecycle Phase 3 says richer policies are applied by network.ts. Audited S50 finds NETWORKED_POLICIES empty and all ordinary runtime containers use --network none. The standalone helper and separate Claude-inside firewall path do not establish ordinary CLI integration.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "ordinary policy selection",
+          "lines": [
+            26,
+            31
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "richer policy application",
+          "lines": [
+            50,
+            50
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "network policies",
+          "lines": [
+            58,
+            64
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/run.ts",
+          "symbol": "NETWORKED_POLICIES; S50",
+          "lines": [
+            1,
+            219
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts"
+        }
+      ],
+      "recommendation": "Expose effective policy and current availability in generated help/instructions. Preserve offline behavior; any new network capability requires its own concrete implementation/verification and policy review."
+    },
+    {
+      "id": "SW-F06",
+      "severity": "low",
+      "status": "additional affected documentation for existing runtime finding SF08",
+      "title": "Cache reuse promise is repeated across independent sandbox surfaces",
+      "claim": "COMMANDS glossary, README, create command and lifecycle all promise identical dependency inputs imply identical tag/cache hit. Existing SF08/S49 identifies random create checkout basenames in the actual tag, defeating that cross-create promise.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/COMMANDS.md",
+          "symbol": "dephash glossary",
+          "lines": [
+            35,
+            39
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/COMMANDS.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "image caching",
+          "lines": [
+            66,
+            71
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/commands/sandbox.md",
+          "symbol": "cache flow",
+          "lines": [
+            24,
+            27
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/commands/sandbox.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+          "symbol": "cache gate",
+          "lines": [
+            39,
+            41
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md"
+        }
+      ],
+      "related_finding": "SF08; no additional runtime defect is asserted",
+      "recommendation": "Correct stable cache identity once in the driver, then derive the same bounded reuse claim for every surface. Keep cache-hit proof separate from hash equality."
+    },
+    {
+      "id": "SW-F07",
+      "severity": "medium",
+      "status": "source-confirmed model-guided admission limitation",
+      "title": "Claude-inside requires codeArbiter maintainer evidence under the consumer project root",
+      "claim": "Preflight says read or STOP for two specific sandbox spike documents and ADR 0007 at CLAUDE_PROJECT_DIR/.codearbiter. There is no packaged-reference fallback in the skill. Therefore a consumer project without those files is directed to stop even when driver/platform requirements are otherwise satisfied; the audit does not assume a particular user project\u2019s files.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "mandatory consumer-project references",
+          "lines": [
+            16,
+            28
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/README.md",
+          "symbol": "independent sibling plugin",
+          "lines": [
+            8,
+            9
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/README.md"
+        }
+      ],
+      "recommendation": "Ship a concise current prerequisite/capability contract at a plugin-owned path and cite maintainer evidence as commit-bound provenance. Do not require consumers to manufacture/copy internal ADR or historical spike files."
+    },
+    {
+      "id": "SW-F08",
+      "severity": "medium",
+      "status": "prose enforcement claim exceeds executable admission",
+      "title": "Separate executable placement does not enforce five Claude-inside workflow phases",
+      "claim": "The skill says separate binary placement IS the gate and calls the five BLOCK phases enforced rather than advice. Fully read runClaudeInsideCli accepts image/home/policy, checks environment token presence, then calls runClaudeInside; it consumes no proof of caller identity, approved store, reviewed image or phase completion. Actual token-argv/source-volume/policy and runtime isolation guards remain real and should be credited individually.",
+      "sources": [
+        {
+          "path": "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+          "symbol": "separation-is-gate assertion",
+          "lines": [
+            30,
+            45
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "symbol": "parseClaudeCli",
+          "lines": [
+            61,
+            111
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+        },
+        {
+          "path": "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+          "symbol": "runClaudeInsideCli",
+          "lines": [
+            139,
+            181
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/claude-inside-cli.ts"
+        }
+      ],
+      "recommendation": "Label model-guided checks and mechanically enforced guards accurately. Keep the separate supported entrypoint and real isolation checks; introduce no new mandatory proof/approval mechanism unless a concrete authority design is intentionally approved."
+    },
+    {
+      "id": "SW-F09",
+      "severity": "medium",
+      "status": "README claims compared with fully audited hook owner evidence",
+      "title": "Claude README overstates dormant behavior and confines repository writes too narrowly",
+      "claim": "README says hooks immediately do nothing without .codearbiter and repository writes are .codearbiter only. The hook owner confirms session-start.main clears its mode marker and may heal globally owned statusline settings before the active-repository check. Opted-in initialization also installs Git hooks and writes selected Git-common info/exclude and hook bookkeeping outside .codearbiter. These are different scopes and should be stated separately.",
+      "sources": [
+        {
+          "path": "plugins/ca/README.md",
+          "symbol": "activation and write scope",
+          "lines": [
+            19,
+            29
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/README.md"
+        },
+        {
+          "path": "core/pysrc/session-start.py",
+          "symbol": "main startup before dormant exit",
+          "lines": [
+            1170,
+            1248
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/session-start.py"
+        },
+        {
+          "path": "core/pysrc/_githooks.py",
+          "symbol": "install; hook-owner full read",
+          "lines": [
+            1070,
+            1241
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_githooks.py"
+        },
+        {
+          "path": "core/pysrc/_taskexcludelib.py",
+          "symbol": "_ensure; hook-owner full read",
+          "lines": [
+            147,
+            214
+          ],
+          "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:core/pysrc/_taskexcludelib.py"
+        }
+      ],
+      "recommendation": "Document repository enforcement activation separately from host-wide startup maintenance. List Git metadata writes and existing opt-in boundaries. This requires claim correction, not removing useful maintenance or broadening authority."
+    }
+  ],
+  "coverage": {
+    "fully_read_files": [
+      "plugins/ca-sandbox/COMMANDS.md",
+      "plugins/ca-sandbox/README.md",
+      "plugins/ca-sandbox/commands/sandbox-cp.md",
+      "plugins/ca-sandbox/commands/sandbox-destroy.md",
+      "plugins/ca-sandbox/commands/sandbox-exec.md",
+      "plugins/ca-sandbox/commands/sandbox-shell.md",
+      "plugins/ca-sandbox/commands/sandbox.md",
+      "plugins/ca-sandbox/skills/INDEX.md",
+      "plugins/ca-sandbox/skills/sandbox-claude-inside/SKILL.md",
+      "plugins/ca-sandbox/skills/sandbox-lifecycle/SKILL.md",
+      "plugins/ca-sandbox/tools/claude-inside-cli.ts",
+      "plugins/ca/README.md"
+    ],
+    "fully_read_file_count": 12,
+    "requested_prose_files": 11,
+    "requested_prose_lines": 703,
+    "additional_read": "claude-inside-cli.ts fully read to verify the separate-binary enforcement assertion; its runtime machine is not duplicated.",
+    "cross_owner_runtime_evidence": "surfaces.json S47\u2013S54/SF08\u2013SF10 and hook owner full-source reads support cross-surface comparisons. These runtime files are not falsely attributed to this supplement\u2019s own read manifest.",
+    "unread_requested_files": [],
+    "no_new_tests": "No new tests/probes, Docker calls, credentials, model calls, repository edits or external writes.",
+    "readme_existing_finding_extension": {
+      "id": "W-F05 / HOOK-B02",
+      "path": "plugins/ca/README.md",
+      "lines": [
+        49,
+        52
+      ],
+      "claim": "Additional SessionStart injection wording conflicts with prompt-submit persona owner; add this surface to the existing finding rather than counting another runtime defect."
+    }
+  },
+  "decision": "Use owner-defined transitions/capabilities to generate operational instructions and public claims. Define explicit shell-detach versus destruction and instance versus prune scope. Preserve actual isolation and user authority; distinguish model-guided phases from enforced guards rather than inventing new approval machinery."
+}

@@ -1,0 +1,1118 @@
+{
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "source_commit": "338ed6a17a783d233a24edd10cd565777655e934",
+  "proof_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native13-source-successor-338ed\\native-source13-preserved.json",
+  "proof_destination": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+  "proof_sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d",
+  "source_review_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native13-source-successor-338ed\\source-review.json",
+  "source_review_sha256": "a3960534107aad7cc0ff8b9e1eb1fdb6681795fa36d4e771bc85efbd6d97207b",
+  "rows": [
+    {
+      "section": "transitions",
+      "id": "N01:07",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-06",
+          "NT-08",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-06",
+          "NT-08",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N07:02",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-09",
+          "NT-05",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-09",
+          "NT-05",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N12:03",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-05",
+          "NT-09",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-05",
+          "NT-09",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N20:04",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-06",
+          "NT-09",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-06",
+          "NT-09",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N25:02",
+      "expected": {
+        "owner": "native",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N25:03",
+      "expected": {
+        "owner": "native",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N25:05",
+      "expected": {
+        "owner": "native",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "task_ids": [
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N36:03",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-06",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
+            "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-remaining-a203/native-remaining-source-clauses.json",
+            "sha256": "c5c9034c6e0c9fd85bd4d2cd26082c0daa85bdb719563ec524e72875270ba834",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-06",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-remaining-a203/native-remaining-source-clauses.json",
+            "sha256": "c5c9034c6e0c9fd85bd4d2cd26082c0daa85bdb719563ec524e72875270ba834",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
+            "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N37:02",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N37:03",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N37:04",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-03",
+          "NT-10",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "candidate_contract_note": "Only the exact independently inspected source-level guard/effect/retry contract is preserved; remaining runtime assertion gaps remain recorded.",
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "ed9b2b4d9ab37f545208d30be91559af14154133",
+            "ref": "docs/state-contracts-major/execution/evidence/native-windows-proposed/native-source-conformance.json",
+            "sha256": "a6143b1a9a38f5ef2fab363828b06f4638031e75cf6225f4e4a70f9d71f1de5e",
+            "ref_commit": "ecc138a850a49ee765985227c94bc5be205a663a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "02c2c8b5062c535174776ef1c6ca26a121031966",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-repair-55509/native-source-conformance.json",
+            "sha256": "ecdcd1395a07acb9bdee06c655ff849ed535356f5e6598807d62a57d5a80a9fc",
+            "ref_commit": "94b569fb51ab306ac187f60fe4e61cf0bef6992a"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/windows-native-zero-a203/native-source-conformance.json",
+            "sha256": "0fdad302c044de9b7bceb9a995bf091c5ff2c1ff8ed3aea765516363a5e7f3e8",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source10-preserved.json",
+            "sha256": "f4b89e5a82ab6aa8e68053956795fa9d2497249ec146b3aeb1498165d77c9f00",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N38:02",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-02",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
+            "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-remaining-a203/native-remaining-source-clauses.json",
+            "sha256": "c5c9034c6e0c9fd85bd4d2cd26082c0daa85bdb719563ec524e72875270ba834",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-02",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-remaining-a203/native-remaining-source-clauses.json",
+            "sha256": "c5c9034c6e0c9fd85bd4d2cd26082c0daa85bdb719563ec524e72875270ba834",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
+            "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    },
+    {
+      "section": "transitions",
+      "id": "N38:03",
+      "expected": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-02",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
+            "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-remaining-a203/native-remaining-source-clauses.json",
+            "sha256": "c5c9034c6e0c9fd85bd4d2cd26082c0daa85bdb719563ec524e72875270ba834",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          }
+        ]
+      },
+      "replacement": {
+        "owner": "native",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "NT-02",
+          "NT-12"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "338ed6a17a783d233a24edd10cd565777655e934",
+            "ref": "docs/state-contracts-major/execution/evidence/native-source-338ed/native-source13-preserved.json",
+            "sha256": "5786ff828fc7adb5ff4a7e39eb97cca84c841a0d9098fcb0a376258ad18d575d"
+          }
+        ],
+        "evidence_history": [
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-remaining-a203/native-remaining-source-clauses.json",
+            "sha256": "c5c9034c6e0c9fd85bd4d2cd26082c0daa85bdb719563ec524e72875270ba834",
+            "ref_commit": "69b09d8c529c005881bb8d0f9ae9c504becac84c"
+          },
+          {
+            "kind": "conformance-check",
+            "commit": "3688ef7fcedce06561443c0b3a8c3186b9e6e7be",
+            "ref": "docs/state-contracts-major/execution/evidence/native-cone-successors/native-source3-preserved.json",
+            "sha256": "8fc7ada16fe2a67e73f83e95cb25dc1b351b7953989647261d915e25bbefd320",
+            "ref_commit": "338ed6a17a783d233a24edd10cd565777655e934"
+          }
+        ]
+      }
+    }
+  ],
+  "history_rule": "Retain every existing historical reference byte-for-byte; append prior active proof with explicit current committed ref locator before new active source proof. No old source/test outcome relabel.",
+  "limits": [
+    "PRESERVED source clauses only. All retained exceptional runtime gaps/assumptions remain; no missing case is labeled TESTED.",
+    "128 legacy runtime UNKNOWN cells are outside proposal; no whole native/runtime/membership qualification inferred.",
+    "Original source10/source3 records and their histories remain immutable; this is a new source review, not old execution at new commit."
+  ]
+}

@@ -1,0 +1,22 @@
+{
+ "test_asts": {
+  ".github/scripts/test_major_qualification_report.py": {
+   "old_method_asts_preserved": 146,
+   "added_classes": [
+    "HookReviewObservationProfileTests"
+   ]
+  },
+  ".github/scripts/test_ci_impact.py": {
+   "old_method_asts_preserved": 175,
+   "added_classes": []
+  }
+ },
+ "all_old_roles_identical_except_emit": true,
+ "new_exact_roles": 3,
+ "old_selection_groups_identical": true,
+ "old_policy_bindings_identical": true,
+ "old_ordered_75_command_digest": "ded35eea9a75a8ec9d9a4d76e986dd48763f4258962945ffd527bb0c20d85974",
+ "native16_native40_installed13_unchanged": true,
+ "no_ledger_status_or_proof_changes": true,
+ "all_capture_private_snapshots_equal": true
+}

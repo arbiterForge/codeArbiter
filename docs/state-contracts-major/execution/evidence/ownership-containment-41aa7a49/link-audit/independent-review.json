@@ -1,0 +1,303 @@
+{
+ "schema": "codearbiter.private-independent-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "reviewer": "/root/ci_repair_review",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_commit": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "observed_head": "ac826ed2c77aab89449799cebdcf7b61d3513d6c",
+ "candidate": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\delivery.json",
+  "sha256": "0256ad7a13c76958e71215d7281e6e8edae8b1971d1bb3092a70ff97b6eafde6"
+ },
+ "patch_sha256": "307035eaec6ea48b5d52e026110acd3f87856b602770560beb21d8775e7e57a9",
+ "full_subjects": [
+  {
+   "path": "site/scripts/link-audit/lib.ts",
+   "preimage_sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+   "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+   "bytes": 9643,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\scripts\\link-audit\\lib.ts",
+   "physical_preimage_sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+   "git_index_oid": null,
+   "binding": "PRIVATE_SEALED_CANDIDATE_NOT_STAGED"
+  },
+  {
+   "path": "site/test/link-audit/lib.test.ts",
+   "preimage_sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+   "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+   "bytes": 16373,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\test\\link-audit\\lib.test.ts",
+   "physical_preimage_sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+   "git_index_oid": null,
+   "binding": "PRIVATE_SEALED_CANDIDATE_NOT_STAGED"
+  }
+ ],
+ "assessment": [
+  "Root-absolute POSIX normalization precedes base membership, preserving valid normalized in-base URLs and stopping a raw dot-segment sibling from satisfying the audit.",
+  "Final host path uses relative(distRoot,distFile), refusing exact parent, parent plus host separator, and absolute cross-root results before existsSync or linked-target read. Sibling-prefix and cross-root paths are not admitted by string-prefix comparison.",
+  "Page-relative resolution, URL query/fragment stripping, external/scheme skips, redirect refusal, empty-page invariant and required asset rules are untouched. Original test bytes are a literal prefix of final tests.",
+  "All six real escape assertion failures are retained across original/predecessor stages; final40 Windows cases include original32 plus explicit normal-path positives. No synthetic setup/import failure is presented as regression RED."
+ ],
+ "checks": {
+  "record_hashes_verified": 34,
+  "original_predecessor_final_source_delta_exact": true,
+  "original_test_byte_prefix_preserved": true,
+  "same_final_test_bytes_on_intermediate_RED": true,
+  "retained_final_green": {
+   "phase": "green",
+   "argv": [
+    "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+    "run",
+    "--root",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site",
+    "--config",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\vitest.private.mjs",
+    "--coverage",
+    "--reporter=verbose",
+    "--no-color"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h",
+   "exit_code": 0,
+   "elapsed_seconds": 0.488644099998055,
+   "source_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+   "test_sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+   "stdout_sha256": "19a851d91cde11e677b0c9105de2478b97567ea8852a4a75829dc46c75c0877a",
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "retained_scoped_typecheck": {
+   "phase": "typecheck",
+   "argv": [
+    "D:/dev/Users/brenn/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/bin/node.exe",
+    "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\typescript\\bin\\tsc",
+    "--project",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\tsconfig.private.json"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h",
+   "exit_code": 0,
+   "elapsed_seconds": 0.37998279999010265,
+   "source_sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+   "test_sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+  },
+  "coverage_scope": {
+   "host": "Windows",
+   "profile": "lines-branches",
+   "scope": "scripts/link-audit/lib.ts only",
+   "metrics": {
+    "lines": {
+     "total": 74,
+     "covered": 74,
+     "skipped": 0,
+     "pct": 100
+    },
+    "statements": {
+     "total": 88,
+     "covered": 87,
+     "skipped": 0,
+     "pct": 98.86
+    },
+    "functions": {
+     "total": 10,
+     "covered": 10,
+     "skipped": 0,
+     "pct": 100
+    },
+    "branches": {
+     "total": 61,
+     "covered": 58,
+     "skipped": 0,
+     "pct": 95.08
+    },
+    "branchesTrue": {
+     "total": 0,
+     "covered": 0,
+     "skipped": 0,
+     "pct": "Unknown"
+    }
+   },
+   "overall_site_and_Ubuntu": "UNMEASURED"
+  },
+  "no_execution_replay": true
+ },
+ "limits": [
+  "Lexical containment for classified internal targets only; no symlink/realpath, hostile filesystem, URL parser completeness, OS confinement or process sandbox claim.",
+  "Author Windows component tests/scoped typecheck reused; no Ubuntu/full-site/browser/build/installed/runtime/API/network qualification.",
+  "Read-only review with private metadata output only; no Root/index/ref/marker/source/user-config writes or fleet.",
+  "Current complete32 security policy unchanged and reused; Root owns canonical integration and exact-head hosted qualification."
+ ],
+ "verified_records": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\original\\site\\scripts\\link-audit\\lib.ts",
+   "sha256": "5dc9948b5dba59154368db94e6a75206401d25265e1e153092f34977320c57a9",
+   "bytes": 9128
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor\\site\\scripts\\link-audit\\lib.ts",
+   "sha256": "53c2444f104bf036752a8469ac3c7d9875fbcb1b1b40ece7d8887c5b76932f60",
+   "bytes": 9265
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\scripts\\link-audit\\lib.ts",
+   "sha256": "8724612673ad4d3489fbd74913cc5e0a9b1026adb7514fde878b849c73848074",
+   "bytes": 9643
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\original\\site\\test\\link-audit\\lib.test.ts",
+   "sha256": "ab4b91b00d9db79c7a476c84bf3ea19c751b05bd3c58beda895c50994711e8b5",
+   "bytes": 13780
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor\\site\\test\\link-audit\\lib.test.ts",
+   "sha256": "eafe97b104135534c362af9f0388625ee80c01cd2006e91bc6009007b6db250b",
+   "bytes": 15433
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate\\site\\test\\link-audit\\lib.test.ts",
+   "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+   "bytes": 16373
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\predecessor.json",
+   "sha256": "7d477a6e4ffe0631803faac2e82d001af8748f89e0c4d7ad998e482346e50ef7",
+   "bytes": 2855
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\candidate.patch",
+   "sha256": "307035eaec6ea48b5d52e026110acd3f87856b602770560beb21d8775e7e57a9",
+   "bytes": 4548
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\successor.patch",
+   "sha256": "cee9fc69f3f56497532da289e84a37890ea27f9667dcf18e71c3c4d5e8fa59ee",
+   "bytes": 2320
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\outcomes.json",
+   "sha256": "3dec153b81587754d3ac522f5e02c08b0d3792102dc09530708244717803b906",
+   "bytes": 3884
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\dependency-joins.json",
+   "sha256": "7a2c9045375ec93d0c2dc706025124667788ced15b788a2a3d4799c47e0251d2",
+   "bytes": 3244
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\intermediate-red.json",
+   "sha256": "2b2886d1a16f9467ccf29add141040b8b363c420cb704d0e3cfb0aa7ba605ef9",
+   "bytes": 1070
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\original-backslash-red.json",
+   "sha256": "e3fe47398e05d11c2440683b6c2e03e5a330da13e6be48ebe6e622543476ad4a",
+   "bytes": 1125
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\green.json",
+   "sha256": "883cd6f6c292744b499ac16332e813969155693f35f4c64ede858a1865f320f1",
+   "bytes": 1075
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\typecheck.json",
+   "sha256": "7e939d039cd62f4707df0e47c9666b215491692315c42b5169dae6e415311580",
+   "bytes": 898
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\predecessor-join.json",
+   "sha256": "7942f41d926d32086c39b398ba2e29e129dafcf1a16017150bba4e7f8bf6d470",
+   "bytes": 211
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\vitest.private.mjs",
+   "sha256": "1acb033992c2c048817ea8bffb041f912a70c0fb2d86decb8c3d0b56c5b59bd4",
+   "bytes": 735
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\tsconfig.private.json",
+   "sha256": "353cc022daf509cbfa6d8f718487136809c21631216f6cc8260f7f72137b7c33",
+   "bytes": 768
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\regression-intermediate-red.test.ts",
+   "sha256": "d167c00ff12386ae55be714628031d47264c1e6f683b848e45f2f95c700ded16",
+   "bytes": 16373
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\coverage\\coverage-summary.json",
+   "sha256": "c9683aa9da2daa3dc029956d7e08d22ffb6b73bdf09707b659954e4e70129ce8",
+   "bytes": 697
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\coverage\\coverage-final.json",
+   "sha256": "53164bd5d93565dd19e5be087aa53d9ec9b83b623f86e7aa3688864bf9e9b05c",
+   "bytes": 20721
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\intermediate-red.stdout",
+   "sha256": "3082b8be623ccff614576c3576059cd3c1d2e4e05bc5da981452fa640bd6995e",
+   "bytes": 5729
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\intermediate-red.stderr",
+   "sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d",
+   "bytes": 1179
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\original-backslash-red.stdout",
+   "sha256": "0b6076cf7dac8eacb4cc1097a4d41a436fbce47175f28afb9fe017d7aa5a9763",
+   "bytes": 5589
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\original-backslash-red.stderr",
+   "sha256": "9d67e8b6dd49a75fa815be9b6747a27f7548758719d581eb038b26e49fd2a87d",
+   "bytes": 1179
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\green.stdout",
+   "sha256": "19a851d91cde11e677b0c9105de2478b97567ea8852a4a75829dc46c75c0877a",
+   "bytes": 5859
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\green.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\typecheck.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-successor-85m2n50h\\logs\\typecheck.stderr",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\candidate.patch",
+   "sha256": "89afbd9f0d9919352f845bac7908b4572ef38ffaf830546d6340bf30ac4b43e6",
+   "bytes": 2420
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\red.json",
+   "sha256": "6df64328f1444a0efd8b8f08f6a5e8e03f31d5e91eaea118b95a05f15051d897",
+   "bytes": 1076
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\green.json",
+   "sha256": "d0fde826bfff24f69fd5518fdef4dda9477e8011fe8ffbe12f4ff816fc215a21",
+   "bytes": 1112
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\coverage\\coverage-summary.json",
+   "sha256": "721e649a561339755874ac073c4565fc5bc90bcb1a732e3993212ef61d0ba01b",
+   "bytes": 689
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-link-containment-fix-d5zflta6\\typecheck.json",
+   "sha256": "448f3588436752139a45b5ca6acb521aecb83c1d9bf9d55e9ac3570830c2db53",
+   "bytes": 999
+  }
+ ]
+}

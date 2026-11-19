@@ -1,0 +1,194 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: literal62-clause immutable Pi/current-callee/baseline inspection; no execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+  "plugins/ca-pi/tools/src/footer-state.ts": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+  "plugins/ca-pi/tools/src/footer.ts": "6ef4b8813f1d230cba3274798c07ec4f8ea782efec2ba1a5305e39a8756891c7",
+  "plugins/ca-pi/tools/src/git-facts.ts": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+  "plugins/ca-pi/tools/src/status.ts": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403"
+ },
+ "disposition_ids": [
+  "disposition:machines:S18",
+  "disposition:transitions:S18:03"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/source-bindings.json",
+   "sha256": "5ff5edd6e452412a3caec604eae002b4d10132d8321c3a991c99e8949bce025f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/pi-remaining-nine-source-384/clause-inspection.json",
+   "sha256": "c64cc79bbe9a660bfe891b9af36197023a543a82c16bb4e333a96dc7cec32dfa"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S18",
+   "frozen_row_sha256": "9ae9ffe9871e3413cbd79369b6fbfc8ff2e2e184bf7926375a0bf67708f5948c",
+   "clause_ids": [
+    "disposition:transitions:S18:01",
+    "disposition:transitions:S18:02",
+    "disposition:transitions:S18:03",
+    "disposition:transitions:S18:04",
+    "disposition:transitions:S18:05",
+    "disposition:transitions:S18:06",
+    "disposition:transitions:S18:07"
+   ],
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 24,
+     "end": 38,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "1c69d4202e86dbec5282e4984d0fa786103646d90571edf44a9e5c23af6c6b10"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 135,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "b379ddd0a43b041ffb473d45d5af4e0c8c21c3e875053dd6c7c11f93b3cdd4e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 120,
+     "end": 151,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "a284ad39f9fb05d2b1cdde323342e3113aaf9e14e630a499c0bef484f0ea79ca"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 211,
+     "end": 219,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "88647cc4659de77b365cb030a8fe3ea94301d85186ee6a8ca07f963a008e5c30"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 24,
+     "end": 30,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c0f31044bb138b5f315c2c82afe27db8712eca58e09f8b2dc5c354dce7deab0c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 138,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "710733a49c53025ecea8fb885c0ef770083b3f4a07a22fe5cb01660feb3e8468"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 222,
+     "end": 254,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "a89bc7e49a6f582fa12237f78643c4f30b7627b4e8aef3babd36bae07a2c907e"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 154,
+     "end": 190,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "4216a8dfaa30d19ef3f72a4e0cdb3d0d9312a1e72d15349a100ef5f4a8f33884"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 239,
+     "end": 264,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "746b13305fe8251d166cf55e1373c8f2f6cc9a843086e6313e933828cdb450ac"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/footer-state.ts",
+     "start": 188,
+     "end": 230,
+     "file_sha256": "58a5020c023917581e5d2de23d24b66394b36da84a2192fa27f020e127d2292c",
+     "span_sha256": "02538942e57670cbdc1de3c2858fa7db6e1a564b706b7b57cbc3caea80ed89d9"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/git-facts.ts",
+     "start": 125,
+     "end": 149,
+     "file_sha256": "fd73247de295529ddeca62256c7bb60d1685b49893ef188401ce08e02fea7f87",
+     "span_sha256": "31a39abaa8a91e9d9d349c8f4042d84b523df61a4d54fe7f2bd668cea10507aa"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 193,
+     "end": 207,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "19fb5c9a1218775b7a972f798bbb68802e4ec139093ea6cd5c5025ded93fe5e5"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 229,
+     "end": 264,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c777afccab7e99858fe31210dd14ea5726edc5ac6e42be07bcfbce8f6df91131"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 267,
+     "end": 289,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c04ef91a454eac1fffede09ce5fb33f17c76f41ce9b69d6b45c034b7e7ad43bf"
+    }
+   ],
+   "semantic_assessment": "All actual current owner guards/effects/retry branches mapped individually. Explicit analytical corrections/accepted task deltas are incorporated; no literal nonexistent guard or bug preservation claimed. ",
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  },
+  {
+   "cell": "disposition:transitions:S18:03",
+   "frozen_row_sha256": "bada1aa9749d6ec4497d946667920edc0bb6909f0d8171289d810e77ad0b6654",
+   "witnesses": [
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 24,
+     "end": 30,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "c0f31044bb138b5f315c2c82afe27db8712eca58e09f8b2dc5c354dce7deab0c"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 103,
+     "end": 138,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "710733a49c53025ecea8fb885c0ef770083b3f4a07a22fe5cb01660feb3e8468"
+    },
+    {
+     "path": "plugins/ca-pi/tools/src/status.ts",
+     "start": 211,
+     "end": 219,
+     "file_sha256": "959aa8a98865b7a2b1ecdb276de3df2cee4d442545504716d1f5a5747c656403",
+     "span_sha256": "88647cc4659de77b365cb030a8fe3ea94301d85186ee6a8ca07f963a008e5c30"
+    }
+   ],
+   "semantic_assessment": "Noninteractive exits before installation; missing/invalid metrics or install exception emits fixed notice and restoresnative, while stale completion does nothing. No host render or width runtime success inferred.",
+   "intake_variances": [],
+   "limits": "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification."
+  }
+ ],
+ "scope": "Actual current source-only conformance underPROGRAM/ADR43/49/acceptedPi tasks; no strongerliteral/runtime/host/task claim.",
+ "limits": [
+  "Reasoned source conformance/inapplicability only. No software/test/installed/real-host/model/human/permission/containment/task/scenario/publication qualification.",
+  "PROGRAM actual-source/current accepted direction takes precedence over inaccurate analytical intake. Every variance is explicit; frozen rows remain unchanged.",
+  "PI-L02 intentionally replaces S19 resurrection bug; ADR49 narrows endpoint transports, ordinary artifact ceremony is separate from real host permissions underADR43.",
+  "S17:07 exact absent confirmation-dedup route is N/A only; retained proposal no-op/fingerprint checks and bounded best-effort audit remain supported.",
+  "Only47 PLANNED row proposals;24advanced edges and all other ledger records/history remain untouched. Whole ledgerhash advisory; exact per-rowCAS authoritative.",
+  "All proofs bind genuine immutable384269 source inspection, not futureCI or currentRoot staging. No stagedOIDs or fullowner authentication claimed."
+ ]
+}

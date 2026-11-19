@@ -1,0 +1,184 @@
+{
+ "schema": "codearbiter.bounded-independent-source-proposal-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "scope": "C21-C29 exact sealed private47-row source-conformance proposal; all46 frozen literal transitions, guards/effects/retries and accepted task/policy scopes assessed. No runtime qualification.",
+ "reviewer": "/root/acceptance_security_review; proposal author /root/crypto_evidence_review is different",
+ "task_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "proposal_delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\delivery.json",
+  "sha256": "38c9ef449f2c2cbdbc695448868cd235353e025c1d8f985041ba5bc0465720e1",
+  "bytes": 5222
+ },
+ "source_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "current_root_head_observed": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+ "full_subjects": {
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\additional-paths.json": {
+   "sha256": "13cc0e866e66dfc3ccf673fdbf6efd8b5bf15ba2bac2cd258dde8d9b8ee34fef",
+   "bytes": 940,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\adoption-filemap.json": {
+   "sha256": "79ed9f574d1f97799f27f7efb138cb30003c2ec1a88820200aa9d83312687e60",
+   "bytes": 3853,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\baseline-bindings.json": {
+   "sha256": "82adbc55b151a814b13e008a02a9750e1325142dd491aaf9905c44328396018c",
+   "bytes": 3282,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\cas-proposal.json": {
+   "sha256": "fbb41d8a7c7a15ad94bbe4a46290ed665d918916076aab9d6c16c3c2d096266f",
+   "bytes": 79232,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\clause-inspection.json": {
+   "sha256": "6ba6e13d99fe68dd11863e7cf9d5be27fd43e9a9d9034eb6987e6b8bc3c487fc",
+   "bytes": 105171,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\clauses.json": {
+   "sha256": "df5183c5afd337d1cb9b377ec1dd43580e80042ff2e357a3e640e13c95700827",
+   "bytes": 77524,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\source-bindings.json": {
+   "sha256": "cf8f85ba73f3de86f3532c613c73af316c60e409611777bbf590c485bc378ab5",
+   "bytes": 22591,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\summary.json": {
+   "sha256": "362ac4a6a7c58054e5abbdd386671ad7e90af87bb7f3790363c950f9fa80ea45",
+   "bytes": 1625,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\validation.json": {
+   "sha256": "3ee25c11749f47ee459e7dd25b649261b256263901e914ed05ec55b98efb9300",
+   "bytes": 601,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C21-preserved.json": {
+   "sha256": "8b51bc92a42674c09b29efeb2a6b12b43cad52297850b5d9a7c530a1fe52d1a0",
+   "bytes": 15613,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C22-preserved.json": {
+   "sha256": "fdc7bd4ef34eb29709df0f8ee279789d1e15ebd5386c54182c810b674bff2214",
+   "bytes": 12080,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C23-preserved.json": {
+   "sha256": "833be981097a85463dac71d7118a9d2960bd7fb0fb5419413f6c084f0a7f7c50",
+   "bytes": 10185,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C24-preserved.json": {
+   "sha256": "d64bfddb318c4dbbb57088307f4909b6c9ec16c55c2ba04ba9e832189b4a7870",
+   "bytes": 14897,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C25-preserved.json": {
+   "sha256": "7618d9a488458f9878bfd27c6d3ffbe6b53afb3f3a189afdb06ac5f524a54212",
+   "bytes": 15200,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C26-preserved.json": {
+   "sha256": "23574b00d79fa0a84c64311042aac2a7dae471d3095e553ad3e0e82ee95e945c",
+   "bytes": 19380,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C27-preserved.json": {
+   "sha256": "830e3cdc0103f819bcbbeec75e1c4fcf70d779d5be3c6eaac7152fb5d829f1be",
+   "bytes": 14454,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C28-preserved.json": {
+   "sha256": "ecca5e899e094cfd1082d15e339ae3d757a6395ea3459ce04039623768e8290e",
+   "bytes": 7287,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  },
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release-nine-source-ea9-crypto\\proofs\\C29-preserved.json": {
+   "sha256": "6b37c11d2a791f2f216955a3a407a7efa3bbbd9505064a564ea1a85b7f2326ee",
+   "bytes": 14891,
+   "binding": "SEALED_PRIVATE_NOT_STAGED"
+  }
+ },
+ "coverage": {
+  "families": {
+   "C21": 5,
+   "C22": 4,
+   "C23": 4,
+   "C24": 5,
+   "C25": 6,
+   "C26": 7,
+   "C27": 5,
+   "C28": 5,
+   "C29": 5
+  },
+  "literal_clauses": 46,
+  "proposed_rows": 47,
+  "machines": 9,
+  "PLANNED_edges": 38,
+  "retained_advanced_edges": [
+   "C23:01",
+   "C23:02",
+   "C27:01",
+   "C28:01",
+   "C28:02",
+   "C28:03",
+   "C28:04",
+   "C28:05"
+  ],
+  "source_joins": 36,
+  "pinned_baseline_joins": 14,
+  "matrix_witnesses": 94,
+  "proof_witnesses": 168,
+  "filemap_files": 11
+ },
+ "evidence": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release47-independent-review-9xybiv4m\\input-inventory.json",
+   "sha256": "483591ebd43341b1c09dc597ec30465ceece8da998a7b48bc14008bb0e4fdd34",
+   "bytes": 16443
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-release47-independent-review-9xybiv4m\\join-inspection.json",
+   "sha256": "d184c9920d1196272a7c5c32f3562fd3af8f972166682dae8cdabc114afaf0fd",
+   "bytes": 354
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\release47-peer-input.txt",
+   "sha256": "ae63c1eede0a5e43631b6415cffa0e18b66c29c45de1ba7492d8139795fcafbc",
+   "bytes": 10206
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\release47-peer-context.json",
+   "sha256": "547064206e98d1323aaa0c7054ffd57cf64f49746b73ae944a9589b293b439b7",
+   "bytes": 18339
+  }
+ ],
+ "substantive_checks": [
+  "C21 validates production fixed original receipt floor and closed legacy grades/identity before missing-token shortcut; ordinary skipped/unavailable and strict failures remain distinct. Live direct-object identity comparisons do not claim a new peel or retroactive historical authenticity.",
+  "C22 literal booleans, contexts, queue and linear/merge settings preserve definite violation versus unknown; relevant unreadable fields cannot be reported as verified.",
+  "C23 distinct canonical public App identities precede isolated key-bearing mint steps. Fixed RS256/OpenSSL SHA256 and no-redirect HTTPS token request, umask/trap caller cleanup, no explicit minted-token revoke on output failure; verifier assertions and advisory publication audit are not account-side proof.",
+  "C24/C25 registry-only exact metadata and inert SHA512 tarball inspection remain separate from reviewed-v2 installation. Exact dependency lock/config/advisory identities and date backstop are checked; registry-error retries differ from signature retries. Explicit lack of install/audit subprocess wall deadlines and reviewer-string authentication limit are retained.",
+  "C26 strictly newer inert candidate and three baseline validation cells stay separate from dependency-reviewed runtime support. Actual knowledge owner CAS/readback replaces raw HTML writes; prepared text writes do not imply cross-file rollback. failure() rendering is not guaranteed after cancellation, and public draft creation requires explicit option plus successful dependencies.",
+  "C27 builder is not hosted commit attestation; historical task/obligation verifier preserves distinct fixture mode, exact row/check populations, evidence-only descendant scope and source ancestry. It does not qualify this major program merely because source conforms.",
+  "C28 immutable Release/annotated tag/peeled source/manifest checks, no-change source equality, exact replacement/partial local writes and scheduled owner-pending failure match source. Existing five advanced edges remain untouched.",
+  "C29 matching validation inputs do not grant deployment rights. Program qualification suppresses ordinary deploy; separate explicit main-only PREPUBLICATION_READY route transfers exact original Pages tar and checks current-run transfer before privileged dependent deployment. No successful browser, public deployment or readback inferred."
+ ],
+ "accepted_policy_alignment": [
+  "PROGRAM and ADR43 distinguish progress, source conformance, checks, authority, runtime and delivery. Source-only PRESERVED does not close accepted task/scenario/platform/publication obligations.",
+  "ADR32 retired desktop-host release machinery is not reinstated; ADR34 historical closed provenance and ADR40 advisory ordinary audit behavior are preserved in their actual scopes.",
+  "ADR41 strict audit-reduction review remains separate from installer receipt schema; ADR44 Pi trusted publication account/provenance requirements are not weakened by Codex advisory ruleset behavior. ADR49 external HTTPS restriction remains.",
+  "R05/R06 direct input selection and typed verified/skipped/unavailable/rejected results are described without turning ordinary zero exit into required-major affirmative evidence."
+ ],
+ "limits": [
+  "Read-only source/data inspection only; no tests, strict-owner validator, runtime, provider/API/network/install/build/dispatch or review fleet executed.",
+  "Private proposal review has no staged candidate/index OID or marker claim. No canonical/index/ref/marker/ledger writes. Root owns actual prospective strict-owner admission and adoption.",
+  "All18 sealed delivery subject bytes and current36 source joins match; eight retained advanced rows are exact objects. No history/runtime epoch restamp or unrelated row update.",
+  "Existing complete security-policy/reviewer context reused unchanged for bounded semantic assessment; no new secret values read or crypto implementation authored. Unkeyed SHA256 and Git OID names provide cooperative byte joins, not independent consent or external authentication."
+ ]
+}

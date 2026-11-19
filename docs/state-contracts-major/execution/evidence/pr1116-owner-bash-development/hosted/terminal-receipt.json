@@ -1,0 +1,1166 @@
+{
+  "schema": "exact-head-pr-watch-terminal/1",
+  "utc": "2026-11-17T00:27:13.011527+00:00",
+  "configuration": {
+    "schema": "exact-head-pr-watch/1",
+    "repository": "arbiterForge/codeArbiter",
+    "pull_request": 1116,
+    "head_sha": "15c57b73859b00b806d6b027d1504ab0e193a489",
+    "base_ref": "major/state-contracts",
+    "runs": {
+      "ci": {
+        "id": 43983045996,
+        "attempt": 1,
+        "path": ".github/workflows/ci.yml"
+      },
+      "docs": {
+        "id": 43983045676,
+        "attempt": 1,
+        "path": ".github/workflows/docs.yml"
+      }
+    },
+    "interval_seconds": 30,
+    "merge_check": "[GATE ] | [REPO] | Merge readiness"
+  },
+  "head_pin": true,
+  "pull_request": {
+    "number": 1116,
+    "state": "open",
+    "merged": false,
+    "draft": false,
+    "mergeable_state": "blocked"
+  },
+  "runs": {
+    "ci": {
+      "id": 43983045996,
+      "name": "ci",
+      "node_id": "WFR_kwLOSYOuyM8AAAAKPZgFbA",
+      "head_branch": "codex/state-contracts-acceptance-bindings",
+      "head_sha": "15c57b73859b00b806d6b027d1504ab0e193a489",
+      "path": ".github/workflows/ci.yml",
+      "display_title": "Bind task qualification to original producer observations",
+      "run_number": 2561,
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "failure",
+      "workflow_id": 291790591,
+      "check_suite_id": 119068364155,
+      "check_suite_node_id": "CS_kwDOSYOuyM8AAAAbuQcNew",
+      "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045996",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996",
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/arbiterForge/codeArbiter/pulls/1116",
+          "id": 5346835625,
+          "number": 1116,
+          "head": {
+            "ref": "codex/state-contracts-acceptance-bindings",
+            "sha": "15c57b73859b00b806d6b027d1504ab0e193a489",
+            "repo": {
+              "id": 1233366728,
+              "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+              "name": "codeArbiter"
+            }
+          },
+          "base": {
+            "ref": "major/state-contracts",
+            "sha": "0b0ae193496335c0d87337e5993f032a9385fffb",
+            "repo": {
+              "id": 1233366728,
+              "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+              "name": "codeArbiter"
+            }
+          }
+        }
+      ],
+      "created_at": "2026-11-16T23:52:58Z",
+      "updated_at": "2026-11-17T00:26:48Z",
+      "actor": {
+        "login": "SUaDtL",
+        "id": 174701191,
+        "node_id": "U_kgDOCmm6hw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/174701191?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/SUaDtL",
+        "html_url": "https://github.com/SUaDtL",
+        "followers_url": "https://api.github.com/users/SUaDtL/followers",
+        "following_url": "https://api.github.com/users/SUaDtL/following{/other_user}",
+        "gists_url": "https://api.github.com/users/SUaDtL/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/SUaDtL/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/SUaDtL/subscriptions",
+        "organizations_url": "https://api.github.com/users/SUaDtL/orgs",
+        "repos_url": "https://api.github.com/users/SUaDtL/repos",
+        "events_url": "https://api.github.com/users/SUaDtL/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/SUaDtL/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "run_attempt": 1,
+      "referenced_workflows": [],
+      "run_started_at": "2026-11-16T23:52:58Z",
+      "triggering_actor": {
+        "login": "SUaDtL",
+        "id": 174701191,
+        "node_id": "U_kgDOCmm6hw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/174701191?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/SUaDtL",
+        "html_url": "https://github.com/SUaDtL",
+        "followers_url": "https://api.github.com/users/SUaDtL/followers",
+        "following_url": "https://api.github.com/users/SUaDtL/following{/other_user}",
+        "gists_url": "https://api.github.com/users/SUaDtL/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/SUaDtL/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/SUaDtL/subscriptions",
+        "organizations_url": "https://api.github.com/users/SUaDtL/orgs",
+        "repos_url": "https://api.github.com/users/SUaDtL/repos",
+        "events_url": "https://api.github.com/users/SUaDtL/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/SUaDtL/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "jobs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045996/jobs",
+      "logs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045996/logs",
+      "check_suite_url": "https://api.github.com/repos/arbiterForge/codeArbiter/check-suites/119068364155",
+      "artifacts_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045996/artifacts",
+      "cancel_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045996/cancel",
+      "rerun_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045996/rerun",
+      "previous_attempt_url": null,
+      "workflow_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/workflows/291790591",
+      "head_commit": {
+        "id": "15c57b73859b00b806d6b027d1504ab0e193a489",
+        "tree_id": "f553d95f632645071608dffe712b1eff9213a362",
+        "message": "fix: preserve qualification across runtime and shell layouts\n\nBound complete Python inventories and retain inert link identities without\ntraversal. Keep imported runtime closure and exact qualification guards.\nResolve actual Git for Windows Bash entrypoints and retain scoped rollback,\nisolation and source-conformance observations without task promotion.",
+        "timestamp": "2026-11-16T23:51:22Z",
+        "author": {
+          "name": "SUaDtL",
+          "email": "SUaDtL@users.noreply.github.com"
+        },
+        "committer": {
+          "name": "SUaDtL",
+          "email": "SUaDtL@users.noreply.github.com"
+        }
+      },
+      "repository": {
+        "id": 1233366728,
+        "node_id": "R_kgDOSYOuyA",
+        "name": "codeArbiter",
+        "full_name": "arbiterForge/codeArbiter",
+        "private": false,
+        "owner": {
+          "login": "arbiterForge",
+          "id": 292945970,
+          "node_id": "O_kgDOEXYAMg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/292945970?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/arbiterForge",
+          "html_url": "https://github.com/arbiterForge",
+          "followers_url": "https://api.github.com/users/arbiterForge/followers",
+          "following_url": "https://api.github.com/users/arbiterForge/following{/other_user}",
+          "gists_url": "https://api.github.com/users/arbiterForge/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/arbiterForge/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/arbiterForge/subscriptions",
+          "organizations_url": "https://api.github.com/users/arbiterForge/orgs",
+          "repos_url": "https://api.github.com/users/arbiterForge/repos",
+          "events_url": "https://api.github.com/users/arbiterForge/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/arbiterForge/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/arbiterForge/codeArbiter",
+        "description": "Open-source governance and hard gates for AI coding agents across Claude Code, Codex CLI, and Pi.",
+        "fork": false,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+        "forks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/forks",
+        "keys_url": "https://api.github.com/repos/arbiterForge/codeArbiter/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/arbiterForge/codeArbiter/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/arbiterForge/codeArbiter/teams",
+        "hooks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/hooks",
+        "issue_events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/events",
+        "assignees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/arbiterForge/codeArbiter/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/tags",
+        "blobs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/arbiterForge/codeArbiter/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/arbiterForge/codeArbiter/languages",
+        "stargazers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/stargazers",
+        "contributors_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contributors",
+        "subscribers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscribers",
+        "subscription_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscription",
+        "commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/arbiterForge/codeArbiter/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/arbiterForge/codeArbiter/merges",
+        "archive_url": "https://api.github.com/repos/arbiterForge/codeArbiter/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/arbiterForge/codeArbiter/downloads",
+        "issues_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/arbiterForge/codeArbiter/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/arbiterForge/codeArbiter/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/arbiterForge/codeArbiter/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/arbiterForge/codeArbiter/labels{/name}",
+        "releases_url": "https://api.github.com/repos/arbiterForge/codeArbiter/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/deployments"
+      },
+      "head_repository": {
+        "id": 1233366728,
+        "node_id": "R_kgDOSYOuyA",
+        "name": "codeArbiter",
+        "full_name": "arbiterForge/codeArbiter",
+        "private": false,
+        "owner": {
+          "login": "arbiterForge",
+          "id": 292945970,
+          "node_id": "O_kgDOEXYAMg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/292945970?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/arbiterForge",
+          "html_url": "https://github.com/arbiterForge",
+          "followers_url": "https://api.github.com/users/arbiterForge/followers",
+          "following_url": "https://api.github.com/users/arbiterForge/following{/other_user}",
+          "gists_url": "https://api.github.com/users/arbiterForge/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/arbiterForge/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/arbiterForge/subscriptions",
+          "organizations_url": "https://api.github.com/users/arbiterForge/orgs",
+          "repos_url": "https://api.github.com/users/arbiterForge/repos",
+          "events_url": "https://api.github.com/users/arbiterForge/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/arbiterForge/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/arbiterForge/codeArbiter",
+        "description": "Open-source governance and hard gates for AI coding agents across Claude Code, Codex CLI, and Pi.",
+        "fork": false,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+        "forks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/forks",
+        "keys_url": "https://api.github.com/repos/arbiterForge/codeArbiter/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/arbiterForge/codeArbiter/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/arbiterForge/codeArbiter/teams",
+        "hooks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/hooks",
+        "issue_events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/events",
+        "assignees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/arbiterForge/codeArbiter/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/tags",
+        "blobs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/arbiterForge/codeArbiter/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/arbiterForge/codeArbiter/languages",
+        "stargazers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/stargazers",
+        "contributors_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contributors",
+        "subscribers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscribers",
+        "subscription_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscription",
+        "commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/arbiterForge/codeArbiter/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/arbiterForge/codeArbiter/merges",
+        "archive_url": "https://api.github.com/repos/arbiterForge/codeArbiter/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/arbiterForge/codeArbiter/downloads",
+        "issues_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/arbiterForge/codeArbiter/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/arbiterForge/codeArbiter/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/arbiterForge/codeArbiter/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/arbiterForge/codeArbiter/labels{/name}",
+        "releases_url": "https://api.github.com/repos/arbiterForge/codeArbiter/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/deployments"
+      }
+    },
+    "docs": {
+      "id": 43983045676,
+      "name": "Deploy docs",
+      "node_id": "WFR_kwLOSYOuyM8AAAAKPZgELA",
+      "head_branch": "codex/state-contracts-acceptance-bindings",
+      "head_sha": "15c57b73859b00b806d6b027d1504ab0e193a489",
+      "path": ".github/workflows/docs.yml",
+      "display_title": "Bind task qualification to original producer observations",
+      "run_number": 1889,
+      "event": "pull_request",
+      "status": "completed",
+      "conclusion": "success",
+      "workflow_id": 298040606,
+      "check_suite_id": 119068363362,
+      "check_suite_node_id": "CS_kwDOSYOuyM8AAAAbuQcKYg",
+      "url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045676",
+      "html_url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045676",
+      "pull_requests": [
+        {
+          "url": "https://api.github.com/repos/arbiterForge/codeArbiter/pulls/1116",
+          "id": 5346835625,
+          "number": 1116,
+          "head": {
+            "ref": "codex/state-contracts-acceptance-bindings",
+            "sha": "15c57b73859b00b806d6b027d1504ab0e193a489",
+            "repo": {
+              "id": 1233366728,
+              "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+              "name": "codeArbiter"
+            }
+          },
+          "base": {
+            "ref": "major/state-contracts",
+            "sha": "0b0ae193496335c0d87337e5993f032a9385fffb",
+            "repo": {
+              "id": 1233366728,
+              "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+              "name": "codeArbiter"
+            }
+          }
+        }
+      ],
+      "created_at": "2026-11-16T23:52:58Z",
+      "updated_at": "2026-11-17T00:02:12Z",
+      "actor": {
+        "login": "SUaDtL",
+        "id": 174701191,
+        "node_id": "U_kgDOCmm6hw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/174701191?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/SUaDtL",
+        "html_url": "https://github.com/SUaDtL",
+        "followers_url": "https://api.github.com/users/SUaDtL/followers",
+        "following_url": "https://api.github.com/users/SUaDtL/following{/other_user}",
+        "gists_url": "https://api.github.com/users/SUaDtL/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/SUaDtL/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/SUaDtL/subscriptions",
+        "organizations_url": "https://api.github.com/users/SUaDtL/orgs",
+        "repos_url": "https://api.github.com/users/SUaDtL/repos",
+        "events_url": "https://api.github.com/users/SUaDtL/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/SUaDtL/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "run_attempt": 1,
+      "referenced_workflows": [],
+      "run_started_at": "2026-11-16T23:52:58Z",
+      "triggering_actor": {
+        "login": "SUaDtL",
+        "id": 174701191,
+        "node_id": "U_kgDOCmm6hw",
+        "avatar_url": "https://avatars.githubusercontent.com/u/174701191?v=4",
+        "gravatar_id": "",
+        "url": "https://api.github.com/users/SUaDtL",
+        "html_url": "https://github.com/SUaDtL",
+        "followers_url": "https://api.github.com/users/SUaDtL/followers",
+        "following_url": "https://api.github.com/users/SUaDtL/following{/other_user}",
+        "gists_url": "https://api.github.com/users/SUaDtL/gists{/gist_id}",
+        "starred_url": "https://api.github.com/users/SUaDtL/starred{/owner}{/repo}",
+        "subscriptions_url": "https://api.github.com/users/SUaDtL/subscriptions",
+        "organizations_url": "https://api.github.com/users/SUaDtL/orgs",
+        "repos_url": "https://api.github.com/users/SUaDtL/repos",
+        "events_url": "https://api.github.com/users/SUaDtL/events{/privacy}",
+        "received_events_url": "https://api.github.com/users/SUaDtL/received_events",
+        "type": "User",
+        "user_view_type": "public",
+        "site_admin": false
+      },
+      "jobs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045676/jobs",
+      "logs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045676/logs",
+      "check_suite_url": "https://api.github.com/repos/arbiterForge/codeArbiter/check-suites/119068363362",
+      "artifacts_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045676/artifacts",
+      "cancel_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045676/cancel",
+      "rerun_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/runs/43983045676/rerun",
+      "previous_attempt_url": null,
+      "workflow_url": "https://api.github.com/repos/arbiterForge/codeArbiter/actions/workflows/298040606",
+      "head_commit": {
+        "id": "15c57b73859b00b806d6b027d1504ab0e193a489",
+        "tree_id": "f553d95f632645071608dffe712b1eff9213a362",
+        "message": "fix: preserve qualification across runtime and shell layouts\n\nBound complete Python inventories and retain inert link identities without\ntraversal. Keep imported runtime closure and exact qualification guards.\nResolve actual Git for Windows Bash entrypoints and retain scoped rollback,\nisolation and source-conformance observations without task promotion.",
+        "timestamp": "2026-11-16T23:51:22Z",
+        "author": {
+          "name": "SUaDtL",
+          "email": "SUaDtL@users.noreply.github.com"
+        },
+        "committer": {
+          "name": "SUaDtL",
+          "email": "SUaDtL@users.noreply.github.com"
+        }
+      },
+      "repository": {
+        "id": 1233366728,
+        "node_id": "R_kgDOSYOuyA",
+        "name": "codeArbiter",
+        "full_name": "arbiterForge/codeArbiter",
+        "private": false,
+        "owner": {
+          "login": "arbiterForge",
+          "id": 292945970,
+          "node_id": "O_kgDOEXYAMg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/292945970?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/arbiterForge",
+          "html_url": "https://github.com/arbiterForge",
+          "followers_url": "https://api.github.com/users/arbiterForge/followers",
+          "following_url": "https://api.github.com/users/arbiterForge/following{/other_user}",
+          "gists_url": "https://api.github.com/users/arbiterForge/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/arbiterForge/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/arbiterForge/subscriptions",
+          "organizations_url": "https://api.github.com/users/arbiterForge/orgs",
+          "repos_url": "https://api.github.com/users/arbiterForge/repos",
+          "events_url": "https://api.github.com/users/arbiterForge/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/arbiterForge/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/arbiterForge/codeArbiter",
+        "description": "Open-source governance and hard gates for AI coding agents across Claude Code, Codex CLI, and Pi.",
+        "fork": false,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+        "forks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/forks",
+        "keys_url": "https://api.github.com/repos/arbiterForge/codeArbiter/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/arbiterForge/codeArbiter/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/arbiterForge/codeArbiter/teams",
+        "hooks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/hooks",
+        "issue_events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/events",
+        "assignees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/arbiterForge/codeArbiter/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/tags",
+        "blobs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/arbiterForge/codeArbiter/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/arbiterForge/codeArbiter/languages",
+        "stargazers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/stargazers",
+        "contributors_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contributors",
+        "subscribers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscribers",
+        "subscription_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscription",
+        "commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/arbiterForge/codeArbiter/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/arbiterForge/codeArbiter/merges",
+        "archive_url": "https://api.github.com/repos/arbiterForge/codeArbiter/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/arbiterForge/codeArbiter/downloads",
+        "issues_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/arbiterForge/codeArbiter/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/arbiterForge/codeArbiter/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/arbiterForge/codeArbiter/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/arbiterForge/codeArbiter/labels{/name}",
+        "releases_url": "https://api.github.com/repos/arbiterForge/codeArbiter/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/deployments"
+      },
+      "head_repository": {
+        "id": 1233366728,
+        "node_id": "R_kgDOSYOuyA",
+        "name": "codeArbiter",
+        "full_name": "arbiterForge/codeArbiter",
+        "private": false,
+        "owner": {
+          "login": "arbiterForge",
+          "id": 292945970,
+          "node_id": "O_kgDOEXYAMg",
+          "avatar_url": "https://avatars.githubusercontent.com/u/292945970?v=4",
+          "gravatar_id": "",
+          "url": "https://api.github.com/users/arbiterForge",
+          "html_url": "https://github.com/arbiterForge",
+          "followers_url": "https://api.github.com/users/arbiterForge/followers",
+          "following_url": "https://api.github.com/users/arbiterForge/following{/other_user}",
+          "gists_url": "https://api.github.com/users/arbiterForge/gists{/gist_id}",
+          "starred_url": "https://api.github.com/users/arbiterForge/starred{/owner}{/repo}",
+          "subscriptions_url": "https://api.github.com/users/arbiterForge/subscriptions",
+          "organizations_url": "https://api.github.com/users/arbiterForge/orgs",
+          "repos_url": "https://api.github.com/users/arbiterForge/repos",
+          "events_url": "https://api.github.com/users/arbiterForge/events{/privacy}",
+          "received_events_url": "https://api.github.com/users/arbiterForge/received_events",
+          "type": "Organization",
+          "user_view_type": "public",
+          "site_admin": false
+        },
+        "html_url": "https://github.com/arbiterForge/codeArbiter",
+        "description": "Open-source governance and hard gates for AI coding agents across Claude Code, Codex CLI, and Pi.",
+        "fork": false,
+        "url": "https://api.github.com/repos/arbiterForge/codeArbiter",
+        "forks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/forks",
+        "keys_url": "https://api.github.com/repos/arbiterForge/codeArbiter/keys{/key_id}",
+        "collaborators_url": "https://api.github.com/repos/arbiterForge/codeArbiter/collaborators{/collaborator}",
+        "teams_url": "https://api.github.com/repos/arbiterForge/codeArbiter/teams",
+        "hooks_url": "https://api.github.com/repos/arbiterForge/codeArbiter/hooks",
+        "issue_events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/events{/number}",
+        "events_url": "https://api.github.com/repos/arbiterForge/codeArbiter/events",
+        "assignees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/assignees{/user}",
+        "branches_url": "https://api.github.com/repos/arbiterForge/codeArbiter/branches{/branch}",
+        "tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/tags",
+        "blobs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/blobs{/sha}",
+        "git_tags_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/tags{/sha}",
+        "git_refs_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/refs{/sha}",
+        "trees_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/trees{/sha}",
+        "statuses_url": "https://api.github.com/repos/arbiterForge/codeArbiter/statuses/{sha}",
+        "languages_url": "https://api.github.com/repos/arbiterForge/codeArbiter/languages",
+        "stargazers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/stargazers",
+        "contributors_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contributors",
+        "subscribers_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscribers",
+        "subscription_url": "https://api.github.com/repos/arbiterForge/codeArbiter/subscription",
+        "commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/commits{/sha}",
+        "git_commits_url": "https://api.github.com/repos/arbiterForge/codeArbiter/git/commits{/sha}",
+        "comments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/comments{/number}",
+        "issue_comment_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues/comments{/number}",
+        "contents_url": "https://api.github.com/repos/arbiterForge/codeArbiter/contents/{+path}",
+        "compare_url": "https://api.github.com/repos/arbiterForge/codeArbiter/compare/{base}...{head}",
+        "merges_url": "https://api.github.com/repos/arbiterForge/codeArbiter/merges",
+        "archive_url": "https://api.github.com/repos/arbiterForge/codeArbiter/{archive_format}{/ref}",
+        "downloads_url": "https://api.github.com/repos/arbiterForge/codeArbiter/downloads",
+        "issues_url": "https://api.github.com/repos/arbiterForge/codeArbiter/issues{/number}",
+        "pulls_url": "https://api.github.com/repos/arbiterForge/codeArbiter/pulls{/number}",
+        "milestones_url": "https://api.github.com/repos/arbiterForge/codeArbiter/milestones{/number}",
+        "notifications_url": "https://api.github.com/repos/arbiterForge/codeArbiter/notifications{?since,all,participating}",
+        "labels_url": "https://api.github.com/repos/arbiterForge/codeArbiter/labels{/name}",
+        "releases_url": "https://api.github.com/repos/arbiterForge/codeArbiter/releases{/id}",
+        "deployments_url": "https://api.github.com/repos/arbiterForge/codeArbiter/deployments"
+      }
+    }
+  },
+  "all_checks": [
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133719939905",
+      "name": "major readiness producer",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133719907023",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717758047",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717758509",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717758032",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717758080",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717758111",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717758003",
+      "name": "[CHECK] | [CORE] | Structured artifact cold package  <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717759650",
+      "name": "[CHECK] | [CDX ] | Installed retained package <codex: ${{ matrix.codex-version }}>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717759854",
+      "name": "[CHECK] | [PI  ] | Installed retained package <pi: ${{ matrix.system }} 1.5.0>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717283404",
+      "name": "[CHECK] | [CORE] | Structured artifact package assembly",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717283462",
+      "name": "[CHECK] | [CORE] | Structured artifact browser qualification",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133717027592",
+      "name": "[CHECK] | [CORE] | Structured artifact qualification",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831493",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831430",
+      "name": "[CHECK] | [CORE] | Native authority <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133710483960",
+      "name": "[CHECK] | [CORE] | Native Go statement coverage",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235590",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: macos-latest \u00b7 partition: all>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133708862150",
+      "name": "[CHECK] | [REPO] | Coverage union",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831488",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831474",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831376",
+      "name": "[CHECK] | [CORE] | Native authority <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133706738228",
+      "name": "[CHECK] | [PI  ] | Coverage union",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831295",
+      "name": "[CHECK] | [CORE] | Native authority <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831422",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831292",
+      "name": "[CHECK] | [CORE] | Native authority <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235526",
+      "name": "[GATE ] | [SBX ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235367",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: macos-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831450",
+      "name": "[CHECK] | [CORE] | Native authority <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831336",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235190",
+      "name": "[CHECK] | [REPO] | Manifest contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235537",
+      "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.143.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045676/job/133708354912",
+      "name": "Site | [Deploy] - GitHub Pages",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831301",
+      "name": "[CHECK] | [CORE] | Native authority <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133707831345",
+      "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235662",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235544",
+      "name": "[CHECK] | [CDX ] | Real-host install  <codex: 0.145.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235448",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: macos-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235089",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235842",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: ubuntu-latest \u00b7 partition: all>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235136",
+      "name": "[CHECK] | [PI  ] | Host-independent adapter contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235812",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: isolation>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235156",
+      "name": "[CHECK] | [SBX ] | Sandbox driver contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235446",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235880",
+      "name": "[CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235337",
+      "name": "[CHECK] | [REPO] | Program integrity  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235572",
+      "name": "[CHECK] | [CORE] | Workflow recovery  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235140",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: windows-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234914",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235211",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: ubuntu-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235170",
+      "name": "[CHECK] | [CA  ] | Farm dispatcher contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235069",
+      "name": "[CHECK] | [PI  ] | Security analysis  <language: JavaScript/TypeScript>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235115",
+      "name": "[GATE ] | [CA  ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235037",
+      "name": "[WATCH] | [CDX ] | Upstream compatibility  <runtime: npm latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235160",
+      "name": "Coverage union (Pi)  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234837",
+      "name": "[CHECK] | [CA  ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235109",
+      "name": "Coverage union (Pi)  <os: windows-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234855",
+      "name": "[CHECK] | [SBX ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234943",
+      "name": "[CHECK] | [CDX ] | Reference graph",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234935",
+      "name": "[CHECK] | [CA  ] | Documentation consistency",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234999",
+      "name": "[GATE ] | [PI  ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234777",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234739",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234845",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235023",
+      "name": "[GATE ] | [CDX ] | Payload version",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234880",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234688",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704235255",
+      "name": "[CHECK] | [PI  ] | Adapter contract  <os: macos-latest \u00b7 runtime: Pi 1.5.0>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234548",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234583",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234701",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234970",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234654",
+      "name": "[CHECK] | [CORE] | Instrumented native coverage <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234537",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234607",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234551",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <darwin/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234706",
+      "name": "[WATCH] | [PI  ] | Upstream compatibility  <runtime: npm latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704233905",
+      "name": "[CHECK] | [REPO] | Impact planner contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234455",
+      "name": "[CHECK] | [CORE] | Default native, storage and context checks <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704233985",
+      "name": "Coverage union  <os: ubuntu-latest>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704233816",
+      "name": "[GATE ] | [CDX ] | Candidate provenance",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704233951",
+      "name": "[CHECK] | [CDX ] | Skill resource evidence contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234627",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <windows/arm64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704233851",
+      "name": "Coverage union  <os: windows-latest>",
+      "state": "FAILURE"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704233840",
+      "name": "[CHECK] | [CORE] | Host descriptor contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704234560",
+      "name": "[CHECK] | [CORE] | Tested native candidate build <linux/amd64>",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://coderabbit.ai?utm_source=cr_app&utm_medium=github",
+      "name": "CodeRabbit",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704237153",
+      "name": "[CHECK] | [SBX ] | Installed shipped bundle <docker>",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104819",
+      "name": "[CHECK] | [REPO] | Branch protection",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104780",
+      "name": "[GATE ] | [RELEASE] | Candidate readiness",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104929",
+      "name": "[CHECK] | [REPO] | Published tag immutability",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104969",
+      "name": "[CHECK] | [REPO] | Documentation contract",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704105004",
+      "name": "[CHECK] | [REPO] | Control bytes",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104451",
+      "name": "[CHECK] | [REPO] | Secret scan",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104881",
+      "name": "[CHECK] | [CORE] | Generated surface",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104916",
+      "name": "[CHECK] | [REPO] | License consistency",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045676/job/133704102509",
+      "name": "Site | [Build] - Astro Pages",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133704104765",
+      "name": "[CHECK] | [REPO] | Impact selection",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "pass",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045676/job/133704102819",
+      "name": "Site | [Test] - Generator",
+      "state": "SUCCESS"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045676/job/133704104146",
+      "name": "Site | [Deploy] - Qualified GitHub Pages",
+      "state": "SKIPPED"
+    },
+    {
+      "bucket": "skipping",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045676/job/133704104183",
+      "name": "Site | [Prepare] - Qualified Pages",
+      "state": "SKIPPED"
+    }
+  ],
+  "required_checks": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133719907023",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "merge_readiness": [
+    {
+      "bucket": "fail",
+      "link": "https://github.com/arbiterForge/codeArbiter/actions/runs/43983045996/job/133719907023",
+      "name": "[GATE ] | [REPO] | Merge readiness",
+      "state": "FAILURE"
+    }
+  ],
+  "all_jobs_terminal": true,
+  "skipped_job_ids": [
+    133704237153,
+    133717759650,
+    133717759854,
+    133719939905,
+    133704104146,
+    133704104183,
+    133708354912
+  ],
+  "all_checks_terminal": true,
+  "verdict": "BLOCK",
+  "limits": [
+    "PR CI/Docs only; no trusted-normal installed/native qualification.",
+    "No retry/cancel/merge/source/index/ref/marker/provider mutations.",
+    "Skipped checks retained; their eligibility is governed by the maintained merge gate."
+  ]
+}

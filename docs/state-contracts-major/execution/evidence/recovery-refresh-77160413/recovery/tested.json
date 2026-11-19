@@ -1,0 +1,1280 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+  "source_tree": "75c056788eae3c323d76add34ec9742f2214f119",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/crypto_evidence_review exact current 29 existing Windows software fixture assertions at committed 77160413; independent producer, no test edits"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/test_workflow_recovery.py": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f",
+    "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+    "core/pysrc/_adrlifecycle.py": "cb1c3c3e39eb2e21f390026b3c336273660a4218e015621f76a18a60ddeaf4f1",
+    "core/pysrc/_adrlifecyclegit.py": "36877c5b94a11135c0b3a4ceb4776e36a94beba1dbd89c0c01be57235806ab24",
+    "core/pysrc/_adrlifecyclewrite.py": "689c79bebe37d412849de84dc3e2b00ba594298b44815effb66bdafbb1663176",
+    "core/pysrc/_appendonlyconflictlib.py": "8fbf10aeaad62bfb1d7da174d71fe354930d3c8a49224b96953b4b87ace687b0",
+    "core/pysrc/_approvallib.py": "fc71ec67a9c44ebbadd9897244da291b6b50768dbe19e59d576ee3f15505828b",
+    "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+    "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+    "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+    "core/pysrc/_babysitlib.py": "f52d87fb3497cc43262785a201c3f0ac10d3e28f2f2e037bc6cd4044d7206d94",
+    "core/pysrc/_bashguardlib.py": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+    "core/pysrc/_boxlib.py": "b523b1e6ec6753c05224486a0bc2f5d7a553b6628c91939b8462f6a78fa7be0e",
+    "core/pysrc/_cleanuplib.py": "66f099d21eebe2fd8d0eea472fb0f0b5fd62713d6d687eab88e0b74f42c4e03c",
+    "core/pysrc/_colorlib.py": "ff8d212dfc06de9b442330085162b2186a01336cbdc2f76d2f87a88f35f578df",
+    "core/pysrc/_contextmergelib.py": "8d4b990b58e075f01bd9efcb2efeb08705b7be0949af30f82e20a4a517c4653c",
+    "core/pysrc/_contextreportlib.py": "76669de01a426b83a841d439d92f82532923303097fa051c4d08c1a1d0bfb538",
+    "core/pysrc/_contextselectlib.py": "0609783e758b6d654c05eeda8c40ccf355641eaf51fb0d9e9978ae5bf4304706",
+    "core/pysrc/_contextsnapshotlib.py": "bef9c37c09abc39e6113baa39f51f261103c760db66ec8e4cdc5818a075c1afe",
+    "core/pysrc/_contextwriterlib.py": "1a2c1856a2ba17ac17b947e0823b1dece6f355a2de600f70e0d392b09263607f",
+    "core/pysrc/_debughandofflib.py": "1a25b13304f05054f7b3787068b937269066c7cb8c61ef0098f14dad48d78c5f",
+    "core/pysrc/_durabilitylib.py": "42e9d3ed6f6f43c76bef073e6edad2b8a119dfc154e2a497909422b4e4d28f9b",
+    "core/pysrc/_entrylib.py": "1f4f95d55502d022f60bc9754a629a3fd38f0914ad69903fb5aa4aa8c4da8f5a",
+    "core/pysrc/_fmtlib.py": "b5e55dccad28210a2781c883704a491d081264ca3f23993ecb815f76b82b2a85",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "core/pysrc/_githooks.py": "450d3204c7895d7649c4bd7b1daf40b498b960df48de00138914559d41008e38",
+    "core/pysrc/_gitlib.py": "7b310f1946f358a77d6a9eab2333adb64ba9648d41c69c564b66fcb6ab4df276",
+    "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+    "core/pysrc/_intentlib.py": "9712bed86854f405475958d07727bf21f58a0faa1bfd03c19d9ada8972007319",
+    "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+    "core/pysrc/_ledgerlib.py": "33fdd7e0ec5505e4faea7776c861a123206bb5c2c09315b09965ab4f92dda580",
+    "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db",
+    "core/pysrc/_overrideappendlib.py": "592f63ca6a6a5e51f5e315cd60f6d2d8a6565234835e0904bb422b74d20090b0",
+    "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+    "core/pysrc/_planfilelib.py": "038cf68ad85d022d22aab4da5f218f1ce5fb1bdec3bc60e329c607b806fd6fe0",
+    "core/pysrc/_prerequisitelib.py": "8263651e6f29f987b3cc935827c2f6a4b4745251ecddb87a3a7d51fd3d861479",
+    "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+    "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+    "core/pysrc/_provenancelib.py": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+    "core/pysrc/_prunelib.py": "f34aceae4140a7ff25dff91888cd3b9d7d2e5ddc2e1f084558218b22d1c1bdc4",
+    "core/pysrc/_prunepolicy.py": "13bc82c138975121c3dbd28379a0bc8dda183f09fa6e47fbe2bab2e9cc0faf35",
+    "core/pysrc/_readinjectlib.py": "a4d689293690beefa28e33834c7aa421145bab6547685f8d25e5c29425b61138",
+    "core/pysrc/_reconciliationlib.py": "7a281f3f4cdf7c29d62185d12ac24ebb26e3f1c01f42004aa99a1f8080ae2691",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+    "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+    "core/pysrc/_segmentslib.py": "48faefd3a2134195781d821e46d7d7aa2439ef6f6bd950f4de19eff0d416ebe2",
+    "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+    "core/pysrc/_sessionlib.py": "bc9ff7504329deee9b205a8d5e8abd7797b8e404152a5c0147c91c8dfd4b8fa1",
+    "core/pysrc/_sloplib.py": "568692fdecb4237ae961bdc3cdb0a3f1566f1630ba2f18ac0ea13fa4df40214e",
+    "core/pysrc/_sprintapprovallib.py": "5fe52f17bb36abe2bbdaa124bfb9f5f2e391af7de47d7cc6492e334765a5cac8",
+    "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "core/pysrc/_subagentslib.py": "e2a6aaf737d02180fc5d464f8b28a0c723408a19774696f60ad0e8175e4b6529",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/_taskexcludelib.py": "dbe5ae4cbe72a2cdccfb4bdf78b4adbece144fed74703f2d2f403851ce3c39a0",
+    "core/pysrc/_tribunalinventorylib.py": "974533bbe66808475c0e64e3247ee5baf814f9f0762e731f904b924e696de251",
+    "core/pysrc/_tribunalrunlib.py": "c0381e0d22a0e25a22d7ac27adaf518724c322c92dd77b11014702d251fd2624",
+    "core/pysrc/_updatelib.py": "6a66e7bc681bf5c347529becbe6e5405165d59b336436183e4e7881d4d26d7b4",
+    "core/pysrc/_usagelib.py": "bed9730b7b21b382845e2389eead3458d07360c5c86e91ad3b0b9f17112cfff5",
+    "core/pysrc/_workadopt.py": "2691e5e61824ef58cf2e13463de8aaf44a99a831079595d906ce96f06aa320b7",
+    "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "core/pysrc/_workgithub.py": "79a1ce36cc360eb1eb095b45ab08ecc50c50fe10670dc10e2d9c5cd21be8ca1f",
+    "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+    "core/pysrc/adr-acceptance.py": "0b04065fbb367c9da1e690dc622d478be59838949f80e583d730c55401db4f53",
+    "core/pysrc/adr-merge-method.py": "3dae85fb9b0d89ef9f24b95576ef481784739e667f7030dad79a2acc418d66a4",
+    "core/pysrc/append-override.py": "d6a14fef85401e11222737e02b5188c71143d63c396cdaf0f3aa24736502ad9e",
+    "core/pysrc/artifact-authority-hook.py": "783230e6cc6f27ee697797467cac092b8db0b257b6c408f5f7051f403a8d82d4",
+    "core/pysrc/artifact-authority.py": "0dc4fd27b25ec5ca9f38ab0a52301a480c44c87072b0ec92080738fc0db38010",
+    "core/pysrc/artifact-reconcile.py": "adc01569ed70ca46c4dd6d9201b25a32747b7ad413dd3a68a5676d1fdc1b502b",
+    "core/pysrc/babysit.py": "a7fbcb50898df63718f9705da0b69c7e7658932e859cad90710893603f0ff841",
+    "core/pysrc/boardsync.py": "b6e7b0b7e21bc838929593815a071c1418d35e30f1fa0b64410f5a9c2424023b",
+    "core/pysrc/debug-handoff.py": "c6d77fbd2ca05791b59669ce2685cd733afc2a221ebe1bd95801ddc91c26fff9",
+    "core/pysrc/doctor.py": "d3ebfd7a428d6c0664f2990f8d749ce6f514d4a75b582b5ac6ab6ed469ce18a7",
+    "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+    "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+    "core/pysrc/init-codearbiter.py": "641f0d04057ea22bff6fc39ce6fd95324901c4cc810617f4a783842cd31086b3",
+    "core/pysrc/knowledge.py": "c986978cae7c6cffcd1ce33b2ecf398ed187c16463d30ee598ba9ff05c758847",
+    "core/pysrc/migration-pass.py": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+    "core/pysrc/post-write-edit.py": "691d3d3691a49d25c60749153a95488a63b31414db34145a719ed14522e9e7cd",
+    "core/pysrc/pre-bash.py": "b2cf1a875a6ec0aa4c36e59bfdc2c9f64a81a70dcc901a5bbc46465b087e4873",
+    "core/pysrc/pre-edit.py": "baa81cd615c6ef9d0df399f7c5a15e5f5cd7d0bdff84508ae22d62b4b9b047a3",
+    "core/pysrc/pre-read.py": "e8acb8b4901198cac202084b880605d7dd0a702781d650a47dad5d0214c491f3",
+    "core/pysrc/pre-write.py": "8f6cbdb29ecde96ab608fbafdfc0373c664686f89da9f21aa71129e9f72003f8",
+    "core/pysrc/prompt-submit.py": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+    "core/pysrc/prune-transcript.py": "697c844472240ac0440e4043d17eb7de832d70eadf6e21de0ab0684a07008977",
+    "core/pysrc/releasehash.py": "a9e806767403343937015026d544513985a6fb8d5cf7578f42d038797d9b0614",
+    "core/pysrc/resolve-append-only-conflict.py": "4f9c5e92f7dd3371edaee443997728fd4d86e93394aced542e4c1c934c0eacf0",
+    "core/pysrc/resolve-context-conflict.py": "e2ee12d67b0c4a1c7f786171ecd46d77d202e134b87c72a194a35e86eef483a1",
+    "core/pysrc/security-pass.py": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+    "core/pysrc/session-start.py": "4c3c1e9b8180aa571eda8fcacf24569f1fd16366a12c3aba5f76944cf1ba52cb",
+    "core/pysrc/statusline.py": "3cbe9248df153967c3e22d9d05fbf6ab01e668d8539e1defcf5ac7a55df2881c",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/tribunal.py": "01322be9197fbd2ccaabad56ff7f7fa2dd64abda618d98d6194f528a028a343c",
+    "core/pysrc/update-refresh.py": "73ef43701475c700a34bd0ac22f18085e0c29fa72157c960232ae1ec8e0b282c",
+    "core/pysrc/wire-statusline.py": "41c489a88d6a6f1be51806d9269013a124d0f0974830f248615201d2be0d8192",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "core/pysrc/workflow-recovery.py": "a9a971371d2be4ece6eebdce24f4e2ebeb1a2a9a23e16d3d6d5e39479ef2b482",
+    "core/workflow-recovery-contract.json": "2b3bcd49600605fc5a49785c8df98fa3ef3d0704a2831b00d83a16752825dc72",
+    "plugins/ca-codex/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca-pi/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+    "plugins/ca/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+  },
+  "absent_inputs": [
+    {
+      "path": "core/pysrc/_host.py",
+      "path_style": "windows"
+    }
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        "-m",
+        "unittest",
+        "-v",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_blocking_decision_is_not_demoted_or_confirmed",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_deferred_decision_and_decline_commit_once_after_response_loss",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_linked_followup_uses_existing_fields_without_reopening_settled_history",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_post_commit_failure_reports_observed_record_without_false_no_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_emitted_fallback_notice_is_deduplicated_per_session",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+      "exit_code": 0,
+      "seconds": 22.9641685999959,
+      "selected_named_population": 29,
+      "selected_skipped": 0,
+      "actual_execution_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-start.json",
+      "sha256": "e990363572f76dec0cbd773b4fa2dee454f8f19ca7a8f88b112ffa49725d20f3"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-result.json",
+      "sha256": "1e6a5ef14320fa71c87dfebdcf54685138bba5e49b9581e67b24d7fcd21c3b5c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/process-exit.json",
+      "sha256": "f08ce309f4099d28316af0e92c9f444001f8d0d1298f55172d69bb7950408090"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/after-snapshot.json",
+      "sha256": "be8fa0c987a2bbb5aadea9ec98fca638833eb41e1674d2ae54ad7f471769ace0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/actual-imports-65628.json",
+      "sha256": "ad7e5704077ba7d9d7f3967e6a5ea7d302f2ecd72ed7c03dcd2fb459a7824c5b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/observer/sitecustomize.py",
+      "sha256": "df9638a5fee62cf3e1cb4dbfcccba5b189200687d904e0f5fb0fcf24db827729"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/original.stdout.log.base64.json",
+      "sha256": "23c3ff223e6b29a338984fd49718addd4c7b4778c1a06f3bbfa25d3e70f25adc"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/original.stderr.log.base64.json",
+      "sha256": "5edbc00be059d2bb0f5070762fd33c12855dbdb1791c28bf9f38f575197d639c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/protocol/capture.py",
+      "sha256": "4b70a152cc047b7029248fd372428e8d17fedd41c6bbb352e48186e08d21fa9d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/protocol/capture-complete.json",
+      "sha256": "a309e15c22eab2caeac2a26de7b996d0ad2c638465aa3e8d4a696adbb2b84a07"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/protocol/selection.json",
+      "sha256": "e0f1bbaecd4038b6acb2bba9a83a0623d3a8e91ad20288e6f79f0211b5d00077"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/protocol/parity-reused-receipt.json",
+      "sha256": "35683301c3038f75f1f94dadd4945f428ff5317c089f8c5a18a92679268dc002"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:added_transitions:WR-01",
+    "disposition:added_transitions:WR-02",
+    "disposition:added_transitions:WR-03",
+    "disposition:added_transitions:WR-04",
+    "disposition:added_transitions:WR-05",
+    "disposition:added_transitions:WR-06",
+    "disposition:added_transitions:WR-07",
+    "disposition:added_transitions:WR-08",
+    "disposition:added_transitions:WR-09",
+    "disposition:added_transitions:WR-10",
+    "disposition:added_transitions:WR-11",
+    "disposition:added_transitions:WR-12",
+    "disposition:added_transitions:WR-13",
+    "disposition:added_transitions:WR-14",
+    "disposition:added_transitions:WR-15",
+    "disposition:added_transitions:WR-16",
+    "disposition:added_transitions:WR-17",
+    "disposition:added_transitions:WR-18",
+    "disposition:added_transitions:WR-19",
+    "disposition:added_transitions:WR-20",
+    "disposition:added_transitions:WR-21",
+    "disposition:added_transitions:WR-22"
+  ],
+  "original_named_results": [
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_blocking_decision_is_not_demoted_or_confirmed",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_deferred_decision_and_decline_commit_once_after_response_loss",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_linked_followup_uses_existing_fields_without_reopening_settled_history",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_post_commit_failure_reports_observed_record_without_false_no_effect",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_emitted_fallback_notice_is_deduplicated_per_session",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "transition_id": "WR-01",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Eight real child exits across payload/intent/record/slot/page/index/clear/commit boundaries never manufacture registration; explicit repair+same registration yields one pending record, board untouched.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact"
+      ]
+    },
+    {
+      "transition_id": "WR-02",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Closed invalid/unknown-kind/oversize requests report durable:false and create no registered store; partial failure retains exact completed/remaining IDs; child mutation refuses without shared state.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Capacity/numeric field limits other than exercised33batch/65536description are source-defined, not all separately executed here.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_invalid_unknown_and_oversize_input_leave_no_registered_store",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state"
+      ]
+    },
+    {
+      "transition_id": "WR-03",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Exact registration returns stable obligation identity and entire store snapshot remains identical; settled replay covered separatelyWR20.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact"
+      ]
+    },
+    {
+      "transition_id": "WR-04",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Correction keeps old candidate in actual history; stale revision conflicts unchanged; unknown effect refuses correction; after proven absence correction succeeds without effect; two real correction processes yield exactly one winner.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner"
+      ]
+    },
+    {
+      "transition_id": "WR-05",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Absence scan creates nothing; registered scan is physically unchanged;37items split32+5within262144B; changed generation cursor refuses; malformed projection/nonblocking notice failure never creates marker or discards obligations.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_scan_is_physically_readonly_and_registration_replay_is_exact",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_pages_and_stale_cursor_never_claim_a_complete_empty_scan",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+      ]
+    },
+    {
+      "transition_id": "WR-06",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Real OS lock held in another child blocks claim without changed store; released lock permits claimed state then stale expected revision conflicts; two real claimants produce one winner.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Canonical claim persistence/identity/CAS only; caller actual host delegation grant not inferred.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner"
+      ]
+    },
+    {
+      "transition_id": "WR-07",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Changed source persists source-stale unavailable while target bytes exact; denied/stopped state cannot be cleared by ordinary correction; blocking decision waits for user without question/audit publication; child direct mutation refuses.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Actual Pi revocation/physical scope denial and every owner-ambiguity variant are separate host/native boundaries.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_changed_source_is_held_without_touching_target",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_blocking_decision_is_not_demoted_or_confirmed",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_direct_child_mutation_needs_parent_and_creates_no_shared_state"
+      ]
+    },
+    {
+      "transition_id": "WR-08",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual decision/decline response-loss test asserts durableWR06 claim and claimed uncertainty, then recoveredWR11 settlement; declined outcome is explicitly admitted by its corrected owner disposition and the audit effect occurs exactlyonce. Runtime events remainWR06/WR09/WR11 as owningWR08 composite text declares.",
+      "limits": "Canonical explicit caller decline/audit composite only. No actual interactive preview/physical user denial or host grant authentication; unknown effect remainsclaimed for reconciliation.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_deferred_decision_and_decline_commit_once_after_response_loss",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost"
+      ]
+    },
+    {
+      "transition_id": "WR-09",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual fresh canonical legacy-work effect settles and stores receipt; concurrent resume yields exactly one origin; archived exact-origin lookup reuses independently named target without recreating open work.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Legacy runtime board owner only; installed native-work adapter and parent completion/review remain separate.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work"
+      ]
+    },
+    {
+      "transition_id": "WR-10",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual child exits79 after target/during settlement preserve exact one target; later explicit reconcile reads current record/origin before settlement; no blind duplicate replay.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate"
+      ]
+    },
+    {
+      "transition_id": "WR-11",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Exact-origin readback recovers already committed effect with reused disposition, board byte-identical; terminal resume repeats no effect; archived target content not overwritten.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_legacy_origin_in_archive_is_reused_without_recreating_work"
+      ]
+    },
+    {
+      "transition_id": "WR-12",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Real separate process holds OS obligation lock; resume reports busy and snapshot exactly unchanged, then released lock permits laterclaim. No age/TTL theft path.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite"
+      ]
+    },
+    {
+      "transition_id": "WR-13",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Claim without target reconciles absent-effect; candidate correction then allowed. Reconcile of denied unknown effect proves absence while state remains unavailable and denial persists; it performs no target write.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Fixture authority context is never a real grant; inspected runtime retains immutable effect identity for exact retry until explicit correction, not implied permission.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrected_candidate_cas_preserves_original_and_unknown_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial"
+      ]
+    },
+    {
+      "transition_id": "WR-14",
+      "proposed_status": "TESTED",
+      "observed_assertions": "For decision/decline with missing/existing targets, actual concurrent subprocess append makes publication refuse changed-binding; unavailable record retains unresolved effect; reconcile proves absence before same-origin retry. Unknown effect also blocks new lift context.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Real append/CAS boundary exercised; arbitrary provider unavailable/actual grant revocation remain unexecuted.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial"
+      ]
+    },
+    {
+      "transition_id": "WR-15",
+      "proposed_status": "TESTED",
+      "observed_assertions": "For every14known reason, real unavailable records scan complete with matching trustedreason_recovery guidance in existingresume field; notice includes whole routes within768chars and directs to scan for remaining advice; arbitrary private title never becomes guidance. Entire ledger and board snapshot stayexact. A substituted summary reason refuses corrupt-record without writes.",
+      "limits": "Canonical actual Python projection/scan only; no visible parent/TUI/installed host delivery proof or automatic authorization from guidance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_scan_and_notice_show_bounded_reason_specific_recovery",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_unavailable_summary_cannot_substitute_a_different_recovery_reason",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+      ]
+    },
+    {
+      "transition_id": "WR-16",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Ordinary restore/correction cannot clear explicit stop/denial; unsupported authority_source rejects; explicit same-owner lift context recordsWR16 and prior exact history but no authorized field or target effect. Unknown effect blocks lift; proven absence retains denial until explicit lift.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. TESTED is only canonical bookkeeping/trusted-caller admission. user:/host: fixture references are not actual user/host grant authentication; physical consent and scoped producer observation remain pending.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_denial_and_explicit_stop_are_not_cleared_by_correction",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_actual_owner_lift_is_explicit_bookkeeping_and_never_a_target_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_new_grant_cannot_clear_unknown_effect_or_reconciliation_clear_denial"
+      ]
+    },
+    {
+      "transition_id": "WR-17",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual persisted future record/store format and corrupt cross-field projection yield unavailable safe bounded metadata, and raw store remains exact; explicit repair refuses unsupported store.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Persisted unknown-kind classifier is source-inspected; no downgrade/deletion/power-loss repair or all malformed encodings claimed.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_corrupt_record_and_future_store_are_unavailable_without_repair_write",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_projection_refuses_cross_field_corruption_and_notice_failure_is_nonblocking"
+      ]
+    },
+    {
+      "transition_id": "WR-18",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Explicit canonical cancel settles cancelled with target board unchanged; an existing unreconciled claimed effect refuses cancel uncertain-effect.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Trusted caller cancellation only, not physical UI consent or shared-state child authorization.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target"
+      ]
+    },
+    {
+      "transition_id": "WR-19",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Self-replacement refuses; selected distinct existing obligation linked in superseded outcome; replacement remains pending and target board unchanged.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Trusted caller supersession only; no host/user UI acceptance claim.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_cancel_and_linked_supersession_are_explicit_and_never_touch_target"
+      ]
+    },
+    {
+      "transition_id": "WR-20",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Compaction retains terminal receipt/tombstone identity and old history; exact registration reports same settled identity; subsequent resume returns settled with board exact, no duplicate effect or authority prompt.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_compacted_terminal_record_preserves_exact_dedup_and_old_history",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_legacy_target_response_loss_reconciles_without_duplicate"
+      ]
+    },
+    {
+      "transition_id": "WR-21",
+      "proposed_status": "TESTED",
+      "observed_assertions": "After actual predecessor settles, caller registers a newrun/distinct predecessor-naming boundedorigin and candidate.provenance with currentchanged sourcefingerprint. New ID is distinct and pending with inspectedpersisted link, no effect; oldrecord/history rawbytes and canonical targetboard remainexact. Exactnew registration replay reusesID and leaves entireledger unchanged.",
+      "limits": "Existing v1 register/get fields encode caller-declared link; testdoesnot authenticate arbitrary prose/past authority or add a newCLI/API/recordfield. Trusted parent authorization and physical consent are external boundaries.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_linked_followup_uses_existing_fields_without_reopening_settled_history"
+      ]
+    },
+    {
+      "transition_id": "WR-22",
+      "proposed_status": "TESTED",
+      "observed_assertions": "Actual failure after commit returns durable:false/commit uncertain separately from observed pending/no pending transaction/not-attempted effect; exactretry later confirms durable; partial registration completed/remaining exact; actual concurrent target append preserved under refusal.",
+      "limits": "Canonical Python recovery runtime with real disposable Git/legacy board files on Windows only. Trusted parent invocation is fixture context; no released install/native adapter/host producer/physical user consent/provider/TUI acceptance. Observation readback is canonical runtime; no remote write commit, host receipt, or blind rollback inference.",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+      "observed_named_assertions": [
+        "test_workflow_recovery.RecoveryRuntimeTest.test_partial_registration_retains_exact_completed_and_remaining_ids",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_post_commit_failure_reports_observed_record_without_false_no_effect",
+        "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost"
+      ]
+    }
+  ],
+  "runtime": {
+    "python_executable": "C:\\Python314\\python.exe",
+    "python_version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "python_sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "git_executable": "C:/Program Files/Git/cmd/git.exe",
+    "git_sha256": "7b7971dd13f0c3a284e538601f2f9770b3a87dfaccb5fb52d68141c67ed22364",
+    "structured_runtime_files": 1905,
+    "runtime_raw_ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-start.json"
+  },
+  "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_NO_LAZY_FETCH",
+    "GIT_NO_REPLACE_OBJECTS",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONIOENCODING",
+    "PYTHONNOUSERSITE",
+    "PYTHONPATH",
+    "PYTHONPYCACHEPREFIX",
+    "PYTHONUTF8",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME"
+  ],
+  "disposable_HOME_before_import": true,
+  "scope": "Renew only the same22 already-TESTED WR software component rows with the exact original27 mapped methods plus one existing emitted-notice dedup control and the independently authored real-child fixture-isolation control (29 unique methods). Not all40 methods or whole HW14/host/native acceptance.",
+  "limits": [
+    "Local Windows canonical Git/software assertions only; no native build, installed host, provider/model, trusted hosted CI, physical user consent, TUI or publication qualification.",
+    "All original positive input paths preserved and rehashed against literal source before/after; no namespace or negative lookup footprint is reduced.",
+    "Two complete typed Python Git namespaces plus separately complete physical names/modes/contents are recorded before/after. Legacy cache entries remain explicitly present and unchanged; no cache deletion or blanket names-equal assertion.",
+    "The 1905 runtime records are structured path/SHA256 entries from the first capture record; all before/after bytes match.",
+    "Raw transcripts use the existing lossless original-transcript envelope with decoded digest/size and original private bytes preserved; no transcript content normalized or relabelled.",
+    "Only prospective new retained metadata is emitted. Existing proof source epochs and ledger history remain unchanged; no final staged/full-program admission asserted.",
+    "One actual current29-method Recovery-only execution; no P02, parity, source92 or native/runtime/hosted repetition. Raw process results and after-snapshot persisted before validation.",
+    "The unchanged passive witness retained22 Python launch environments before Windows argv conversion and one actual child-loaded canonical module/prefix observation. Eight crash-test launches use changed target self.root while their actual private environment remains owned by original setUp HOME.parent. The collector only observes; it never mutates child argv/environment.",
+    "All other machine/native/installed/task/model and physical-user holds remain unchanged."
+  ],
+  "historical_evidence_not_relabelled": {
+    "ref": "docs/state-contracts-major/execution/evidence/workflow-recovery-ce3a4a91/canonical-runtime.json",
+    "source_commit": "ce3a4a91a3164e1b778e81d206ec76517633c518",
+    "sha256": "1d5a538b2a62d7dc4cee5eb688804b40a35c5a4e27e6f376509df908f6865a63"
+  },
+  "input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "ba26cb7e243ea1d7c06d5f5b5f017d0cec71ed399c262e0d72409bed2e6ccf93"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    }
+  ],
+  "predecessor_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/software-refresh-e62a2a85/recovery/tested.json",
+    "sha256": "a711e3ef112af704425e8322c8c2ae0c2c0ba5fae603a37fa38ba75a2a1b4d8b",
+    "source_commit": "e62a2a85a6a804bd14a80ad6faec5cb61aff8b20",
+    "read_from_commit": "771604132801a0e67c971581fbbf76227af2f712",
+    "historical_epoch_unchanged": true
+  },
+  "execution_context": {
+    "actual_start_git_commit": "771604132801a0e67c971581fbbf76227af2f712",
+    "actual_end_git_commit": "771604132801a0e67c971581fbbf76227af2f712",
+    "HEAD_index_stable": true,
+    "complete_import_namespaces_Git_physical_before_after_stable": true,
+    "runtime_before_after_structured_records": 1905,
+    "runtime_ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-start.json",
+    "actual_repository_imports": {
+      ".github/scripts/test_workflow_recovery.py": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f",
+      "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+      "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+      "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+      "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+      "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+      "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+      "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+      "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+      "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+      "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+      "core/pysrc/_artifactlib.py": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+      "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+      "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+      "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+      "core/pysrc/_modelib.py": "d97433737654bbcad2051e62495e70ec006dc31d458514fa74e338e49d04a1db"
+    },
+    "parent_private_prefix_before_imports": true,
+    "raw_seven_P02_lookup_facts_ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-start.json",
+    "owning_host_lookup_ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-start.json",
+    "fixture_parameters_ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/recovery/run-start.json",
+    "Git_physical_projection": {
+      ".github/scripts": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": 52,
+        "other_entries_preserved": []
+      },
+      "core/pysrc": {
+        "Git_names_equal_physical_names": false,
+        "legacy_cache_entries_preserved": 22,
+        "other_entries_preserved": []
+      }
+    },
+    "actual_fixture_child_observations": [
+      {
+        "forbidden_present": {
+          "APPDATA": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "FARM_API_KEY": false,
+          "GITHUB_TOKEN": false,
+          "LOCALAPPDATA": false,
+          "OPENAI_API_KEY": false,
+          "PYTHONPATH": false,
+          "XDG_CACHE_HOME": false,
+          "XDG_CONFIG_HOME": false
+        },
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4\\disposable-home",
+        "module_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_workflowrecoverylib.py",
+        "no_user_site": 1,
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4\\private-bytecode",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4\\disposable-home",
+        "source_module_paths": [
+          {
+            "path": "core/pysrc/_workflowrecoverylib.py",
+            "sha256": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+            "actual_loaded_path": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\pysrc\\_workflowrecoverylib.py"
+          }
+        ]
+      }
+    ],
+    "actual_fixture_python_launches": 22,
+    "mutable_frame_root_distinctions": 8,
+    "actual_fixture_python_launch_records": [
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-urnkbhu9",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_live_os_lock_is_not_stolen_and_stale_cas_cannot_overwrite",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-urnkbhu9\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-urnkbhu9\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-urnkbhu9\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_multiprocess_claim_correct_and_settle_races_preserve_one_winner",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-4di1s7k_\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_after_target_and_during_settlement_never_duplicates",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-ambmhcvy\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-xcn2u1rr",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-ea06mc77",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-xspt1mle",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-6jtg4dhn",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-ibb3498y",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-bnama3jp",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-mqqc3g43",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-recovery-crash-7jly_57h",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_process_crash_at_each_registration_commit_boundary",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-tmot13mf\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_append_between_decision_preparation_and_publication_is_never_lost",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-fslizr4m\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      },
+      {
+        "fixture_root": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4",
+        "test_id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site",
+        "python": "C:\\Python314\\python.exe",
+        "pycache_prefix": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4\\private-bytecode",
+        "no_user_site": "1",
+        "home": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4\\disposable-home",
+        "userprofile": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-Recovery-77160413-qr17uou5\\recovery-successor\\profile\\tmp\\ca-workflow-recovery-j04shcp4\\disposable-home",
+        "forbidden_present": {
+          "APPDATA": false,
+          "LOCALAPPDATA": false,
+          "XDG_CONFIG_HOME": false,
+          "XDG_CACHE_HOME": false,
+          "PYTHONPATH": false,
+          "FARM_API_KEY": false,
+          "CLAUDE_CODE_OAUTH_TOKEN": false,
+          "GITHUB_TOKEN": false,
+          "OPENAI_API_KEY": false
+        },
+        "limits": "Passive Popen.__init__ entry before Windows argument conversion. Original argv/env read only; no argv, code, request or credential value recorded."
+      }
+    ]
+  },
+  "corroborating_named_controls": [
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_emitted_fallback_notice_is_deduplicated_per_session",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    },
+    {
+      "id": "test_workflow_recovery.RecoveryRuntimeTest.test_real_child_uses_fixture_private_cache_and_disables_user_site",
+      "result": "PASSED",
+      "source_commit": "771604132801a0e67c971581fbbf76227af2f712"
+    }
+  ],
+  "generated_helper_parity": {
+    "kind": "source-byte-parity-only",
+    "source_commit": "771604132801a0e67c971581fbbf76227af2f712",
+    "actual_check_ref": "docs/state-contracts-major/execution/evidence/recovery-refresh-77160413/protocol/parity-reused-receipt.json",
+    "actual_check_sha256": "35683301c3038f75f1f94dadd4945f428ff5317c089f8c5a18a92679268dc002",
+    "copies": {
+      "core/pysrc/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "plugins/ca/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "plugins/ca-codex/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e",
+      "plugins/ca-pi/hooks/_workflowrecoverylib.py": "a37291b659cdc1ae94482f7591e50b0e869a87c4a16fdf427bd1373c2e7ade9e"
+    },
+    "limits": "Existing Root-observed current98x3 sync-core parity receipt reused. This Recovery producer did not execute parity; no generated/installed host copy executed."
+  }
+}

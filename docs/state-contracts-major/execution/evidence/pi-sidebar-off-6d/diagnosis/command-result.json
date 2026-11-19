@@ -1,0 +1,64 @@
+{
+  "source": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "argv": [
+    "C:\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+    "node_modules/vitest/vitest.mjs",
+    "run",
+    "test/sidebar-manager.test.ts",
+    "-t",
+    "off while metrics are pending keeps native hooks after metrics resolve|never auto-installs again after the user turned it off",
+    "--reporter=json",
+    "--outputFile=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\target-red-with-positive.json"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\candidate\\plugins\\ca-pi\\tools",
+  "exit_code": 1,
+  "seconds": 0.5813961999956518,
+  "Node_sha256": "c0b01496cf3da5cceca86eb6e1b2ef5d088cd46ad4e97cf502e2c937fa7f56b9",
+  "HOME_before_import": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\private-home",
+  "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "NO_COLOR",
+    "PATH",
+    "PATHEXT",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR",
+    "XDG_CACHE_HOME",
+    "XDG_CONFIG_HOME"
+  ],
+  "actual_named": [
+    {
+      "ancestorTitles": [
+        "sidebar manager auto-install (AC-5)"
+      ],
+      "fullName": "sidebar manager auto-install (AC-5) never auto-installs again after the user turned it off",
+      "status": "passed",
+      "title": "never auto-installs again after the user turned it off",
+      "duration": 1.3007000000000062,
+      "failureMessages": [],
+      "meta": {},
+      "tags": []
+    },
+    {
+      "ancestorTitles": [
+        "sidebar manager disposal while installation is pending (PI-L02)"
+      ],
+      "fullName": "sidebar manager disposal while installation is pending (PI-L02) off while metrics are pending keeps native hooks after metrics resolve",
+      "status": "failed",
+      "title": "off while metrics are pending keeps native hooks after metrics resolve",
+      "duration": 3.225699999999989,
+      "failureMessages": [
+        "AssertionError: expected true to be false // Object.is equality\n    at C:/Users/brenn/AppData/Local/Temp/ca-pi-sidebar-off-diagnosis-4wssibkw/candidate/plugins/ca-pi/tools/test/sidebar-manager.test.ts:310:42\n    at process.processTicksAndRejections (node:internal/process/task_queues:104:5)\n    at async file:///C:/Users/brenn/.codex/worktrees/program-governance-prep/codeArbiter/plugins/ca-pi/tools/node_modules/@vitest/runner/dist/chunk-artifact.js:1903:20"
+      ],
+      "meta": {},
+      "tags": []
+    }
+  ],
+  "filtered_unselected": 21,
+  "scope": "ActualSidebarManager/public registered handler throughdeclaredfakeUI/metrics; no installed/privatehost/provider/native/TUI effect."
+}

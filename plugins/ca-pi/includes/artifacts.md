@@ -126,6 +126,21 @@ as `DONE`; **DONE is not independently verified or accepted**. Report actual
 checks, failures and unrun verification separately. Review relevant risks;
 do not spawn a reviewer fleet to clear task bookkeeping.
 
+The versioned `recorded-progress/1` projection separates recorded progress from
+derived check applicability. `DONE` is caller-reported; receipt-bearing `REVIEW`
+and historical `ACCEPTED` still require assessment of their actual evidence.
+Legacy `STALE` reports unresolved prior progress, never a guessed completion.
+Blocking an upstream task preserves downstream progress and independently
+recorded stops; dependency readiness is assessed separately. Typed retirement
+retains original symbol kind and historical checks without scheduling retired
+tasks or reusing their IDs. New semantics use schema 0.3.4; old unsupported
+clients refuse rather than reinterpret those writes.
+
+Operation descriptors report the implemented backend, availability and effects.
+They are declarations, not permission or qualification. A bounded native read
+may assess declared source inputs and may have platform lock metadata effects;
+do not describe every read as physically effect-free on every platform.
+
 ## Resume safely
 
 On interruption, inspect the worktree, running workers and committed state

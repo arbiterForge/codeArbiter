@@ -1,0 +1,17 @@
+test_expected_inputs_uses_immutable_python_namespace_and_absence (test_npm_binding_observation.AdmissionTests.test_expected_inputs_uses_immutable_python_namespace_and_absence) ... ok
+test_large_tool_identity_records_share_the_bounded_streaming_limit (test_npm_binding_observation.AdmissionTests.test_large_tool_identity_records_share_the_bounded_streaming_limit) ... ok
+test_missing_case_platform_and_failed_uploader_refuse (test_npm_binding_observation.AdmissionTests.test_missing_case_platform_and_failed_uploader_refuse) ... ok
+test_named_child_skip_and_final_projection_tampering_refuse (test_npm_binding_observation.AdmissionTests.test_named_child_skip_and_final_projection_tampering_refuse) ... ok
+test_opt_in_selection_closed_and_default_native_grammar_unchanged (test_npm_binding_observation.AdmissionTests.test_opt_in_selection_closed_and_default_native_grammar_unchanged) ... ok
+test_raw_identity_mutations_refuse_before_any_task_verdict (test_npm_binding_observation.AdmissionTests.test_raw_identity_mutations_refuse_before_any_task_verdict) ... ok
+test_same_source_sidecar_and_exact_uploader_log_are_independent_authorities (test_npm_binding_observation.AdmissionTests.test_same_source_sidecar_and_exact_uploader_log_are_independent_authorities) ... ok
+test_selected_actual_parents_exist_on_every_required_platform (test_npm_binding_observation.AdmissionTests.test_selected_actual_parents_exist_on_every_required_platform) ... ok
+test_six_original_components_and_sidecars_roundtrip_actual_readiness_owner (test_npm_binding_observation.AdmissionTests.test_six_original_components_and_sidecars_roundtrip_actual_readiness_owner) ... ok
+test_large_identity_streams_while_source_reader_keeps_small_limit (test_npm_binding_observation.IdentityLimitTests.test_large_identity_streams_while_source_reader_keeps_small_limit) ... ok
+test_stream_refuses_growth_and_descriptor_identity_changes (test_npm_binding_observation.IdentityLimitTests.test_stream_refuses_growth_and_descriptor_identity_changes) ... ok
+test_original_python_producer_exports_opt_in_consumed_identities (test_npm_binding_observation.ProducerBoundaryTests.test_original_python_producer_exports_opt_in_consumed_identities) ... ok
+
+----------------------------------------------------------------------
+Ran 12 tests in 15.374s
+
+OK

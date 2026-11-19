@@ -1,0 +1,18 @@
+{
+  "schema": "codearbiter-execution-state/1",
+  "program_id": "codearbiter-major-state-contracts",
+  "branch": null,
+  "head": null,
+  "recorded_at": null,
+  "task_updates": [],
+  "later_decisions": [],
+  "new_required_work": [],
+  "new_transition_rows": [],
+  "evidence_records": [],
+  "scoped_blockers": [],
+  "unknown_outcomes": [],
+  "next_actions": [],
+  "delivery_state": "NOT_STARTED",
+  "trusted_readiness_reference": null,
+  "distribution_settlement_references": []
+}

@@ -1,0 +1,109 @@
+{
+  "format": "codearbiter.artifact-promotion/0.1.0",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "workflow": ".github/workflows/ci.yml",
+  "run_id": "43582198115",
+  "version": "0.1.0",
+  "protocol": "codearbiter.artifact-api/0.1.0",
+  "schema_version": "0.3.2",
+  "hosts": {
+    "claude": "plugins/ca/helpers/artifacts",
+    "codex": "plugins/ca-codex/helpers/artifacts",
+    "pi": "plugins/ca-pi/helpers/artifacts"
+  },
+  "qualifications": {
+    "darwin/amd64": {
+      "receipt_sha256": "6ee557a924f03c43b3b6a6dbd2413117a4fa4d9c6bf42b45e79e3df81422e102",
+      "job": "artifact-engine",
+      "binary_sha256": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52",
+      "native_tests": [
+        "artifact-bridge",
+        "artifact-conformance",
+        "artifact-native",
+        "artifact-package",
+        "go-test",
+        "go-vet"
+      ],
+      "context_observation_sha256": "ca06206ca583e435e00b31e44b54a5b18aebf66e0f077b951c95c3d368c9b7ea"
+    },
+    "darwin/arm64": {
+      "receipt_sha256": "017c49d86cbf5465585566e5cf0657cc26f757846b301a1d3f7f015a931485f9",
+      "job": "artifact-engine",
+      "binary_sha256": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0",
+      "native_tests": [
+        "artifact-bridge",
+        "artifact-conformance",
+        "artifact-native",
+        "artifact-package",
+        "go-test",
+        "go-vet"
+      ],
+      "context_observation_sha256": "0d7ed4c4fa627a3decddaaf214e96fdccaa08452c41e55be4d44b8001e1228d3"
+    },
+    "linux/amd64": {
+      "receipt_sha256": "b42362e6ee10dd1f61ceb22064b1763c8bcf188a9da6b86677f37e309c570ebf",
+      "job": "artifact-engine",
+      "binary_sha256": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69",
+      "native_tests": [
+        "artifact-bridge",
+        "artifact-conformance",
+        "artifact-native",
+        "artifact-package",
+        "go-test",
+        "go-vet"
+      ],
+      "context_observation_sha256": "42da7ad0a1b2100d02ba44a4ff874f7912daffb96fa0d180bf14c8cb10a68a51"
+    },
+    "linux/arm64": {
+      "receipt_sha256": "419f5b4343d1a5129be5b95cd841210ab4ce556aa05894ebd937d7375f9efe23",
+      "job": "artifact-engine",
+      "binary_sha256": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8",
+      "native_tests": [
+        "artifact-bridge",
+        "artifact-conformance",
+        "artifact-native",
+        "artifact-package",
+        "go-test",
+        "go-vet"
+      ],
+      "context_observation_sha256": "dcb2dd16f97d0a246259606025d527e5753c6e36c6f39feddfb6dbdf69b5326e"
+    },
+    "windows/amd64": {
+      "receipt_sha256": "615a31bd195ff97f65cfb6ab2ae56d4c9fadfd829202fed14c48ac27c48ade3b",
+      "job": "artifact-engine",
+      "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "native_tests": [
+        "artifact-bridge",
+        "artifact-conformance",
+        "artifact-native",
+        "artifact-package",
+        "go-test",
+        "go-vet"
+      ],
+      "context_observation_sha256": "5ddaf793089c6a24d75fa88608a107e6fe231dfd647e4707292a487ede3b5af9"
+    },
+    "windows/arm64": {
+      "receipt_sha256": "407d56be54002bba8d4534d23dba942598e59c6ad334a48bd57351ad97a585b3",
+      "job": "artifact-engine",
+      "binary_sha256": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1",
+      "native_tests": [
+        "artifact-bridge",
+        "artifact-conformance",
+        "artifact-native",
+        "artifact-package",
+        "go-test",
+        "go-vet"
+      ],
+      "context_observation_sha256": "41ce97debadcd79f60f1c869b9f50a786da38b0af29e7ad10fa80d310f8571e3"
+    }
+  },
+  "payload": {
+    "release.json": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+    "ca-artifact-darwin-amd64": "ec05923150f39cc568838b8f61efa973e952ffb4cf777a61b24b042cdb324b52",
+    "ca-artifact-darwin-arm64": "934f11932a55b3ba1d07c73331abd61f896a92017c3111c8dc312394dad046c0",
+    "ca-artifact-linux-amd64": "033a0813ca9f5c2dde20d1cafc1a69052e9ba9a2492f623aa38673df72411d69",
+    "ca-artifact-linux-arm64": "d8ad70e32a3ca49646a6dcdac13c5f01a8da97d3cca6dc6fdaf946e3d975f3a8",
+    "ca-artifact-windows-amd64.exe": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+    "ca-artifact-windows-arm64.exe": "9e898a3ddce11894395df766611165ace082bc1c5c7c110f083b9f095ff697f1"
+  }
+}

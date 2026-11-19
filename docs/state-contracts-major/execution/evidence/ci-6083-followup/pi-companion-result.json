@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-W",
+    "always::ResourceWarning",
+    "-m",
+    "unittest",
+    "test_pi_package.PiPackageTests.test_rpc_observed_raw_identity_and_artifact_are_bounded_and_closed",
+    "test_pi_package.PiPackageTests.test_real_rpc_raw_compatibility_path_keeps_the_original_cli_arguments",
+    "test_pi_package.PiPackageTests.test_real_rpc_passive_observed_raw_companion_retains_runtime_and_phases",
+    "test_pi_package.PiPackageTests.test_rpc_shutdown_observer_does_not_force_exit_on_eof",
+    "-v"
+  ],
+  "exit_code": 0,
+  "seconds": 4.969254499999806,
+  "before_after_equal": true,
+  "scope": "Four focused selectors only; original raw and separate observed companion both run once; actualNode22.19/Pi1.5; Python3.14.6, no hosted3.15 qualification."
+}

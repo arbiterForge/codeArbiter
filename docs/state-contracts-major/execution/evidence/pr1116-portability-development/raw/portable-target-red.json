@@ -1,0 +1,19 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-c",
+    "import sys,unittest;sys.path.insert(0,'C:\\\\Users\\\\brenn\\\\AppData\\\\Local\\\\Temp\\\\ca-npm-runtime-portability-fix-b_7qg4fc\\\\candidate\\\\.github\\\\scripts');s=unittest.TestSuite(unittest.defaultTestLoader.loadTestsFromName(n) for n in [\"test_npm_binding_observation.RuntimePortabilityTests.test_actual_owned_8193_regular_file_inventory_is_complete\",\"test_npm_binding_observation.RuntimePortabilityTests.test_actual_owned_links_are_inert_and_never_traversed\"]);r=unittest.TextTestRunner(verbosity=2).run(s);sys.exit(not r.wasSuccessful())"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-runtime-portability-fix-b_7qg4fc",
+  "exit_code": 1,
+  "duration_seconds": 1.9247776999836788,
+  "source_sha256": "cfedbbdd5b2f8e69027062303302ee704183a34a2cfead8b7ac1c160623e72c8",
+  "test_sha256": "e89dec22cd8d92463dc8915e75761c7b9e36e562c838af0cfeb1ec83243764dd",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "396fd0dd1a9a3d3311561e87818be239c2e40f48cb63831f57c5d849fbc15dc9"
+}

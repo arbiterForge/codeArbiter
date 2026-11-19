@@ -1,0 +1,731 @@
+{
+  "format": "codearbiter.site-machine-source-inspection/1",
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "baseline_commit": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "machine": "S57",
+  "full_frozen_machine": {
+    "machine_id": "S57",
+    "name": "Academy command preferences and copy interaction",
+    "domain": "Pi, farm, sandbox, site and packaging",
+    "kind": "implemented",
+    "owner": "site",
+    "closure_task": "Q-01",
+    "task_ids": [
+      "Q-01"
+    ],
+    "explicit_machine_task_ids": [],
+    "source_intersection_task_ids": [],
+    "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+    "treatment": "PRESERVE_BASELINE_CONTRACT",
+    "status": "NOT_RUN",
+    "transition_count": 7,
+    "source_refs": [
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+      "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts"
+    ],
+    "proposed_composed_scenario_ids": [],
+    "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+    "evidence": []
+  },
+  "assessment": "Seven-clause SOURCE-ONLY preferences/copy conformance, including the actual no-cross-tab/no-disconnect baseline limitation; no clipboard/browser observation.",
+  "clauses": [
+    {
+      "cell": "disposition:transitions:S57:01",
+      "baseline": {
+        "event": "read preferences",
+        "guard": "record validates",
+        "to": "partially selected or selected",
+        "effects": "Apply separate OS and host filters; otherwise start unset.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "connect",
+        "transition_id": "S57:01"
+      },
+      "frozen_row_sha256": "4ac4f745a2953a1629a0adb600b620c66b324dc11ef64238a6d703b5914fe2ae",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "456eb28496ae8d869ef52c9258f6a8f265151d63ea6ae9ae72abc82d53325eca",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. OS and host keys are independently constrained to fixed allowed Sets; storage acquisition/read failure or unsupported value yields null. Initial reflect/refresh applies those in-memory values. This is the conditional component source contract, not generated Academy/module availability.",
+      "guard_effect_retry_assessment": "Preference read accepts only supported OS/host values; inaccessible or malformed storage yields unset values, with axes kept separate.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 19,
+          "end": 42,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 74,
+          "end": 99,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 142,
+          "end": 144,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:01",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/academy-command-preferences.ts",
+                "start": 19,
+                "end": 42,
+                "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 74,
+                "end": 99,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 142,
+                "end": 144,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "OS and host keys are independently constrained to fixed allowed Sets; storage acquisition/read failure or unsupported value yields null. Initial reflect/refresh applies those in-memory values. This is the conditional component source contract, not generated Academy/module availability.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "4ac4f745a2953a1629a0adb600b620c66b324dc11ef64238a6d703b5914fe2ae",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S57:02",
+      "baseline": {
+        "event": "choose OS or host",
+        "guard": "supported option",
+        "to": "updated selection",
+        "effects": "Update UI immediately; persist best effort; if no variants match, fall back to showing all.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "any choice",
+        "transition_id": "S57:02"
+      },
+      "frozen_row_sha256": "dda1862ea89f90aa6ddd805da33f31412dc3eca9a14f45cb56f6ce9bb0b23c8e",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "aad0e49479b2c4f51e85c5b8c49f668029365c35a3d7d9da42ba1988dd66ed64",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Only supported OS/host choices update the matching in-memory field; persistence is attempted in try/catch, then aria reflection and variant refresh run. A zero-match filter returns every variant index. Unknown option returns without change.",
+      "guard_effect_retry_assessment": "A supported choice changes in-memory selection and filtering immediately, then attempts persistence; an unmatched combination shows all variants rather than hiding every command.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 44,
+          "end": 52,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 102,
+          "end": 120,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:02",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/academy-command-preferences.ts",
+                "start": 44,
+                "end": 52,
+                "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 102,
+                "end": 120,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "Only supported OS/host choices update the matching in-memory field; persistence is attempted in try/catch, then aria reflection and variant refresh run. A zero-match filter returns every variant index. Unknown option returns without change.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "dda1862ea89f90aa6ddd805da33f31412dc3eca9a14f45cb56f6ce9bb0b23c8e",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S57:03",
+      "baseline": {
+        "event": "storage write fails",
+        "guard": "browser denies storage",
+        "to": "storage fallback",
+        "effects": "Keep current in-memory choice; no false durability claim.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "updated selection",
+        "transition_id": "S57:03"
+      },
+      "frozen_row_sha256": "0406299c07da8c9c95ab4b4383deba37e3910089eb297e79f125aaa29e71fb1b",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "c012bcfe60b0ef3abb5ffe563eb89ce5d9cb81ff59525858aa1b297d48bdd7e8",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. preferences[kind] changes before setItem; the storage exception is swallowed and both reflect and refresh still run. No successful durability receipt or persisted-readback assertion is manufactured.",
+      "guard_effect_retry_assessment": "A storage write failure does not roll back the explicit in-memory choice or assert durable persistence.",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 102,
+          "end": 113,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:03",
+            "witnesses": [
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 102,
+                "end": 113,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "preferences[kind] changes before setItem; the storage exception is swallowed and both reflect and refresh still run. No successful durability receipt or persisted-readback assertion is manufactured.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "0406299c07da8c9c95ab4b4383deba37e3910089eb297e79f125aaa29e71fb1b",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S57:04",
+      "baseline": {
+        "event": "copy",
+        "guard": "clipboard API available",
+        "to": "copy pending",
+        "effects": "Copy exact rendered command text.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "visible command",
+        "transition_id": "S57:04"
+      },
+      "frozen_row_sha256": "ef3566752045dceccb8d3c7f326c2e3922dcef6e04f33f729319171594eb2177",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "45dd23f78ca80cd389d2f6eb5a014046de10bb4345669adf942a10238e97909c",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. The copy listener resolves the declared target, passes exactly target.textContent to the async clipboard writer and returns when target absent. No shell/tool command is invoked.",
+      "guard_effect_retry_assessment": "Copy passes the exact currently rendered command text to the clipboard operation, retaining displayed command provenance.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 54,
+          "end": 66,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 121,
+          "end": 136,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:04",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/academy-command-preferences.ts",
+                "start": 54,
+                "end": 66,
+                "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 121,
+                "end": 136,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "The copy listener resolves the declared target, passes exactly target.textContent to the async clipboard writer and returns when target absent. No shell/tool command is invoked.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "ef3566752045dceccb8d3c7f326c2e3922dcef6e04f33f729319171594eb2177",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S57:05",
+      "baseline": {
+        "event": "clipboard resolves",
+        "guard": "success",
+        "to": "copied",
+        "effects": "Display success feedback.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "copy pending",
+        "transition_id": "S57:05"
+      },
+      "frozen_row_sha256": "3ac3abec2c92aa8cbc0026646fa3e0eefb38dcee74aa9af35e782c1258ce069c",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "a2c6773d1f76e691322f9c577a69bfed25ae3d9308a0a3b62ba85e751f392173",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Only awaited writer resolution returns copied, selecting the Copied status text; status element absence is tolerated. No actual system clipboard observation is claimed.",
+      "guard_effect_retry_assessment": "Resolved clipboard write shows success feedback; no independent command execution or authority evidence is created.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 59,
+          "end": 61,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 137,
+          "end": 139,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:05",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/academy-command-preferences.ts",
+                "start": 59,
+                "end": 61,
+                "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 137,
+                "end": 139,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "Only awaited writer resolution returns copied, selecting the Copied status text; status element absence is tolerated. No actual system clipboard observation is claimed.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "3ac3abec2c92aa8cbc0026646fa3e0eefb38dcee74aa9af35e782c1258ce069c",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S57:06",
+      "baseline": {
+        "event": "clipboard rejects",
+        "guard": "failure",
+        "to": "copy failed",
+        "effects": "Select command text for manual copy; show failure state.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "copy pending",
+        "transition_id": "S57:06"
+      },
+      "frozen_row_sha256": "d643863cfea7e20baa5f7df429061e25747e0428c901ee33234199ab689e1ef7",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "16bb58ce1c642e7f93d20cbeab8c19dd0810eacd4f32e5163fb59b64b151f954",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. Writer rejection enters fallback callback selecting target node contents via Range/Selection, then returns fallback and emits the manual Ctrl+C/Command+C guidance. A later ordinary click retries the same flow.",
+      "guard_effect_retry_assessment": "Rejected/unavailable clipboard writing selects rendered text using Range/Selection and reports the manual-copy path.",
+      "witnesses": [
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "start": 59,
+          "end": 65,
+          "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 126,
+          "end": 139,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:06",
+            "witnesses": [
+              {
+                "path": "site/src/scripts/academy-command-preferences.ts",
+                "start": 59,
+                "end": 65,
+                "file_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 126,
+                "end": 139,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "Writer rejection enters fallback callback selecting target node contents via Range/Selection, then returns fallback and emits the manual Ctrl+C/Command+C guidance. A later ordinary click retries the same flow.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "d643863cfea7e20baa5f7df429061e25747e0428c901ee33234199ab689e1ef7",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    },
+    {
+      "cell": "disposition:transitions:S57:07",
+      "baseline": {
+        "event": "setup again",
+        "guard": "dataset once-bound guard",
+        "to": "same",
+        "effects": "Avoid duplicate binding.",
+        "failure_retry": "No cross-tab storage listener or disconnect abort is installed by this component.",
+        "source": [
+          {
+            "path": "site/src/scripts/academy-command-preferences.ts",
+            "symbol": "preference validation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/scripts/academy-command-preferences.ts",
+            "lines": "1-66"
+          },
+          {
+            "path": "site/src/components/AcademyCommandPreferences.astro",
+            "symbol": "preference component",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:site/src/components/AcademyCommandPreferences.astro",
+            "lines": "1-151"
+          }
+        ],
+        "from": "DOM reused",
+        "transition_id": "S57:07"
+      },
+      "frozen_row_sha256": "56a7556c50618d741d82639a0e2b7fd4d92e9a65db0b17b0e6cd176efb70c1cf",
+      "current_edge_status": "PRESERVED",
+      "current_edge_row_sha256": "33568ed37ecae2ac5794bbf853da506942f3b12a8dcec24df85820a092a3144d",
+      "current_contract_note": "Conditional source guard/effect/retry clauses inspected; not execution. dataset.initialized true returns before listener binding; custom element definition is also guarded. Entire component script contains neither storage-event listener nor disconnectedCallback/abort, preserving that explicit baseline limit.",
+      "guard_effect_retry_assessment": "The setup dataset guard prevents duplicate binding on repeated setup. The actual baseline deliberately has no cross-tab preference listener or disconnect-abort protocol.",
+      "witnesses": [
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 77,
+          "end": 80,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "start": 115,
+          "end": 150,
+          "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+        }
+      ],
+      "retained_conformance_mappings": [
+        {
+          "proof": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+          "proof_sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+          "mapping": {
+            "cell": "disposition:transitions:S57:07",
+            "witnesses": [
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 77,
+                "end": 80,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              },
+              {
+                "path": "site/src/components/AcademyCommandPreferences.astro",
+                "start": 115,
+                "end": 150,
+                "file_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025"
+              }
+            ],
+            "semantic_assessment": "dataset.initialized true returns before listener binding; custom element definition is also guarded. Entire component script contains neither storage-event listener nor disconnectedCallback/abort, preserving that explicit baseline limit.",
+            "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+            "frozen_row_sha256": "56a7556c50618d741d82639a0e2b7fd4d92e9a65db0b17b0e6cd176efb70c1cf",
+            "treatment": "PRESERVE_BASELINE_CONTRACT",
+            "guard_effect_retry_source_only": true
+          }
+        }
+      ],
+      "new_edge_disposition": null
+    }
+  ],
+  "input_join_ref": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/source-joins.json",
+    "sha256": "8e328271fc2116902ef90cd4d9e7f9ead1a21e83144a0d6b8d2f2d7150cf91fa"
+  },
+  "existing_conformance_reuse": [
+    {
+      "ref": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/site-preserved.json",
+      "sha256": "5955d753d6a3261cdfc86dc5144a025f61f0edae154cbe97698d82f4ae8ce1e3",
+      "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+      "result": "PRESERVED",
+      "all_declared_inputs_equal_current": true,
+      "input_comparisons": [
+        {
+          "path": "docs/state-contracts-major/contracts/machine-coverage.json",
+          "recorded_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "actual_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/tasks.json",
+          "recorded_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "actual_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+          "equal": true
+        },
+        {
+          "path": "docs/state-contracts-major/contracts/transition-coverage.json",
+          "recorded_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "actual_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+          "equal": true
+        },
+        {
+          "path": "site/package-lock.json",
+          "recorded_sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+          "actual_sha256": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+          "equal": true
+        },
+        {
+          "path": "site/package.json",
+          "recorded_sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+          "actual_sha256": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+          "equal": true
+        },
+        {
+          "path": "site/public/examples/statusline-themes.json",
+          "recorded_sha256": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+          "actual_sha256": "7babdcdb11f11eba777a5df3aba9e976972b4ddbd1183316540510e74bf910bf",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/academy-wayfinding.ts",
+          "recorded_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+          "actual_sha256": "834239f0853c91950f60bc7061c5459d1de4abf148de6857be051d706a34ff31",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/decision-evidence.ts",
+          "recorded_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+          "actual_sha256": "2e294b0e78d8cf799864a05582264dbfb98a570a64e918134e5eba716ca26550",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/model.ts",
+          "recorded_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+          "actual_sha256": "04b4f5cdb726e0ec2674702a8abcf61fb028bc4ef585f7f6313de3d8e42b7c0b",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/execution-maps/render.ts",
+          "recorded_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+          "actual_sha256": "3d56cdebe1826f57be49faa04e8db97c02933cb3102bbafe41d4c506d48bb328",
+          "equal": true
+        },
+        {
+          "path": "site/scripts/statusline-capture.ts",
+          "recorded_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+          "actual_sha256": "dfdae29f2cb79e7dd3621f96494505823a464702cc3885b7377e88013e222a33",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyBookmark.astro",
+          "recorded_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "actual_sha256": "7df832f6754945b2000dce018820eb7385e63858c48be6505924b06d44148c90",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyCommandPreferences.astro",
+          "recorded_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+          "actual_sha256": "ea080042d0bdfafad187400cdc520dcdb900a9b87c5660e7ad75c5141ccb3025",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/AcademyOverview.astro",
+          "recorded_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "actual_sha256": "91c6001f997b8e0856a239c79cc9a2f848f6874bbd2b229696e57dee28a0f0f6",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/CaTocList.astro",
+          "recorded_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "actual_sha256": "e24d8512cfb4536672452f7621f2f4f8bfe20531b9a5b8fde93ab5f070386dd1",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ContextExplorer.astro",
+          "recorded_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "actual_sha256": "74300b7836f500dfc8bc25d457a3da4436849ce8a8fad6c549592b426f57a4de",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/DecisionEvidence.astro",
+          "recorded_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "actual_sha256": "03c01d814a3567d0cc40124fb0accdc238128e3fd3a97aacf9aaece1c127ea40",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExampleChoices.astro",
+          "recorded_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "actual_sha256": "759b8059a8e843d934eaa29e2dc2abadd43d467eccfd923fcfa9970f0cd73bca",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ExecutionMap.astro",
+          "recorded_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "actual_sha256": "3640d7182dc62e40b4e93b2493c96c9ff5f40f62e05d195161ad2de8e6075e8a",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/StatuslineGallery.astro",
+          "recorded_sha256": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043",
+          "actual_sha256": "c2fdf29278542b4ec97dfe98bc034d17fb0ee051aaece243fe7fe94b76dfa043",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/TableOfContents.astro",
+          "recorded_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "actual_sha256": "f1b79c5d376b165ab8842eb148970f0acd646a70d5b67fcf5929ca2b37b5f214",
+          "equal": true
+        },
+        {
+          "path": "site/src/components/ThemeProvider.astro",
+          "recorded_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "actual_sha256": "ee077452e1c217bbdd27b4a798accb96a9134919b3c77e6390b1f5a413a83bad",
+          "equal": true
+        },
+        {
+          "path": "site/src/data/context-examples.json",
+          "recorded_sha256": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+          "actual_sha256": "54a898295cfa87f7cf0c6299f8ec9228d2685a1fae96bc42747b7e13b2942820",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/academy-bookmark.ts",
+          "recorded_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "actual_sha256": "8015708d6686b7efef1186d7a0ebc3fd1b737462308acfd2d25511428636029e",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/academy-command-preferences.ts",
+          "recorded_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+          "actual_sha256": "35677f032947676efdc8df94efaace8f78f4f1544cd28ee37a1410e1457abcc2",
+          "equal": true
+        },
+        {
+          "path": "site/src/scripts/execution-map-navigation.ts",
+          "recorded_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "actual_sha256": "7f0a27f56602618dd58781d6ca3c08cfca456c8483c0407e67a94cb4fb4a3dc5",
+          "equal": true
+        },
+        {
+          "path": "site/src/styles/academy-wayfinding.css",
+          "recorded_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+          "actual_sha256": "7af3a3fa26f8f7a848cdbfbf18d4631f74a53a0fbed79d654e3ebb2bb19f3dc2",
+          "equal": true
+        }
+      ]
+    }
+  ],
+  "accepted_changes": "BUILD-G01 replaces delete-first with complete staged owned publication for S64/S67. Existing analytical corrections stay exactly as committed. gen.ts now forwards skipped-call-site annotations; serial stage ordering is unchanged.",
+  "dependency_boundary": "Conditional control flow given valid declared DOM/content/model inputs; no particular corpus, generated build or external Academy checkout was admitted or executed.",
+  "observation": "Source inspection/hash comparison only. No tests, validators, browser, commands under test, build, runtime, network or provider were executed."
+}

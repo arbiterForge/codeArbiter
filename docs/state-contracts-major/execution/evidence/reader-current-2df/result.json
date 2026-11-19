@@ -1,0 +1,198 @@
+{
+  "format": "bounded-current-reader-observation/1",
+  "source_commit": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "actual_execution_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+  "source_relation": "Declared executable input epoch2df; actual observed HEAD/index at execution retained independently; all5 inputs literally match both Git subjects and physical source.",
+  "started_at": "2026-11-15T02:18:09.671496+00:00",
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-B",
+    "-X",
+    "utf8",
+    "-m",
+    "unittest",
+    "-v",
+    "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+    "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+    "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+    "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+    "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+    "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+    "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts",
+  "exit_code": 0,
+  "seconds": 6.115125899999839,
+  "selectors": [
+    "ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+    "ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+    "ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+    "ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+    "ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+    "ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+    "CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+    "CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+    "PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+    "PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+    "PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+    "PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+    "PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+    "PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied"
+  ],
+  "named_results": [
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_binary_readiness_preserves_completion_from_one_write",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_binary_early_eof_reports_closed_and_finishes_empty",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_without_input_closes_stdin_after_readiness",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_sends_text_or_binary_input_after_readiness",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_communicate_timeout_retry_sends_the_original_payload_once",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.ReadinessWaitTest.test_unread_stdin_stays_bounded_and_cleanup_settles_writer",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.CodexHostCommandDeadlineTest.test_hanging_codex_command_fails_with_timeout_and_containment",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.CodexHostCommandDeadlineTest.test_a_timed_out_marketplace_add_is_a_recorded_failure",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_no_ready_line_is_a_bounded_failure_with_containment",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_ready_line_is_refused",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_immediate_exit_is_refused",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_well_behaved_boundary_completes",
+      "outcomes": [
+        "ok"
+      ]
+    },
+    {
+      "id": "test_boundedproc.PiBenchmarkReadinessDeadlineTest.test_partial_early_exit_retains_readiness_failure_when_group_signal_is_denied",
+      "outcomes": [
+        "ok"
+      ]
+    }
+  ],
+  "inputs_before": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/check_codex_host.py": "7622feb0ce9b2b584628857cd3ea01f7866efb46965452423372217c84237ecd",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+  },
+  "inputs_after": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/check_codex_host.py": "7622feb0ce9b2b584628857cd3ea01f7866efb46965452423372217c84237ecd",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+  },
+  "committed_inputs": {
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/scripts/pi_benchmark.py": "1a224fc7625b00586e453d9f3cac878d5d2db1d68ac26b37c54b5002b1b8ee77",
+    ".github/scripts/test_boundedproc.py": "95238b422b62a6b154effe3d919c9f86f8927babbcf240ea40ab919f6828b87e",
+    ".github/scripts/check_codex_host.py": "7622feb0ce9b2b584628857cd3ea01f7866efb46965452423372217c84237ecd",
+    ".github/scripts/codex_agent_routes.py": "756a4a53059853fe85bbb846dd0bf87acf8c556506f4f5b0f7476897b2471092"
+  },
+  "identity_before": {
+    "head": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+    "index_sha256": "982415cf9f2fe4af5bcdc78c58d0f4766cf9180887f22447a4639d445f2eb083"
+  },
+  "identity_after": {
+    "head": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+    "index_sha256": "982415cf9f2fe4af5bcdc78c58d0f4766cf9180887f22447a4639d445f2eb083"
+  },
+  "runtime": {
+    "python_executable": "C:\\Python314\\python.exe",
+    "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+    "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+    "platform": "win32"
+  },
+  "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONIOENCODING",
+    "PYTHONNOUSERSITE",
+    "SystemRoot",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR",
+    "XDG_CONFIG_HOME"
+  ],
+  "disposable_HOME_before_import": true,
+  "module_scope": "All5 explicit project module paths captured; stdlib-only import cone inspected. No hostapi/Go/installed-source lookup is executed, so no invented host absence or native membership declaration.",
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "ddf9ef4a9205c69e62cac0df6a5405021ee3b76cba1de1fe2447bd69f0b1e7d6",
+  "observer_sha256": "e67c5d439d0d627ed9f12eeb4445496ef2dc79d5baa43884b9f591194cbef164",
+  "limits": [
+    "14 exact existing fixture methods; neither full23 module nor warm100 benchmark executed.",
+    "No Pi/Codex CLI, Node, esbuild, native/Go, provider, network, install, API or production build.",
+    "Cleanup statuses are the existing Windows process-group/taskkill owner, not Job Object/native rundown guarantees.",
+    "The generic grandchild test was excluded because its untyped Windows liveness helper is not needed or adopted as a stronger oracle."
+  ]
+}

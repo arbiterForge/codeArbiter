@@ -130,7 +130,12 @@ def check_payload(root, host=None):
             pi_config = package.get("pi") if isinstance(package, dict) else None
             extensions = pi_config.get("extensions") if isinstance(pi_config, dict) else None
             skills = pi_config.get("skills") if isinstance(pi_config, dict) else None
-            if (package.get("name") == "ca-pi"
+            # HW-03: the identity is the host's own declared package name
+            # (`@arbiterforge/ca-pi`), never a bare `ca-pi` literal — that
+            # literal failed every legitimate install and told it to reinstall.
+            expected_name = getattr(host, "adapter_name", None)
+            if (isinstance(expected_name, str) and expected_name
+                    and package.get("name") == expected_name
                     and extensions == ["./extensions/codearbiter.js"]
                     and skills == ["./skills"]):
                 ok("package.json declares only the ca-pi extension and generated skills")

@@ -1,0 +1,467 @@
+{
+  "schema": "codearbiter-major-development-observations/1",
+  "recorded_at": "2026-11-16T08:51:51.837211+00:00",
+  "controller_anchor": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "scope": "Retained local development observations and framework controls; no disposition proof admission or task/source epoch renewal.",
+  "changes": [
+    "Eleven additional native contract recipes require exact named original test outcomes on all six existing native CI platforms. Existing eight recipes and native16 selection remain unchanged.",
+    "Three original Sandbox contracts require existing guard assertions plus actual owned home, offline/nonroot, and interrupted real copy effects. Original tmpfs-copy failure remains separately retained; corrected image-layer fixture is explicitly copy-only.",
+    "Docs reporter retains safe fixed source coordinates and original browser observation after report refusal; original27d refusal predicate remains UNKNOWN.",
+    "The S18 footer used real supported SDK owner/provider/component with a virtual terminal and data-only session. It is component evidence, not installed-host/human/provider acceptance. Portable original-owner CI wiring remains separate.",
+    "Portable SDK footer method and one-cell closed Python source profile now reuse the original unfiltered Pi package suite once, with its original source uploader and authenticated completed-reader role. No SDK runtime replay during wiring.",
+    "Cold installed-host diagnostics distinguish five fixed refused-launch categories, without target/argv/environment contents or permission changes. Original hosted launch cause remains UNKNOWN."
+  ],
+  "actual_checks": {
+    "docs": {
+      "tests": 25,
+      "result": "PASSED",
+      "seconds": 2.147,
+      "receipt": "root-controls/docs-coordinate-final-green.json"
+    },
+    "native_authority": {
+      "tests": 18,
+      "result": "PASSED",
+      "seconds": 1.56,
+      "receipt": "root-controls/native-nineteen-green.json"
+    },
+    "sandbox_route": {
+      "tests": 3,
+      "result": "PASSED",
+      "seconds": 5.843,
+      "receipt": "root-controls/sandbox-current-routing-green.json"
+    },
+    "native_product": "Prior N09 four parents, N11 three-event history, and corrected next-four/12children ran in separate bounded offline captures; unchanged complement suites/all six platforms not locally rerun.",
+    "sandbox_product": "Two original effect cases PASS; original tmpfs copy failed; corrected copy-only successor PASS with actual partial-copy abort.",
+    "sdk_product": "One original Python method PASS with real reviewed supported SDK child; eleven phase controls, no provider or full application.",
+    "sandbox_typecheck": {
+      "result": "PASSED",
+      "seconds": 1.027,
+      "receipt": "root-controls/next-sandbox-typecheck.json",
+      "scope": "Declared npx tsc --noEmit expanded to pinned existing Node and local TypeScript entry; no dependency acquisition/runtime/Docker replay."
+    },
+    "combined_controls": {
+      "tests": 53,
+      "result": "PASSED",
+      "seconds": 24.579,
+      "receipt": "root-controls/combined-profile-controls-green.json",
+      "scope": "Docs25+native18+SDK6+Sandbox3+SDKworkflow1; inert inner observer TestResults are not additional product/SDK runtime executions."
+    },
+    "launch_diagnostic": {
+      "tests": 1,
+      "subcases": 5,
+      "result": "PASSED",
+      "seconds": 0.057,
+      "receipt": "launch-diagnostic/green.json",
+      "scope": "Pure captured actual audit callback, no installed hook or launch; genuine initial5subcaseRED retained. Legacy decoder values preserved, actual launch predicates AST unchanged."
+    },
+    "integration_integrity": {
+      "actual_branch_head": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "verification_fixture_commit": "1d635a022faa161aed8a94ffa9e1dc17f1ccd350",
+      "candidate": "candidate-v1:331257c984c92fbd9e98d1c88363db5c643fc5f7f310039c3fb8450fd4d27ef5",
+      "result": "PASSED",
+      "frozen": 105,
+      "records": 1318,
+      "applicability": {
+        "APPLICABLE": 523,
+        "STALE": 795
+      },
+      "seconds": 41.125,
+      "source_ref_moved": false,
+      "scope": "Actual original owner measured93-path staged source/data tree at distinct real private Git epoch; only these reporting fields and its retained summary followed. Final-head hosted validation remains required. Applicability counts are not passing behavior."
+    }
+  },
+  "source_limits": [
+    "New native-boundary file has one reporting-only header correction after the recorded successful unit run; all executable Go bytes unchanged.",
+    "Raw SDK before/after full runtime closure inventories remain in private original capture; retained summaries/digests are not a replacement source qualification.",
+    "Original runtime invocations occurred at their own recorded source epochs. New source requires fresh original hosted evidence; these are not rebound as current passing proofs."
+  ],
+  "retained": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-progress/delivery.json",
+      "sha256": "e752a44643fc196a80f907e83e41e8cfe41313f59705106dd2949a08bdd9dbfa",
+      "bytes": 5226
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-progress/focused-summary.json",
+      "sha256": "10bae2b7df379d9427309fac1bc7c94841bda866d019cd69c2c9b9fb0f2ff6a7",
+      "bytes": 987
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-progress/focused.stdout.jsonl",
+      "sha256": "492edaa43c89c8fe7dbdffcab1863df882850150fe49e903c51093744d96cd22",
+      "bytes": 51288
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-progress/scope-successor-summary.json",
+      "sha256": "bd9ed387beb21ddfadae8315513d0905c1f8560e07f7972fce8cef99092038dc",
+      "bytes": 322
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-progress/scope-successor.stdout.jsonl",
+      "sha256": "25bcfdd131ad56a2bcd84242f2728b66e9f79f86bbed8c67a5b7a47a7f72139c",
+      "bytes": 7394
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-progress/fixture-correction.json",
+      "sha256": "0fd5bfbac060a32cf6f9f01ce95329e95266af0c4822b19e591c65d037022852",
+      "bytes": 666
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-dependent-history/delivery.json",
+      "sha256": "4cb6b11952f8c3ece1f37f00ec901763daa1817fdcb7251c7f421d13b9802b29",
+      "bytes": 4528
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-dependent-history/summary.json",
+      "sha256": "d607899444464cd7931c5e5bc8bafa0bd866a11b16445a7e8ec829926765b800",
+      "bytes": 824
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-dependent-history/focused.stdout.jsonl",
+      "sha256": "10a65f25ac2b7a744c0f7d59661a979e8e3f137c27ee94e12e97db7d482af4fb",
+      "bytes": 5527
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-boundaries/delivery.json",
+      "sha256": "680616f01d1b48d40d568bf80323f9834a798ec9245f287fc8f1b6018f0a4f60",
+      "bytes": 1888
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-boundaries/summary.json",
+      "sha256": "94a0bca963a733fc90fde6aab337614d9eb15791abd756b52d06487872e1b9df",
+      "bytes": 2529
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-boundaries/focused.stdout.jsonl",
+      "sha256": "c0b935a6ccee6824d5618f27e3654b602d7f8a71d340b2f6bdc9dbf81b7e4b20",
+      "bytes": 17584
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/native-boundaries/freeze.json",
+      "sha256": "ba646c39784ed3527207d5af45015ceb488096dc830772d7a334f821c859b9ad",
+      "bytes": 1128
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/delivery.json",
+      "sha256": "0b8e04697e43f78db13bf11ae8b9614597f6593e844c55125dbd68fb4d587d68",
+      "bytes": 1026
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/actual-summary.json",
+      "sha256": "50fbe36e8be58f7051a3a269fb5777f56e55e89868ed908b57f4e41a5397892c",
+      "bytes": 5009
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/invocation.json",
+      "sha256": "9b214d858dc3d07e1328a58b0c4194d4c48dc0cb9bbc9c29541f75063b450749",
+      "bytes": 3180
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/result.json",
+      "sha256": "736effac9d35359ecaa11f80c031ab3f9dc44781e37c7a5b50ee86f562051b04",
+      "bytes": 549
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/vitest.json",
+      "sha256": "f03535dcfe32727048a8b94ddf2a148f17db0e92d9422c747ad83fce0a611235",
+      "bytes": 5405
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/stderr.log",
+      "sha256": "552e9160a7528e988d76f10c08fc7da1599d50ff08a77e8883070bdac7ff9b39",
+      "bytes": 1068
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/delivery.json",
+      "sha256": "2851847181500b8cb5f836b90eb10279c44a00cc61b71cbd0572be1235eb9102",
+      "bytes": 1309
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/actual-summary.json",
+      "sha256": "df90ada21527e64f44b756bd8db54d14caea624b50dd235edd86348e344dc1b4",
+      "bytes": 4532
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/invocation.json",
+      "sha256": "8ba17fb832cd954b99930d3900e03b45d11fddd6be2327dafcd94801af78466b",
+      "bytes": 2929
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/result.json",
+      "sha256": "80459a58e91c8d072b8364f560a0e3380ef12d879d79bf7363b8baa55d2e5f87",
+      "bytes": 549
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/vitest.json",
+      "sha256": "928ab3c6eda2d6f8a86e09d48403dbd3a9122992f14803cebaa5c24668b033a1",
+      "bytes": 4567
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/copy-result-private.json",
+      "sha256": "dec976329461e5e2a583740e2ad1c01d66efe3805d3217262049218ca7c73ece",
+      "bytes": 622
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-copy-successor/sidecar-retention.json",
+      "sha256": "90ad3f6cb43919f36793ac13fb9c2cc125fd5afc90133254f05deb8aba0a1897",
+      "bytes": 611
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/delivery.json",
+      "sha256": "be084a766e16aca073a8b312d6b1d15718957983b146825398cc444c5f00851b",
+      "bytes": 7388
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/command.json",
+      "sha256": "dc0f6a126ccc3507380491e1003d8de7aec49d10d0c9f69c7136126b166e558e",
+      "bytes": 2351
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/source-runtime-stability.json",
+      "sha256": "9b2c498ac4a1b054a0b0a1ddaf23f673672d206b7758d407cdc17be08e3cbe23",
+      "bytes": 253
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/actual-import-source-joins.json",
+      "sha256": "0f92b503fa9447ba057e269c0b6b6852b37977ccf710fe6a5678be3809b0f679",
+      "bytes": 1406
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/unittest-result.json",
+      "sha256": "aaf91c1b62e9455289f46c339f9a83413e2619e0b49f6a7011da4b74078abf0e",
+      "bytes": 142
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/terminal-capture.json",
+      "sha256": "a097dda0184b48a025bbd377162e7faa47a5236f0604723450f1d667da69d369",
+      "bytes": 5429
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-component/original.stderr.log",
+      "sha256": "d8279aa14670d2a6a816977ff8ccf3f63f2b9ca75b16cfdad042bd3edf646a87",
+      "bytes": 383
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-refusal-red.json",
+      "sha256": "c1726e425840798a13c4765a414b4e6a1cc36667278a68b3bbb1b2fbef0fb783",
+      "bytes": 1267
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-refusal-red.stderr",
+      "sha256": "599161f6892a49ce9336e0882309f84ec45828a61e5b89ddacd088f52ee49f74",
+      "bytes": 946
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-diagnostic-upload-red.json",
+      "sha256": "037c7073f6a3ac915aff26a6efdc460903a984848415dd144b5c75ee7a5db1c2",
+      "bytes": 1133
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-diagnostic-upload-red.stderr",
+      "sha256": "f446f379799ca961f8926f3d0fcad2bf0da5adac068163d17785bfc784bf5c1a",
+      "bytes": 24095
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-guard-coordinate-red.json",
+      "sha256": "8b1a46de6dc1fcdd85b803698b11cd2f1ff00fbb5ecbf259cb35433a58f5f6af",
+      "bytes": 3416
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-guard-coordinate-red.stderr",
+      "sha256": "3b62b8178ffca6690b806031491f56262c7d7cd3ef7c7327ed6c843053d49129",
+      "bytes": 1302
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-json-coordinate-red.json",
+      "sha256": "50bc33c5d45d2f6ff237352b101934ce0d2cf1e8bfad245d2e4de8f7c060f4d8",
+      "bytes": 3299
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-json-coordinate-red.stderr",
+      "sha256": "1104cc6996eb70bc26d1b7a623a66391e3a25e5e7f51c350e421f0680dff4f5c",
+      "bytes": 1373
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-coordinate-final-green.json",
+      "sha256": "9cd349cdb2d405c3e34cf07d2fe42d3b058cd8b76d82a487ed2656508aca2c07",
+      "bytes": 3202
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/docs-coordinate-final-green.stderr",
+      "sha256": "0680cabe287a052378dcde003ad0e557bfbd8a2713efe2c5067db474b6ed03ed",
+      "bytes": 129
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/native-nineteen-green.json",
+      "sha256": "d1374701a63d9d839534d6102a24c2ef5f8e4102f2d6f6e7fe06f83424f8ecee",
+      "bytes": 3199
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/native-nineteen-green.stderr",
+      "sha256": "5727a5a370054421540ae8240c99c603920708dbb4547a63df0c9664f34c2e09",
+      "bytes": 122
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/sandbox-current-routing-green.json",
+      "sha256": "38a1b2e8c279f4d67987252e1a9de84e6357f2d68fd721550a25a970be644eb8",
+      "bytes": 3376
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/sandbox-current-routing-green.stderr",
+      "sha256": "9b20a7a0978832f6c8d3a9e7a326309c7ee41fe9091e0183db9aa225c34f9465",
+      "bytes": 106
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/normal-integration/terminal-receipt.json",
+      "sha256": "e718b8040c87e3520c174b4cb3ade40ea22de07d5999f5eb832425984c76044f",
+      "bytes": 1041
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/reviews/docs-diagnostic-review.json",
+      "sha256": "5158b8e9460c3244e61edec9d10375e083fbdc21ce8e365aa74052311c65ba16",
+      "bytes": 7214
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/next-sandbox-typecheck.json",
+      "sha256": "26a308942a79a600d7bee65e37f9664bd82932406476be168c0dc0e404c68667",
+      "bytes": 10258
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/delivery.json",
+      "sha256": "92f2937417cb79e78de88ff8c83012e0aed56720109984402c31dda577b08698",
+      "bytes": 1744
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/preparation.json",
+      "sha256": "20cfa5339bfc7ea2120dfdd23fba1c6a7660a65e8c9647ced4afa41f5f8812f5",
+      "bytes": 1021
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/static-guards.json",
+      "sha256": "bbc386dd8d94b4c4fd0a9eea915a54ce5b0d23526c04a593775f048085ca2e03",
+      "bytes": 1013
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/original-failure-closed-projection.json",
+      "sha256": "36b2c7020845c41cad33e640dfb02926a9f3210e1bd48b2a3739d2cbf64548fc",
+      "bytes": 1007
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/red.json",
+      "sha256": "65385cbaa3c743ba2ae71fc64a6d1959227925870db95a18a24f611444c195de",
+      "bytes": 1243
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/red.stderr",
+      "sha256": "f8d1a760136f57aeab9fb23be786fff85c7ec12ab5e151b208c5833c88bf8026",
+      "bytes": 5819
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/green.json",
+      "sha256": "8a2b1df7f9c368d0278444dd229755dcd4564f144b24b81d79203e4cedb10507",
+      "bytes": 1244
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/green.stderr",
+      "sha256": "0d14a066ef4f7fc2d1b49aeb9343b04b86605b7cc450e8c8f95d408cdbe1bffa",
+      "bytes": 310
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/delivery.json",
+      "sha256": "0819cfc3098e043d71d364e7604b6aa88cbb8aa2b76a0cf771e604ff1721bbf7",
+      "bytes": 20543
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/checks-summary.json",
+      "sha256": "bfdd4da5bc1b3a7bee5f0c766bda34f5f6c38a6195308173fde5dea2bbabd916",
+      "bytes": 2388
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/RED-result.json",
+      "sha256": "77071b27968a668ca9be0ebbbc96dd4d0b68e81ccb1020c43e0ecaa80ff65a2b",
+      "bytes": 849
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/RED-tests.json",
+      "sha256": "709b00743bb7a9cf7a720eb1d48521ffc7d1f1b83745f6e352fe1b5c1c2dab0e",
+      "bytes": 256
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/FINAL-result.json",
+      "sha256": "329020377bfe8764643f7c41d1342e84b8104e8e9ee1610e7c6233ca15d4ed9f",
+      "bytes": 851
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/FINAL-tests.json",
+      "sha256": "b432017616fd8ab3b4e1066c3169435ca3463b7b0d466a97f59cfd3ec3112821",
+      "bytes": 184
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/COMPAT-result.json",
+      "sha256": "75464e6da45a8265efdbdaffad8813c1c4711e365d4f8f7efd6f3f622fcb9d3d",
+      "bytes": 851
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/COMPAT-tests.json",
+      "sha256": "519508fb315af1db2bff1193b656803bc2755a9b9fa5e45379e3066c7585477f",
+      "bytes": 776
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/CI-corrected-result.json",
+      "sha256": "d3f31b1eb360a26bb88fc4cd2265950a34025312b1f1173483c8ee05ea833a97",
+      "bytes": 859
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/sdk-profile/CI-corrected-tests.json",
+      "sha256": "df6208def3b64d48e4f2420e163a238302c4139b8576928c06c8b62f7494b95c",
+      "bytes": 186
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/combined-profile-controls-green.json",
+      "sha256": "98d69394eda963e47151003aff918bd17121e43af8ac398c68ee7428a2e70c1b",
+      "bytes": 4973
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/combined-profile-controls-green.stderr",
+      "sha256": "ad0b3fc971c74b8c3991aa442d14f22f422e72948e4ef20df10da1ea5d1cda74",
+      "bytes": 364
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-effects-development/root-controls/staged-integrity-summary.json",
+      "sha256": "69616be7272441b51615d1afb31056921cd583ccb503bc92c66f643d1dc8c376",
+      "bytes": 432
+    }
+  ],
+  "qualification": false,
+  "ledger_status_changes": false,
+  "main_merge": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED",
+  "normal_integration": {
+    "source_commit": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "ci_run": 43829498560,
+    "docs_run": 43829498531,
+    "ci": {
+      "result": "FAILURE",
+      "jobs": 89,
+      "successful": 74,
+      "failed": 3,
+      "skipped": 12
+    },
+    "docs": {
+      "result": "FAILURE",
+      "jobs": 5,
+      "successful": 1,
+      "failed": 1,
+      "skipped": 3
+    },
+    "qualification": false,
+    "primary_failures": [
+      "Docs qualification emission predicate UNKNOWN, original input unretained",
+      "WindowsAMD64 cold conformance claude author-dispatch subprocess launch-guard outer refusal; target identity UNKNOWN"
+    ],
+    "consequences": [
+      "Structured artifact qualification refuses unsuccessful artifact-native-bridges",
+      "Required merge gate FAILURE"
+    ]
+  }
+}

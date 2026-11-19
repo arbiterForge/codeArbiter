@@ -1,0 +1,7 @@
+{
+  "actual_transcript_sha256": "b14515d732a0d91a4893d5d8bd38486f2ac3a5cf831bcace1212374d992ab085",
+  "cursor_code": "ESC[5;1H meansrow5,column1; preserveacolumn1lineboundary before genericCSIremoval",
+  "actual_positive": true,
+  "echo_only_negative": true,
+  "not_a_product_failure": true
+}

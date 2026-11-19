@@ -1,0 +1,60 @@
+{
+ ".github/major-test-selections.json": {
+  "old67groups_exact": true,
+  "new_groups": 1
+ },
+ ".github/major-qualification-policy.json": {
+  "all_old_fields_exact_except_additive_bindings": true,
+  "new_bindings": [
+   "disposition:findings:C-F02",
+   "disposition:findings:HOOK-F04"
+  ]
+ },
+ ".github/scripts/major_qualification_report.py": {
+  "syntax": "PASS",
+  "old_owner_count": 44,
+  "changed_old_owners": [
+   "build_report"
+  ],
+  "new_owners": []
+ },
+ ".github/scripts/major_readiness.py": {
+  "syntax": "PASS",
+  "old_owner_count": 48,
+  "changed_old_owners": [
+   "_requirements"
+  ],
+  "new_owners": []
+ },
+ ".github/scripts/major_native_observation.py": {
+  "syntax": "PASS",
+  "old_owner_count": 8,
+  "changed_old_owners": [
+   "runtime_requirements",
+   "admit"
+  ],
+  "new_owners": [
+   "launch_finding_selection"
+  ],
+  "all_old_native_constants_exact": true
+ },
+ ".github/scripts/test_major_qualification_report.py": {
+  "syntax": "PASS",
+  "old_owner_count": 29,
+  "changed_old_owners": [],
+  "new_owners": [
+   "ReleaseSelectionFiniteFindingTests"
+  ]
+ },
+ ".github/scripts/test_npm_binding_observation.py": {
+  "syntax": "PASS",
+  "old_owner_count": 7,
+  "changed_old_owners": [],
+  "new_owners": [
+   "HookF04FiniteFindingAdmissionTests"
+  ]
+ },
+ "actual_head_at_check": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+ "current_subject_preimages_unchanged": true,
+ "coverage": "Python .github/scripts no numeric tooling per exact FACT-005; critical-path source/admission behavior checks retained. No Go runtime qualification or coverage run."
+}

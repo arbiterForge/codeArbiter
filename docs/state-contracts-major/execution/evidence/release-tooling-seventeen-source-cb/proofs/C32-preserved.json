@@ -1,0 +1,387 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or execution"
+ },
+ "inputs": {
+  ".github/scripts/check_command_route_release_state.py": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+  ".github/workflows/ci.yml": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+  ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "tools/command_compatibility.py": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e"
+ },
+ "disposition_ids": [
+  "disposition:machines:C32",
+  "disposition:transitions:C32:01",
+  "disposition:transitions:C32:02",
+  "disposition:transitions:C32:03",
+  "disposition:transitions:C32:04",
+  "disposition:transitions:C32:05",
+  "disposition:transitions:C32:06",
+  "disposition:transitions:C32:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/source-bindings.json",
+   "sha256": "45891723d29447b00cae54a7a442993ccc3f6e36a9fb135e45076809f1521ffa"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/clause-inspection.json",
+   "sha256": "4a839448147f245fb42c6b6d005f08c6504da1c8b305b7d62674f2b28e6e406b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/inherited-evidence-inventory.json",
+   "sha256": "a2dd17b6493de56b7a7ffec33edb11f90ec1216c0637afb2ce2ceaeb34ace507"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/release-tooling-seventeen-source-cb/owner-baseline-current.diff",
+   "sha256": "5dd6b3c611e152a358cda1ee2dd026cb8563fa9f58fc949808a5c721058f0301"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:C32",
+   "frozen_row_sha256": "48d8194046b784e06b7f3bab7c639553809fbb64c7fd90d6988e016b425d31e0",
+   "clause_ids": [
+    "disposition:transitions:C32:01",
+    "disposition:transitions:C32:02",
+    "disposition:transitions:C32:03",
+    "disposition:transitions:C32:04",
+    "disposition:transitions:C32:05",
+    "disposition:transitions:C32:06",
+    "disposition:transitions:C32:07"
+   ],
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 58,
+     "end": 62,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "858b4a655f4c5d7b800755b4d1ec7605f267462d44a9704922fde79efc138733"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 65,
+     "end": 87,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "cf0b497c40ffecf147d7ce4f4cf5f775d6ede9b390be56cd51809b675a4644aa"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 90,
+     "end": 129,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "bb159ee37f4b30719884741d46a018fd6f5020f251063adc9d88146fac919d96"
+    },
+    {
+     "path": "tools/command_compatibility.py",
+     "start": 1,
+     "end": 32,
+     "file_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+     "span_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 132,
+     "end": 153,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f26329fdcc19d9b8277ec587d3f3b411f252ae9d846cee4d095a732ba91a199c"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 187,
+     "end": 234,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 240,
+     "end": 252,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "1c737455e61f8e1694bfd8daa9a52e3480e38c627d1d732d3ffbf8725c5bec1d"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 304,
+     "end": 345,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "aa3f374448bb3ccd291395e94189155e657eac9b15aa48d929af90e87f9597b5"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 156,
+     "end": 184,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "cf9c8eda1aa7e7aac4c9ab07be0ff0e264922f72564f8f9468d8bd469b80fb01"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 357,
+     "end": 454,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "af2e2352169112b91692433461099e7bf01f24e300a75d5726072b22efb0d269"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 255,
+     "end": 291,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "2188b407b46d56f8abee7b322e86185bb4cbcabc9f23edd2bbd5fe510e9b58b8"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4206,
+     "end": 4216,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "cce07ccfb7289eca398db1bf66bc278d9a9d933ed8507974d4f8e911f26b8d37"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 472,
+     "end": 513,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "d878d7d44fa806c6a1ff07198c920bc9b8b0f162c21c0e9c0ef0c517ed72d851"
+    }
+   ],
+   "semantic_assessment": "All 7 frozen event/guard/effect/retry clauses inspected against pinned/current owners and named callees, with explicit analytical limits and accepted replacements in clause-inspection. Advanced observations are not renewed.",
+   "intake_variances": [
+    "Accepted HW-21 replaced the frozen claim that removalRequires is ignored. Major-version floor, named removal decision and fresh exact non-draft evidence are separate conditions; none authorizes removal here.",
+    "R-04 current public-list observation distinguishes unknown hidden drafts from explicit draft-inclusive absence.",
+    "The frozen wording before public tag/source checks means Release public-identity checks, not bypass of the preceding Git tag evidence guard.",
+    "Current source fixes the frozen exact target_commitish==commit description: existing-tag Releases legitimately retain mutable branch names. No actual Release is observed by this inspection.",
+    "Accepted R-04 replaces the frozen unwired-release TODO. This source trace is not an actual publication observation; record-mode state classification returns zero but receipt I/O failures can still raise."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:01",
+   "frozen_row_sha256": "e8108ddd16ab029993e00a71cd50a2916e024976d0293553fa89d8ca5b863f2c",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 58,
+     "end": 62,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "858b4a655f4c5d7b800755b4d1ec7605f267462d44a9704922fde79efc138733"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 65,
+     "end": 87,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "cf0b497c40ffecf147d7ce4f4cf5f775d6ede9b390be56cd51809b675a4644aa"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 90,
+     "end": 129,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "bb159ee37f4b30719884741d46a018fd6f5020f251063adc9d88146fac919d96"
+    },
+    {
+     "path": "tools/command_compatibility.py",
+     "start": 1,
+     "end": 32,
+     "file_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e",
+     "span_sha256": "09134ca1d1e27c69762c22d5e93631042829864bf6b4112043e4f81df791085e"
+    }
+   ],
+   "semantic_assessment": "Declaration loading requires the exact closed compatibility object, confirmed-non-draft clock rule and exact target metadata. Strict versions satisfy published baseline < first-containing <= current manifest. Current validation also checks the closed separately approved removal policy; malformed declarations fail before observation.",
+   "intake_variances": [
+    "Accepted HW-21 replaced the frozen claim that removalRequires is ignored. Major-version floor, named removal decision and fresh exact non-draft evidence are separate conditions; none authorizes removal here."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:02",
+   "frozen_row_sha256": "e625ae628ea173f98c8561fbd3ebbfa451f4028ed519e3883b8280ed04d1dd23",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 132,
+     "end": 153,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f26329fdcc19d9b8277ec587d3f3b411f252ae9d846cee4d095a732ba91a199c"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 187,
+     "end": 234,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 240,
+     "end": 252,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "1c737455e61f8e1694bfd8daa9a52e3480e38c627d1d732d3ffbf8725c5bec1d"
+    }
+   ],
+   "semantic_assessment": "Explicit missing-release evidence plus absent tag classifies planned; observe aggregate cannot report full published unless every target is published. The record path treats absence from a public/draft-hidden list as unavailable rather than proving no draft. Bad transport is unknown, not clean publication.",
+   "intake_variances": [
+    "R-04 current public-list observation distinguishes unknown hidden drafts from explicit draft-inclusive absence."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:03",
+   "frozen_row_sha256": "aa0511eef5c24504bc1159b8dda8df3ebc8e8050d1728b17e9a5a274f24ec44a",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 187,
+     "end": 234,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 304,
+     "end": 345,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "aa3f374448bb3ccd291395e94189155e657eac9b15aa48d929af90e87f9597b5"
+    }
+   ],
+   "semantic_assessment": "A present Git tag must bind exact registry/manifest/version and a valid commit. Explicit missing Release then classifies tag-only; malformed tag facts mismatch. Tag creation alone never starts the publication clock.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:04",
+   "frozen_row_sha256": "12f3b735fec5501704953d478a0e7a6953755d7da08cfeee8a8fa181e0b0a559",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 187,
+     "end": 234,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d"
+    }
+   ],
+   "semantic_assessment": "After valid tag evidence and a typed Release object, draft=true classifies draft before public tag_name/target_commitish checks. Draft does not satisfy published. Invalid tag/source evidence still refuses first.",
+   "intake_variances": [
+    "The frozen wording before public tag/source checks means Release public-identity checks, not bypass of the preceding Git tag evidence guard."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:05",
+   "frozen_row_sha256": "45b34dbedb7a0afe5919497dac2f50bdfc405d1991fceaff20c8e6726d034b87",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 187,
+     "end": 234,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 304,
+     "end": 345,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "aa3f374448bb3ccd291395e94189155e657eac9b15aa48d929af90e87f9597b5"
+    }
+   ],
+   "semantic_assessment": "Published requires non-draft Release, exact tag_name, string target_commitish and independently verified Git tag commit/registry/version. A commit-shaped conflicting target value mismatches; a branch-name target is allowed because Git tag commit is the identity. Any contradiction refuses.",
+   "intake_variances": [
+    "Current source fixes the frozen exact target_commitish==commit description: existing-tag Releases legitimately retain mutable branch names. No actual Release is observed by this inspection."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:06",
+   "frozen_row_sha256": "963d8504ebee2bdcaf8f14a536a590767ffada57d83648d0a02c3a6c003e703f",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 132,
+     "end": 153,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f26329fdcc19d9b8277ec587d3f3b411f252ae9d846cee4d095a732ba91a199c"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 156,
+     "end": 184,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "cf9c8eda1aa7e7aac4c9ab07be0ff0e264922f72564f8f9468d8bd469b80fb01"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 240,
+     "end": 252,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "1c737455e61f8e1694bfd8daa9a52e3480e38c627d1d732d3ffbf8725c5bec1d"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 187,
+     "end": 234,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "f3a7b53185f08b97a5ac4e402c0833b67dea661904edc1f3c6528928e6aa4c8d"
+    }
+   ],
+   "semantic_assessment": "Transport/status failures become unavailable; malformed response shape, duplicate matching Releases, invalid fields and contradictory tag/source facts become mismatch. No parse or transport failure advances the clock. Draft-inclusive and public listing absence remain distinct.",
+   "intake_variances": [],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  },
+  {
+   "cell": "disposition:transitions:C32:07",
+   "frozen_row_sha256": "88aa35f0a4f3b3e7948f2f19e635b1b3ddba1ededc9f6dd538d0d946c7e72416",
+   "witnesses": [
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 357,
+     "end": 454,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "af2e2352169112b91692433461099e7bf01f24e300a75d5726072b22efb0d269"
+    },
+    {
+     "path": ".github/scripts/check_command_route_release_state.py",
+     "start": 255,
+     "end": 291,
+     "file_sha256": "3a16b82896652ae67684e0be334537278629e0b2cab1101ca63c50608a3db1e9",
+     "span_sha256": "2188b407b46d56f8abee7b322e86185bb4cbcabc9f23edd2bbd5fe510e9b58b8"
+    },
+    {
+     "path": ".github/workflows/ci.yml",
+     "start": 4206,
+     "end": 4216,
+     "file_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+     "span_sha256": "cce07ccfb7289eca398db1bf66bc278d9a9d933ed8507974d4f8e911f26b8d37"
+    },
+    {
+     "path": ".github/workflows/release.yml",
+     "start": 472,
+     "end": 513,
+     "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+     "span_sha256": "d878d7d44fa806c6a1ff07198c920bc9b8b0f162c21c0e9c0ef0c517ed72d851"
+    }
+   ],
+   "semantic_assessment": "CI runs static declarations and its tests. The current release workflow additionally runs a read-only, post-target-settlement record observer and retains its source/run/tag/release/outcome receipt; unknown listing is retained unknown and grants no removal authority. Record classification does not roll back external publication.",
+   "intake_variances": [
+    "Accepted R-04 replaces the frozen unwired-release TODO. This source trace is not an actual publication observation; record-mode state classification returns zero but receipt I/O failures can still raise."
+   ],
+   "limits": "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed."
+  }
+ ],
+ "scope": "C32 current source contract with explicit analytical variances and named accepted changes; no tool/task/runtime acceptance.",
+ "limits": [
+  "Source-only reasoned conformance; no inspected tools, tests, runtime/native/Go/Node/browser/SDK/helper/provider/model/API/network/install/dispatch executed.",
+  "Only63 actual PLANNED source dispositions are proposed (16machines47edges);39 advanced edge objects/full histories/epochs remain unchanged; no task/scenario/main/publication promotion.",
+  "PROGRAM/current accepted tasks govern named replacements and explicitly qualified analytical intake errors. Frozen literal clauses remain; no old failing observation is relabeled or called N/A.",
+  "T05 machine remains PLANNED pending its stale manual persona hint correction; all3 advanced edges remain unchanged.",
+  "Root alone owns independent review, strict prospective owner admission and canonical adoption. Metadata checks here are not those validations."
+ ]
+}

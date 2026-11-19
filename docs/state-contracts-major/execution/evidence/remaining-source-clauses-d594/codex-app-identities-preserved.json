@@ -1,0 +1,57 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-only immutable source-clause guard/effect/retry inspection after9ab"
+  },
+  "inputs": {
+    ".github/scripts/validate_codex_distribution_identity.py": "7aeef0279072186b3823d24b8021123b1e6987844f568898ab346793dbf23f6b",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C23:01"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/inspection.json",
+      "sha256": "7bdf6363096e657456b22553f28e1557073f264a2bfa36e0b57706e275b8d4f7"
+    }
+  ],
+  "scope": "Public numeric identity guard and workflow-owned validator-before-mint ordering only. No actual GitHub App configuration or token/release effect.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C23:01",
+      "witnesses": [
+        {
+          "path": ".github/scripts/validate_codex_distribution_identity.py",
+          "start": 15,
+          "end": 39,
+          "file_sha256": "7aeef0279072186b3823d24b8021123b1e6987844f568898ab346793dbf23f6b"
+        },
+        {
+          "path": ".github/workflows/release.yml",
+          "start": 287,
+          "end": 303,
+          "file_sha256": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126"
+        }
+      ],
+      "semantic_assessment": "Validator checks canonical positive public App/installation IDs, rejects generic15368 and shared publisher/verifier App IDs; release workflow loads validator from its own workflow revision before token mint steps.",
+      "limits": "No real App configuration, token creation, key acquisition or privileged release execution. Installation IDs need not differ; only App IDs are required distinct.",
+      "frozen_row_sha256": "4f93986b3c21c15cf81d0dd2cc71c11176dcec02220a92f4d8c033ca93da5b3e",
+      "scope": "SOURCE_CLAUSE_ONLY"
+    }
+  ],
+  "dependency_boundary": "Public numeric identity guard and workflow-owned validator-before-mint ordering only. No actual GitHub App configuration or token/release effect.",
+  "excluded_cells": [
+    {
+      "id": "C23:03",
+      "reason": "Verifier requires two named expected policies, required-rule subset and sole publisher bypass, but permits unrelated observed rulesets and extra rules. Frozen rejection of every extra policy/rule is stronger than actual code."
+    }
+  ]
+}

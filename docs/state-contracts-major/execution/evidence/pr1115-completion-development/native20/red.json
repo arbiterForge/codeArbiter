@@ -1,0 +1,13 @@
+{
+  "names": [
+    "test_cli_route_joins_sorted_twenty_policy_and_all_original_components"
+  ],
+  "tests_run": 1,
+  "failures": 1,
+  "errors": 0,
+  "skips": 0,
+  "exit_code": 1,
+  "duration_seconds": 0.013792999990982935,
+  "stderr_sha256": "0028849e34e15a9959e25a25ff058b5472e892343e9f93bdb7030ee020227dc5",
+  "scope": "Existing pure Python inert six-archive/stamp/uploader/source/run/attempt fixture through actual produce+verify owners. No Go/helper/native/provider runtime; no test evidence renewal."
+}

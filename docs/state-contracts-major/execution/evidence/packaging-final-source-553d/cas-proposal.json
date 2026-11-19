@@ -1,0 +1,585 @@
+{
+  "schema": "codearbiter-packaging-finite-source-cas/1",
+  "base_source": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "base_tree": "201c662dee158a880d74ebb574f3320a95548b15",
+  "ledger_path": "docs/state-contracts-major/execution/coverage-ledger.json",
+  "row_hash_encoding": "SHA256 UTF8 json.dumps(row,sort_keys=True,separators=(comma,colon),ensure_ascii=False)",
+  "updates": [
+    {
+      "table": "transitions",
+      "id": "S71:01",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+            "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S71:02",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+            "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S71:03",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+            "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S71:04",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+            "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S71:07",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+            "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S71",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+            "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S72:07",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+            "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S72",
+      "old_row_sha256": "b1ae2926987eca39ba18d32f42b6aeb2b12cb5f3a0e21de66f6b3070b1ca90ef",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+            "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S73",
+      "old_row_sha256": "dd8fe74a739ca223a9ccd5e9f083f14ffe2ab14fa150810cfae8db8099ab1ab8",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+            "sha256": "f3ae9766d5f5ec6d521d28644cccfb66f96286a81083fdbf591eeb9830bb2bc6"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S75:01",
+      "old_row_sha256": "fe8d9239b85c8c345809b5d22de30a96bac55f0e2fcae0a41575aa4c1095f2c7",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "BUILD-G02",
+          "HW-19",
+          "HW-20",
+          "HW-21",
+          "HW-27",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+            "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S75",
+      "old_row_sha256": "fe8d9239b85c8c345809b5d22de30a96bac55f0e2fcae0a41575aa4c1095f2c7",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "BUILD-G02",
+          "HW-19",
+          "HW-20",
+          "HW-21",
+          "HW-27",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+            "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S76",
+      "old_row_sha256": "9e762568e5ef1072fc7c2a16a4b9ed3e54b769ff354684cfe5fb17e18cddd11d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "BUILD-G01",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/sync-preserved.json",
+            "sha256": "d17ed13f530d1ddecc6c53ff28b7fe835b13db39ef098e5871f4d5eb39667d6d"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:01",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:02",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:03",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:04",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:05",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:06",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:07",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:08",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "transitions",
+      "id": "S77:09",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    },
+    {
+      "table": "machines",
+      "id": "S77",
+      "old_row_sha256": "8936313c0b679af52d228aa171d1dcde5aa3f53ba54c5a38b6be426f015b120d",
+      "proposed_row": {
+        "owner": "packaging",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D03",
+          "PI-D07",
+          "Q-01"
+        ],
+        "status": "PRESERVED",
+        "evidence": [
+          {
+            "kind": "conformance-check",
+            "commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+            "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+            "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848"
+          }
+        ],
+        "candidate_contract_note": "Finite current source-conformance only; full guard/effect/retry mapped under accepted HW21/BUILD-G01/BUILD-G02/DIST-M02 and existing candidate-preflight limitations where relevant. No runtime, installed, publication or task completion claim."
+      }
+    }
+  ],
+  "counts": {
+    "transitions": 16,
+    "machines": 6,
+    "PRESERVED": 22,
+    "runtime_promotions": 0
+  },
+  "future_metadata_ref_commit": null,
+  "preserve_unselected_rows_and_all_old_evidence": true,
+  "limits": [
+    "No new test/build/API/download/native/Pi/npm/provider/publication/installed effect was executed.",
+    "PRESERVED means finite declared source guard/effect/retry conformance under accepted changes; no current runtime, whole task, model, platform union or release acceptance.",
+    "Payload/source/metadata supplied to these procedures are input parameters; no particular current cohort, emitted output or every generated instruction body is newly qualified.",
+    "Retained original raw/readsets are references at their own original epochs; no old runtime proof hash is refreshed."
+  ]
+}

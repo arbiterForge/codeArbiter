@@ -1,0 +1,113 @@
+{
+  "schema": "codearbiter.source-prose-delta-review/1",
+  "verdict": "PASS",
+  "reviewer": "/root",
+  "author": "/root/ci_repair_review (two prose corrections); original source assessment /root/acceptance_security_review",
+  "full_subjects": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\delivery.json",
+      "sha256": "a28b30449b653e958f13c66594148ac78a3b9f2961a282e0e20fdfce7ef7d0e2"
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\source-bindings.json",
+      "sha256": "f1c80dc6fb32d804476cb4c08c0300f1c1a558a663ff0966a7d528ebd1673ae3",
+      "bytes": 9145
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\clause-inspection.json",
+      "sha256": "17c0b4ad1a0a2a788ca694ae5ef47a5d2edf7dad6a27c07482b8677d1475b1aa",
+      "bytes": 201539
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\inherited-evidence-inventory.json",
+      "sha256": "19672882618a89df5e884b32bfc17348014e7b6210d33ff6ba4e2839f9caf7c7",
+      "bytes": 1607
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S21-preserved.json",
+      "sha256": "dddeca78a05a5dff08998688a9510d5f341315d8edc0a1d4421c99dd860d864f",
+      "bytes": 13067
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S22-preserved.json",
+      "sha256": "90377c2fe000698f4dc6f34c685194e31f1fb5525fcdd0d113428d15c9756a99",
+      "bytes": 19243
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S23-preserved.json",
+      "sha256": "0e391ee466467b443fc44560d657262ce685ce5dae003f8669cff9c6d6037d43",
+      "bytes": 13198
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S24-preserved.json",
+      "sha256": "e3b37cfa7868d09aff7a19c5a3823f8ec2784aa5bf484092f269878af830c933",
+      "bytes": 12204
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S25-preserved.json",
+      "sha256": "e91c26fe1074ae3b84a104a8a492aab65c14c07fe759dc78a4da7297a8b45bf9",
+      "bytes": 9037
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S26-preserved.json",
+      "sha256": "4e486fad0131a12282b52c1b18dd8ee889c219274911cd57bda478025edca6ed",
+      "bytes": 8541
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S27-preserved.json",
+      "sha256": "b9f392b0b82a5d72b7af04d4c776206bf3cd360a60674296f30ec75512cc3daa",
+      "bytes": 8806
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S28-preserved.json",
+      "sha256": "c29843be8bff6a52bdd280c046c95e97a40bac7e68ba8453e2f1db862d4ef41e",
+      "bytes": 10281
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S29-preserved.json",
+      "sha256": "d18f375c42e9e97fed0fbee02a4f4194c02f609a753606a4c34fa09bf4851832",
+      "bytes": 7606
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S30-preserved.json",
+      "sha256": "efc5979b479a7cc274a93d3f594d6c4f71bb392a0e8575811e30ce642ecf4e77",
+      "bytes": 7626
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S31-preserved.json",
+      "sha256": "158c80ee9b71c9886e3ef5635654cfa710c3028c7ed2d0e6967a1c02e4508506",
+      "bytes": 7899
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-prose-successor-s3p4cq_b\\proofs\\S32-preserved.json",
+      "sha256": "a36b8a9fedb0cf5428a9ade89bfd06ab26f36763a06ee07eebdf61aaccce3b7e",
+      "bytes": 7931
+    }
+  ],
+  "findings": [],
+  "closed_findings": [
+    "FARM23-PROSE-01",
+    "FARM23-PROSE-02"
+  ],
+  "checks": {
+    "changed_clauses": [
+      "disposition:transitions:S29:02",
+      "disposition:transitions:S31:01"
+    ],
+    "unmodified_clauses": 98,
+    "source_inputs_current": 19,
+    "selected_CAS": 23,
+    "advanced_histories_unchanged": 89,
+    "proof_raw_and_filemap_joins": "PASS"
+  },
+  "prior_review_reused": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm23-independent-review-cy76yghl\\review.json",
+    "sha256": "80eb5e31dc3cf7200dbabe734a40d68f0d39403465ec97ecd599b0727dc96ff7",
+    "scope": "Other98 clauses and original source/CAS/history review, excluding old two overstatements"
+  },
+  "limits": [
+    "Tiny independent prose delta/source reading and mechanical joins only; no tests, runtime, API or original owner replay.",
+    "Prospective original-owner current authentication remains required before canonical adoption.",
+    "Original actor identity is historical source author; successor correction authorship is explicit in this admission and delivery."
+  ]
+}

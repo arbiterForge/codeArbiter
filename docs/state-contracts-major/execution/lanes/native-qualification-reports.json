@@ -1,0 +1,104 @@
+{
+  "schema": "codearbiter-q02-report-author-freeze/1",
+  "owner": "/root/native_cohort_integration",
+  "base_commit": "38c8b8e75d47d5502a487fb7af6e303ae651a5ad",
+  "source_sha256": {
+    ".github/scripts/test_artifact_installed_host.py": "87667106ad6c17fad5d2023daa3acf3b90e819cf73032af6cd26b50f792015e5",
+    ".github/scripts/major_readiness.py": "69c552cea8cfd78d604537db666c7f1b5a27713072e83d367858c2ee0b0e8fed",
+    ".github/scripts/test_major_readiness.py": "03fd7fb96cee0b83f972afc89d82b3e713dbdf4e1017e84611a68db5c6286646",
+    ".github/scripts/major_qualification_report.py": "c69895a08eca3aaaae14262d3751d3369a29041afed55177df16f9de4b68ef9d",
+    ".github/scripts/test_major_qualification_report.py": "541f5389d9dcc24b00f9b609bb96de250046dc6fa6b8b8a282bab8cb567ab975",
+    ".github/major-qualification-policy.json": "5f7ed4021ca021cac5e8146c3c090848d64a498c2fe7e5c4a5285a4038b127c5",
+    ".github/major-test-selections.json": "3bf3973d2e416bbb7a8bf47e74e88bd185bca41cb2736d1108ef52b677fd1eed",
+    "tools/go_test_parallel.py": "7ed1fb5eaa71a0b74b4139d330a75bed1ac8656029d64b58678ce9cc3a575a40",
+    ".github/scripts/test_go_test_parallel.py": "19980e11d5b1a0277957c130f21eefcba306d06e402ee630ff6a38c4f482fad8",
+    "tools/build-artifacts.py": "1ba585a0ffe11c20262801b2e00f0cf93f9593c58e84da214b4f6cb1336c00be"
+  },
+  "tests": [
+    {
+      "suite": ".github/scripts/test_major_qualification_report.py",
+      "result": "PASS",
+      "tests": 12,
+      "seconds": 1.296,
+      "scope": "Real original Python entrypoint once; actual child Vitest protocol fixture once (not live Vitest); strict named outcome/source/native payload bindings."
+    },
+    {
+      "suite": ".github/scripts/test_go_test_parallel.py",
+      "result": "PASS",
+      "tests": 19,
+      "seconds": 32.021,
+      "scope": "Real compiled disposable Go modules; original behavior plus named observation pass/skip/fail, create-only output, missing/repeated test refusal."
+    },
+    {
+      "suite": ".github/scripts/test_major_readiness.py",
+      "result": "33PASS_2BLOCKED",
+      "tests": 35,
+      "seconds": 16.96,
+      "blocker": "CurrentG01 new ADR0046/0047/0048 lacked lifecycle bindings at execution time. Original authority checker refused; no suppression."
+    },
+    {
+      "suite": "tools/build-artifacts.py --skip-tests --test-observation <new> --output <new>",
+      "result": "EXPECTED_REFUSAL",
+      "exit_code": 2,
+      "payload_created": false,
+      "observation_created": false
+    }
+  ],
+  "red_green": [
+    {
+      "case": "Actual duplicate result across Go chunks",
+      "red": "Runner returned0 after real test was executed twice; global seen collapsed result.",
+      "green": "Runner returns1 and retains repeated; existing exactly-once contract enforced."
+    },
+    {
+      "case": "Native proof stamp must match authenticated consumed payload stamp",
+      "red": "Draft helper accepted mismatching native_binding.",
+      "green": "Selected result requires matching original CI20 stamp parsed from API-authenticated archive and byte-identical consumed root."
+    },
+    {
+      "case": "Proof-kind-only installed/live-host spoof",
+      "red": "Draft helper accepted a live-host string alone.",
+      "green": "Only implemented source/native producers supported; unsupported installed/live-host emitter refuses."
+    }
+  ],
+  "implemented": [
+    "Original Python unittest result observation and original Vitest JSON reporter wrappers, no second suite.",
+    "Exact native named-test output and existing same-run stamp join; source input hash before/after.",
+    "Semantic selectors map1 precisely reviewed N09:04 transition to3 actual owning Go tests and the existing native builder job.",
+    "Existing readiness population-preserving exact job-name overrides.",
+    "Trusted-main final report emission authenticates retained payload APIarchive and all consumed member hashes; existing readiness owner separately authenticates original report upload step/job."
+  ],
+  "pending": [
+    "Root CI instrumentation/upload step wiring and source commit.",
+    "Semantic mappings for remaining task/scenario/disposition cells; none inherit an aggregate suite total.",
+    "Installed/live-host and Playwright result emitters are deliberately unsupported; cannot be claimed from source fixtures.",
+    "Full final same-run package/native/Pi/cold/realDocker qualification and Q01/manual parent TUI evidence.",
+    "Rerun35 readiness tests after G01 lifecycle bindings are recorded."
+  ],
+  "ci_wiring": {
+    "native_build": "Add --test-observation RUNNER_TEMP/native-tests.json to existing build-artifacts invocation, and preserve native-tests.json beside original artifact-candidate +ci20-native-tested.json in same existing artifact. No extra test run.",
+    "native_join": "python .github/scripts/major_qualification_report.py admit-go --observation RUNNER_TEMP/native-tests.json --native-binding RUNNER_TEMP/ci20-native-tested.json --output RUNNER_TEMP/native-observation.json",
+    "python_observer": "python .github/scripts/major_qualification_report.py observe-python --output RUNNER_TEMP/unique.json -- .github/scripts/test_<owner>.py <original args>",
+    "vitest_observer": "python .github/scripts/major_qualification_report.py observe-vitest --output RUNNER_TEMP/unique-observation.json --raw-results RUNNER_TEMP/unique-vitest.json -- npm --prefix <original tools> test -- <original selectors>; wrapper appends one owned JSON reporter.",
+    "emit": "Trusted main push only: GH_TOKEN scoped to this step; actions:read+contents:read. python .github/scripts/major_qualification_report.py emit --job-name \"<exact owning job>\" --observation native-module=RUNNER_TEMP/native-observation.json --payload-root ci20-native-tested-windows-2025=RUNNER_TEMP --output RUNNER_TEMP/qualification.json",
+    "report_upload": "Exact step name Upload major qualification report; pinned upload-artifact action, sole qualification.json member, artifact name major-qualification-<numeric job_id from emitted JSON>. Readiness producer verifies original actual upload attribution.",
+    "readiness_producer": "Only after mapped authentic owning reports and completed program: exact job name major readiness producer, run major_readiness.py produce with actual GITHUB_SHA/runid; exact step Upload major readiness record, sole major-readiness.json in major-readiness-GITHUB_SHA. Do not invent placeholder report jobs."
+  },
+  "integrator_followup": {
+    "readiness_tests": {
+      "count": 35,
+      "result": "PASS",
+      "seconds": 24.745,
+      "scope": "Verifier tests after real ADR acceptance bindings; no program readiness receipt generated"
+    },
+    "native_observation_wiring": "Original six-platform build now writes named Go observation once and joins original same-run stamp; retained as exact native artifact members.",
+    "report_wiring": "Windowsamd64 trusted-main-only emit plus post-ci-passed readiness producer; integration marker retirement noops; semantic map remainsonlyN09:04.",
+    "ci_contracts": {
+      "count": 64,
+      "result": "PASS",
+      "seconds": 2.84
+    },
+    "generated_parity": "98 canonical helpers x3hosts plus surface parity PASS",
+    "remaining": "Remaining semantic maps, committed disposition proofs, supported host observers and final exact-head CI are incomplete."
+  }
+}

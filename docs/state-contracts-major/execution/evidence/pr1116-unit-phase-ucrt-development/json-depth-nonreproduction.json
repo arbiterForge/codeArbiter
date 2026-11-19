@@ -1,0 +1,14 @@
+[
+  {
+    "kind": "array",
+    "depth": 16000,
+    "bytes": 32001,
+    "direct_decoder": "decoded"
+  },
+  {
+    "kind": "object",
+    "depth": 5000,
+    "bytes": 30001,
+    "direct_decoder": "decoded"
+  }
+]

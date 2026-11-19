@@ -1,0 +1,532 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "ac9b184a662b24cef088db186eeef5defcc410ac",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Bound Pi structured role redaction source delta"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "plugins/ca-pi/tools/src/activity.ts": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+    "plugins/ca-pi/tools/src/contracts.ts": "ba8cb4ff16968f1f2eaf74309939d56a06c7d230b050058f9f3a35b0460444d0",
+    "plugins/ca-pi/tools/src/dispatch.ts": "6bc076c8cbce006d702bea5b8a865e79f614a0afde694d9fb6836f34ced0f983",
+    "plugins/ca-pi/tools/src/extension.ts": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+    "plugins/ca-pi/tools/src/roles.ts": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+    "plugins/ca-pi/tools/src/runner.ts": "6fa29ff1b26cfb408258c98566220caa38d089f7f54bc636981ce1d8f227d399"
+  },
+  "disposition_ids": [
+    "disposition:machines:S07",
+    "disposition:transitions:S07:01",
+    "disposition:transitions:S07:02",
+    "disposition:transitions:S07:03",
+    "disposition:transitions:S07:04",
+    "disposition:transitions:S07:05",
+    "disposition:transitions:S07:06",
+    "disposition:transitions:S07:07",
+    "disposition:transitions:S07:08"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-role-redaction-source-ac9b184a/source-inspection.json",
+      "sha256": "e306160f0a90f27027c4b3bd313747ddab5d801debc8c78d3f81a2d045075596"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+      "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/clause-inspection.json",
+      "sha256": "f5e00c8018474f0ac90e62529aa59e94eba6e06009665435ecae8518affda102"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/source-bindings.json",
+      "sha256": "9c2baf70473957bd4adbdd180f477f193a950467e3c57428bb559427dab63a67"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S07",
+      "frozen_row_sha256": "06484ce42768de57047022cccf4fefbffff75299c8658180c42ab2812405a45b",
+      "clause_ids": [
+        "disposition:transitions:S07:01",
+        "disposition:transitions:S07:02",
+        "disposition:transitions:S07:03",
+        "disposition:transitions:S07:04",
+        "disposition:transitions:S07:05",
+        "disposition:transitions:S07:06",
+        "disposition:transitions:S07:07",
+        "disposition:transitions:S07:08"
+      ],
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 270,
+          "end": 301,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+          "span_sha256": "c4c16768712890db9766a8efb8530d9a0ecd40fe0debce560a8a9b28418ae023"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 293,
+          "end": 335,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "9359e66a6246ffb1d0f8fed43d498406bbf18545e3d5f8cea9182755396667db"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 474,
+          "end": 558,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "4655135e15d1ca562e4be40f2d1e4e549e1c29be463ebda7057d156e9c3be33a"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/roles.ts",
+          "start": 25,
+          "end": 69,
+          "file_sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+          "span_sha256": "68183a585724f1499c65841c126719172c2183dbbcc4f8f6908b2af1841f4289"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 163,
+          "end": 203,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "1e9e4a6cc70903ff790c25ff15f9ca8123f4910adea63c5cf67fd866721df509"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 390,
+          "end": 410,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "3688020eb3b3fb0706a915b5519dcff6ede70be901fbc6d6c78a96d505f0e781"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 179,
+          "end": 253,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 40,
+          "end": 56,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "f89dd7888d928bd108879f6423bab78714db3fc209894bafe7cb59cddf091f06"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 205,
+          "end": 240,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "6b0cd116e49a56254a29a3897ab55681192d6085d7c7fe55a6093a4c03b75d5c"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 339,
+          "end": 368,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "1841deeb81eb0b8f948f89c147770b5acb01e642e62288268d71dc0663744fa4"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 333,
+          "end": 373,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "fd158dd42439b3129a02d7fe81bcefa460f84727a10175aa4d215bd2fc190da3"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 682,
+          "end": 710,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "cd2c4ce49bfb49ea0bc87bfe7dd668d7ff6f5e78f23780bdc26302f805a2ce04"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 818,
+          "end": 843,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 923,
+          "end": 936,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "34d1d5c7e93d7ad23040f65927c479b26a6bafc7bbf8ec1e260b6e4249f36a3b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 151,
+          "end": 153,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "aadbc41caaca222606cb6fa1bbbb076f3517fb2797b9e98ee95ab4d6d9bed6f7"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 268,
+          "end": 291,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "842420737d7a29bb0f7f4cf4164670e3082c46b9e04c396529f63058152ad651"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 375,
+          "end": 390,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "a6fd00d036b4f467e8660fb6476dfb702825278e7b22ee240cb1a1196b0531a0"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 330,
+          "end": 343,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "7b5f34cf5fe6fc0c6894d0a4ddf19cd26d193e90d6f904dc599300b14addf32e"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 390,
+          "end": 408,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "82f4460756b3cbebea2c51757db244cbf4108815969f2b2184b379f3daace81f"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 742,
+          "end": 764,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "c8eaad914456151c5de31cfd61b7fa7b08c72c94662a479b6f0c209c14fdd8ab"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 864,
+          "end": 880,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "47b7c68e5a194c28be0a4be7bcc9fcde80d55c73a2b2e780088c6127470d503e"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 76,
+          "end": 84,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "2dd76b73a4f73f0fb24d16c2dd1132cd8e142f3eaa59c78c096b8d8cc328dd98"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 242,
+          "end": 265,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "be1f64dedb831db278d166aad4c93120b3d224e9629e427832c90103c69da812"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 411,
+          "end": 415,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "17f306a7af221030b53a6f2e2d1041605f36202255b9183f2d6a4b8bfcbe246b"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 558,
+          "end": 581,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "0ffed0ef43595cf51a9ea0b17a7a7a86465ae5900d19dcc0d7b5134b5e781cdc"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/activity.ts",
+          "start": 251,
+          "end": 254,
+          "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+          "span_sha256": "6b285b96856aeaabab44f85f85795fef63e4639eb2fe5ce3c8590d2acd9cb5ac"
+        }
+      ],
+      "semantic_assessment": "Every real owner guard/effect/retry clause separately mapped with explicit accepted/intake corrections. No nonexistent effect asserted. S03 analytical edit composite separately N/A; S08 scope only current1.5 optional unavailable. No machine runtime/task closure."
+    },
+    {
+      "cell": "disposition:transitions:S07:01",
+      "frozen_row_sha256": "a393a19f2a732f76107fa36eadd2b652414f9ef0a209bb3b47f14fa7a296b30c",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/extension.ts",
+          "start": 270,
+          "end": 301,
+          "file_sha256": "1f16ba94ea35ea59027c0e37f5e0cc77ce3dd313adc27ffab0bf0919d582a532",
+          "span_sha256": "c4c16768712890db9766a8efb8530d9a0ecd40fe0debce560a8a9b28418ae023"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 293,
+          "end": 335,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "9359e66a6246ffb1d0f8fed43d498406bbf18545e3d5f8cea9182755396667db"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 474,
+          "end": 558,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "4655135e15d1ca562e4be40f2d1e4e549e1c29be463ebda7057d156e9c3be33a"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/roles.ts",
+          "start": 25,
+          "end": 69,
+          "file_sha256": "dd0a19f72519e60e9013a1647bd977628492a5e72edca920f109a904abec8792",
+          "span_sha256": "68183a585724f1499c65841c126719172c2183dbbcc4f8f6908b2af1841f4289"
+        }
+      ],
+      "semantic_assessment": "Public admission requires enabled/trusted ready parent lease and rechecks it after runtime resolution; canonical request validates mode, unique roles<=8, depth<=4, bounded task/limits; catalog requires known roles and<=1author before launch. Invalid shape/mode/role/depth becomes explicit protocol_error/depth_exceeded; oversized envelope refuses. Prior child output is redacted, not an invented universal task-content scrub.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:02",
+      "frozen_row_sha256": "fd60d0a4ce73deb37db7b60d80d4e18df1450b94fca65c5e98ffc8b919062ffb",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 163,
+          "end": 203,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "1e9e4a6cc70903ff790c25ff15f9ca8123f4910adea63c5cf67fd866721df509"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 390,
+          "end": 410,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "3688020eb3b3fb0706a915b5519dcff6ede70be901fbc6d6c78a96d505f0e781"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 179,
+          "end": 253,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "b4c46e42efca48bf97f793ae1265e23753e75027bb089f3062f611cf6505f125"
+        }
+      ],
+      "semantic_assessment": "FIFO cursor uses at most min(concurrency<=4,selected.length) workers; each role gets fixed catalog tools/charter/skills and its cancellation scope; actual runner validates trusted package/runtime resource identities.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:03",
+      "frozen_row_sha256": "260a5d07d2d69915dcaa9596d68ec2ea52c4ca927243d697f79d47941e9d001e",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 40,
+          "end": 56,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "f89dd7888d928bd108879f6423bab78714db3fc209894bafe7cb59cddf091f06"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 205,
+          "end": 240,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "6b0cd116e49a56254a29a3897ab55681192d6085d7c7fe55a6093a4c03b75d5c"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 339,
+          "end": 368,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "1841deeb81eb0b8f948f89c147770b5acb01e642e62288268d71dc0663744fa4"
+        }
+      ],
+      "semantic_assessment": "Exact final JSON state+bounded nonempty summary admits accepted/changes_requested/blocked. Best-effort audit uses fixed metadata; parent effect/delegation axes stay independent of model judgment.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:04",
+      "frozen_row_sha256": "cc8b29b954fdea901f03d99fc149805e1523391c8888790220d31a3bd38e0e21",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 333,
+          "end": 373,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "fd158dd42439b3129a02d7fe81bcefa460f84727a10175aa4d215bd2fc190da3"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 682,
+          "end": 710,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "cd2c4ce49bfb49ea0bc87bfe7dd668d7ff6f5e78f23780bdc26302f805a2ce04"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 818,
+          "end": 843,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "c329b12f9a9b12a1686c0fd06de182c3bc73f790c81ad4aa17c0873c81dcb39a"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 923,
+          "end": 936,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "34d1d5c7e93d7ad23040f65927c479b26a6bafc7bbf8ec1e260b6e4249f36a3b"
+        }
+      ],
+      "semantic_assessment": "Dispatcher preserves its cancelled/timeout/crashed/protocol_error outcomes; runner faults are fixed degraded, cleanup owned by runner. Valid bounded report material may remain visible on degraded/cancelled outcome without promoting effect/run success.",
+      "intake_variances": [
+        "Analytical timed-out/depth-exceeded/protocol-error names differ from canonical timeout/depth_exceeded/protocol_error; low-level runner faults intentionally collapse to degraded."
+      ],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:05",
+      "frozen_row_sha256": "fb5b90581c0141acc7de8f472b841e2ef0d412b13025e20e293e0865bdb49edb",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 151,
+          "end": 153,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "aadbc41caaca222606cb6fa1bbbb076f3517fb2797b9e98ee95ab4d6d9bed6f7"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 268,
+          "end": 291,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "842420737d7a29bb0f7f4cf4164670e3082c46b9e04c396529f63058152ad651"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 375,
+          "end": 390,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "a6fd00d036b4f467e8660fb6476dfb702825278e7b22ee240cb1a1196b0531a0"
+        }
+      ],
+      "semantic_assessment": "Chain advances on all three model judgments, including blocked; technical state stops. Prior summary is redacted into bounded next envelope; oversized envelope stops before launch.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:06",
+      "frozen_row_sha256": "d996e3f67406aae2be9ea810754fd3d620fb768c0418b078ada67acdc69806af",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 330,
+          "end": 343,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "7b5f34cf5fe6fc0c6894d0a4ddf19cd26d193e90d6f904dc599300b14addf32e"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 390,
+          "end": 408,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "82f4460756b3cbebea2c51757db244cbf4108815969f2b2184b379f3daace81f"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 742,
+          "end": 764,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "c8eaad914456151c5de31cfd61b7fa7b08c72c94662a479b6f0c209c14fdd8ab"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/runner.ts",
+          "start": 864,
+          "end": 880,
+          "file_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+          "span_sha256": "47b7c68e5a194c28be0a4be7bcc9fcde80d55c73a2b2e780088c6127470d503e"
+        }
+      ],
+      "semantic_assessment": "Initial abort returns cancelled for all roles; parallel queue checks before launch, running child controller receives cancellation, and runner checks abort before spawn and settles owned cleanup.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:07",
+      "frozen_row_sha256": "29c612a6e1e0d3c9ed11b216191ca5b43ec411997d292d112d36b81227325ab1",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 76,
+          "end": 84,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "2dd76b73a4f73f0fb24d16c2dd1132cd8e142f3eaa59c78c096b8d8cc328dd98"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 242,
+          "end": 265,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "be1f64dedb831db278d166aad4c93120b3d224e9629e427832c90103c69da812"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 411,
+          "end": 415,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "17f306a7af221030b53a6f2e2d1041605f36202255b9183f2d6a4b8bfcbe246b"
+        }
+      ],
+      "semantic_assessment": "Aggregate judgment bytes<=262144 with child bound65536; exact priority cancelled>timeout>depth_exceeded>oversized>protocol_error>crashed>degraded>blocked>changes_requested>accepted. Signal abort wins; separately observed effect axes are retained when report material overflows.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    },
+    {
+      "cell": "disposition:transitions:S07:08",
+      "frozen_row_sha256": "2f1c7cef149fcea4a96dc0a42a54f5627988330ca02169421b6008d53ae506b7",
+      "witnesses": [
+        {
+          "path": "plugins/ca-pi/tools/src/dispatch.ts",
+          "start": 558,
+          "end": 581,
+          "file_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+          "span_sha256": "0ffed0ef43595cf51a9ea0b17a7a7a86465ae5900d19dcc0d7b5134b5e781cdc"
+        },
+        {
+          "path": "plugins/ca-pi/tools/src/activity.ts",
+          "start": 251,
+          "end": 254,
+          "file_sha256": "06239371173598c3f20388c49ca36f4497befe27dbb5e93d3d91fa660c1ed8d1",
+          "span_sha256": "6b285b96856aeaabab44f85f85795fef63e4639eb2fe5ce3c8590d2acd9cb5ac"
+        }
+      ],
+      "semantic_assessment": "Finally completes every allocated role activity ID, including unstarted roles. Fail-soft display publication cannot determine execution or acceptance.",
+      "intake_variances": [],
+      "limits": "Reasoned source conformance/inapplicability only; no runtime/user-consent/OS/provider/model/installed/task/scenario/publication qualification."
+    }
+  ],
+  "scope": "Source-only actual owner behavior under accepted PROGRAM/ADR0043/0049 and Pi task criteria; no runtime, installed, model, human or task qualification.",
+  "limits": [
+    "S08 N/A is limited to current supported Pi1.5 host; old legacy1.0.2 code/conditional guards/tests remain retained, not failed evidence relabeled.",
+    "PROGRAM/PI-D05/06 S09:10 maps actual signal cancellation, effect grant retirement and owned settlement; no nonexistent universal post-await model-report discard is claimed.",
+    "S03:03 exact unsupported analytical public-edit/hash/revision composite differs from actual CAS helper/state return/disk restore. S03 machine preserves only real owner behavior, with this correction explicit.",
+    "Only40 PLANNED rows proposed; all old source/test/host epochs and foreign rows retained. No runtime or test execution.",
+    "Per-row CAS expected rows bind actual current untouched subjects, not whole ledger hash. Relevant production/frozen positives are literal immutable f5, even if Root HEAD moves.",
+    "Scope is source conformance. The changed Pi runner and the reviewed C36 observations require their own exact runtime evidence."
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/pi-nextfive-source-f5/proofs/S07-preserved.json",
+    "sha256": "765067bc58a9c9833151c41f37dde2b20cb9b869003ee717059e624cc4af4b81",
+    "original_code": "f5dff55e71530806c58a5dd6c352935d369ac5ae",
+    "stored_at": "24ee1333a11f6ed07873f926c3593f56e879b4bb"
+  },
+  "changed_paths": [
+    "plugins/ca-pi/tools/src/contracts.ts",
+    "plugins/ca-pi/tools/src/dispatch.ts",
+    "plugins/ca-pi/tools/src/runner.ts"
+  ]
+}

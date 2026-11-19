@@ -1,0 +1,15 @@
+{
+ "argv": [
+  "C:\\Python314\\python.exe",
+  "-B",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e\\run-owning.py",
+  "TestPersonaFollowsRealTransitions.test_failed_delivery_record_write_does_not_suppress_return_persona"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-persona-record-failure-fix-rns65l7e",
+ "exit_code": 1,
+ "elapsed_seconds": 1.6342102999915369,
+ "source_sha256": "34eeb237a4484224083e6b8e75f351041c28f5e22c57c8d9ca33ba9a9dc9743b",
+ "test_sha256": "75c28b9651144fcd001d2d9ef52662cc93b1fbd219bc2cb61e6f0af1bc057ad5",
+ "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "stderr_sha256": "3088d187bc568d2198ac0d547a6fa269ac7b887bf44ea54af31d6d97bb36c13e"
+}

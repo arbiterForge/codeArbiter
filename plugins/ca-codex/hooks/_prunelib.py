@@ -1230,7 +1230,9 @@ def hook_run(payload, env=None):
             os.path.realpath(os.path.expanduser("~/.claude"))
         ))
         _real_path = os.path.normcase(os.path.normpath(os.path.realpath(path)))
-        if not _real_path.startswith(_claude_home):
+        # A lexical prefix also admits siblings such as ~/.claude-other.
+        if (_real_path == _claude_home
+                or os.path.commonpath((_claude_home, _real_path)) != _claude_home):
             return 0
     except Exception:  # noqa: BLE001 — realpath can fail on unusual mounts
         return 0

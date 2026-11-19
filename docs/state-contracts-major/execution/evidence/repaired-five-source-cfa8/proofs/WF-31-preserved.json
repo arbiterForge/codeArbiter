@@ -1,0 +1,463 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "cfa8effd8e3e856571052f94311f4f01c96b7f77",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root: current source-only literal26-clause reinspection after audited mode repair; actual prior independent source/code review reuse"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/surface/includes/farm.md": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+  "core/surface/skills/subagent-driven-development/references/farm-dispatch.md": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+  "core/surface/skills/writing-plans/references/farm-plan.md": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885"
+ },
+ "disposition_ids": [
+  "disposition:machines:WF-31",
+  "disposition:transitions:WF-31:01",
+  "disposition:transitions:WF-31:02",
+  "disposition:transitions:WF-31:03",
+  "disposition:transitions:WF-31:04",
+  "disposition:transitions:WF-31:05",
+  "disposition:transitions:WF-31:06",
+  "disposition:transitions:WF-31:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/source-bindings.json",
+   "sha256": "8babe064021f1b04b4fbb67c306596503503621ea4ff7edc3663ed7d6813a9b9"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/clause-inspection.json",
+   "sha256": "db86b6d8b1fa9ccf86f4d8924c9c43510d112b393f32a9fe9c1bbd727c266f46"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/current-reinspection.json",
+   "sha256": "e6624c3877987f7115ecefeab4e4f5b476e5b0694f7f9543a79473b92bf4d1fe"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/repaired-five-source-cfa8/prior-independent-source-review.json",
+   "sha256": "862f1c5b33258b71a90e8df568379d1a92f1fdb3462815599f8b4ca5899afc5d"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:WF-31",
+   "frozen_row_sha256": "0fbd72eba947b0ea1e9db199d62cac9d3f85dffa6a03d1ff45c422291b89db49",
+   "clause_ids": [
+    "disposition:transitions:WF-31:01",
+    "disposition:transitions:WF-31:02",
+    "disposition:transitions:WF-31:03",
+    "disposition:transitions:WF-31:04",
+    "disposition:transitions:WF-31:05",
+    "disposition:transitions:WF-31:06",
+    "disposition:transitions:WF-31:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 1,
+     "end": 52,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "37b1dd4d0d47549160cb8286f14f9b52b6d60e4b3176dc36f77426fe217385d7"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 1,
+     "end": 15,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "819d4a88ffcf2fb40dd527043273d81e1b07350bb4c577d79a536a6f00bd7f9c"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+     "start": 1,
+     "end": 71,
+     "file_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+     "span_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 192,
+     "end": 239,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "256eacab6095c18a02cda79e2ff2a7fc9bda5ed2d10ab64d98de81bca79903e8"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 17,
+     "end": 47,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "1bb981f2a08c29d5904a59a515404479ec32e54191a1f86d9ebc9860bde7d29e"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 192,
+     "end": 215,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "a18a927b0e20efa8480eb69f92d00ab858f8a9c7c7084101f230a827b633c927"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 325,
+     "end": 385,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "a98760260a1cf5c0e630387e753e8c08008e6db7f9142989b5fedcfcc77372ac"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 49,
+     "end": 114,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "888309924b0c7625a6cb20a8df66783f16c03804caaee769532f854175b79abc"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 124,
+     "end": 143,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "c180c762d37e2f74dedd18e36b257ceb477b8fc684788300489e7de336294f2b"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 30,
+     "end": 133,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "d904ca69f5126e446201e6075755eea85ad2f63f382dd0013330fa06f9c44d8b"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 139,
+     "end": 190,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "8492f806bfba54c54ce541a290e8676626e59ec7b26b888c16bd38ae590067c4"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 145,
+     "end": 169,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "ed9284fa49679227fd8da119e7ce3f764ddad979c667857b134fd1f6ba934c8e"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 389,
+     "end": 421,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "d7f1cca035d43256fa1980485be066a239c80a174382cf255b8bf0e8ca577311"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 116,
+     "end": 175,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "e54dcde1392b818ddd1287c3b2b58ae3ff54d2f8123e86c759de398caecf8806"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 425,
+     "end": 435,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "60d0ab1ef0c492ddf210668bdf40027cce9216a9686c409251ea1a8488da5d66"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 93,
+     "end": 114,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "2111803579a64351e4c29cf3d4ecc4f88b07c453acee570f4f4807aa20474e5b"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 170,
+     "end": 175,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "f2b2efee474ee3a3d726c7666c3982c8459bea3d7934db254b09c44d5aa7edd1"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "start": 1,
+     "end": 53,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "cbaac97f66344711ff6c75634f369bc6e2c2fc8e1dc645bc7de2b4da75bf312d"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "start": 58,
+     "end": 128,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "0e26cd54ff1cdbc814f36f160214b341aae16a20c1e472a9d3dbd6eb223af9d3"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 7,
+     "end": 28,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "98ec5ad882dccfc2f9d355c18bba3e21de0cd38b52c101831cf0add14b1a0935"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+     "start": 10,
+     "end": 13,
+     "file_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+     "span_sha256": "de880c610840d6bcef10f679d586dc958532f3bdc3eea40a7407a6140500ef7e"
+    }
+   ],
+   "semantic_assessment": "All literal family clauses, including retained advanced children, are mapped to current/pinned owners and essential callee spans. Exact accepted repairs and honest limitations are explicit per clause. This authored source-only assessment does not renew runtime evidence or close actual task/host/human acceptance.",
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:01",
+   "frozen_row_sha256": "84f9c14603077f2dd11cfeb2483c9266bfa53478281fe5e275057e3d803016b2",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 1,
+     "end": 52,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "37b1dd4d0d47549160cb8286f14f9b52b6d60e4b3176dc36f77426fe217385d7"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 1,
+     "end": 15,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "819d4a88ffcf2fb40dd527043273d81e1b07350bb4c577d79a536a6f00bd7f9c"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+     "start": 1,
+     "end": 71,
+     "file_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+     "span_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222"
+    }
+   ],
+   "semantic_assessment": "The workflow remains explicitly opt-in preview on a supported legacy backend, requires a current-slice plan and narrow real RED, and retains HTML ordinary-farm disablement. A materialized/projected HTML artifact and a supported host label do not authorize dispatch or supply unavailable Codex execution.",
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:02",
+   "frozen_row_sha256": "aa50fc27cc95484622d216978c676bfec7844ad8b79c9fa608366f746ab48e8c",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 192,
+     "end": 239,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "256eacab6095c18a02cda79e2ff2a7fc9bda5ed2d10ab64d98de81bca79903e8"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 17,
+     "end": 47,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "1bb981f2a08c29d5904a59a515404479ec32e54191a1f86d9ebc9860bde7d29e"
+    }
+   ],
+   "semantic_assessment": "Explicit model override wins; otherwise the workflow requests a measured bounded canary/recent exact-plan cache and isolates experiments from a fixed base. Failed/unavailable canary can fall back to a cache or unmeasured choice only with that provenance disclosed, not a fabricated measurement or identity substitution.",
+   "intake_variances": [
+    "Model/backend observations remain future execution. ADR0049 narrows non-loopback endpoints to HTTPS; it does not create permission to disclose or use credentials."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:03",
+   "frozen_row_sha256": "d5dfcf2e4ef04c89acd6801f72ea88dd841ba1b0376ffb6b0b4a11eb4b65caa2",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 192,
+     "end": 215,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "a18a927b0e20efa8480eb69f92d00ab858f8a9c7c7084101f230a827b633c927"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 325,
+     "end": 385,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "a98760260a1cf5c0e630387e753e8c08008e6db7f9142989b5fedcfcc77372ac"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 49,
+     "end": 114,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "888309924b0c7625a6cb20a8df66783f16c03804caaee769532f854175b79abc"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 124,
+     "end": 143,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "c180c762d37e2f74dedd18e36b257ceb477b8fc684788300489e7de336294f2b"
+    }
+   ],
+   "semantic_assessment": "The caller resolves repository/plan/branch, checks authenticated model access, builds and invokes one shared farm backend, and distinguishes JSONL progress from the authoritative run-scoped report. Report and stream completeness are separate; atomic report publication does not make concurrent Git indexes safe.",
+   "intake_variances": [
+    "Current effect receipts add separate complete/errors accounting without granting dispatch or stronger Git concurrency/durability guarantees."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:04",
+   "frozen_row_sha256": "7e20a65c252e1b198694439493151b447bf21dba201fcee223ea44d635becbd9",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 30,
+     "end": 133,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "d904ca69f5126e446201e6075755eea85ad2f63f382dd0013330fa06f9c44d8b"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 139,
+     "end": 190,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "8492f806bfba54c54ce541a290e8676626e59ec7b26b888c16bd38ae590067c4"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 145,
+     "end": 169,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "ed9284fa49679227fd8da119e7ce3f764ddad979c667857b134fd1f6ba934c8e"
+    }
+   ],
+   "semantic_assessment": "Green worker results undergo the task-spec/current-verification and once-per-scope quality phases before acceptance; mutation evidence carries measured/unavailable and known-usage labels. Passing tests/mutant rejection is not by itself acceptance or proof against gaming.",
+   "intake_variances": [],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:05",
+   "frozen_row_sha256": "be956d4ab25962577b76e3f0bfafd13832c00950f75b8a1ac8d588ece9c2a964",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 139,
+     "end": 190,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "8492f806bfba54c54ce541a290e8676626e59ec7b26b888c16bd38ae590067c4"
+    },
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 389,
+     "end": 421,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "d7f1cca035d43256fa1980485be066a239c80a174382cf255b8bf0e8ca577311"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 116,
+     "end": 175,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "e54dcde1392b818ddd1287c3b2b58ae3ff54d2f8123e86c759de398caecf8806"
+    }
+   ],
+   "semantic_assessment": "Failure/escalation retains task-level causes and upstream fix/retry ownership. Breaker abort is surfaced with recorded observations and no silent premium whole-batch redispatch. Foreground consumption preserves ordered progress, with final authoritative report reconciliation.",
+   "intake_variances": [
+    "Current text corrects the unsupported inference that the breaker alone proves model incapability; no new model/price conclusion is inferred."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:06",
+   "frozen_row_sha256": "0f0228ad9efe915ee89e27f688f32877fda283e0933f14bec97c9f1c59ad5b02",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 425,
+     "end": 435,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "60d0ab1ef0c492ddf210668bdf40027cce9216a9686c409251ea1a8488da5d66"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 93,
+     "end": 114,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "2111803579a64351e4c29cf3d4ecc4f88b07c453acee570f4f4807aa20474e5b"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 170,
+     "end": 175,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "f2b2efee474ee3a3d726c7666c3982c8459bea3d7934db254b09c44d5aa7edd1"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "start": 1,
+     "end": 53,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "cbaac97f66344711ff6c75634f369bc6e2c2fc8e1dc645bc7de2b4da75bf312d"
+    },
+    {
+     "path": "plugins/ca/tools/farm-recovery.ts",
+     "start": 58,
+     "end": 128,
+     "file_sha256": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+     "span_sha256": "0e26cd54ff1cdbc814f36f160214b341aae16a20c1e472a9d3dbd6eb223af9d3"
+    }
+   ],
+   "semantic_assessment": "The former receipt-failure redispatch instruction is replaced by receipt-only recovery: exclusive run/resource identities, exact repository/branch/commit/tree observations, independent recovered receipt, no author/reset/deletion or replacement original streams. Unknown refs/cleanup stay unknown, and new author work requires explicit fresh unused identities.",
+   "intake_variances": [
+    "Accepted Farm recovery repair supersedes the frozen historical reset/redispatch defect. The conformance claim covers the repaired source boundary, not any actual recovered effect or crash-durable publication."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  },
+  {
+   "cell": "disposition:transitions:WF-31:07",
+   "frozen_row_sha256": "c9356f6040ae1dd801df17007a5409220d8e44937bb88b096f393274f242b3c7",
+   "witnesses": [
+    {
+     "path": "core/surface/includes/farm.md",
+     "start": 7,
+     "end": 28,
+     "file_sha256": "34890b198d228dd6d832a424197704fcca054b0eded9d20976ead8f94d4f616b",
+     "span_sha256": "98ec5ad882dccfc2f9d355c18bba3e21de0cd38b52c101831cf0add14b1a0935"
+    },
+    {
+     "path": "core/surface/skills/subagent-driven-development/references/farm-dispatch.md",
+     "start": 1,
+     "end": 15,
+     "file_sha256": "1e99b50ca963e05fbbafd91b68ca1359de3fd7574eb4e25f1ea5624b49bd410b",
+     "span_sha256": "819d4a88ffcf2fb40dd527043273d81e1b07350bb4c577d79a536a6f00bd7f9c"
+    },
+    {
+     "path": "core/surface/skills/writing-plans/references/farm-plan.md",
+     "start": 10,
+     "end": 13,
+     "file_sha256": "195c2018447e92470c71bb579556c6768ff7f3952aa7486ae85ef3675141d222",
+     "span_sha256": "de880c610840d6bcef10f679d586dc958532f3bdc3eea40a7407a6140500ef7e"
+    }
+   ],
+   "semantic_assessment": "Promotion remains a fresh exact-revision/model campaign across five slices/three repositories/fifty tasks and Windows/POSIX with two models, stated completion/escalation/attempt/incident/cost floors. Old campaign data earns no current credit, and neither preview stability nor projection enables ordinary HTML farm.",
+   "intake_variances": [
+    "These are acceptance requirements, not completed measurements or authorization to execute an expensive campaign."
+   ],
+   "limits": "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending."
+  }
+ ],
+ "scope": "Authored reasoned source-only preservation of selected PLANNED cells; no actual execution, installed/runtime acceptance, host consent, model/benchmark or publication claim.",
+ "limits": [
+  "Authored reasoned source conformance only. No actual host/user/model/provider/task, installed/runtime/native/OS containment, browser/accessibility, promotion/publication or human acceptance. All prior runtime/evidence epochs remain unchanged. Strict prospective owner authentication and independent review are pending.",
+  "All26 literal frozen transition rows are mapped, including9 advanced rows; only5 PLANNED machines and17 PLANNED transitions are proposed PRESERVED. No source row is proposed TESTED or N/A.",
+  "Accepted persona recovery, later-user statusline ownership, Farm receipt recovery, link containment and parity hint corrections are explicit per clause. No historical defect is silently asserted to remain current.",
+  "Future launches, double storage denial, shared Git concurrency, lexical-not-realpath link checks and manual/two-host qualification remain explicit boundaries.",
+  "No subject code/runtime, tests, owner validation, models/providers, network/API, tools/install, source edits, Root/index/ref/marker/ledger writes or new reviewer fleet are performed by this author lane. Sole CI watcher is a separately authorized read-only lane."
+ ]
+}

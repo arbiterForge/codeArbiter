@@ -1,0 +1,307 @@
+{
+  "verdict": "PASS",
+  "findings": [],
+  "scope": "Qualified finite SOURCE_ONLY review of N20/N27/N29/N38 current accepted contracts, not literal preservation of two inaccurate historical descriptions. No staged integration, execution, strict admission or runtime/task/platform/installed/host/user/model qualification.",
+  "proposal_delivery_sha256": "719f30b36d16aea7b9a6437abe67067a92a08998c072855cb50ae2cd367ed6b8",
+  "proof_sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+  "matrix_sha256": "7af7e7c2d56037c5f8f434a8aa7172a77790535eb8131bdf9b143abd6e27b719",
+  "source_joins_sha256": "a4ff9b734ed19750786a5d900f1c5e67d69d742d03ae4095e73829e4006aa90f",
+  "machine_fragments_sha256": "1d796d76c55bbf777124ec8d9b661e967f880c47588a2d8ea386fa181ccaaa86",
+  "source_epoch": "970518e787c13f82d688a79a55b683ed60225752",
+  "current_epoch": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "input_count": 58,
+  "all_source_current_physical_inputs_equal_before_after": true,
+  "input_bindings": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n20-n27-n29-n38-independent-review-fdc6igbi\\input-bindings.json",
+    "sha256": "8c31161f268fe70b39ca9eb5e3d335f6d4be532d7d5537ca2cc200ec53ddd38d"
+  },
+  "clause_bindings": {
+    "N20:01": {
+      "clause_sha256": "9810e92b31c24c54c2f11462d0597e50c58c2d43d5df4220e5aeff7f1dec51db",
+      "matrix_entry_sha256": "45e09cd57b90c5f173df7c4c138d48a8da53598aaf4c516e968088363c38c6a1",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "read/read.go:69-195,320-382; store/infrastructure.go:154-163"
+    },
+    "N20:02": {
+      "clause_sha256": "253dfec77d2aa2ab33b1c6723e07575cc86062464ca848449873dde962973904",
+      "matrix_entry_sha256": "37ceb502c3678ba65cf15ccc3c18a460fd9b6b89323a67a2a58ddcd7e28ecdb5",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "read/read.go:69-195,320-382"
+    },
+    "N20:03": {
+      "clause_sha256": "ea23f6eead2ebf143a208b3dca4aeb9947aef3ef54b346e4a196262ede661970",
+      "matrix_entry_sha256": "7771e90a6e61837ea1315c399a0b9d49ffa20ecf00cf9da260c3361d16dca8a2",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "read/read.go:197-318,400-446; operations/engine.go:322-407; core/pysrc/_artifactlib.py:1279-1350"
+    },
+    "N20:04": {
+      "clause_sha256": "c10fce695dd74975f9768648db3d502af38933e7958c21110035c156d1cf6d24",
+      "matrix_entry_sha256": "d04fa967d9c4a084302ad7f7b7c9ec8a585fe559fe889dc4629f44eab994d0d1",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "read/read.go:383-399; operations/assistive.go:166-200; operations/protocol.go:426-429"
+    },
+    "N27:01": {
+      "clause_sha256": "fa6418e5e18e13c12f2545606acfe561a0a3fcad6106b9d3e7c5ac913305cc04",
+      "matrix_entry_sha256": "df27664f24822b8ace4024dbf6343356f376e9599195bdc862518e8d522239a9",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/engine.go:562-596; operations/mutations.go:504-506"
+    },
+    "N27:02": {
+      "clause_sha256": "5036a6fc4557badb773613bbc4d2147be3e0232e9965e31b47d59cea6d8db4ad",
+      "matrix_entry_sha256": "c12da46e7b62323a1fc01b1e7baef18ffab9d72a0cd3cc6965d4973f92474efb",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/engine.go:562-617; operations/protocol.go:51-68; operations/descriptors.go:83-87; store/transaction.go:193-213,268-432"
+    },
+    "N27:03": {
+      "clause_sha256": "ca33d085ec1a15e8744ccac858655cbbd3da9fb51db6d597be4d6ae848ed4825",
+      "matrix_entry_sha256": "55c9f625703a4167096e41ea8ca003ed6d0790ee740c8c6dafd89092116caac1",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/capture_export.go:144-182; operations/engine.go:141-160; store/transaction.go:268-432"
+    },
+    "N29:01": {
+      "clause_sha256": "7fc97298e4c5ceb22858faca0b1250cd114e1e7fbc92566667840604c410b957",
+      "matrix_entry_sha256": "624a9653e7d54ebb3efb02a327a7a0168307f76af398b5296a6bded9d8b71f7b",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:81-104,289-323,731-874; operations/work_coordination.go:150-243"
+    },
+    "N29:02": {
+      "clause_sha256": "58264620d6c8e8aaedf8d535ef0608b3231e6963e718da433a6e7aedbd092de3",
+      "matrix_entry_sha256": "e60450421ffb9a8d12d778cda5b88b046039f787ab26af693c2021a82adca165",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:795-801,845-874; operations/work_coordination.go:150-243"
+    },
+    "N29:03": {
+      "clause_sha256": "fcbdc5164a51afa36f194d96a4687b411049ccee1cd08e729edff4e5d4df3145",
+      "matrix_entry_sha256": "a17e0a5115a866d0a3457586bf1c1b8cb68a82032e18b73982a0c1463521d90a",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:802-810,845-874; operations/work_coordination.go:150-243"
+    },
+    "N29:04": {
+      "clause_sha256": "cd3feef61386fee14b099dcce7a28aeda5ff051870fcb61f062df0784bd8e6dd",
+      "matrix_entry_sha256": "efb9ec3579a878352573bdb6d0cf436665f0358aa42e30c8282d31a5f22fda66",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:811-815,845-874"
+    },
+    "N29:05": {
+      "clause_sha256": "f80b50c14a21ea4e50fde77f530785911ae7a10a0cd9a868d53b89061afe439c",
+      "matrix_entry_sha256": "abc860a0484bd3ce57824f836185d8d006730a30402d78b4688171c6005e0b94",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:258-287,752-790; operations/protocol.go:405-422"
+    },
+    "N29:06": {
+      "clause_sha256": "220898b3e819feae07b8883e1f0d0edf69f3ad7519b263b5c35fcb804ee6ad2e",
+      "matrix_entry_sha256": "f3aeec4a59fec9d4ed75565af7a1e9f13311f5ffa22cdf344616525030fc0553",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:816-844,849-874; schema/work.schema.json:46-60"
+    },
+    "N29:07": {
+      "clause_sha256": "2ec0a92d2eddb0d783813026850273b8083a9d0978820589b32e77ef1bf49f39",
+      "matrix_entry_sha256": "30d45119a3529cf7a9508309eb64c437cb9ebd999ca39e4dd888a6ad0e2be818",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/work.go:230,731-874; operations/work_adopt.go:547; operations/descriptors.go:176-183; schema/work.schema.json:40-45"
+    },
+    "N38:01": {
+      "clause_sha256": "f6bad6af1729e70e8628420610e0d4883b632845192dc5378653a2e1f2e75e93",
+      "matrix_entry_sha256": "d3583db6a1b8fe73667a63904127e1f092fbe959a3b27e2c728039d55bc0ec8e",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "contextdocument/contract.go:282-396; contextdocument/render.go:121-130"
+    },
+    "N38:02": {
+      "clause_sha256": "959dbcc08ee4f48986315d110ff7850bef5748e2400ac98fc97fbd69178d03a6",
+      "matrix_entry_sha256": "19d09675fe0304b8538f8bde039d34c1231babdd903d01089da672d6d9df119e",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "contextdocument/contract.go:141-175,177-280; contextdocument/render.go:84-97"
+    },
+    "N38:03": {
+      "clause_sha256": "bc66329530d090ea2d71fa9211fb23d5b06dfea4e99596970f100572714514b1",
+      "matrix_entry_sha256": "d8cd66fad32f087d503c6c038fc9698c6f487be125a61663e847e52d2d53fe5f",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "contextdocument/operations.go:199-264,310-346; operations/context_assistive.go:48-104"
+    },
+    "N38:04": {
+      "clause_sha256": "42afb53a4d00cc854bb8a9d2b8c4ac74878c30c52c715d94f8a3cc3038b8181a",
+      "matrix_entry_sha256": "998589a14dc2ca44960287b416d787ff91c6834667ecce42d022c2aa493363dd",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "contextdocument/evidence.go:37-68,320-368; contextdocument/operations.go:310-350"
+    },
+    "N38:05": {
+      "clause_sha256": "9e7f6ab6ccb1d67b7d6e0da6a1882fdd56cf5584ea339d0c69d214d96702572f",
+      "matrix_entry_sha256": "6cc09279aaf72d3e3e0e5e12f3dd6a74f8916a6704f3a42d6b15dbbd11616c6c",
+      "review": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "contextdocument/evidence.go:16-35,69-315"
+    }
+  },
+  "independently_read_source_spans": {
+    "N20": [
+      {
+        "path": "core/artifacts/internal/read/read.go",
+        "first_line": 1,
+        "last_line": 434,
+        "sha256": "8a5b99fb3cdcc08611b36d56382251b053e8b884b8112e3506f412a5dcee5c39"
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "first_line": 333,
+        "last_line": 381,
+        "sha256": "98e36594da548d74e1557c2fdea72294a9631f5a6967d2c2a1a227c77ca34ae4"
+      },
+      {
+        "path": "core/pysrc/_artifactlib.py",
+        "first_line": 1279,
+        "last_line": 1345,
+        "sha256": "b25863f5c4d2530755b057d4726506d54787ba95f2da499f3dd95f42117fce8f"
+      },
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "first_line": 166,
+        "last_line": 196,
+        "sha256": "10751a285ca97fdba9ac707bd31c6cdd04758880c5eef7f32c926552e1dd631a"
+      },
+      {
+        "path": "core/artifacts/internal/store/infrastructure.go",
+        "first_line": 155,
+        "last_line": 163,
+        "sha256": "103c8aa12bed0032d6509987b120f4e2a6de9e2e3b3b89c656ff55dee74fcdb2"
+      }
+    ],
+    "N27": [
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "first_line": 140,
+        "last_line": 154,
+        "sha256": "7688fe087ab68886d42a0424172073ca2ec273c461ba575d82e51517eaa9bf38"
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "first_line": 564,
+        "last_line": 617,
+        "sha256": "d13e092f81b8a28031855d44fb17f5cb1b49642d1fd4dfe152b1a03018247c0a"
+      },
+      {
+        "path": "core/artifacts/internal/operations/capture_export.go",
+        "first_line": 144,
+        "last_line": 172,
+        "sha256": "5b899972bc7b21d6e70a4cc4c5c7dbf34a90628eea8916b1664570f3f024730b"
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "first_line": 504,
+        "last_line": 506,
+        "sha256": "07bfaf7c87e8f94346c239375435a60e9c32161e5d11da9611a1b6807050cbc3"
+      },
+      {
+        "path": "core/artifacts/internal/operations/descriptors.go",
+        "first_line": 83,
+        "last_line": 87,
+        "sha256": "094cd888067050943e32d3239e1106a19a2ec072d0f698fa00215388fd66f5f5"
+      }
+    ],
+    "N29": [
+      {
+        "path": "core/artifacts/internal/operations/work.go",
+        "first_line": 81,
+        "last_line": 104,
+        "sha256": "0a4f7d9c461c27b731d7cea770ff6bdf03bcf0109fe7e38e2cf65b6f87cbe2c1"
+      },
+      {
+        "path": "core/artifacts/internal/operations/work.go",
+        "first_line": 224,
+        "last_line": 236,
+        "sha256": "9d2c72456a93f54b44e5c608d80e12a461c0202cc8e0571bbfaa37c6f334347d"
+      },
+      {
+        "path": "core/artifacts/internal/operations/work.go",
+        "first_line": 258,
+        "last_line": 323,
+        "sha256": "9c54a5ee50057696b1b4238499c46292ca71d3e3af4ef2fc685ff8cb87ca068d"
+      },
+      {
+        "path": "core/artifacts/internal/operations/work.go",
+        "first_line": 731,
+        "last_line": 850,
+        "sha256": "ab06765232ac01a43c9d89482d81c60cc04c64322cda82bb67d4a58f6c38718a"
+      },
+      {
+        "path": "core/artifacts/internal/operations/work_coordination.go",
+        "first_line": 150,
+        "last_line": 222,
+        "sha256": "dfda03496bb791d66456c32e5f462c21167116de0b87bab4a31a31bb111fc76f"
+      },
+      {
+        "path": "core/artifacts/internal/operations/protocol.go",
+        "first_line": 408,
+        "last_line": 420,
+        "sha256": "2a0fcdbbfb50c9850dfd5378fb126a7e3a3fb8dceb6e18fa7961a18dc74e2b7d"
+      },
+      {
+        "path": "core/artifacts/internal/operations/descriptors.go",
+        "first_line": 176,
+        "last_line": 183,
+        "sha256": "b0a6c95aaf56b5bed2c985f24395be9ce1b8f63759e2c9844cd599e55bfc7ba1"
+      }
+    ],
+    "N38": [
+      {
+        "path": "core/artifacts/internal/contextdocument/contract.go",
+        "first_line": 122,
+        "last_line": 396,
+        "sha256": "7f2202cf6c3779a123f95e6e0f0d757250ea48ddc34423ef38d44fc10882afe0"
+      },
+      {
+        "path": "core/artifacts/internal/contextdocument/operations.go",
+        "first_line": 199,
+        "last_line": 264,
+        "sha256": "38448bae6a98eb426be8a7e41b80717e6ec0f876a43dc710e2415efb48dc5508"
+      },
+      {
+        "path": "core/artifacts/internal/contextdocument/operations.go",
+        "first_line": 310,
+        "last_line": 350,
+        "sha256": "1606e37d3d18e4d4b639d70e0763e207047c3f48d77ebe7c486e254b38e295e3"
+      },
+      {
+        "path": "core/artifacts/internal/contextdocument/evidence.go",
+        "first_line": 15,
+        "last_line": 366,
+        "sha256": "e0a3242d8a50185a19ed60266a0a15bbb65a19c2e194a9173c17b9a3ab1bcc79"
+      },
+      {
+        "path": "core/artifacts/internal/contextdocument/render.go",
+        "first_line": 81,
+        "last_line": 130,
+        "sha256": "c06b877480bdac037da36c7db09b0a8197e21ce8a6219ee78a4c5b51fb02a986"
+      },
+      {
+        "path": "core/artifacts/internal/operations/context_assistive.go",
+        "first_line": 48,
+        "last_line": 105,
+        "sha256": "13c9f2c7cab9ab60f15d0bee69ffda02cc81b228d663c5dc9bf4a50e111735fb"
+      }
+    ]
+  },
+  "foundation_reuse": {
+    "count": 29,
+    "review_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n05-n06-n08-independent-review-as11thkf\\review.json",
+    "review_sha256": "fb885217e5896ab69f0b9dda5866cb49e555f16e4f3cb8a7a914ad71db5a704d",
+    "all_inputs_match_prior_reviewed_proof": true
+  },
+  "interpretations": {
+    "N20:03": "Inherited as-is audit prose error. Literal fd7/current read.go and both actual consumers show Outline omits context_complete and creates no completed ticket. Exact/batch/verification remain false; only contextual Page may assert complete. NT06 explicitly preserves read-mode/effect separation; no flag invented or completion implied.",
+    "N38:02": "Inherited as-is audit prose error. Literal fd7/current contract.go admits fact source_ref/consumer_ref as bounded inert text. Actual cwd/map paths/constraint scope/declaration paths are repository-relative validated; actual evidence content/membership is separately reacquired. NT02 preserves inert proposal/permission separation and output-consumer safety, not an all-label filesystem grammar.",
+    "N27:02": "Named accepted NT03 repair-apply discovery change; do not preserve the old absent-in-Names defect. CAS, journal, normative identity and replay retained.",
+    "N29:07": "Named accepted NT07 schema-only passed/failed capability metadata; no native setter or inferred executed checks. All work lifecycle/delivery operations retain independent provenance."
+  },
+  "checks": {
+    "all_19_frozen_clauses_exact": true,
+    "all_19_current_edge_rows_and_history_unchanged_since_source": true,
+    "four_PLANNED_machine_preimages_match_current": true,
+    "mutable_ledger_excluded_from_proof_inputs": true,
+    "receiving_original_strict_owner_admission": "NOT_RUN_PENDING_ROOT"
+  },
+  "limits": [
+    "No tests, validators, native/Go/Python application runtime, probes, API/network or canonical/index/ref/marker writes.",
+    "Four proposals remain private; no ledger/status mutation or forced PRESERVED admission.",
+    "No task/scenario/human/model/installed/client/platform or whole-native qualification. Original Pi cause UNKNOWN remains separate."
+  ]
+}

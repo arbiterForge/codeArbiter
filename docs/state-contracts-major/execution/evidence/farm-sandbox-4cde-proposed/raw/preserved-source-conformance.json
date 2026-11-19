@@ -1,0 +1,2616 @@
+{
+  "schema": "codearbiter.current-source-conformance/1",
+  "source_commit": "4cde96cb54592545d78e8cdbe42391a34748f7ff",
+  "recorded_at": "2026-11-13T21:17:04.736438+00:00",
+  "inputs": {
+    "plugins/ca/tools/artifact-manifest.test.ts": "5f0d5807cc1f1ea8e171981934435ad097cb29db53922474e499038d7f3f7cbd",
+    "plugins/ca/tools/artifact-manifest.ts": "c52753ad9aa137876622281652641e67d94e5904f64d1f6d8565e64c2f2c88c0",
+    "plugins/ca/tools/exec.test.ts": "0ddced741cce3c642e5106fc7da5e7447f213c5d8b28607d2798706e10a41a8d",
+    "plugins/ca/tools/exec.ts": "1a2fe067280c570d3d0c296f6795e642901bf546e873123b2d125da13444fc73",
+    "plugins/ca/tools/farm-dist.test.ts": "6aa430ff36c3e68cea975dd5321dc445219c06c61e49cf858189c4ef5fa2c257",
+    "plugins/ca/tools/farm-recovery.test.ts": "9b0350923cb56e10d98db848df37e9bf5fb6798e22f4a92d07a860c7306d9ead",
+    "plugins/ca/tools/farm-recovery.ts": "1dbbbce56e7cda24d6016c7205f60b5bf758e24aed2a5a8132ff4ff336e49885",
+    "plugins/ca/tools/farm-surface.test.ts": "75c654b5afedc1d10abe0a97402bad72d921745eb614b6bb9a80ce924b24ec00",
+    "plugins/ca/tools/farm.js": "d5cbf42a8f523e2f1d036ed966ebb29ceee2fa35bbe53d51520fee8d52b8d5d8",
+    "plugins/ca/tools/farm.test.ts": "395ec94484631ee6ffdb66b57b6b8241201592db3b081b218128ddee9758a15e",
+    "plugins/ca/tools/farm.ts": "0ce099a0d277cf8a1cb00a782c089a54e02791f9b02186a689cc47b00d0ff223",
+    "plugins/ca/tools/farm.unit.test.ts": "23ba125efe2493fe0839ec23120805b04866d472cc5705b78568788d7d2f151f",
+    "plugins/ca/tools/mutation.test.ts": "5985942832195d81674ed6604208756643282d4c040cd7a7c2f6f2b7547fe28e",
+    "plugins/ca/tools/mutation.ts": "27e5548419430e94ce9b892f478c5cb32da84791c5a07dac01e4393dce01e90d",
+    "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
+    "plugins/ca/tools/package.json": "e36527e252fe0b559c93c8b0501eccf93d168297f4a5c2da4f2ce2aa709c9972",
+    "plugins/ca/tools/plan-contract.test.ts": "45fd70c361ad9d9d73903eaa2ebf5fe053133e505f07a796da85e81d6950128a",
+    "plugins/ca/tools/redactor.test.ts": "29fe4c9011694308fb2ee0944b40482d78d31149bee604b39ba69db4924eb46d",
+    "plugins/ca/tools/redactor.ts": "ef6344cdbb5578e525173852e08e2b410a02238a622e548488daff48b9e30f03",
+    "plugins/ca/tools/state-contracts.test.ts": "098543b2d565f82a7a3efcd9bb140ed1c34ac88c7f567b70ddd8056b48815e72",
+    "plugins/ca/tools/tsconfig.json": "8930059661c9e911148eb53c7b96506313ef87c66239856d8ec6500cf6a8aa2e",
+    "plugins/ca/tools/vitest.config.ts": "830ac6df0919d2caae0c7cdda948d931fa2d2bc7c6c270704d5bd43ce495edf0",
+    "plugins/ca/tools/worktree-fs.test.ts": "11379a2c4661f38320c4a6f7e41f152d038d8dbdbb09d1c008506be4d6f53dda",
+    "plugins/ca/tools/worktree-fs.ts": "0b0f2af98c0f48cbbe4d3a53f5365c87c597d2fc0e702ca15a6af0e2ce618277",
+    "plugins/ca-sandbox/tools/build-pinned-base.test.ts": "386f1427fa69f9abade4175b9b3e51b465068b77e3c5375f4a6776294f2da3f8",
+    "plugins/ca-sandbox/tools/build.test.ts": "872ff21ccd5b2c25009d34246a45561a770c6128ab526c9ceb03551c04a6f30c",
+    "plugins/ca-sandbox/tools/build.ts": "5126c4cc8954b4ae5dbe0e297200d33aafbfaadb295cb069c079ed4d5fd15414",
+    "plugins/ca-sandbox/tools/cache-provenance.test.ts": "c0d251b237d0ace3079a6411d8508471f6ab8166e42fd3cbff0e4e67333272fb",
+    "plugins/ca-sandbox/tools/claude-inside-cli.test.ts": "b40ae21eec8ff1bfaa707e827627fad2d0ef4f8505491ad7b52055295a5e5727",
+    "plugins/ca-sandbox/tools/claude-inside-cli.ts": "c90cdf6009a6002b60da08efdf1b1521a7a3d61807d95cc631f3a779e1daa988",
+    "plugins/ca-sandbox/tools/claude-inside.js": "3c7db1ab1c01c7e6d28565f3361d5eaf605d5af10e8fc6bb5c4b60ffb2d4877f",
+    "plugins/ca-sandbox/tools/claude-inside.test.ts": "26071d0acced2f08d2bbffb11df516d70314fb8bd1bec297bb4d8318caa66fbd",
+    "plugins/ca-sandbox/tools/claude-inside.ts": "d7e2fc4ec87ee06ec029e9f2810a5c61bde1de9727a0eec7baa5abd94f92d954",
+    "plugins/ca-sandbox/tools/cli-resolve.test.ts": "cdfcbbe5df13e15df1dfadbb410299063731b2e4012cc3bcf65a00d164b939f6",
+    "plugins/ca-sandbox/tools/cli.test.ts": "93f892b6ece601a3597e5ec24823905409e6f7e53ec6fab0d6d4c1e5e4e31eb2",
+    "plugins/ca-sandbox/tools/cli.ts": "f5a004a68aa2ab6da7432ee6d6b5a216ae22d0c79a993b4ca3587e5bd5de209c",
+    "plugins/ca-sandbox/tools/cp.test.ts": "3741020ad0375ed4723ec8dcae667c9d30074e368582827ae6d3f149b4002623",
+    "plugins/ca-sandbox/tools/cp.ts": "fd83506733aecf21534c824e4928d2962fd369ba51dc94d5bb096a073b6d0d42",
+    "plugins/ca-sandbox/tools/create-failure-diagnostics.test.ts": "e7bbc8b1d2a365d5988b6bcc361e1cd1785a25c9e474dadbb4be96d9bd4ff45e",
+    "plugins/ca-sandbox/tools/create.test.ts": "cc745bb0f6608396af140a164745de508f2cad90ed5c47a236b1ff5c5fb16451",
+    "plugins/ca-sandbox/tools/create.ts": "670edcdbeb9de04467101d3a78992258bcd9e35b606b000334e551888e16d0ea",
+    "plugins/ca-sandbox/tools/deadline.test.ts": "04d5f58165ec7e3d2a0c3237951c5e9d6a777ad4a5f9571e2a4f11f4b39b288b",
+    "plugins/ca-sandbox/tools/dephash.test.ts": "948f350a1e162b093404ad889c4793eca9cfc2527dc7dc785ce1d4709c41b2ad",
+    "plugins/ca-sandbox/tools/dephash.ts": "4eb0ffdbc5d66eeb47409a43a04ccec81f1ea41dc391074be44488028f23139c",
+    "plugins/ca-sandbox/tools/destroy.ts": "6afde8b498f4db671dfffe90a5086ad64ff9e28b67a3a4da4a22c008d66d2ce9",
+    "plugins/ca-sandbox/tools/docker-gate.test.ts": "295b0d554ca7b3eded77cae1da1c0938ce1690d2a8d40e5c3e9c6c1c383b6bf3",
+    "plugins/ca-sandbox/tools/docker-gate.ts": "0f4929feb9b5e41224cd1a276fb0a1aa3b2b6fb064dd0a7c7c28309e35f70e5b",
+    "plugins/ca-sandbox/tools/docker.ts": "ac2127a49446d7794bb7b8b2b20cf786c56f8d4a318ade2e56b354fc7a068fc0",
+    "plugins/ca-sandbox/tools/exec.test.ts": "eb8e5b337f9e1efc2dcb87a3361b02c1b6374f44bc2165aba7b51a97de864fb1",
+    "plugins/ca-sandbox/tools/exec.ts": "31b0297d6bf0288c4d16bfd6c8604b31141ddf887cd8103c63b2e9ac0343458e",
+    "plugins/ca-sandbox/tools/layering.test.ts": "c3b00e1ddd7edea8932533cbc7c622302d4835945142331ad24d8d1205ba5f7f",
+    "plugins/ca-sandbox/tools/lifecycle.test.ts": "c0960d9ac942ef3cee063de1295ecfa7f907fa4b807b34cf27dd8179d1078a74",
+    "plugins/ca-sandbox/tools/mounts.test.ts": "4e8062616b2ec7a8e2908880dec65b8c4299783539b816abc1b4e0cc105f856a",
+    "plugins/ca-sandbox/tools/mounts.ts": "15a89e0d2b08a57bc82139f1af267d250cc2bb3380f134df56dc55dcfe92b81d",
+    "plugins/ca-sandbox/tools/multistack.test.ts": "7e319d65112281a4486dbd7b44c65325cd3c7c1a864c31b321c66f23d8787c9b",
+    "plugins/ca-sandbox/tools/native-build-inputs.test.ts": "9e38fce0ea3659c0c2aba3d05e663a50d148cf8825d6f48d000eedd940a6d5ce",
+    "plugins/ca-sandbox/tools/network.test.ts": "63d813425daf314f90e86afa7cd9664ad889721d0da74d94c85897ab2703cf8f",
+    "plugins/ca-sandbox/tools/network.ts": "8e2996776125984b212b369788ee7a1ec0fe5cd632943ad4cfefbf96c90caa69",
+    "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
+    "plugins/ca-sandbox/tools/package.json": "cf3b87fea39148d3b3bee0db60c84b8fcbf353f4b0565d513141fd2937ae3138",
+    "plugins/ca-sandbox/tools/registry.ts": "3778f8fd9cafdc5dfa48da14de7597db3110bc1a578adf03b4c136e1504a07a7",
+    "plugins/ca-sandbox/tools/run.test.ts": "4bf724a1dd484a423e0575f5dd6b7e03d790682d3a39f39e1395489c45662355",
+    "plugins/ca-sandbox/tools/run.ts": "ccc40123e2594539925e3bbcba2f8f9a4d574509349c25f047d298e275dc595a",
+    "plugins/ca-sandbox/tools/sandbox.js": "6c873ef61f7fcb144a00f017ea617339d7edc326179eb1478326f6acb3f9877b",
+    "plugins/ca-sandbox/tools/smoke.test.ts": "13dd3936d6526679f7d7b07f2afaf65f3597f7cf11d97a09f82398ecea684532",
+    "plugins/ca-sandbox/tools/smoke.ts": "0250b87b95582ccccbd50b7e5a6aba0b8524d7ec85a3fc3f6bfa046a46363bae",
+    "plugins/ca-sandbox/tools/state-contracts.test.ts": "a30f1aa76b194bd79e1c4716c5ca1db4dd2adb804d0e352d86e737486fa18441",
+    "plugins/ca-sandbox/tools/supply-chain.test.ts": "da8c2c7792565c4652e6fe054b755d4751e8522ad4d707e2fcbeacfa10d13b2f",
+    "plugins/ca-sandbox/tools/teardown.test.ts": "099d7bc04797d9863a1f5da7f774a9f5e47ac320e6769e88e367dff561b6680c",
+    "plugins/ca-sandbox/tools/tsconfig.json": "006a5145157df0bf27f79f2bb00dee8cf9df85720b01d88675510e13770deab7",
+    "plugins/ca-sandbox/tools/vitest.config.ts": "bb1c82a13ca1af089ef3db4af843da2bfef3def0733b812ccd5fb36f6460dd5e"
+  },
+  "purpose": "30unchanged guard/effect/retry clauses under current source; source conformance, not synthetic fresh tests.",
+  "reviewed_changes": "Current sandbox native provider restoration is confined to build admission/generation/cache identity; Node/Python JSON unchanged. It does not change Docker client deadlines, ordinary run networking, registry teardown, farm worktree materialization, setup/sampling/merge/retry/cleanup, mutation restoration. Current farm installedArtifactBinary evolution does not change preserved author/task helper bodies. New source was independently reviewed by root; this record claims no additional independent review authority.",
+  "rows": [
+    {
+      "transition_id": "S24:02",
+      "baseline_contract": {
+        "event": "run setup",
+        "guard": "first attempt or setup fingerprint changed or setupEachAttempt",
+        "to": "authoring",
+        "effects": "Run configured setup; fingerprint commands and declared setup inputs; ignored dependencies can survive resets.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "prepareWorktree, runTask, checkDrift, runGate",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "650-3050"
+          },
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "safe materialization",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "setup",
+        "transition_id": "S24:02"
+      },
+      "group": "ordinary-setup-cache-and-refusal",
+      "preservation_reason": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry."
+    },
+    {
+      "transition_id": "S24:03",
+      "baseline_contract": {
+        "event": "setup command fails",
+        "guard": "any setup failure",
+        "to": "escalated",
+        "effects": "Stop task immediately; leave inspection worktree.",
+        "failure_retry": "No author quality retry is used to repair a setup failure.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "prepareWorktree, runTask, checkDrift, runGate",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "650-3050"
+          },
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "safe materialization",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "setup",
+        "transition_id": "S24:03"
+      },
+      "group": "ordinary-setup-cache-and-refusal",
+      "preservation_reason": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry."
+    },
+    {
+      "transition_id": "S25:02",
+      "baseline_contract": {
+        "event": "all samples settle",
+        "guard": "all launched samples awaited",
+        "to": "selecting",
+        "effects": "Order green candidates by sample index, not fastest arrival; retain best failure and deferred transport signal.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "sampling",
+        "transition_id": "S25:02"
+      },
+      "group": "candidate-selection-and-fatal-safety",
+      "preservation_reason": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+    },
+    {
+      "transition_id": "S25:03",
+      "baseline_contract": {
+        "event": "eligible candidate",
+        "guard": "sample green",
+        "to": "winner materialized",
+        "effects": "Reset task worktree, copy candidate patch and run full task checks again; try later candidate if a nonfatal materialization/check fails.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "selecting",
+        "transition_id": "S25:03"
+      },
+      "group": "candidate-selection-and-fatal-safety",
+      "preservation_reason": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+    },
+    {
+      "transition_id": "S25:04",
+      "baseline_contract": {
+        "event": "fatal candidate failure",
+        "guard": "unsafe write/test/containment issue",
+        "to": "no winner",
+        "effects": "Do not continue alternatives across a fatal safety failure.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "selecting",
+        "transition_id": "S25:04"
+      },
+      "group": "candidate-selection-and-fatal-safety",
+      "preservation_reason": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+    },
+    {
+      "transition_id": "S25:05",
+      "baseline_contract": {
+        "event": "first rechecked candidate passes",
+        "guard": "full task pipeline green",
+        "to": "winner selected",
+        "effects": "Use that candidate; do not run additional author samples.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "selecting",
+        "transition_id": "S25:05"
+      },
+      "group": "candidate-selection-and-fatal-safety",
+      "preservation_reason": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+    },
+    {
+      "transition_id": "S25:06",
+      "baseline_contract": {
+        "event": "no passing candidate",
+        "guard": "all checked or deferred without winner",
+        "to": "no winner",
+        "effects": "Feed best bounded failure into outer retry; deferred cooldown only stops when no winner exists.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "selecting",
+        "transition_id": "S25:06"
+      },
+      "group": "candidate-selection-and-fatal-safety",
+      "preservation_reason": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure."
+    },
+    {
+      "transition_id": "S25:07",
+      "baseline_contract": {
+        "event": "finally",
+        "guard": "every sample resource",
+        "to": "cleanup pending",
+        "effects": "Verify removal of every sample worktree and branch, even losing/cancelled samples.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "any sample outcome",
+        "transition_id": "S25:07"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S25:08",
+      "baseline_contract": {
+        "event": "remaining resource exists",
+        "guard": "cleanup retries exhausted",
+        "to": "cleanup degraded",
+        "effects": "Attach leak diagnostics.",
+        "failure_retry": "A task can remain green while run exits 2 for cleanup degradation; preserve both dimensions.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "best-of-N sampling and selection",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "2000-3050"
+          }
+        ],
+        "from": "cleanup pending",
+        "transition_id": "S25:08"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S26:01",
+      "baseline_contract": {
+        "event": "stage task paths",
+        "guard": "validated explicit paths",
+        "to": "staging",
+        "effects": "git add explicit paths, with up to three idempotent retries.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "commit and integrate task",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1800-3050"
+          }
+        ],
+        "from": "ready",
+        "transition_id": "S26:01"
+      },
+      "group": "verified-merge-recovery",
+      "preservation_reason": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+    },
+    {
+      "transition_id": "S26:05",
+      "baseline_contract": {
+        "event": "merge fails",
+        "guard": "conflict or Git failure",
+        "to": "rollback checking",
+        "effects": "Abort merge and verify integration worktree clean before releasing/continuing.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "commit and integrate task",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1800-3050"
+          }
+        ],
+        "from": "merging",
+        "transition_id": "S26:05"
+      },
+      "group": "verified-merge-recovery",
+      "preservation_reason": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+    },
+    {
+      "transition_id": "S26:06",
+      "baseline_contract": {
+        "event": "clean state cannot be verified",
+        "guard": "abort/readback failure",
+        "to": "fatal",
+        "effects": "Stop task; do not reset/retry over unknown integration state.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "commit and integrate task",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1800-3050"
+          }
+        ],
+        "from": "rollback checking",
+        "transition_id": "S26:06"
+      },
+      "group": "verified-merge-recovery",
+      "preservation_reason": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+    },
+    {
+      "transition_id": "S26:07",
+      "baseline_contract": {
+        "event": "clean rollback and retry budget",
+        "guard": "integration HEAD can be pinned",
+        "to": "rebasing retry",
+        "effects": "Capture prior attempt, reset task hard to current integration HEAD, clean untracked files, read back base and refresh protected-test hashes.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "commit and integrate task",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1800-3050"
+          }
+        ],
+        "from": "rollback checking",
+        "transition_id": "S26:07"
+      },
+      "group": "verified-merge-recovery",
+      "preservation_reason": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+    },
+    {
+      "transition_id": "S26:08",
+      "baseline_contract": {
+        "event": "new base observed",
+        "guard": "same intended task identity",
+        "to": "authoring",
+        "effects": "Run full author/check pipeline again on moved integration base.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "commit and integrate task",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1800-3050"
+          }
+        ],
+        "from": "rebasing retry",
+        "transition_id": "S26:08"
+      },
+      "group": "verified-merge-recovery",
+      "preservation_reason": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget."
+    },
+    {
+      "transition_id": "S26:09",
+      "baseline_contract": {
+        "event": "task cleanup",
+        "guard": "worktree removal verified",
+        "to": "green",
+        "effects": "Remove worktree but keep task branch/commit; record green only after cleanup result handled.",
+        "failure_retry": "Cleanup failure is explicit and can degrade the run even when commit/merge succeeded.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "commit and integrate task",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1800-3050"
+          }
+        ],
+        "from": "integrated",
+        "transition_id": "S26:09"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S28:11",
+      "baseline_contract": {
+        "event": "finally",
+        "guard": "backups exist",
+        "to": "restoring",
+        "effects": "Restore every original file even on abort/failure.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/mutation.ts",
+            "symbol": "mutation sweep and optional hook",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/mutation.ts",
+            "lines": "1-529"
+          },
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "quality evidence integration",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "900-3050"
+          }
+        ],
+        "from": "any sweep",
+        "transition_id": "S28:11"
+      },
+      "group": "mutation-history-restoration",
+      "preservation_reason": "Original bytes are restored through in-loop and final paths after mutations; deadline-before-test does not invent a measured run. This narrow row is restoration only, not heuristic intent or verified kill coverage."
+    },
+    {
+      "transition_id": "S29:04",
+      "baseline_contract": {
+        "event": "tree absence verified",
+        "guard": "cleanup result clean",
+        "to": "closed clean with timeout",
+        "effects": "Return 124/timedOut=true/cleanupFailed=false.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/exec.ts",
+            "symbol": "run and treeKill",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/exec.ts",
+            "lines": "1-355"
+          }
+        ],
+        "from": "terminating",
+        "transition_id": "S29:04"
+      },
+      "group": "clean-timeout-class",
+      "preservation_reason": "A verified-gone cleanup returns124/timedOut and no cleanupFailed, distinct from125 unknown. Mocked process verification tests establish result semantics; no POSIX descendant or nonroot execution claim."
+    },
+    {
+      "transition_id": "S30:01",
+      "baseline_contract": {
+        "event": "remove worktree",
+        "guard": "worktree lock acquired",
+        "to": "removing",
+        "effects": "git worktree remove; separately observe registry and disk.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "verified worktree/branch cleanup helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1700-2050"
+          }
+        ],
+        "from": "cleanup requested",
+        "transition_id": "S30:01"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S30:02",
+      "baseline_contract": {
+        "event": "registry absent and disk absent",
+        "guard": "both observed gone",
+        "to": "clean",
+        "effects": "Record verified cleanup; remove empty sample root where applicable.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "verified worktree/branch cleanup helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1700-2050"
+          }
+        ],
+        "from": "observing",
+        "transition_id": "S30:02"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S30:04",
+      "baseline_contract": {
+        "event": "remaining resource or observation failed",
+        "guard": "attempts remain",
+        "to": "retry",
+        "effects": "Retry at bounded 150ms/300ms delays; registry observation failure treated as present.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "verified worktree/branch cleanup helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1700-2050"
+          }
+        ],
+        "from": "observing",
+        "transition_id": "S30:04"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S30:06",
+      "baseline_contract": {
+        "event": "delete sample branch",
+        "guard": "branch expected disposable",
+        "to": "observing",
+        "effects": "Delete branch then verify ref absence separately; retain successful task branch by policy.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/farm.ts",
+            "symbol": "verified worktree/branch cleanup helpers",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/farm.ts",
+            "lines": "1700-2050"
+          }
+        ],
+        "from": "cleanup requested",
+        "transition_id": "S30:06"
+      },
+      "group": "cleanup-axes-and-all-samples",
+      "preservation_reason": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work."
+    },
+    {
+      "transition_id": "S33:01",
+      "baseline_contract": {
+        "event": "write worker file",
+        "guard": "portable relative path inside worktree",
+        "to": "ancestors checked",
+        "effects": "Create/check ancestors without following unsafe symlink boundaries.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "writeWorktreeFile and safety checks",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "unresolved path",
+        "transition_id": "S33:01"
+      },
+      "group": "worktree-materialization-boundary",
+      "preservation_reason": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+    },
+    {
+      "transition_id": "S33:02",
+      "baseline_contract": {
+        "event": "open target",
+        "guard": "exclusive/no-follow and regular single-link target",
+        "to": "target opened",
+        "effects": "Pin target handle and inode identity.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "writeWorktreeFile and safety checks",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "ancestors checked",
+        "transition_id": "S33:02"
+      },
+      "group": "worktree-materialization-boundary",
+      "preservation_reason": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+    },
+    {
+      "transition_id": "S33:03",
+      "baseline_contract": {
+        "event": "pre-write revalidation",
+        "guard": "path/handle still same after optional test hook",
+        "to": "revalidated",
+        "effects": "Reject link or replacement races before truncation.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "writeWorktreeFile and safety checks",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "target opened",
+        "transition_id": "S33:03"
+      },
+      "group": "worktree-materialization-boundary",
+      "preservation_reason": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+    },
+    {
+      "transition_id": "S33:04",
+      "baseline_contract": {
+        "event": "write bytes",
+        "guard": "owned safe target",
+        "to": "written",
+        "effects": "Truncate/write exact requested bytes; close handle best effort.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "writeWorktreeFile and safety checks",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "revalidated",
+        "transition_id": "S33:04"
+      },
+      "group": "worktree-materialization-boundary",
+      "preservation_reason": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+    },
+    {
+      "transition_id": "S33:05",
+      "baseline_contract": {
+        "event": "unsafe identity or I/O failure",
+        "guard": "guard/write fails",
+        "to": "unsafe/partial",
+        "effects": "Throw bounded UnsafeWorktreeWrite failure.",
+        "failure_retry": "Write failure after truncation can leave partial bytes; caller escalates rather than presenting atomic file replacement.",
+        "source": [
+          {
+            "path": "plugins/ca/tools/worktree-fs.ts",
+            "symbol": "writeWorktreeFile and safety checks",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca/tools/worktree-fs.ts",
+            "lines": "1-194"
+          }
+        ],
+        "from": "any phase",
+        "transition_id": "S33:05"
+      },
+      "group": "worktree-materialization-boundary",
+      "preservation_reason": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim."
+    },
+    {
+      "transition_id": "S47:01",
+      "baseline_contract": {
+        "event": "Docker call",
+        "guard": "signal already aborted",
+        "to": "closed code 130",
+        "effects": "Return cancellation without starting client.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "not spawned",
+        "transition_id": "S47:01"
+      },
+      "group": "docker-client-observation-contract",
+      "preservation_reason": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment."
+    },
+    {
+      "transition_id": "S47:03",
+      "baseline_contract": {
+        "event": "deadline elapsed",
+        "guard": "first failure reason",
+        "to": "timeout latched",
+        "effects": "SIGKILL Docker client; report 124/timedOut.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S47:03"
+      },
+      "group": "docker-client-observation-contract",
+      "preservation_reason": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment."
+    },
+    {
+      "transition_id": "S47:04",
+      "baseline_contract": {
+        "event": "abort signal",
+        "guard": "first failure reason",
+        "to": "abort latched",
+        "effects": "SIGKILL Docker client; report 130/aborted.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/docker.ts",
+            "symbol": "runDocker bounded subprocess",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/docker.ts",
+            "lines": "1-325"
+          }
+        ],
+        "from": "running",
+        "transition_id": "S47:04"
+      },
+      "group": "docker-client-observation-contract",
+      "preservation_reason": "Controlled child-process tests prove pre-abort spawn refusal, finite deadlines wired to spawn, abort130 distinct from timeout124, ordinary failure not timeout, child kill and first-result terminal cleanup. They do not prove live container workload containment."
+    },
+    {
+      "transition_id": "S50:01",
+      "baseline_contract": {
+        "event": "ordinary run/create",
+        "guard": "current NETWORKED_POLICIES set empty",
+        "to": "offline plan",
+        "effects": "All ordinary sandbox runtime containers use --network none.",
+        "failure_retry": "",
+        "source": [
+          {
+            "path": "plugins/ca-sandbox/tools/network.ts",
+            "symbol": "network planner/firewall installation",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/network.ts",
+            "lines": "1-272"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/run.ts",
+            "symbol": "NETWORKED_POLICIES and runtime planning",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/run.ts",
+            "lines": "1-219"
+          },
+          {
+            "path": "plugins/ca-sandbox/tools/cli.ts",
+            "symbol": "network option handling",
+            "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:plugins/ca-sandbox/tools/cli.ts",
+            "lines": "1-496"
+          }
+        ],
+        "from": "runtime plan",
+        "transition_id": "S50:01"
+      },
+      "group": "ordinary-offline-argv",
+      "preservation_reason": "Ordinary NETWORKED_POLICIES remains empty; requested unsupported allowlist returns effective offline/availablefalse and actual argv --network none without privileged/NET_ADMIN. Argument construction is tested, not actual nonroot/network boundary enforcement."
+    }
+  ],
+  "semantic_groups": [
+    {
+      "id": "ordinary-setup-cache-and-refusal",
+      "claim": "First setup precedes author; unchanged input skips cached setup, changed fingerprint reruns; setupEachAttempt reruns before attempts. Setup failure immediately escalates without author retry.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/farm-surface.test.ts",
+          "name": "runTask escalations are distinguished by note, not just by status escalates immediately on a setup failure WITHOUT burning a worker retry",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns invokes a dependency-only `npm ci` setup ONCE across two worker retries",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns reruns `setupEachAttempt` before every attempt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns still runs setup BEFORE the worker on the first attempt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns escalates immediately when setupEachAttempt fails",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns reruns cached setup when a declared setupInput changes under the worktree",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns does NOT rerun setup when the declared setupInput is unchanged",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns is a no-op when neither setup phase is configured",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm-surface.test.ts",
+          "name": "runTask escalations are distinguished by note, not just by status escalates immediately on a setup failure WITHOUT burning a worker retry",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns invokes a dependency-only `npm ci` setup ONCE across two worker retries",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns reruns `setupEachAttempt` before every attempt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns still runs setup BEFORE the worker on the first attempt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns escalates immediately when setupEachAttempt fails",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns reruns cached setup when a declared setupInput changes under the worktree",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns does NOT rerun setup when the declared setupInput is unchanged",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/plan-contract.test.ts",
+          "name": "#391 setup runs once per worktree; setupEachAttempt reruns is a no-op when neither setup phase is configured",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "candidate-selection-and-fatal-safety",
+      "claim": "All samples settle and first green wins by index; failed sibling does not erase winner. Materialized candidates receive full gate/mutation/immutable-test checks; nonfatal rejection can select retained sibling without fresh author. Fatal containment/test/reset failure forbids sibling or new round; configured exhausted/deferred failure remains failure.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency never runs more than `max` jobs concurrently, and does parallelize up to it",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency clamps a max < 1 to 1 (never deadlocks, never unbounded)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency returns each job's resolved value",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency releases the slot even when a job throws (no slot leak)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask survives a sample that THROWS \u2014 it resolves to a failure and a green sibling still wins (M1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives uses the next retained candidate after high risk with no new worker round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains an alternative until the materialized task gate passes",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives checks both candidates before spending the configured next retry",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 1 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 2 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives keeps a clean built-in timeout diagnostic without spending another model round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains a low completed built-in result before interruption and tries its sibling",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the built-in containment refusal with 1 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the built-in containment refusal with 2 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives records known tokens and cleans all sample resources when qualification throws",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not switch candidates across an unresolved task reset failure",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives preserves evidence when retry reset fails after 1 rejected sampling rounds",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives preserves evidence when retry reset fails after 2 rejected sampling rounds",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not replace a failed between-candidate setup with a green sibling",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains known sample usage when a later sample check throws",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through partial-worker without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through gate-failed without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through gate-throw without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through select-partial without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context filters the single-worker retry against the same reported write set",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context retains the last written-file list on terminal gate-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context retains the last written-file list on terminal drift-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context does not invent previous work from an empty failure",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context capture accepts only reported in-scope implementation files: []",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context capture accepts only reported in-scope implementation files: [\"src/untouched.ts\"]",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context capture accepts only reported in-scope implementation files: [\"src/impl.ts\",\"test.txt\",\"../outside\",\"secret.key\"]",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context keeps the legacy explicit snapshot helper when no write filter is supplied",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency never runs more than `max` jobs concurrently, and does parallelize up to it",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency clamps a max < 1 to 1 (never deadlocks, never unbounded)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency returns each job's resolved value",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 createLimiter caps concurrency releases the slot even when a job throws (no slot leak)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask accepts the FIRST green sample by index and reports its files (AC-F1.2)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask sums token spend across ALL samples and records the accepted candidate's separately (AC-F1.6)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask escalates when no sample passes the gate and retries are spent (AC-F1.5)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask auto-bumps temperature to 0.7 when FARM_SAMPLES>1 and FARM_TEMPERATURE is unset (AC-F1.3)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask does NOT bump temperature when the operator set FARM_TEMPERATURE explicitly (incl. an explicit 0)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask treats a non-numeric FARM_SAMPLES as 1 (no NaN mass-escalation) (L1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask survives a sample that THROWS \u2014 it resolves to a failure and a green sibling still wins (M1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "F1 \u2014 best-of-N in runTask REGRESSION: FARM_SAMPLES=1 runs one worker call into the TASK worktree, not a sample (AC-F1.1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives uses the next retained candidate after high risk with no new worker round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains an alternative until the materialized task gate passes",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives applies the unchanged mutation evidence floor before accepting an alternative",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives checks both candidates before spending the configured next retry",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not penalize a candidate for missing mutation count beyond the existing warning policy",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains mutation-hook infrastructure warnings rather than inventing an escalation rule",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the adverse-report count floor without publishing failed scores",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (undefined)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (0)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent a blocking count from a failed hook (4)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives stops after mutation containment is unverified with 1 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives stops after mutation containment is unverified with 2 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 1 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives keeps unclassified nonzero outcomes diagnostic with 2 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the upper-bound/count policy (0.1, 10) before buying another sample round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the upper-bound/count policy (0.2, 5) before buying another sample round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the upper-bound/count policy (0, 4) before buying another sample round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives keeps a clean built-in timeout diagnostic without spending another model round",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains a low completed built-in result before interruption and tries its sibling",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not invent an adequate completed count for interrupted built-in screening",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the built-in containment refusal with 1 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains the built-in containment refusal with 2 candidate(s)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives records known tokens and cleans all sample resources when qualification throws",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not switch candidates across an unresolved task reset failure",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives preserves evidence when retry reset fails after 1 rejected sampling rounds",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives preserves evidence when retry reset fails after 2 rejected sampling rounds",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives preserves single-worker usage when retry reset fails without inventing cleanup",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not try a sibling after the task's immutable test changes",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives does not replace a failed between-candidate setup with a green sibling",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "qualified best-of-N alternatives retains known sample usage when a later sample check throws",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through partial-worker without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through gate-failed without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through gate-throw without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context carries one candidate through select-partial without replaying untouched source",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context retains candidate evidence and refuses new author/reset when sample drift observation is unavailable",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context filters the single-worker retry against the same reported write set",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context retains the last written-file list on terminal gate-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context retains the last written-file list on terminal drift-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context does not invent previous work from an empty failure",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context capture accepts only reported in-scope implementation files: []",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context capture accepts only reported in-scope implementation files: [\"src/untouched.ts\"]",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context capture accepts only reported in-scope implementation files: [\"src/impl.ts\",\"test.txt\",\"../outside\",\"secret.key\"]",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "attributed retry context keeps the legacy explicit snapshot helper when no write filter is supplied",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "verified-merge-recovery",
+      "claim": "Explicit staging is retried idempotently1/2 times; refused staging never partial-commits. Failed merge requires observed abort/clean/currentHEAD/reset/readback and refreshed protected-test baseline; each abort/read/reset/clean/wrongHEAD/missing-test failure retains evidence and author count. Valid new baseline reruns pipeline with unchanged budget.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 1 samples, reversed arrival=false",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=false",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=true",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: dirty-integration",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: unreadable-head",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: reset",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: reset-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: clean",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: wrong-head",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: missing-test",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery does not turn a refused staging operation into a partial commit",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retries 1 transient stages without another worker or authoring allowance",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retries 2 transient stages without another worker or authoring allowance",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery still rejects worker edits to the newly bound protected test",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery keeps the original retry budget at zero without rebasing",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.test.ts",
+          "name": "verified merge recovery CLI source: single retains merge evidence and uses the verified baseline",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.test.ts",
+          "name": "verified merge recovery CLI source: samples retains merge evidence and uses the verified baseline",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 1 samples, reversed arrival=false",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=false",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery recovers on the exact advanced baseline and keeps previous candidate with 2 samples, reversed arrival=true",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: abort-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: dirty-integration",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: unreadable-head",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: reset",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: reset-throw",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: clean",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: wrong-head",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retains evidence and dispatches no new author when recovery fails: missing-test",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery does not turn a refused staging operation into a partial commit",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retries 1 transient stages without another worker or authoring allowance",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery retries 2 transient stages without another worker or authoring allowance",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery still rejects worker edits to the newly bound protected test",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "verified merge recovery keeps the original retry budget at zero without rebasing",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.test.ts",
+          "name": "verified merge recovery CLI source: single retains merge evidence and uses the verified baseline",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-recovery-cli-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.test.ts",
+          "name": "verified merge recovery CLI source: samples retains merge evidence and uses the verified baseline",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-recovery-cli-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "cleanup-axes-and-all-samples",
+      "claim": "Teardown serializes registry operations, observes registration and disk independently and retries bounded failures. All sample teardowns run despite earlier failure; branch verification is independent, successful task branch retained. Unreleased ownership/cleanup degrades run independently of green work.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown retries a transient remove failure and confirms git no longer registers the worktree",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown returns ok:false with diagnostics when git still registers the worktree after every attempt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent removals",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization serializes callers in the order they arrive",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent PREPARES",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization a rejecting caller does not wedge the lock, and does not let the queue reorder",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown deleteBranchVerified reports a branch git still lists",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown run exit code is non-zero when ownership could not be released, zero otherwise",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown retries a transient remove failure and confirms git no longer registers the worktree",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown returns ok:false with diagnostics when git still registers the worktree after every attempt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent removals",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization serializes callers in the order they arrive",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization never runs two registry commands at once across concurrent PREPARES",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown #515 worktree registry serialization a rejecting caller does not wedge the lock, and does not let the queue reorder",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown deleteBranchVerified reports a branch git still lists",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown a task whose worktree removal cannot be verified carries the failure \u2014 green is never unqualified",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown best-of-N attempts EVERY sample's teardown even when an earlier one fails, and reports all leftovers",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown run exit code is non-zero when ownership could not be released, zero otherwise",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/farm.unit.test.ts",
+          "name": "#398 \u2014 verified, retried, reported worktree teardown integration-worktree teardown failure is carried on the run health and lands in the receipt",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "clean-timeout-class",
+      "claim": "A verified-gone cleanup returns124/timedOut and no cleanupFailed, distinct from125 unknown. Mocked process verification tests establish result semantics; no POSIX descendant or nonroot execution claim.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/exec.test.ts",
+          "name": "run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/exec.test.ts",
+          "name": "run() \u2014 containment failure is distinguishable from a clean timeout reports EXIT_TIMEOUT and no cleanupFailed when the tree is verified gone",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "worktree-materialization-boundary",
+      "claim": "Portable relative/absolute path containment, canonical ancestry, single-link regular destination and retained handle identity precede truncation. Directory junction, leaf symlink, hard-link and ancestor failure negative controls preserve external sentinel. Safe writes truncate exact shorter/nonASCII content; I/O faults refuse, no atomic rollback claim.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer rejects a multiply-linked existing destination",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer writes a normal nested file beneath the canonical root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer rejects a directory symlink or Windows junction without changing an external sentinel",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer rejects a multiply-linked existing destination",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer rejects a hard link introduced after initial destination validation",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer pins every farm and mutation write/restore path to the shared primitive",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses a worktree root that is itself a link",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses an escaping relative path and writes NOTHING outside the root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths judges an absolute destination by where it LANDS, not by its shape",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths accepts an absolute destination spelled through a link into the same root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths does NOT pre-resolve the leaf, so a symlinked destination is still refused",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths REFUSES when an ancestor cannot be canonicalized for a reason other than absence",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths treats a missing ancestor as normal and walks up to the deepest existing one",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths still refuses an absolute destination whose ancestors link OUT of the root",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in the destination segment",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths refuses a NUL byte in an intermediate segment",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths absorbs a lost mkdir race between concurrent writers",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths funnels an unexpected filesystem error into the same refusal, leaking nothing",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 refusal paths leaves ancestor directories behind on a refusal \u2014 refusal is not a rollback",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 write contracts truncates rather than appends when rewriting a shorter payload",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/worktree-fs.test.ts",
+          "name": "symlink-safe worktree writer \u2014 write contracts round-trips non-ASCII content without re-encoding it",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "mutation-history-restoration",
+      "claim": "Original bytes are restored through in-loop and final paths after mutations; deadline-before-test does not invent a measured run. This narrow row is restoration only, not heuristic intent or verified kill coverage.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca/tools/mutation.test.ts",
+          "name": "mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/mutation.test.ts",
+          "name": "built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-owner-coverage.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/mutation.test.ts",
+          "name": "mutationCheck \u2014 built-in text mutation restores the original file through BOTH the in-loop and the final path",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca/tools/mutation.test.ts",
+          "name": "built-in mutation deadline and terminal evidence restores without running the test when a mutant write consumes the whole budget",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca\\tools\\state-contracts-final-bounded-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "docker-client-observation-contract",
+      "claim": "Controlled child-process tests prove pre-abort spawn refusal, finite timeout124 and independent abort130 typed outcomes, including actual invocation of child kill. Output cap, exact once settlement and live container workload containment are not admitted by this narrow group.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline passes a per-call environment to the spawned Docker client",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline declares a default timeout, and it is finite and plausible",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline gives every declared operation a finite deadline, longest for builds",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline passes the deadline through to the spawn, not merely stores it",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline reports a timeout as a TYPED result, not an indistinguishable non-zero",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline does not mark an ordinary docker failure as a timeout",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline escalates a timed-out exec: the container process is stopped, not orphaned",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline does not escalate when the exec merely fails",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#394 \u2014 every docker invocation carries a finite deadline still returns a result when the escalation itself fails",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable aborts a call that would otherwise run to its deadline (AC-1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable kills the child rather than merely resolving around it (AC-1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable refuses to spawn at all when the signal is ALREADY aborted (AC-1)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable types an abort apart from a timeout (AC-4)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable an unrelated signal firing after the call settles changes nothing",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable stops the container an ABORTED exec targeted, exactly as a timeout does (AC-2)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/deadline.test.ts",
+          "name": "#479 \u2014 an in-flight docker call is cancellable does not stop the container on an ordinary non-zero exec (AC-2)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    },
+    {
+      "id": "ordinary-offline-argv",
+      "claim": "Ordinary NETWORKED_POLICIES remains empty; requested unsupported allowlist returns effective offline/availablefalse and actual argv --network none without privileged/NET_ADMIN. Argument construction is tested, not actual nonroot/network boundary enforcement.",
+      "source_review_limits": "No installed host, real provider, Linux/Darwin/nonroot or Docker-enforcement qualification is conferred.",
+      "historical_named_corroboration": [
+        {
+          "file": "plugins/ca-sandbox/tools/run.test.ts",
+          "name": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) offline detaches the container from all networking",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/run.test.ts",
+          "name": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) a typo of 'offline' still gets --network none (fail closed)",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/run.test.ts",
+          "name": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) an unrecognized policy fails closed to --network none",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/run.test.ts",
+          "name": "buildRunArgs \u2014 network policy (AC-01 / AC-08 seam) refuses an empty image or volume name",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "name": "SBX-D03 requested ordinary allowlist is unavailable and the real argv stays offline",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-final-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        },
+        {
+          "file": "plugins/ca-sandbox/tools/state-contracts.test.ts",
+          "name": "SBX-D03 requested ordinary allowlist is unavailable and the real argv stays offline",
+          "original_status": "passed",
+          "original_report": "C:\\Users\\brenn\\.codex\\worktrees\\program-farm-sandbox\\codeArbiter\\plugins\\ca-sandbox\\tools\\state-contracts-manifest-repair-results.json",
+          "admission": "ORIGINAL_HISTORICAL_CORROBORATION_NOT_NEW_TESTED"
+        }
+      ]
+    }
+  ],
+  "nonclaims": "No POSIX/nonroot/Docker/provider effects or new installed qualification from conformance. No source overlap or suite total is substituted for individual row reasoning."
+}

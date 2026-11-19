@@ -1,0 +1,63 @@
+{
+ "schema": "original-child-membership-failure/1",
+ "result": "CONFIRMED_STATIC_REGISTRY_DRIFT",
+ "source": "f2620b36217a892f2506ad6e9b50fa7897458fe1",
+ "run_id": 44049065822,
+ "attempt": 1,
+ "event": "pull_request",
+ "jobs": [
+  {
+   "job_id": 133937912611,
+   "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/amd64>",
+   "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-f262-read-continuation-xto9v155\\original-job-133937912611.log",
+   "sha256": "8bc9a7574f629ca42b363f3a360967917f0fbba6213eb8d6d1680a47186e2576",
+   "bytes": 166410
+  },
+  {
+   "job_id": 133937912670,
+   "name": "[CHECK] | [CORE] | Native adapters and conformance <linux/arm64>",
+   "log": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1119-f262-read-continuation-xto9v155\\original-job-133937912670.log",
+   "sha256": "ff3912a079e2ef2493e3e932760b0e1733399717861c85e3edc0bbb3fd641220",
+   "bytes": 109273
+  }
+ ],
+ "owner": "ArtifactConformanceTest.test_adversarial_native_candidate_suites_run_as_one_snapshot",
+ "source_path": ".github/scripts/test_artifact_conformance.py",
+ "line": 706,
+ "child_script": "test_work_adopt.py",
+ "source_test_count": 15,
+ "registered_test_count": 7,
+ "missing_registered_names": [
+  "test_nonregular_archive_and_replay_refuse_before_read",
+  "test_reader_closes_descriptor_on_acquisition_validation_or_read_error",
+  "test_reader_preserves_optional_size_utf8_and_regular_controls",
+  "test_reader_rejects_acquisition_identity_drift_without_read",
+  "test_reader_rejects_link_before_open",
+  "test_reader_rejects_reparse_metadata_before_open",
+  "test_reader_requests_safe_available_flags_and_bounded_read",
+  "test_replay_regular_snapshots_keep_exact_request_and_optional_absence"
+ ],
+ "unexpected_registered_names": [],
+ "source_bindings": [
+  {
+   "path": ".github/scripts/test_artifact_conformance.py",
+   "sha256": "06a9e05cb73801f2fc5b87b0b6793a659c0be2374512722676ba0b3a22ac1103",
+   "bytes": 43650
+  },
+  {
+   "path": ".github/scripts/test_work_adopt.py",
+   "sha256": "3cd415d63047b566b617c47c4716097061b836b75d0a4e4635d10181f1b5398b",
+   "bytes": 15474
+  },
+  {
+   "path": ".github/scripts/test_ci_impact.py",
+   "sha256": "671118235de1877c4f8788b6da4d134db0019989c9a4fe105858bc37853504e1",
+   "bytes": 328129
+  }
+ ],
+ "observations": [
+  "Actual native candidate-suite child returned0 before exact membership comparison; this is not an assertion failure inside the eight new reader tests.",
+  "Existing static prevention is ArtifactEngineCIContractTest.test_candidate_suites_have_one_qualified_execution; original Impact planner contract was skipped.",
+  "No guard relaxation, runtime replay, source correction or qualification claim performed."
+ ]
+}

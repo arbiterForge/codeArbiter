@@ -1,0 +1,85 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: finite guard/effect/retry immutable source inspection"
+  },
+  "inputs": {
+    ".github/scripts/test_artifact_authoring.py": "97c4b9b0dc903a187eb86cea3c5429b758073beb741299b50f618890e9c38555",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "tools/measure-knowledge-retrieval.py": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+  },
+  "disposition_ids": [
+    "disposition:transitions:T09:01",
+    "disposition:transitions:T09:02",
+    "disposition:transitions:T09:03",
+    "disposition:transitions:T09:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/tool-controllers-source-d594/inspection.json",
+      "sha256": "0e80a53fd8c7ac14f17fe1b4ab3fa467597a83546beb2d99cdbe79fe13553a02"
+    }
+  ],
+  "scope": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:T09:01",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 129,
+          "end": 144,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Main requires nonempty ARTIFACT_TEST_INSTALLATION before invoking builder. The inspected build_installation supplied branch requires directory and copies supplied native payload; driver then loads fixture-installed knowledge helper. The unsupplied builder branch is unreachable under stable environment through this main check; no actual native installation admission/result is claimed.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:T09:02",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 38,
+          "end": 99,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Chosen fixed small/large size creates owned TemporaryDirectory resolved to physical root; fixed Git init checks success, helper init/create-missing must return0. Synthetic records use fixed kinds, scoped/global path data and batches20, with matching five legacy Markdown files; context cleanup covers failures. Actual helper effect is conditional on its success, not asserted here.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:T09:03",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 68,
+          "end": 126,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Fixed helper subprocess has 300-second timeout and nonzero abort. Driver reads all five legacy documents, invokes same scoped relevant target twice, decodes actual warm JSON fields and reports returned/unmatched/omitted/unreadable counts. Cold/warm equality is an observed-output comparison boolean, not an assumed equality. No measured result is fabricated.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    },
+    {
+      "cell": "disposition:transitions:T09:04",
+      "witnesses": [
+        {
+          "path": "tools/measure-knowledge-retrieval.py",
+          "start": 129,
+          "end": 144,
+          "file_sha256": "d263c11dd70e00a76f81a35eeba44c738162115dd1d480c402deea499aee68ac"
+        }
+      ],
+      "semantic_assessment": "Only after requested size calls complete is the aggregate printed; finally cleans builder owner when provided. Main has no percentage acceptance threshold. Legacy byte/4 and new character/4 estimators remain explicitly estimates; no tokenizer accuracy or performance improvement is asserted.",
+      "limits": "Conditional benchmark-driver source contract only. Actual installation, canonical knowledge/native behavior and imported helper execution are preconditions, not qualified by this inspection. Builder supplied-candidate branch was inspected; no source native build, download, latency, bytes-saved or installed result was observed."
+    }
+  ],
+  "excluded_cells": []
+}

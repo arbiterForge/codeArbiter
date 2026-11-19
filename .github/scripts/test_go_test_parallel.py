@@ -66,6 +66,36 @@ class RealModule(unittest.TestCase):
         self.assertIn("5 top-level tests in 2 packages", result.stdout)
         self.assertIn("4 passed, 1 skipped, all complete", result.stdout)
 
+    def test_optional_observation_retains_actual_named_results_and_refuses_overwrite(self):
+        root = self.module(self.PASSING)
+        observation = root / "observed.json"
+        result = self.run_runner(root, "--observation", str(observation))
+        self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
+        value = json.loads(observation.read_text(encoding="utf-8"))
+        self.assertEqual(value["format"], "codearbiter.go-test-observation/1")
+        self.assertTrue(value["complete"])
+        self.assertEqual(len(value["selected"]), 5)
+        self.assertEqual({(r["package"], r["test"]) for r in value["selected"]},
+                         {(r["package"], r["test"]) for r in value["observed"]})
+        self.assertEqual(sum(r["result"] == "pass" for r in value["observed"]), 4)
+        self.assertEqual(sum(r["result"] == "skip" for r in value["observed"]), 1)
+        original = observation.read_bytes()
+        refused = self.run_runner(root, "--observation", str(observation))
+        self.assertNotEqual(refused.returncode, 0)
+        self.assertEqual(observation.read_bytes(), original)
+
+    def test_optional_observation_never_turns_failed_or_missing_tests_into_passes(self):
+        files = dict(self.PASSING)
+        files["b/b_test.go"] = 'package b\nimport "testing"\nfunc TestB(t *testing.T) { t.Fatal("broken") }\n'
+        root = self.module(files)
+        observation = root / "failed.json"
+        result = self.run_runner(root, "--observation", str(observation))
+        self.assertEqual(result.returncode, 1, result.stdout + result.stderr)
+        value = json.loads(observation.read_text(encoding="utf-8"))
+        self.assertFalse(value["complete"])
+        self.assertIn({"package": "example.test/parallel/b", "test": "TestB", "result": "fail"},
+                      value["observed"])
+
     def test_a_failing_test_fails_the_run(self):
         files = dict(self.PASSING)
         files["b/b_test.go"] = 'package b\nimport "testing"\nfunc TestB(t *testing.T) { t.Fatal("broken") }\n'
@@ -179,6 +209,22 @@ class RealModule(unittest.TestCase):
         self.assertIn("listed tests without a result", output.getvalue())
         self.assertIn("TestB", output.getvalue())
 
+    def test_repeated_results_across_chunks_cannot_be_collapsed_into_one_pass(self):
+        runner = load_runner()
+        root = self.module(self.PASSING)
+        original = runner.chunk
+
+        def repeated(package, names, hints, workers):
+            chunks = original(package, names, hints, workers)
+            return [*chunks, chunks[0]]
+
+        argv = ["go_test_parallel.py", "--module", str(root), "--jobs", "2", "--hints", str(root / "absent.json")]
+        with unittest.mock.patch.object(runner, "chunk", repeated), unittest.mock.patch.object(sys, "argv", argv), \
+                unittest.mock.patch.dict(os.environ, {"GOFLAGS": "", "GOWORK": "off"}), \
+                contextlib.redirect_stdout(io.StringIO()) as output:
+            self.assertEqual(runner.main(), 1)
+        self.assertIn("repeated top-level result", output.getvalue())
+
     def test_a_compile_failure_fails_the_run(self):
         files = dict(self.PASSING)
         files["b/b_test.go"] = 'package b\nimport "testing"\nfunc TestB(t *testing.T) { undefined() }\n'
@@ -231,6 +277,59 @@ class Chunking(unittest.TestCase):
         for value in ("20", "", "m", "20x", "20m junk", "-5s"):
             with self.subTest(value=value), self.assertRaises(ValueError):
                 runner.duration_seconds(value)
+
+
+
+
+class NamedChildObservation(unittest.TestCase):
+    """Actual runner orchestration, only compiler/process effects are inert."""
+    def observe(self, events):
+        runner = load_runner()
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            (root/'go.mod').write_text('module example.test/children\n\ngo 1.21\n')
+            (root/'fixture_test.go').write_text('package children\n')
+            output = root/'observation.json'
+            package = 'example.test/children'
+            def go(arguments, module, env):
+                if arguments[0] == 'list':
+                    return json.dumps({'ImportPath':package,'Dir':str(root),'TestGoFiles':['fixture_test.go']})
+                self.assertEqual(arguments[:3],['test','-c','-buildvcs=false'])
+                target=Path(arguments[arguments.index('-o')+1])
+                (target/('children.test'+('.exe' if os.name=='nt' else ''))).write_bytes(b'inert unit binary placeholder')
+                return ''
+            encoded='\n'.join(json.dumps(x) for x in events).encode()
+            results=[subprocess.CompletedProcess([],0,b'inert test stream',b''),
+                     subprocess.CompletedProcess([],0,encoded,b'')]
+            argv=['runner','--module',str(root),'--jobs','1','--hints',str(root/'absent.json'),
+                  '--observation',str(output)]
+            with unittest.mock.patch.object(runner,'go',side_effect=go), \
+                 unittest.mock.patch.object(runner,'discover',return_value=['TestProducer']), \
+                 unittest.mock.patch.object(runner.subprocess,'run',side_effect=results) as effects, \
+                 unittest.mock.patch.object(sys,'argv',argv), contextlib.redirect_stdout(io.StringIO()):
+                code=runner.main()
+            self.assertEqual(effects.call_count,2,'original suite and test2json conversion occur once')
+            return code,json.loads(output.read_text())
+
+    def test_parent_pass_preserves_required_child_skip_in_original_observation(self):
+        code,record=self.observe([
+            {'Test':'TestProducer/workspaces-32','Action':'skip'},
+            {'Test':'TestProducer','Action':'pass'}])
+        self.assertEqual(code,0,'unselected skips keep original whole-run semantics')
+        self.assertTrue(record['complete'])
+        self.assertEqual(record['observed'],[{'package':'example.test/children','test':'TestProducer','result':'pass'}])
+        self.assertEqual(record.get('subtests',[]),[
+            {'package':'example.test/children','test':'TestProducer/workspaces-32','result':'skip'}])
+
+
+    def test_duplicate_stray_and_failed_children_cannot_be_complete(self):
+        for children in ([{'Test':'TestProducer/child','Action':'pass'}]*2,
+                         [{'Test':'OtherParent/child','Action':'pass'}],
+                         [{'Test':'TestProducer/child','Action':'fail'}]):
+            with self.subTest(children=children):
+                code,record=self.observe([*children,{'Test':'TestProducer','Action':'pass'}])
+                self.assertEqual(code,1)
+                self.assertFalse(record['complete'])
 
 
 if __name__ == "__main__":

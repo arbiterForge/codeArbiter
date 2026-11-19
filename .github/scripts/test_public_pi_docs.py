@@ -31,6 +31,12 @@ class PublicHostVocabularyTest(unittest.TestCase):
         self.assertIn("three governance hosts", readme.lower())
 
     def test_canonical_project_docs_use_pi_vocabulary(self):
+        from project_knowledge import context_text
+        context_names = {
+            ".codearbiter/CONTEXT.md": "project",
+            ".codearbiter/tech-stack.md": "tech-stack",
+            ".codearbiter/coding-standards.md": "coding-standards",
+        }
         for path in (
             ".codearbiter/CONTEXT.md",
             ".codearbiter/tech-stack.md",
@@ -39,7 +45,7 @@ class PublicHostVocabularyTest(unittest.TestCase):
             "docs/hooks.md",
         ):
             with self.subTest(path=path):
-                text = read(path)
+                text = context_text(context_names[path]) if path in context_names else read(path)
                 self.assertIn("ca-pi", text)
                 self.assertIn("Pi", text)
 

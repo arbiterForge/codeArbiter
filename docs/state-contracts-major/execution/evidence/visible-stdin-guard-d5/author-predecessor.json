@@ -1,0 +1,375 @@
+{
+ "result": "LOCAL_PASS_PENDING_INDEPENDENT_REVIEW",
+ "task": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "source_epoch": "91a22bf4ea29a156dd601c9385667d7f1feadedc",
+ "root_epoch_at_delivery": "d5f41252f4610d614eb51d709357ec511730313d",
+ "source_preimage_identity_unchanged_across_disjoint_Root_epoch": true,
+ "bug_origin": {
+  "validated_packet": "T/ca-h18-classifier-diagnosis-oykfyahe/debug-handoff.json",
+  "sha256": "ee8f37fbd84031e9a2ad7f1f645b8259a1890709443403436e75e7db17e0e1cb",
+  "actual_consumer_validation": "O/h18-root-handoff-validation.json"
+ },
+ "fix": "Expose a literal PowerShell here-string interpreter before the intact body, after unchanged closed read projection. Python visible stdin/default-stdin is also represented as inline code for H22; stdlib option parsing preserves explicit script/-c/-m stdin-data exceptions. Unknown option grammar stays conservative.",
+ "apply_files": [
+  {
+   "path": "core/pysrc/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\core\\pysrc\\_bashguardlib.py",
+   "sha256": "11803e48446495fa36093742520c3346c6fd73615920f261697db0ef80e80ccb",
+   "bytes": 159118
+  },
+  {
+   "path": ".github/scripts/test_literal_python_reads.py",
+   "preimage_sha256": "a95105f4c4ed155c756d519e5428dd8dd77c867a52ca517b92693aba22013a53",
+   "preimage_bytes": 12965,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\.github\\scripts\\test_literal_python_reads.py",
+   "sha256": "4cc4ad0a4c24e495796ef37af920d8b2c21819ed84d8f786f066dc096ab1f8d2",
+   "bytes": 20255
+  },
+  {
+   "path": "plugins/ca/hooks/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\plugins\\ca\\hooks\\_bashguardlib.py",
+   "sha256": "11803e48446495fa36093742520c3346c6fd73615920f261697db0ef80e80ccb",
+   "bytes": 159118
+  },
+  {
+   "path": "plugins/ca-codex/hooks/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\plugins\\ca-codex\\hooks\\_bashguardlib.py",
+   "sha256": "11803e48446495fa36093742520c3346c6fd73615920f261697db0ef80e80ccb",
+   "bytes": 159118
+  },
+  {
+   "path": "plugins/ca-pi/hooks/_bashguardlib.py",
+   "preimage_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "preimage_bytes": 156954,
+   "candidate_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\plugins\\ca-pi\\hooks\\_bashguardlib.py",
+   "sha256": "11803e48446495fa36093742520c3346c6fd73615920f261697db0ef80e80ccb",
+   "bytes": 159118
+  }
+ ],
+ "patch": {
+  "sha256": "0bb1102a41b5dfc8812b2d8ac59368ae48da2dc408428700249d0668764a21cd",
+  "bytes": 22564
+ },
+ "checks": {
+  "result": "PASS",
+  "original_class_methods_AST_unchanged": 15,
+  "all_retained_RED_method_AST_unchanged_in_final": true,
+  "changed_existing_production_function": "run_guards (one additional conservative view call)",
+  "new_production_function": "_powershell_stdin_interpreter_view",
+  "all_other_existing_production_function_ASTs_unchanged": true,
+  "B03_full_candidate_guard_function_AST_unchanged": true,
+  "B03_other_producer_consumer_and_gitexec_full_bytes_unchanged": true,
+  "literal_read_profile_full_function_AST_unchanged": true,
+  "sanctioned_script_argv_and_piped_nonstdin_data_exception_PASS": true,
+  "three_generated_mirrors_exact_core_bytes": true,
+  "syntax_compile_without_execution": [
+   "core/pysrc/_bashguardlib.py",
+   ".github/scripts/test_literal_python_reads.py",
+   "plugins/ca/hooks/_bashguardlib.py",
+   "plugins/ca-codex/hooks/_bashguardlib.py",
+   "plugins/ca-pi/hooks/_bashguardlib.py"
+  ],
+  "current_Root_source_preimages_equal": true
+ },
+ "phases": {
+  "red": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\original\\core\\pysrc\\_bashguardlib.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\regression-red.py",
+   "tests_run": 4,
+   "assertion_failures": 7,
+   "errors": 0,
+   "skips": 0,
+   "meaning": "Original H18/H05/H11/quoted consumer actual full-guard acceptance0 instead of2; benign controls passed.",
+   "source_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "test_sha256": "5febf20f43689840adbe789a71ea5ddc784e6cabb9eaf14accff6354e07dcc99",
+   "controller": {
+    "sha256": "4d35ce88af4f9948d8a1a198f9b2c6ac4552e657c826828a401bb3f37560edc4",
+    "bytes": 817
+   },
+   "stdout": {
+    "sha256": "3e031d36450236b23643f5c399f77e5fa2a51771de699cf056385c7443c60642",
+    "bytes": 94
+   },
+   "stderr": {
+    "sha256": "749b19d4a51e3588853da3d995630fdddb7f8521329708830a2dbd1ff943dfd8",
+    "bytes": 7621
+   }
+  },
+  "green-target": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h18-only-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\regression-red.py",
+   "tests_run": 4,
+   "assertion_failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "source_sha256": "cc13dea02ba712a2db262ef93c5e5182bee7a77c717279a5a462eefcdb116f4f",
+   "test_sha256": "5febf20f43689840adbe789a71ea5ddc784e6cabb9eaf14accff6354e07dcc99",
+   "controller": {
+    "sha256": "757fd07897a937e29a1c7754b057c7d91562a832f5b1ccacfdbaf5c2c848e690",
+    "bytes": 814
+   },
+   "stdout": {
+    "sha256": "3bd23e1fe0571bc0b64b87eb95e6b3b0200334da966319247518e8f496b0f79d",
+    "bytes": 94
+   },
+   "stderr": {
+    "sha256": "25170a90ccb7539277de37851f7bc197505643428a6616079212f882b493fccd",
+    "bytes": 765
+   }
+  },
+  "green-owning": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h18-only-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h18-only-predecessor-tests.py",
+   "tests_run": 15,
+   "assertion_failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "meaning": "H18-only predecessor; separately observed H22 stdin gap was not passed off as closure.",
+   "source_sha256": "cc13dea02ba712a2db262ef93c5e5182bee7a77c717279a5a462eefcdb116f4f",
+   "test_sha256": "55753022c0c4815c405295689379a2968c97eab2f3914eb0752df5b32c6c7758",
+   "controller": {
+    "sha256": "eda535def2dc9b5c123abb4d89eb99cab8d523ddd9f2d4170e887639e8029800",
+    "bytes": 1611
+   },
+   "stdout": {
+    "sha256": "a03672e7517e1a22faedbb0325b66abad7fa94ed5168a935ef8fe96e923e0347",
+    "bytes": 93
+   },
+   "stderr": {
+    "sha256": "aef38f3d0015bb3242eb12c5748ddbae3c61a3f2ec2651485b6b6fd9cddbbd0e",
+    "bytes": 2503
+   }
+  },
+  "h22-original-red": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\original\\core\\pysrc\\_bashguardlib.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-regression-red.py",
+   "tests_run": 2,
+   "assertion_failures": 2,
+   "errors": 0,
+   "skips": 0,
+   "source_sha256": "d063d505398a0aec40f05bb0657b221bd80e0fb6f006a5c909768b2c9ee002a4",
+   "test_sha256": "21072592e4fb924f6114ddac0406a73b3d3c1dceb335ccc4f2131097116c0c10",
+   "controller": {
+    "sha256": "8e26a9cda493e5fc32b0c79c0837cc094be9d1b66ff30d38e2ba6c63f73b1462",
+    "bytes": 983
+   },
+   "stdout": {
+    "sha256": "0bf626b38f94a06adf2803f9f795358c6629dc29d64f826e34fbe498e2bf7fb1",
+    "bytes": 95
+   },
+   "stderr": {
+    "sha256": "252e951460ba1435e8af511cec7169e7de7c2a4cabecfae4eb0ed950eb5e0cf2",
+    "bytes": 2370
+   }
+  },
+  "h22-predecessor-red": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h18-only-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-regression-red.py",
+   "tests_run": 2,
+   "assertion_failures": 2,
+   "errors": 0,
+   "skips": 0,
+   "source_sha256": "cc13dea02ba712a2db262ef93c5e5182bee7a77c717279a5a462eefcdb116f4f",
+   "test_sha256": "21072592e4fb924f6114ddac0406a73b3d3c1dceb335ccc4f2131097116c0c10",
+   "controller": {
+    "sha256": "75b1dd358c5ec42668c5ace31ea280717bba0d19b960decf70ee98386bddbc64",
+    "bytes": 983
+   },
+   "stdout": {
+    "sha256": "ebb6f524b839e2da27e784b7db860f0acb60c997924ee7c58a265acac15d5294",
+    "bytes": 95
+   },
+   "stderr": {
+    "sha256": "d09b88c1d78a0e558a50985ba45d651dbaaf3851ac756085a8c8e1b9f2b4b6b5",
+    "bytes": 2370
+   }
+  },
+  "h22-green": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-explicit-stdin-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-regression-red.py",
+   "tests_run": 8,
+   "assertion_failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "meaning": "Intermediate explicit-stdin green before separate default-stdin/combined-option target REDs.",
+   "source_sha256": "1ca30532aa50b3c29c9da6ea7be3f0cd9de907620f76646544bdf78a1f96f636",
+   "test_sha256": "21072592e4fb924f6114ddac0406a73b3d3c1dceb335ccc4f2131097116c0c10",
+   "controller": {
+    "sha256": "5cf41e6ebc241d97081b1e856878b12fe89c64b71aaefa8549a84b4734189a4d",
+    "bytes": 817
+   },
+   "stdout": {
+    "sha256": "f7fa17297cd68301d738df3dbb2f529ab6de8e712e9a7443c67c7b60612fa385",
+    "bytes": 94
+   },
+   "stderr": {
+    "sha256": "b4daed6ee71d014288c2811d635db5380df9cf176aa9b38eb9bfdb0f9a33e3bf",
+    "bytes": 1423
+   }
+  },
+  "h22-default-stdin-red": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-explicit-stdin-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-default-stdin-red-tests.py",
+   "tests_run": 1,
+   "assertion_failures": 3,
+   "errors": 0,
+   "skips": 0,
+   "source_sha256": "1ca30532aa50b3c29c9da6ea7be3f0cd9de907620f76646544bdf78a1f96f636",
+   "test_sha256": "4087e6e732dc084ca3ab907c50e091f6170638598d9d8d975d9e6132fd981af9",
+   "controller": {
+    "sha256": "ec3edf66f073e0693f8608e7f58ea72b3c2ee53558ccf568f0e8c79f24cf3bc6",
+    "bytes": 881
+   },
+   "stdout": {
+    "sha256": "0140d9545c3aabccfa06e887758960735ef9d6aaa76b518a08d3da4c567dd5e2",
+    "bytes": 95
+   },
+   "stderr": {
+    "sha256": "c75c374f48d1f70bfa96f98107716a757225cf3d409b5d7e981f7f2822926408",
+    "bytes": 3011
+   }
+  },
+  "h22-combined-options-red": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-combined-options-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-combined-options-red-tests.py",
+   "tests_run": 1,
+   "assertion_failures": 2,
+   "errors": 0,
+   "skips": 0,
+   "source_sha256": "29ee0a18fa4bf22fd942cb5793e5dd329e7d5091efc044816979060e3051d41e",
+   "test_sha256": "4cc4ad0a4c24e495796ef37af920d8b2c21819ed84d8f786f066dc096ab1f8d2",
+   "controller": {
+    "sha256": "27c4167473f03ffe4481aae2274816abad700654f099f8da5ffbab43012bc78f",
+    "bytes": 883
+   },
+   "stdout": {
+    "sha256": "92b6c1d2255eac6da1102f946082d35a3b360523910187e775f310d68a56018d",
+    "bytes": 95
+   },
+   "stderr": {
+    "sha256": "6e131f8847175250dfac4bd9f373e942388a024cf42a64c234dfbfbc3dcb9a00",
+    "bytes": 2147
+   }
+  },
+  "green-final": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-combined-options-predecessor-bashguard.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\h22-default-stdin-red-tests.py",
+   "tests_run": 18,
+   "assertion_failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "meaning": "Intermediate default-stdin green; later combined-option target RED retained, not silently qualified.",
+   "source_sha256": "29ee0a18fa4bf22fd942cb5793e5dd329e7d5091efc044816979060e3051d41e",
+   "test_sha256": "4087e6e732dc084ca3ab907c50e091f6170638598d9d8d975d9e6132fd981af9",
+   "controller": {
+    "sha256": "4e0b01609b374c2d6fdefdb9c6f603c627c73493f423c8e3cdd57256ca9f612c",
+    "bytes": 1611
+   },
+   "stdout": {
+    "sha256": "f6dd5447c8b33243ae48479aab747058c0d660bb70f1144154336a80020540b1",
+    "bytes": 95
+   },
+   "stderr": {
+    "sha256": "87b49d72f85c45f7af916fea76019fcc7649adc12b2cdfeffb8e308e265966ba",
+    "bytes": 3029
+   }
+  },
+  "green-final2": {
+   "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\core\\pysrc\\_bashguardlib.py",
+   "tests": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-h18-stdin-ownership-fix-5xnsbhy_\\candidate\\.github\\scripts\\test_literal_python_reads.py",
+   "tests_run": 19,
+   "assertion_failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "meaning": "Actual final source:10 new owning methods plus9 unchanged applicable pure methods; no subject command bodies or subprocess/network effects.",
+   "source_sha256": "11803e48446495fa36093742520c3346c6fd73615920f261697db0ef80e80ccb",
+   "test_sha256": "4cc4ad0a4c24e495796ef37af920d8b2c21819ed84d8f786f066dc096ab1f8d2",
+   "controller": {
+    "sha256": "d295184f47caea3acb5b9a103ac2b4f5fa8683ae20258115d83729de965d148d",
+    "bytes": 1612
+   },
+   "stdout": {
+    "sha256": "ad704bfb172787a44db12cc4dfde675ab50bf60e51236b2f62a25c48ee5557da",
+    "bytes": 95
+   },
+   "stderr": {
+    "sha256": "8e329c84ae201c16e512a5c2cda4045a51c510e2605c22a1273213bf2ff7629a",
+    "bytes": 3203
+   }
+  }
+ },
+ "runtime": {
+  "path": "C:/Python314/python.exe",
+  "sha256": "03168c01b7b7491423350e82c26fee71f35b43694d1319d3c668bda6903a0c38",
+  "bytes": 106208,
+  "invocation": "-I -S -B -X utf8; private minimal environment established before test startup"
+ },
+ "history_limits": [
+  "Initial H18-only candidate and all outputs are retained as predecessors, not final H22 closure.",
+  "Default-stdin and combined-option incompleteness each got actual target RED before its additional minimal repair.",
+  "A failed initial comment-only patch application made no source changes and was not test evidence."
+ ],
+ "coverage": {
+  "profile": "CTX-TECH-STACK#FACT-005",
+  "measurement": "Python hooks have no numeric coverage tooling; direct critical-path behavioral and mutation/refusal checks.",
+  "actual_final": "19 methods PASS, zero errors/skips, 0.138 seconds.",
+  "excluded_effectful_methods": [
+   "LiteralPythonReadTest.test_complete_hook_preserves_read_access_and_actual_write_denials",
+   "CompoundReadRegression.test_complete_hook_allows_compound_reads_and_keeps_three_write_guards"
+  ],
+  "exclusion_reason": "Assignment permits only pure guard invocation, not their real Git fixtures/subprocess/body execution. Their original source/assertions remain byte/AST unchanged; no claim that excluded methods passed now."
+ },
+ "security_boundaries": [
+  "All command bodies are inert strings; child audit rejects subprocess/os execution and network.",
+  "Owned initialized context bytes are asserted unchanged for every full-guard invocation.",
+  "H05/H11/H18/H19/H22 actual negative outcomes retained; ordinary Get-Content, closed isolated read and nonexecutor data stay allowed.",
+  "Original unsupported compound read remains conservatively H18-blocked; no broad read or Python exemption.",
+  "Visible Python stdin ownership is qualified here; other dynamic stdin/nested shell execution and installed/model behavior remain outside claims.",
+  "No registry mutation, dependency, SDK/native/Pi/provider, Root protected read, canonical/index/ref or marker effects."
+ ],
+ "verification_limits": "Local source/tests only; Root independently reviews and folds generated mirrors, then owns staged/scanner/hosted gates. Main1098 and publication held.",
+ "artifacts": {
+  "source-preimages.json": {
+   "sha256": "2d47a047d802ba8c8fa96287253235b0f3cea2ce3e3987461fc9203304f78f25",
+   "bytes": 15314
+  },
+  "source-checks.json": {
+   "sha256": "fc25e1c880322f4d0894f3efa54a2390cb2046c5c73944e3acbd8dc106d6eb3f",
+   "bytes": 978
+  },
+  "run_tests.py": {
+   "sha256": "22aa600659e6398809a585c43a0006d0ecb510ae811f0373dedd859c4305c905",
+   "bytes": 1084
+  },
+  "control.py": {
+   "sha256": "898d90c3826b78256e90eb76c2e943d7d67ce92891642795dc7085eb9f6a8023",
+   "bytes": 1440
+  },
+  "h22-stdin-scope-observation.json": {
+   "sha256": "625b1a36f6dd859bf9651e88bd5366e8cea5b7d9b4fb10c0f3ddd279dcfb40fa",
+   "bytes": 369
+  },
+  "h18-only-predecessor-bashguard.py": {
+   "sha256": "cc13dea02ba712a2db262ef93c5e5182bee7a77c717279a5a462eefcdb116f4f",
+   "bytes": 158291
+  },
+  "h18-only-predecessor-tests.py": {
+   "sha256": "55753022c0c4815c405295689379a2968c97eab2f3914eb0752df5b32c6c7758",
+   "bytes": 18170
+  },
+  "h22-explicit-stdin-predecessor-bashguard.py": {
+   "sha256": "1ca30532aa50b3c29c9da6ea7be3f0cd9de907620f76646544bdf78a1f96f636",
+   "bytes": 159108
+  },
+  "h22-combined-options-predecessor-bashguard.py": {
+   "sha256": "29ee0a18fa4bf22fd942cb5793e5dd329e7d5091efc044816979060e3051d41e",
+   "bytes": 159204
+  }
+ }
+}

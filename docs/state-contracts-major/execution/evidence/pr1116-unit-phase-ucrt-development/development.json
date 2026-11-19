@@ -1,0 +1,310 @@
+{
+  "schema": "codearbiter.major.unit-phase-ucrt-development/1",
+  "recorded_at": "2026-11-17T01:35:53.456387+00:00",
+  "controller_anchor": "ad4101ab36c30e9b46b69e32455911d3311f8bd6",
+  "source_subjects": {
+    ".github/scripts/test_npm_binding_observation.py": {
+      "sha256": "52672a6736ba467147070aec1cf42572d09579df97e29c47f214d2520797d34c",
+      "bytes": 38704
+    },
+    ".github/scripts/test_hook_ci_partition.py": {
+      "sha256": "b8ff350ee2af5f749ee84aa57e74c95846add15405de9ef5d090e9d01dfa49bc",
+      "bytes": 48828
+    },
+    ".github/scripts/test_release_workflow.py": {
+      "sha256": "25663e5b265c928927e2425286471ba4cfee31fd4b56b935c8c13f4ac7595501",
+      "bytes": 41755
+    },
+    ".github/scripts/_windows_rpc_timeout.py": {
+      "sha256": "779ec631f9ed52ec08a08bbcf766a6066f6a0a898fa4bb4487c024006e586c9f",
+      "bytes": 28281
+    },
+    ".github/scripts/test_pi_package.py": {
+      "sha256": "68136d266bc4a8d32a738af8eae902f37b4b2fb3fbd67186cff9c24b2619f166",
+      "bytes": 316443
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+      "bytes": 277135
+    },
+    ".gitleaks.toml": {
+      "bytes": 20516,
+      "sha256": "50ecb90f855e66a666556d711233a46bfb1e648d285b3612ca49a6bc640f1355"
+    }
+  },
+  "original_hosted": {
+    "API_head": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+    "checkout": "2b4db6f13ecf55e16baf85a7915e053ef8ff355d",
+    "CI": {
+      "run": 43992411061,
+      "result": "failure"
+    },
+    "Docs": {
+      "run": 43992410933,
+      "result": "success"
+    },
+    "checks": {
+      "passed": 66,
+      "failed": 6,
+      "skipped": 13
+    },
+    "required_merge_readiness": "failure",
+    "all_three_program_integrity": "PASS",
+    "four_nonlinux_native_builders": "PASS",
+    "coverage_aggregates": "PASS; no failed-whole qualification"
+  },
+  "linux_unit": {
+    "observation": "Qualified Python3.14.10 unit still exceeds its30s child deadline on both Linux platforms before native build. Moving ownership did not resolve the timeout. Original inner phase/counts/bytes remain UNKNOWN.",
+    "local_variant": "One Windows3.14.6 passive-profile run passed10.910s: two full7995-file/350-directory/231630395-byte runtime snapshots take5.394s/5.364s; not a Linux reproduction.",
+    "correction": "Passive bounded last-phase capture surrounds the exact unchanged embedded producer script. Strict32KiB closed phase/count/byte reader reports the last successfully flushed record on timeout and still fails. No production observer, assertion, hash cache, grammar or30s cap change.",
+    "actual_checks": {
+      "proper_tiny_owned_timeout_RED": 1,
+      "new_controls": 3,
+      "pure_npm_plus_partition_passed": 72,
+      "seconds": 10.73,
+      "canonical_partition_after_Pi_fold_passed": 52,
+      "canonical_partition_seconds": 0.128,
+      "pure_method_ownership": 20,
+      "full_runtime_unit_ownership": 1
+    }
+  },
+  "ucrt": {
+    "original_selected_git": "C:/Program Files/Git/ucrt64/bin/git.EXE",
+    "original_failures": 5,
+    "cause": "Bash test helper accepted mingw32/mingw64 but omitted the actual ucrt64 architecture directory. Product/shell cases did not execute after those setup assertions.",
+    "fix": "Recognize only the additional closed ucrt64 bin and internal git-core layouts, resolving the same declared installation. Preserve aliases, unknown-layout refusal, all original shell assertions and deadlines.",
+    "regression": {
+      "proper_RED_methods": 4,
+      "proper_RED_failing_subcases": 2,
+      "GREEN_methods": 9,
+      "GREEN_original_real_shell_methods": 5,
+      "GREEN_seconds": 10.225,
+      "local_actual_UCRT_install_exercised": false
+    }
+  },
+  "pi_windows": {
+    "original_natural_discovery": "PASS",
+    "additional_observed_discovery": "FAIL30s after stdinEOF",
+    "JS_orderly_exit_entry_ms": 1922,
+    "reallyExit_entered": true,
+    "native_before": "matched handle RUNNING",
+    "native_after": "same handle SIGNALED exitCode0 during5017ms capture",
+    "debugger_frontier": "provider-hash-dbgeng deadline at4942ms; no worker or target7040 stack captured",
+    "other_PID9948_frames": "Not evidence for7040",
+    "original_native_cause": "UNKNOWN"
+  },
+  "Pi_implementation": "Reviewed first scripted public-parent-TUI observer committedad4101ab is folded into the existing child to avoid another PR/integration round. Its37 inert controls pass; actual trusted normal Linux Pi1.5 TUI execution remains pending.",
+  "observations": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/hosted-terminal.json",
+      "sha256": "5d74ea041f23e627c0d2e02dae089a2668bbe777e2f2bdf22b0fa1c160c3bef1",
+      "bytes": 57856,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\terminal-receipt.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/hosted-delivery.json",
+      "sha256": "e218af475fc4b486217775d7553b6bd61e4d0d04ea41df73f268b537b6db3229",
+      "bytes": 40161,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\final-delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/linux-amd64-closed.json",
+      "sha256": "9b5d160bdee058c071771c5a229820667ba03a992d5d03e57ecf931ee1a810e0",
+      "bytes": 2027,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\failed-job-133736258057-closed.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/linux-arm64-closed.json",
+      "sha256": "f518c3338c0b81b7811d42cc05f58daaa8307c33d4cd838bcc47ebfd44b94749",
+      "bytes": 2035,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\failed-job-133736258068-closed.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/windows-hook-closed.json",
+      "sha256": "cf1dbd7030875a66bf05f9ebb62c610cbeceea6075fe3898955bb9e621faa09c",
+      "bytes": 4530,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\failed-job-133736258482-closed.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/windows-pi-closed.json",
+      "sha256": "13f0f497c9a69682e13bb3c44d5bf0e20296e1efd750d88e4536a496777d1ef7",
+      "bytes": 3193,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\failed-job-133736258848-closed.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/pi-js-shutdown.json",
+      "sha256": "74e618252e910f08e9342ea3d65d1e67709c9c6f36564ae4110cd8fef6e080fa",
+      "bytes": 1533,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1116-bbc6-watch-bc5255sq\\pi-windows-shutdown-closed.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/pi-archive-authentication.json",
+      "sha256": "3e0bff2e5371a422f097155c9ea960f640d4f2a2045c0ce4bf86add3bc7a5352",
+      "bytes": 2764,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-bbc6-pi-original-diagnostic-psjm2q16\\authentication.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/pi-native-safe-projection.json",
+      "sha256": "162f677e2d40c4c700ce741ebfd47ae1991b29b95fc11f77acee5e62d981e5c0",
+      "bytes": 5958,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-bbc6-pi-original-diagnostic-psjm2q16\\safe-projection.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/unit-proposal.json",
+      "sha256": "80565c3fa40c55e6ee5ccf2fd9021809d63a95eede7aced0f56d8567b3fea6eb",
+      "bytes": 6365,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/unit-target-red.json",
+      "sha256": "266d138f5c45136d62e48f2f1ab0a0d43e04aee0d329d080fe7937e97aeafab8",
+      "bytes": 1563,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\progress-target-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/unit-pure72-green.json",
+      "sha256": "51c12fd2a5d339222b2b1dc2d34179c60cacded846674c75f29ccd39bc8ad31c",
+      "bytes": 1989,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-progress-test-change-3gdogo2h\\final-pure-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/local-phase-variant.json",
+      "sha256": "9b91350df6fffe1ad2c465e0a4eff8d7b535e1dfa4f3a5c9636e7f8b689e7e92",
+      "bytes": 3523,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/local-phase-progress.json",
+      "sha256": "c8febcf63dd6acad0c3410f13aee50e490f95e09e067f889acf7080b21321a57",
+      "bytes": 1876,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-phase-variant-hcnm2p6i\\phase-progress.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/checkout-source-join.json",
+      "sha256": "a76d0ef486c997b4914c18b822c990b115197ac10e5d5a497b0be825547ab643",
+      "bytes": 1807,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-npm-producer-checkout-join-z3ol14lu\\join.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/ucrt-red.json",
+      "sha256": "1142260c21155117b216a2fca8bca28c2a9a72407f117c36a06a132a00f920d7",
+      "bytes": 1011,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\1116-ucrt-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/ucrt-green.json",
+      "sha256": "09ecee7518fbb42d16deebcd53485c4d9e91a50b03625bc2332269285acceb16",
+      "bytes": 1169,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\1116-ucrt-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/warm-proposal.json",
+      "sha256": "efeb6f27c758b01cbaf2b3e05051a330d91692037cde05f48c3b7a17f910820e",
+      "bytes": 8423,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\delivery.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/warm-original-ordering-red.json",
+      "sha256": "907f3971360dffbc8100828e934e32128137a36f7260485ee9aa07f1218910b1",
+      "bytes": 2480,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\preflight-target-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/warm-author18-green.json",
+      "sha256": "5d98a1d818f9bc60eb7586ea6f1a7a35c531e226fece6f6473e392b00de36080",
+      "bytes": 2701,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-native-warm-preflight-e4b86kn8\\final-preflight-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/warm-missing-directory-red.json",
+      "sha256": "e6f8ffcfcee3df6e501d35c921751d9a1e79a67d92c722cb5d7a3ada18dc750f",
+      "bytes": 1073,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\warm-retention-red.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/warm-root15-green.json",
+      "sha256": "6cf2fafa524d261cc635483d9bbc2c3db95c38be4c21830e1ed590398dd55d24",
+      "bytes": 1002,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\warm-retention-green.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/json-depth-nonreproduction.json",
+      "sha256": "cf63004b75a2d67ed5332a59638ba3197fdcda519afbaf688922838152462ffc",
+      "bytes": 207,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\progress-depth-bound-observations.json"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1116-unit-phase-ucrt-development/json-depth-controller-expectation-failed.json",
+      "sha256": "bd601c18ee7c418c9f6030308c27935dd3d436d9d71852c0f480b8869c5154aa",
+      "bytes": 339,
+      "original": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\progress-depth-red.json"
+    }
+  ],
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "program_qualification": false,
+  "limits": [
+    "Original failures and unknown causes remain retained. Diagnostic last-phase capture is not an optimization or an exact syscall/stack claim.",
+    "Source-only accounting remains782PLANNED; no new task/runtime disposition is promoted.",
+    "New complete exact-head CI/Docs, trusted normal integration reports and actual installed/user/model scenarios remain required.",
+    "Parent1098 remains draft/held from main for user testing; publication unauthorized."
+  ],
+  "native_warm_preflight": {
+    "selection": "Only additional observed Windows fixtures; original natural and nonWindows paths unchanged.",
+    "operation": "Existing canonical Python helper performs hash-only protected-provider reads before target spawn, under existing bounded owner5s execution deadline and separately bounded cleanup. No target handle/DbgEng attach before original failure.",
+    "authority": "Warm hashes discarded; every original failure/worker full fresh hash function is unchanged. Warm record is diagnostic only, never readiness.",
+    "containment": "Contained refusal or timeout proceeds to original RPC; unknown helper containment blocks target and records targetState not-spawned with NonePID.",
+    "retention": "Separate PID-associated rpc-native-warmup JSON uploader glob. Root proved missing first diagnostic directory loses receipt, then guarded final-directory creation fixes it without broad parent creation or overwrites.",
+    "checks": {
+      "author_affected": 18,
+      "author_seconds": 0.685,
+      "Root_missing_directory_RED": 1,
+      "Root_final_class_PASS": 15,
+      "Root_final_seconds": 0.46
+    },
+    "protected_DLL_or_SDK_replay": false,
+    "stack_recovery_or_original_cause_fixed": false
+  },
+  "defensive_json_reader": {
+    "change": "Normalize RecursionError to closed refused progress just like other parser errors.",
+    "classification": "Inferred defensive exception coverage only; no demonstrated P2 repair or RED.",
+    "actual_local_cases": "Depth2048 array, depth16000 array and depth5000 object hook all decoded under Python3.14.6.",
+    "controller_history": "Root initially expected RED but the actual test returned0; that controller assertion failed. Extra fixture was removed, original20+1 method count retained.",
+    "new_test_credit": false
+  },
+  "scanner_false_positive": {
+    "finding_count": 13,
+    "verified_public_values": {
+      "bbc6f39d688296e56ae6f3d5543e018f93288a7a": {
+        "kind": "commit",
+        "source": "PR1116 exact authenticated head"
+      },
+      "75965cb808c4022355b8235a321b117f075d6b5f": {
+        "kind": "blob",
+        "source": ".github/scripts/test_npm_binding_observation.py"
+      },
+      "b7347574f4b32cd9f39f5408cc7c6d7ee716783be627b0a6989ca7831b8c7c3f": {
+        "kind": "public-source-sha256",
+        "source": ".github/scripts/test_npm_binding_observation.py"
+      },
+      "2384ad748dcc9c96f79ae9e17230997e04910923": {
+        "kind": "blob",
+        "source": ".github/scripts/npm_binding_observation.py"
+      },
+      "d203d30b593783fb05454904311d7e25c7f7f1b913f3a501f45cf7aac27a95ab": {
+        "kind": "public-source-sha256",
+        "source": ".github/scripts/npm_binding_observation.py"
+      },
+      "b8ff83ebe880655e2e1cdf06a37ef7c569abe283": {
+        "kind": "blob",
+        "source": "core/artifacts/internal/evidence/launch_binding_limits_test.go"
+      },
+      "1a320a186987678561a8a01e0e4eaf641d3fafe65cd38a0c9667d165a9c81810": {
+        "kind": "public-source-sha256",
+        "source": "core/artifacts/internal/evidence/launch_binding_limits_test.go"
+      }
+    },
+    "verification": "Exact immutable bbc6 Git objects and direct SHA-256 of their bytes, not credential input. Original evidence bytes remain unchanged.",
+    "exception": "Seven fully anchored complete-value literals only; no path, detector, field-pattern, substring or commit scan exemption."
+  }
+}

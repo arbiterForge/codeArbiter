@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-binary-full-candidate-fix-bz_qxlkd\\green-target.stderr",
+ "original_sha256": "aa87a0d4ecab050dde47c0c3ded482ea2a8a3b52881af9179a197362eaa14232",
+ "original_bytes": 679,
+ "utf8_text": "test_binary_override_rejects_changed_full_staged_candidate_with_unchanged_binary (test_security_pass.TestSecurityPassBranches.test_binary_override_rejects_changed_full_staged_candidate_with_unchanged_binary) ... ok\r\ntest_binary_override_rejects_legacy_binary_only_marker (test_security_pass.TestSecurityPassBranches.test_binary_override_rejects_legacy_binary_only_marker) ... ok\r\ntest_binary_override_rejects_same_candidate_in_another_linked_worktree (test_security_pass.TestSecurityPassBranches.test_binary_override_rejects_same_candidate_in_another_linked_worktree) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 3 tests in 5.789s\r\n\r\nOK\r\n"
+}

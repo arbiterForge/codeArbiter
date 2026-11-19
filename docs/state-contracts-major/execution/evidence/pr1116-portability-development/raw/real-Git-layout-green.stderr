@@ -1,0 +1,12 @@
+test_pi_publish_refuses_a_different_workflow_commit (test_release_workflow.ConsumerSafetyGateTest.test_pi_publish_refuses_a_different_workflow_commit) ... ok
+test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes (test_release_workflow.ReceiptShellBoundaryTest.test_literal_extraction_refuses_missing_duplicate_and_unsupported_shapes) ... ok
+test_missing_receipt_is_uploaded_once_and_replay_only_reads (test_release_workflow.ReceiptShellBoundaryTest.test_missing_receipt_is_uploaded_once_and_replay_only_reads) ... ok
+test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite (test_release_workflow.ReceiptShellBoundaryTest.test_same_named_wrong_receipt_is_downloaded_and_refused_without_overwrite) ... ok
+test_uploaded_receipt_with_lost_response_is_observed_before_retry (test_release_workflow.ReceiptShellBoundaryTest.test_uploaded_receipt_with_lost_response_is_observed_before_retry) ... ok
+test_git_entrypoints_share_the_same_installations_bash (test_release_workflow.BashDiscoveryTest.test_git_entrypoints_share_the_same_installations_bash) ... ok
+test_missing_or_unknown_installations_cannot_select_an_unrelated_bash (test_release_workflow.BashDiscoveryTest.test_missing_or_unknown_installations_cannot_select_an_unrelated_bash) ... ok
+
+----------------------------------------------------------------------
+Ran 7 tests in 10.565s
+
+OK

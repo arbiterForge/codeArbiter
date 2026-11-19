@@ -1,0 +1,152 @@
+{
+  "schema": "codearbiter-major-development-observations/1",
+  "recorded_at": "2026-11-16T09:35:09.102717+00:00",
+  "source_anchor": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+  "original_pr": 1115,
+  "original_ci_run": 43837681879,
+  "original_docs_run": 43837682005,
+  "original_primary_failures": {
+    "candidate_intent": "Sandbox0.2.0 note at27d did not bind newcp.test.ts payload input. Note updated; version/publication unchanged.",
+    "impact_readers": "Three exact Docs-role readers omitted diagnostic artifact role; merge-group reader omitted the exact validated SDK emission role. Actual4FAIL reproduced before repair; workflows unchanged.",
+    "native_policy": "Appended recipes were not globally sorted. Actual2 owning readiness errors reproduced; only list order changed, all19cells and strictguards preserved.",
+    "suite_registry": "Actual package child60methods completed before outer conformance rejected missing expected newmethod. Exact registry59\u219260; equality/duplicate/output/skip guards unchanged."
+  },
+  "original_failure_logs": [
+    {
+      "job_id": 133198293671,
+      "url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43837681879/job/133198293671",
+      "sha256": "eb97fd3e19883812545d34e49b1929fd13d3364ee374619f71072728dc5ec075",
+      "bytes": 74682,
+      "retained_original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-639f9e-watch-35pc0ghk\\failed-job-133198293671.log"
+    },
+    {
+      "job_id": 133198510570,
+      "url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43837681879/job/133198510570",
+      "sha256": "5cd8f8274495e60290951cf90b3a8d71d49f400024aadc626152eabc9b689a1d",
+      "bytes": 33801,
+      "retained_original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-639f9e-watch-35pc0ghk\\failed-job-133198510570.log"
+    },
+    {
+      "job_id": 133198511358,
+      "url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43837681879/job/133198511358",
+      "sha256": "550203184da3db286e0cab67d26cfe3de5f16345db30a8d0d173e3e814140ef9",
+      "bytes": 167407,
+      "retained_original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-639f9e-watch-35pc0ghk\\failed-job-133198511358.log"
+    },
+    {
+      "job_id": 133203059443,
+      "url": "https://github.com/arbiterForge/codeArbiter/actions/runs/43837681879/job/133203059443",
+      "sha256": "922840769ab9f006e0d8b1d988de54f8de75aefa8955718e9bce093005a0c457",
+      "bytes": 108696,
+      "retained_original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-639f9e-watch-35pc0ghk\\failed-job-133203059443.log"
+    }
+  ],
+  "actual_local_checks": {
+    "native_policy": "Two owning population cases +18nativeauthority cases PASS20 in13.068s after original2ReadinessErrors. No native/application replay.",
+    "reader": "Original8scope had4FAIL; corrected10scopePASS0.113s/24newclosednegativevectors. One explicitly inert tech-stack wording seam; originalworkflowbytes and other checks unchanged. Hostedfullreader suite remains required.",
+    "registry": "Pure AST source membership FAILED59expected/60declared\u2192PASSED60/60; this is NOT60newtest executions. Original hosted child execution remains distinct.",
+    "intent": {
+      "result": "PASSED",
+      "receipt": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/staged-intent-only.json",
+      "scope": "Original evaluate_candidate owner on exact21pathstagedtree, separate real private Git epoch with554localtags. All4candidateintents pass; no pre-tag commands/network/publication. Reporting-only receipt/indexfieldsfollowed."
+    }
+  },
+  "actual_hosted_positive_observations": {
+    "source_commit": "639f9e50892e4b6cfd951847e786fafeb8a92eb1",
+    "docs": "WholeoriginalPRDocsSUCCESS; no normalDocs emit/deploy claim.",
+    "sdk": "OriginalPi job133198510949 passed88tests119.972s including realSDKfooter method; prepare/originalsuite/sourceuploadSUCCESS, emission correctlySKIPPED onPR.",
+    "sandbox": "Originaljob133198510989 passed29files414tests, actualownedhome/offline/partial-copy effects. Copy950272observed\u21921441792retained of67108864bytes, exit130/abortedtrue.",
+    "native": "All6platformstatementcoverage84.3356%; lines/branchesunmeasured.",
+    "pi_union": {
+      "lines_percent": 86.95,
+      "branches_percent": 81.94
+    },
+    "repository_union": {
+      "lines_percent": 74.94,
+      "branches_percent": 74.15
+    },
+    "windows_package": "OriginalWindows conformance child returned0 before outer exactregistryfailure; originalcoldmethod was in expected set with no skip/decorator path. Source/control-flow-supported positive for this PR, individual passing-child line unretained. Historicalnormal27d guardcause UNKNOWN."
+  },
+  "retained": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-native-policy-order-red.json",
+      "sha256": "37449ac5027e3711047a6bd4480acd8d5107e45fd4623c1c7e471d960447512a",
+      "bytes": 985
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-native-policy-order-red.stderr",
+      "sha256": "143009caaa768f7fc9f520bfe33165264b727963d094d7c1b7e8f1b53d494965",
+      "bytes": 4561
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-native-policy-order-green.json",
+      "sha256": "e11b75dded12b61834a8619a5d171c2170e93f673db28364463088f9920a044a",
+      "bytes": 1269
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-native-policy-order-green.stderr",
+      "sha256": "e2bd31e84ea5629cda1313c1b00fed809b43bfa2496dd51ebb6ba939cabcec8d",
+      "bytes": 125
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-package-membership-red.json",
+      "sha256": "3027cbe6b4b4b9e9374dc132eb2b09da7be5001c4f8fb333f478a01c63b01308",
+      "bytes": 666
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-package-membership-green.json",
+      "sha256": "ecbb3b80d4a851ad396b85ca89c79947e7b3ba82673400981282ef8119de1780",
+      "bytes": 581
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/pr1115-intent-inspection.json",
+      "sha256": "d62bca19b29c817c9e843c58ad5274929e9b754007e837185300098fb2f7882e",
+      "bytes": 961
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/reader/delivery.json",
+      "sha256": "c21827385b6e3e3802af28fefe0bb35893b9632ffc3d6a8e57945cdc02683433",
+      "bytes": 1273
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/reader/preparation.json",
+      "sha256": "4964904a3537c3a5d6142f0b0cc3981a4d8b7e752efbcc5ad01c50ecb80017e7",
+      "bytes": 829
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/reader/red.json",
+      "sha256": "1720ce94d7db5b0ffa8b90d6070140fe1132cb64d1f2eb7631a0613dc5afd83c",
+      "bytes": 1249
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/reader/red.stderr",
+      "sha256": "ffe7abb2c221189544aebebdf7a6e7003a8a3fbd3bc395f73ff3a25a32bf2335",
+      "bytes": 8667
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/reader/green.json",
+      "sha256": "0f7eac704e82771b145bc08dbe6e33e383ad4a712ff60e8dc7124041da662354",
+      "bytes": 737
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/reader/green.stderr",
+      "sha256": "638c2ace15b4143aa363c1512c61aef341f55460ba503b440b58f59cd2a36677",
+      "bytes": 2146
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/hosted-selected-controls.json",
+      "sha256": "7effa91091fd8b51ba50675eaab2d1d6c7a624fe3e8dd1946eae4dbfd98c4478",
+      "bytes": 2681
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pr1115-corrective-development/root/staged-intent-only.json",
+      "sha256": "68e57ab4646e58fa22fe8b3d902317e474c5da580fec90addd1f4d8770191b19",
+      "bytes": 1044
+    }
+  ],
+  "review_history": "Original exact94subject reviewPASS39717e0a\u2026 retained; subsequent exactheadCI established these4classes. This corrective record does not rewrite that original verdict.",
+  "qualification": false,
+  "source_or_status_renewal": false,
+  "main_merge": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED"
+}

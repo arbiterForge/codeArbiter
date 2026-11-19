@@ -1,0 +1,107 @@
+{
+  "format": "normal-integration-refusal-retention/1",
+  "source_commit": "a04f4f07cbb66175faa7f106d2b1c105f408015b",
+  "source_tree": "a8e7217853e989fc3b12c6025bcc9dfa23735ea5",
+  "run_id": 43730381874,
+  "event": "push",
+  "branch": "major/state-contracts",
+  "conclusion": "failure",
+  "original_Codex_job_id": 132873135159,
+  "original_Codex_artifact": {
+    "id": 14169871255,
+    "name": "installed-codex-observation-0.143.0-1",
+    "archive_sha256": "97392f3371baada01d75f539f8e52f17c6a96676a9bacedbfb74786d37121439",
+    "archive_bytes": 291,
+    "member": "coordinator-failure.json",
+    "member_sha256": "6967a21a2bdaa58886bff5808f2d0cf98787b37c4bd4b808b2847a73b8ef4f2d",
+    "member_bytes": 156,
+    "metadata_document": {
+      "original_name": "failure-selected-artifacts.json",
+      "sha256": "07e243c3e05a6039d18fdddb0ade68bafd3b34c28cb32b6231861e52364b669a"
+    }
+  },
+  "retained_checks": {
+    "existing_receipt_source_run_matches": true,
+    "original_archive_digest_matches_existing_API_metadata": true,
+    "safe_single_regular_bounded_ZIP_member": true,
+    "closed_failure_exactly_matches_original_discriminator": true,
+    "upload_predicates_later_observed": [
+      {
+        "artifact_id": 14169396994,
+        "step": "Preserve the exact multi-host package overlay",
+        "step_bounds": {
+          "start": "2026-11-15T16:12:24+00:00",
+          "end": "2026-11-15T16:12:30+00:00"
+        },
+        "timestamp_parse_errors": [],
+        "selected_log_lines": 38,
+        "checks": {
+          "pin": {
+            "in_expected_step_window": true,
+            "in_full_log": true,
+            "matching_line_numbers": [
+              848,
+              949
+            ]
+          },
+          "digest": {
+            "in_expected_step_window": true,
+            "in_full_log": true,
+            "matching_line_numbers": [
+              872
+            ]
+          },
+          "finalized": {
+            "in_expected_step_window": true,
+            "in_full_log": true,
+            "matching_line_numbers": [
+              874
+            ]
+          }
+        }
+      },
+      {
+        "artifact_id": 14169576928,
+        "step": "Preserve the exact normal release package cohort",
+        "step_bounds": {
+          "start": "2026-11-15T16:13:00+00:00",
+          "end": "2026-11-15T16:13:04+00:00"
+        },
+        "timestamp_parse_errors": [],
+        "selected_log_lines": 51,
+        "checks": {
+          "pin": {
+            "in_expected_step_window": true,
+            "in_full_log": true,
+            "matching_line_numbers": [
+              848,
+              949
+            ]
+          },
+          "digest": {
+            "in_expected_step_window": true,
+            "in_full_log": true,
+            "matching_line_numbers": [
+              975
+            ]
+          },
+          "finalized": {
+            "in_expected_step_window": true,
+            "in_full_log": true,
+            "matching_line_numbers": [
+              977
+            ]
+          }
+        }
+      }
+    ]
+  },
+  "limits": [
+    "Existing authenticated acquisition facts reused; no new API/download or external reauthentication.",
+    "Original coordinator failed during bootstrap before runtime acquisition/installed host execution.",
+    "Historical in-job stderr/HTTP cause was discarded and remains UNKNOWN; later matching attribution checks do not prove its original cause.",
+    "Failed normal run does not qualify installed13, publication or whole program; Sandbox job success is not overall run success.",
+    "Original private receipts and ZIP unchanged; no whole job log or binary ZIP copied into canonical retention.",
+    "No test/runtime/Gov/Git/index/marker writes."
+  ]
+}

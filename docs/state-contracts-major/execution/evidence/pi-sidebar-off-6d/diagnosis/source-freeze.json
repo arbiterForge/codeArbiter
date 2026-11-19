@@ -1,0 +1,20 @@
+{
+  "state": "DIAGNOSIS_TARGET_RED_ONLY_NO_PRODUCTION_FIX",
+  "source": "6d4c858fff4df40cc14d71c19c0e4d5a0d6bf434",
+  "input_count": 140,
+  "only_changed_input": "plugins/ca-pi/tools/test/sidebar-manager.test.ts",
+  "test_before_sha256": "7fd059d6121f2695392a81606ab8d3c7e94126b3d43d9ae04440608ab51f8a99",
+  "test_after_sha256": "de9751d8c06fe92b4bd18031a6ecd0e3d98239d9889015c904a08ffd3b21c203",
+  "test_file": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sidebar-off-diagnosis-4wssibkw\\candidate\\plugins\\ca-pi\\tools\\test\\sidebar-manager.test.ts",
+  "regression_patch_sha256": "8611f6bbf3530cb95406b3f86c132ce7596b1dce059aa8d67b8299efd58ab014",
+  "actual_red_sha256": "839e30a66e06dec1158c30e67b174626eda9f0a284bda99c35ad8b89b6e81f72",
+  "production_source_sha256": "9434a127d94ea06b6e9d46f844ca1ce02b36048ed3270e8ef8912d543337008f",
+  "original_test_bodies_unchanged": true,
+  "all_other_inputs_unchanged": true,
+  "actual_cases": "One genuine newRED installed=true afteroff, one existing positivePASS; no production/source mutation orextraexecution.",
+  "limits": [
+    "DeclaredfakeUI/metrics ports with actualSidebarManager and registeredpublic command; no installed/privatehost/TUI/consent claim.",
+    "No typecheck/broadPi/native/provider/cohort/Gov/index/ledger/marker operation.",
+    "Prior frozenpackets intact; nextfix requires Root actorpacket."
+  ]
+}

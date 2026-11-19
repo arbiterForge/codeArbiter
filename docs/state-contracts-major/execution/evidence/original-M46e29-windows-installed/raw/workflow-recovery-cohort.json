@@ -1,0 +1,12 @@
+{
+  "format": "codearbiter.workflow-recovery-cohort-observation/1",
+  "cohort_sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "source_tree": "d69fb1c0eb4b16672137e1185eb085339f13727d",
+  "tests_run": 10,
+  "failures": 0,
+  "errors": 0,
+  "skipped": 0,
+  "verdict": "PASS",
+  "scope": "retained archive CLI and hook event seams; no visible parent TUI, consent or publication proof"
+}

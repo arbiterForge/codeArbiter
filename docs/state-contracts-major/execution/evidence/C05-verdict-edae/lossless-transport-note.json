@@ -1,0 +1,13 @@
+{
+  "format": "root-lossless-transport-verification/1",
+  "original_producer_delivery_sha256": "dec5a44fb36f730927db5c90850b18b29d4db9f35e1728880640cab0b86bb677",
+  "successor_delivery_sha256": "da49de01f7fcb24dcff17a779477daf6b656bbb7368ac4727e8146558a678ef5",
+  "decoded_identity_verified": true,
+  "original_log_sha256": "b1b364ae78cce5e9e69da52f0023833cc9319db23950b98147ee2391361773d4",
+  "original_log_bytes": 4545,
+  "scope_change": false,
+  "tests_rerun": false,
+  "only_active_proof_change": "Lossless stdout JSON raw reference and dependent digest bindings; all actual assertions/source/runtime unchanged.",
+  "original_packet": "Original producer-delivery.json remains an immutable prospective proposal, superseded by lossless-transport-delivery.json for canonical log transport.",
+  "all_other_combined_ledger_rows_unchanged": true
+}

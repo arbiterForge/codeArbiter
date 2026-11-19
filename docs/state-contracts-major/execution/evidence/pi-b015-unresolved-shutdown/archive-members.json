@@ -1,0 +1,57 @@
+{
+  "schema": "codearbiter.reviewable-archive-members/1",
+  "original_archive_sha256": "57c8db56ef59b99df5ad41980e7db9a7741c896cbfe3272e6419b5cfe613f1ba",
+  "original_archive_bytes": 4395,
+  "original_archive_preserved": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-b015-exit-diagnosis-tc0i5mrv\\diagnostics.zip",
+  "qualification_claim": false,
+  "members": [
+    {
+      "name": "rpc-shutdown-govdd5nz.json",
+      "sha256": "7b67df6e44250ec502b27f5394c4423d41d697f1b360b9963d8022b795448727",
+      "bytes": 1260,
+      "raw_utf8": "{\"schemaVersion\":2,\"outcome\":\"failure\",\"trace\":{\"schemaVersion\":1,\"pid\":1808,\"node\":\"v22.19.0\",\"platform\":\"win32\",\"phases\":[{\"phase\":\"started\",\"elapsedMs\":3,\"stdinEnded\":false,\"resources\":[\"PipeWrap\"]},{\"phase\":\"stdin_end\",\"elapsedMs\":2265,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"session_shutdown_observer\",\"elapsedMs\":2266,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"process_exit\",\"elapsedMs\":2267,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"],\"exitCode\":0}]},\"protocol\":{\"schemaVersion\":1,\"events\":[{\"phase\":\"spawned\",\"elapsedMs\":0},{\"phase\":\"send_commands\",\"elapsedMs\":1},{\"phase\":\"send_invoke\",\"elapsedMs\":1},{\"phase\":\"receive_commands\",\"elapsedMs\":1993},{\"phase\":\"agent_settled\",\"elapsedMs\":2299},{\"phase\":\"send_capture\",\"elapsedMs\":2299},{\"phase\":\"receive_capture\",\"elapsedMs\":2300},{\"phase\":\"collection_complete\",\"elapsedMs\":2300},{\"phase\":\"stdin_closed\",\"elapsedMs\":2300},{\"phase\":\"shutdown_timeout\",\"elapsedMs\":32311},{\"phase\":\"error\",\"elapsedMs\":32312}],\"recordCount\":23,\"recordCountSaturated\":false,\"commandsSeen\":true,\"stateSeen\":false,\"agentSettledSeen\":true,\"captureSeen\":true,\"collection\":\"complete\",\"eofClosed\":true,\"processExited\":false,\"exitCode\":null}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-na1gb8ib.json",
+      "sha256": "77da70a93c08f85832feb573651f402f7802c129e0ea343f619bc046e442971b",
+      "bytes": 1090,
+      "raw_utf8": "{\"schemaVersion\":2,\"outcome\":\"failure\",\"trace\":{\"schemaVersion\":1,\"pid\":1988,\"node\":\"v22.19.0\",\"platform\":\"win32\",\"phases\":[{\"phase\":\"started\",\"elapsedMs\":3,\"stdinEnded\":false,\"resources\":[\"PipeWrap\"]},{\"phase\":\"stdin_end\",\"elapsedMs\":10,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"ProcessWrap\",\"PipeWrap\"]},{\"phase\":\"session_shutdown_observer\",\"elapsedMs\":11,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"ProcessWrap\",\"PipeWrap\"]},{\"phase\":\"process_exit\",\"elapsedMs\":11,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"ProcessWrap\",\"PipeWrap\"],\"exitCode\":0}]},\"protocol\":{\"schemaVersion\":1,\"events\":[{\"phase\":\"spawned\",\"elapsedMs\":0},{\"phase\":\"send_commands\",\"elapsedMs\":0},{\"phase\":\"receive_commands\",\"elapsedMs\":43},{\"phase\":\"collection_complete\",\"elapsedMs\":43},{\"phase\":\"stdin_closed\",\"elapsedMs\":43},{\"phase\":\"shutdown_timeout\",\"elapsedMs\":30044},{\"phase\":\"error\",\"elapsedMs\":30044}],\"recordCount\":1,\"recordCountSaturated\":false,\"commandsSeen\":true,\"stateSeen\":false,\"agentSettledSeen\":false,\"captureSeen\":false,\"collection\":\"complete\",\"eofClosed\":true,\"processExited\":false,\"exitCode\":null}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-my346zof.json",
+      "sha256": "335854b04f4d8cc93a0baa68022ff334003e01ee204686d7458ec1851feefa0a",
+      "bytes": 579,
+      "raw_utf8": "{\"schemaVersion\":2,\"outcome\":\"failure\",\"trace\":null,\"protocol\":{\"schemaVersion\":1,\"events\":[{\"phase\":\"spawned\",\"elapsedMs\":0},{\"phase\":\"send_commands\",\"elapsedMs\":0},{\"phase\":\"receive_commands\",\"elapsedMs\":25},{\"phase\":\"collection_complete\",\"elapsedMs\":25},{\"phase\":\"stdin_closed\",\"elapsedMs\":25},{\"phase\":\"process_exited\",\"elapsedMs\":29},{\"phase\":\"error\",\"elapsedMs\":29}],\"recordCount\":1,\"recordCountSaturated\":false,\"commandsSeen\":true,\"stateSeen\":false,\"agentSettledSeen\":false,\"captureSeen\":false,\"collection\":\"complete\",\"eofClosed\":true,\"processExited\":true,\"exitCode\":3}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-observed-6j76ubvg.json",
+      "sha256": "20c031519b0e337eeeedd3918b02388edb98bb78844685e34890986d772ca841",
+      "bytes": 942,
+      "raw_utf8": "{\"schemaVersion\":1,\"route\":\"passive-observed-raw-companion\",\"outcome\":\"observed-pass\",\"runtimeIdentity\":{\"nodeSha256\":\"995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362\",\"cliSha256\":\"e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774\",\"entrySha256\":\"74a9d5d094ebe3209a1db904f84ec05b59ed0fa202346ec3762ee3162170baa9\",\"rpcModuleSha256\":\"e52d27d064df05fe8ec15f05db07d7c895051597551a0d62b2fe77208d88e942\"},\"trace\":{\"schemaVersion\":1,\"pid\":8928,\"node\":\"v22.19.0\",\"platform\":\"win32\",\"phases\":[{\"phase\":\"started\",\"elapsedMs\":3,\"stdinEnded\":false,\"resources\":[\"PipeWrap\"]},{\"phase\":\"stdin_end\",\"elapsedMs\":1397,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"session_shutdown_observer\",\"elapsedMs\":1397,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"process_exit\",\"elapsedMs\":1399,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"],\"exitCode\":0}]}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-observed-o3393rd7.json",
+      "sha256": "8608594ce91110215bb94d81419e4560906d3b53fb70daf5ac2a38f792432953",
+      "bytes": 942,
+      "raw_utf8": "{\"schemaVersion\":1,\"route\":\"passive-observed-raw-companion\",\"outcome\":\"observed-pass\",\"runtimeIdentity\":{\"nodeSha256\":\"995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362\",\"cliSha256\":\"e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774\",\"entrySha256\":\"74a9d5d094ebe3209a1db904f84ec05b59ed0fa202346ec3762ee3162170baa9\",\"rpcModuleSha256\":\"e52d27d064df05fe8ec15f05db07d7c895051597551a0d62b2fe77208d88e942\"},\"trace\":{\"schemaVersion\":1,\"pid\":8948,\"node\":\"v22.19.0\",\"platform\":\"win32\",\"phases\":[{\"phase\":\"started\",\"elapsedMs\":3,\"stdinEnded\":false,\"resources\":[\"PipeWrap\"]},{\"phase\":\"stdin_end\",\"elapsedMs\":2709,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"session_shutdown_observer\",\"elapsedMs\":2710,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"process_exit\",\"elapsedMs\":2711,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"],\"exitCode\":0}]}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-observed-r0ayz8je.json",
+      "sha256": "2f7fefc8fa45b196a94c4684937baa4a5ccdb7ce9d712575cef8ae28679d378c",
+      "bytes": 942,
+      "raw_utf8": "{\"schemaVersion\":1,\"route\":\"passive-observed-raw-companion\",\"outcome\":\"observed-pass\",\"runtimeIdentity\":{\"nodeSha256\":\"995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362\",\"cliSha256\":\"e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774\",\"entrySha256\":\"74a9d5d094ebe3209a1db904f84ec05b59ed0fa202346ec3762ee3162170baa9\",\"rpcModuleSha256\":\"e52d27d064df05fe8ec15f05db07d7c895051597551a0d62b2fe77208d88e942\"},\"trace\":{\"schemaVersion\":1,\"pid\":7460,\"node\":\"v22.19.0\",\"platform\":\"win32\",\"phases\":[{\"phase\":\"started\",\"elapsedMs\":3,\"stdinEnded\":false,\"resources\":[\"PipeWrap\"]},{\"phase\":\"stdin_end\",\"elapsedMs\":1599,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"session_shutdown_observer\",\"elapsedMs\":1600,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"process_exit\",\"elapsedMs\":1601,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"],\"exitCode\":0}]}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-observed-soenpa95.json",
+      "sha256": "0378cc6b55a8f47d471ba17bb24f65d65926cb95d9ee0cd16d6caaa0a40028a4",
+      "bytes": 942,
+      "raw_utf8": "{\"schemaVersion\":1,\"route\":\"passive-observed-raw-companion\",\"outcome\":\"observed-pass\",\"runtimeIdentity\":{\"nodeSha256\":\"995a3fb3cefad590cd3f4b321532a4b9582fb9c6575320ed2e3e894caac3e362\",\"cliSha256\":\"e79626f2dd6f94aa45d30f3fa63cd84319a6eefcd150b353cfaf274366926774\",\"entrySha256\":\"74a9d5d094ebe3209a1db904f84ec05b59ed0fa202346ec3762ee3162170baa9\",\"rpcModuleSha256\":\"e52d27d064df05fe8ec15f05db07d7c895051597551a0d62b2fe77208d88e942\"},\"trace\":{\"schemaVersion\":1,\"pid\":7424,\"node\":\"v22.19.0\",\"platform\":\"win32\",\"phases\":[{\"phase\":\"started\",\"elapsedMs\":3,\"stdinEnded\":false,\"resources\":[\"PipeWrap\"]},{\"phase\":\"stdin_end\",\"elapsedMs\":2496,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"session_shutdown_observer\",\"elapsedMs\":2496,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"]},{\"phase\":\"process_exit\",\"elapsedMs\":2497,\"stdinEnded\":true,\"resources\":[\"PipeWrap\",\"PipeWrap\",\"PipeWrap\"],\"exitCode\":0}]}}\r\n"
+    },
+    {
+      "name": "rpc-shutdown-taoeqf_9.json",
+      "sha256": "8788a09f839ea9915d8961a095bb92534380d871ed467a16eefa5623e0443582",
+      "bytes": 409,
+      "raw_utf8": "{\"schemaVersion\":2,\"outcome\":\"failure\",\"trace\":null,\"protocol\":{\"schemaVersion\":1,\"events\":[{\"phase\":\"spawned\",\"elapsedMs\":0},{\"phase\":\"send_commands\",\"elapsedMs\":0},{\"phase\":\"error\",\"elapsedMs\":30}],\"recordCount\":0,\"recordCountSaturated\":false,\"commandsSeen\":false,\"stateSeen\":false,\"agentSettledSeen\":false,\"captureSeen\":false,\"collection\":\"error\",\"eofClosed\":false,\"processExited\":false,\"exitCode\":null}}\r\n"
+    }
+  ]
+}

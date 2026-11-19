@@ -1,0 +1,235 @@
+--- baseline/core/surface/commands/init.md
++++ current/core/surface/commands/init.md
+@@ -10,9 +10,19 @@
+ root. It writes the activation flag and the empty state files, then hands off to the populator.
+ 
+ `.codearbiter/CONTEXT.md` frontmatter `arbiter: enabled` is the single activation flag — it gates
+-{{IF:claude}}both the SessionStart persona injection and the arbiter statusline segments{{ELSE}}the SessionStart persona injection{{END}}. The scaffolded
++repository governance and per-turn persona delivery{{IF:claude}}, including the arbiter statusline segments{{END}}.
++{{IF:pi}}Pi also requires affirmative project trust; its `session_start` event emits startup state and its pre-agent prompt seam delivers the persona.{{ELSE}}SessionStart settles mode state and emits startup state; prompt-submit composes and delivers the persona.{{END}}
++{{IF:claude}}SessionStart may repair an existing ca-owned global statusline before checking repository activation.{{END}}
++The scaffolded
+ `CONTEXT.md` is a **stub** (no initialization sentinel), so after scaffolding the project still needs
+ populating before normal operation.
++
++Governance records live in `.codearbiter/`. Opted-in hooks also maintain managed
++Git shims and Git-common enforcement bookkeeping; the task-board writer retains
++its lock sidecar and maintains its exact Git-common `info/exclude` rule. These
++owners retain their existing permissions and preserve foreign hooks and user
++configuration. Use the explicit-root passive check below before entering an
++unfamiliar repository session; a later skill cannot undo startup effects.
+ 
+ <!-- catalog-command-modes:start -->
+ ## Explicit population strategies
+--- baseline/core/surface/commands/override.md
++++ current/core/surface/commands/override.md
+@@ -95,9 +95,14 @@
+ 
+    Do not combine launcher discovery and the producer in one chained shell expression, and never
+    use `python3 X || python X`, which reruns X on any nonzero exit (#577). The producer
+-   writes `{{PROJECT_DIR}}/.codearbiter/.markers/security-gate-passed` bound to the
+-   sensitive lines it approves, so hook H-09b/H-10b allows the commit — recorded **only** after
+-   steps 1–3, never to skip the gate proper.
++   writes `{{PROJECT_DIR}}/.codearbiter/.markers/security-gate-passed` bound to this worktree,
++   the digest of the complete staged diff, and the diagnostic bindings of its sensitive rows, so
++   hook H-09b/H-10b allows a commit of exactly that candidate — recorded **only** after steps 1–3,
++   never to skip the gate proper. Any later change to the staged candidate, including an
++   unrelated staged edit to a non-sensitive file, invalidates it; restage the reviewed candidate or
++   repeat the review for the new one rather than looking for a freshness bypass. The producer's
++   success records the outcome you established; it does not itself prove a semantic reviewer
++   PASS.
+ 
+    If the gate explicitly reports a genuine binary whose text context is unavailable, run the
+    combined audited producer below from the exact reviewed checkout root. It appends the mandatory `SECURITY-OVERRIDE` row first and
+--- baseline/core/surface/commands/standup.md
++++ current/core/surface/commands/standup.md
+@@ -144,6 +144,18 @@
+    dedicated archive commit and the normal PR path.
+    Do not stage journals, generated compatibility views, or unrelated work.
+ 
++7. **Interrupted workflow follow-ups** — resolve the installed
++   `hooks/workflow-recovery.py` from the same helper card and read `scan` only.
++   Present this page's pending, claimed and unavailable subset, its precise
++   reason, and any opaque continuation cursor. A partial scan is not a complete
++   backlog count. Never mine transcripts or run promotion, completion, review,
++   issue publication, staging, cleanup or transaction repair as part of this
++   read. A selected explicit resume belongs to `includes/harvest.md` under its
++   existing scoped confirmation or already valid sprint authority, with exact
++   operation/origin reconciliation before retry. A new session cannot reuse a
++   revoked child grant. Ledger/notification failure affects only that recovery
++   obligation; independent authorized work continues.
++
+ Present a one-line summary of what was done and what was declined.
+ 
+ ## When NOT to use
+--- baseline/core/surface/commands/status.md
++++ current/core/surface/commands/status.md
+@@ -70,6 +70,15 @@
+ 5. **Overrides since last checkpoint** — entries in `{{PROJECT_DIR}}/.codearbiter/overrides.log`
+    newer than the marker in `{{PROJECT_DIR}}/.codearbiter/last-checkpoint`.
+ 6. **Current branch** — from git.
++7. **Interrupted workflow follow-ups** — resolve the installed
++   `hooks/workflow-recovery.py` using the helper card above, then run `scan`.
++   Report pending, claimed and unavailable entries from this bounded page.
++   A `partial` result is a lower bound with an opaque cursor; offer selected
++   further pages rather than claiming a complete backlog count. An absent
++   ledger means no registered obligations, not that historical work completed.
++   Unreadable, unknown-version or interrupted state stays unavailable with its
++   reason and explicit recovery route. Status never invokes `repair`, `resume`,
++   promotion, completion, staging, issue publication, or a notice-marker write.
+ 
+ ## Output
+ 
+@@ -84,6 +93,7 @@
+ Open tasks:       N
+ Open questions:   N ([CONFIRM-NN] unresolved)
+ Overrides since last checkpoint: N
++Workflow recovery: <this page's pending/claimed/unavailable; complete/partial/unavailable>
+ ```
+ 
+ No specs and no plans → `Pipelines: none`.
+--- baseline/core/surface/includes/artifacts.md
++++ current/core/surface/includes/artifacts.md
+@@ -126,6 +126,21 @@
+ checks, failures and unrun verification separately. Review relevant risks;
+ do not spawn a reviewer fleet to clear task bookkeeping.
+ 
++The versioned `recorded-progress/1` projection separates recorded progress from
++derived check applicability. `DONE` is caller-reported; receipt-bearing `REVIEW`
++and historical `ACCEPTED` still require assessment of their actual evidence.
++Legacy `STALE` reports unresolved prior progress, never a guessed completion.
++Blocking an upstream task preserves downstream progress and independently
++recorded stops; dependency readiness is assessed separately. Typed retirement
++retains original symbol kind and historical checks without scheduling retired
++tasks or reusing their IDs. New semantics use schema 0.3.4; old unsupported
++clients refuse rather than reinterpret those writes.
++
++Operation descriptors report the implemented backend, availability and effects.
++They are declarations, not permission or qualification. A bounded native read
++may assess declared source inputs and may have platform lock metadata effects;
++do not describe every read as physically effect-free on every platform.
++
+ ## Resume safely
+ 
+ On interruption, inspect the worktree, running workers and committed state
+--- baseline/core/surface/includes/knowledge.md
++++ current/core/surface/includes/knowledge.md
+@@ -40,6 +40,13 @@
+ - `knowledge.py read <doc>` lists a document's records; `read <doc> <ID> ...`
+   returns exact records. `knowledge.py commands [--purpose test]` lists declared
+   commands.
++- `knowledge.py read <doc> --text` reads current narrative in the active format.
++  HTML uses revision-bound native reads of active records; retained notes and
++  retired records cannot substitute for current instructions. Empty current
++  collections refuse the projection. `--commands-only` selects active HTML
++  command declarations; legacy Markdown keeps its existing document text.
++  Shared Python consumers use the same `knowledge.context_text` owner rather
++  than opening a fixed Markdown filename or parsing HTML.
+ - A plan task's `task-context` packet already includes its relevant knowledge.
+ 
+ For a selected project work item, resolve the installed `hooks/work.py` through
+@@ -64,8 +71,10 @@
+ Every instruction to consult `security-controls.md` for policy uses this format
+ rule. First inspect `.codearbiter/CONTEXT.md` for `context-format: html` (or run
+ `knowledge.py format`). In HTML mode, run `knowledge.py read security-controls`
+-to list the complete document, then read **all** `CTX-SECURITY-CONTROLS` records
+-and notes by their exact IDs. Do not rely on `knowledge.py relevant` for a full
++to list the complete document, then read **all current** `CTX-SECURITY-CONTROLS`
++records by exact ID, or use `read security-controls --text` for their complete
++current narrative. Read retained notes when provenance/history matters; notes
++do not reinstate retired or withdrawn policy. Do not rely on `knowledge.py relevant` for a full
+ policy review. Also read the operative migration, CI and deploy scope blocks in
+ `.codearbiter/security-controls.md` when they apply. In Markdown mode, read the
+ full `.codearbiter/security-controls.md` directly. A file containing only scope
+--- baseline/core/surface/includes/security-gate-record.md
++++ current/core/surface/includes/security-gate-record.md
+@@ -24,7 +24,12 @@
+ AND matches the exact staged candidate being committed. There is no time window: a pass stays
+ valid only while that complete staged diff remains byte-for-byte the independently reviewed
+ candidate. Any added, removed, moved, or changed row blocks, so a pass recorded for one diff cannot
+-launder a later, different change.
++launder a later, different change. That includes an unrelated staged edit to a non-sensitive file:
++the binding is the whole staged candidate, not only its sensitive lines. A commit form that can
++absorb unstaged content (for example `git commit -a`) is blocked only when the candidate touches a
++guarded pattern; stage the reviewed candidate explicitly and commit that. The producer's success
++records the outcome of the review you performed; it does not itself prove a semantic reviewer PASS,
++and a binary override, an attributed `/override`, and a reviewer PASS stay distinct records.
+ 
+ On any BLOCK, self-review, unreadable candidate, stale result, or wrong-worktree result, do **not**
+ record the pass — the commit stays blocked until the finding is resolved and the independent gate
+--- baseline/core/surface/skills/context-check/SKILL.md
++++ current/core/surface/skills/context-check/SKILL.md
+@@ -146,6 +146,12 @@
+ normative rule or require a new approval. Keep observed upstream conventions
+ and accepted ADR references source-scoped when they do not already govern this
+ project. Surface a real conflict without silently displacing either source.
++Use `{{CMD:conflict}}` to retain both exact sources and record the affected scope
++and its authority, data or decision dependencies. Pause that scope and actual
++dependents, including affected child delegations. Continue independent authorized
++work and mutations. Shared security/authority dependencies can expand the pause;
++unknown dependencies need inspection, not an invented graph or chosen rule.
++An explicit global user or host stop remains global.
+ 
+ If the requested change would adopt or replace normative instructions, route
+ the proposal to its actual owner and obtain that owner's actual approval before
+--- baseline/core/surface/skills/decision-lifecycle/references/authoring.md
++++ current/core/surface/skills/decision-lifecycle/references/authoring.md
+@@ -99,19 +99,24 @@
+ 2. Route through `commit-gate` to commit the accepted ADR and decision-log append. Do not add the
+    acceptance binding to that commit: its `source_commit` cannot truthfully name a commit that does
+    not exist yet.
+-3. From that exact commit, hash the committed Git blob bytes and the separately canonicalized
+-   immutable record: strict UTF-8 with LF-normalized line endings, containing the complete ADR while
+-   replacing only the recognized status value in the strictly parsed frontmatter `status:` field and
+-   `## Status` section with fixed sentinels. The two values must agree. All remaining Status prose,
+-   including approval attribution, stays bound alongside title, date, `decided-by`, supersession,
+-   governed paths, H1, and every other section. Malformed or duplicate frontmatter, status, or
+-   headings fail closed. Append one
+-   `acceptance` event to
+-   `{{PROJECT_DIR}}/.codearbiter/decisions/adr-lifecycle.jsonl`, then persist that acceptance binding
+-   in a subsequent commit. The event uses schema `adr-lifecycle/v1` and records `adr` (full stem),
+-   `recorded_at`, `source_commit`, `blob_sha256`, `body_sha256`, `obligations`,
+-   `obligations_sha256`, and `obligations_sealed: true`. A second acceptance or baseline binding for
+-   the same stem is invalid.
++3. From that exact commit, put the independently reviewed obligations in a JSON array of
++   `id`, `section`, and exact `text`. Use a full-stem `id` followed by a dot and stable suffix.
++   Run the shipped writer from the project root, substituting the selected Python 3 interpreter:
++
++   ```sh
++   python "{{PLUGIN_ROOT}}/hooks/adr-acceptance.py" --root "{{PROJECT_DIR}}" --adr <full-stem> --source-commit <full-accepted-ADR-commit> --obligations-json <reviewed-file.json> --reviewed-by <reviewer-identity>
++   ```
++
++   The writer reads the exact committed Git blob, checks ancestry and the current accepted ADR,
++   computes the canonical immutable-body and obligation digests using the verifier's code, records
++   the reviewer's identity, validates the complete event, and appends it under the audit lock. It refuses an existing binding, a dirty
++   ledger, changed ADR content, or malformed obligations. Do not hand-calculate hashes or hand-append
++   acceptance JSON. After you commit the accepted ADR, the writer will append the acceptance binding;
++   persist it in a subsequent commit. A second acceptance or baseline binding for the same stem is
++   invalid.
++   The immutable-body digest excludes only the recognized status values. It still binds
++   approval attribution, title, date, decided-by, supersession, governed paths, headings and
++   every other section. Malformed or duplicate status fields and headings fail closed.
+ 4. Preserve **ADR source ancestry** through delivery. Before opening the PR and again before
+    its merge offer, follow the finishing skill's `--merge-method` preflight on the exact base/head.
+    A source not already in base ancestry requires a true merge commit with `--match-head-commit`;
+@@ -130,6 +135,20 @@
+ invalidation event may withdraw a prior evidence event. Only a complete,
+ sealed obligation set with current implementation inputs and fresh verification inputs derives
+ Implemented or Verified. Changed inputs invalidate the derived state; history is never rewritten.
++
++If a committed acceptance was malformed, do not rewrite it or create another acceptance. Obtain
++independent review of a corrected obligation set against the unchanged accepted ADR, then use the
++same shipped writer with `--correct --reason <specific-error>` and the original source commit.
++It appends an `acceptance-correction` bound to the original event digest and the same ADR/source
++identity. A correction cannot replace an already valid binding or remap obligations that have
++delivery evidence. A committed ledger may contain several malformed bindings; append a correction
++for each one, keeping every prior line. The writer admits only a valid append-only correction suffix
++before the next commit. The verifier checks the retained original and its replacement; failures remain
++blocking. A correction is governance evidence, not a new user decision.
++
++```sh
++python "{{PLUGIN_ROOT}}/hooks/adr-acceptance.py" --root "{{PROJECT_DIR}}" --adr <full-stem> --source-commit <original-source-commit> --obligations-json <reviewed-file.json> --reviewed-by <reviewer-identity> --correct --reason <specific-error>
++```
+ 
+ After acceptance, do not edit any bound ADR content. A later user-authorized stored status transition
+ may change only the recognized status value in the strictly parsed frontmatter `status:` and

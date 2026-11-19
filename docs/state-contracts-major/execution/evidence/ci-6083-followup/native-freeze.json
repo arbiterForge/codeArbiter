@@ -1,0 +1,113 @@
+{
+  "scope": "Test-only confidentiality correction to UNRESOLVED native-worktree fixture diagnostics; no underlying ENOENT repair claim.",
+  "head_after": "6083dd63b651cb13a45fb37d6f5ffb4fdc32d47a",
+  "files": {
+    "core/artifacts/internal/operations/completion_fixture_test.go": {
+      "sha256": "d66fca2f772314af0a214c648543f1efc356b7674669408f963888c9bf4205b1",
+      "size_bytes": 6729
+    },
+    "core/artifacts/internal/operations/completion_git_diagnostics_test.go": {
+      "sha256": "8a2ed4fa471d69d26fd16aadc482af9b7d658a4d5bee25c502191823c67f85e5",
+      "size_bytes": 8918
+    }
+  },
+  "prior_instrumentation_freeze": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-worktree-create-debug-2afe3cac\\observability-freeze.json",
+    "sha256": "e10025f064ff8900e8c6ed381e2b83c90aa754d6c18b023fe706810f8547c2c1",
+    "preserved": true
+  },
+  "commands": [
+    {
+      "argv": [
+        "go",
+        "test",
+        "./internal/operations",
+        "-run",
+        "^TestCompletionGitFailureDiagnostics$",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 1,
+      "raw": "red.jsonl",
+      "meaning": "Actual real-invalid-ref Git failure trace selected inert environment/config markers from ambient diagnostic selectors; the new privacy oracle failed."
+    },
+    {
+      "argv": [
+        "go",
+        "test",
+        "./internal/operations",
+        "-run",
+        "^TestCompletion(GitFailureDiagnostics|GitDiagnosticFailureChild|ReviewSelectionAndDecisionAreExact|PublicationClosureRetainsIntegrity|ReviewRejectsSelectedEvidenceDrift|ReviewNativeCapturePublicationAndScope)$",
+        "-count=1",
+        "-json"
+      ],
+      "exit_code": 0,
+      "raw": "green.jsonl",
+      "meaning": "Final real-invalid-ref trace excludes the marker; all original4completion tests and existing bounds/registration checks pass."
+    }
+  ],
+  "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\core\\artifacts",
+  "runtime": "Go1.27.1 Windows/amd64, Git2.55.0.windows.3; GOTOOLCHAIN=local GOPROXY=off GOSUMDB=off",
+  "passed_top_level": [
+    {
+      "name": "TestCompletionGitDiagnosticFailureChild",
+      "elapsed_seconds": 0
+    },
+    {
+      "name": "TestCompletionGitFailureDiagnostics",
+      "elapsed_seconds": 0.57
+    },
+    {
+      "name": "TestCompletionReviewSelectionAndDecisionAreExact",
+      "elapsed_seconds": 8.69
+    },
+    {
+      "name": "TestCompletionPublicationClosureRetainsIntegrity",
+      "elapsed_seconds": 16.5
+    },
+    {
+      "name": "TestCompletionReviewNativeCapturePublicationAndScope",
+      "elapsed_seconds": 17.97
+    },
+    {
+      "name": "TestCompletionReviewRejectsSelectedEvidenceDrift",
+      "elapsed_seconds": 24.83
+    }
+  ],
+  "passed_subcases": [
+    "TestCompletionPublicationClosureRetainsIntegrity/unchanged",
+    "TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-capture",
+    "TestCompletionReviewSelectionAndDecisionAreExact/missing-obligation",
+    "TestCompletionReviewSelectionAndDecisionAreExact/duplicate-obligation",
+    "TestCompletionReviewSelectionAndDecisionAreExact/missing-fact",
+    "TestCompletionReviewSelectionAndDecisionAreExact/unselected-reference",
+    "TestCompletionReviewSelectionAndDecisionAreExact/duplicate-reference",
+    "TestCompletionReviewSelectionAndDecisionAreExact/whitespace-assessment",
+    "TestCompletionReviewSelectionAndDecisionAreExact/definition-only",
+    "TestCompletionPublicationClosureRetainsIntegrity/source",
+    "TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-capture",
+    "TestCompletionPublicationClosureRetainsIntegrity/unknown-output",
+    "TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-before-consume",
+    "TestCompletionPublicationClosureRetainsIntegrity/malformed-output",
+    "TestCompletionPublicationClosureRetainsIntegrity/tamper",
+    "TestCompletionReviewRejectsSelectedEvidenceDrift/material-before-consume",
+    "TestCompletionReviewRejectsSelectedEvidenceDrift/mapped-after-publish",
+    "TestCompletionReviewRejectsSelectedEvidenceDrift/material-after-publish"
+  ],
+  "package_seconds": [
+    25.331
+  ],
+  "invariants": [
+    "Owned trace environment clears GIT_TRACE2_ENV_VARS and GIT_TRACE2_CONFIG_PARAMS, including every case alias, and replaces only its GIT_TRACE2_EVENT sink.",
+    "Empty selector overrides prevent requests to include private environment/config values; unrelated Git environment/config bytes are retained.",
+    "Actual child oracle includes only inert PrivateFixtureValue environment/config markers, no credentials. Case-alias preservation control runs on every host.",
+    "Original Git argv, assertions, failure verdict and deadlines remain unchanged; successful calls are quiet; auxiliary commands remain bounded and read-only.",
+    "Original40 registrations remain intact, directory16entries/trace8192bytes/overall16384bytes retained caps still tested."
+  ],
+  "limits": [
+    "Linux Git2.56.1 ENOENT still unobserved locally; this improves safe failure observability only.",
+    "No full477 rerun or engine build. No staging/index/metadata edits by this agent.",
+    "Source hashes captured after writing and while final run was finishing, then recaptured after completion; no separate pre-run hash file exists.",
+    "Original pre-privacy instrumentation packets/raws remain untouched; this successor packet describes the new frozen2-file source."
+  ]
+}

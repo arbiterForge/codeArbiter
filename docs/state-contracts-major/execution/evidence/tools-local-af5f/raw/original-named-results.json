@@ -1,0 +1,32 @@
+{
+  "source_commit": "af5f74a6afb0090a378520f7e175a8cb2ea29d39",
+  "python": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]",
+  "platform": "win32",
+  "executed_named_results": {
+    "measurement": [
+      "__main__.MeasurementContracts.test_empty_statusline_reports_cannot_pass",
+      "__main__.MeasurementContracts.test_failed_smarts_child_cannot_pass_from_plausible_output",
+      "__main__.MeasurementContracts.test_farm_escalation_does_not_invent_premium_spend_or_abort_cause",
+      "__main__.MeasurementContracts.test_nonempty_compatible_subset_compares_and_wrong_harness_refuses",
+      "__main__.MeasurementContracts.test_screenshot_browser_failure_closes_browser_and_preserves_prior_image",
+      "__main__.MeasurementContracts.test_screenshot_failed_run_cleans_owned_scratch_and_preserves_prior_image",
+      "__main__.MeasurementContracts.test_screenshot_renderer_failure_is_not_a_good_image",
+      "__main__.MeasurementContracts.test_smarts_lens_keywords_are_not_material_alternatives",
+      "__main__.MeasurementContracts.test_unknown_statusline_scenario_is_rejected_before_measurement"
+    ],
+    "ci20": [
+      "__main__.BaselineTest.test_counts_all_conclusions_including_unknowns_and_null",
+      "__main__.BaselineTest.test_cycles_and_unknown_dependencies_refuse",
+      "__main__.BaselineTest.test_dirty_workflow_cannot_be_bound_to_clean_head_before_api_read",
+      "__main__.BaselineTest.test_matrix_needs_and_real_durations",
+      "__main__.BaselineTest.test_optimized_inventory_still_rejects_wrong_checkout",
+      "__main__.BaselineTest.test_protection_contexts_and_checks_only_fallback",
+      "__main__.BaselineTest.test_skipped_matrix_name_is_still_identified",
+      "__main__.BaselineTest.test_timestamp_and_runner_accounting",
+      "__main__.BaselineTest.test_unknown_ambiguous_and_missing_jobs_refuse",
+      "__main__.BaselineTest.test_wrong_source_refuses_before_job_retrieval"
+    ]
+  },
+  "no_whole_worktree_clean_claim": true,
+  "scope": "Only9snapshottool source/test inputs, no provider/model/native calls; fake renderer/browser boundaries explicit."
+}

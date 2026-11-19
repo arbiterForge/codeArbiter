@@ -1,0 +1,132 @@
+{
+  "schema": "codearbiter.committed-review-object-binding/1",
+  "result": "PASS",
+  "code_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+  "parent": "ea9da763b33708c8533623568b7241eaaea0d153",
+  "review": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-framework-final-crypto-p_9slku5\\review.json",
+    "sha256": "a873fd00a89fbb7f5e50a2fe207a6d20e6dbdfb834ea92ca060667ab5649a642",
+    "candidate": "candidate-v1:0d488228acac2fe92907703e60c18f16355e11ea69acab86f21b428930cbf628"
+  },
+  "patch_sha256": "9c05aa48cd6a517276741b4c9cdc6cdcf7335660df54e5a627734f03b3e5a4fe",
+  "full_subjects": {
+    ".github/scripts/_immutable_git_blobs.py": {
+      "index_oid": "c57d637c5fa98bbc8c3e0577e2e488e4dd43e439",
+      "sha256": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+      "bytes": 9589
+    },
+    ".github/scripts/_windows_rpc_timeout.py": {
+      "index_oid": "35bade6a74539cf84e400fc4ea1d9d0e5d9f510f",
+      "sha256": "675c6c0c210c1975a4b1411c6d8ab2e813be9bc95f0129001cbab92f36eb6367",
+      "bytes": 32975
+    },
+    ".github/scripts/observe_pi_installed_rpc.py": {
+      "index_oid": "999d113145ecd5440df4be305922c4914b4db4bc",
+      "sha256": "d938a17303589d102770cd8f3e62b46b29f45d3d2e001cfd314bf3fe9cf656c5",
+      "bytes": 28068
+    },
+    ".github/scripts/test_immutable_git_blobs.py": {
+      "index_oid": "fc5b3161059486a272c772dfd024998b76658215",
+      "sha256": "53dc16422c59b0811798c9b240e5b29e86c6bbe5f6ea45f40145115fe6a0a6d9",
+      "bytes": 20221
+    },
+    ".github/scripts/test_pi_package.py": {
+      "index_oid": "e7c4ef0bb68bf546306fba42b24f0f0ec422e79a",
+      "sha256": "9788156e60ce919b7b535d551ecbc5cf788749981b49716cb8956725afc26092",
+      "bytes": 331763
+    },
+    ".github/scripts/test_pi_parent_tui_observation.py": {
+      "index_oid": "b298c44a25b91fbf79e64a4d3ad790dfede2db34",
+      "sha256": "7cb86d6114d49843e24203be2f723a915e5778e3d692e8611c7fd3f9fc212295",
+      "bytes": 30068
+    },
+    ".github/workflows/ci.yml": {
+      "index_oid": "c6e1e01adc555c19f5ae9bd88e7eb52a965559c3",
+      "sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+      "bytes": 277146
+    },
+    "docs/state-contracts-major/execution/evidence/immutable-positive-blob-reuse/author-delivery.json": {
+      "index_oid": "9abbc989f49ea051481ba919139e5a2a57c20635",
+      "sha256": "f5ae95260a3b381bcfa0766a76c0e5c454a97e6753221b44a39d4a39eacbfda3",
+      "bytes": 15106
+    },
+    "docs/state-contracts-major/execution/evidence/immutable-positive-blob-reuse/development.json": {
+      "index_oid": "c5b8d4d2f76d77297453120bfd9e13a05cdd06e2",
+      "sha256": "3652013c6ab621b1ce0f0cb3eef127bcb7506faa51af626b58bcc40239824223",
+      "bytes": 9229
+    },
+    "docs/state-contracts-major/execution/evidence/immutable-positive-blob-reuse/independent-review.json": {
+      "index_oid": "f003391c9a14620e01e033a81eda4bf7644600d6",
+      "sha256": "c252e2690ed652e9cf88d71b88fa372a6853cf937920a2e02cec86a5c94fe537",
+      "bytes": 14692
+    },
+    "docs/state-contracts-major/execution/evidence/immutable-positive-blob-reuse/normal-a713-terminal.json": {
+      "index_oid": "2c74f8104ad56c84c34098cd408492423e517e5d",
+      "sha256": "ae34bdcb7c36b54ee0c76bd2ff8039a11c5a22887e132daed1a956768b64198f",
+      "bytes": 543754
+    },
+    "docs/state-contracts-major/execution/evidence/pi-installed-setup-repairs/darwin-author.json": {
+      "index_oid": "4c309e363eadfb91779aece2f8f898f6977ae350",
+      "sha256": "cdf4de62ac6a27445c20d30ac3593f2284690a1d3f72e1957c9d323e7800de99",
+      "bytes": 12331
+    },
+    "docs/state-contracts-major/execution/evidence/pi-installed-setup-repairs/darwin-reader-security-admission.json": {
+      "index_oid": "574a9983973c9745bf02bc457d05c328e9079959",
+      "sha256": "60ea10df7732fabcfd0be594a0e1241d7e88bf1429ee1aef131fe755d25d33ec",
+      "bytes": 4149
+    },
+    "docs/state-contracts-major/execution/evidence/pi-installed-setup-repairs/development.json": {
+      "index_oid": "865d08e291f04049404167d7d7a24e02e3d06312",
+      "sha256": "82086c8584e32d3d4df7f5285ec6cdf684bf03dc5a111ec746c2f8e3217b3349",
+      "bytes": 2217
+    },
+    "docs/state-contracts-major/execution/evidence/pi-installed-setup-repairs/parent-payload-author.json": {
+      "index_oid": "0c707d9cdf9947ab9dfc23861290df1f55af0454",
+      "sha256": "4b248b2efae8c51edc29de8a6f4da6835a05ac454d69ece38ed4985da3af5419",
+      "bytes": 6403
+    },
+    "docs/state-contracts-major/execution/evidence/pi-installed-setup-repairs/parent-payload-cause.json": {
+      "index_oid": "9a52998887e64c8bf9d6b27102c848d7d45b05d2",
+      "sha256": "b063ad56c4f07b48899e6456c2760fda9aebe678ce732a5172ba14dfbbe0512f",
+      "bytes": 3897
+    },
+    "docs/state-contracts-major/execution/evidence/pi-installed-setup-repairs/parent-payload-review-admission.json": {
+      "index_oid": "3ee83705d9d93b62b61ef5b4106b3936fc2aa0d2",
+      "sha256": "59915ae0e7cce9f4f897e0644dd0ebe9c9d2b7a615cd9e9694f034c84c4bc24c",
+      "bytes": 1676
+    },
+    "docs/state-contracts-major/execution/evidence/windows-closed-transport-diagnostic/development.json": {
+      "index_oid": "efc3379bf840242b861dccfedd8b47dc55cd767a",
+      "sha256": "c0c21e17a4bc484a17e023aed140df6f4e1e51c9a8f932c7025bb385b5615fad",
+      "bytes": 2410
+    },
+    "docs/state-contracts-major/execution/evidence/windows-closed-transport-diagnostic/initial-peer-finding.json": {
+      "index_oid": "3a388b802ec5014b23fba72819c3a946586b6915",
+      "sha256": "a8eee7aefd8ed34b107edde54cba2dbf3a6a25751038b2be3686018286febbef",
+      "bytes": 4413
+    },
+    "docs/state-contracts-major/execution/evidence/windows-closed-transport-diagnostic/original-source-cause.json": {
+      "index_oid": "e45952e88399b76c6d7950415174c4ac49d77b67",
+      "sha256": "4996f880ae245579bd09f5c55bf64e93a79df88689bb7bb13967804835ec1a69",
+      "bytes": 3539
+    },
+    "docs/state-contracts-major/execution/evidence/windows-closed-transport-diagnostic/predecessor-author.json": {
+      "index_oid": "0e900243265dd3ee5dbb1bba0ddc1e77d6e38c80",
+      "sha256": "4f69ebebaeb3e357a93d5b4f55bad406107a3f716103c511623c77e8f018b417",
+      "bytes": 30320
+    },
+    "docs/state-contracts-major/execution/evidence/windows-closed-transport-diagnostic/successor-author.json": {
+      "index_oid": "69f13d80c19efc8d3f85e5ec54e7e835081c5284",
+      "sha256": "0c5fe9bcc57a2d02c54e454138333e8ec74d140ff9e165e29da20fde1e016fdb",
+      "bytes": 8082
+    },
+    "docs/state-contracts-major/execution/evidence/windows-closed-transport-diagnostic/successor-peer-review.json": {
+      "index_oid": "7714972a7c7df7f17cf2caa89b181439e2ada1e1",
+      "sha256": "548bc74003ae5adc7116a1c6999c638a30cd445ac7a2ff732c057e4b7d6d7854",
+      "bytes": 3672
+    }
+  },
+  "admission_before_commit": true,
+  "security_marker_before_commit": true,
+  "scope": "Actual23 committed source/evidence Git blobs equal reviewed staged candidate. Per-code independent reviews retained in code commit; crypto scope excludes reviewer own parent repair and is separately covered by other reviewer. No new review or runtime qualification."
+}

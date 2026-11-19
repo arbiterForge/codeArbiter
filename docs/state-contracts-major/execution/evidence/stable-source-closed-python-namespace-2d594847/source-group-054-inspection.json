@@ -1,0 +1,2724 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "2d594847888619a98aa964ad1757a31a788aa5c4",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-054",
+  "positive_input_join": {
+    ".agents/plugins/marketplace.json": {
+      "sha256": "4c8db8d2444bdb886cc8d4db8bbaa6ed56f8e3edf93b623ed0ffef4dfc9ff1d4",
+      "bytes": 371,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "4c8db8d2444bdb886cc8d4db8bbaa6ed56f8e3edf93b623ed0ffef4dfc9ff1d4",
+        "bytes": 371
+      }
+    },
+    ".claude-plugin/marketplace.json": {
+      "sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+      "bytes": 638,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+        "bytes": 638
+      }
+    },
+    ".codearbiter/release-targets.md": {
+      "sha256": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+      "bytes": 4899,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "62d1bcd7b153fafa6488a4b75f53abc1f726fb53ca69f2110b0a528c6142f96d",
+        "bytes": 4899
+      }
+    },
+    ".github/scripts/_contextverificationlib.py": {
+      "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+      "bytes": 23733,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "bytes": 23733
+      }
+    },
+    ".github/scripts/_releaselib.py": {
+      "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+      "bytes": 22106,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+        "bytes": 22106
+      }
+    },
+    ".github/scripts/build_release_targets_provenance.py": {
+      "sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+      "bytes": 6400,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+        "bytes": 6400
+      }
+    },
+    ".github/scripts/check_codex_skill_resources.py": {
+      "sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+      "bytes": 145175,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+        "bytes": 145175
+      }
+    },
+    ".github/scripts/check_codex_static_package.py": {
+      "sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+      "bytes": 13505,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+        "bytes": 13505
+      }
+    },
+    ".github/scripts/test_artifact_installed_host.py": {
+      "sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04",
+      "bytes": 92423,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04",
+        "bytes": 92423
+      }
+    },
+    ".github/scripts/test_context_installed.py": {
+      "sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+      "bytes": 6007,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+        "bytes": 6007
+      }
+    },
+    ".github/scripts/test_context_native.py": {
+      "sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+      "bytes": 13892,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+        "bytes": 13892
+      }
+    },
+    "core/artifact-release-manifest.json": {
+      "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+      "bytes": 864,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+        "bytes": 864
+      }
+    },
+    "core/hosts.json": {
+      "sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+      "bytes": 6084,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+        "bytes": 6084
+      }
+    },
+    "core/pysrc/_artifactauthoritylib.py": {
+      "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+      "bytes": 251805,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+        "bytes": 251805
+      }
+    },
+    "core/pysrc/_artifactmanifestlib.py": {
+      "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+      "bytes": 4249,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+        "bytes": 4249
+      }
+    },
+    "core/pysrc/_gitexec.py": {
+      "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+      "bytes": 24644,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+        "bytes": 24644
+      }
+    },
+    "core/pysrc/_hooklib.py": {
+      "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+      "bytes": 49147,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+        "bytes": 49147
+      }
+    },
+    "core/pysrc/_provenancelib.py": {
+      "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "bytes": 76910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+        "bytes": 76910
+      }
+    },
+    "core/pysrc/_releaselib.py": {
+      "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "bytes": 211540,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+        "bytes": 211540
+      }
+    },
+    "docs/state-contracts-major/IMPLEMENTATION-TASKS.md": {
+      "sha256": "90bd8baf41fcc21f7c670358a996de2eaf110d9e7f89133b248e38a74d286b28",
+      "bytes": 289090,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "90bd8baf41fcc21f7c670358a996de2eaf110d9e7f89133b248e38a74d286b28",
+        "bytes": 289090
+      }
+    },
+    "docs/state-contracts-major/PROGRAM.md": {
+      "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+      "bytes": 7910,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+        "bytes": 7910
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/build-host-packages.py": {
+      "sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "bytes": 116956,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+        "bytes": 116956
+      }
+    },
+    "tools/host_descriptors.py": {
+      "sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+      "bytes": 15608,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+        "bytes": 15608
+      }
+    },
+    "tools/install-artifact-payload.py": {
+      "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+      "bytes": 15065,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+        "bytes": 15065
+      }
+    },
+    "tools/owned_output.py": {
+      "sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+      "bytes": 4648,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+        "bytes": 4648
+      }
+    },
+    "tools/promote-claude-marketplace.py": {
+      "sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "bytes": 7804,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+        "bytes": 7804
+      }
+    },
+    "tools/promote-codex-marketplace.py": {
+      "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "bytes": 16924,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+        "bytes": 16924
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": "core/pysrc",
+      "path_order": "windows",
+      "sha256": "47866d8dbbe83d269b0c3311e9bb1df44111bd8596c4c9808865eabf6d10ff9d"
+    },
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "scope": "Finite release, provenance, installed-host checks and packaging declarations. Modules and package roots are fixed; source contracts do not imply whole installed validation.",
+    "namespace": {
+      "profile": {
+        "profile": "python-import-directory-v1",
+        "root": ".github/scripts",
+        "path_order": "windows"
+      },
+      "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+      "current_source": "2d594847888619a98aa964ad1757a31a788aa5c4",
+      "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+      "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+      "entries_before": 281,
+      "entries_now": 284,
+      "added": [
+        {
+          "path": ".github/scripts/site_vitest_observation.py",
+          "sha256_at_review": "98b5620ce215a73d72c6af137e3a63547b0254886dd2d6c8502861affc530608",
+          "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+        },
+        {
+          "path": ".github/scripts/test_pi_payload_identity.py",
+          "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+          "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+        },
+        {
+          "path": ".github/scripts/test_site_vitest_observation.py",
+          "sha256_at_review": "d72a94774f9efa10ae6e1b73cb87900567b6acfc248ddb03f9dc9817b08c0293",
+          "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+        }
+      ],
+      "negative_scope": "No old namespace member, mode or object class changed. Physical and lexical resolution inside reviewed paths names existing sources, tools, plugins or scratch/candidate scopes, and never uses the new names. Their bytes are identified at review, while the strict namespace digest binds names, object classes and modes."
+    },
+    "referenced_script_roles": {
+      ".github/scripts/_contextverificationlib.py": {
+        "role": "Bounded rglob of exact caller-owned Go module and staged plugin root, plus empty isolated PATH. It does not select scripts.",
+        "sha256": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+        "reviewed_discovery_calls": [
+          {
+            "line": 68,
+            "call": "root.rglob(\"*\")"
+          },
+          {
+            "line": 351,
+            "call": "plugin.rglob(\"*\")"
+          },
+          {
+            "line": 440,
+            "call": "empty.iterdir()"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/_releaselib.py": {
+        "role": "Dynamic import binds exact core/pysrc/_releaselib.py; module selection is not enumerated.",
+        "sha256": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+        "reviewed_discovery_calls": [
+          {
+            "line": 110,
+            "call": "importlib.util.spec_from_file_location(\n    \"_release_mechanism\", _MECHANISM_PATH)"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/build_release_targets_provenance.py": {
+        "role": "Each loader call names core/pysrc/_releaselib.py or core/pysrc/_provenancelib.py.",
+        "sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+        "reviewed_discovery_calls": [
+          {
+            "line": 53,
+            "call": "importlib.util.spec_from_file_location(name, REPO / relpath)"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/check_codex_skill_resources.py": {
+        "role": "Direct shipped skill and resource path checks; no namespace discovery.",
+        "sha256": "d9b66e6f9de71e8dcdf3c001141ac35abc350de1dc85b4d583c483be70b7bfb0",
+        "reviewed_discovery_calls": [],
+        "new_name_references": []
+      },
+      ".github/scripts/check_codex_static_package.py": {
+        "role": "Dynamic import binds the explicit sibling check_codex_skill_resources.py path.",
+        "sha256": "7c0e43244ea71edcf8ecbb62dcd83209b152e6e63f796557f08027915d2c5618",
+        "reviewed_discovery_calls": [
+          {
+            "line": 79,
+            "call": "importlib.util.spec_from_file_location(\n        \"codearbiter_trusted_candidate_resources\", RESOURCE_CHECKER_PATH\n    )"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/test_artifact_installed_host.py": {
+        "role": "Loader paths derive fixed installed hooks and an isolated package root. Enumerations target package/user state, workflow spec/plan files and empty PATH.",
+        "sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04",
+        "reviewed_discovery_calls": [
+          {
+            "line": 744,
+            "call": "importlib.util.spec_from_file_location(\"cold_installed_artifact_bridge\", bridge_path)"
+          },
+          {
+            "line": 849,
+            "call": "importlib.util.spec_from_file_location(\n                \"_approvallib\", adapter\n            )"
+          },
+          {
+            "line": 872,
+            "call": "importlib.util.spec_from_file_location(\n                \"cold_installed_prompt_submit\", prompt_submit\n            )"
+          },
+          {
+            "line": 949,
+            "call": "importlib.util.spec_from_file_location(\n                \"_prerequisitelib\", adapter\n            )"
+          },
+          {
+            "line": 973,
+            "call": "importlib.util.spec_from_file_location(\n                \"cold_installed_prerequisite_prompt_submit\", prompt_submit\n            )"
+          },
+          {
+            "line": 1120,
+            "call": "(args.repository / \".codearbiter\" / \".artifacts\" / \"receipts\").glob(\"*.json\")"
+          },
+          {
+            "line": 1266,
+            "call": "receipts.rglob(\"*.json\")"
+          },
+          {
+            "line": 1270,
+            "call": "where.glob(\"*.md\")"
+          },
+          {
+            "line": 1391,
+            "call": "importlib.util.spec_from_file_location(name, path)"
+          },
+          {
+            "line": 1406,
+            "call": "importlib.util.spec_from_file_location(\"cold_\" + filename.replace(\"-\", \"_\").replace(\".\", \"_\"), path)"
+          },
+          {
+            "line": 1464,
+            "call": "directory.rglob(\"*.md\")"
+          },
+          {
+            "line": 1559,
+            "call": "Path(path).iterdir()"
+          }
+        ],
+        "new_name_references": []
+      },
+      ".github/scripts/test_context_installed.py": {
+        "role": "Explicit installed context runner and owned candidate/repository paths. No dynamic directory import/test discovery.",
+        "sha256": "563efb67846280e1f33b2ae135ba6616e49cee8df96aa56ca30eb421f653bd19",
+        "reviewed_discovery_calls": [],
+        "new_name_references": []
+      },
+      ".github/scripts/test_context_native.py": {
+        "role": "Explicit Go and installed runner inputs. No dynamic directory import/test discovery.",
+        "sha256": "8fa405405398bed4d39dd6b6a7f445b65c6e89b7c29c59aff9a6322fae64595b",
+        "reviewed_discovery_calls": [],
+        "new_name_references": []
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:S69",
+      "frozen_record": {
+        "machine_id": "S69",
+        "name": "Cross-platform qualification promotion into host payload overlay",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "packaging",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "077a5998c7a178712bc979c79dd97532ede9d5179cf77c28325dd85e41242104",
+      "group": "source-group-054",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Cross-platform qualification promotion into host payload overlay. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S71",
+      "frozen_record": {
+        "machine_id": "S71",
+        "name": "Qualified release package cohort construction and verification",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "packaging",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "ef737acc1d551a284fe9a45624ce95ed3cb7c66529f4d0340eb450f5a9aa2740",
+      "group": "source-group-054",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Qualified release package cohort construction and verification. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S72",
+      "frozen_record": {
+        "machine_id": "S72",
+        "name": "Cold installed-host package execution and evidence",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "packaging",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 7,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "4f2d1da56360512b47eb93be4be8fca6ecc99e26c669e92d43c46760336c9ffc",
+      "group": "source-group-054",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Cold installed-host package execution and evidence. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+          "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S73",
+      "frozen_record": {
+        "machine_id": "S73",
+        "name": "Claude immutable distribution tag and marketplace channel promotion",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "packaging",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "DIST-M02"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 11,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-claude-marketplace.py",
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "3595ecb7fa78bf8edc060934239328a1c541fb9bdf043f28e88cba24a8983756",
+      "group": "source-group-054",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Claude immutable distribution tag and marketplace channel promotion. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+          "sha256": "f3ae9766d5f5ec6d521d28644cccfb66f96286a81083fdbf591eeb9830bb2bc6",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S74",
+      "frozen_record": {
+        "machine_id": "S74",
+        "name": "Codex immutable distribution, optional npm identity and channel promotion",
+        "domain": "Pi, farm, sandbox, site and packaging",
+        "kind": "implemented",
+        "owner": "packaging",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [
+          "DIST-M02"
+        ],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "status": "NOT_RUN",
+        "transition_count": 10,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py"
+        ],
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "1462c2d1f78c0993a447d99157b44fb8d4fcb7fc796a9aa698e3a4354a004f72",
+      "group": "source-group-054",
+      "literal_inspection": "74-new-full-frozen-machine-or-finding-records",
+      "assessment": "Conditional finite source composition of Codex immutable distribution, optional npm identity and channel promotion. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C34:01",
+      "frozen_record": {
+        "transition_id": "C34:01",
+        "machine_id": "C34",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "absent or old record",
+          "from": "absent or old record",
+          "event": "build provenance",
+          "guard": "release declarations parse",
+          "to": "built",
+          "effects": "Enumerate declared paths, batch Git hashes, preserve unknown as null, write provenance record.",
+          "failure_retry": "Unresolvable declaration or write failure rejects; a null hash is not invented evidence.",
+          "source": [
+            {
+              "path": ".github/scripts/build_release_targets_provenance.py",
+              "symbol": "build",
+              "lines": [
+                60,
+                86
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/build_release_targets_provenance.py"
+            }
+          ],
+          "transition_id": "C34:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1b50750cbb9fd2df4bd427278d1dd9aa04f440e7ec125debe148c808a1c13535",
+      "group": "source-group-054",
+      "assessment": "The check validates declared path population, not current contents. Unknown hashes stay null; a source-only path-current result cannot renew provenance/runtime claims.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+          "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C34:02",
+      "frozen_record": {
+        "transition_id": "C34:02",
+        "machine_id": "C34",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "built",
+          "from": "built",
+          "event": "--check",
+          "guard": "recorded path set equals currently declared target path set",
+          "to": "path-current",
+          "effects": "Return success on scope population parity.",
+          "failure_retry": "Does not compare current content hashes; ordinary version bumps can leave hash evidence stale pending separate healing.",
+          "source": [
+            {
+              "path": ".github/scripts/build_release_targets_provenance.py",
+              "symbol": "check",
+              "lines": [
+                103,
+                122
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/build_release_targets_provenance.py"
+            }
+          ],
+          "transition_id": "C34:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e5fa516cf97f8554c81616039c5c18bb3b77db778596c935fea64340aa62693b",
+      "group": "source-group-054",
+      "assessment": "The check validates declared path population, not current contents. Unknown hashes stay null; a source-only path-current result cannot renew provenance/runtime claims.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+          "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C34:03",
+      "frozen_record": {
+        "transition_id": "C34:03",
+        "machine_id": "C34",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "built",
+          "from": "built",
+          "event": "--check after declared scope change",
+          "guard": "path population differs",
+          "to": "path-stale",
+          "effects": "Fail with regeneration instruction.",
+          "failure_retry": "No auto-rewrite in check mode.",
+          "source": [
+            {
+              "path": ".github/scripts/build_release_targets_provenance.py",
+              "symbol": "check",
+              "lines": [
+                103,
+                122
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/build_release_targets_provenance.py"
+            }
+          ],
+          "transition_id": "C34:03"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "d88631aee81e64b083eb38d4fdfb5260bb054af22ed04b0b57ee63b84ba71c4b",
+      "group": "source-group-054",
+      "assessment": "The check validates declared path population, not current contents. Unknown hashes stay null; a source-only path-current result cannot renew provenance/runtime claims.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/release-provenance-scope-preserved.json",
+          "sha256": "190dfe8f3017d8ab48cc55fdcf0e17ce87624efcc3010616ed3266845f7063b9",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S69:01",
+      "frozen_record": {
+        "transition_id": "S69:01",
+        "machine_id": "S69",
+        "owner": "packaging",
+        "baseline": {
+          "event": "stage promotion",
+          "guard": "new real output parent; one independent receipt per candidate; trusted protected context",
+          "to": "collecting",
+          "effects": "Validate each native format/architecture/hash, exact supported version/protocol/schema and receipt source/run/test binding.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "stage_artifact_host_payloads and pinned stage classes",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "111-626"
+            }
+          ],
+          "from": "collecting",
+          "transition_id": "S69:01"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "1b5282f3ead8cab093e9ea4c17de3281818a8b8b94e216ea87ee442288f6a895",
+      "group": "source-group-054",
+      "assessment": "Qualification receipts and exact platform set precede create-only overlays; optional context fields remain typed declarations bound to actual original observations. Receipt-last does not mean multi-file atomicity; partial staging stays inspect/discard/fresh-output recovery.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S69:02",
+      "frozen_record": {
+        "transition_id": "S69:02",
+        "machine_id": "S69",
+        "owner": "packaging",
+        "baseline": {
+          "event": "all candidates verified",
+          "guard": "required platform set exact, no duplicates/missing/extra",
+          "to": "all qualified",
+          "effects": "Hold immutable binary/receipt bytes; validate optional context finite evidence.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "stage_artifact_host_payloads and pinned stage classes",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "111-626"
+            }
+          ],
+          "from": "collecting",
+          "transition_id": "S69:02"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "33396b48092bbf40db1b28f914b9675b50355015e4571120b864347badb7a36b",
+      "group": "source-group-054",
+      "assessment": "Qualification receipts and exact platform set precede create-only overlays; optional context fields remain typed declarations bound to actual original observations. Receipt-last does not mean multi-file atomicity; partial staging stays inspect/discard/fresh-output recovery.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S69:03",
+      "frozen_record": {
+        "transition_id": "S69:03",
+        "machine_id": "S69",
+        "owner": "packaging",
+        "baseline": {
+          "event": "build release manifest",
+          "guard": "platform identities agree",
+          "to": "release manifest built",
+          "effects": "Create five-key release manifest plus optional sixth context_qualification when any candidate supplies context evidence.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "stage_artifact_host_payloads and pinned stage classes",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "111-626"
+            }
+          ],
+          "from": "all qualified",
+          "transition_id": "S69:03"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "4cd0a61523a2aca172bb79e61ae73688d59d89fd6094b120a9c50866e090a951",
+      "group": "source-group-054",
+      "assessment": "Qualification receipts and exact platform set precede create-only overlays; optional context fields remain typed declarations bound to actual original observations. Receipt-last does not mean multi-file atomicity; partial staging stays inspect/discard/fresh-output recovery.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S69:04",
+      "frozen_record": {
+        "transition_id": "S69:04",
+        "machine_id": "S69",
+        "owner": "packaging",
+        "baseline": {
+          "event": "write host overlays",
+          "guard": "validated canonical host descriptors",
+          "to": "per-host payload writing",
+          "effects": "Create pinned create-only output; write identical qualified binary/manifest payload under each host-specific install path.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "stage_artifact_host_payloads and pinned stage classes",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "111-626"
+            }
+          ],
+          "from": "release manifest built",
+          "transition_id": "S69:04"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8b8bae09ff82c365d27c8e9b4aaf45a295e3f2b5f6cd1b7d739279b30ccb081a",
+      "group": "source-group-054",
+      "assessment": "Qualification receipts and exact platform set precede create-only overlays; optional context fields remain typed declarations bound to actual original observations. Receipt-last does not mean multi-file atomicity; partial staging stays inspect/discard/fresh-output recovery.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S69:05",
+      "frozen_record": {
+        "transition_id": "S69:05",
+        "machine_id": "S69",
+        "owner": "packaging",
+        "baseline": {
+          "event": "all host writes succeed",
+          "guard": "byte identities fixed",
+          "to": "promotion receipt written",
+          "effects": "Write artifact-promotion.json last, with exact host map, payload digests, qualification identities and context observation binding.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "stage_artifact_host_payloads and pinned stage classes",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "111-626"
+            }
+          ],
+          "from": "per-host payload writing",
+          "transition_id": "S69:05"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c5c17d491b26cd4c50080cc23b2bf29da0af20c14608bb16a96f1f6c06605dbc",
+      "group": "source-group-054",
+      "assessment": "Qualification receipts and exact platform set precede create-only overlays; optional context fields remain typed declarations bound to actual original observations. Receipt-last does not mean multi-file atomicity; partial staging stays inspect/discard/fresh-output recovery.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S69:06",
+      "frozen_record": {
+        "transition_id": "S69:06",
+        "machine_id": "S69",
+        "owner": "packaging",
+        "baseline": {
+          "event": "I/O/path identity failure",
+          "guard": "partial destination may exist",
+          "to": "partial unavailable",
+          "effects": "Stop; output path remains create-only, so caller must inspect/discard failed staging and choose a fresh output.",
+          "failure_retry": "Do not claim multi-file atomic overlay or enable a source checkout from this staging operation.",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "stage_artifact_host_payloads and pinned stage classes",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "111-626"
+            }
+          ],
+          "from": "any write",
+          "transition_id": "S69:06"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "96647d12aba302c58f08c5e20865d93012ea0986ccdd540afdf2c9f51dfb0eb8",
+      "group": "source-group-054",
+      "assessment": "Qualification receipts and exact platform set precede create-only overlays; optional context fields remain typed declarations bound to actual original observations. Receipt-last does not mean multi-file atomicity; partial staging stays inspect/discard/fresh-output recovery.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-accepted-c2cf0a18/promotion-stage/preserved.json",
+          "sha256": "dbd84f1320fe58c49c566170d5a7708f182ad0c6f8e88de2897854e98f8f5e53",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "c2cf0a18b020ef426d7df94f70fe9770fa102c32"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:01",
+      "frozen_record": {
+        "transition_id": "S71:01",
+        "machine_id": "S71",
+        "owner": "packaging",
+        "baseline": {
+          "event": "derive members",
+          "guard": "exact Git archive at full source commit + trusted promotion snapshot",
+          "to": "members derived",
+          "effects": "Read Claude/Codex/Pi source members from commit; reject preexisting native payload; transform host catalogs; overlay identical promoted bytes; require canonical license/notices.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "_expected_release_package_members, build_artifact_release_packages, verify_artifact_release_packages:627-732;999-1578",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+            }
+          ],
+          "from": "source pinned",
+          "transition_id": "S71:01"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "e547021182cedc372c5dd72c4a21ba5b813b0a2b287070410e71d039079234df",
+      "group": "source-group-054",
+      "assessment": "Full-source archive, host catalog transforms, exact npm selection and immutable promotion bytes remain guarded. Outputs are create-only and not whole-cohort atomic. Selected launcher/runtime scopes are not full Node/npm/Git or upstream installed qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:02",
+      "frozen_record": {
+        "transition_id": "S71:02",
+        "machine_id": "S71",
+        "owner": "packaging",
+        "baseline": {
+          "event": "select Pi npm members",
+          "guard": "exact reviewed npm executable/integrity; isolated environment",
+          "to": "members derived",
+          "effects": "Use npm pack selection for Pi shipping whitelist; prohibit unknown/empty selected set; bind packer qualification production vs local-portability.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "_expected_release_package_members, build_artifact_release_packages, verify_artifact_release_packages:627-732;999-1578",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+            }
+          ],
+          "from": "members derived",
+          "transition_id": "S71:02"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "959724eab3cc82a1b4d4765de2ed007f6095f92bbc3f7e9152bbd0420356bafc",
+      "group": "source-group-054",
+      "assessment": "Full-source archive, host catalog transforms, exact npm selection and immutable promotion bytes remain guarded. Outputs are create-only and not whole-cohort atomic. Selected launcher/runtime scopes are not full Node/npm/Git or upstream installed qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:03",
+      "frozen_record": {
+        "transition_id": "S71:03",
+        "machine_id": "S71",
+        "owner": "packaging",
+        "baseline": {
+          "event": "build archives",
+          "guard": "admitted members",
+          "to": "archives built",
+          "effects": "Deterministic tar/gzip Claude/Codex; exact npm pack for Pi; bind host versions, modes, sizes, paths, source/provenance/digests.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "_expected_release_package_members, build_artifact_release_packages, verify_artifact_release_packages:627-732;999-1578",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+            }
+          ],
+          "from": "members derived",
+          "transition_id": "S71:03"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "290b7b818c3c53e93bd189b87d507d636af42449c3329b71b69650c29165496e",
+      "group": "source-group-054",
+      "assessment": "Full-source archive, host catalog transforms, exact npm selection and immutable promotion bytes remain guarded. Outputs are create-only and not whole-cohort atomic. Selected launcher/runtime scopes are not full Node/npm/Git or upstream installed qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:04",
+      "frozen_record": {
+        "transition_id": "S71:04",
+        "machine_id": "S71",
+        "owner": "packaging",
+        "baseline": {
+          "event": "write output",
+          "guard": "new pinned output directory",
+          "to": "cohort written",
+          "effects": "Write three host archives and artifact-package-cohort.json last; create-only operation.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "_expected_release_package_members, build_artifact_release_packages, verify_artifact_release_packages:627-732;999-1578",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+            }
+          ],
+          "from": "archives built",
+          "transition_id": "S71:04"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "8cf24c7dc4154fb3612bd401dd6aab93486c6346748bd86281b595509831a514",
+      "group": "source-group-054",
+      "assessment": "Full-source archive, host catalog transforms, exact npm selection and immutable promotion bytes remain guarded. Outputs are create-only and not whole-cohort atomic. Selected launcher/runtime scopes are not full Node/npm/Git or upstream installed qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:07",
+      "frozen_record": {
+        "transition_id": "S71:07",
+        "machine_id": "S71",
+        "owner": "packaging",
+        "baseline": {
+          "event": "mismatch/missing/extra/unsafe path/error",
+          "guard": "guard fails",
+          "to": "refused/partial",
+          "effects": "Reject even if filenames or versions appear correct; output writes are not whole-cohort atomic.",
+          "failure_retry": "Use fresh staging for recovery; never rewrite an immutable published version to hide drift.",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "_expected_release_package_members, build_artifact_release_packages, verify_artifact_release_packages:627-732;999-1578",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py"
+            }
+          ],
+          "from": "any construction/verification",
+          "transition_id": "S71:07"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "5d88c97ed6fdfc652bc6fc8b1c31c3e4f5dc4a6f7282a97b05843739d5ce0f93",
+      "group": "source-group-054",
+      "assessment": "Full-source archive, host catalog transforms, exact npm selection and immutable promotion bytes remain guarded. Outputs are create-only and not whole-cohort atomic. Selected launcher/runtime scopes are not full Node/npm/Git or upstream installed qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S72:07",
+      "frozen_record": {
+        "transition_id": "S72:07",
+        "machine_id": "S72",
+        "owner": "packaging",
+        "baseline": {
+          "event": "missing qualification/nonzero/malformed/mismatch",
+          "guard": "guard fails",
+          "to": "refused",
+          "effects": "No receipt success; dispose temporary isolated extraction.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/build-host-packages.py",
+              "symbol": "extract_artifact_release_package, cold_execute_artifact_host_payload",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/build-host-packages.py",
+              "lines": "1579-1887"
+            }
+          ],
+          "from": "any cell",
+          "transition_id": "S72:07"
+        },
+        "task_ids": [
+          "DIST-M01",
+          "PI-C01",
+          "PI-D07",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-16",
+          "SEQ-31",
+          "SEQ-12",
+          "SEQ-13",
+          "SEQ-14"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "30788480f69b551e785cc48cc41eaf282121336061c7afd915dfa0ea43f86abc",
+      "group": "source-group-054",
+      "assessment": "Missing/mismatched/nonzero cold inputs refuse success and dispose owned temporary extraction; preserve original bounded platform/host obligations. No cold runtime replay, installed pass or new evidence epoch supplied.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+          "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S73:11",
+      "frozen_record": {
+        "transition_id": "S73:11",
+        "machine_id": "S73",
+        "owner": "packaging",
+        "baseline": {
+          "event": "push=false",
+          "guard": "local review mode",
+          "to": "staged result",
+          "effects": "Return concrete refs/commits/hashes without remote mutation.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-claude-marketplace.py",
+              "symbol": "promote",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-claude-marketplace.py",
+              "lines": "1-101"
+            },
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "shared Git and deterministic commit helpers",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "45-91"
+            }
+          ],
+          "from": "channel planned",
+          "transition_id": "S73:11"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "84fbb4ab885f996de74b741427a902fe08632c9d3d1cb202ab570bf23d75b9e1",
+      "group": "source-group-054",
+      "assessment": "push=false reports concrete staging/ref/hash results with no remote writes; any remote read is still observation, not permission or publication. Distribution/channel history and immutable identities remain separate.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S74:01",
+      "frozen_record": {
+        "transition_id": "S74:01",
+        "machine_id": "S74",
+        "owner": "packaging",
+        "baseline": {
+          "event": "prepare",
+          "guard": "new work path; exact source/version/catalog digest; git or npm mode",
+          "to": "immutable planned",
+          "effects": "Stage exact package; derive deterministic ca-codex-dist-vVERSION orphan commit; optionally build exact npm bytes.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "promote and ledger",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "1-210"
+            }
+          ],
+          "from": "qualified",
+          "transition_id": "S74:01"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "94971b8b77d793012cb449ccd91155e966bae62215564cb05af009539a6db720",
+      "group": "source-group-054",
+      "assessment": "Immutable version conflicts, exact package integrity and nonrollback catalog/ledger rules remain. Same bytes reuse prior channel; review-only result is not remote channel publication or npm provenance qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S74:02",
+      "frozen_record": {
+        "transition_id": "S74:02",
+        "machine_id": "S74",
+        "owner": "packaging",
+        "baseline": {
+          "event": "observe tag",
+          "guard": "same version points elsewhere",
+          "to": "refused",
+          "effects": "Reject immutable distribution identity conflict.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "promote and ledger",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "1-210"
+            }
+          ],
+          "from": "immutable planned",
+          "transition_id": "S74:02"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c4be8fe5f240ec83cb8f758fb0282093771d73d1312b3e93fd9aa59f2b212ae1",
+      "group": "source-group-054",
+      "assessment": "Immutable version conflicts, exact package integrity and nonrollback catalog/ledger rules remain. Same bytes reuse prior channel; review-only result is not remote channel publication or npm provenance qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S74:05",
+      "frozen_record": {
+        "transition_id": "S74:05",
+        "machine_id": "S74",
+        "owner": "packaging",
+        "baseline": {
+          "event": "npm channel",
+          "guard": "verified expected npm integrity+sha equal generated package",
+          "to": "channel eligible",
+          "effects": "Require registry artifact identity to be supplied before changing channel to npm source.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "promote and ledger",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "1-210"
+            }
+          ],
+          "from": "channel eligible",
+          "transition_id": "S74:05"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "c2d4291c31f95f2a7356478ffe6cf3926cfd70608314014e318e3d4f104fb403",
+      "group": "source-group-054",
+      "assessment": "Immutable version conflicts, exact package integrity and nonrollback catalog/ledger rules remain. Same bytes reuse prior channel; review-only result is not remote channel publication or npm provenance qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S74:06",
+      "frozen_record": {
+        "transition_id": "S74:06",
+        "machine_id": "S74",
+        "owner": "packaging",
+        "baseline": {
+          "event": "observe prior channel",
+          "guard": "parseable approved source shape and no version rollback",
+          "to": "channel planned",
+          "effects": "Read old catalog/ledger, reject malformed/missing version or downgrade; preserve prior ledger entries and reject same-version record drift.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "promote and ledger",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "1-210"
+            }
+          ],
+          "from": "channel eligible",
+          "transition_id": "S74:06"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "bca1b1d1d5297d7a25e7977be8e2b03a055b8a2cfaab23adfaa135b31f72e3ab",
+      "group": "source-group-054",
+      "assessment": "Immutable version conflicts, exact package integrity and nonrollback catalog/ledger rules remain. Same bytes reuse prior channel; review-only result is not remote channel publication or npm provenance qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S74:07",
+      "frozen_record": {
+        "transition_id": "S74:07",
+        "machine_id": "S74",
+        "owner": "packaging",
+        "baseline": {
+          "event": "same catalog and ledger",
+          "guard": "byte equality",
+          "to": "channel unchanged",
+          "effects": "Reuse prior channel commit idempotently.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "promote and ledger",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "1-210"
+            }
+          ],
+          "from": "channel eligible",
+          "transition_id": "S74:07"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "689f1927b50e2d785302a61d12b9f5ad3b91ef73ce7fc2ce506c6a1fd45d9773",
+      "group": "source-group-054",
+      "assessment": "Immutable version conflicts, exact package integrity and nonrollback catalog/ledger rules remain. Same bytes reuse prior channel; review-only result is not remote channel publication or npm provenance qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S74:10",
+      "frozen_record": {
+        "transition_id": "S74:10",
+        "machine_id": "S74",
+        "owner": "packaging",
+        "baseline": {
+          "event": "push=false",
+          "guard": "review path",
+          "to": "concrete result",
+          "effects": "Return exact candidate refs/commits/package hashes without writing remote.",
+          "failure_retry": "",
+          "source": [
+            {
+              "path": "tools/promote-codex-marketplace.py",
+              "symbol": "promote and ledger",
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/promote-codex-marketplace.py",
+              "lines": "1-210"
+            }
+          ],
+          "from": "any planning",
+          "transition_id": "S74:10"
+        },
+        "task_ids": [
+          "DIST-M02",
+          "Q-01"
+        ],
+        "treatment": "REVIEW_SCOPED_CHANGE_AND_PRESERVE_OTHER_EDGES",
+        "proposed_composed_scenario_ids": [
+          "SEQ-31"
+        ],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "45547edd294d28e0b4495019553e6d98a02dede2e15eabe92445897ccfff5cc8",
+      "group": "source-group-054",
+      "assessment": "Immutable version conflicts, exact package integrity and nonrollback catalog/ledger rules remain. Same bytes reuse prior channel; review-only result is not remote channel publication or npm provenance qualification.",
+      "literal_inspection": "261-delta",
+      "changed_helper_interpretation_ids": [
+        "installed-host-refusal-diagnostics"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-source-9a26600f/channel-planning/preserved.json",
+          "sha256": "ce48a220e990c6f611f8b5adbf495171580dcdc986cd99b86ab10fb334562f96",
+          "ref_commit": "7ac016078da0beedc92537334d6c8d849794f2dc",
+          "source_commit": "9a26600f756bb48d26f9fe5a89bc043f73812c31"
+        },
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+          "sha256": "91eaa3e6e744b668fb2c2fec326b1e62dd6cf7df7d33bfb10136460e7b0d30fe",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "7ac016078da0beedc92537334d6c8d849794f2dc"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "core/pysrc/_gitexec.py",
+      "old_span": [
+        68,
+        86
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "d7d98b764f3314376e9c2b5d2820a7f50eb730c0e476333934e42bd23d5bc506",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          68,
+          86
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          68,
+          86
+        ]
+      ],
+      "actual0ef_file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/build-host-packages.py",
+      "old_span": [
+        111,
+        626
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "87cac93a10c1afe52b3805df4990d36e5b6d9fab50db78116998e20593d0facd",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          111,
+          626
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          111,
+          626
+        ]
+      ],
+      "actual0ef_file_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/build-host-packages.py",
+      "old_span": [
+        1,
+        2396
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          2396
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1,
+          2396
+        ]
+      ],
+      "actual0ef_file_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/build-host-packages.py",
+      "old_span": [
+        1579,
+        1887
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "397d9d3ee470295cd8c6fb28b0f7ea9a9adc0fe66c66257a9536b596dd674100",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1579,
+          1887
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1579,
+          1887
+        ]
+      ],
+      "actual0ef_file_sha256": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/promote-claude-marketplace.py",
+      "old_span": [
+        1,
+        124
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          124
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1,
+          124
+        ]
+      ],
+      "actual0ef_file_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/promote-claude-marketplace.py",
+      "old_span": [
+        1,
+        101
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "50649aef0846e984405c746d1ca1c8b63a427a1d89c2faf2acbfa970e346077d",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          101
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1,
+          101
+        ]
+      ],
+      "actual0ef_file_sha256": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/promote-codex-marketplace.py",
+      "old_span": [
+        1,
+        254
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          254
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1,
+          254
+        ]
+      ],
+      "actual0ef_file_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/promote-codex-marketplace.py",
+      "old_span": [
+        45,
+        91
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "057df42d128a5a8673d7ce4712b43cae72fc04efc39e0b8c5f946ff709436587",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          45,
+          91
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          45,
+          91
+        ]
+      ],
+      "actual0ef_file_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "tools/promote-codex-marketplace.py",
+      "old_span": [
+        1,
+        210
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "1f80b3a7ddad9570b7d2fcfbe80fc84df0eb6a504c1c739e5142043fd3fc6d13",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1,
+          210
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1,
+          210
+        ]
+      ],
+      "actual0ef_file_sha256": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": ".github/scripts/build_release_targets_provenance.py",
+      "old_span": [
+        60,
+        86
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "bbbcdf4a23eadc326c4fbab183237dcab63f05c793b99659c0af19fc646f1afb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          60,
+          86
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          60,
+          86
+        ]
+      ],
+      "actual0ef_file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": ".github/scripts/build_release_targets_provenance.py",
+      "old_span": [
+        142,
+        145
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "efc21050a6b792bdc2ee3f4e6a40e5718b5434ebb4d751ceb972c07b1054934b",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          142,
+          145
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          142,
+          145
+        ]
+      ],
+      "actual0ef_file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_provenancelib.py",
+      "old_span": [
+        235,
+        253
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "3cf3ef36b736ab8fb7964da139c58392ca01dad8dcaadf6113cb6562df9e5ffb",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          235,
+          253
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          235,
+          253
+        ]
+      ],
+      "actual0ef_file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_provenancelib.py",
+      "old_span": [
+        847,
+        892
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "105c3d61e0d347cfcf6ba21b98a6895f3ef0f9f6310d1f5150a7647d608f3497",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          847,
+          892
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          847,
+          892
+        ]
+      ],
+      "actual0ef_file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_releaselib.py",
+      "old_span": [
+        1395,
+        1437
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "da89538f3ef2c84b7abd73bb019aaf3e30a80fdd583799bbe6cd1d669b496668",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          1395,
+          1437
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          1395,
+          1437
+        ]
+      ],
+      "actual0ef_file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": ".github/scripts/build_release_targets_provenance.py",
+      "old_span": [
+        89,
+        122
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "4c94f4aa026f3592fdee70f6fdf76f5c8e38f80be1ea0f389de4bbf2e1240fa1",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          89,
+          122
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          89,
+          122
+        ]
+      ],
+      "actual0ef_file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": ".github/scripts/build_release_targets_provenance.py",
+      "old_span": [
+        131,
+        140
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "26d115be4b999eca4c967d1008b88d288b70fe25a76dce9f674b21d2044b4308",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          131,
+          140
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          131,
+          140
+        ]
+      ],
+      "actual0ef_file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": "core/pysrc/_provenancelib.py",
+      "old_span": [
+        459,
+        507
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "acfc213c920183db7838ab9d3eb3aa981d3b69a919113b9a859715103a850836",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          459,
+          507
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          459,
+          507
+        ]
+      ],
+      "actual0ef_file_sha256": "3cbd8d241ff6640e824ee2707ca1a3bd3202db83df371822201ceeabdd2657e4",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    },
+    {
+      "path": ".github/scripts/build_release_targets_provenance.py",
+      "old_span": [
+        114,
+        138
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+      "block_sha256_LF": "badc496d8b96e26571d2f1511b2d15898898b445affcdb2de67bafcd6ffb0039",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          114,
+          138
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+      "actual0ef_spans": [
+        [
+          114,
+          138
+        ]
+      ],
+      "actual0ef_file_sha256": "89b3fb346ea6476a7a5027a26c613b3783e0095b142f70dd3eebcdb90729392f",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [
+    {
+      "path": ".github/scripts/test_artifact_installed_host.py",
+      "older_witness": {
+        "path": ".github/scripts/test_artifact_installed_host.py",
+        "old_span": [
+          512,
+          614
+        ],
+        "origin": "docs/state-contracts-major/execution/evidence/source246-current-7ac/raw/witnesses.json",
+        "block_sha256_LF": "0f4c9ce43007c47253aa8efda9ca4d26a71e2c412463c599ef3664905e4d5252",
+        "result": "CHANGED_OR_REMOVED",
+        "current_spans": [],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source246-current-7ac/source-packaging27.json",
+        "actual0ef_spans": [],
+        "actual0ef_file_sha256": "2111b6d05267b906dabe4676f8945029aaceeabc343ae962c3afc35362deac04",
+        "actual0ef_literal_state": "CHANGED_HELPER_INTERPRETATION_REQUIRED"
+      },
+      "prepared_current_interpretations": [
+        {
+          "id": "installed-host-refusal-diagnostics",
+          "paths": [
+            ".github/scripts/test_artifact_installed_host.py"
+          ],
+          "assessment": "Closed fixed refusal categories replace a generic launch-site label only after denial; they add no permission or I/O. The sys import is allowed solely for read-only sys.platform and all alias/rebinding/other capability shapes refuse. Existing executable/native/payload/worker boundaries remain; old diagnostics equality must be scoped to these accepted categories."
+        }
+      ]
+    }
+  ],
+  "reused_helper_assessments": [
+    {
+      "id": "installed-host-refusal-diagnostics",
+      "paths": [
+        ".github/scripts/test_artifact_installed_host.py"
+      ],
+      "assessment": "Closed fixed refusal categories replace a generic launch-site label only after denial; they add no permission or I/O. The sys import is allowed solely for read-only sys.platform and all alias/rebinding/other capability shapes refuse. Existing executable/native/payload/worker boundaries remain; old diagnostics equality must be scoped to these accepted categories."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

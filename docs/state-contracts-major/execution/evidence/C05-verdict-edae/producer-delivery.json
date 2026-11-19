@@ -1,0 +1,57 @@
+{
+  "format": "C05-current-qualification-delivery/1",
+  "state": "READY_FOR_ROOT_ADMISSION",
+  "source_commit": "edae1b98d8e9b783f71f43b031f862ca99a126c1",
+  "proof": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\C05-three-tested.json",
+    "sha256": "10f82d3ccdfcc5d38b43c840452850e024b66bb151d5118c95dfb41f30d4c5d6",
+    "bytes": 10980
+  },
+  "proposal": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\cas-proposal.json",
+    "sha256": "21414d4f8f61948f3c2c33fdea242febf7407529e1f9a4cb81408d51f561d3ee",
+    "bytes": 6554
+  },
+  "filemap": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\filemap.json",
+    "sha256": "6eb48aebfae0f885017e14b7dd2d84698486effb1b3f8bdc073036816a8a2838",
+    "bytes": 5105
+  },
+  "owner_authentication": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-qualification\\owner-authentication.json",
+    "sha256": "64ffcfb989a94be04471b5f47bfa8b619557662ec2cd73be5c38eafe3d1b77ab",
+    "bytes": 2164
+  },
+  "actual_checks": {
+    "named_PASS": 11,
+    "selected_SKIP": 0,
+    "seconds": 4.222543700001552,
+    "actual_child_returns": 18,
+    "actual_group_returns": 26,
+    "actual_wrapper_fixture": true,
+    "preflight_vectors": 6,
+    "real_multi_unittest_children": 7,
+    "runtime_files": 1905,
+    "HEAD_index_source_runtime_stable": true
+  },
+  "finite_status_updates": {
+    "C05:01": "PLANNED to TESTED",
+    "C05:04": "PLANNED to TESTED",
+    "C05:05": "PLANNED to TESTED"
+  },
+  "unchanged": [
+    "machine C05",
+    "C05:02",
+    "C05:03"
+  ],
+  "limits": [
+    "Local11 existing named software methods only; no hosted run, installed package, provider/model, native/Go build, SDK/network/install or publication/task/machine qualification.",
+    "Exactly C05:01/04/05 proposed TESTED. MachineC05 remainsPLANNED; existing02/03 remainPRESERVED and unchanged. No suite-total or nearby-assertion promotion.",
+    "Parent Python is isolated/no-site and imports test+runner by literal file path. Tests and assertions are unchanged. Actual fixture children/wrapper run under original owner calls, credential-blind private cwd/profile; no full repository import namespace is inferred.",
+    "The actual .cmd wrapper/probe bytes, original child output and grouped returns are retained by read-only main/thread profiling before original teardown. No target function/process replacement by the evidence producer.",
+    "Hung fixture demonstrates direct-child timeout/termination only, never whole-tree containment or identity-safe OS rundown.",
+    "Runtime inventory is the existing bounded1905-file Python/Git support footprint captured beforeafter; no installation or global cache mutation. No performance budget/improvement claim from profiled elapsed time.",
+    "Prospective new metadata is not claimed committed. Root must perform final canonical copy/full P02 staged admission and commit gates."
+  ],
+  "next": "Root-only final canonical admission/commit. No further tests or cohorts."
+}

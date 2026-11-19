@@ -1,0 +1,67 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "b972a83e48826112467c43b4255f3ad853e49416",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact current npm audit source and retained unchanged owning clauses"
+  },
+  "inputs": {
+    ".codearbiter/context/security-controls.html": "acc40c8be54720df2c281417c414184a098ace7cd3d2e36ff9092eec00891d22",
+    ".codearbiter/security-controls.md": "3d1d12735222b1457be07ebd5378e073391284836e24db527c9f279a70e018ca",
+    "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+    "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+    "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+    "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+    "core/surface/arbiter.md": "1d6573386db5443a7d905e792ee72608d39569ff470c8bf6635b7d0c691b94a4",
+    "core/surface/commands/conflict.md": "7a609162219b2404e7c530a6afeefc40e325ed8cdc34d15fc40c6b3b6e4b3736",
+    "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+    "core/surface/includes/artifacts.md": "be4fb60919830f128adc5bf7a5120d4151132b24efdf7de8e960e2e7a2cd3776",
+    "core/surface/includes/command-compatibility.md": "bf5dd28ce57d6798bb56d4911b50dfe9d2709674169553a5e41b4656a554725b",
+    "core/surface/includes/helper-invocation.md": "6e5f3da6727dc91ea2838bf414f2f626301ebe75ddeae91aeefede57712ebe33",
+    "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+    "core/surface/includes/routing-table.md": "279eeb8174ac6831904c2852cb14ab60c23fdef68849afe155d32451176d796b",
+    "core/surface/includes/safety-core.md": "a3356c9c306c2624b737f425565afa748d093015c0e968a421092b40bb8f9347",
+    "core/surface/skills/post-merge-cleanup/SKILL.md": "350a64b693b0d344ae85f53c410c0574448a0bfe8733d94672e3ac2b1b48dea7",
+    "core/surface/skills/using-git-worktrees/SKILL.md": "766b46a2b3eb6ccab1692324f153c8a168c3568c1f42b00a8ed9614395caea38"
+  },
+  "disposition_ids": [
+    "disposition:transitions:WF-21:01",
+    "disposition:transitions:WF-21:02",
+    "disposition:transitions:WF-21:03",
+    "disposition:transitions:WF-21:04",
+    "disposition:transitions:WF-21:05",
+    "disposition:transitions:WF-22:01",
+    "disposition:transitions:WF-22:02",
+    "disposition:transitions:WF-22:03",
+    "disposition:transitions:WF-22:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/npm-audit-exact-source-b972a83e/source-delta-review.json",
+      "sha256": "b7e3084fca34c5ebdac7389de6510d4000b04a4594a66279a02a2493f1643848"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+      "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/hooks-wf21-22-source-clauses/preserved.json",
+    "sha256": "8c74f66f42c1d48741f0ac31c410d21ca666882f7368cb752713b1fe8c358e9f",
+    "original_code": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+    "stored_at": "146b9e5e5a49d2ccb6b23fa539205bfb66e14b67"
+  },
+  "scope": "Nine finite WF21/22 instruction clauses only; no execution/model/user/Git/cleanup/archive/installed acceptance.",
+  "changed_paths": [
+    ".codearbiter/context/security-controls.html"
+  ],
+  "limits": [
+    "Complete executable/ArtifactClient/nativeGo/host/OS/network dependencies and actual external records are not qualified.",
+    "Source obligations only, no actual archive CAS/concurrency/deletion/model execution inferred from equality.",
+    "Separate step7 helper-card declared-leaf omission reported to parent; no source change.",
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs."
+  ]
+}

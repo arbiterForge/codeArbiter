@@ -1,0 +1,399 @@
+{
+  "source_base": "9e3b2ea5890259cce16eae9c8f88f8b35b5255ef",
+  "physical_inputs": {
+    ".github/actions/publish-target/action.yml": "21d293f60b6657d92c01872b5fa440b9937ddbb0761358af21f8115e5b4ad4f3",
+    ".github/workflows/release.yml": "2d6a6ef3a78d84185f90ee0503254cd2c59e6cccfc9fc0bced8fd75987d87126",
+    ".github/scripts/release_target.py": "1161d997e00605651e80f572b0c66445ada185165793f15bb8ba9a76b5c8fe51",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    ".github/scripts/tag_publication_receipt.py": "6c866f210551a648d92358c94c2fda702f9862e4b490416b65b1f0ff1f0cf7f6",
+    ".github/scripts/_npm_publishlib.py": "7ff29182306d065369610d83e7ecba8450a2444340d05580fb03f7afaccfae6a",
+    "tools/promote-claude-marketplace.py": "e7116b3e55aac1f20cedfc164a66563b10f7773b1499700483a91f8df1636bda",
+    "tools/promote-codex-marketplace.py": "491e8ab597c869827aae0444a58bd4b8a390f28ba6589dfa25d1bb932c2f56a9",
+    "tools/build-host-packages.py": "c2c812bf93e81b69cbf62c133c569a6bce07a56e8fc0edbe501a22f9f60d2225",
+    "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github/scripts/test_release_target.py": "ec0ddddceb68542143b3bcb6862cade4d5a86981ad007d99b5ca1f50f2adbcac",
+    ".github/scripts/test_release_workflow.py": "a583c039057e33945e9d268409c2757ed83cad8a709334e2385998b2553fd4ae",
+    ".github/scripts/test_marketplace_git_channels.py": "a309e384656c31f507a1708441092eaeceb0d4571de73302f76962c98bf59525",
+    ".github/scripts/test_codex_marketplace_distribution.py": "067d6d867a34542ccd07b60ac44850776515c32f226ca2dc98cb40e6f0aa576e",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "core/pysrc/_gitexec.py": "a5935246028f506ef5ab13ba379b399cb7a754a077866fd39528545f30f4bef3",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601",
+    "core/hosts.json": "3ea50fd2af1ed359e602210de3f0a9b661a567c45d08a5f947f0f4c2e24a8cd8",
+    "tools/install-artifact-payload.py": "57d98c6db9a9a24431b42ab5e77907f8c94c10d7dbb4f7a273c9c55c90b5f985",
+    ".claude-plugin/marketplace.json": "a3a6b24af000bc458fadce167057d906d675e4b889a3b59bfbdf5baed02e78ea",
+    ".github/scripts/test_ci_impact.py": "d24fe9bbda5694b5aaaf18f79c9b4eb1f6290d77dca876b88d306a37ca3f2886",
+    "tools/ci-impact.py": "3191c6696b631c006b47122842fbd36057b3ac68881009c90734e04899dada79",
+    ".github/scripts/release_source.py": "aa37a86177d236a072bb2ba366e2c00ef6296df83bf5a9b367abb56e7532c2d3",
+    ".github/workflows/ci.yml": "2d1bbf7ed1932ca7efbdb64b45b63c1376b6a94798afa4567583ee0aa1970473"
+  },
+  "overlays": [],
+  "AST_definition_deltas": [
+    {
+      "path": ".github/scripts/release_target.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "_load"
+      ],
+      "changed_named_definitions": [
+        "eligible",
+        "main",
+        "peel_remote_tag",
+        "plan",
+        "release_state",
+        "releases_for"
+      ],
+      "added_named_definitions": [
+        "Conflict",
+        "_asset_observations",
+        "_digest_args",
+        "_flatten",
+        "channel_name",
+        "describe",
+        "observe",
+        "package_asset_name",
+        "required_assets",
+        "tag_refs",
+        "verify_receipt"
+      ]
+    },
+    {
+      "path": ".github/scripts/_releaselib.py",
+      "same_whole_bytes": true,
+      "unchanged_named_definitions": [
+        "__getattr__",
+        "_declared_target_names",
+        "_read",
+        "classify_merge_readiness",
+        "last_tag_select",
+        "main",
+        "release_tag_prefixes",
+        "select_release_target"
+      ],
+      "changed_named_definitions": [],
+      "added_named_definitions": []
+    },
+    {
+      "path": "core/pysrc/_releaselib.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "AbsentBlockError",
+        "BackfillAmbiguousError",
+        "ChangelogReconciliationError",
+        "DelimiterInValueError",
+        "DuplicateKeyError",
+        "DuplicateTargetError",
+        "EmptyBlockError",
+        "FileExistsNoBlockError",
+        "InvalidBooleanError",
+        "MalformedBlockError",
+        "MissingRequiredKeyError",
+        "MultipleBlocksError",
+        "ReleaseTargetsError",
+        "UnknownKeyError",
+        "UnreadableTargetsFileError",
+        "ValueTooLongError",
+        "_bare_version",
+        "_changelog_section_result",
+        "_committed_changelog_text",
+        "_could_not_run",
+        "_finish_row",
+        "_heading_version",
+        "_load_declared_changelog_reconciliations",
+        "_looks_like_changelog_heading",
+        "_manifest_version",
+        "_new_row",
+        "_normalised_release_path",
+        "_normalize_git_tree_path",
+        "_numeric_sequence_components",
+        "_policy_declaration_valid",
+        "_release_path_contains",
+        "_release_paths_overlap",
+        "_release_re",
+        "_resolve_posix_shell",
+        "_resolve_target_row",
+        "_safe_release_asset_name",
+        "_sanitized_git_environment",
+        "_targets_error_exit_code",
+        "_terminal_footer_text",
+        "_version_matches_policy",
+        "apply_bump",
+        "changelog_section",
+        "classify_commit",
+        "classify_publish_state",
+        "classify_window",
+        "default_backfill_root",
+        "default_targets_path",
+        "derive_version",
+        "detect_candidate_target",
+        "first_release_baseline",
+        "format_release_targets_block",
+        "git_executable",
+        "governance_scratch_exclusions",
+        "last_tag_select",
+        "last_tag_select_for_policy",
+        "load_targets",
+        "main",
+        "notes_heading_matches",
+        "numeric_sequence_key",
+        "parse_changelog_reconciliations",
+        "parse_release_targets",
+        "parse_window_log",
+        "peel_tag",
+        "provenance_trigger_paths",
+        "release_dates_consistent",
+        "release_tree_status",
+        "render_release_assets",
+        "row_assertions",
+        "scan_backfill_candidates",
+        "select_release_target",
+        "select_release_target_by_name",
+        "semver_greater",
+        "semver_key",
+        "verify_release_asset_inventory",
+        "verify_tag_ancestor",
+        "version_greater",
+        "window_excludes_payload_paths"
+      ],
+      "changed_named_definitions": [
+        "classify_merge_readiness"
+      ],
+      "added_named_definitions": []
+    },
+    {
+      "path": ".github/scripts/tag_publication_receipt.py",
+      "same_whole_bytes": true,
+      "unchanged_named_definitions": [
+        "_Parser",
+        "_arguments",
+        "_output_path",
+        "_positive_integer",
+        "_sha",
+        "_tag",
+        "_write_exclusive",
+        "main",
+        "parse_remote_refs"
+      ],
+      "changed_named_definitions": [],
+      "added_named_definitions": []
+    },
+    {
+      "path": ".github/scripts/_npm_publishlib.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "RegistryUnavailable",
+        "_archive_member_bytes",
+        "_codex_npm_metadata",
+        "_git",
+        "_integrity_hex",
+        "_registry_document",
+        "_signature_failure_detail",
+        "_unique_object",
+        "classify_registry_lookup",
+        "load_prebuilt_pi_package",
+        "main",
+        "parse_pack_report",
+        "parser",
+        "prepare",
+        "prepare_codex",
+        "registry_lookup",
+        "validate_attestation_document",
+        "validate_git_identity",
+        "validate_inputs",
+        "validate_main_commit",
+        "validate_package_identity",
+        "validate_project_registry",
+        "validate_publication_attestation",
+        "validate_release_document",
+        "validate_release_source_binding",
+        "validate_remote_annotated_tag",
+        "validate_sha",
+        "verify",
+        "verify_codex",
+        "verify_registry_authenticity"
+      ],
+      "changed_named_definitions": [
+        "verify_release_cohort"
+      ],
+      "added_named_definitions": []
+    },
+    {
+      "path": "tools/promote-claude-marketplace.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "_channel_version"
+      ],
+      "changed_named_definitions": [
+        "main",
+        "promote"
+      ],
+      "added_named_definitions": []
+    },
+    {
+      "path": "tools/promote-codex-marketplace.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "_catalog_version",
+        "_commit_tree",
+        "_git",
+        "_ledger",
+        "_remote_commit",
+        "_source_object"
+      ],
+      "changed_named_definitions": [
+        "main",
+        "promote"
+      ],
+      "added_named_definitions": [
+        "_push_observed",
+        "channel_commit_carrying"
+      ]
+    },
+    {
+      "path": "tools/build-host-packages.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "_UnixArtifactStage",
+        "_WindowsArtifactStage",
+        "_archive_bytes",
+        "_artifact_candidate",
+        "_artifact_installer_module",
+        "_artifact_qualification",
+        "_binary_matches_platform",
+        "_claude_catalog",
+        "_codex_catalog",
+        "_context_qualification",
+        "_expected_release_package_members",
+        "_git",
+        "_git_archive_files",
+        "_git_package_output",
+        "_isolated_npm_environment",
+        "_member_receipt",
+        "_normal_windows_path",
+        "_npm_pack_pi_bytes",
+        "_npm_selected_pi_members",
+        "_open_unix_parent",
+        "_payload_members",
+        "_pin_windows_directory",
+        "_pinned_artifact_stage",
+        "_portable_member_parts",
+        "_promotion_snapshots",
+        "_read_archive",
+        "_require_package_notices",
+        "_semver_greater",
+        "_semver_key",
+        "_stage_marketplace_distribution",
+        "_verified_npm_packer",
+        "_verify_windows_handle_path",
+        "_write_all",
+        "_write_member_tree",
+        "build_artifact_release_packages",
+        "build_codex_npm_package",
+        "cold_execute_artifact_host_payload",
+        "expected_package",
+        "extract_artifact_release_package",
+        "pi_release_guard",
+        "promoted_codex_catalog",
+        "promoted_codex_git_catalog",
+        "render_package",
+        "stage_claude_marketplace_distribution",
+        "stage_codex_marketplace_distribution",
+        "validate_pi_release_advance",
+        "verify_artifact_release_packages"
+      ],
+      "changed_named_definitions": [
+        "_source_identity",
+        "_subprocess_failure",
+        "main",
+        "stage_artifact_host_payloads"
+      ],
+      "added_named_definitions": [
+        "_integration_candidate_module",
+        "pi_integration_guard",
+        "validate_pi_integration_candidate"
+      ]
+    },
+    {
+      "path": ".github/scripts/test_release_target.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "CliTests",
+        "release",
+        "remote"
+      ],
+      "changed_named_definitions": [
+        "EligibleTests",
+        "PlanTests"
+      ],
+      "added_named_definitions": [
+        "CompletionModelTests",
+        "CompositionContractTests",
+        "Crash",
+        "FakeRemote",
+        "FaultInjectionTests",
+        "PublicationRun",
+        "ReceiptReadbackTests",
+        "asset"
+      ]
+    },
+    {
+      "path": ".github/scripts/test_release_workflow.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "ChannelTest",
+        "ConsumerSafetyGateTest",
+        "IndependenceTest",
+        "PermissionTest",
+        "action_step",
+        "action_text",
+        "jobs",
+        "release_text",
+        "step_index"
+      ],
+      "changed_named_definitions": [
+        "AdvisoryCheckTest",
+        "TriggerTest"
+      ],
+      "added_named_definitions": [
+        "SourceSelectionTest",
+        "_source_module",
+        "ci_artifacts"
+      ]
+    },
+    {
+      "path": ".github/scripts/test_marketplace_git_channels.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "ChannelFixture",
+        "ClaudeCatalogTests",
+        "_load",
+        "archive_bytes",
+        "git"
+      ],
+      "changed_named_definitions": [
+        "ClaudeChannelTests",
+        "CodexGitChannelTests"
+      ],
+      "added_named_definitions": [
+        "UncertainPushTests"
+      ]
+    },
+    {
+      "path": ".github/scripts/test_codex_marketplace_distribution.py",
+      "same_whole_bytes": false,
+      "unchanged_named_definitions": [
+        "_npm_channel_promote",
+        "archive_bytes",
+        "git_run"
+      ],
+      "changed_named_definitions": [
+        "CodexMarketplaceDistributionTests"
+      ],
+      "added_named_definitions": []
+    }
+  ],
+  "source_note": "All18 inspected source/charter/task owners plus six channel-fixture dependency owners now equal actual9e3 committed content. Production release owners unchanged from31e/74057; test a583 actual at9e3."
+}

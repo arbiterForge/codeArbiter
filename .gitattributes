@@ -141,3 +141,38 @@ plugins/**/*.json text eol=lf
 site/**/*.ts      text eol=lf
 site/**/*.json    text eol=lf
 .claude-plugin/*.json text eol=lf
+
+# Major state-contract program intake corpus (docs/state-contracts-major/). Its
+# MANIFEST.json binds 105 files by SHA-256; never normalize these bytes. The
+# live execution/ records beside the intake are ordinary branch bookkeeping.
+/docs/state-contracts-major/** -text
+
+# Retained evidence is byte-bound, including original Windows line terminators.
+# Recognize CRLF while retaining the normal whitespace error checks.
+/docs/state-contracts-major/execution/evidence/** whitespace=blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+
+# These exact declared source-profile inputs are compared to raw Git blobs.
+# Keep fresh Windows checkouts canonical without touching historical/raw files.
+/.github/major-qualification-policy.json text eol=lf
+/.github/major-test-selections.json text eol=lf
+/core/workflow-recovery-contract.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/agent-posttooluse.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/agent-pretooluse.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/subagentstart.json text eol=lf
+/.github/scripts/fixtures/claude-hooks/subagentstop-first.json text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/go/go.mod text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/go/main.go text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/py/requirements.txt text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.lock text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/rust/Cargo.toml text eol=lf
+/plugins/ca-sandbox/tools/__fixtures__/rust/src/main.rs text eol=lf
+
+# Preserve whitespace present in these original failure captures, including a
+# unittest subcase label's trailing space and Docker stderr's final blank line.
+/docs/state-contracts-major/execution/evidence/remaining-effects-development/launch-diagnostic/red.stderr whitespace=-blank-at-eol,blank-at-eof,space-before-tab,cr-at-eol
+/docs/state-contracts-major/execution/evidence/remaining-effects-development/sandbox-initial/stderr.log whitespace=blank-at-eol,-blank-at-eof,space-before-tab,cr-at-eol
+
+# Farm source observations bind these exact manifest and example-input bytes.
+/.github/fixtures/artifact-release-manifest.json text eol=lf
+/core/artifact-release-manifest.json text eol=lf
+/plugins/ca/tools/.env.example text eol=lf

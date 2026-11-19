@@ -1,0 +1,27 @@
+{
+  "format": "reader-successor-execution-notes/1",
+  "declared_executable_input_epoch": "2df782d48576e72bd01ef303c9f3546f3b620b05",
+  "actual_execution_commit": "108dc767f0873d7fecbfad7ac8017ba0a6e2ea2b",
+  "source_join": "All5 executable/input modules equal literal2df/108dc and physical bytes before/after. Actual metadata HEAD/index stable at108dc; no observation relabeled as running at an older HEAD.",
+  "successful_methods": 14,
+  "renewed_records": 6,
+  "source_changes": 0,
+  "not_reexecuted": "Original23 module/100warm historical output retained unchanged. No further group in this turn.",
+  "holds": {
+    "C36:02": "Full frozen clause includes pinned esbuild/Node, temporary production JS bundle, wrapperCount4 and startup measurement. Current selected reader controls do not observe those; no build allowed.",
+    "C36:03": "Full frozen clause requires100 timings, exact105 bridge/native calls and metric output. Reader completion bytes alone are insufficient; original warm historical mention lacked captured full closure. No new measurement or upgrade claimed."
+  },
+  "owner_command": {
+    "argv": [
+      "C:/Python314/python.exe",
+      "-B",
+      "-X",
+      "utf8",
+      "-"
+    ],
+    "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-reader-current-2df",
+    "exit_code": 0,
+    "scope": "Unmodified owner API with explicit allowlisted prospective metadata path loader; source reads are real Git blobs."
+  },
+  "preflight": "One before-tests epoch equality guard refused after the announced Root metadata commit; actual5-input join was verified before the one test execution. Original preflight observer/receipt retained privately. This was not a test failure or root-cause RED."
+}

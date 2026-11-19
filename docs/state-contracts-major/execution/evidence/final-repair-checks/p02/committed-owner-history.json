@@ -1,0 +1,2685 @@
+{
+  "schema": "codearbiter-integration-integrity/1",
+  "source_commit": "89333ff30221f3b7a145de055a9d7a8d2eb42500",
+  "result": "PASSED",
+  "frozen_files": 105,
+  "counts": {
+    "findings": {
+      "PLANNED": 58,
+      "TESTED": 12
+    },
+    "machines": {
+      "PLANNED": 267,
+      "TESTED": 18,
+      "PRESERVED": 2
+    },
+    "transitions": {
+      "PLANNED": 1460,
+      "PRESERVED": 125,
+      "TESTED": 163
+    },
+    "added_transitions": {
+      "TESTED": 47
+    }
+  },
+  "current_applicability": {
+    "disposition:findings:N-F01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F06": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F07": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F08": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F09": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:N-F10": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:findings:C-F08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:findings:T-F01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:findings:T-F03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:findings:T-F04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:machines:N09": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N11": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N13": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N14": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N16": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N17": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N21": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N22": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N23": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N24": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N28": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N30": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N31": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N34": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N35": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:N39": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:machines:S33": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:machines:S53": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:machines:S65": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:machines:T12": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-08:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-08:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-08:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-08:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-09:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-09:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-09:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-09:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-09:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-10:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-10:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-10:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-10:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-16:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-16:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-16:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-16:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-16:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-21:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-21:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-21:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-21:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-21:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-22:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-22:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-22:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:WF-22:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N01:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N01:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N01:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N01:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N01:06": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N01:07": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N02:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:06": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:07": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N02:08": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N03:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N03:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N03:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N03:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N03:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N04:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N04:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N06:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N06:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N06:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N07:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N09:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N09:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N09:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N09:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N09:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N11:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N11:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N11:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N11:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N12:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N12:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N12:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N13:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N13:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N13:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N13:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N14:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N14:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N14:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N14:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N14:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N16:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N16:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N16:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N16:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N17:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N17:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N17:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N17:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N17:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N20:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N20:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N21:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N21:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N21:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N21:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N21:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N21:06": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N22:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N22:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N22:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N23:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N23:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N23:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N24:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N24:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N24:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N25:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N25:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N25:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N27:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N27:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N27:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N28:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N28:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N28:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N28:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N29:07": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N30:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N30:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N30:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N30:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N31:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N31:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N31:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N31:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N31:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N31:06": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N34:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N34:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N34:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N34:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N34:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N35:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N35:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N35:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N36:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N36:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N36:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N37:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N37:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N37:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N37:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N38:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N38:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N38:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:N38:04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N38:05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N39:01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N39:02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:N39:03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:hooks:verifier:07": {
+      "status": "UNKNOWN",
+      "changed_inputs": [
+        ".github/scripts/_contextverificationlib.py"
+      ],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py",
+        "membership:core/artifacts"
+      ]
+    },
+    "disposition:transitions:hooks:native-client:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:cleanup-journal:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:cleanup-journal:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:cleanup-journal:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:cleanup-journal:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:cleanup-journal:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:hooks:cleanup-journal:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S03:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S03:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S03:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S03:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S04:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S04:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S04:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S06:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S06:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S06:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S06:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S06:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S23:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S23:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S23:11": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S24:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S24:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S24:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S24:09": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S24:12": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:07": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S25:08": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S26:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S26:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S26:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S26:07": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S26:08": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S26:09": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:07": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:08": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S27:09": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:07": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:08": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:09": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:10": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:11": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S28:12": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S29:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S29:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S30:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S30:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S30:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S30:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S30:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S31:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S31:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S31:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S31:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S31:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S31:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts",
+        "plugins/ca/tools/state-contracts.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S33:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S33:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S33:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S33:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S33:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.js",
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:07": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S44:09": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S47:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S47:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S47:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S48:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S48:07": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S49:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S50:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S51:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S52:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S52:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S52:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S52:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S52:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:02": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:03": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:04": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:05": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:06": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S53:07": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca-sandbox/tools/deadline.test.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:07": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S65:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S75:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:S75:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:C36:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:C36:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:SX03:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T04:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T04:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T05:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T08:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T10:07": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T10:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:05": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:06": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:07": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:08": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:T12:09": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:runtime-discovery:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:runtime-discovery:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:runtime-discovery:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:runtime-discovery:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:disposable-home:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:disposable-home:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:disposable-home:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:transitions:pi-qualification:disposable-home:04": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:T11:added-renderer-refused": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:T11:added-render-failure-cleanup": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:T11:added-browser-failure-cleanup": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:S75:added-stage-failed": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:S75:added-rolled-back": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:S75:added-unusable": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:S75:added-writer-refused": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:SBX-BUILD-OBSERVATION:03": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:C36:added-prefetched-completion": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:C36:added-stdin-eof": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:C36:added-input-once": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:C36:added-input-timeout": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:C36:added-cleanup-denied": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:P02:added-stale-history": {
+      "status": "STALE",
+      "changed_inputs": [
+        ".github/scripts/check_state_contracts_integration.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:P02:added-unknown-input": {
+      "status": "STALE",
+      "changed_inputs": [
+        ".github/scripts/check_state_contracts_integration.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:P02:added-original-tamper": {
+      "status": "STALE",
+      "changed_inputs": [
+        ".github/scripts/check_state_contracts_integration.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:P02:added-frozen-anchor": {
+      "status": "STALE",
+      "changed_inputs": [
+        ".github/scripts/check_state_contracts_integration.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:P02:added-origin-mix": {
+      "status": "STALE",
+      "changed_inputs": [
+        ".github/scripts/check_state_contracts_integration.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:P02:added-selected-gate": {
+      "status": "STALE",
+      "changed_inputs": [
+        ".github/scripts/check_state_contracts_integration.py",
+        ".github/scripts/major_readiness.py",
+        ".github/scripts/test_state_contracts_integration.py"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:WR-01": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-02": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-03": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-04": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-05": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-06": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-07": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-08": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-09": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-10": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-11": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-12": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-13": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-14": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-15": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-16": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-17": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-18": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-19": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-20": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-21": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:WR-22": {
+      "status": "UNKNOWN",
+      "changed_inputs": [],
+      "unavailable_inputs": [
+        "host-lookup:core/pysrc/_host.py"
+      ]
+    },
+    "disposition:added_transitions:FARM-CLEANUP-OBSERVATION:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:FARM-REGISTRATION-OBSERVATION:01": {
+      "status": "STALE",
+      "changed_inputs": [
+        "plugins/ca/tools/farm.ts"
+      ],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:RELEASE-READINESS-BINDING:01": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    },
+    "disposition:added_transitions:RELEASE-READINESS-BINDING:02": {
+      "status": "APPLICABLE",
+      "changed_inputs": [],
+      "unavailable_inputs": []
+    }
+  },
+  "recorded_statuses_changed": false,
+  "product_qualification": false,
+  "publication_readiness": "NOT_ASSESSED",
+  "committed_authenticity": true
+}

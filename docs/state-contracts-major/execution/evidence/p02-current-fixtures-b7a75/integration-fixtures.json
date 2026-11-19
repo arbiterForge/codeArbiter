@@ -1,0 +1,211 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "Actual current Windows18-case owning integration integrity run by farm_sandbox_program; seven exact literal Git/physical inputs stable before/after."
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/check_state_contracts_integration.py": "0913c941f25461ccb34f602e89e96bfedadb5eedca6adbaaca2f4a38100a1067",
+    ".github/scripts/test_state_contracts_integration.py": "8681aa43a81b9aca7a5a85f4e3d42d25d299da3d639fd50e9eb044bd6e9885c0",
+    ".github/scripts/major_readiness.py": "3bc43e5765ae067368fe2d7ae258c4c7ab47bb0081081f0db9b0ed1d79745b84",
+    ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    ".github/workflows/ci.yml": "119a7708523aa65253387091fb85f41a272bf90632d8da096e10c15d3fb59358",
+    "docs/state-contracts-major/execution/tools/coverage_ledger.py": "6c0f728fa54b38a2d093c1ef7b091e9496f915ac7028932bf0b7d3ae62eacb4a",
+    "docs/state-contracts-major/MANIFEST.json": "86be15f1b12dc7f9e052268a1c627f47af99713020449593a2c57b4cb3fc58f4"
+  },
+  "execution_context": {
+    "actual_execution_source": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+    "fixture_git_source": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+    "fixture_metadata_added_rows": 44,
+    "working_metadata_added_rows": 47,
+    "working_metadata_clean": false,
+    "source_binding": "All seven declared source inputs physically equal literal b7a75 Git before/after. Actual fixture setup reads immutable b7a75 progress/ledger44-row parameters. Separately observed dirty working metadata47 rows is retained as context and not relabelled fixture input.",
+    "context_before_sha256": "64c4da917936cb1b40ead9d4f51efdaf6c23d568a0a51d181b2d5a7190569eea",
+    "context_after_sha256": "64c4da917936cb1b40ead9d4f51efdaf6c23d568a0a51d181b2d5a7190569eea",
+    "limits": "Synthetic disposable real-Git history and actual Windows Bash merge script; no native build, runtime/provider/installed/publication qualification. Separate membership/absent-input audit remains OPEN."
+  },
+  "disposition_ids": [
+    "disposition:added_transitions:P02:added-stale-history",
+    "disposition:added_transitions:P02:added-unknown-input",
+    "disposition:added_transitions:P02:added-original-tamper",
+    "disposition:added_transitions:P02:added-frozen-anchor",
+    "disposition:added_transitions:P02:added-origin-mix",
+    "disposition:added_transitions:P02:added-selected-gate"
+  ],
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "-X",
+        "utf8",
+        ".github/scripts/test_state_contracts_integration.py",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+      "started_utc": "2026-11-14T02:50:09.626471+00:00",
+      "finished_utc": "2026-11-14T02:50:23.011190+00:00",
+      "seconds": 13.384965900098905,
+      "exit_code": 0,
+      "source_override_env": "CODEARBITER_TEST_SOURCE_REPO and CODEARBITER_TEST_CI_PATH absent",
+      "environment_keys": [
+        "APPDATA",
+        "CODEARBITER_DEV",
+        "CODEARBITER_PRUNE",
+        "CODEARBITER_PRUNE_TIER",
+        "CODEX_APPLY_PATCH_PRESERVE_LINE_ENDINGS",
+        "CODEX_CI",
+        "CODEX_PERMISSION_PROFILE",
+        "CODEX_SESSION_ID",
+        "CODEX_THREAD_ID",
+        "CODEX_TOOL_CALL_ID",
+        "CODEX_VERSION",
+        "COLORTERM",
+        "COMSPEC",
+        "FARM_API_KEY",
+        "GH_PAGER",
+        "GIT_PAGER",
+        "HOMEDRIVE",
+        "HOMEPATH",
+        "LANG",
+        "LC_ALL",
+        "LC_CTYPE",
+        "LOCALAPPDATA",
+        "NODE_REPL_TRUSTED_BROWSER_CLIENT_SHA256S",
+        "NO_COLOR",
+        "PAGER",
+        "PATH",
+        "PATHEXT",
+        "PROGRAMDATA",
+        "PROGRAMFILES",
+        "PROGRAMFILES(X86)",
+        "PROGRAMW6432",
+        "PSMODULEPATH",
+        "PYTHONDONTWRITEBYTECODE",
+        "SHELL",
+        "SYSTEMDRIVE",
+        "SYSTEMROOT",
+        "TEMP",
+        "TERM",
+        "TMP",
+        "USERDOMAIN",
+        "USERNAME",
+        "USERPROFILE",
+        "WINDIR"
+      ],
+      "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+      "stderr_sha256": "30291916e5c6c6aa6ac544637dba729525e29539a41ea88aa00ea635e6d5c680"
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/stderr.log",
+      "sha256": "30291916e5c6c6aa6ac544637dba729525e29539a41ea88aa00ea635e6d5c680"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/command-result.json",
+      "sha256": "5e673ad56a2a89e6378a74e398bdcd6ddf7901bdbda5942731953f219c9e5baf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/inputs-before.json",
+      "sha256": "c5d4494fe69e4c8cb1eec63fed2dc6f492109bd9896cea28211ce2b7042cac38"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/inputs-after.json",
+      "sha256": "c5d4494fe69e4c8cb1eec63fed2dc6f492109bd9896cea28211ce2b7042cac38"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/execution-context-before.json",
+      "sha256": "64c4da917936cb1b40ead9d4f51efdaf6c23d568a0a51d181b2d5a7190569eea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/execution-context-after.json",
+      "sha256": "64c4da917936cb1b40ead9d4f51efdaf6c23d568a0a51d181b2d5a7190569eea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/p02-current-fixtures-b7a75/named-observations.json",
+      "sha256": "f6b1d9cab80543f10a5b1300eec66a87fb343f21d72a9cfa1e7b742d471dda45"
+    }
+  ],
+  "scope": "Refresh exactly the existing six TESTED P-02 added rows using meaningful named existing fixture cases. No new row/status promotion or whole-reader/program readiness claim.",
+  "semantic_groups": [
+    {
+      "id": "P02:added-stale-history",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-stale-history"
+      ],
+      "observed_named_cases": [
+        "test_stale_history_passes_integration_but_strict_publication_refuses",
+        "test_original_proof_passes_and_records_applicable",
+        "test_planned_and_implemented_partial_program_pass_without_publication"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-unknown-input",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-unknown-input"
+      ],
+      "observed_named_cases": [
+        "test_unavailable_current_input_is_unknown_not_passed_applicability"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-original-tamper",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-original-tamper"
+      ],
+      "observed_named_cases": [
+        "test_changed_original_input_refuses_even_when_current_source_stale",
+        "test_changed_original_raw_proof_refuses_even_when_current_source_stale"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-frozen-anchor",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-frozen-anchor"
+      ],
+      "observed_named_cases": [
+        "test_frozen_intake_changed_bytes_refuse",
+        "test_rehashed_frozen_file_and_manifest_cannot_rebaseline"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-origin-mix",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-origin-mix"
+      ],
+      "observed_named_cases": [
+        "test_hosted_claim_cannot_borrow_valid_local_raw_path",
+        "test_publication_rejects_hosted_identity_fields_on_local_raw_path"
+      ],
+      "result": "PASSED"
+    },
+    {
+      "id": "P02:added-selected-gate",
+      "disposition_ids": [
+        "disposition:added_transitions:P02:added-selected-gate"
+      ],
+      "observed_named_cases": [
+        "test_actual_owning_ci_runs_partial_check_for_ledger_only_children",
+        "test_hosted_proof_token_is_step_local_and_job_permissions_are_read_only",
+        "test_metadata_only_paths_select_integrity_without_full_hooks",
+        "test_selected_integrity_failure_cancellation_and_skip_refuse_actual_merge_gate"
+      ],
+      "result": "PASSED"
+    }
+  ],
+  "historical_evidence_unchanged": true
+}

@@ -1,0 +1,150 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "562c6170c010eedbef93a4216b4baa971fd6b9a6",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-042",
+  "positive_input_join": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    },
+    "tools/codex-parity-fixture.py": {
+      "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+      "bytes": 6671,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+        "bytes": 6671
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": "tools",
+      "path_order": "windows",
+      "sha256": "10c81f10b65668b6620241a721151872bd51a7c350722bee46217e02801f7c2a"
+    }
+  ],
+  "semantic_rows": [
+    {
+      "cell": "disposition:transitions:T05:02",
+      "frozen_record": {
+        "transition_id": "T05:02",
+        "machine_id": "T05",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "files created",
+          "from": "files created",
+          "event": "Git init/add/commit",
+          "guard": "each Git command succeeds",
+          "to": "seeded commit",
+          "effects": "Initialize repository and create fixture-authored initial commit.",
+          "failure_retry": "Nonzero init/add/commit returns failure; no automatic rollback of files/repository.",
+          "source": [
+            {
+              "path": "tools/codex-parity-fixture.py",
+              "symbol": "main",
+              "lines": [
+                117,
+                177
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:tools/codex-parity-fixture.py"
+            }
+          ],
+          "transition_id": "T05:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "3b34bd0c0ef8ddbdfcab80ce511f4e261927e2239c097df08451acb2281663fa",
+      "group": "source-group-042",
+      "assessment": "Full literal guard/effect/retry read in original349 checkpoint; retain prior scoped meaning together with the attached current helper effects and negative-scope notes.",
+      "literal_inspection": "349-checkpoint",
+      "changed_helper_interpretation_ids": [
+        "parity-manual-hint"
+      ],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+          "sha256": "40e99da400a2c258ea326047fdfd823220d8e6a11e2f10175e31a17807a94ab5",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+        }
+      ]
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "path": "tools/codex-parity-fixture.py",
+      "old_span": [
+        148,
+        161
+      ],
+      "origin": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+      "block_sha256_LF": "27a6ea3b9233e4218b9dfc3dbfaba46d894a1b0c37b09077354da6aba5a5fe5f",
+      "result": "EXACT_UNIQUE",
+      "current_spans": [
+        [
+          148,
+          161
+        ]
+      ],
+      "prior_proof": "docs/state-contracts-major/execution/evidence/remaining-source-clauses-d594/parity-fixture-git-preserved.json",
+      "actual0ef_spans": [
+        [
+          148,
+          161
+        ]
+      ],
+      "actual0ef_file_sha256": "2b5a0f0354dc475be6946949408498520033e795871a0fd4a3a76832f46f0dea",
+      "actual0ef_literal_state": "EXACT_WITH_SEMANTIC_PREPARATION"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [
+    {
+      "id": "parity-manual-hint",
+      "paths": [
+        "tools/codex-parity-fixture.py"
+      ],
+      "assessment": "Only the printed hint changes: persona delivery is prompt-submit when due; SessionStart startup state/daily briefing are separate. Fixture creation/Git operations/target refusal are unchanged. T05:03 frozen stale session-start-injection detail needs an explicit corrected current contract note, not a claim the old hint is preserved or live host parity passed."
+    }
+  ],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

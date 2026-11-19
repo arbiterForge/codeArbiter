@@ -1,0 +1,741 @@
+{
+  "schema": "codearbiter.current-finite-source-inspection/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "original_semantic_inspection_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+  "group": "source-group-049",
+  "positive_input_join": {
+    ".github/scripts/coverage_union.py": {
+      "sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "previous_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "bytes": 15839,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+        "bytes": 15839
+      }
+    },
+    ".github/workflows/ci.yml": {
+      "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+      "previous_sha256": "c0e8e0f0480ffb0f660c894347f26df49da423a300158a1566da702e5a0d8102",
+      "bytes": 306751,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "9b9bbb72e86631c1577135cb3ee13181d3b04ed8db2f5e7f4f957e6fb85f1fb3",
+        "bytes": 306751
+      }
+    },
+    "docs/state-contracts-major/contracts/machine-coverage.json": {
+      "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "previous_sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+      "bytes": 385316,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+        "bytes": 385316
+      }
+    },
+    "docs/state-contracts-major/contracts/program.json": {
+      "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "previous_sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+      "bytes": 6403,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+        "bytes": 6403
+      }
+    },
+    "docs/state-contracts-major/contracts/tasks.json": {
+      "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "previous_sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+      "bytes": 331224,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+        "bytes": 331224
+      }
+    },
+    "docs/state-contracts-major/contracts/transition-coverage.json": {
+      "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "previous_sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+      "bytes": 3185278,
+      "physical_join": {
+        "kind": "EXACT",
+        "sha256": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+        "bytes": 3185278
+      }
+    }
+  },
+  "current_input_membership": [
+    {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows",
+      "sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334"
+    }
+  ],
+  "closed_namespace_review": {
+    "profile": {
+      "profile": "python-import-directory-v1",
+      "root": ".github/scripts",
+      "path_order": "windows"
+    },
+    "inspection_source": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+    "current_source": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+    "inspection_namespace_sha256": "30dfb70857dada7f2af20b58b264573d7e513e9fa5cf520f2de33b9922046943",
+    "current_namespace_sha256": "434ab55d7381a628a19f46607073b7a4df23e2dfc2ba9a4b88d4433fac07b334",
+    "entries_before": 281,
+    "entries_now": 284,
+    "added": [
+      {
+        "path": ".github/scripts/site_vitest_observation.py",
+        "sha256_at_review": "d545215d255ddc9433955a413da58b4f11ccb6d54ef09fb3ab6cbc57a67aab60",
+        "role": "Docs site source and coverage/report owner. Explicitly invoked by the named Docs workflow steps and imported by its own new tests."
+      },
+      {
+        "path": ".github/scripts/test_pi_payload_identity.py",
+        "sha256_at_review": "4adbb9a6d233807f230129d7c5c3e0293ced3fefb74625b12a1c408ec4afe27e",
+        "role": "Fixture selector for the Pi source payload identity predicate. Individually declared by the original Hook evidence route."
+      },
+      {
+        "path": ".github/scripts/test_site_vitest_observation.py",
+        "sha256_at_review": "651d1f0eb2034ff3016da09a7a427722b9960bc3417983958c1d3921062ef942",
+        "role": "Fixture for the named Docs Vitest source/report owner. Explicitly invoked by Docs, with its own main entry point."
+      }
+    ],
+    "negative_scope": "No old namespace member, mode or object class changed. The three new named entry points are explicitly routed, while fixture/module lookup for the assessed predicates remains owned by its reviewed path. The digest binds names, object classes and modes."
+  },
+  "current_owner_delta_review": {
+    "scope": "Original exact pre-test tracked bytes, post-test evidence check and multi-host coverage union producers/joins are byte-identical.",
+    "workflow_callsite_join": {
+      "coverage-union": {
+        "previous_sha256": "d1c29522e0cda4b1e2e2ee8be945e58165938bcaa2b23307a6efa044ca4fbbfc",
+        "current_sha256": "d1c29522e0cda4b1e2e2ee8be945e58165938bcaa2b23307a6efa044ca4fbbfc",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union-merge": {
+        "previous_sha256": "7b9e02102ee3052aea705d906b188722febad210e1d5a4d76f31af517ebc506c",
+        "current_sha256": "7b9e02102ee3052aea705d906b188722febad210e1d5a4d76f31af517ebc506c",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union-pi": {
+        "previous_sha256": "24ea369869bd391fdc0949848697124ecd2b83ac5fd880799a559d12a8db83ac",
+        "current_sha256": "24ea369869bd391fdc0949848697124ecd2b83ac5fd880799a559d12a8db83ac",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      },
+      "coverage-union-pi-merge": {
+        "previous_sha256": "2c21a1fd416685630aca523d560b8864b41bb9e4b6ea213e08495cec8a61d3da",
+        "current_sha256": "2c21a1fd416685630aca523d560b8864b41bb9e4b6ea213e08495cec8a61d3da",
+        "current_scope": "Complete owning job or top-level event/concurrency block unchanged."
+      }
+    }
+  },
+  "semantic_rows": [
+    {
+      "cell": "disposition:machines:C09",
+      "frozen_record": {
+        "machine_id": "C09",
+        "name": "Coverage input binding, post-test receipt and multi-host union",
+        "domain": "Hosted CI and release",
+        "kind": "implemented",
+        "owner": "release-and-tooling",
+        "closure_task": "Q-01",
+        "task_ids": [
+          "Q-01"
+        ],
+        "explicit_machine_task_ids": [],
+        "source_intersection_task_ids": [],
+        "mapping_basis": "Owner assignment uses the inspected audit domain and explicit owner ledger; source intersections flag review impact, not a claim every edge changes.",
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "status": "NOT_RUN",
+        "transition_count": 6,
+        "source_refs": [
+          "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+        ],
+        "proposed_composed_scenario_ids": [],
+        "required_disposition": "Read the pinned/current owner, preserve each existing guard/effect/retry boundary except a named authorized change, map meaningful executed tests or reasoned conformance review to the row IDs, and add new rows for introduced events.",
+        "evidence": []
+      },
+      "frozen_record_sha256": "f54f32b54d544ac6ee16d5a31377be3a1f317f75a53743c02c14af7500d3cff0",
+      "group": "source-group-049",
+      "literal_inspection": "13-exact-prior65-machine-records",
+      "assessment": "Conditional finite source composition of Coverage input binding, post-test receipt and multi-host union. Constituent guard/effect/retry source scopes and named accepted changes retained; neither task_ids nor model-guided instructions prove executed runtime/installed/model behavior.",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+          "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:C09:01",
+      "frozen_record": {
+        "transition_id": "C09:01",
+        "machine_id": "C09",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "unbound",
+          "from": "unbound",
+          "event": "prepare",
+          "guard": "tracked committed tree, exact declared Vitest configs/source maps and new output receipt",
+          "to": "pre-test bound",
+          "effects": "Write exclusive snapshot of source/config identities before tests.",
+          "failure_retry": "Dirty/missing/linked/unexpected input rejects.",
+          "source": [
+            {
+              "path": ".github/scripts/coverage_union.py",
+              "symbol": "prepare",
+              "lines": [
+                271,
+                282
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+            }
+          ],
+          "transition_id": "C09:01"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "fd64743028586643d3c2f7524f5b7fccce92eb0457839b83ae39415635a26e65",
+      "group": "source-group-049",
+      "assessment": "Prepare still binds declared tracked inventory, retaining explicit untracked/reparse limitations.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+          "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C09:01",
+        "frozen_row_sha256": "fd64743028586643d3c2f7524f5b7fccce92eb0457839b83ae39415635a26e65",
+        "literal": {
+          "event": "prepare",
+          "guard": "tracked committed tree, exact declared Vitest configs/source maps and new output receipt",
+          "effects": "Write exclusive snapshot of source/config identities before tests.",
+          "failure_retry": "Dirty/missing/linked/unexpected input rejects."
+        },
+        "actual_current_interpretation": "Prepare still binds declared tracked inventory, retaining explicit untracked/reparse limitations.",
+        "witness_ids": [
+          "w93",
+          "w94"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    },
+    {
+      "cell": "disposition:transitions:C09:02",
+      "frozen_record": {
+        "transition_id": "C09:02",
+        "machine_id": "C09",
+        "owner": "release-and-tooling",
+        "baseline": {
+          "from_state": "pre-test bound",
+          "from": "pre-test bound",
+          "event": "prepare --check after tests",
+          "guard": "same exact snapshot; coverage data file present and bounded",
+          "to": "post-test checked",
+          "effects": "Bind output blob digest in new checked receipt.",
+          "failure_retry": "Source or configuration drift after measurement rejects; cannot rewrite old proof as current.",
+          "source": [
+            {
+              "path": ".github/scripts/coverage_union.py",
+              "symbol": "prepare",
+              "lines": [
+                271,
+                282
+              ],
+              "ref": "arbiterForge/codeArbiter@fd7eb34b2da439551443d09526ab48fd1d1bb9bf:.github/scripts/coverage_union.py"
+            }
+          ],
+          "transition_id": "C09:02"
+        },
+        "task_ids": [
+          "Q-01"
+        ],
+        "treatment": "PRESERVE_BASELINE_CONTRACT",
+        "proposed_composed_scenario_ids": [],
+        "verification_status": "NOT_RUN",
+        "evidence": [],
+        "candidate_transition": null,
+        "evidence_rule": "This is a planned responsibility mapping. The receiver must attach observed test/review evidence or an explicit supported N/A rationale. Broad source overlap is not row-specific coverage proof."
+      },
+      "frozen_record_sha256": "478ac1b4592209c0d064b7c425d6f5379028dd41f3fc61263ba7f5b1a0b1a6b7",
+      "group": "source-group-049",
+      "assessment": "Post-test check requires unchanged source snapshot and bounded blob.",
+      "literal_inspection": "65-assessment",
+      "changed_helper_interpretation_ids": [],
+      "scope_notes": [
+        "Render Parse has one finite legacy read profile; never general HTML/model-only acceptance.",
+        "T05:03 printed persona-delivery hint is now prompt-submit when due; frozen old descriptive mismatch is corrected.",
+        "SBX prune has per-resource discovery timing; Claude-inside phases are guidance, not binary-enforced completion."
+      ],
+      "history": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+          "sha256": "db46dca34b5919360fc30c750cb27f32514210ca2b075424c9c880ddb7b366b6",
+          "ref_commit": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca",
+          "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d"
+        }
+      ],
+      "exact_earlier_clause_assessment": {
+        "cell": "disposition:transitions:C09:02",
+        "frozen_row_sha256": "478ac1b4592209c0d064b7c425d6f5379028dd41f3fc61263ba7f5b1a0b1a6b7",
+        "literal": {
+          "event": "prepare --check after tests",
+          "guard": "same exact snapshot; coverage data file present and bounded",
+          "effects": "Bind output blob digest in new checked receipt.",
+          "failure_retry": "Source or configuration drift after measurement rejects; cannot rewrite old proof as current."
+        },
+        "actual_current_interpretation": "Post-test check requires unchanged source snapshot and bounded blob.",
+        "witness_ids": [
+          "w95",
+          "w94",
+          "w96",
+          "w97",
+          "w98"
+        ],
+        "prior_proof": "docs/state-contracts-major/execution/evidence/source13-ci-callsite-revalidation/C09-preserved.json",
+        "selected_for_successor": true,
+        "action": "Append source successor only at actual commit, retaining old evidence."
+      }
+    }
+  ],
+  "verified_literal_witnesses": [
+    {
+      "witness_id": "w93",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          37,
+          104
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w93",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          37,
+          104
+        ],
+        "current_spans": [
+          [
+            37,
+            104
+          ]
+        ],
+        "sha256_of_LF_span": "72af8091d550a833a4569a9582178df656c6a7d334ba2a523fb469f994db0284",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          37,
+          104
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w94",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          261,
+          282
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w94",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          261,
+          282
+        ],
+        "current_spans": [
+          [
+            261,
+            282
+          ]
+        ],
+        "sha256_of_LF_span": "0abd8ef2e708a20f0b4f3074ee25864b0935be196e98d40f3b4dfa246ff782c2",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          261,
+          282
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w95",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          25,
+          49
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w95",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          25,
+          49
+        ],
+        "current_spans": [
+          [
+            25,
+            49
+          ]
+        ],
+        "sha256_of_LF_span": "d9a2ce5bbdba0a7470c71aa366c9bf9041c6875a85ad714bea930f9f3d52b69a",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          25,
+          49
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w99",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          107,
+          145
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w99",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          107,
+          145
+        ],
+        "current_spans": [
+          [
+            107,
+            145
+          ]
+        ],
+        "sha256_of_LF_span": "9ceb23bb950574e296ec85862b3290d20785bedb3507a52a25fbaee5b3f69562",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          107,
+          145
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w100",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          216,
+          258
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w100",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          216,
+          258
+        ],
+        "current_spans": [
+          [
+            216,
+            258
+          ]
+        ],
+        "sha256_of_LF_span": "2958fd8f25704321f9e66447d3dd1a754f2981165c209091ed0c1d59b30afc69",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          216,
+          258
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w101",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          285,
+          309
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w101",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          285,
+          309
+        ],
+        "current_spans": [
+          [
+            285,
+            309
+          ]
+        ],
+        "sha256_of_LF_span": "76f3210c54b362b992c1dc6636a4177733d72b4a198c7e203db08e6a0bb8640e",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          285,
+          309
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w102",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          107,
+          258
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w102",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          107,
+          258
+        ],
+        "current_spans": [
+          [
+            107,
+            258
+          ]
+        ],
+        "sha256_of_LF_span": "19764fa256784733aecf3cbbcbee69770259d16902ab37f9147688930a4ede2d",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          107,
+          258
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w105",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          321,
+          333
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w105",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          321,
+          333
+        ],
+        "current_spans": [
+          [
+            321,
+            333
+          ]
+        ],
+        "sha256_of_LF_span": "fa26453096bf35a600a86111c74e6066fa73dfad94b160289b6801d646639f9a",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          321,
+          333
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w106",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          148,
+          258
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w106",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          148,
+          258
+        ],
+        "current_spans": [
+          [
+            148,
+            258
+          ]
+        ],
+        "sha256_of_LF_span": "031b64f5bf396891fae78ba5b97f2f993eff9e794a27ccc6ec1d150212ffda65",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          148,
+          258
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w107",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          261,
+          268
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w107",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          261,
+          268
+        ],
+        "current_spans": [
+          [
+            261,
+            268
+          ]
+        ],
+        "sha256_of_LF_span": "4145ac5623da11cf2d58fd451f34a4f21df1850518bfbc653d1dc374d8ca40cb",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          261,
+          268
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    },
+    {
+      "witness_id": "w108",
+      "path": ".github/scripts/coverage_union.py",
+      "actual0ef_spans": [
+        [
+          300,
+          309
+        ]
+      ],
+      "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5",
+      "prior": {
+        "id": "w108",
+        "path": ".github/scripts/coverage_union.py",
+        "old_source": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+        "old_span": [
+          300,
+          309
+        ],
+        "current_spans": [
+          [
+            300,
+            309
+          ]
+        ],
+        "sha256_of_LF_span": "ee3757a7a9592b37c5bc0c6fddeca33ec92cdd2e6c8fd222fcf4d4da38e25b71",
+        "current_source_commit": "2ed6575320cc49b57186b997ed119789f7a754aa",
+        "current_file_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+      },
+      "assessment": "Exact literal block plus prior clause meaning retained; line shifts alone do not imply semantic drift.",
+      "current_f3_spans": [
+        [
+          300,
+          309
+        ]
+      ],
+      "current_f3_sha256": "e077682f3584d8ba8ed47c3c7d9ac28642b08c4f31ccf96a9813f27d8d0e5cf5"
+    }
+  ],
+  "changed_old_literals": [],
+  "reused_helper_assessments": [],
+  "negative_scope": "Static finite guarded claims only, with inherited scope/limits. No execution, qualification or unchecked new source claim."
+}

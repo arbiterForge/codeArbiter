@@ -1,0 +1,21 @@
+{
+  "source_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+  "bindings": [
+    {
+      "path": ".github/scripts/test_artifact_installed_host.py",
+      "literal_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "preimage_sha256": "1e6bd6d4de5bbc37fe116b5d95ef010b65de7831d5ef55bb99fbc3d9008f6595",
+      "physical_equals_literal": true
+    },
+    {
+      "path": ".github/scripts/test_artifact_package.py",
+      "literal_epoch": "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+      "preimage_sha256": "5d1ed3a9efe9eb54be5a819268812fbe09473e1e955cf5df37706ff4683fda50",
+      "physical_equals_literal": true
+    }
+  ],
+  "old_test_methods_preserved": 59,
+  "new_test": "RuntimeAuditPlatformTests.test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload",
+  "production_changed_before_RED": false,
+  "scope": "Pure direct callback policy/diagnostic invocation only. sys.addaudithook intercepted; no native package setup, actual process launch, hook install, host/helper/SDK/provider replay."
+}

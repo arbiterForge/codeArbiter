@@ -1,0 +1,17 @@
+{
+ "command": [
+  "C:\\Python314\\python.exe",
+  "-X",
+  "utf8",
+  "-B",
+  "-m",
+  "unittest",
+  "test_work_adopt",
+  "-v"
+ ],
+ "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-work-adopt-regular-reader-fix-4n2f399l\\fixture\\.github\\scripts",
+ "returncode": 1,
+ "seconds": 0.29088849999243394,
+ "source_sha256": "5931ac77ec7ce695bf35daac6a93a889f5ce65b6fd8df8c150c0f9a3f6564078",
+ "test_sha256": "fc9f46ecb32afc5407924c00ae83e9dcf9cadff2179626a5c7248b0e33ec55b7"
+}

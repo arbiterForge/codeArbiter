@@ -1,0 +1,52 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "f3cb12f5095401d5b7e8c32c2861816c7109ce02",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact prepared finite clauses with immutable current witness and namespace join"
+  },
+  "inputs": {
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/surfaces-tasks.json": "5a68b14cdc637e369fa5298d3f566b950dec9fb8056e4f1fa77baf40cb4b0d97",
+    "site/scripts/execution-maps/atlas-model.ts": "79d5c4e0ef690a7bb1b1ccaf11a79d412a0b91106c78c2d0db4fcdf8e2ada05a",
+    "site/scripts/execution-maps/atlas-render.ts": "363afecc6eb88d96cd5101789ae593b5887c516ea8bde230e718102714c82e00",
+    "site/scripts/execution-maps/atlas-theme.ts": "dc6d4a624d0872a5466460598a5209daaa9a15b181a5110bb217af9f37d697b0",
+    "site/src/components/WorkflowAtlas.astro": "40120780283cc6fddec19b657ef49e069612514aa77d093cb840500ea846174e",
+    "site/src/scripts/workflow-atlas.ts": "6d92b58abbbb867766927de18d9197c1797d84945ee9f81ffced6429c710707e",
+    "site/src/styles/workflow-atlas.css": "4c9ee30fb6006a62db600f80ec3d2e50805eb32afce66341572044927889e22c"
+  },
+  "disposition_ids": [
+    "disposition:machines:S61"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-046-inspection.json",
+      "sha256": "d106a3177138e93fb220f67fc187fba67f378c4804674502d22853b49a65b23b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+      "sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7"
+    }
+  ],
+  "retained_prior_proof": {
+    "path": "docs/state-contracts-major/execution/evidence/site-ten-machines-source-d2b8c58a/proofs/S61-preserved.json",
+    "sha256": "ac3c7e28a6750c9dd7810f0b87199a606249ae08f4356684f0afa0393794bdc7",
+    "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+    "retained_at": "0ef322662cc2a9bb7d5f73838f96ed0ffb46bcca"
+  },
+  "semantic_mapping_ref": "docs/state-contracts-major/execution/evidence/stable-source-final-ci-atlas-f3cb12f5/source-group-046-inspection.json",
+  "scope": "Thirteen-clause SOURCE-ONLY Atlas client conformance with existing S61:10/:11 print-description corrections retained. Valid rendered model is a precondition; no SVG geometry/browser/print/dialog/user acceptance.",
+  "limits": [
+    "No Q-01/task/scenario completion, installed/platform/model/user/browser/assistive/clipboard/print acceptance, publication or main readiness.",
+    "No whole-site atomicity, general filesystem cleanup guarantee, or arbitrary dynamic corpus admission.",
+    "Six existing unsupported analytical descriptions and four BUILD-G01 retired intermediates remain in their original NOT_APPLICABLE records; no new N/A or waiver.",
+    "No run, platform, package, task, provider, user or installed evidence was renewed.",
+    "All prior original source epochs and raw evidence remain exact.",
+    "New file names are bound in the exact full Python namespace; the disjoint entry points are not a claim of newly executed tests."
+  ]
+}

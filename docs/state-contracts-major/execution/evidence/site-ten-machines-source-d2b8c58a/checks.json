@@ -1,0 +1,15 @@
+{
+  "source_commit": "d2b8c58a650277eeab25d21272c086b19a25c4f2",
+  "machine_proposals": 10,
+  "literal_clauses": 66,
+  "all_declared_input_git_physical_joins": true,
+  "selected_machine_row_preimages_match_committed_A": true,
+  "selected_edge_rows_and_histories_unchanged": true,
+  "all_selected_source_bytes_stable_after_packaging": true,
+  "all14_retained_source_packets_complete_declared_inputs_match": true,
+  "executed_tests": 0,
+  "admission_validators_run": 0,
+  "canonical_writes": 0,
+  "runtime_claim": false,
+  "strict_owner_authentication": "NOT_RUN; Root receives this private proposal for independent authentication/admission."
+}

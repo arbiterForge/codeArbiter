@@ -1,0 +1,167 @@
+{
+  "schema": "codearbiter-original-docs-browser-route-projection/1",
+  "source_commit": "5d9f62dc3addc8c9c6709f3b417ecbd48e27b65f",
+  "source_tree": "afa51b34b669709989827a641f84ad2f3a6b5330",
+  "branch": "major/state-contracts",
+  "event": "push",
+  "run_id": 44249853781,
+  "run_attempt": 1,
+  "whole_run_conclusion": "success",
+  "job_id": 134617573746,
+  "job_name": "Site | [Build] - Astro Pages",
+  "job_run_attempt": 1,
+  "job_conclusion": "success",
+  "original_job_log_sha256": "66116e4cc2d1ed0578016c59d2bfbaf018c623a40aad36b254e4a42f08767bae",
+  "archive_roles": {
+    "pages": {
+      "id": 14403407804,
+      "name": "github-pages",
+      "archive_sha256": "6a31a3b890cb2a4fa94cd98183a3a463a75b1149aab21002600bf359a0c0aa23",
+      "bytes": 6586833
+    },
+    "report": {
+      "id": 14403781924,
+      "name": "major-docs-qualification-134617573746",
+      "archive_sha256": "742128c07d2ebafbf928974a7c2ff9d1fb784105493f83c594911c77d322bbb6",
+      "bytes": 54908
+    }
+  },
+  "pages_tar_sha256": "550bedc63d239517cc7be45bf5a9ffef06396dd1aada04b6928d797f3d6bc7ef",
+  "observed_served_member_count": 465,
+  "named_population": 203,
+  "original_command": {
+    "argv": [
+      "npm",
+      "run",
+      "test:browser"
+    ],
+    "cwd": "site",
+    "exit_code": 0
+  },
+  "original_producer_sources": {
+    ".github/workflows/docs.yml": "e66b8432409b34bc630a90e39c8c8cf5f675e651548c2147cbd824d116231c07",
+    ".github/scripts/pages_readiness.py": "71e696171575831324103ef699981f9eca7cb05caa2d1417d00ea1885fc1c871",
+    ".github/scripts/site_playwright_observation.py": "6bb0e951d43b84220d1a8cdc05c37c77b53878e93ffcc6f98b8d5edef4f898e1",
+    "site/package.json": "f5fc189cffe4dd4f4ba2de7ee1a31f36cacc017d0f4b598d69a3ffc4e1bdffd3",
+    "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
+    "site/playwright.config.ts": "f2a38948fcd2328be7db945fbfca08ccaa1d6e05f58acdb1e5cd26c1b19f9fd8"
+  },
+  "guide_inputs_at_source": [
+    "site/src/content/docs/guides/adding-a-dependency.mdx",
+    "site/src/content/docs/guides/autonomous-sprints.mdx",
+    "site/src/content/docs/guides/ca-sandbox.md",
+    "site/src/content/docs/guides/feature-lane.mdx",
+    "site/src/content/docs/guides/first-feature.mdx",
+    "site/src/content/docs/guides/index.mdx",
+    "site/src/content/docs/guides/investigate-and-fix.mdx",
+    "site/src/content/docs/guides/opt-in-a-repo.mdx",
+    "site/src/content/docs/guides/overriding-a-gate.md",
+    "site/src/content/docs/guides/plan-a-new-project.mdx",
+    "site/src/content/docs/guides/recording-adrs.mdx",
+    "site/src/content/docs/guides/releasing-a-version.mdx",
+    "site/src/content/docs/guides/resume-and-recover.mdx",
+    "site/src/content/docs/guides/return-to-a-project.md",
+    "site/src/content/docs/guides/review-and-ship.mdx",
+    "site/src/content/docs/guides/review-artifacts.md",
+    "site/src/content/docs/guides/the-statusline.md",
+    "site/src/content/docs/guides/troubleshooting.md",
+    "site/src/content/docs/guides/understand-an-existing-project.md",
+    "site/src/content/docs/guides/uninstalling.md",
+    "site/src/content/docs/guides/uninstalling/details.md"
+  ],
+  "original_observations": {
+    "bookmark": [
+      {
+        "cell": "disposition:transitions:S56:01",
+        "selectors": [
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+        ],
+        "assertion_scope": "Valid current bookmark saved by the explicit button survives lesson/all-lessons/back navigation and resolves only to the current declared practitioner lesson URL; source validates exact schema/release/commit/lesson before constructing its inventory-based URL."
+      },
+      {
+        "cell": "disposition:transitions:S56:02",
+        "selectors": [
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion"
+        ],
+        "assertion_scope": "Initial declared owned key is null while the Save control is visible. Visiting the lesson does not create a record; saving is opt-in and the UI explicitly says completion is not checked."
+      },
+      {
+        "cell": "disposition:transitions:S56:04",
+        "selectors": [
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:denied storage retains the full lesson and an actionable explanation"
+        ],
+        "assertion_scope": "A denied localStorage getter exercises unavailable reading, then Save failure yields actionable could-not-be-saved text while the full lesson/action and curriculum link remain visible. This is deliberate storage denial, not ordinary empty state."
+      },
+      {
+        "cell": "disposition:transitions:S56:05",
+        "selectors": [
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+        ],
+        "assertion_scope": "Explicit click and keyboard Save create the exact four-field current source/lesson record and update does-not-mark-complete feedback. Source inspection supplies the only-scoped-key clause: one derived-key setItem call inside saveBookmark, no other write route; no unobserved arbitrary account data claim."
+      },
+      {
+        "cell": "disposition:transitions:S56:06",
+        "selectors": [
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:stale source identity has no resume URL and clearing retains command preferences",
+          "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors"
+        ],
+        "assertion_scope": "Explicit clear removes the scoped bookmark, preserves independent academy-os=linux, hides resume and restores status/Save focus. Unknown verifier progress is never created or changed."
+      }
+    ],
+    "directory": [
+      {
+        "cell": "disposition:transitions:S58:01",
+        "selectors": [
+          "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+          "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filtering makes no request or storage write and does not submit a query URL"
+        ],
+        "assertion_scope": "Actual category selection narrows to4; two required literal terms narrow to1; a nonmatch containing markup yields0, visible empty state and exact count. Source-only guard supplement: guideMatches applies NFKC/lowercase and bounded160-character normalized query, requires each term and matching selected category; no claim that a runtime Unicode boundary vector was executed."
+      },
+      {
+        "cell": "disposition:transitions:S58:02",
+        "selectors": [
+          "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+          "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filter controls and the review guide reconnect after client navigation and back"
+        ],
+        "assertion_scope": "Clear restores the complete declared card count and input focus. After real client navigation/back, controls remain usable and selecting initialize-and-understand yields3 cards. Read-only test separately asserts no request, storage write or query-URL submission."
+      }
+    ]
+  },
+  "historical_origin_preserved": {
+    "bookmark": {
+      "product_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+      "source_tree": "2dfcf37c50ccc3dd7c5aac1c43cc321c6e7f3793",
+      "normal_docs_run": 44046125414,
+      "original_browser_job": 133912127642,
+      "original_browser_attempt": 1,
+      "successful_whole_workflow_attempt": 2,
+      "attempt2_alias_job": 133980845215,
+      "original_report_artifact": 14311124383,
+      "original_archive_sha256": "8e2cf1a3cbf8e0069c7a2984e4ac630e355414ac11c9a2c3ade0bfd0b02d5c9e",
+      "original_job_log_sha256": "30583d8204dc9764475532134cf5f0a6d9a08325a7ccb1d8a5227b45d74578dd",
+      "actual_criterion_named_outcomes": 7,
+      "entire_original_unfiltered_named_population": 203,
+      "source_epoch": "Original D482 hosted product, not current local HEAD/inspection",
+      "later_work": "Read-only original metadata/55KB report admission and unchanged clause/input source reinspection; no build/browser/runtime replay"
+    },
+    "directory": {
+      "product_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+      "source_tree": "2dfcf37c50ccc3dd7c5aac1c43cc321c6e7f3793",
+      "normal_docs_run": 44046125414,
+      "original_browser_job": 133912127642,
+      "original_browser_attempt": 1,
+      "successful_whole_workflow_attempt": 2,
+      "attempt2_alias_job": 133980845215,
+      "original_report_artifact": 14311124383,
+      "original_archive_sha256": "8e2cf1a3cbf8e0069c7a2984e4ac630e355414ac11c9a2c3ade0bfd0b02d5c9e",
+      "original_job_log_sha256": "30583d8204dc9764475532134cf5f0a6d9a08325a7ccb1d8a5227b45d74578dd",
+      "actual_criterion_named_outcomes": 7,
+      "entire_original_unfiltered_named_population": 203,
+      "source_epoch": "Original D482 hosted product, not current local HEAD/inspection",
+      "later_work": "Read-only original metadata/55KB report admission and unchanged clause/input source reinspection; no build/browser/runtime replay"
+    }
+  },
+  "scope": "Finite bookmark and guide directory browser software assertions against the exact original built Pages bytes."
+}

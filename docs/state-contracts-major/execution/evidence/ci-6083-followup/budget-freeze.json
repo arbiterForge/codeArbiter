@@ -1,0 +1,69 @@
+{
+  "state": "TEMP_ONLY_NOT_APPLIED",
+  "source_base_head_observed": "ceba007c8274c1921d99fb86c6fa4c27edcc283b",
+  "preimages": {
+    ".github/workflows/ci.yml": "a9c3465ac76712a5d78392acecd496ed722ffb01e6c9ee90f85a3aeb78e5d535",
+    ".github/scripts/test_hook_ci_partition.py": "5cbe651b5d26b258a0ec4a4dcedb59594ecd2ab0c466cbfd9f6dba6ede29af2a"
+  },
+  "proposed": {
+    ".github/workflows/ci.yml": "e2dd496b8d10d368a1f879597b0796b94d3c1ca7eff785dab09549fe9f0cac99",
+    ".github/scripts/test_hook_ci_partition.py": "c1e7ad0051bb5509b158ea5c2f8c439b1e574f951daa18e2b24a76566001ca15"
+  },
+  "patch_sha256": "2fcf18af0828098bc271bc1d79cb5c84c41ddf1413c1efcf20282826db4cfc55",
+  "scope": "Only Windows hooks contracts aggregate job budget25minutes; all other hooks cells20minutes, recovery15minutes, existing per-test/command deadlines and population unchanged.",
+  "basis": {
+    "prior_success": {
+      "run": 43550337422,
+      "job": 132311178328,
+      "source": "6a636870bc23f5079700faf58a234d19f6823eca",
+      "seconds": 1187
+    },
+    "current_timeout": {
+      "run": 43554312132,
+      "job": 132323671915,
+      "seconds": 1206,
+      "annotation": "The job has exceeded the maximum execution time of20m0s",
+      "native_reader_seconds": 277
+    },
+    "raw_evidence_packet": "C:/Users/brenn/AppData/Local/Temp/ca-sbx-transport-peer-l8a7x3zv",
+    "reason": "The prior complete pass consumed98.9percent of20minutes. Latest run reaches the final ADR lifecycle suite without assertion failure and is cancelled at the aggregate ceiling.25minutes provides bounded25percent runner/setup margin, without widening test timeouts or reducing work."
+  },
+  "checks": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "-m",
+        "unittest",
+        "test_hook_ci_partition.PartitionContractTests.test_current_windows_contract_budget_has_only_the_observed_exception",
+        "-v"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk\\.github\\scripts",
+      "exit_code": 1,
+      "raw": "red.log",
+      "claim": "New owning wiring criterion genuinely fails against original20-minute job."
+    },
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk\\.github\\scripts\\test_hook_ci_partition.py"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-windows-contract-budget-b1m40vsk",
+      "exit_code": 0,
+      "raw": "green.log",
+      "claim": "All owning partition/recovery tests and actual workflow inventory checks pass; deliberate host/partition/ceiling mutants fail."
+    }
+  ],
+  "preserved": [
+    "Other workflow jobs, Sandbox result transport, permission/event/action pins unchanged.",
+    "Literal73ordered command digest and72contracts+isolation partition unchanged.",
+    "20-minuteWindows isolation/Linux/macOS and15-minute recovery budgets unchanged.",
+    "No Gov source/index/metadata/marker writes; Temp-only copy. No suite/Go/Docker rerun."
+  ],
+  "limits": [
+    "The cancelled ADR lifecycle run is incomplete, not passing; future hosted25-minute cell must actually finish.",
+    "Initial cancelled-step raw KeyboardInterrupt is runner cancellation, not a proven suite assertion failure.",
+    "Head metadata may change during preparation; exact physical preimage hashes are authoritative for applying this Temp patch."
+  ]
+}

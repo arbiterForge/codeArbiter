@@ -49,3 +49,11 @@ list when there are none. `NOTE` is not an accepted severity.
 
 A wrapped or annotated reply is rejected, and a rejected review is not retried
 under the same request.
+
+That finality applies to this request and child. A corrected report or target
+may receive a new linked request through the owning adapter's
+`artifact-authority.py resubmit-review` route. The parent must launch the new
+request's exact envelope with a fresh independent child and observe its actual
+first terminal result. Do not repair this reply by sending a later stop or a
+follow-up message to this child. A new request is not approval, and does not
+clear a user/host denial, a stop, missing evidence, or a `BLOCK` finding.

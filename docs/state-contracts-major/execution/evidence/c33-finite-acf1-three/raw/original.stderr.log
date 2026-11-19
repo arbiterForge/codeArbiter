@@ -1,0 +1,8 @@
+test_missing_artifact_file (test_check_skill_proof_fresh.CheckFailureModeTest.test_missing_artifact_file) ... ok
+test_unparseable_json (test_check_skill_proof_fresh.CheckFailureModeTest.test_unparseable_json) ... ok
+test_a_host_that_no_longer_renders_the_source_raises (test_check_skill_proof_fresh.PayloadDerivationTest.test_a_host_that_no_longer_renders_the_source_raises) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.006s
+
+OK

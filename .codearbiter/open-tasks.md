@@ -5,6 +5,84 @@ per task. Schema and the count rule: see `plugins/ca/hooks/init-codearbiter.py`
 (`OPEN_TASKS`) or `.codearbiter/specs/task-board-lifecycle.md`.
 
 ## In-flight
+- [x] Preserve Pi role report structure during redaction  (from github:arbiterForge:codeArbiter:pull:1135:real-pi-structured-role-redaction)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1135:real-pi-structured-role-redaction
+  - Desc: The real packaged runner replaces a whole one-line role response when its summary has a sensitive pattern. Validate the closed response and redact only its summary while refusing exact operator values on both serialized and decoded views.
+  - Work type: fix
+  - Work ID: WORK-F187DF2FF154EC83D94AEE0878B2E904
+  - Work operation ID: work-44339213e1648b91c535bdc4e5f98846f61a6e7c
+- [x] Recognize positioned Yes and No rows in the Pi TUI fixture  (from github:arbiterForge:codeArbiter:pull:1135:positioned-pi-confirmation)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1135:positioned-pi-confirmation
+  - Desc: The exact retained full-screen terminal capture lost cursor row boundaries before selection was checked. Preserve those boundaries so the distinct decline request waits for the actual No redraw before sending Enter.
+  - Work type: fix
+  - Work ID: WORK-B254EB75FEF02AB0A855E0FA51B0EC1E
+  - Work operation ID: work-cdb4ec59e66415b9ceb4bb14e4bc8f32b9abceda
+- [x] Verify reviewer inspection and a no-change author in the retained Pi TUI  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-reviewer-no-change
+  - Desc: Run one bounded inspection chain on the exact retained Pi package. Verify two real read results, a redacted reviewer handoff and zero recorded mutation requests while the earlier approve and decline evidence stays intact.
+  - Work type: feature
+  - Work ID: WORK-AF8EAFE6391DB3D77C85484AA1AE116B
+  - Work operation ID: work-80e95841f8ac9a32e442ff1c280513b027588803
+- [x] Qualify denial in the retained Pi parent TUI fixture  (from github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:pull:1098:PI-D07:installed-linux-rendered-decline
+  - Desc: Exercise a genuinely rendered declined tool confirmation in the existing installed Linux Pi 1.5.0 fixture. Require an exact child refusal, durable cancel audit and no canary effect while preserving the approved write, edit and command.
+  - Work type: feature
+  - Work ID: WORK-DA95F739E7251449E791CDEEAF8EBEA5
+  - Work operation ID: work-9133f2f3e86d10f9425b12648522715efb131be1
+- [x] Align original Windows isolation launcher and retain append timeout state  (from github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:actions-job:135178530631:windows-statusline-launcher
+  - Desc: The original Windows isolation launcher uses Git Bash while the pull request isolation uses native PowerShell. Use native PowerShell for the recorder and retain the owned audit fixture state at each process timeout.
+  - Work type: fix
+  - Work ID: WORK-67519D23AB7DBBDEEDF65DAEC5CFBCC1
+  - Work operation ID: work-7a5308a6fdbe9b9ac54fa6615c202480af8c3d16
+- [x] Recognize live Docs producers while sibling jobs are queued  (from github:arbiterForge:codeArbiter:actions-job:135143111321:docs-live-run-state)  (done 2026-11-18)
+  - Work origin: github:arbiterForge:codeArbiter:actions-job:135143111321:docs-live-run-state
+  - Desc: The original component report failed at the aggregate Docs workflow status gate while its job was running. Accept documented nonterminal Actions states only for live authenticated producers and preserve the completed-success final gate.
+  - Work type: fix
+  - Work ID: WORK-5AB2A1161888D1D5504CA07713EC4447
+  - Work operation ID: work-97611abf57f355a735d93dfa1c74fe8d9a9fb8a9
+- [x] Wait for shell exit in audit append fixtures  (from github:arbiterForge/codeArbiter:actions-job:135047091639:audit-append-wait)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions-job:135047091639:audit-append-wait
+  - Desc: Separate append command exit from output pipe EOF in the original isolation fixture. A controlled Windows reproduction establishes that an inherited pipe can time out after the owned root exited. Keep 30 seconds, no prompts, and UTF-8 prefix assertions.
+  - Work type: fix
+  - Work ID: WORK-F284ED1D952810AD5D0E5CF9B0609A5F
+  - Work operation ID: work-3a9f29237cc1a55b7c9404d1378d45cef6cdc86b
+- [x] Warm the debugger provider before Windows Pi RPC diagnostic runs  (from github:arbiterForge/codeArbiter:actions-job:135047091700:pi-debugger-provider-preflight)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions-job:135047091700:pi-debugger-provider-preflight
+  - Desc: Add the existing bounded hash warmup before standalone Windows RPC CI targets that request retained diagnostics. The original doctor failure at job 135047091700 reached the diagnostic provider hash deadline before attaching. Preserve raw package behavior, the exit deadline, and the original failure.
+  - Work type: fix
+  - Work ID: WORK-3D6B45043C30BBBC7DE77E865736768F
+  - Work operation ID: work-27c532f5fffe866749d1d6c85c9b4c371936b717
+- [x] Run audit append shell fixtures without an interactive console  (from github:arbiterForge/codeArbiter:actions:44331430097:134896781356)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:44331430097:134896781356
+  - Desc: The Windows Hook isolation suite timed out in its PowerShell append fixture. Close standard input and disable PowerShell prompts in the fixture while exercising the original append commands and their existing UTF-8, prefix and timeout checks.
+  - Work type: fix
+  - Work ID: WORK-E747782EBCBF2B339B232DEBCCE4FFC8
+  - Work operation ID: work-8e66e99fa8140cac9de678efe4f03a42187703f6
+- [x] Retain the original Pages evidence for 14 days  (from github:arbiterForge/codeArbiter:actions:artifact:14403407804)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:artifact:14403407804
+  - Desc: The Pages upload uses the upstream one-day default even though live Docs evidence requires its original ZIP. Request the approved 14-day repository limit on that upload and preserve the existing publisher, files, production gates, and workflow events.
+  - Work type: fix
+  - Work ID: WORK-81728E0E40380AB14CC5233F54261636
+  - Work operation ID: work-08b4e08f0f9a3a3d6a8829a206cf79cea5e3fb33
+- [x] Isolate optional Node caching in aggregate Windows Pi RPC fixtures  (from github:arbiterForge/codeArbiter:actions:44314217993:134836490507)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:44314217993:134836490507
+  - Desc: The duplicate aggregate fixture can time out after JavaScript reports exit. Exclude optional compile-cache persistence from the aggregate Windows RPC test environment, while retaining standalone and installed default-cache checks, strict natural exit, and all assertions.
+  - Work type: fix
+  - Work ID: WORK-F259450A17FBF92C7D56BC0D7E0DB1AA
+  - Work operation ID: work-a014e7b24aed784828dc1849c9a5e60429435344
+- [x] Keep evidence authentication outside the immutable Git I/O budget  (from github:arbiterForge/codeArbiter:actions:44314217993:134836490325)  (done 2026-11-18)
+  - Work origin: github:arbiterForge/codeArbiter:actions:44314217993:134836490325
+  - Desc: The macOS Program integrity check exhausted the immutable Git reader deadline while the validation owner holds a cross-evidence transaction. Keep total Git transport time and per-query bounds while allowing authentication between reads, and preserve evidence checks.
+  - Work type: fix
+  - Work ID: WORK-3B7671FEA2E08A2ECC32E2E0AA7717E6
+  - Work operation ID: work-7fe8f0ce3556889ed407447fc272add817543018
+- [~] Complete the major state-contracts integration program  (from github:arbiterForge/codeArbiter:pull/1098)  (started 2026-11-14)
+  - Work origin: github:arbiterForge/codeArbiter:pull/1098
+  - Desc: Complete the accepted specification and qualification tracked by PR1098 and docs/state-contracts-major/contracts/tasks.json through major/state-contracts; preserve author worktrees and hold main and publication for Brennon testing.
+  - Work type: feature
+  - Work ID: WORK-2A68C3051D5A477EAC131493FF8A85AF
+  - Work operation ID: work-1ba8102df9235247240914316b17b6d708d2c85a
 - [x] Make consumer ADR acceptance writer match lifecycle verifier  (from https://github.com/SUaDtL/SIM/pull/23#adr-0002-lifecycle)  (done 2026-11-12)
   - Work origin: https://github.com/SUaDtL/SIM/pull/23#adr-0002-lifecycle
   - Desc: Consumer ADR acceptance can append malformed lifecycle evidence that the shipped verifier refuses. Provide a portable writer using the verifier contract and a general append-only correction path for already committed malformed bindings, with tests across all hosts.

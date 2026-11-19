@@ -1,0 +1,77 @@
+{
+  "schema": "codearbiter-hooks-task-diagnosis/1",
+  "source_commit": "a2032b5d6f5af2afccc02ae93568f976db1cd601",
+  "progress_inventory": {
+    "records": 82,
+    "IMPLEMENTED_UNQUALIFIED": 72,
+    "IN_PROGRESS": 9,
+    "NOT_STARTED": 1,
+    "generic_assembled_implementation_text": 77,
+    "interpretation": "These are readiness/reporting states, not proof of77missing implementations. This diagnosis is bounded to HW04/HW15/HW26/HW27."
+  },
+  "tasks": [
+    {
+      "id": "HW-04",
+      "implementation": "Shared37launchfile/32workspace role boundary is implemented in observation schema/role validation and completion consumer.",
+      "actual_gap_resolved": "Owning test lacked real npm-script producer zero-workspace shape; added root-only script+0matrix, preserved30/31/32. ZeroWindows shape has4base files; nested adds prefix helper for5base files.",
+      "owned_change": "core/artifacts/internal/evidence/launch_binding_limits_test.go",
+      "frozen_sha256": "49eed36e4a9bdc684cbd14f28177355265be3026932791ddf40b3637c1b7c05d",
+      "actual_current_evidence": "FivefocusedGo tests42named inclsubtests PASS,0skip; realWindows producer0/30/31/32\u21924/35/36/37; common bound+schema/role negatives retain38total/33workspace refusal and fingerprint/unknown/duplicate/path/argv controls.",
+      "remaining": "CurrentPOSIX0/30/31/32 producer/platform and historicalprofile matrix are owned by affected hosted/native qualification. Refreshed full native input binding requires newtestsource currentbuild; native owner running it. Do not mark all HOOK-F04 platform qualification complete from this Windows pass.",
+      "proof": "hooks-npm-boundary-tested.json"
+    },
+    {
+      "id": "HW-15",
+      "implementation": "Canonical recovery ledger/index/CAS/repair/reconcile/retention and installed helper/native journeys already exist. Task explicitly verification-only, no additional runtime authority implementation required.",
+      "actual_current_evidence": "14namedcanonical tests PASS10.560s: allregistration transaction failpoints, exactreplay, actualtargetcommit/settlementfail, multiprocessclaim/correct/resumeonewinner+exacttargetcount, liveOSlock, changedsource, denial, future/corruptschema, stalecursor,32summary/256KiB pagebounds, partialbatch, tombstone dedup/history and notice failure.",
+      "existing_installed_evidence": {
+        "root": "C:/Users/brenn/AppData/Local/Temp/ca-recovery-isolated-green-v7992ogr",
+        "suite": "suite.log",
+        "result": "result.json",
+        "named_tests": 7,
+        "seconds": 84.995,
+        "native_tested": true,
+        "native_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+        "scope": "Actual source-installed helpers on Windows; old/no-ledger installation target/pending retention, nativeeffect afteractualprocessdeath, ownermanifest/currentproject/dualowner refusals, credentialblind timeout child,3hosthelpers. Not retainedreleasearchive proof."
+      },
+      "remaining": "Production retained-cohort qualification requires actual archives/trustedworkflow+run/package stage/promotionreceipt via qualify_workflow_recovery_cohort.py; actualhost/platform sourcebinding stays explicit. ActualrevokedPi delegation observation belongs Pi lane. No new production code gap identified in this bounded requirement review.",
+      "proof": "recovery-canonical-task-qualification.json"
+    },
+    {
+      "id": "HW-26",
+      "implementation": "All3qualification helpers and Vitest absolute setupFiles owner unchanged byteforbyte from frozenbaseline. RecoveryInstalledFixture isolatesHOME/env before importing installation/authnative owners. Benchmark uses productionwrapBuiltins but fixturebridge/native functions; noauthhost behavior implied.",
+      "actual_current_evidence": "Four#464cases PASS: realhomedir/environment/dummystore/childspread effects. Full103Pi owner inputs before/after literalGitjoin. Discovery4rows/exitcleanup1row staticallyrevalidated; exactbytebaseline unchanged.",
+      "remaining": "Pi exactinstalledcandidate/runtime version/packageidentity/digest and actualdelegatedauthors acceptance belong existingPi qualification caller/PI-D07. PATH helper alone is intentionally insufficient. No invented helper runtime defect; no new isolation product change required.",
+      "proofs": [
+        "hooks-pi-isolation-tested.json",
+        "hooks-preserved-proof.json"
+      ]
+    },
+    {
+      "id": "HW-27",
+      "implementation": "Integrated branch hold/generation/equality/package/host admission is an acceptancegate, not a newglobalmachine.",
+      "remaining": "Cannot truthfullyclose before all27taskrequirements and selectedrootintegration/NT12/P02/G01 actual acceptance qualify. Source-bound per-transition reviews/tests remain incompletely reconciled; do not classify737mappedtransitions from suite totals. Root owns exact candidate artifacts/sourceidentity/platform/package qualification and user testing hold.",
+      "reviewable_commands": [
+        "python -B tools/build-surface.py --check",
+        "python -B tools/sync-core.py --check",
+        "python -B .github/scripts/test_generated_output.py",
+        "python -B .github/scripts/test_hooks_cold_install.py",
+        "python -B .github/scripts/test_artifact_package.py",
+        "python -B .github/scripts/test_artifact_installed_host.py"
+      ],
+      "limits": "Commands are owner handoff locations; not a claim of new execution in this bounded lane. Parent alreadyowns generated-source checks and hosted acceptance; no duplicate fullsuite run requested."
+    }
+  ],
+  "disposition_proposal": {
+    "TESTED_transition_rows": 4,
+    "PRESERVED_transition_rows": 11,
+    "findings_closed": 0,
+    "machine_wide_promotions": 0,
+    "whole_tasks_closed": 0,
+    "basis": "Exact named current observations or clause-specific unchanged source guard/effect/retry review only."
+  },
+  "physical_source_state": {
+    "authorized_normalization": "Exactly12tracked-clean eolLF paths backed up outsidecarry, physicalCRLF\u2192LF identical toa203literalGit; nosemanticGit/index change. Originalauthorworktreesuntouched.",
+    "qualification": "439fullownerfiles before/after literalGit equality,0drift. EarlierCRLFtestresults and initialharnessSystemRootfailure retained outsidecarry; onlyliteral successful outcomes supportcurrentproof."
+  }
+}

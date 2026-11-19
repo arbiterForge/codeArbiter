@@ -6,6 +6,41 @@ All notable changes to the **ca-codex** plugin are recorded here. Format follows
 
 ## [Unreleased]
 
+## [0.30.0] - 2026-11-13
+
+### Changed
+
+- Reuse the validated worktree for automatic recovery scans, avoiding a second Git process within the existing one-second deadline.
+- Keep protected Python stdin writes guarded when a PowerShell here-string body precedes its executor or a later command follows it.
+- Bind audited binary security overrides to the complete staged candidate; reject reuse after text changes and reject old binary-only markers.
+- Attribute task-lock ignore-rule initialization to its actual owner in generated init guidance.
+- Refuse prefix-sibling paths before transcript healing or pruning; require a proper canonical descendant of the Claude home.
+- Audit an attributable prior mode exit together with its new entry, preserving bounded replay and truthful uncertain-storage guidance.
+- Refuse nonregular or changed legacy work files before bounded adoption reads, preserving existing archives and replay inputs.
+- Invalidate a stale persona delivery record after an update failure; report when storage also denies invalidation.
+- Preserve no-bytecode execution when SessionStart launches the detached updater.
+- Document refusal of reused farm run IDs and direct retained-effect recovery to its receipts.
+- Preserve a later user statusline replacement or removal when uninstalling a legacy installation with stale backup metadata.
+- Separate recorded work progress from derived dependency readiness and independently verified checks, preserving identities, user stops and later edits across supported schema upgrades.
+- Use shared current-mode, task-discovery, context-delivery and corrected-review helpers; reconcile interrupted workflow effects through their owning receipts.
+- Preserve primary farm failures and bound recovery reads before consuming content; keep local implementation, installed qualification and publication outcomes distinct.
+- Carry the current verifier-compatible ADR acceptance writer and LF-boundary ledger reader into the major candidate; retain immutable accepted source ancestry.
+- Read current HTML knowledge records through the shared, identity-bound reader; preserve retained history separately and prepare the native reader before bounded Pi qualification steps.
+
+### Fixed
+
+- Avoid Windows version-discovery shell commands during installed native selection and dispatch; retain native architecture, binary identity and process guards.
+- Detect changes beneath plain directory knowledge scopes, retaining exact paths, glob depth, sibling boundaries and unknown baseline state.
+
+- Provide a credential-blind environment for selected local Git metadata reads while retaining ordinary hook environments and protected file-based configuration.
+
+- Preserve newer user spinner choices during rollback and migrate legacy backup metadata without discarding its value.
+- Suppress repeated fallback workflow recovery notices after the host records the notice as delivered.
+- Inspect final check states after CI watching; cancelled checks and interrupted watches remain unverified.
+- Classify malformed provider JSON at the transport boundary without hiding programmer errors.
+- Keep independent mapped targets moving after expected provider read failures, while preserving pending intent, uncertain sends and completed targets.
+- Allow independent read-only shell statements without weakening protected-file write guards; retain conservative handling for complex shell syntax and redirection.
+
 ## [0.26.9] - 2026-11-12
 
 ### Fixed

@@ -1,0 +1,21 @@
+{
+  "name": "test_launch_refusal_diagnostic_distinguishes_closed_targets_without_payload",
+  "tests_run": 1,
+  "failures": 5,
+  "errors": 0,
+  "skips": 0,
+  "exit_code": 1,
+  "duration_seconds": 0.05714909998641815,
+  "stderr_sha256": "f8d1a760136f57aeab9fb23be786fff85c7ec12ab5e151b208c5833c88bf8026",
+  "candidate_before": {
+    ".github\\scripts\\test_artifact_installed_host.py": "1e6bd6d4de5bbc37fe116b5d95ef010b65de7831d5ef55bb99fbc3d9008f6595",
+    ".github\\scripts\\test_artifact_package.py": "348e170fd1714b7afdfbaa927e927ec8b80ff4aedb0f887c854f849e6d19003a"
+  },
+  "candidate_after": {
+    ".github\\scripts\\test_artifact_installed_host.py": "1e6bd6d4de5bbc37fe116b5d95ef010b65de7831d5ef55bb99fbc3d9008f6595",
+    ".github\\scripts\\test_artifact_package.py": "348e170fd1714b7afdfbaa927e927ec8b80ff4aedb0f887c854f849e6d19003a"
+  },
+  "candidate_unchanged": true,
+  "scope": "AST-selected new pure method from owning test file, actual installed-host guard callback and failure decoder; native package setUpModule and old process-based methods intentionally not run. No real audit hook installed.",
+  "subtest_outcomes": "Failure list retains actual unittest subtest IDs; positive/legacy/redaction assertions remain in the method."
+}

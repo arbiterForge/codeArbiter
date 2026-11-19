@@ -1,0 +1,31 @@
+{
+  "all12_original_test_method_ASTs_identical": true,
+  "new_test_methods": [
+    [
+      "AdmissionTests",
+      "test_large_sidecar_uses_same_document_budget_through_original_archive_consumer"
+    ],
+    [
+      "AdmissionTests",
+      "test_runtime_population_directory_entries_bytes_and_version_overflows_refuse"
+    ],
+    [
+      "RuntimePortabilityTests",
+      "test_actual_owned_8193_regular_file_inventory_is_complete"
+    ],
+    [
+      "RuntimePortabilityTests",
+      "test_actual_owned_links_are_inert_and_never_traversed"
+    ],
+    [
+      "RuntimePortabilityTests",
+      "test_inert_link_change_and_unrecorded_consumed_imports_are_refused"
+    ],
+    [
+      "RuntimePortabilityTests",
+      "test_snapshot_budget_stops_before_hashing_an_over_budget_file"
+    ]
+  ],
+  "native_consumer_one_shared_document_limit_only": true,
+  "Windows_only_exact3_predicates_literal_all_assertions_mutants_unchanged": true
+}

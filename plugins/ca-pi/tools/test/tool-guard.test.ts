@@ -139,6 +139,40 @@ function interactiveContext(overrides: Record<string, unknown> = {}): Record<str
   };
 }
 
+describe("Pi delegated final gate", () => {
+  test("headless parent has a distinct bounded refusal and cannot execute", async () => {
+    const installer = new EnforcementInstaller(); let effects = 0;
+    const outcome = await installer.executeDelegated("write", "parent-call", { path: "x", content: "x" },
+      new AbortController().signal, { cwd: "C:/repo", mode: "rpc", hasUI: false },
+      async () => { effects++; return {}; });
+    expect(outcome.admitted).toBe(false); expect(outcome.reason).toBe("no-parent-ui"); expect(effects).toBe(0);
+  });
+  test("uses parent bridge and concrete confirmation before the supplied exact effect", async () => {
+    const pi = new FakePi(); const bridge = new FakeBridge({ version: 1, outcome: "allow" });
+    const installer = new EnforcementInstaller(); const native: Array<{ tool: string; params: Record<string, unknown> }> = [];
+    installer.ensureBootstrap(pi, descriptor); installer.beginActivation();
+    installer.ensureBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories(native),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
+      permissionPolicy, permissionAudit: async () => true }); installer.markReady();
+    const prompts: string[] = []; let effects = 0;
+    const context = interactiveContext({ ui: { confirm: async (_title: string, text: string) => { prompts.push(text); return true; } } });
+    const result = await installer.executeDelegated("write", "parent-operation", { path: "result.txt", content: "approved bytes" },
+      new AbortController().signal, context, async (params) => { effects++; expect(params.content).toBe("approved bytes"); return { isError: false }; });
+    expect(result.admitted).toBe(true); expect(effects).toBe(1); expect(native).toEqual([]);
+    expect(bridge.requests[0]?.tool).toBe("write"); expect(prompts[0]).toContain("result.txt");
+  });
+  test("bridge block never reaches parent confirmation or supplied effect", async () => {
+    const pi = new FakePi(); const bridge = new FakeBridge({ version: 1, outcome: "block", ruleId: "test-hard-block" });
+    const installer = new EnforcementInstaller(); installer.ensureBootstrap(pi, descriptor); installer.beginActivation();
+    installer.ensureBuiltins(pi, bridge, { cwd: "C:/repo", descriptor, factories: factories([]),
+      wrapperSourcePath: "C:/package/extensions/codearbiter.js", projectTrust: () => true,
+      permissionPolicy, permissionAudit: async () => true }); installer.markReady();
+    let effects = 0; const result = await installer.executeDelegated("write", "parent-operation", { path: "x", content: "x" },
+      new AbortController().signal, interactiveContext(), async () => { effects++; return {}; });
+    expect(result.admitted).toBe(false); expect(effects).toBe(0);
+  });
+});
+
 describe("Pi final-wrapper permission decision", () => {
   test("registers the core-descriptor background tool through the enforcement installer", async () => {
     const hosts = JSON.parse(

@@ -1,0 +1,227 @@
+{
+  "schema": "codearbiter.evidence-filemap/1",
+  "state": "TEMP_ONLY_ROOT_COPY_MAP_NOT_APPLIED",
+  "repository_destination_prefix": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3",
+  "entries": [
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\diagnosis\\debug-handoff.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/diagnosis/debug-handoff.json",
+      "sha256": "45381931107aa3855efac7f935369469c7fd83efccb048fce778931a222f0355",
+      "bytes": 9469,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\debug-handoff.json",
+        "sha256": "45381931107aa3855efac7f935369469c7fd83efccb048fce778931a222f0355",
+        "bytes": 9469
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\diagnosis\\handoff-validation.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/diagnosis/handoff-validation.json",
+      "sha256": "25591fd511f86fd0a39f1f5104ed21f2a790ae52258c77f3bb7646accf35473c",
+      "bytes": 93,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\handoff-validation.json",
+        "sha256": "25591fd511f86fd0a39f1f5104ed21f2a790ae52258c77f3bb7646accf35473c",
+        "bytes": 93
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\diagnosis\\host-interface-source.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/diagnosis/host-interface-source.json",
+      "sha256": "81478ade826ab34c544f869217ebe775128dff051157849bc8e036e9464c144d",
+      "bytes": 1189,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\host-interface-source.json",
+        "sha256": "81478ade826ab34c544f869217ebe775128dff051157849bc8e036e9464c144d",
+        "bytes": 1189
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\diagnosis\\foreign-footer-original-red.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/diagnosis/foreign-footer-original-red.json",
+      "sha256": "01611cbf16060c9597e8057f5be68e296ea80eedbf7465b218f23fc4c0372b1c",
+      "bytes": 2346,
+      "representation": "LOSSLESS_SELECTED_ASSERTION_OBJECTS_PARTIAL_REPORT",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-replacement-diagnosis-abwz3vyv\\diagnosis-red-with-positive-control.json",
+        "sha256": "f1134f5366b233f8bcd96b2745ada783845d9986860ef5f03e4721d19d7b513b",
+        "bytes": 13816,
+        "preserved_in_Temp": true
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\source-freeze.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/source-freeze.json",
+      "sha256": "05b28e96dcf4d508aa78a178674b95770c8f3737b8139c1b5255034507bdc6a7",
+      "bytes": 20749,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\source-freeze.json",
+        "sha256": "05b28e96dcf4d508aa78a178674b95770c8f3737b8139c1b5255034507bdc6a7",
+        "bytes": 20749
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\actual-inputs-before.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/actual-inputs-before.json",
+      "sha256": "45378cc5cecabb1b0bfaab1a586345e838f9e86aa93d0fca3e50358b12a63938",
+      "bytes": 16717,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\before.json",
+        "sha256": "45378cc5cecabb1b0bfaab1a586345e838f9e86aa93d0fca3e50358b12a63938",
+        "bytes": 16717
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\actual-inputs-after.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/actual-inputs-after.json",
+      "sha256": "5fe1c3b7e7c9fa0752013c8573e3078cce4566d30ad97daef822e689dd7b324f",
+      "bytes": 16107,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\inputs-after.json",
+        "sha256": "5fe1c3b7e7c9fa0752013c8573e3078cce4566d30ad97daef822e689dd7b324f",
+        "bytes": 16107
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\status41-original.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/status41-original.json",
+      "sha256": "4b8c0baf852142747b03745353be9cf922e2aaa87a10d1eb3841cfc2c84a0b28",
+      "bytes": 52766,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\owning-status-coverage.json",
+        "sha256": "4b8c0baf852142747b03745353be9cf922e2aaa87a10d1eb3841cfc2c84a0b28",
+        "bytes": 52766
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\coverage-summary.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/coverage-summary.json",
+      "sha256": "a645b57fd7576e776824cc9b5684e65da865fea5f09d7ba048011616c57fc49d",
+      "bytes": 709,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\coverage\\coverage-summary.json",
+        "sha256": "a645b57fd7576e776824cc9b5684e65da865fea5f09d7ba048011616c57fc49d",
+        "bytes": 709
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\commands.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/commands.json",
+      "sha256": "9779ac92dcc7c070fc5a999dfccf07050949f1786de538746b2c15523dae124d",
+      "bytes": 3692,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\commands.json",
+        "sha256": "9779ac92dcc7c070fc5a999dfccf07050949f1786de538746b2c15523dae124d",
+        "bytes": 3692
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\fix\\typecheck-result.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/fix/typecheck-result.json",
+      "sha256": "1d460e40d02159e2c42ddd31110cb7c00670ca4937ef7c72536dde542accc6f6",
+      "bytes": 1187,
+      "representation": "DERIVED_EXPLICIT_OBSERVATION",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-footer-ownership-fix-n97nrqa4\\commands.json",
+        "sha256": "9779ac92dcc7c070fc5a999dfccf07050949f1786de538746b2c15523dae124d"
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\doctor\\predecessor-source-freeze.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/doctor/predecessor-source-freeze.json",
+      "sha256": "cbc3155a003d942b3e735259793508a3131208da5a7d00633f2bdd5eceeb3ee6",
+      "bytes": 11551,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\source-freeze.json",
+        "sha256": "cbc3155a003d942b3e735259793508a3131208da5a7d00633f2bdd5eceeb3ee6",
+        "bytes": 11551
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\doctor\\actual-inputs-before.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/doctor/actual-inputs-before.json",
+      "sha256": "b2c5630b0143e884e3d364ae0d7a0e85daa520596deb128adbe1882c7ec29ffb",
+      "bytes": 16518,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\before.json",
+        "sha256": "b2c5630b0143e884e3d364ae0d7a0e85daa520596deb128adbe1882c7ec29ffb",
+        "bytes": 16518
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\doctor\\commands.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/doctor/commands.json",
+      "sha256": "2ca88174c1102876552edd714a888f8e3cb2b905599bd51c62e8902d4dfa6f15",
+      "bytes": 2784,
+      "representation": "EXACT_ORIGINAL_UTF8",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\commands.json",
+        "sha256": "2ca88174c1102876552edd714a888f8e3cb2b905599bd51c62e8902d4dfa6f15",
+        "bytes": 2784
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\doctor\\doctor6-selected-original.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/doctor/doctor6-selected-original.json",
+      "sha256": "037d8243e37182a0869d66942afef6c01c474ae8d6be46f1b5d3b269f507685e",
+      "bytes": 3559,
+      "representation": "LOSSLESS_SELECTED_ASSERTION_OBJECTS_PARTIAL_REPORT",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\focused-green.json",
+        "sha256": "82108ca7895ba76fc0d6f8aacbd8af70210201ba30fa8599b3394d96cc921fc3",
+        "bytes": 8662,
+        "preserved_in_Temp": true
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\doctor\\precedence-mutant-selected-original-red.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/doctor/precedence-mutant-selected-original-red.json",
+      "sha256": "c3a9607a1c025e1642d2e5235af3a1d18ecfa59890dd8a5881f95c7c10ee65ae",
+      "bytes": 2985,
+      "representation": "LOSSLESS_SELECTED_ASSERTION_OBJECTS_PARTIAL_REPORT",
+      "origin": {
+        "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-doctor-aggregate-yfb1_rma\\precedence-negative-control.json",
+        "sha256": "a1afb0d8cb008e2dfd6b0308a58b86b7fd867decceeb06f713d8aaac4aea6773",
+        "bytes": 9986,
+        "preserved_in_Temp": true
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\applied-source-joins.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/applied-source-joins.json",
+      "sha256": "e45663fee582668e0ad0aa886c3836a6749d520d23d9bdd4b559593ca9031392",
+      "bytes": 3398,
+      "representation": "DERIVED_EXPLICIT_OBSERVATION",
+      "origin": {
+        "kind": "new read-only current Root WIP byte observation"
+      }
+    },
+    {
+      "source": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-ui-retention-jdrodo4p\\files\\summary.json",
+      "destination": "docs/state-contracts-major/execution/evidence/pi-footer-doctor-ce3/summary.json",
+      "sha256": "f00f3df193d88b30fc12158379f200589a0c53d0552cfd331b1152238c34a772",
+      "bytes": 2448,
+      "representation": "DERIVED_EXPLICIT_OBSERVATION",
+      "origin": {
+        "kind": "bounded derived summary; originals and identities above"
+      }
+    }
+  ],
+  "files": 18,
+  "total_bytes": 168267,
+  "strict_UTF8": true,
+  "raw_ASCII_and_C1_controls_other_than_structural_whitespace": false,
+  "projections": "Only two doctor selected reports and originalfooterRED are projections, with exact selected assertion object roundtrip and originalTemp+SHA preserved. Other originalJSONs copied byteexact.",
+  "non_actions": "No test/build/runtime/acquisition/Gov/index/ledger/marker change."
+}

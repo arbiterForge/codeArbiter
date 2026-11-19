@@ -64,6 +64,27 @@ def root_bound_git_env(*, preserve_index=False):
     return env
 
 
+
+def local_read_git_env(*, preserve_index=False):
+    """Credential-blind environment for explicitly local, read-only Git calls.
+
+    Keep protected file-based configuration and root/index selection semantics.
+    Environment-config injection and arbitrary credentials are never forwarded.
+    The ordinary Git/hook environment above is deliberately unchanged.
+    """
+    allowed = frozenset({
+        "SYSTEMROOT", "SYSTEMDRIVE", "WINDIR", "COMSPEC", "PATHEXT", "PATH",
+        "HOME", "USERPROFILE", "HOMEDRIVE", "HOMEPATH", "APPDATA", "LOCALAPPDATA",
+        "TEMP", "TMP", "TMPDIR", "XDG_CONFIG_HOME", "LANG", "LANGUAGE", "LC_ALL",
+        "LC_CTYPE", "LC_MESSAGES", "TZ", "GIT_CONFIG_GLOBAL", "GIT_CONFIG_SYSTEM",
+        "GIT_CONFIG_NOSYSTEM",
+    })
+    bound = root_bound_git_env(preserve_index=preserve_index)
+    result = {key: value for key, value in bound.items()
+              if key.upper() in allowed or (preserve_index and key == "GIT_INDEX_FILE")}
+    result["GIT_TERMINAL_PROMPT"] = "0"
+    return result
+
 def active_index_recovery(root):
     """Return a recovery message when an inherited alternate index vanished."""
     value = os.environ.get("GIT_INDEX_FILE")

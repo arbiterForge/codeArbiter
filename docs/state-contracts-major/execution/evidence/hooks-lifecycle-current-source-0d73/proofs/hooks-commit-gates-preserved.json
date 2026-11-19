@@ -1,0 +1,567 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "0d73b17e3409e0295fede33918838d8a8481290e",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/acceptance_security_review as source author; not independent self-review or execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0030-orchestration-mode-plane-with-composed-persona.md": "c383c47baac98aa64638795f50d10befa8ad7361e803788229d4f71826ef962b",
+  ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+  ".codearbiter/decisions/0033-bind-accepted-adrs-to-obligation-evidence.md": "47c8903501b5d2fa3c5c72c9c59a5a0eebddae0c8ffa6f4f153f262068b1c16f",
+  ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+  ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+  ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+  "core/pysrc/_bashguardlib.py": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+  "core/pysrc/git-enforce.py": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+  "core/pysrc/migration-pass.py": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+  "core/pysrc/security-pass.py": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/decisions.json": "5e27a869b569224df3b516a6f64a84aac662b8819607ae6c75b5847be23770a9",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+  "docs/state-contracts-major/hooks-workflow-tasks.json": "05a2b15eb968b7fa25bb2af6c11c862eef599757f66404b6abcf5b0f519c3e30"
+ },
+ "disposition_ids": [
+  "disposition:machines:hooks:commit-gates",
+  "disposition:transitions:hooks:commit-gates:01",
+  "disposition:transitions:hooks:commit-gates:02",
+  "disposition:transitions:hooks:commit-gates:03",
+  "disposition:transitions:hooks:commit-gates:04",
+  "disposition:transitions:hooks:commit-gates:05",
+  "disposition:transitions:hooks:commit-gates:06",
+  "disposition:transitions:hooks:commit-gates:07",
+  "disposition:transitions:hooks:commit-gates:08"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/source-bindings.json",
+   "sha256": "c42504c013b5c1e9673e47a51f8e33b609f9b365cf9830478dbec065df87d2f4"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/clause-inspection.json",
+   "sha256": "0020b4f082221414c7e6e513665f0725b1b592a3d02fe789565df50a69dde593"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/intake-and-limits.json",
+   "sha256": "cd46da96efcaf1c38aff76cf3168ec98afd7971d315addd34fb3720eec84e5f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/retained-history.json",
+   "sha256": "5329297af40dff771aa893950d7f8fd8ce504bffc2ded986b80cc4dd130f138b"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/hooks-lifecycle-current-source-0d73/review-reuse-and-reinspection.json",
+   "sha256": "371ced28ee3ccfaf3c4d1553327a20c0c4a732311990f68019a08946ac0c0cfe"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:hooks:commit-gates",
+   "frozen_row_sha256": "848efc75963f3b2ab3d64cf605feaba463bc785c3f8b4e866262b38d6d38a7fa",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:01",
+    "disposition:transitions:hooks:commit-gates:02",
+    "disposition:transitions:hooks:commit-gates:03",
+    "disposition:transitions:hooks:commit-gates:04",
+    "disposition:transitions:hooks:commit-gates:05",
+    "disposition:transitions:hooks:commit-gates:06",
+    "disposition:transitions:hooks:commit-gates:07",
+    "disposition:transitions:hooks:commit-gates:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 140,
+     "end": 180,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "9147cb4f9663d191d12f0228e5266b7adefc81446261df25c98842a65c588045",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 242,
+     "end": 263,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "b84e940dd7699fd15ccdf21d6afde540bcc25c1a931f80186558152e1db451bf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2177,
+     "end": 2226,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "cc1986100f07b42c5caba148ed273f2185f6f784ccebb55e6d3ea3d65258f0bf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 174,
+     "end": 233,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "b5bc37cee9359e87ff5d27b210752e6bf27695a95a3227dfa24603cc5f7f797c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2145,
+     "end": 2214,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "54856a4fad5543787e1e7f185261208ee9c3504a478f2a3bbb33101e0f4e6a83",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2276,
+     "end": 2292,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "e5f9d1b5d978385bd9228e40b17fc455dcb15f894fd32adcb0a33b35da7d7ecc",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 3000,
+     "end": 3092,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "78420fd37585dfdd918fb2e1ae0de5c3955ff309b558875e5ddda05dd3c7f79d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2618,
+     "end": 2803,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "b32b6edd6ae2a11fd7867dc156639c2bba16e82e79879d6f09d31b657e449b60",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 183,
+     "end": 224,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "cff0448e38003706c38c5b6ed8e0ccd594cbdfe649b6299e29d7b0b6390f3273",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 242,
+     "end": 352,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "26624ad6b1037e8cc8c2acba6934e6a1c8a3a093b530078cf4c6cbdd70fc64a1",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 620,
+     "end": 693,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "442fe8a75bace4c066cc45a0bb60b3821dd6ba9757fc1cda00a51b594f095e9c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 287,
+     "end": 315,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "13e307b71631556f08fdb3abb9034c765d415f450cc509d4aaeff3028b2b3df5",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2618,
+     "end": 2716,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "0b78fd0288f133b4cb29a1efd82bb467f9a8d09305c2e1a36e019a414ff7a0f6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 369,
+     "end": 420,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "a750c4ce4f2696eecd400eb9237110e65b0048afba1c74d11d479ebf3e4f7c8f",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 620,
+     "end": 723,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "5924d78aaec858629dd36953d3f5280646f0f3030de732a1b13364f895f2dc99",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 274,
+     "end": 286,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "b2112009cfa3c7f5bcc00e599324e6bee277b29663f71a907e154133a770eeb3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/security-pass.py",
+     "start": 104,
+     "end": 154,
+     "file_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+     "span_sha256": "6400293dc6ef22127b17e7de2e35fd32939de868239fa8756e75922103234e33",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_gitexec.py",
+     "start": 388,
+     "end": 448,
+     "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+     "span_sha256": "39d32a9121cd6e81efbf503450af5654bf9e3b7ce0152789cee2cbf0b91dc752",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 376,
+     "end": 381,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "db6cc1c59b90f82227e436d18e647e73f55126bd7f706f35a91bdd7bcd422349",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 318,
+     "end": 352,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "dec0d7782bba5762597ab58e32ebdfb050c775257c8e7956bc068c86503d27ba",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2719,
+     "end": 2803,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "06c0a553e43074e08b98a4a300083831575ac5c3ffb0ad68b7b6b45ee0e67a26",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/migration-pass.py",
+     "start": 60,
+     "end": 115,
+     "file_sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+     "span_sha256": "fa57d62e57cc5becbfedd7e822da81116a96752569bc3cb58e7efce7b750fad2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 384,
+     "end": 393,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "1580c2616e8bb60161bd4e8313fa4a2ea22e9de71bb0ef92d37504eee21ee7fd",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 268,
+     "end": 352,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "cf7b15c771fb64014c354a5e4a723f4969f17c87fe045c1bbb55e23ade411fb6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:01",
+   "frozen_row_sha256": "ade12a7e956ccd93b7ba9a48951332c138da9ea825aaeb062fa7982b4a5ee217",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:01"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 140,
+     "end": 180,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "9147cb4f9663d191d12f0228e5266b7adefc81446261df25c98842a65c588045",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 242,
+     "end": 263,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "b84e940dd7699fd15ccdf21d6afde540bcc25c1a931f80186558152e1db451bf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2177,
+     "end": 2226,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "cc1986100f07b42c5caba148ed273f2185f6f784ccebb55e6d3ea3d65258f0bf",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:02",
+   "frozen_row_sha256": "5796973e51692df35b52000e76fd423fafc01fb6008d8c4d2ec0a8c627d4dd50",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:02"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 174,
+     "end": 233,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "b5bc37cee9359e87ff5d27b210752e6bf27695a95a3227dfa24603cc5f7f797c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2145,
+     "end": 2214,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "54856a4fad5543787e1e7f185261208ee9c3504a478f2a3bbb33101e0f4e6a83",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2276,
+     "end": 2292,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "e5f9d1b5d978385bd9228e40b17fc455dcb15f894fd32adcb0a33b35da7d7ecc",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 3000,
+     "end": 3092,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "78420fd37585dfdd918fb2e1ae0de5c3955ff309b558875e5ddda05dd3c7f79d",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:03",
+   "frozen_row_sha256": "c8964c5105a6a68012815149a779b7818055a28918a5b2ce5bcd9bd4e5f5ddfb",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:03"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2618,
+     "end": 2803,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "b32b6edd6ae2a11fd7867dc156639c2bba16e82e79879d6f09d31b657e449b60",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:04",
+   "frozen_row_sha256": "643809e4cd82e05865b3454ac52be21beb249c2e1bfd5cff03195b8f42436f4a",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:04"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 183,
+     "end": 224,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "cff0448e38003706c38c5b6ed8e0ccd594cbdfe649b6299e29d7b0b6390f3273",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 242,
+     "end": 352,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "26624ad6b1037e8cc8c2acba6934e6a1c8a3a093b530078cf4c6cbdd70fc64a1",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 620,
+     "end": 693,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "442fe8a75bace4c066cc45a0bb60b3821dd6ba9757fc1cda00a51b594f095e9c",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:05",
+   "frozen_row_sha256": "ea04624f240b2184ade2b3d3ee1049e8f796685df3af9c973303d655e27efd37",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:05"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 287,
+     "end": 315,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "13e307b71631556f08fdb3abb9034c765d415f450cc509d4aaeff3028b2b3df5",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2618,
+     "end": 2716,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "0b78fd0288f133b4cb29a1efd82bb467f9a8d09305c2e1a36e019a414ff7a0f6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 369,
+     "end": 420,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "a750c4ce4f2696eecd400eb9237110e65b0048afba1c74d11d479ebf3e4f7c8f",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 620,
+     "end": 723,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "5924d78aaec858629dd36953d3f5280646f0f3030de732a1b13364f895f2dc99",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:06",
+   "frozen_row_sha256": "d9781bf9592c2ccdd122ac4c5e50d8d17509752627114d05bd556bfa00591421",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:06"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 274,
+     "end": 286,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "b2112009cfa3c7f5bcc00e599324e6bee277b29663f71a907e154133a770eeb3",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/security-pass.py",
+     "start": 104,
+     "end": 154,
+     "file_sha256": "fc0e0a054cd36fbe3150dceacca2d603d106b36ae49db405d91109f016a211ed",
+     "span_sha256": "6400293dc6ef22127b17e7de2e35fd32939de868239fa8756e75922103234e33",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_gitexec.py",
+     "start": 388,
+     "end": 448,
+     "file_sha256": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+     "span_sha256": "39d32a9121cd6e81efbf503450af5654bf9e3b7ce0152789cee2cbf0b91dc752",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 376,
+     "end": 381,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "db6cc1c59b90f82227e436d18e647e73f55126bd7f706f35a91bdd7bcd422349",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:07",
+   "frozen_row_sha256": "a90d20ec08f349a81b910da611665454562df3aaf65585ce3870c9f9d05c83a9",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 318,
+     "end": 352,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "dec0d7782bba5762597ab58e32ebdfb050c775257c8e7956bc068c86503d27ba",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2719,
+     "end": 2803,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "06c0a553e43074e08b98a4a300083831575ac5c3ffb0ad68b7b6b45ee0e67a26",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/migration-pass.py",
+     "start": 60,
+     "end": 115,
+     "file_sha256": "878db96323fefc73b65b6bff73f54bdffafb98af6f260789e79f9b9d3a954fcd",
+     "span_sha256": "fa57d62e57cc5becbfedd7e822da81116a96752569bc3cb58e7efce7b750fad2",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_sensitivelib.py",
+     "start": 384,
+     "end": 393,
+     "file_sha256": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+     "span_sha256": "1580c2616e8bb60161bd4e8313fa4a2ea22e9de71bb0ef92d37504eee21ee7fd",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  },
+  {
+   "cell": "disposition:transitions:hooks:commit-gates:08",
+   "frozen_row_sha256": "8133a9a0de807ec9402937c60bc89384604b87f532741f03fef8f9912f5caf3b",
+   "clause_ids": [
+    "disposition:transitions:hooks:commit-gates:08"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/git-enforce.py",
+     "start": 268,
+     "end": 352,
+     "file_sha256": "41e0d0a2d5a08c55cde71441540d8717eee55914de62d3186d05f3de38ab8142",
+     "span_sha256": "cf7b15c771fb64014c354a5e4a723f4969f17c87fe045c1bbb55e23ade411fb6",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    },
+    {
+     "path": "core/pysrc/_bashguardlib.py",
+     "start": 2618,
+     "end": 2803,
+     "file_sha256": "34ed8f188b821b4f840f2d9ed5b601edfa502648129de914abb8694c412c244f",
+     "span_sha256": "b32b6edd6ae2a11fd7867dc156639c2bba16e82e79879d6f09d31b657e449b60",
+     "commit": "0d73b17e3409e0295fede33918838d8a8481290e"
+    }
+   ],
+   "assessment": "Current source preserves the finite literal responsibilities with the named accepted corrections and explicit intake/platform/storage limits in bound matrix.",
+   "source_boundary": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+  }
+ ],
+ "limits": "Reasoned finite source-conformance at actual committed0d73 only. No tests, original-owner/native/API/provider/model execution, actual work/effect/cleanup permission, runtime/installed/human/scenario/task acceptance, CI or publication qualification. Historical checks remain bound to their exact source and observation epochs. No global atomicity, storage-denial durability, unconditional replay, ancestor confinement or universal OS race/nofollow guarantee. Source author is not independent self-review; Root owns review, admission and canonical writes."
+}

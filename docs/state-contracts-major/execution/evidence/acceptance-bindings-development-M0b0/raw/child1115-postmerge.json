@@ -1,0 +1,37 @@
+{
+  "result": "MERGED_CHILD_PARENT_HELD",
+  "child": {
+    "baseRefName": "major/state-contracts",
+    "headRefOid": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+    "mergeCommit": {
+      "oid": "0b0ae193496335c0d87337e5993f032a9385fffb"
+    },
+    "mergedAt": "2026-11-16T21:29:30Z",
+    "state": "MERGED",
+    "url": "https://github.com/arbiterForge/codeArbiter/pull/1115"
+  },
+  "parent": {
+    "autoMergeRequest": null,
+    "baseRefName": "main",
+    "headRefOid": "0b0ae193496335c0d87337e5993f032a9385fffb",
+    "isDraft": true,
+    "mergedAt": null,
+    "state": "OPEN",
+    "url": "https://github.com/arbiterForge/codeArbiter/pull/1098"
+  },
+  "merge_parents": [
+    "27d38a2ddc0f6fbf77671a86cad04cd1a02e43dd",
+    "9d714e4c09acac13b33bdd5623ec6b8e647873d1"
+  ],
+  "remote_refs": {
+    "refs/heads/main": "3f1bd13762ed9f25320e58907f9bf98a81128504",
+    "refs/heads/major/state-contracts": "0b0ae193496335c0d87337e5993f032a9385fffb"
+  },
+  "remote_child_auto_deleted": true,
+  "local_head": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "source_tree_equal_child": true,
+  "tracked_index_clean": true,
+  "protected_artifacts_preserved": true,
+  "normal_integration_ci": "PENDING_FRESH_OBSERVATION",
+  "main_publication": "HELD_FOR_USER_TESTING"
+}

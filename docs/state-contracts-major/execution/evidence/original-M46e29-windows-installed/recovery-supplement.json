@@ -1,0 +1,516 @@
+{
+  "schema": "codearbiter-retained-recovery-supplement/1",
+  "source_commit": "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+  "run_id": 43582198115,
+  "producer_class": "local-host",
+  "platform": "windows/amd64",
+  "result": "PASSED_FINITE_10",
+  "tests_run": 10,
+  "skipped": 0,
+  "commands": [
+    {
+      "argv": [
+        "C:/Python314/python.exe",
+        "-B",
+        "C:\\Users\\brenn\\.codex\\worktrees\\state-contracts-merge-acceptance\\codeArbiter\\.github\\scripts\\qualify_workflow_recovery_cohort.py",
+        "--cohort",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\packages\\artifact-package-cohort.json",
+        "--output",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\workflow-recovery-cohort.json",
+        "--trusted-source-commit",
+        "46e29a796e89e0eaa3250cf171e4c9bea97ac437",
+        "--trusted-workflow",
+        ".github/workflows/ci.yml",
+        "--trusted-workflow-run",
+        "43582198115",
+        "--release-package-stage",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-cohort-M46e29-R43582198115\\stage",
+        "--promotion-receipt-sha256",
+        "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+      ],
+      "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-original-windows-M46e29-R43582198115\\workflow-recovery\\work",
+      "exit_code": 0,
+      "timed_out": false,
+      "containment": "exited",
+      "elapsed_seconds": 29.78435360000003,
+      "original_execution": true,
+      "execution_location": "local Windows AMD64"
+    }
+  ],
+  "installed_artifacts": {
+    "claude": {
+      "archive": "codearbiter-ca-4.0.0.tar.gz",
+      "archive_sha256": "676c25c2726d4c818c654bcb3e11a4f5302cb42ab710dd6cd92093b05967947a",
+      "native_binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "release_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+      "bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "selected_installed_members": {
+        "plugins/ca/helpers/artifacts/ca-artifact-windows-amd64.exe": {
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+          "bytes": 6860288
+        },
+        "plugins/ca/helpers/artifacts/release.json": {
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+          "bytes": 5655
+        },
+        "plugins/ca/hooks/_artifactlib.py": {
+          "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+          "bytes": 64937
+        },
+        "plugins/ca/hooks/_host.py": {
+          "sha256": "9d04b88683d1deab03850ef1f2a169579f59756d3430079bdc6aa2160994bc1b",
+          "bytes": 1689
+        },
+        "plugins/ca/hooks/_workflowrecoverylib.py": {
+          "sha256": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+          "bytes": 104156
+        },
+        "plugins/ca/hooks/hostapi.py": {
+          "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+          "bytes": 38083
+        }
+      }
+    },
+    "codex": {
+      "archive": "codearbiter-ca-codex-0.30.0.tar.gz",
+      "archive_sha256": "eefdaa4b3c34471dae446d84019b5533d09370cf60d945713e1060898ac437ca",
+      "native_binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "release_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+      "bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "selected_installed_members": {
+        "plugins/ca-codex/helpers/artifacts/ca-artifact-windows-amd64.exe": {
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+          "bytes": 6860288
+        },
+        "plugins/ca-codex/helpers/artifacts/release.json": {
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+          "bytes": 5655
+        },
+        "plugins/ca-codex/hooks/_artifactlib.py": {
+          "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+          "bytes": 64937
+        },
+        "plugins/ca-codex/hooks/_host.py": {
+          "sha256": "92b1977ada85436649380fdcf07651f586174efee76a8412beb3ae26bf1e457f",
+          "bytes": 15607
+        },
+        "plugins/ca-codex/hooks/_workflowrecoverylib.py": {
+          "sha256": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+          "bytes": 104156
+        },
+        "plugins/ca-codex/hooks/hostapi.py": {
+          "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+          "bytes": 38083
+        }
+      }
+    },
+    "pi": {
+      "archive": "arbiterforge-ca-pi-0.30.0.tgz",
+      "archive_sha256": "c52dfd6a2022edc6dfc90eab88ce6a8cd433d1fa61bbb8b31fe81166bfecb553",
+      "native_binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "release_manifest_sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+      "bridge_sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+      "selected_installed_members": {
+        "package/plugins/ca-pi/helpers/artifacts/ca-artifact-windows-amd64.exe": {
+          "sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+          "bytes": 6860288
+        },
+        "package/plugins/ca-pi/helpers/artifacts/release.json": {
+          "sha256": "55ae724da5997f93a255f26c6e0b238f93849cda989338e6b9e35e83f8f7bbdd",
+          "bytes": 5655
+        },
+        "package/plugins/ca-pi/hooks/_artifactlib.py": {
+          "sha256": "59dbf6c51cbbb824cf553aa38aeb9c543dcada14c6311e9393434d231babe03b",
+          "bytes": 64937
+        },
+        "package/plugins/ca-pi/hooks/_host.py": {
+          "sha256": "ba885061399fd0fcfd26979ac310ae175a232501346ebae6fd5142db2c302b62",
+          "bytes": 4549
+        },
+        "package/plugins/ca-pi/hooks/_workflowrecoverylib.py": {
+          "sha256": "65003d177eb77827c3a9723cf1565ed86e8a9724d22fb19cd3a727471cd71dad",
+          "bytes": 104156
+        },
+        "package/plugins/ca-pi/hooks/hostapi.py": {
+          "sha256": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+          "bytes": 38083
+        }
+      }
+    }
+  },
+  "observations": [
+    {
+      "observed_name": "RetainedRecoveryTests.test_shared_store",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_cli.py",
+      "owner_sha256": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+      "existing_method": "InstalledRecoveryTest.test_all_three_authenticated_helpers_capture_and_observe_same_local_store",
+      "lines": [
+        116,
+        129
+      ],
+      "source_excerpt": "    def test_all_three_authenticated_helpers_capture_and_observe_same_local_store(self):\n        ids = []\n        for number, host in enumerate(self.hosts):\n            result, registered = self.cli(host, \"register\", {\"candidates\": [self.offer(number)]})\n            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)\n            self.assertTrue(registered[\"durable\"])\n            ids.append(registered[\"items\"][0][\"obligation_id\"])\n        for host in self.hosts:\n            result, observed = self.cli(host, \"scan\")\n            self.assertEqual(result.returncode, 0, result.stderr + result.stdout)\n            self.assertEqual(observed[\"status\"], \"complete\")\n            self.assertEqual([item[\"obligation_id\"] for item in observed[\"items\"]], ids)\n            self.assertLessEqual(observed[\"bytes_read\"], 262144)\n        self.assertEqual((self.root / \".codearbiter/open-tasks.md\").read_text(), \"# Tasks\\n\\n## Backlog\\n\")",
+      "finite_assertion": "Each authenticated host durably registers; all three observe exact ordered IDs with <=256KiB; legacy board unchanged.",
+      "supplements_only": [
+        "WR-01",
+        "WR-05"
+      ]
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_native_response_loss",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_cli.py",
+      "owner_sha256": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+      "existing_method": "InstalledRecoveryTest.test_real_native_work_effect_is_reconciled_after_actual_process_death",
+      "lines": [
+        131,
+        152
+      ],
+      "source_excerpt": "    def test_real_native_work_effect_is_reconciled_after_actual_process_death(self):\n        (self.root / \".codearbiter/open-tasks.md\").unlink()\n        _, registration = self.cli(\"codex\", \"register\", {\"candidates\": [self.offer()]})\n        self.assertTrue(registration[\"durable\"], registration)\n        oid = registration[\"items\"][0][\"obligation_id\"]\n        script = (\"import sys,json,os;sys.path.insert(0,sys.argv[1]);import _workflowrecoverylib as r;\"\n                  \"\\ndef crash(point):\\n if point=='after-target':os._exit(79)\\n\"\n                  \"r.dispatch(sys.argv[2],'resume',{'obligation_id':sys.argv[3],'expected_revision':1},fault=crash)\\n\")\n        process = subprocess.run([sys.executable, \"-B\", \"-c\", script, str(self.hosts[\"codex\"] / \"hooks\"), str(self.root), oid],\n                                 env=self.environment(\"codex\"), cwd=self.root, capture_output=True, text=True, timeout=30)\n        self.assertEqual(process.returncode, 79, process.stderr + process.stdout)\n        work = self.root / \".codearbiter/work\"\n        files = {path.name: path.read_bytes() for path in work.glob(\"*.html\")}\n        self.assertEqual(len(files), 1)\n        _, record = self.cli(\"pi\", \"get\", oid=oid)\n        self.assertEqual(record[\"record\"][\"state\"], \"claimed\")\n        result, reconciled = self.cli(\"pi\", \"reconcile\", oid=oid, revision=record[\"record\"][\"record_revision\"])\n        self.assertEqual(result.returncode, 0, result.stderr + result.stdout)\n        self.assertEqual(reconciled[\"status\"], \"settled\", reconciled)\n        self.assertEqual(reconciled[\"record\"][\"effect\"][\"owner\"], \"native-work\")\n        self.assertEqual(files, {path.name: path.read_bytes() for path in work.glob(\"*.html\")})\n        self.assertFalse((self.root / \".codearbiter/open-tasks.md\").exists())",
+      "finite_assertion": "Actual os._exit(79) after native work effect; exactly one HTML target; claimed record; Pi reconciliation settles native-work with identical target bytes and no legacy board.",
+      "supplements_only": [
+        "WR-10",
+        "WR-11"
+      ]
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_foreign_helper",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_cli.py",
+      "owner_sha256": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+      "existing_method": "InstalledRecoveryTest.test_unknown_helper_foreign_manifest_and_arbitrary_storage_argument_refuse",
+      "lines": [
+        154,
+        166
+      ],
+      "source_excerpt": "    def test_unknown_helper_foreign_manifest_and_arbitrary_storage_argument_refuse(self):\n        foreign = self.root / \"foreign\" / \"ca\"\n        shutil.copytree(self.hosts[\"claude\"], foreign)\n        manifest = foreign / \".claude-plugin/plugin.json\"\n        value = json.loads(manifest.read_text())\n        value[\"name\"] = \"foreign-package\"\n        manifest.write_text(json.dumps(value))\n        result, observed = self.cli(\"claude\", \"register\", {\"candidates\": [self.offer()]}, package=foreign)\n        self.assertEqual(observed[\"reason\"], \"untrusted-helper\", result.stderr + result.stdout)\n        self.assertFalse((self.root / \".git/codearbiter/workflow-recovery\").exists())\n        result, _ = self.cli(\"claude\", \"scan\", extra=(\"--storage-root\", str(self.root / \"not-an-owner\")))\n        self.assertNotEqual(result.returncode, 0)\n        self.assertFalse((self.root / \"not-an-owner\").exists())",
+      "finite_assertion": "Mutated foreign manifest refuses untrusted-helper without store; unsupported --storage-root fails without creating supplied path.",
+      "supplements_only": []
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_credential_boundary",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_cli.py",
+      "owner_sha256": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+      "existing_method": "InstalledRecoveryTest.test_automatic_scan_child_environment_has_no_provider_credentials",
+      "lines": [
+        195,
+        211
+      ],
+      "source_excerpt": "    def test_automatic_scan_child_environment_has_no_provider_credentials(self):\n        _, registered = self.cli(\"pi\", \"register\", {\"candidates\": [self.offer()]})\n        self.assertTrue(registered[\"durable\"])\n        script = (\"import sys,json;sys.path.insert(0,sys.argv[1]);import _workflowrecoverylib as r;\"\n                  \"real=r.subprocess.run\\ndef observe(*args,**kw):\\n\"\n                  \" assert 'FARM_API_KEY' not in kw['env']\\n assert 'CLAUDE_CODE_OAUTH_TOKEN' not in kw['env']\\n\"\n                  \" assert 'PYTHONPATH' not in kw['env']\\n return real(*args,**kw)\\n\"\n                  \"r.subprocess.run=observe;print(json.dumps(r.automatic_snapshot(sys.argv[2])))\\n\")\n        env = self.environment(\"pi\")\n        env[\"FARM_API_KEY\"] = secrets.token_urlsafe(32)\n        env[\"CLAUDE_CODE_OAUTH_TOKEN\"] = secrets.token_urlsafe(32)\n        process = subprocess.run([sys.executable, \"-B\", \"-c\", script, str(self.hosts[\"pi\"] / \"hooks\"), str(self.root)],\n                                 env=env, cwd=self.root, capture_output=True, text=True, timeout=10)\n        self.assertEqual(process.returncode, 0, process.stderr)\n        observed = json.loads(process.stdout)\n        self.assertEqual(observed[\"status\"], \"complete\", observed)\n        self.assertEqual(observed[\"pending\"], 1)",
+      "finite_assertion": "Probe asserts child env excludes FARM_API_KEY, CLAUDE_CODE_OAUTH_TOKEN, PYTHONPATH; actual automatic snapshot completes.",
+      "supplements_only": []
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_changed_owner",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_cli.py",
+      "owner_sha256": "5e3af20417b589322cf2121be7df1697c4533f4052b40003d964f16a3acca4e7",
+      "existing_method": "InstalledRecoveryTest.test_changed_native_project_and_dual_owner_hold_only_affected_obligation",
+      "lines": [
+        168,
+        193
+      ],
+      "source_excerpt": "    def test_changed_native_project_and_dual_owner_hold_only_affected_obligation(self):\n        board = self.root / \".codearbiter/open-tasks.md\"\n        board.unlink()\n        _, initial = self.cli(\"claude\", \"register\", {\"candidates\": [self.offer()]})\n        oid = initial[\"items\"][0][\"obligation_id\"]\n        _, promoted = self.cli(\"claude\", \"resume\", oid=oid, revision=1)\n        self.assertEqual(promoted[\"status\"], \"settled\", promoted)\n        _, pending = self.cli(\"codex\", \"register\", {\"candidates\": [self.offer(1)]})\n        other = pending[\"items\"][0][\"obligation_id\"]\n        project = self.root / \".codearbiter/work/project.json\"\n        original = project.read_bytes()\n        changed = json.loads(original)\n        changed[\"project_id\"] = \"PROJECT-\" + \"A\" * 32\n        project.write_text(json.dumps(changed))\n        before = {p.name: p.read_bytes() for p in project.parent.glob(\"*.html\")}\n        _, held = self.cli(\"codex\", \"resume\", oid=other, revision=1)\n        self.assertEqual(held[\"reason\"], \"changed-binding\", held)\n        self.assertEqual(before, {p.name: p.read_bytes() for p in project.parent.glob(\"*.html\")})\n        project.write_bytes(original)\n        board.write_text(\"# Legacy owner\\n\\n## Backlog\\n\")\n        _, another = self.cli(\"pi\", \"register\", {\"candidates\": [self.offer(2)]})\n        third = another[\"items\"][0][\"obligation_id\"]\n        _, ambiguous = self.cli(\"pi\", \"resume\", oid=third, revision=1)\n        self.assertEqual(ambiguous[\"reason\"], \"owner-ambiguous\", ambiguous)\n        self.assertEqual(board.read_text(), \"# Legacy owner\\n\\n## Backlog\\n\")\n        self.assertEqual(before, {p.name: p.read_bytes() for p in project.parent.glob(\"*.html\")})",
+      "finite_assertion": "Changed project ID refuses changed-binding; restored native + legacy dual owner refuses owner-ambiguous; existing HTML and board bytes unchanged.",
+      "supplements_only": [
+        "WR-07"
+      ]
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_host_reentry",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_hosts.py",
+      "owner_sha256": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+      "existing_method": "RecoveryHostTest.test_real_startup_prompt_and_compaction_keep_notice_separate_from_persona",
+      "lines": [
+        42,
+        82
+      ],
+      "source_excerpt": "    def test_real_startup_prompt_and_compaction_keep_notice_separate_from_persona(self):\n        self.register()\n        baseline = self.store_snapshot()\n        for index, host in enumerate((\"claude\", \"codex\")):\n            with self.subTest(host=host):\n                session = \"notice-session-\" + host\n                payload = {\"hook_event_name\": \"SessionStart\", \"cwd\": str(self.root), \"session_id\": session}\n                started = time.monotonic()\n                first = self.script(host, \"session-start.py\", payload, startup=True)\n                elapsed = time.monotonic() - started\n                self.assertEqual(first.returncode, 0, first.stderr)\n                self.assertIn(f\"workflow recovery page: {index + 1} pending\", first.stdout)\n                self.assertLess(elapsed, 60)  # Actual Codex startup hook budget.\n                repeated = self.script(host, \"session-start.py\", payload, startup=True)\n                self.assertEqual(repeated.returncode, 0, repeated.stderr)\n                self.assertNotIn(\"workflow recovery page:\", repeated.stdout)\n                prompt = {\"hook_event_name\": \"UserPromptSubmit\", \"cwd\": str(self.root), \"session_id\": session, \"prompt\": \"continue\"}\n                first_prompt = self.script(host, \"prompt-submit.py\", prompt)\n                self.assertEqual(first_prompt.returncode, 0, first_prompt.stderr)\n                self.assertNotIn(\"codeArbiter: workflow recovery page:\", first_prompt.stdout)\n                self.register(1 if host == \"claude\" else 2)\n                changed = self.script(host, \"prompt-submit.py\", prompt)\n                self.assertEqual(changed.returncode, 0, changed.stderr)\n                self.assertIn(\"codeArbiter: workflow recovery page:\", changed.stdout)\n                if host == \"codex\":\n                    self.assertIn(\"workflow recovery page:\", json.loads(changed.stdout)[\"hookSpecificOutput\"][\"additionalContext\"])\n                compact = dict(prompt, hook_event_name=\"PreCompact\")\n                self.assertEqual(self.script(host, \"prompt-submit.py\", compact).returncode, 0)\n                after_compact = self.script(host, \"prompt-submit.py\", prompt)\n                self.assertEqual(after_compact.returncode, 0, after_compact.stderr)\n                self.assertNotIn(\"codeArbiter: workflow recovery page:\", after_compact.stdout)\n        # Registration above is the only ledger writer. Presentation never\n        # marks any record settled or calls a work target.\n        _, observed = self.cli(\"pi\", \"scan\")\n        self.assertEqual({item[\"state\"] for item in observed[\"items\"]}, {\"pending\"})\n        self.assertEqual((self.root / \".codearbiter/open-tasks.md\").read_text(), \"# Tasks\\n\\n## Backlog\\n\")\n        self.assertTrue(set(baseline).issubset(self.store_snapshot()))\n        after = self.store_snapshot()\n        for path, raw in baseline.items():\n            if path != \"index.json\" and not path.startswith(\"pages/\"):\n                self.assertEqual(after[path], raw)",
+      "finite_assertion": "Real Claude/Codex startup/prompt/PreCompact event seams suppress repeats, emit changed pending count; records remain pending and board unchanged. Only unrelated background fetch/update launchers doubled.",
+      "supplements_only": [
+        "WR-05"
+      ]
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_codex_pretool",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_hosts.py",
+      "owner_sha256": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+      "existing_method": "RecoveryHostTest.test_codex_pretool_context_does_not_synthesize_allow_or_change_block",
+      "lines": [
+        84,
+        101
+      ],
+      "source_excerpt": "    def test_codex_pretool_context_does_not_synthesize_allow_or_change_block(self):\n        self.register()\n        before = self.store_snapshot()\n        allowed = {\"hook_event_name\": \"PreToolUse\", \"tool_name\": \"exec_command\", \"cwd\": str(self.root),\n                   \"session_id\": \"allowed-notice\", \"tool_input\": {\"command\": \"git status --short\"}}\n        observed = self.script(\"codex\", \"pre-tool-adapter.py\", allowed)\n        self.assertEqual(observed.returncode, 0, observed.stderr)\n        body = json.loads(observed.stdout)\n        self.assertNotIn(\"decision\", body)\n        self.assertNotIn(\"permissionDecision\", body[\"hookSpecificOutput\"])\n        self.assertIn(\"workflow recovery page:\", body[\"hookSpecificOutput\"][\"additionalContext\"])\n        blocked = dict(allowed, session_id=\"blocked-notice\", tool_input={\"command\": \"git commit -m blocked-probe\"})\n        rejected = self.script(\"codex\", \"pre-tool-adapter.py\", blocked)\n        self.assertEqual(rejected.returncode, 0, rejected.stderr)\n        body = json.loads(rejected.stdout)\n        self.assertEqual(body[\"decision\"], \"block\")\n        self.assertNotIn(\"hookSpecificOutput\", body)\n        self.assertEqual(before, self.store_snapshot())",
+      "finite_assertion": "Allowed exec gets recovery additionalContext with no permission allow; blocked commit stays block without hookSpecificOutput; store identical.",
+      "supplements_only": []
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_pi_codec",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_hosts.py",
+      "owner_sha256": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+      "existing_method": "RecoveryHostTest.test_pi_closed_snapshot_codec_reads_pending_state_without_any_effect",
+      "lines": [
+        103,
+        119
+      ],
+      "source_excerpt": "    def test_pi_closed_snapshot_codec_reads_pending_state_without_any_effect(self):\n        oid = self.register()\n        before = self.store_snapshot()\n        request = {\"version\": 1, \"event\": \"workflow_recovery_snapshot\", \"cwd\": str(self.root), \"sessionId\": \"new-parent-session\"}\n        result = self.script(\"pi\", \"pi-bridge.py\", request)\n        self.assertEqual(result.returncode, 0, result.stderr)\n        value = json.loads(result.stdout)\n        self.assertEqual(value[\"auditCode\"], \"PI_WORKFLOW_RECOVERY\")\n        snapshot = value[\"resultPatch\"][\"workflowRecovery\"]\n        self.assertEqual(set(snapshot), {\"status\", \"revision\", \"pending\", \"claimed\", \"unavailable\", \"cursor\",\n                                         \"bytesRead\", \"reason\", \"notice\", \"fingerprint\"})\n        self.assertEqual(snapshot[\"pending\"], 1)\n        self.assertEqual(snapshot[\"claimed\"], 0)\n        self.assertEqual(snapshot[\"status\"], \"complete\")\n        self.assertNotIn(\"grant\", snapshot)\n        self.assertNotIn(oid, snapshot[\"notice\"])\n        self.assertEqual(before, self.store_snapshot())",
+      "finite_assertion": "Pi Python bridge event returns exact closed snapshot key set, pending1/claimed0/complete; no grant or obligation ID in notice; store identical.",
+      "supplements_only": [
+        "WR-05"
+      ]
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_dormant",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_hosts.py",
+      "owner_sha256": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+      "existing_method": "RecoveryHostTest.test_dormant_snapshot_and_missing_ledger_create_no_state",
+      "lines": [
+        121,
+        132
+      ],
+      "source_excerpt": "    def test_dormant_snapshot_and_missing_ledger_create_no_state(self):\n        for dormant in (False, True):\n            if dormant:\n                (self.root / \".codearbiter/CONTEXT.md\").write_text(\"---\\narbiter: disabled\\n---\\n\")\n            request = {\"version\": 1, \"event\": \"workflow_recovery_snapshot\", \"cwd\": str(self.root)}\n            result = self.script(\"pi\", \"pi-bridge.py\", request)\n            self.assertEqual(result.returncode, 0, result.stderr)\n            snapshot = json.loads(result.stdout)[\"resultPatch\"][\"workflowRecovery\"]\n            self.assertEqual(snapshot[\"status\"], \"absent\")\n            self.assertEqual(snapshot[\"notice\"], \"\")\n            self.assertFalse((self.root / \".git/codearbiter/workflow-recovery\").exists())\n            self.assertFalse((self.root / \".codearbiter/.markers\").exists())",
+      "finite_assertion": "Absent and disabled Pi snapshot returns absent/empty notice without ledger or marker directories.",
+      "supplements_only": []
+    },
+    {
+      "observed_name": "RetainedRecoveryTests.test_corrupt_inventory",
+      "actual_named_outcome": "PASS once, unskipped",
+      "owner": ".github/scripts/test_workflow_recovery_hosts.py",
+      "owner_sha256": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+      "existing_method": "RecoveryHostTest.test_corrupt_inventory_notice_never_repairs_or_blocks_real_host_entry",
+      "lines": [
+        134,
+        150
+      ],
+      "source_excerpt": "    def test_corrupt_inventory_notice_never_repairs_or_blocks_real_host_entry(self):\n        self.register()\n        index = self.root / \".git/codearbiter/workflow-recovery/v1/index.json\"\n        index.write_bytes(b\"not valid JSON\\n\")\n        before = self.store_snapshot()\n        for host in (\"claude\", \"codex\"):\n            result = self.script(host, \"session-start.py\", {\"hook_event_name\": \"SessionStart\", \"cwd\": str(self.root),\n                                                            \"session_id\": \"damaged-\" + host}, startup=True)\n            self.assertEqual(result.returncode, 0, result.stderr)\n            self.assertIn(\"workflow recovery inventory unavailable\", result.stdout)\n            self.assertIn(\"Independent authorized work continues\", result.stdout)\n        result = self.script(\"pi\", \"pi-bridge.py\", {\"version\": 1, \"event\": \"workflow_recovery_snapshot\", \"cwd\": str(self.root)})\n        self.assertEqual(result.returncode, 0, result.stderr)\n        value = json.loads(result.stdout)[\"resultPatch\"][\"workflowRecovery\"]\n        self.assertEqual(value[\"status\"], \"unavailable\")\n        self.assertIn(\"Independent authorized work continues\", value[\"notice\"])\n        self.assertEqual(before, self.store_snapshot())",
+      "finite_assertion": "Actual corrupt index remains byte-identical; Claude/Codex startup and Pi bridge report unavailable/independent work continues, exit0.",
+      "supplements_only": [
+        "WR-15",
+        "WR-17"
+      ]
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/result.json",
+      "sha256": "41ed2c7742ff32cfbe073cacb2e208427ab51c483dc3eed61a5bd18f6342bb5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/child-exit.json",
+      "sha256": "268e73ca56e8576f44c8fd05ee9625aaede99ce1baa824d7c57e5a2445493c5a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/command.json",
+      "sha256": "12e326ef8e001be3a5b5e6e8559282304958ec5e0a718d466b8e67fd7c6c0686"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/receipt-observation.json",
+      "sha256": "18ef5bbad6dbfcaedda95fd32d90babd3e08eb38262222a54e34d5dba0fdfd96"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/original.stdout.log",
+      "sha256": "5a820841c6a549c737c8b6ee9e1b37f735e6aebaf9253293c62ae4c312d3840b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-claude.json",
+      "sha256": "70593cbc601237908bbbe1e3eada03647ac2852b82ab9b662538e83f392f9785"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/result.json",
+      "sha256": "03ec3e4c484890a07a9b0d6ec0418dfe469c19e03aaf8748e5ff5388e74baa2e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/child-exit.json",
+      "sha256": "b72839ad58de91cd6e015e0d5edfebe0076f315b5fb5fa691db1fc85211e0b43"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/command.json",
+      "sha256": "fcb29b9401eebd179e1df52a797876237984a3e5d60af9ce0bee051d884114e7"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/receipt-observation.json",
+      "sha256": "5d8a352b4fc0cbf950b077dd62fda4e05911f1f27daded87190241396418967f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/original.stdout.log",
+      "sha256": "5a820841c6a549c737c8b6ee9e1b37f735e6aebaf9253293c62ae4c312d3840b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-codex.json",
+      "sha256": "6de480b94510cf315f75446a0cbf2d607d738bb9cabcdb97a07200795f57975e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/result.json",
+      "sha256": "247a1481d1b2a82e3a2511534021275a3efd6554a2a132f1a9247d8f03636462"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/child-exit.json",
+      "sha256": "b83aa5ff9ce1082fcff32441fd273ac056a1b6224cf1c1241e408dd7deb12501"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/command.json",
+      "sha256": "9291e77421865e61a785586fd65036d038def1a38137ff54317aa2b56fd35dd2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/receipt-observation.json",
+      "sha256": "9bb4889fc958842cc1e793fe3f3d062926aea2e5224093fbcf502e0d8d04ceac"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/original.stdout.log",
+      "sha256": "5a820841c6a549c737c8b6ee9e1b37f735e6aebaf9253293c62ae4c312d3840b"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi/original.stderr.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/cold-pi.json",
+      "sha256": "fd9ab9fbf59c539ca0b2de428884e67d64e930a8244db373bc7d2c27c5e75dc5"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/result.json",
+      "sha256": "226c5e420d9266ca08fcc96653377b4587d2122e88978ca278a7f5b5e7de6d85"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/child-exit.json",
+      "sha256": "968b8203a3d4b32631cd8796316625884d4aab626514bad0864e7f7eaa23229a"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/command.json",
+      "sha256": "d930c8aa13a529798f87c75fb956e35cf116db9ed11911d099827fa8fc8579fa"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/receipt-observation.json",
+      "sha256": "75b16237574b04792e6a0001dc07686219fcce52b37b56e4730023ebb737b82f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/inputs-before.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/inputs-after.json",
+      "sha256": "8c47984c36c38b19f9f8745fd042a24c3de5b0a9aa17b09709bfb7410b818781"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/original.stdout.log",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery/original.stderr.log",
+      "sha256": "c5d1ea2e848402a98fcc3d85153c156163749910b8e2873f977070e71ad5e883"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/workflow-recovery-cohort.json",
+      "sha256": "823fc907298aa17572b9688c2f7b3242c07559097e7f1e9729cc08ac7e5c55cf"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/runner-result.json",
+      "sha256": "0c523fff10d31f52b0fc4b6dae021cb2dd071875d48fe367cec45a08ef9a2fe0"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/runner-inputs-before.json",
+      "sha256": "31d4213ae114cd4e7ffaa8c9e98221abc94525d10e246b978b7e0a1a848ffb3d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/production-admission.json",
+      "sha256": "e3f54c5296dc069ba8313dcb5bb69ec19d08a83c71402d19d18bbe66da4ddc39"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/admission-payload-before.json",
+      "sha256": "2905102cc24520e99e0f4610de641f2d743882938d4c50412c6760a562a27d35"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/original-current-run.json",
+      "sha256": "d8e88add04beb3740177d14cf61346adea27cd370ba780b38778b2313c3496ea"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/current-original-artifact-metadata.json",
+      "sha256": "617a4551c14cea2605785fda32e4312d8b141c404dc54cc2ac9706ac232144f8"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/commands.json",
+      "sha256": "46ed5a5efd83a8426337ff5d5a8e9a8588a44d87874d7993bc1c7c002e575a56"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/python-version.json",
+      "sha256": "2496b5922e227393f92771663dcd02da748d33e7f90dd237c05057599e429bca"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/node-version.json",
+      "sha256": "eace2538f17808027c20f716896b042d648290d238781621d2ed6c437ea83458"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/git-version.json",
+      "sha256": "8896213851a0efbb937993bac0d57f9f66d587dbbaaac4f14034dcd444e9ce65"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/acquisition.json",
+      "sha256": "c4362438de5cc8f0f5b3b5d11d21691be6e37cd1f9e27d82491261421e8f2e0c"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/artifact-package-cohort.json",
+      "sha256": "9a73912786f525c6347539e73fc5f37644482bddefca8c0260ed4dda43f6ef01"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-M46e29-windows-installed/raw/artifact-promotion.json",
+      "sha256": "a026e43fb2a74cfa8dcedf022db50f6cb46876a15556b318d3660f39d856d084"
+    }
+  ],
+  "canonical_22_dispositions": "All22 current active canonical proofs and status TESTED retained byte-for-byte; this supplement does not replace them or promote WR rows.",
+  "supplemented_clauses": [
+    "WR-01",
+    "WR-05",
+    "WR-07",
+    "WR-10",
+    "WR-11",
+    "WR-15",
+    "WR-17"
+  ],
+  "limits": [
+    "Local original archive execution on Windows AMD64, not a new hosted execution or six-platform runtime union.",
+    "M native/archive evidence remains M. Current Gov F includes the NT06 Go test; M Go membership244 versus F245 is not relabeled or inferred passed.",
+    "114 exact source inputs unchanged before/after each actual child and equal immutable M; same114 equal current Gov F. Prebuilt native bytes are independently bound through original package/promotion identity, not a current-source Go compilation claim.",
+    "Bare core/pysrc/_host.py absence applies only to that canonical source lookup. All three installed hooks/_host.py are positively present and separately hashed.",
+    "Claude/Codex host-observed-prompt means installed bridge fixture events. Pi synthetic-policy-event is fixture evidence. No physical human consent or visible parent TUI/provider qualification.",
+    "Retained recovery10 are finite CLI/hook-event seams, not all22 canonical branches, platform concurrency, migration/downgrade, Pi revoked delegation or whole HW-15 completion.",
+    "Nested cold context/workflow subprocess outputs are retained only as owning cold receipt hashes and asserted outcomes; do not claim their original raw stdout bytes were separately retained.",
+    "No test, native command, build, download, API, install or package verification owner was executed by this proposal author. Only recorded evidence reading, hashing, immutable Git reads and in-memory archive inspection occurred."
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: split-only successor reusing actual original d594 clause inspection; current physical bytes checked, no rerun"
+  },
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site-tool-source-clauses-d594/inspection.json",
+      "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56"
+    }
+  ],
+  "scope": "Original finite conditional source clauses only, narrowed to actual concurrent-direct-child control cone; no execution or broader task/machine claim.",
+  "dependency_boundary": "Same original inspected direct code/guard/data scope; unrelated CI source removed because this cone does not read it. No runtime observation or imported authority is created by splitting.",
+  "inputs": {
+    ".github/scripts/run_concurrent_suites.py": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+  },
+  "disposition_ids": [
+    "disposition:transitions:C05:02",
+    "disposition:transitions:C05:03"
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:C05:02",
+      "witnesses": [
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "start": 55,
+          "end": 68,
+          "file_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b"
+        },
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "start": 89,
+          "end": 103,
+          "file_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b"
+        }
+      ],
+      "semantic_assessment": "Direct child stdout/stderr share an owned temporary log; after process completion bytes decode with replacement and return with actual code. Thread-pool results are collected before grouped output. Neither output-byte bound nor environment isolation is added by this source contract.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "3de7482c73a0d6dbeedac7524d10cf1dd333e32c6c1dc75f0bde7a4f4648336e",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    },
+    {
+      "cell": "disposition:transitions:C05:03",
+      "witnesses": [
+        {
+          "path": ".github/scripts/run_concurrent_suites.py",
+          "start": 55,
+          "end": 68,
+          "file_sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b"
+        }
+      ],
+      "semantic_assessment": "TimeoutExpired kills only the direct Popen child, waits it and adds timeout diagnostic with code-1. No process-tree kill, descendant cleanup or bounded post-kill rundown is claimed; those explicit limits remain source-visible.",
+      "failure_retry_boundary": "No execution observed; failures retain the named source path/branch and explicit retry remains caller-owned.",
+      "frozen_row_sha256": "e0f518bd0bd5dbde15e7c7ef8b440eb487647f6b2881f330c7aea3c5f8e7f3a6",
+      "treatment": "PRESERVE_BASELINE_CONTRACT",
+      "guard_effect_retry_source_only": true
+    }
+  ],
+  "original_inspection": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-site-tool-source-clauses-d594\\inspection.json",
+    "sha256": "d0e65eb23208d15b31066e5d842fd8c4db2ffd6bed4e2fc8e0a3ee582f7eee56",
+    "source_commit": "d594c913dd574241886cc9917fd7e4e8d0a6e25d"
+  }
+}

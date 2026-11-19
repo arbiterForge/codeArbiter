@@ -1,0 +1,14 @@
+{
+  "kind": "HANDOFF_CLIENT_LOGIC_SMOKE",
+  "result": "PASSED",
+  "checks": [
+    "369 records initially visible",
+    "machine-only 287",
+    "N09 machine lookup 1",
+    "missing query 0",
+    "task-only 82",
+    "collapse all",
+    "copy exact prompt"
+  ],
+  "environment": "Node VM with explicit DOM fixture; not browser rendering or product qualification"
+}

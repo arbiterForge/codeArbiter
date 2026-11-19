@@ -1,0 +1,77 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "04253aedfbd65761cdb816d814b38c49a122266f",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "Exact Pages retention and additive regression delta"
+  },
+  "inputs": {
+    ".codearbiter/decisions/0032-hosted-static-codex-release-evidence.md": "96b28b262f0bff474a53383c9823c22fbe06ecc3f63f343d8c6a31993c97e4c9",
+    ".codearbiter/decisions/0034-establish-closed-legacy-published-tag-provenance-epoch.md": "caec3ca7d29942c143661cab268b49cb57bb1c403c55d1ac476ca02a7059e224",
+    ".codearbiter/decisions/0040-independent-per-target-release-with-consumer-safety-gates.md": "2dce2651ea067cc7bec25982ce23fdeb1528e9bfb003906c55be7e243a3a8964",
+    ".codearbiter/decisions/0041-admit-pi-host-that-strictly-reduces-audit-findings.md": "6a37a0cbfb33ee413d2409bee9e8318413bfe5635d5335d0734352584f4730be",
+    ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+    ".codearbiter/decisions/0044-trusted-pi-npm-publication.md": "fda3c0194f83d41bcb169fae7c14d1b24bdaf3bace8d41780a88825e10fe30d6",
+    ".codearbiter/decisions/0049-require-https-outside-bounded-loopback.md": "c757cef9d5e318b75ff164d270b29a49255449360f0b7cde51e53775e6916ab8",
+    ".github/scripts/site_playwright_observation.py": "216dbd8c32b0e340e2146c6c1a4ea79c58310e96e7e4b3c124674be617a452ba",
+    ".github/scripts/site_vitest_observation.py": "03d2840061d1dedb383b38f6fb45b1ac5a605d79350113770da24b46a8c5db09",
+    ".github/workflows/docs.yml": "65ed7547ac447257221bcac5a3afe8d77d07ba3142f730ed06c1e0cdc75af0f4",
+    "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    ".github/scripts/site_component_observation.py": "8b75c628a126d7bdda908dc3adccbd10be7b855639390f8c59d44bcbbc338249",
+    ".github/scripts/test_site_component_observation.py": "1aa420e3dee3e25a3b02b4ea9aae0b6f966e2b20342f5c529f624c09e3eef4e3",
+    "site/playwright.components.config.ts": "a754c185ecb38521688fdf1dcc946d6539c8dbab4974ded2733914077c6cc370"
+  },
+  "disposition_ids": [
+    "disposition:machines:C29",
+    "disposition:transitions:C29:01",
+    "disposition:transitions:C29:02",
+    "disposition:transitions:C29:03",
+    "disposition:transitions:C29:04",
+    "disposition:transitions:C29:05"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/pages-retention-source-04253aed/source-inspection.json",
+      "sha256": "7e2cd30b427a990d3ecab1c0899a3021767eee13df3a2cf6e2f5e1e307f8cd4e"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-01.json",
+      "sha256": "9e95d70335975f1d5474ae11ce471ad650069f564f3ae2b966f6d773f768dca2"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/source-delta-review.json",
+      "sha256": "05938adb97a326d4f877382e44599484331bbd3de369b90acd2dabda5fb77d5f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/historical-docs-sandbox-source-9889e5fa/proof-01.json",
+      "sha256": "f2cfac12e4a6bb01072ca8d0b7f4dfd02180247162e6be8fdc9801ff426eec12"
+    }
+  ],
+  "prior_source_fingerprint": {
+    "path": "docs/state-contracts-major/execution/evidence/original-owner-captures-source-8bf4cfbe/proof-01.json",
+    "sha256": "9e95d70335975f1d5474ae11ce471ad650069f564f3ae2b966f6d773f768dca2",
+    "original_code": "8bf4cfbe62806a78fd750f01108037c69b611e98",
+    "stored_at": "bad24886ceb514cae7d8e3b0e11b9bca3ce178dc"
+  },
+  "scope": "Finite, previously assessed owning source clauses.",
+  "changed_paths": [
+    ".github/workflows/docs.yml"
+  ],
+  "limits": [
+    "Only evidence binding was renewed for unchanged finite predicates. C35 has explicit maintainer-authorized policy changes.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Static renewal preserves C29 owner, pass and refusal conditions. A refused observation belongs to the existing bounded failure-evidence path.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Source renewal preserves existing named authority and Docs lifecycle predicates. Prior execution or runtime evidence retains original trust and provenance.",
+    "Source-only assessment. All execution and prior evidence retain their original epochs.",
+    "Existing Docs source conformance plus exact bound original replacement component owner, unchanged publication/deploy blocks, and conservative descriptor identity normalization.",
+    "No execution, installation, release, task or hosted result is changed or established.",
+    "Scope is source conformance. Hosted upload retention is measured separately."
+  ]
+}

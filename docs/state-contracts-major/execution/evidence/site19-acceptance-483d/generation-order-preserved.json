@@ -1,0 +1,108 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "483d0d34e43176dda01496db21201cac3e611ccd",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools: bounded remaining-site guard/effect/retry inspection"
+  },
+  "inputs": {
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "site/scripts/capture/normalize.ts": "41fe12095320d57c409bf95f50a0c98408d23fd56f83d3a2c570fb3dec11bd73",
+    "site/scripts/capture/verify.ts": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8",
+    "site/scripts/gen.ts": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0",
+    "site/scripts/generator/generate.ts": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed",
+    "site/scripts/owned-output.ts": "13ec4068eea8d6af7afaa8ca7e96b288a2aa8ca9991b7fb42a6901804f70fb3f"
+  },
+  "disposition_ids": [
+    "disposition:transitions:S64:01",
+    "disposition:transitions:S64:03",
+    "disposition:transitions:S64:04"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/site19-acceptance-483d/inspection.json",
+      "sha256": "bd79337c146ebf2c0792950656dccec184ff81907945f3047f38e45fd7808658"
+    }
+  ],
+  "scope": "Conditional source-clause control flow only; dynamic corpus/DOM data are preconditions, not observed accepted outputs. No runtime transport/dependency completeness claim.",
+  "semantic_mapping": [
+    {
+      "cell": "disposition:transitions:S64:01",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 31,
+          "end": 43,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 99,
+          "end": 125,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 239,
+          "end": 271,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 46,
+          "end": 99,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        },
+        {
+          "path": "site/scripts/capture/verify.ts",
+          "start": 121,
+          "end": 131,
+          "file_sha256": "ce088dd96d3d056ed1234d5bb27932b748aeb300c2a863f7c7590a1d022e32f8"
+        }
+      ],
+      "assessment": "Nonempty capture inventory and all listed current source hashes are checked before reference generation. Missing/malformed/stale captures fail the CLI. Reference collector/parser/catalog/curated admission calls precede rendering and publisher invocation; this is conditional source control-flow, not a claim the current external corpus was executed/admitted.",
+      "frozen_row_sha256": "a91c1b70799250c07e2d1c88792a3b70d17cefe843899ce0684723b5939fe108"
+    },
+    {
+      "cell": "disposition:transitions:S64:03",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 43,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        }
+      ],
+      "assessment": "Only after generate returns does CLI render/write hooks, configuration and optional existing changelog, then load Academy source/topic map, publish Academy and finally generate release applicability. Exceptions propagate or terminate preflight nonzero. No global transaction is implied across distinct output owners.",
+      "frozen_row_sha256": "b54771b08e744db230255342c0793b2ea9665b378422a9a14f21aae1b2ea73b8"
+    },
+    {
+      "cell": "disposition:transitions:S64:04",
+      "witnesses": [
+        {
+          "path": "site/scripts/gen.ts",
+          "start": 119,
+          "end": 134,
+          "file_sha256": "ab090b29ff4d165dbabfd87043c8038596fa1afb810c53b40c062db0d7896fb0"
+        },
+        {
+          "path": "site/scripts/generator/generate.ts",
+          "start": 454,
+          "end": 459,
+          "file_sha256": "782922efc0b6bb050bc8e91ddeec0bb4b7339776df1c868d527ac28f243681ed"
+        }
+      ],
+      "assessment": "Reference helper returns only after owned publication returns. Top-level CLI reaches its final completion log only after Academy and release applicability return; thrown required-stage errors cannot reach the ordinary successful end. This is the serial completion guard for invoked stages, not a completeness assertion about unobserved output bytes.",
+      "frozen_row_sha256": "7da282967342505664e8789bf8eb183d47830d4dc5ec618d10dc9187e9e0d7c7"
+    }
+  ],
+  "limits": [
+    "Only finite conditional source control-flow clauses. No new runtime/browser/build/corpus/installed/whole-machine/task/program acceptance.",
+    "Every frozen cited source path is bound, with logic witnesses separate from broader family citation exposure.",
+    "Metadata and unrelated staged cancellation changes are outside these inputs. Source epoch is immutable483d; no claim the whole worktree was clean."
+  ]
+}

@@ -1,0 +1,378 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "2e09c637d4897afbdb7494e2c1d9d0dfe782ca08",
+ "kind": "conformance-check",
+ "result": "PRESERVED",
+ "producer": {
+  "class": "source-conformance",
+  "identity": "/root/ci_repair_review: source-only author, no independent self-review or current runtime execution"
+ },
+ "inputs": {
+  ".codearbiter/decisions/0043-assistive-state-engine.md": "65518e0d03b2e90f63a73c731b802d9a1638f11d6475a7f6046720cf358c54a5",
+  "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+  "docs/state-contracts-major/PROGRAM.md": "d9c7aa742d3a4197d6812c6aa7e5f3ccba4d9a57886fc6b9aae1eff024e7a6b7",
+  "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+  "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d",
+  "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+  "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e"
+ },
+ "disposition_ids": [
+  "disposition:machines:S41",
+  "disposition:transitions:S41:01",
+  "disposition:transitions:S41:02",
+  "disposition:transitions:S41:03",
+  "disposition:transitions:S41:04",
+  "disposition:transitions:S41:05",
+  "disposition:transitions:S41:06",
+  "disposition:transitions:S41:07"
+ ],
+ "raw_evidence": [
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/source-bindings.json",
+   "sha256": "49ceb8835845eb0eb591600af4b0acb25cdc3292d9894e40d9460f362aa79b2f"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/baseline-current-joins.json",
+   "sha256": "54c3a482febdb2c016750a70c275758a46538ea6aafde188aabdb94fd37ca260"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/inherited-evidence-inventory.json",
+   "sha256": "eb2da6ec744f83648f1f08f0ce74a71b2799c54bc9a73a5b064217fe76efa4a7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/clause-inspection.json",
+   "sha256": "f1c5d66315d2fa44d366cc436ee35c931356edbc33da649c5fc0e1738202e8f7"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/remaining-hooks60-source-2e09c637/prune-repair-binding.json",
+   "sha256": "03f21fd5ac71cce6b28dcaa1a1b77f7f4c4e092a79a161c06effb11602adfd1b"
+  }
+ ],
+ "semantic_mapping": [
+  {
+   "cell": "disposition:machines:S41",
+   "frozen_row_sha256": "eae2757610af98fb9554e61b35b7e8b9116bbe03b0848092f4689830baf9681b",
+   "clause_ids": [
+    "disposition:transitions:S41:01",
+    "disposition:transitions:S41:02",
+    "disposition:transitions:S41:03",
+    "disposition:transitions:S41:04",
+    "disposition:transitions:S41:05",
+    "disposition:transitions:S41:06",
+    "disposition:transitions:S41:07"
+   ],
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promote",
+     "start": 1509,
+     "end": 1545,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "8a57a71e913d3034d31339973158caf283c7c8e9d64b2fb4b62b22c37d90f9e2"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promoted_entry",
+     "start": 1419,
+     "end": 1431,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "18278c26a5ffb69ff1bc816a6c38277d09e44f34b0fc39b55ad0507d861f06f2"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "already_promoted",
+     "start": 1434,
+     "end": 1436,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "d4d1a0a1c674df3c7911613d70994c4a25e05ff7ca4c7787e857c1bd7c2cce2d"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_add_deferred_decision",
+     "start": 1498,
+     "end": 1506,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "a6f1206bacbf217aec9053c4245cf67a4b7ded7e77a09628e8bf808667d69047"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "classify_board_diff",
+     "start": 754,
+     "end": 806,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "48a11f273c4afe93c78a500d9c2a247c4c4edd36d6e9d9cbf07dcc6d65e04693"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_is_valid_block_mutation",
+     "start": 728,
+     "end": 751,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "68120b8b26972bf8548528791ec165a11473c60f5afd6a2bd099a3098738d109"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_valid_created_block",
+     "start": 537,
+     "end": 563,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "6e72ada9cb205a8459d6d4f607d00e30ad797a60f6e8893b302425b9bc14275b"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_binding_delta",
+     "start": 605,
+     "end": 659,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "aaa0c46f8ccb2eff6fa84ee9a352a59b4cc1143a6f53a618592e298047d464a8"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "extract_task_ids",
+     "start": 809,
+     "end": 833,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "b509b2565988341433d5678dd8fa9f7a9de99e3d7634a31f72b37e224766c3e8"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "find_board_drift",
+     "start": 836,
+     "end": 885,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "96195989a557db5a95c317e8aba2587e6068f2016c977a3241d7fea57dc2ec29"
+    }
+   ],
+   "semantic_assessment": "All7 literal clauses inspected at named owner/callee boundaries, with explicit accepted changes/analytical limits below;28 advanced objects remain historical and are not renewed.",
+   "intake_variances": [
+    "Current HW11/HW12 owner compositions intentionally extend frozen add/start/done summary to selected attachment/start+attachment, start+complete collapse and create+start. This is a closed reviewed owner delta, not arbitrary bypass permission; archive/reopen/free prose remain outside this classifier."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:01",
+   "frozen_row_sha256": "da9e0c10d8463949b2ba7f4cca2fd8a5bbebe08e7b5785bd12fd04c4019e6aae",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promote",
+     "start": 1509,
+     "end": 1545,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "8a57a71e913d3034d31339973158caf283c7c8e9d64b2fb4b62b22c37d90f9e2"
+    }
+   ],
+   "semantic_assessment": "Interactive mode returns deduplicated candidates and unchanged board/questions without auto-promotion or decision approval.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:02",
+   "frozen_row_sha256": "c99f8f84f5ece4b4b71395d241dcd34dd1f720ad54ca512b6b21ae625c0a45eb",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promoted_entry",
+     "start": 1419,
+     "end": 1431,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "18278c26a5ffb69ff1bc816a6c38277d09e44f34b0fc39b55ad0507d861f06f2"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "already_promoted",
+     "start": 1434,
+     "end": 1436,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "d4d1a0a1c674df3c7911613d70994c4a25e05ff7ca4c7787e857c1bd7c2cce2d"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_add_deferred_decision",
+     "start": 1498,
+     "end": 1506,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "a6f1206bacbf217aec9053c4245cf67a4b7ded7e77a09628e8bf808667d69047"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promote",
+     "start": 1509,
+     "end": 1545,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "8a57a71e913d3034d31339973158caf283c7c8e9d64b2fb4b62b22c37d90f9e2"
+    }
+   ],
+   "semantic_assessment": "Auto mode routes fresh work to queued board and nonblocking decisions to deferred questions; origin dedup checks board plus archive for work and questions for decisions. Pure output remains proposal until owned caller persists it; no new remote side effect is introduced.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:03",
+   "frozen_row_sha256": "85c031a687670b3bb9609dbb98f19181397834bf6981150cdb9217197b6334af",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promote",
+     "start": 1509,
+     "end": 1545,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "8a57a71e913d3034d31339973158caf283c7c8e9d64b2fb4b62b22c37d90f9e2"
+    }
+   ],
+   "semantic_assessment": "Blocking decisions emit ESCALATE audit rather than non-gating deferred append; auto mode does not supply human approval. Accepted scoped PROGRAM authority is not replaced by a mandatory new confirmation ceremony.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:04",
+   "frozen_row_sha256": "807054b6a9d41f0cd7c8f9fccda43f86ecc458a728bc69aa9a8397bfb44e0a46",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promoted_entry",
+     "start": 1419,
+     "end": 1431,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "18278c26a5ffb69ff1bc816a6c38277d09e44f34b0fc39b55ad0507d861f06f2"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "already_promoted",
+     "start": 1434,
+     "end": 1436,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "d4d1a0a1c674df3c7911613d70994c4a25e05ff7ca4c7787e857c1bd7c2cce2d"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promote",
+     "start": 1509,
+     "end": 1545,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "8a57a71e913d3034d31339973158caf283c7c8e9d64b2fb4b62b22c37d90f9e2"
+    }
+   ],
+   "semantic_assessment": "Known work origin in any current/archived state prevents adding it again; existing decision origin in questions suppresses duplicate deferred promotion. Cross-owner response-loss reconciliation remains with the accepted HW12 owner, not this pure helper.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:05",
+   "frozen_row_sha256": "a8ba817e680bdfcf4c41ffc5b50acd3664d886ed6f9e544b12ebe187cca710f5",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "promote",
+     "start": 1509,
+     "end": 1545,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "8a57a71e913d3034d31339973158caf283c7c8e9d64b2fb4b62b22c37d90f9e2"
+    }
+   ],
+   "semantic_assessment": "Unsupported mode raises ValueError before candidate transformation; only interactive/auto admitted.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:06",
+   "frozen_row_sha256": "7a8b0940f05d28e4d4e4c50bf3deb44127175a07c85c172dfa56ae81b42ed873",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "classify_board_diff",
+     "start": 754,
+     "end": 806,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "48a11f273c4afe93c78a500d9c2a247c4c4edd36d6e9d9cbf07dcc6d65e04693"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_is_valid_block_mutation",
+     "start": 728,
+     "end": 751,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "68120b8b26972bf8548528791ec165a11473c60f5afd6a2bd099a3098738d109"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_valid_created_block",
+     "start": 537,
+     "end": 563,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "6e72ada9cb205a8459d6d4f607d00e30ad797a60f6e8893b302425b9bc14275b"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "_binding_delta",
+     "start": 605,
+     "end": 659,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "aaa0c46f8ccb2eff6fa84ee9a352a59b4cc1143a6f53a618592e298047d464a8"
+    }
+   ],
+   "semantic_assessment": "Classifier admits exactly one closed owner-shaped block operation with valid date/stamp/binding shape, or one absent section plus queued owner block, and rejects unrelated edits/multiple units. Existing required lifecycle transitions remain covered, without treating classifier as entire work lifecycle.",
+   "intake_variances": [
+    "Current HW11/HW12 owner compositions intentionally extend frozen add/start/done summary to selected attachment/start+attachment, start+complete collapse and create+start. This is a closed reviewed owner delta, not arbitrary bypass permission; archive/reopen/free prose remain outside this classifier."
+   ],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  },
+  {
+   "cell": "disposition:transitions:S41:07",
+   "frozen_row_sha256": "7b82055333eb642137745413fb686d8081075092e7f819d2db9b6b879120c4f1",
+   "witnesses": [
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "extract_task_ids",
+     "start": 809,
+     "end": 833,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "b509b2565988341433d5678dd8fa9f7a9de99e3d7634a31f72b37e224766c3e8"
+    },
+    {
+     "path": "core/pysrc/_taskboardlib.py",
+     "symbol": "find_board_drift",
+     "start": 836,
+     "end": 885,
+     "git_oid": "85511a724f3de7a8cf84c069814d0605e72f3395",
+     "file_sha256": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+     "span_sha256": "96195989a557db5a95c317e8aba2587e6068f2016c977a3241d7fea57dc2ec29"
+    }
+   ],
+   "semantic_assessment": "Merged dotted IDs produce advisory queued/active drift and separate unknown IDs; completed rows are excluded and source text is never modified or inferred complete.",
+   "intake_variances": [],
+   "limits": "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope."
+  }
+ ],
+ "scope": "S41 finite literal/current guard/effect/retry source contract; no runtime acceptance.",
+ "limits": [
+  "Source guard/effect/retry conformance only. No new product/test/host/native/provider/model execution or installed/task/scenario/CI/whole-program qualification; prior observations retain their real epoch and scope.",
+  "Original advanced28wholeobjects and5historicalproofs preserved losslessly; known source changes are not hidden by rewriting their observations.",
+  "Root sole integrator and unchanged strict original owner/independent reviewer; this author delivery is not self-approved."
+ ]
+}

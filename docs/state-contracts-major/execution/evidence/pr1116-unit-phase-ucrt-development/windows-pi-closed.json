@@ -1,0 +1,113 @@
+{
+  "source": "bbc6f39d688296e56ae6f3d5543e018f93288a7a",
+  "run_id": 43992411061,
+  "attempt": 1,
+  "job_id": 133736258848,
+  "job_name": "[CHECK] | [PI  ] | Adapter contract  <os: windows-latest \u00b7 runtime: Pi 1.5.0>",
+  "failed_steps": [
+    {
+      "number": 12,
+      "name": "Test cross-platform paths, encoding, cancellation, process trees, prune, and generation",
+      "conclusion": "failure"
+    }
+  ],
+  "metadata_sha256": "b5543364936850e42cacee17c10615ecb370f0293f7421d025988c79ae25563f",
+  "log_sha256": "263fe34d1644c942d7fb0bb07732c49828d3c7698fa73ff7227d5a25deed22e8",
+  "log_bytes": 55010,
+  "named_failure_methods": [
+    {
+      "line": 494,
+      "kind": "FAIL",
+      "method": "test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture",
+      "owner": "__main__.PiPackageTests.test_real_rpc_shutdown_probe_uses_the_same_discovery_and_doctor_fixture"
+    }
+  ],
+  "source_frames": [
+    {
+      "log_line": 497,
+      "source_file": "<repo>\\.github\\scripts\\test_pi_package.py",
+      "source_line": 1065
+    },
+    {
+      "log_line": 499,
+      "source_file": "<repo>\\.github\\scripts\\test_pi_package.py",
+      "source_line": 242
+    },
+    {
+      "log_line": 502,
+      "source_file": "C:\\hostedtoolcache\\windows\\Python\\3.15.2\\x64\\Lib\\subprocess.py",
+      "source_line": 1445
+    },
+    {
+      "log_line": 505,
+      "source_file": "C:\\hostedtoolcache\\windows\\Python\\3.15.2\\x64\\Lib\\subprocess.py",
+      "source_line": 1774
+    },
+    {
+      "log_line": 512,
+      "source_file": "<repo>\\.github\\scripts\\test_pi_package.py",
+      "source_line": 3409
+    },
+    {
+      "log_line": 515,
+      "source_file": "<repo>\\.github\\scripts\\test_pi_package.py",
+      "source_line": 2714
+    },
+    {
+      "log_line": 517,
+      "source_file": "C:\\hostedtoolcache\\windows\\Python\\3.15.2\\x64\\Lib\\unittest\\mock.py",
+      "source_line": 1176
+    },
+    {
+      "log_line": 520,
+      "source_file": "C:\\hostedtoolcache\\windows\\Python\\3.15.2\\x64\\Lib\\unittest\\mock.py",
+      "source_line": 1180
+    },
+    {
+      "log_line": 523,
+      "source_file": "C:\\hostedtoolcache\\windows\\Python\\3.15.2\\x64\\Lib\\unittest\\mock.py",
+      "source_line": 1247
+    },
+    {
+      "log_line": 525,
+      "source_file": "<repo>\\.github\\scripts\\test_pi_package.py",
+      "source_line": 3407
+    },
+    {
+      "log_line": 528,
+      "source_file": "<repo>\\.github\\scripts\\test_pi_package.py",
+      "source_line": 1070
+    }
+  ],
+  "fixed_failure_categories": [
+    {
+      "line": 494,
+      "matched_fixed_category": "FAIL:"
+    },
+    {
+      "line": 496,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 511,
+      "matched_fixed_category": "Traceback (most recent call last)"
+    },
+    {
+      "line": 529,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 532,
+      "matched_fixed_category": "AssertionError"
+    },
+    {
+      "line": 539,
+      "matched_fixed_category": "FAILED ("
+    },
+    {
+      "line": 545,
+      "matched_fixed_category": "Process completed with exit code"
+    }
+  ],
+  "cause": "UNKNOWN_PENDING_SOURCE_TRACE"
+}

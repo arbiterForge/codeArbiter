@@ -1,0 +1,46 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/packaging_site_tools original bounded local Windows observation; original epochs retained"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    "tools/codex-parity-fixture.py": "ad68c3fbdb3b08b51f0fd837e000f1efc1e462d2f95495a24eabb4f0b1799a0b",
+    "docs/codex-parity-testing.md": "fd1f1d2e000346f3cd5461bcb51605dac340f8d903f55a6e2633d938f791dbf6"
+  },
+  "commands": [],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/parity-source-observation.json",
+      "sha256": "4fd77b7af3c148d5f7ce4311941ce9d5680a7882787ce987e573ec25bda5a6de"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:T05:03"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:T05:03",
+      "source_clause": {
+        "event": "print next steps",
+        "guard": "bare and governed branch after seeded commit success",
+        "effect": "Both branches print host-opening/checklist guidance and leave manual verification pending; existing guide reference is unchanged.",
+        "source_symbol": "main tail if bare / else",
+        "scope": "Source text/branch preservation only; no Git creation, session-start persona, installed host, operator action or enforcement result."
+      },
+      "assertion_scope": "Only unchanged emitted manual instructions and same referenced guide; runtime/manual enforcement remains pending."
+    }
+  ],
+  "execution_context": {
+    "observation": "Read-only literal fd7/0830 Git+working source clause comparison; no fixture constructor or Git commit executed."
+  },
+  "scope": "Referenced host/runtime implementations are not dependency-equivalence claims; only unchanged printed instructions + unchanged guide text are preserved.",
+  "limits": [
+    "Component boundary only; no production external ref/release/publication, installed qualified cohort, provider or parent UI acceptance.",
+    "No machine/task/whole-program promotion; unexecuted platform and unrelated branches remain pending."
+  ]
+}

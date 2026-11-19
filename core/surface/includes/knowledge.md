@@ -40,6 +40,13 @@ never adds, removes or relaxes a control.
 - `knowledge.py read <doc>` lists a document's records; `read <doc> <ID> ...`
   returns exact records. `knowledge.py commands [--purpose test]` lists declared
   commands.
+- `knowledge.py read <doc> --text` reads current narrative in the active format.
+  HTML uses revision-bound native reads of active records; retained notes and
+  retired records cannot substitute for current instructions. Empty current
+  collections refuse the projection. `--commands-only` selects active HTML
+  command declarations; legacy Markdown keeps its existing document text.
+  Shared Python consumers use the same `knowledge.context_text` owner rather
+  than opening a fixed Markdown filename or parsing HTML.
 - A plan task's `task-context` packet already includes its relevant knowledge.
 
 For a selected project work item, resolve the installed `hooks/work.py` through
@@ -64,8 +71,10 @@ task in hand, not a reason to stop unrelated work.
 Every instruction to consult `security-controls.md` for policy uses this format
 rule. First inspect `.codearbiter/CONTEXT.md` for `context-format: html` (or run
 `knowledge.py format`). In HTML mode, run `knowledge.py read security-controls`
-to list the complete document, then read **all** `CTX-SECURITY-CONTROLS` records
-and notes by their exact IDs. Do not rely on `knowledge.py relevant` for a full
+to list the complete document, then read **all current** `CTX-SECURITY-CONTROLS`
+records by exact ID, or use `read security-controls --text` for their complete
+current narrative. Read retained notes when provenance/history matters; notes
+do not reinstate retired or withdrawn policy. Do not rely on `knowledge.py relevant` for a full
 policy review. Also read the operative migration, CI and deploy scope blocks in
 `.codearbiter/security-controls.md` when they apply. In Markdown mode, read the
 full `.codearbiter/security-controls.md` directly. A file containing only scope

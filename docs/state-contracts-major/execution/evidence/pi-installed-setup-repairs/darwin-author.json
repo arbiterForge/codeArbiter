@@ -1,0 +1,283 @@
+{
+ "schema": "codearbiter.darwin-pi-optional-argument-fix/1",
+ "state": "PRIVATE_CANDIDATE_READY_FOR_ROOT",
+ "work_id": "WORK-2A68C3051D5A477EAC131493FF8A85AF",
+ "actor": "/root/ci_repair_review",
+ "source_epoch": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "observed_head_after": "ea9da763b33708c8533623568b7241eaaea0d153",
+ "subjects": [
+  {
+   "path": ".github/workflows/ci.yml",
+   "preimage_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+   "preimage_bytes": 277135,
+   "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\repo\\.github\\workflows\\ci.yml",
+   "sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "bytes": 277146
+  },
+  {
+   "path": ".github/scripts/test_pi_parent_tui_observation.py",
+   "preimage_sha256": "ddbc5f3df3043e6055aa12349eda8db271a9aba0c1faded5d98183653fa87ed5",
+   "preimage_bytes": 23571,
+   "candidate": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\repo\\.github\\scripts\\test_pi_parent_tui_observation.py",
+   "sha256": "8b62bc24b9b872c162139905c816da549fa3e14377ded2e7e3ab58205149c067",
+   "bytes": 25160
+  }
+ ],
+ "patch": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\changes.patch",
+  "sha256": "e66e0d7cecb1a4be185ce8745b0461c7fd9864907b66b58dd29b5832835c1c44",
+  "bytes": 5304
+ },
+ "bug_origin": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-argument-orientation-r6nbgmhh\\orientation.json",
+  "sha256": "6e259aa6697a00e6aa060076111f9ffd81fbe712ad27b31287aaebf0210ce7db",
+  "bytes": 4374
+ },
+ "actual_results": {
+  "red_command": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\run-selected.py",
+    "red",
+    "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\repo",
+   "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+   ],
+   "credential_blind_profile": true,
+   "exit_code": 1,
+   "seconds": 0.09515080001438037,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "21fd833844a2f87e4e53337b5d4aef99d03ffbb6637d6eca3a9ca4f75f1f2f51",
+   "stdout_bytes": 0,
+   "stderr_bytes": 2835,
+   "source_sha256": "769f1082a437e2a081e20aef52eb1d8e5bd2a60f9033620d2489da672d663d9f",
+   "test_sha256": "ef36601ba8a198e31a793d8e2034e5e1b4ab1b9c534da20e3975efc25f405f64"
+  },
+  "red": {
+   "tests_run": 1,
+   "failures": 1,
+   "errors": 0,
+   "skips": 0,
+   "seconds": 0.00637090002419427,
+   "named": [
+    {
+     "id": "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin",
+     "result": "FAIL"
+    }
+   ],
+   "successful": false,
+   "private_imports": {
+    ".github\\scripts\\test_pi_parent_tui_observation.py": "ef36601ba8a198e31a793d8e2034e5e1b4ab1b9c534da20e3975efc25f405f64"
+   }
+  },
+  "green_command": {
+   "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\run-selected.py",
+    "green",
+    "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin",
+    "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_actual_ci_selects_only_linux_and_retains_separate_original_outputs",
+    "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_wiring_mutations_cannot_select_other_platform_or_drop_supervision_or_retention"
+   ],
+   "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\repo",
+   "environment_keys": [
+    "APPDATA",
+    "COMSPEC",
+    "GIT_CONFIG_GLOBAL",
+    "GIT_CONFIG_NOSYSTEM",
+    "GIT_TERMINAL_PROMPT",
+    "HOME",
+    "LOCALAPPDATA",
+    "PATH",
+    "PATHEXT",
+    "PYTHONDONTWRITEBYTECODE",
+    "PYTHONNOUSERSITE",
+    "PYTHONUTF8",
+    "SYSTEMROOT",
+    "TEMP",
+    "TMP",
+    "USERPROFILE",
+    "WINDIR"
+   ],
+   "credential_blind_profile": true,
+   "exit_code": 0,
+   "seconds": 0.2892143999924883,
+   "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "stderr_sha256": "b8e482686c90b0798fb8200b2ec9b82f33182aac7555bf1e4067a27d7c6a230d",
+   "stdout_bytes": 0,
+   "stderr_bytes": 752,
+   "source_sha256": "a5b6e922ae90e6b47095f9a1f8986b781e1a12866315d7513fda5daeb6672dcb",
+   "test_sha256": "8b62bc24b9b872c162139905c816da549fa3e14377ded2e7e3ab58205149c067"
+  },
+  "green": {
+   "tests_run": 3,
+   "failures": 0,
+   "errors": 0,
+   "skips": 0,
+   "seconds": 0.18714140000520274,
+   "named": [
+    {
+     "id": "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_optional_parent_author_flag_avoids_unset_empty_array_on_darwin",
+     "result": "PASS"
+    },
+    {
+     "id": "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_actual_ci_selects_only_linux_and_retains_separate_original_outputs",
+     "result": "PASS"
+    },
+    {
+     "id": "test_pi_parent_tui_observation.InstalledLinuxWiringTests.test_wiring_mutations_cannot_select_other_platform_or_drop_supervision_or_retention",
+     "result": "PASS"
+    }
+   ],
+   "successful": true,
+   "private_imports": {
+    ".github\\scripts\\test_pi_parent_tui_observation.py": "8b62bc24b9b872c162139905c816da549fa3e14377ded2e7e3ab58205149c067",
+    ".github\\scripts\\coordinate_pi_host.py": "f93c58c90747e4d8e5acbbc9e2bf893f0723c42419c4bd84b1e09906b25cd1e4",
+    ".github\\scripts\\_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+    "core\\pysrc\\_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+    ".github\\scripts\\_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+    "core\\pysrc\\_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    ".github\\scripts\\_immutable_git_blobs.py": "7cd642fe54f77d6c046403d1829cbc2484244dab3e656a2a21282fdce71655c6",
+    ".github\\scripts\\major_readiness.py": "1a46084a6e9b834863fd064673d608ee48bac330535c59f73ac27ca037df1301",
+    ".github\\scripts\\ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+    ".github\\scripts\\major_qualification_report.py": "b4c63453fedaaa964bad58b179ac0748e2967a45dc620024a16e9c1e9a5a2f4f",
+    ".github\\scripts\\_pi_rpc_profile.py": "3445e2c19c84fbd8a338d538dabf3b1e71610720e527dcd564c0a52156e57d60",
+    ".github\\scripts\\pi_live_report_profile.py": "9ac62697a1547dfaa9ab3735ef4616050e0a4af0e123831f3a72caef99c3d7e7",
+    ".github\\scripts\\test_observe_pi_installed_rpc.py": "f08563e915b4f94c9077816ca65670202570aac1911e3feb5a595ecdeb05c302",
+    ".github\\scripts\\test_pi_ci_wiring.py": "660ac9316fb59777ab13980e126bc523e661ddbf8f58793de81984d9159a9169"
+   }
+  }
+ },
+ "preservation": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\preservation.json",
+  "sha256": "3850d3cebffe6c37ed5fccad29c7670ae2cbce45ec34afb351220b555cd99eea",
+  "bytes": 3505
+ },
+ "integration": "Apply the bounded diff/hunks. Crypto has a distinct additive parent serialization test in the same test owner; do not overwrite its method with this full candidate. Root owns the exact combined owning run.",
+ "limits": [
+  "Actual original A713 Darwin shell failure is retained; local checks execute exact source guards/mutants only. No Bash3.2 runtime or Darwin product/TUI/host success claim.",
+  "No Pi/Node/provider/PTY/runtime/Bash/network/API/install or CI replay. Test child audit denies process/network effects; only outer isolated Python was run.",
+  "No canonical/index/ref/marker/ledger or foreign staged-file mutation. Root alone integrates, reviews and performs hosted followup.",
+  "Earlier Release14 source proposal remains immutable EA9/769f1082 CI bytes; this candidate changes CI input and future applicability must be measured honestly, not silently refreshed."
+ ],
+ "raw_files": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\changes.patch",
+   "sha256": "e66e0d7cecb1a4be185ce8745b0461c7fd9864907b66b58dd29b5832835c1c44",
+   "bytes": 5304
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\config.json",
+   "sha256": "f2e1e08bcdf584578b4e1c0b82b992757376803b42496fa54bb5d9d544185dc0",
+   "bytes": 2300
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\context.json",
+   "sha256": "c325e4a239994b18f72224a55347942990cc0fde70c5462e78a24528d95a047a",
+   "bytes": 13773
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\drive.py",
+   "sha256": "f863a143196e6c66ad4bbc2e37c8c74614706f363d4ce0e9e80a0ee9a5295c30",
+   "bytes": 2021
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\green-command.json",
+   "sha256": "589494ec3e8f3e763304c12d8561a515182ad69316181642e8577104c91d6772",
+   "bytes": 1475
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\green-result.json",
+   "sha256": "270b3ab9a16aa624a4637c6acae22291df1ad0afb86d86c1c47d64ab27834169",
+   "bytes": 2269
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\green.stderr",
+   "sha256": "b8e482686c90b0798fb8200b2ec9b82f33182aac7555bf1e4067a27d7c6a230d",
+   "bytes": 752
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\green.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\input.txt",
+   "sha256": "2c8d192d57e05fee86fb6e4f24e5ec1cc1cd1f2322de26d7ec26c6ab7799980a",
+   "bytes": 8404
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\preservation.json",
+   "sha256": "3850d3cebffe6c37ed5fccad29c7670ae2cbce45ec34afb351220b555cd99eea",
+   "bytes": 3505
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\red-command.json",
+   "sha256": "600c080bb7322bfc4f667f06b952633b711b3b21d57cf2262fae0007f24b3d6e",
+   "bytes": 1195
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\red-result.json",
+   "sha256": "5f9e8fb9d8ead604355b426f22efb6f9ff02631fee6d820c618f3f81c04d3558",
+   "bytes": 449
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\red-test.py",
+   "sha256": "ef36601ba8a198e31a793d8e2034e5e1b4ab1b9c534da20e3975efc25f405f64",
+   "bytes": 24873
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\red.stderr",
+   "sha256": "21fd833844a2f87e4e53337b5d4aef99d03ffbb6637d6eca3a9ca4f75f1f2f51",
+   "bytes": 2835
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\red.stdout",
+   "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+   "bytes": 0
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\run-selected.py",
+   "sha256": "e4be22f2fff2b4f7c19016f988a8e33378460941d5dfde76de010134348bf72c",
+   "bytes": 2274
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\source-after.json",
+   "sha256": "d6fd892487b1290652c566b794e58640fe0706d658750e7f7919d152006f8373",
+   "bytes": 3121
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-darwin-pi-optional-fix-yomrna2g\\source-before.json",
+   "sha256": "881f8f6ade5845a191e85311d8ac7c8bee27e6c3d2d2f7683dcfaee7408b6cf6",
+   "bytes": 43465
+  }
+ ]
+}

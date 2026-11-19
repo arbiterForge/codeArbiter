@@ -1,0 +1,22 @@
+{
+ "argv": [
+  "D:\\dev\\Users\\brenn\\.cache\\codex-runtimes\\codex-primary-runtime\\dependencies\\node\\bin\\node.exe",
+  "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\site\\node_modules\\vitest\\vitest.mjs",
+  "run",
+  "--root",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\fixture",
+  "--config",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\vitest.config.mjs",
+  "--reporter=json",
+  "--outputFile",
+  "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-atlas-owner-revision-fix-jnhrte20\\original-render-red.named.json",
+  "-t",
+  "links each current-source owner to its reviewed revision with legacy fallback"
+ ],
+ "exit": 1,
+ "seconds": 0.7461619000241626,
+ "stdout_sha256": "b660f2f37479eae85cf8d32d3d0f4dd7ba87ab53851057764cc75cc8e8b26ac1",
+ "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+ "test_sha256": "acfdf53015d211ce82506b3c5214cd19ed39be2e31cd4c4292f08c2b130dcada",
+ "production": "Original exact9bc model and renderer, no fix written."
+}

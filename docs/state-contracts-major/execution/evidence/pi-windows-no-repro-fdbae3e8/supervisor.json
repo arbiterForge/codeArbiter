@@ -1,0 +1,22 @@
+{
+  "argv": [
+    "C:\\Python314\\python.exe",
+    "-I",
+    "-S",
+    "-B",
+    "-X",
+    "utf8",
+    "-X",
+    "pycache_prefix=C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-EOF-install-plan-xj8i5ep_\\single-execution\\pycache",
+    "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-EOF-install-plan-xj8i5ep_\\run-reviewed-plan.py",
+    "--worker"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-EOF-install-plan-xj8i5ep_\\single-execution",
+  "returncode": 0,
+  "timed_out": false,
+  "containment": "exited",
+  "seconds": 18.60305460001109,
+  "stdout_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "stderr_sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
+  "limits": "Unexpected process text is hashed, never displayed or retained as raw. Instrumented ordinary local diagnosis only."
+}

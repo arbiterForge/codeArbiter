@@ -1,0 +1,244 @@
+{
+  "source_commit": "b7a75fcab005d9ab3c29618d59559da2edee3283",
+  "rows": [
+    {
+      "cell": "disposition:transitions:S44:01",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreClassifyPublishStateTest.test_no_tag_is_publish_fresh",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 3843,
+          "end": 3848,
+          "body_sha256": "90ec9583d0e85ae0e8b6cbaf0c045981dfc3eabb306056e13831242535b0ddae",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:02",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreClassifyPublishStateTest.test_tag_points_elsewhere_is_abort",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 3864,
+          "end": 3869,
+          "body_sha256": "51de4541badab6d2696e26eea01dd9e3b4efd011b58a3fca7778431d65cd618d",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.CoreClassifyPublishStateTest.test_version_mismatch_is_abort",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 3871,
+          "end": 3876,
+          "body_sha256": "758479aa52a126750ed1a08284bd06c8e4a63c428c04b0dbe839355b9c250e34",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.CoreClassifyPublishStateTest.test_nondraft_release_on_a_tag_at_another_commit_is_abort",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 3878,
+          "end": 3884,
+          "body_sha256": "f92b817cda25bfbfebfcb8e2699df8b1fe4001b5081caf16b1384f8f273b7da1",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:03",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreClassifyPublishStateTest.test_nondraft_release_is_already_published",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 3857,
+          "end": 3862,
+          "body_sha256": "f9606446bd517bc4518912f65719626b1748809485860fd38352fde02cc2f1da",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:04",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreClassifyPublishStateTest.test_tag_at_head_version_match_no_release_is_resume",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 3850,
+          "end": 3855,
+          "body_sha256": "b6ad5ddb8f87d9d5bde1965870d6cf271fb9d99aeb826eb70738317de4ade155",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:05",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_missing_when_no_run_matches_the_name",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4288,
+          "end": 4292,
+          "body_sha256": "59e300a05af9343599e405759473835d2be9d4d06654f2e61b7b3b74f4cd2eea",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_missing_on_empty_check_runs",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4294,
+          "end": 4297,
+          "body_sha256": "ac02c50518cb01e1623644e9a0b462b7a97b8a88f2c0149f35d158160d7243d3",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_unrelated_checks_do_not_stand_in_for_the_gate",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 391,
+          "end": 394,
+          "body_sha256": "b1d1dadce759c7685ee3d3938cdb571f7fdb68b7012d21f0191d4cef76ba0e61",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_never_raises_on_garbage",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 427,
+          "end": 432,
+          "body_sha256": "a54d918c9fd2ac37df89331e27384fd18e318d17fdf19c38c78e4ccad91075c9",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:06",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_sha_mismatch_on_a_different_commit",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4305,
+          "end": 4309,
+          "body_sha256": "e44eef82c44fafb7bca62c66de711570dac701e24f58332abad7bca8a1dd7624",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_success_on_another_commit_is_rejected",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 415,
+          "end": 418,
+          "body_sha256": "210c037f7d41b1caabb0a315e8ad51820b1dc42972a92329b3b5b0ffdb1fff9d",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:07",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_pending_when_not_completed",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4299,
+          "end": 4303,
+          "body_sha256": "3c9dbfafa9e3b6d01415e0c1182305e5284ac1bd1ff1389ffb852befcb982e21",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_queued_and_in_progress_are_pending",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 399,
+          "end": 404,
+          "body_sha256": "0a3bd13054b9805bf530baf62040fb548d47cb8738c9f6b64c942d69dde37ee6",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:08",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_not_successful_on_a_failed_conclusion",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4311,
+          "end": 4315,
+          "body_sha256": "990c81f8ef58dcaeb4fcbacf5736ed928f164f72e8bec1604788f3c48933871f",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_every_non_success_conclusion_is_rejected",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 406,
+          "end": 413,
+          "body_sha256": "4134b077968f8670f281fb5ec02c77fdb6da5325f3fca71707194cc9ccafd994",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_a_green_rerun_alongside_a_red_one_is_rejected",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 420,
+          "end": 425,
+          "body_sha256": "25e0538cbbd21355a34c195aafbf077eff22d17cd1abbb57e7bb647f32a2732a",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S44:09",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_green_is_still_reachable",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4317,
+          "end": 4320,
+          "body_sha256": "bb35d9a97ecac7a14ab0fce8f566e395ea6dd60db0f15d4540cb08cd6ad03d24",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.MergeReadinessTest.test_completed_success_is_green",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 387,
+          "end": 389,
+          "body_sha256": "c33d62ef189e7fe624f42442be509573d0dbf87aa5aa35ffd0540559af8f624f",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_complete_64_character_commit_identity_is_supported",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4353,
+          "end": 4358,
+          "body_sha256": "13b0ce809f10bf32dcbd0df5fa3ba41ce15e0f35f149dfae698d59a671aacf68",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:RELEASE-READINESS-BINDING:01",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_invalid_candidate_identity_cannot_match_an_invalid_reported_identity",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4322,
+          "end": 4333,
+          "body_sha256": "d8753d7472ecbf22f786227d2dc0f89e4403acc3d9816e68a206b2fce0d3a94e",
+          "result": "pass"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:added_transitions:RELEASE-READINESS-BINDING:02",
+      "assertions": [
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_invalid_required_name_cannot_match_an_unnamed_or_invalid_run",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4335,
+          "end": 4345,
+          "body_sha256": "f976de1682efc981fa1ae54b46138d4b9ad89aa7f82b61651f5fde86d69bdd63",
+          "result": "pass"
+        },
+        {
+          "id": "test_release_lib.CoreMergeReadinessArmsTest.test_missing_required_binding_fields_never_form_green_evidence",
+          "path": ".github/scripts/test_release_lib.py",
+          "start": 4347,
+          "end": 4351,
+          "body_sha256": "227e31cde3d60c077cd152c7bfa7f680ec76c5630b61d7f9836c32d65ff6a3fc",
+          "result": "pass"
+        }
+      ]
+    }
+  ]
+}

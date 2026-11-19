@@ -1,0 +1,27 @@
+{
+  "statusline_empty_baseline": {
+    "exit_code": 0,
+    "stdout": "\nPASS: head <= base on every gated structural counter (incremental file counts within the AC-39 formula bound) and timing within x1.05\n",
+    "measurement_count": 0
+  },
+  "smarts_material_without_alternatives_or_table": {
+    "judge": true,
+    "detail": "blocks=1 lenses=['Scalable', 'Maintainable', 'Available'] table=False\nSEC-SMARTS=[{\"type\": \"paragraph\", \"text\": \"Scalable Maintainable Available\"}]",
+    "model": {
+      "normative": {
+        "sections": [
+          {
+            "id": "SEC-SMARTS",
+            "blocks": [
+              {
+                "type": "paragraph",
+                "text": "Scalable Maintainable Available"
+              }
+            ]
+          }
+        ]
+      }
+    }
+  },
+  "limits": "Pure local classifier probes; no statusline render, provider session or native engine invocation occurred."
+}

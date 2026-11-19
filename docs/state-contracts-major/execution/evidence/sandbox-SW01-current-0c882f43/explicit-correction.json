@@ -1,0 +1,21 @@
+{
+  "schema": "codearbiter.source-evidence-correction/1",
+  "source_commit": "0c882f43fdb2893a420fb721539005c89b1e6975",
+  "corrected_cell": "disposition:transitions:SW01:01",
+  "prior_active_evidence": {
+    "kind": "conformance-check",
+    "commit": "ae237d147b8076b3cee8d626535eb7fa0b9eb945",
+    "ref": "docs/state-contracts-major/execution/evidence/farm-sandbox-remaining-ae237d/sw01-current-instruction-contracts-preserved.json",
+    "sha256": "6f79917f90e577317a8f411ade240c12d018f6ccc05d05f060188b9ebb60f22c"
+  },
+  "prior_bad_narrative_exact": "Lazy catalog routing to the invoked command/lifecycle owner is preserved. The omitted catalog claims were corrected in exact proposed41273c bytes, later literally committed ae237d; no consumer phase execution is inferred.",
+  "prior_catalog_source_sha256": "c1479a36e6c897874dbc1c0991b33226664154545a2108d10111a57d269e7739",
+  "actual_prior_catalog_findings": [
+    "Claimed allresources torn downonexit, contraryacceptedD02 explicitdetach lifetime",
+    "Advertisedordinary sandbox--with-claude, absentfromactualordinaryCLI; supportedseparateClaudeentrypoint exists"
+  ],
+  "corrected_catalog_source_sha256": "696258850c06456b2bac2276d72a60f43918076c6f2b806c6e9e68806696ed0b",
+  "actual_correction": "Committed0c882f43 catalog nowstates shellexitdetaches, nameddestroyselectsonlyitsbox, pruneisseparate; Claude routenamesseparateroutineand node<plugin>/tools/claude-inside.js. This is the actualsourcecorrection, nottheprevious claimed41273c/ae237 correction.",
+  "history_rule": "Priorproof/narrativebytes preserved; prioractiveevidencemovesappendonlyhistory. ExistingPRESERVEDstatus retained withtruecurrent-source successor. No backdatedqualification or rewrittenoldoutcome.",
+  "runtime_boundary": "Sourceinstructionconformance only. No observedmodelphase/physicalconsent/TTY/Docker/provider/installed/task/publication claim."
+}

@@ -1,0 +1,53 @@
+{
+  "format": "codearbiter.exact-test-output-set/1",
+  "members": [
+    {
+      "name": "primary-red",
+      "path": "C:/Users/brenn/AppData/Local/Temp/ca-HW05-rollback-tests-8x34m6dk/actual-red.stderr",
+      "bytes": 2054,
+      "sha256": "6707a8f3f8c5fdd091e7f6f5aace59b5304c2257623df0f3204508529a2b56d5",
+      "encoding": "base64",
+      "data": "dGVzdF9saXRlcmFsX2xlZ2FjeV9iYWNrdXBfbWlncmF0aW9uX3ByZXNlcnZlc19jdXN0b21fYW5kX3VucmVsYXRlZF92YWx1ZXMgKHRlc3Rfd2lyZV9zdGF0dXNsaW5lLlRlc3RTcGlubmVyUmVsZWFzZWRSZWFkZXJSb2xsYmFjay50ZXN0X2xpdGVyYWxfbGVnYWN5X2JhY2t1cF9taWdyYXRpb25fcHJlc2VydmVzX2N1c3RvbV9hbmRfdW5yZWxhdGVkX3ZhbHVlcykgLi4uIG9rDQp0ZXN0X21hbGZvcm1lZF9iYWNrdXBfbWV0YWRhdGFfbmV2ZXJfZ3JhbnRzX293bmVyc2hpcF9vZl9jdXN0b21fc3Bpbm5lciAodGVzdF93aXJlX3N0YXR1c2xpbmUuVGVzdFNwaW5uZXJSZWxlYXNlZFJlYWRlclJvbGxiYWNrLnRlc3RfbWFsZm9ybWVkX2JhY2t1cF9tZXRhZGF0YV9uZXZlcl9ncmFudHNfb3duZXJzaGlwX29mX2N1c3RvbV9zcGlubmVyKSAuLi4gb2sNCnRlc3RfcmVsZWFzZWRfcmVhZGVyX2Nhbm5vdF9yZXN0b3JlX292ZXJfbmV3X3VzZXJfc3Bpbm5lciAodGVzdF93aXJlX3N0YXR1c2xpbmUuVGVzdFNwaW5uZXJSZWxlYXNlZFJlYWRlclJvbGxiYWNrLnRlc3RfcmVsZWFzZWRfcmVhZGVyX2Nhbm5vdF9yZXN0b3JlX292ZXJfbmV3X3VzZXJfc3Bpbm5lcikgLi4uIEZBSUwNCg0KPT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PQ0KRkFJTDogdGVzdF9yZWxlYXNlZF9yZWFkZXJfY2Fubm90X3Jlc3RvcmVfb3Zlcl9uZXdfdXNlcl9zcGlubmVyICh0ZXN0X3dpcmVfc3RhdHVzbGluZS5UZXN0U3Bpbm5lclJlbGVhc2VkUmVhZGVyUm9sbGJhY2sudGVzdF9yZWxlYXNlZF9yZWFkZXJfY2Fubm90X3Jlc3RvcmVfb3Zlcl9uZXdfdXNlcl9zcGlubmVyKQ0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KVHJhY2ViYWNrIChtb3N0IHJlY2VudCBjYWxsIGxhc3QpOg0KICBGaWxlICJDOlxVc2Vyc1xicmVublxBcHBEYXRhXExvY2FsXFRlbXBcY2EtSFcwNS1yb2xsYmFjay10ZXN0cy04eDM0bTZka1xjYW5kaWRhdGVccGx1Z2luc1xjYVxob29rc1x0ZXN0c1x0ZXN0X3dpcmVfc3RhdHVzbGluZS5weSIsIGxpbmUgMTEyOSwgaW4gdGVzdF9yZWxlYXNlZF9yZWFkZXJfY2Fubm90X3Jlc3RvcmVfb3Zlcl9uZXdfdXNlcl9zcGlubmVyDQogICAgc2VsZi5hc3NlcnRFcXVhbChhZnRlclsic3Bpbm5lclZlcmJzIl0sIHNlbGYuQ1VTVE9NLA0KICAgIH5+fn5+fn5+fn5+fn5+fn5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl4NCiAgICAgICAgICAgICAgICAgICAgICJyZWxlYXNlZCByb2xsYmFjayByZWFkZXIgcmVzdG9yZWQgYW4gb2xkZXIgc3Bpbm5lciBvdmVyIHRoZSBsYXRlciB1c2VyIGNob2ljZSIpDQogICAgICAgICAgICAgICAgICAgICBeXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXg0KQXNzZXJ0aW9uRXJyb3I6IHsnbW9kZSc6ICdyZXBsYWNlJywgJ3ZlcmJzJzogWydwcmV2aW91cyBwcml2YXRlIHNwaW5uZXInXX0gIT0geydtb2RlJzogJ2FwcGVuZCcsICd2ZXJicyc6IFsnbmV3IHByaXZhdGUgdXNlciBzcGlubmVyJ119DQotIHsnbW9kZSc6ICdyZXBsYWNlJywgJ3ZlcmJzJzogWydwcmV2aW91cyBwcml2YXRlIHNwaW5uZXInXX0NCj8gICAgICAgICAgIF4gXl5eXl4gICAgICAgICAgICAgIF5eIF5eXl5eDQoNCisgeydtb2RlJzogJ2FwcGVuZCcsICd2ZXJicyc6IFsnbmV3IHByaXZhdGUgdXNlciBzcGlubmVyJ119DQo/ICAgICAgICAgICBeXl4gXl4gICAgICAgICAgICAgIF4gXiAgICAgICAgKysrKysNCiA6IHJlbGVhc2VkIHJvbGxiYWNrIHJlYWRlciByZXN0b3JlZCBhbiBvbGRlciBzcGlubmVyIG92ZXIgdGhlIGxhdGVyIHVzZXIgY2hvaWNlDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NClJhbiAzIHRlc3RzIGluIDAuMDUwcw0KDQpGQUlMRUQgKGZhaWx1cmVzPTEpDQo="
+    },
+    {
+      "name": "HW05-primary-green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-primary-green.stderr",
+      "bytes": 107,
+      "sha256": "b8b15cb9589c82323b0cc2681700b74a0eadc4369c864ffb4b0893740b4ae1e2",
+      "encoding": "base64",
+      "data": "Li4uLg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KUmFuIDQgdGVzdHMgaW4gMC4wNTRzDQoNCk9LDQo="
+    },
+    {
+      "name": "HW05-owning-green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-owning-green.stderr",
+      "bytes": 1807,
+      "sha256": "6aad9776a5e5d428bd49ee2cd4cd61938d8a9f8e3e16bbdfe3f106e4d924aa18",
+      "encoding": "base64",
+      "data": "Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uRS4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4NCj09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT09PT0NCkVSUk9SOiB0ZXN0X2xlZ2FjeV9taWdyYXRpb25fa2VlcHNfZm9yZWlnbl9hbmRfZXBoZW1lcmFsX3JlZnJlc2hfaW5lcnQgKHRlc3Rfd2lyZV9zdGF0dXNsaW5lLlRlc3RTcGlubmVyUmVsZWFzZWRSZWFkZXJSb2xsYmFjay50ZXN0X2xlZ2FjeV9taWdyYXRpb25fa2VlcHNfZm9yZWlnbl9hbmRfZXBoZW1lcmFsX3JlZnJlc2hfaW5lcnQpIChib3VuZGFyeT0nZXBoZW1lcmFsJykNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NClRyYWNlYmFjayAobW9zdCByZWNlbnQgY2FsbCBsYXN0KToNCiAgRmlsZSAiQzpcVXNlcnNcYnJlbm5cLmNvZGV4XHdvcmt0cmVlc1xwcm9ncmFtLWdvdmVybmFuY2UtcHJlcFxjb2RlQXJiaXRlclxwbHVnaW5zXGNhXGhvb2tzXHRlc3RzXHRlc3Rfd2lyZV9zdGF0dXNsaW5lLnB5IiwgbGluZSAxMjUwLCBpbiB0ZXN0X2xlZ2FjeV9taWdyYXRpb25fa2VlcHNfZm9yZWlnbl9hbmRfZXBoZW1lcmFsX3JlZnJlc2hfaW5lcnQNCiAgICB3cy5tYWluKFsicmVmcmVzaCIsICItLXNldHRpbmdzIiwgc2VsZi5zZXR0aW5ncywNCiAgICB+fn5+fn5+Xl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl4NCiAgICAgICAgICAgICAiLS1wbHVnaW4tcm9vdCIsIHBsdWdpbiwgIi0taW50ZXJwIiwgInB5dGhvbiJdKQ0KICAgICAgICAgICAgIF5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eXl5eDQogIEZpbGUgIkM6XFVzZXJzXGJyZW5uXC5jb2RleFx3b3JrdHJlZXNccHJvZ3JhbS1nb3Zlcm5hbmNlLXByZXBcY29kZUFyYml0ZXJccGx1Z2luc1xjYVxob29rc1x3aXJlLXN0YXR1c2xpbmUucHkiLCBsaW5lIDQ2OCwgaW4gbWFpbg0KICAgIHJvb3QgPSBwbHVnaW5fcm9vdChhcmdzLnBsdWdpbl9yb290KQ0KICBGaWxlICJDOlxVc2Vyc1xicmVublwuY29kZXhcd29ya3RyZWVzXHByb2dyYW0tZ292ZXJuYW5jZS1wcmVwXGNvZGVBcmJpdGVyXHBsdWdpbnNcY2FcaG9va3Ncd2lyZS1zdGF0dXNsaW5lLnB5IiwgbGluZSA4MiwgaW4gcGx1Z2luX3Jvb3QNCiAgICByYWlzZSBTeXN0ZW1FeGl0KA0KICAgICAgICAiRVJST1I6IC0tcGx1Z2luLXJvb3QgbXVzdCBtYXRjaCB0aGUgYXV0aGVudGljYXRlZCBleGVjdXRpbmcgIg0KICAgICAgICBmImFkYXB0ZXIgcm9vdCAoe2F1dGhlbnRpY2F0ZWR9KTsgZ290IHtyZXF1ZXN0ZWR9LiIpDQpTeXN0ZW1FeGl0OiBFUlJPUjogLS1wbHVnaW4tcm9vdCBtdXN0IG1hdGNoIHRoZSBhdXRoZW50aWNhdGVkIGV4ZWN1dGluZyBhZGFwdGVyIHJvb3QgKEM6XFVzZXJzXGJyZW5uXEFwcERhdGFcTG9jYWxcVGVtcFx0bXBiaTlsOG9kblwuY2xhdWRlXHBsdWdpbnNcY2FjaGVcY29kZWFyYml0ZXJcY2FcOS45LjkpOyBnb3QgQzpcVXNlcnNcYnJlbm5cQXBwRGF0YVxMb2NhbFxUZW1wXHRtcGJpOWw4b2RuXGVwaGVtZXJhbFxyZXBvXC5jbGF1ZGVcd29ya3RyZWVzXHdmXzU4ZWUzZmE2LWRlMS04XHBsdWdpbnNcY2EuDQoNCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NClJhbiA5MiB0ZXN0cyBpbiAxLjA4MHMNCg0KRkFJTEVEIChlcnJvcnM9MSkNCg=="
+    },
+    {
+      "name": "HW05-owning-final-green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-owning-final-green.stderr",
+      "bytes": 196,
+      "sha256": "4166c799ef8ade4cfafe35a20fbdd385edd61cbfe03a1550c189b4b09e555e67",
+      "encoding": "base64",
+      "data": "Li4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4uLi4NCi0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0NClJhbiA5MiB0ZXN0cyBpbiAxLjA0NHMNCg0KT0sNCg=="
+    },
+    {
+      "name": "HW05-idempotence-final-green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-idempotence-final-green.stderr",
+      "bytes": 103,
+      "sha256": "0a97f4fca8ec1d36a9565a1ff1c0b1c003acc35d490999fac68e8129ec479ef5",
+      "encoding": "base64",
+      "data": "Lg0KLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLQ0KUmFuIDEgdGVzdCBpbiAwLjAyNXMNCg0KT0sNCg=="
+    },
+    {
+      "name": "HW05-final-fixture-green",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\HW05-final-fixture-green.stderr",
+      "bytes": 109,
+      "sha256": "9cd9427a37abcd86cdc3f1d4c13ab97bcfe73e2ab2b98b6dc8641b7b1523e440",
+      "encoding": "base64",
+      "data": "Li4uLi4uDQotLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tLS0tDQpSYW4gNiB0ZXN0cyBpbiAwLjA3OHMNCg0KT0sNCg=="
+    }
+  ]
+}

@@ -1,0 +1,67 @@
+{
+ "format": "original-playwright-json-selected-observations/1",
+ "original_source": "d4822a5689cd9c3b157242303236cb26227e0ea5",
+ "original_job_id": 133912127642,
+ "original_run_attempt": 1,
+ "whole_success_attempt": 2,
+ "original_member_sha256": "0666931cd84c947ccaa594e4ffad0a79921b3c2e26e217e1397b9e075f8097bc",
+ "selected": [
+  {
+   "name": "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:a bookmark is opt-in, survives navigation, and never becomes completion",
+   "result": "PASSED",
+   "literal_title": "a bookmark is opt-in, survives navigation, and never becomes completion",
+   "source_path": "site/test/browser/academy-wayfinding.spec.ts",
+   "source_line": 10,
+   "source_sha256": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563"
+  },
+  {
+   "name": "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:denied storage retains the full lesson and an actionable explanation",
+   "result": "PASSED",
+   "literal_title": "denied storage retains the full lesson and an actionable explanation",
+   "source_path": "site/test/browser/academy-wayfinding.spec.ts",
+   "source_line": 52,
+   "source_sha256": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563"
+  },
+  {
+   "name": "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:saving and removing a place work by keyboard in forced colors",
+   "result": "PASSED",
+   "literal_title": "saving and removing a place work by keyboard in forced colors",
+   "source_path": "site/test/browser/academy-wayfinding.spec.ts",
+   "source_line": 117,
+   "source_sha256": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563"
+  },
+  {
+   "name": "playwright:site/test/browser/academy-wayfinding.spec.ts:chrome:stale source identity has no resume URL and clearing retains command preferences",
+   "result": "PASSED",
+   "literal_title": "stale source identity has no resume URL and clearing retains command preferences",
+   "source_path": "site/test/browser/academy-wayfinding.spec.ts",
+   "source_line": 35,
+   "source_sha256": "7f0420bd5403410aa24fc8470702f38718f1aefa4109ff5025cb32aa4dc33563"
+  },
+  {
+   "name": "playwright:site/test/browser/guide-discovery.spec.ts:chrome:directory contains every guide and filters by both task and literal words",
+   "result": "PASSED",
+   "literal_title": "directory contains every guide and filters by both task and literal words",
+   "source_path": "site/test/browser/guide-discovery.spec.ts",
+   "source_line": 36,
+   "source_sha256": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9"
+  },
+  {
+   "name": "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filter controls and the review guide reconnect after client navigation and back",
+   "result": "PASSED",
+   "literal_title": "filter controls and the review guide reconnect after client navigation and back",
+   "source_path": "site/test/browser/guide-discovery.spec.ts",
+   "source_line": 73,
+   "source_sha256": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9"
+  },
+  {
+   "name": "playwright:site/test/browser/guide-discovery.spec.ts:chrome:filtering makes no request or storage write and does not submit a query URL",
+   "result": "PASSED",
+   "literal_title": "filtering makes no request or storage write and does not submit a query URL",
+   "source_path": "site/test/browser/guide-discovery.spec.ts",
+   "source_line": 57,
+   "source_sha256": "cef4f4c061b20f7e48d858cfaed5a9bc01ca999be8420a130be8d9cd6a1aa0d9"
+  }
+ ],
+ "not_inferred_from_total": true
+}

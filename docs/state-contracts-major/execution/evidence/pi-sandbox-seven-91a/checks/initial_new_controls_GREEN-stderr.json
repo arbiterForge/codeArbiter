@@ -1,0 +1,6 @@
+{
+ "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-sandbox-finding-routes-jw9kezze\\green.stderr",
+ "original_sha256": "7253801326ce727f62467f7ccfc7bf7977368a809b69ede919afc5553434a764",
+ "original_bytes": 1047,
+ "utf8_text": "test_a_complete_existing_finite_findings_reach_the_original_report_boundary (test_major_qualification_report.PiSandboxFiniteFindingRoutingTests.test_a_complete_existing_finite_findings_reach_the_original_report_boundary) ... ok\r\ntest_b_configuration_requires_exact_complete_finite_compositions_and_existing_source_closure (test_major_qualification_report.PiSandboxFiniteFindingRoutingTests.test_b_configuration_requires_exact_complete_finite_compositions_and_existing_source_closure) ... ok\r\ntest_c_no_missing_skipped_failed_or_duplicate_outcome_can_qualify_a_finding (test_major_qualification_report.PiSandboxFiniteFindingRoutingTests.test_c_no_missing_skipped_failed_or_duplicate_outcome_can_qualify_a_finding) ... ok\r\ntest_d_partial_added_cross_profile_and_unowned_scope_compositions_refuse (test_major_qualification_report.PiSandboxFiniteFindingRoutingTests.test_d_partial_added_cross_profile_and_unowned_scope_compositions_refuse) ... ok\r\n\r\n----------------------------------------------------------------------\r\nRan 4 tests in 8.006s\r\n\r\nOK\r\n"
+}

@@ -1,0 +1,111 @@
+{
+  "result": "PREPARED_SOURCE_ONLY",
+  "expected_head": "0b0ae193496335c0d87337e5993f032a9385fffb",
+  "packets": [
+    {
+      "source": "970518e787c13f82d688a79a55b683ed60225752",
+      "machines": [
+        "N20",
+        "N27",
+        "N29",
+        "N38"
+      ],
+      "proof_sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+      "review_sha256": "f59a41dd9e1f65e7a572c4dbed29fe4c9b0d5bcc4568d6e6848dba6d9d226d71",
+      "inputs": 58
+    },
+    {
+      "source": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+      "machines": [
+        "N03",
+        "N04",
+        "N07",
+        "N10",
+        "N12"
+      ],
+      "proof_sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+      "review_sha256": "3b13fc94a6957995032ea4a968f66649acf655e99e07b49374dc593a4490ca36",
+      "inputs": 57
+    }
+  ],
+  "machines": [
+    "N03",
+    "N04",
+    "N07",
+    "N10",
+    "N12",
+    "N20",
+    "N27",
+    "N29",
+    "N38"
+  ],
+  "planned": {
+    "findings": 49,
+    "machines": 168,
+    "transitions": 610,
+    "total": 827
+  },
+  "ledger_preimage_sha256": "eddb97eef1d7aec26c6e10e6464b8010c7fae217146d856564479ed60021cf87",
+  "ledger_successor_sha256": "2fed4333494c80f571bf910ac2266763d08a199ea28de8cb9e3a190120f04bc1",
+  "files": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/assessment.md",
+      "sha256": "c26c49ee50890d191a6ff383609dff1ad7c27d9df6b4cd4d80a0c340063f1b0c",
+      "bytes": 2260
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/clause-matrix.json",
+      "sha256": "7af7e7c2d56037c5f8f434a8aa7172a77790535eb8131bdf9b143abd6e27b719",
+      "bytes": 20622
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/source-joins.json",
+      "sha256": "a4ff9b734ed19750786a5d900f1c5e67d69d742d03ae4095e73829e4006aa90f",
+      "bytes": 30278
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/proof.json",
+      "sha256": "6b1bc4e0454765c822731dbabd2f4eb523bc3359b75eb0104a4c51fd5e126bc0",
+      "bytes": 9067
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-n20-n27-n29-n38-source-970518e7/independent-review.json",
+      "sha256": "f59a41dd9e1f65e7a572c4dbed29fe4c9b0d5bcc4568d6e6848dba6d9d226d71",
+      "bytes": 15701
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/assessment.md",
+      "sha256": "9ca69004fb7f1632306319f969adabaa3aca64d51d274f8a9231a8a5647ebcf6",
+      "bytes": 2895
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/clause-matrix.json",
+      "sha256": "efd5868855a463c08970b478ca5d12ce23940bca1214e54e556aeb237d618ce8",
+      "bytes": 25701
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/source-joins.json",
+      "sha256": "364ce9b530688832b2c7fb29e9a234e7ab6a8bd27bdee07b9e2d0f4d622edf40",
+      "bytes": 30010
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/proof.json",
+      "sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+      "bytes": 8930
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/native-last-five-source-9d714e4c/independent-review.json",
+      "sha256": "3b13fc94a6957995032ea4a968f66649acf655e99e07b49374dc593a4490ca36",
+      "bytes": 20385
+    },
+    {
+      "path": "docs/state-contracts-major/execution/coverage-ledger.json",
+      "sha256": "2fed4333494c80f571bf910ac2266763d08a199ea28de8cb9e3a190120f04bc1",
+      "bytes": 1769244
+    }
+  ],
+  "all_edges_tasks_runtime_epochs_unchanged": true,
+  "runtime_qualification": false,
+  "strict_owner_admission": "PENDING",
+  "applied": true
+}

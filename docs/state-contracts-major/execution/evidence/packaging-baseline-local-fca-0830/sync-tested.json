@@ -1,0 +1,117 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "0830b95752a05343563be027e513a2845a6c57df",
+  "kind": "test",
+  "result": "PASSED",
+  "producer": {
+    "class": "local-host",
+    "identity": "/root/packaging_site_tools original bounded local Windows observation; original epochs retained"
+  },
+  "platform": "windows/amd64",
+  "inputs": {
+    ".github/scripts/test_sync_core.py": "5c5639db228ffe01aa909b22d6a8595de470c2f3b38a1ca22050e9d2ca3a1d00",
+    "tools/sync-core.py": "8d7de484c10e26c9e875ca44d3a1ea1d184eecef97dcefabc5ed9d413974062c",
+    "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c",
+    "tools/host_descriptors.py": "2c98ea82723f60879616469ec399cd81db0fb9cb98f4c943eea1dce852123601"
+  },
+  "commands": [
+    {
+      "argv": [
+        "C:\\Python314\\python.exe",
+        "-B",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\observe-sync.py",
+        "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+        "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk"
+      ],
+      "cwd": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter",
+      "exit_code": 0,
+      "environment": {
+        "SystemRoot": "C:\\WINDOWS",
+        "WINDIR": "C:\\WINDOWS",
+        "TEMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "TMP": "C:\\Users\\brenn\\AppData\\Local\\Temp",
+        "COMSPEC": "C:\\WINDOWS\\system32\\cmd.exe",
+        "PATHEXT": ".COM;.EXE;.BAT;.CMD;.VBS;.VBE;.JS;.JSE;.WSF;.WSH;.MSC;.PY;.PYW;.CPL",
+        "PATH": "C:\\Program Files\\Git\\cmd;C:\\Windows\\System32",
+        "HOME": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\sync-home",
+        "USERPROFILE": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-baseline-closure-ly4hjqpk\\sync-home",
+        "PYTHONDONTWRITEBYTECODE": "1",
+        "PYTHONIOENCODING": "utf-8"
+      }
+    }
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/sync-start.json",
+      "sha256": "bfc2eb3d274ddae584063ca091c404771e4959764d5d0f038816156316853768"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/sync-results.json",
+      "sha256": "2da7b656c1d922b6bd8bd2f48c1b6f081ce4454ab56b70b4060049596946a18d"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/sync.stderr.log",
+      "sha256": "f6170e89392d5dd1828f388cc0ae116153abed225a27ea1453ca50f3acbce45f"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/packaging-baseline-local-fca-0830/raw/observe-sync.py",
+      "sha256": "4198d3eeb0511832b2515f692302a4509b2ec7f8fb750cdea7306d4a759f0dd6"
+    }
+  ],
+  "disposition_ids": [
+    "disposition:transitions:S76:02",
+    "disposition:transitions:S76:03",
+    "disposition:transitions:S76:04",
+    "disposition:transitions:S76:05"
+  ],
+  "per_cell_assertion_mapping": [
+    {
+      "cell": "disposition:transitions:S76:02",
+      "observed_named_cases": [
+        "test_sync_core.TestCheckMode.test_check_passes_when_in_sync"
+      ],
+      "assertion_scope": "Byte-identical selected canonical copies produce successful check."
+    },
+    {
+      "cell": "disposition:transitions:S76:03",
+      "observed_named_cases": [
+        "test_sync_core.TestCheckMode.test_check_fails_on_modified_vendored_copy",
+        "test_sync_core.TestCheckMode.test_check_fails_on_missing_vendored_file",
+        "test_sync_core.TestCheckMode.test_check_never_writes_when_drifted"
+      ],
+      "assertion_scope": "Missing/changed copies report drift and check mode does not repair or write."
+    },
+    {
+      "cell": "disposition:transitions:S76:04",
+      "observed_named_cases": [
+        "test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies",
+        "test_sync_core.TestPackageNotices.test_syncs_notices_into_each_installable_plugin_root",
+        "test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy"
+      ],
+      "assertion_scope": "Actual sync owner writes admitted canonical Python/notices to both synthetic declared hosts and repairs drift."
+    },
+    {
+      "cell": "disposition:transitions:S76:05",
+      "observed_named_cases": [
+        "test_sync_core.TestSuccessfulSync.test_write_mode_vendors_byte_identical_copies",
+        "test_sync_core.TestWriteModeRepairsDrift.test_sync_repairs_a_drifted_copy"
+      ],
+      "assertion_scope": "Successful publisher installation leaves exact source bytes at targets. Does not claim a fault-injected late-all-host rollback test."
+    }
+  ],
+  "execution_context": {
+    "actual_source_before": "0830b95752a05343563be027e513a2845a6c57df",
+    "actual_source_after": "0830b95752a05343563be027e513a2845a6c57df",
+    "inputs_before_after_equal": true,
+    "input_count": 4,
+    "runtime": {
+      "executable": "C:\\Python314\\python.exe",
+      "version": "3.14.6 (tags/v3.14.6:c63aec6, Jun 10 2026, 10:26:10) [MSC v.1944 64 bit (AMD64)]"
+    }
+  },
+  "scope": "Actual7 selected Windows sync owner checks with private synthetic core/host descriptors. Covers normal selected copy/parity/drift behavior only; excludes late-failure cross-host rollback, source membership exclusions and installed host behavior.",
+  "limits": [
+    "Component boundary only; no production external ref/release/publication, installed qualified cohort, provider or parent UI acceptance.",
+    "No machine/task/whole-program promotion; unexecuted platform and unrelated branches remain pending."
+  ]
+}

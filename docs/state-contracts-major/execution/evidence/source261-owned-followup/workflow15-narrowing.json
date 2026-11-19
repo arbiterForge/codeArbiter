@@ -1,0 +1,9 @@
+{
+  "actor": "/root",
+  "result": "PASS",
+  "scope": "Mechanical healthy15 narrowing only; independent healthy15 source judgment reused from review09d4b62. No independent PASS for WF33 or new runtime claim.",
+  "updates_byte_identical": 15,
+  "WF33_all_updates_and_active_proof_omitted": true,
+  "unchanged_proof_files": 3,
+  "source_successor_sha256": "ba68c34d8db849bd6e7e08dba9045486d032b6843de71b3c95087c979825e37f"
+}

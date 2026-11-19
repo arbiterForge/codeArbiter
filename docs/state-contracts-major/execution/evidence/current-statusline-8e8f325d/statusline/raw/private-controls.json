@@ -1,0 +1,21 @@
+{
+  "ancestor_limit": {
+    "actual_nested_directories": 64,
+    "actual_enumerated_ancestors": 64,
+    "marker_just_outside_bound_durable": true,
+    "same_marker_one_level_inside_detected": true
+  },
+  "gitfile_read_cap": {
+    "actual_read_requests": [
+      4096
+    ],
+    "target_suffix_offset": 4105,
+    "suffix_beyond_bound_durable": true,
+    "short_in_bound_marker_detected": true
+  },
+  "permission_error": {
+    "in_bound_positive_detected": true,
+    "two_injected_open_refusals_durable": true,
+    "os_acl_mutated": false
+  }
+}

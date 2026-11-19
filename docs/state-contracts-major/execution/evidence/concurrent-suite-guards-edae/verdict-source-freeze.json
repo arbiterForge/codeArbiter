@@ -1,0 +1,64 @@
+{
+  "source_commit": "8d04b33c4e8b6ac56644cbd2517cae2dde228d64",
+  "files": [
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\candidate\\.github\\scripts\\test_run_concurrent_suites.py",
+      "sha256": "476fe6cf7cecee5055c7f2ddf20994f7a13e5617b5759f66445f77308dd7d733",
+      "bytes": 9725
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\candidate\\.github\\scripts\\run_concurrent_suites.py",
+      "sha256": "d09050b8068f9eca93fb9dac6912aaecd17f72d44802e06f5b418a4df053000b",
+      "bytes": 3977
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\original-test.py",
+      "sha256": "aaaed6286b1c44531191c5977cfb4fb0649bc6e279fa9cea8d1bb6c39c692979",
+      "bytes": 7004
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\test-only.patch",
+      "sha256": "49340087b6811ba4a57ed2b685cb58100cd1bb9900cb662c1e56abc773aeacbd",
+      "bytes": 3101
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\run-start.json",
+      "sha256": "2ddbb3aff36754f23722d01b79680f87a39e911cd9467701d12a94ecb16281f2",
+      "bytes": 2676
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\red-result.json",
+      "sha256": "2ca52df4b7eed7ab061f50fece33ba3075e3177719e144df4226d431106d0884",
+      "bytes": 2214
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\original-red.stdout.log",
+      "sha256": "197d99f08666ac7bd998145e37f8389f5a284d0bd69704adc4c21eeb17bb4b7f",
+      "bytes": 3264
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\original-red.stderr.log",
+      "sha256": "a489b2e6cb7f5ff5e57ce82cb986cb75fc90a3369c0d7c2e073fce4f7c6b4768",
+      "bytes": 5426
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\definition.json",
+      "sha256": "837bf37d855d4071a49f498cce9e5d3c4b4b2d898eca49390eeb10cd8bfb6990",
+      "bytes": 830
+    },
+    {
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-C05-verdict-test-u9xcion4\\filemap.json",
+      "sha256": "1d8aa0f9691a2ce9e41a1a166dfc50e3ddd7d4835738ba58121edcf364246f19",
+      "bytes": 825
+    }
+  ],
+  "actor_context": {
+    "input": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-verdict-test-actor-input.txt",
+    "input_sha256": "f9b428124a0cb57577d1f111e1a724f0589c6f6605fb50c94375ffa0ebec984f",
+    "context": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\c05-verdict-test-actor-context.json",
+    "context_sha256": "f54d6bf52c1174ddcc30aed3f1aa18733655bc06eaebd461f1ee2983daee3760"
+  },
+  "same_original_methods_AST": 13,
+  "all_existing_test_methods": 9,
+  "all_existing_AST_unchanged": true
+}

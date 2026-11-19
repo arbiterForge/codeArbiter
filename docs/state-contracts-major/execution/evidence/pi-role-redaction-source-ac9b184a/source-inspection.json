@@ -1,0 +1,278 @@
+{
+  "schema": "codearbiter-source-only-delta-inspection/1",
+  "source": "ac9b184a662b24cef088db186eeef5defcc410ac",
+  "source_tree": "f89aed4b91f5ed757d72b1cb6cffdf7edacde471",
+  "base": "24ee1333a11f6ed07873f926c3593f56e879b4bb",
+  "changed_source": [
+    {
+      "path": ".github/scripts/pi_parent_tui_observation.py",
+      "before_sha256": "febd1fa8d3dd992c39216b2725eef66a3e940ba2e7de7c8118f056aeed17acd6",
+      "after_sha256": "75f446af44d597cc3337cb27da94106ee47caa514232cde1837d5801f1663d1a"
+    },
+    {
+      "path": ".github/scripts/test_pi_parent_tui_observation.py",
+      "before_sha256": "15f093f5bd86746c4ac935f10a9c519060482f286237ff0291d285f0c2f9bd8a",
+      "after_sha256": "6188715cd3ae1c2329c0a3dc3e9718af9d5e0e3aa02fdf251e7817df22c9f575"
+    },
+    {
+      "path": "plugins/ca-pi/CHANGELOG.md",
+      "before_sha256": "83e852125a0ca389af6d07a9f2564260fa61d586695b24e2678944c69901942b",
+      "after_sha256": "34e276e6ed0447978f56f04391cd4f9332222b8742ce656bb3d48ddeeab91c85"
+    },
+    {
+      "path": "plugins/ca-pi/extensions/codearbiter.js",
+      "before_sha256": "66a7b1a50bd4c5e9b0c3cd5e95735136a106011fe31fde703d9e720bf21c96f2",
+      "after_sha256": "7f48684b519953c46ec25111337e2cdec1d2b6632be68c4e231f2d4ccf9d3c05"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/contracts.ts",
+      "before_sha256": "6e1e8b96c95fc9d7dc392817795c7fdbc1d1400c3a2837fb1fd4476cbd8ce928",
+      "after_sha256": "ba8cb4ff16968f1f2eaf74309939d56a06c7d230b050058f9f3a35b0460444d0"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/dispatch.ts",
+      "before_sha256": "f918b822ebfd4e624d0d5257599bd100379ddeda8482a21d090c007c4d2d20f5",
+      "after_sha256": "6bc076c8cbce006d702bea5b8a865e79f614a0afde694d9fb6836f34ced0f983"
+    },
+    {
+      "path": "plugins/ca-pi/tools/src/runner.ts",
+      "before_sha256": "4b41ee58a0dabc79232bf2971d6ad5fe2f33488e25b3e7dc61c2d07768cb9b04",
+      "after_sha256": "6fa29ff1b26cfb408258c98566220caa38d089f7f54bc636981ce1d8f227d399"
+    },
+    {
+      "path": "plugins/ca-pi/tools/test/runner-isolation.test.ts",
+      "before_sha256": "15b25b33f928184493e2bb47f4af7a9576540e26b59e81fc7dfe7972f5f1faac",
+      "after_sha256": "86f255a716ca3ab43c5cb1d284142e818d9d65541e24a05d250451a2d581a326"
+    }
+  ],
+  "role_contract_scope": "The original accepted, changes_requested and blocked values and role declarations are unchanged. The shared constant makes the original state set explicit in the runner and dispatcher.",
+  "runner_scope": "The existing successful final-message, provider, model, byte limits and raw credential guards remain. The closed role response is parsed before line redaction, exact decoded operator values are refused, and malformed diagnostics cannot normalize into a role response. The ordinary text redaction route remains.",
+  "dispatch_scope": "The same state set drives role parsing, handoff selection and the existing response description. The original redaction, bounded execution, authority and settlement paths stay in force.",
+  "release_scope": "The candidate Pi version and release predicates stay in force. The changelog documents the redaction fix within the existing 0.30.0 entry.",
+  "reviewed_source_diff_sha256": "cd9eec809536fe64e1f154ed65cae23a271e4e80f7f87dd5feeb155e83f23952",
+  "runtime_cells_held": [
+    "disposition:transitions:C36:02",
+    "disposition:transitions:C36:03"
+  ],
+  "scopes": [
+    {
+      "predecessor": "pi-background-manager-preservation/source-conformance.json",
+      "cells": [
+        "disposition:transitions:S04:01",
+        "disposition:transitions:S04:06",
+        "disposition:transitions:S04:08"
+      ]
+    },
+    {
+      "predecessor": "pi-five-source-ad4101/proofs/S02-preserved.json",
+      "cells": [
+        "disposition:machines:S02",
+        "disposition:transitions:S02:01",
+        "disposition:transitions:S02:02",
+        "disposition:transitions:S02:03",
+        "disposition:transitions:S02:04",
+        "disposition:transitions:S02:05",
+        "disposition:transitions:S02:06",
+        "disposition:transitions:S02:07",
+        "disposition:transitions:S02:08",
+        "disposition:transitions:S02:09",
+        "disposition:transitions:S02:10",
+        "disposition:transitions:S02:11",
+        "disposition:transitions:S02:12",
+        "disposition:transitions:S02:13",
+        "disposition:transitions:S02:14"
+      ]
+    },
+    {
+      "predecessor": "pi-five-source-ad4101/proofs/S04-preserved.json",
+      "cells": [
+        "disposition:machines:S04"
+      ]
+    },
+    {
+      "predecessor": "pi-five-source-ad4101/proofs/S05-preserved.json",
+      "cells": [
+        "disposition:machines:S05"
+      ]
+    },
+    {
+      "predecessor": "pi-nextfive-source-f5/proofs/S07-preserved.json",
+      "cells": [
+        "disposition:machines:S07",
+        "disposition:transitions:S07:01",
+        "disposition:transitions:S07:02",
+        "disposition:transitions:S07:03",
+        "disposition:transitions:S07:04",
+        "disposition:transitions:S07:05",
+        "disposition:transitions:S07:06",
+        "disposition:transitions:S07:07",
+        "disposition:transitions:S07:08"
+      ]
+    },
+    {
+      "predecessor": "pi-nextfive-source-f5/proofs/S09-preserved.json",
+      "cells": [
+        "disposition:machines:S09",
+        "disposition:transitions:S09:01",
+        "disposition:transitions:S09:02",
+        "disposition:transitions:S09:03",
+        "disposition:transitions:S09:04",
+        "disposition:transitions:S09:05",
+        "disposition:transitions:S09:06",
+        "disposition:transitions:S09:07",
+        "disposition:transitions:S09:08",
+        "disposition:transitions:S09:09",
+        "disposition:transitions:S09:10",
+        "disposition:transitions:S09:11"
+      ]
+    },
+    {
+      "predecessor": "pi-nextfive-source-f5/proofs/S10-preserved.json",
+      "cells": [
+        "disposition:machines:S10",
+        "disposition:transitions:S10:01",
+        "disposition:transitions:S10:02",
+        "disposition:transitions:S10:03",
+        "disposition:transitions:S10:04",
+        "disposition:transitions:S10:05",
+        "disposition:transitions:S10:06",
+        "disposition:transitions:S10:07"
+      ]
+    },
+    {
+      "predecessor": "pi-s20-doctor-input-successor/pi-s20-source-preserved.json",
+      "cells": [
+        "disposition:transitions:S20:04",
+        "disposition:transitions:S20:05"
+      ]
+    },
+    {
+      "predecessor": "stable-source-first-562c6170/source-group-032-proof.json",
+      "cells": [
+        "disposition:machines:S16",
+        "disposition:transitions:S16:01",
+        "disposition:transitions:S16:02",
+        "disposition:transitions:S16:03",
+        "disposition:transitions:S16:04",
+        "disposition:transitions:S16:05",
+        "disposition:transitions:S16:06"
+      ]
+    },
+    {
+      "predecessor": "stable-source-first-562c6170/source-group-033-proof.json",
+      "cells": [
+        "disposition:transitions:S03:01",
+        "disposition:transitions:S03:02",
+        "disposition:transitions:S03:04",
+        "disposition:transitions:S03:05",
+        "disposition:transitions:S03:06",
+        "disposition:transitions:S03:08",
+        "disposition:transitions:S03:09",
+        "disposition:transitions:S04:02",
+        "disposition:transitions:S04:03",
+        "disposition:transitions:S04:04",
+        "disposition:transitions:S04:05",
+        "disposition:transitions:S04:07",
+        "disposition:transitions:S05:01",
+        "disposition:transitions:S05:02",
+        "disposition:transitions:S05:03",
+        "disposition:transitions:S05:04",
+        "disposition:transitions:S05:05",
+        "disposition:transitions:S05:06",
+        "disposition:transitions:S05:07",
+        "disposition:transitions:S05:08",
+        "disposition:transitions:S05:09",
+        "disposition:transitions:S13:01",
+        "disposition:transitions:S13:02",
+        "disposition:transitions:S13:03",
+        "disposition:transitions:S13:04",
+        "disposition:transitions:S13:05",
+        "disposition:transitions:S13:06",
+        "disposition:transitions:S13:07",
+        "disposition:transitions:S13:08",
+        "disposition:transitions:S13:09",
+        "disposition:transitions:S17:02",
+        "disposition:transitions:S17:03",
+        "disposition:transitions:S17:04",
+        "disposition:transitions:S17:05",
+        "disposition:transitions:S18:01",
+        "disposition:transitions:S18:02",
+        "disposition:transitions:S18:04",
+        "disposition:transitions:S18:05",
+        "disposition:transitions:S18:06"
+      ]
+    },
+    {
+      "predecessor": "windows-integration-evidence-source-f1b72420/pages-retention-source-04253aed--original-owner-captures-source-56241415--proof-13.json",
+      "cells": [
+        "disposition:findings:C-F03",
+        "disposition:machines:S48",
+        "disposition:machines:S77",
+        "disposition:transitions:S48:01",
+        "disposition:transitions:S48:02",
+        "disposition:transitions:S48:03",
+        "disposition:transitions:S48:04",
+        "disposition:transitions:S48:05",
+        "disposition:transitions:S48:08",
+        "disposition:transitions:S77:01",
+        "disposition:transitions:S77:02",
+        "disposition:transitions:S77:03",
+        "disposition:transitions:S77:04",
+        "disposition:transitions:S77:05",
+        "disposition:transitions:S77:06",
+        "disposition:transitions:S77:07",
+        "disposition:transitions:S77:08",
+        "disposition:transitions:S77:09",
+        "disposition:transitions:C05:02",
+        "disposition:transitions:C05:03",
+        "disposition:transitions:C15:04",
+        "disposition:transitions:C16:03",
+        "disposition:transitions:C17:01",
+        "disposition:transitions:C17:02",
+        "disposition:transitions:C17:03",
+        "disposition:transitions:C17:04",
+        "disposition:transitions:C17:05",
+        "disposition:transitions:C17:06",
+        "disposition:transitions:C17:07",
+        "disposition:transitions:C17:08",
+        "disposition:transitions:C17:09",
+        "disposition:transitions:C17:11",
+        "disposition:transitions:T01:01",
+        "disposition:transitions:T01:02",
+        "disposition:transitions:T01:03",
+        "disposition:transitions:T01:04",
+        "disposition:transitions:T01:05",
+        "disposition:transitions:SW01:02",
+        "disposition:transitions:SW01:03",
+        "disposition:transitions:SW01:04",
+        "disposition:transitions:SW01:05",
+        "disposition:transitions:SW01:06",
+        "disposition:transitions:SW01:07",
+        "disposition:transitions:SW01:08",
+        "disposition:transitions:SW01:09",
+        "disposition:transitions:SW01:10",
+        "disposition:transitions:SW01:11",
+        "disposition:transitions:SW01:12",
+        "disposition:transitions:SW01:13",
+        "disposition:transitions:SW01:14",
+        "disposition:transitions:SW01:15",
+        "disposition:transitions:SW01:17",
+        "disposition:transitions:SW01:18",
+        "disposition:transitions:SW01:19",
+        "disposition:transitions:SW01:20",
+        "disposition:transitions:SW01:21",
+        "disposition:transitions:SW01:22",
+        "disposition:transitions:SW01:23",
+        "disposition:transitions:SW01:24"
+      ]
+    },
+    {
+      "predecessor": "windows-integration-evidence-source-f1b72420/pages-retention-source-04253aed--original-owner-captures-source-56241415--proof-14.json",
+      "cells": [
+        "disposition:transitions:C15:05"
+      ]
+    }
+  ],
+  "status_changes": 0,
+  "tests_executed_by_this_inspection": 0
+}

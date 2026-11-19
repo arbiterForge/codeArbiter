@@ -1,0 +1,453 @@
+{
+  "schema": "codearbiter-disposition-evidence/1",
+  "source_commit": "15c57b73859b00b806d6b027d1504ab0e193a489",
+  "kind": "conformance-check",
+  "result": "PRESERVED",
+  "producer": {
+    "class": "source-conformance",
+    "identity": "/root/crypto_evidence_review: exact39-clause release owner guard/effect/retry source inspection"
+  },
+  "inputs": {
+    "core/pysrc/_releaselib.py": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea",
+    "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+    ".github/scripts/_releaselib.py": "59ffb55276bf3a0b873861be71c6d286ddf25b035db35715e34c8929bccc6c21",
+    "docs/state-contracts-major/contracts/machine-coverage.json": "df680bd33cb42e645404af30aaf3b5f77c9c2e794f3f061ab1023411fa8a89cd",
+    "docs/state-contracts-major/contracts/transition-coverage.json": "d232df6b0c56920b293e00b8bb468f773ec8abe3958b950c73f1c5bf25b5697e",
+    "docs/state-contracts-major/contracts/tasks.json": "6589dd7d4632b63d93b160fa92de51ea41162075db806b7ad9fbf447b1eef94f",
+    "docs/state-contracts-major/contracts/program.json": "ec9f4c60561d18f103fffbe3605d0f8a22b6800fdbf2b07d7bf1389956cc0e2d"
+  },
+  "disposition_ids": [
+    "disposition:machines:S43",
+    "disposition:transitions:S43:01",
+    "disposition:transitions:S43:02",
+    "disposition:transitions:S43:03",
+    "disposition:transitions:S43:04",
+    "disposition:transitions:S43:05",
+    "disposition:transitions:S43:06",
+    "disposition:transitions:S43:07",
+    "disposition:transitions:S43:08",
+    "disposition:transitions:S43:09"
+  ],
+  "raw_evidence": [
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-five-source-15c/clause-inspection.json",
+      "sha256": "0ecdc14ce756a5edc166ec4b0f2d37283f16a8375159a5560257798a99b14eca"
+    },
+    {
+      "path": "docs/state-contracts-major/execution/evidence/release-five-source-15c/source-bindings.json",
+      "sha256": "ef947b61a0b3e23bb8b11dd01e3ebaa3efbcee304dbb143734612e6bd6662a99"
+    }
+  ],
+  "semantic_mapping": [
+    {
+      "cell": "disposition:machines:S43",
+      "frozen_row_sha256": "c3c3ba47d87b386885d3cca3ec7727bcbf8dc75d5c734f01590d4b85206d6487",
+      "clause_ids": [
+        "disposition:transitions:S43:01",
+        "disposition:transitions:S43:02",
+        "disposition:transitions:S43:03",
+        "disposition:transitions:S43:04",
+        "disposition:transitions:S43:05",
+        "disposition:transitions:S43:06",
+        "disposition:transitions:S43:07",
+        "disposition:transitions:S43:08",
+        "disposition:transitions:S43:09"
+      ],
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 633,
+          "end": 669,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 725,
+          "end": 743,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 407,
+          "end": 414,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 693,
+          "end": 704,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 752,
+          "end": 847,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 958,
+          "end": 972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3328,
+          "end": 3353,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3351,
+          "end": 3373,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1655,
+          "end": 1679,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1277,
+          "end": 1282,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1476,
+          "end": 1522,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3512,
+          "end": 3537,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3627,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1586,
+          "end": 1652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2735,
+          "end": 2814,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3555,
+          "end": 3625,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3648,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1753,
+          "end": 1785,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1788,
+          "end": 1809,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4062,
+          "end": 4098,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1682,
+          "end": 1719,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3654,
+          "end": 3667,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "All 9 literal frozen clauses independently mapped in the raw inspection, including guard, effect/refusal and retry limitations. Pure source PRESERVED claim only; machine runtime/task/release qualification remains unasserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:01",
+      "frozen_row_sha256": "30f05333768e841b34a55cdceb25c3e5332fa93c3fe21bd6e3dffa08b15ade5c",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 633,
+          "end": 669,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 725,
+          "end": 743,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 407,
+          "end": 414,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 693,
+          "end": 704,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "The supplied tag population is filtered by the exact escaped target prefix and declared policy; highest numeric version tuple wins. Semver release scan excludes prerelease/build suffixes; numeric sequence requires the declared component width. Input order, timestamps and lexicographic tag order do not select the baseline; no match yields the none sentinel.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:02",
+      "frozen_row_sha256": "2324ae07955ba0435ff7f79950fed3d0210e135c9a30c732d23ecdf9ba6657c8",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 752,
+          "end": 847,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 958,
+          "end": 972,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3328,
+          "end": 3353,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "The candidate tag and candidate ref must be nonempty/nonoption/NUL-free. Selected Git merge-base --is-ancestor uses a scrubbed repository-selection environment and30s timeout; only return0 means ancestor. CLI accepts ancestor (or explicit no-tag sentinel) and otherwise refuses. Actual Git availability/ancestry is not asserted by this source review.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:03",
+      "frozen_row_sha256": "51b48def8302c942dde94fa0b6db7b0080b8c550b29eeeffff2e31098ef872dc",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 752,
+          "end": 847,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3351,
+          "end": 3373,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Selected highest tag ancestry returns not-ancestor on Git1 and unresolvable on other failures/timeout/launch errors. CLI exits1 or2 respectively; it does not rescan for a convenient older tag, move/delete a tag, or publish anything.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:04",
+      "frozen_row_sha256": "05b16254c368eb2a16d01c0e6e1a1af9d69485ce1f975c68135e71129cacef91",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1655,
+          "end": 1679,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1277,
+          "end": 1282,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1476,
+          "end": 1522,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3512,
+          "end": 3537,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3627,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "NUL-framed supplied log records require exact full commit IDs in triples before classification. Conventional subject types/bang plus terminal paragraph BREAKING CHANGE determine bump; only exactly one nonblank terminal CHANGELOG assertion counts. Rank reduction major>minor>patch>none selects the window. Source review proves parsing/selection conditional on supplied log, not completeness of an actual repository history acquisition.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:05",
+      "frozen_row_sha256": "e800d9c0ca74d414275fdb87ff97f0c9445ef61df2912eddeed1372b08f6bc4e",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3627,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Every bumping commit without a genuine terminal CHANGELOG or exact eligible published reconciliation appears in missing_footer. CLI emits named triage rows and exits1 before any nonbumping/success result. It does not fabricate provenance or alter commit bodies.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:06",
+      "frozen_row_sha256": "48a66463140fa7353d1b807e35f0d67f29988788657cc8ac1cdea08936faeb0d",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1586,
+          "end": 1652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 2735,
+          "end": 2814,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3555,
+          "end": 3625,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Closed unique JSON ledger requires schema1 and exact target/commit/changelog/reason/authorization fields. The committed regular bounded1MiB ledger is read from the resolved published default-branch commit; each selected reconciliation SHA must actually be its ancestor. Only matching missing assertion text is filled; classify_commit still supplies the original bump type and no author/publish assertion is manufactured.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:07",
+      "frozen_row_sha256": "e569c52b413284c27f97d140bd05d547f22191bebaebe3974100596ee0a4d7d5",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1525,
+          "end": 1583,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3648,
+          "end": 3652,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "After missing-footer refusal is considered, a window whose classified bump remains none returns CLI2. No successor version is produced by this branch; publication is outside the classifier.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:08",
+      "frozen_row_sha256": "ebe49685271f1d6ffc7d1829199f3650e724c6635091c248de35460c05f379a7",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1753,
+          "end": 1785,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1788,
+          "end": 1809,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 693,
+          "end": 704,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 4062,
+          "end": 4098,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "Plain semver major/minor/patch arithmetic resets subordinate components as declared; numeric-sequence uses fixed component count/initial floor and increments only the final component, returning the initial version for a no-baseline first release. Unknown policies, invalid bases and none bump refuse; the distinct policies are not collapsed.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    },
+    {
+      "cell": "disposition:transitions:S43:09",
+      "frozen_row_sha256": "f6a6cd66a0862fdfcc4cf833c3cf4065cba71098e6ee436ac34c0fc2aa719cea",
+      "witnesses": [
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 1682,
+          "end": 1719,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        },
+        {
+          "path": "core/pysrc/_releaselib.py",
+          "start": 3654,
+          "end": 3667,
+          "file_sha256": "d4332aa0036ee600830e317b4d130841772f0ee839ca02119cedc63a2e0646ea"
+        }
+      ],
+      "semantic_assessment": "The supplied adoption-log ordered lines select their last nonblank SHA-like entry (the documented oldest adoption boundary). Empty/malformed input returns no baseline. No repository-first-commit fallback or new Git/history effect exists; correctness of the supplied log order remains caller-owned.",
+      "limits": "Reasoned source conformance only; no executed test, real Git/host/file/remote/publication outcome is asserted."
+    }
+  ],
+  "scope": "Source-only reasoned preservation of S43 frozen contract, no execution or publication claim.",
+  "excluded_cells": [],
+  "limits": [
+    "No actual release, first-adoption backfill, tag mutation, pre-tag command or publication was performed.",
+    "S46 ordinary failure has no after-hash/rollback; command and shell-discovery execution have no explicit deadline.",
+    "S45 asset inventory enforces positive-size regular files; no maximum asset byte bound is invented.",
+    "Existing TESTED S44 edges remain unchanged; S44 machine proposal includes all nine clauses only as source context."
+  ]
+}

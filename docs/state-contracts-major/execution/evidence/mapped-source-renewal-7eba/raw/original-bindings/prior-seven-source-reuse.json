@@ -1,0 +1,29 @@
+{
+  "scope": "Source-bound reuse of exactly original7controlled tests; no rerun on new whole-file bytes claimed",
+  "original_result": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-mapped-preclaim-fix-8ufa5p9i\\GREEN.json",
+    "sha256": "5ec5eb11430667e787678af4da1f37bfae92dab9715afad4e23d089435558e49"
+  },
+  "test_function_asts_unchanged": {
+    "test_mapped_preclaim_transport_failure_keeps_pending_and_continues_independent_target": true,
+    "test_mapped_preclaim_timeout_keeps_pending_and_continues_independent_target": true,
+    "test_mapped_preclaim_programmer_error_is_not_swallowed": true,
+    "test_mapped_partial_issue_success_does_not_repeat_when_project_fails": true,
+    "test_mapped_issue_noop_reads_remote_and_repeated_sync_detects_drift": true,
+    "test_mapped_project_noop_reads_remote_and_repeated_sync_detects_drift": true,
+    "test_transport_refuses_unlisted_token_destinations": true
+  },
+  "mapped_tested_function_asts_unchanged": {
+    "sync": true,
+    "sync_project_field": true,
+    "sync_mapped": true,
+    "_resume_mapped": true,
+    "_verify_synchronized_mapped": true,
+    "_mapped_send_ready": true,
+    "_verified_issue_data": true,
+    "_project_issue": true
+  },
+  "unsupported_request_guard_prefix_before_parsing_AST_unchanged": true,
+  "changed_functional_subject": "Only _remote_json and2transport parse call sites; affected actual parser/preclaim/postclaim controls separately executed on successor.",
+  "limits": "Ordinary source/fake-provider acceptance, not installed/model/host/native-cohort qualification."
+}

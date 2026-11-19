@@ -1,0 +1,689 @@
+{
+  "schema": "codearbiter.original-native-eight-component-facts/1",
+  "state": "PROPOSED_COMPONENT_FACTS_NOT_WHOLE_ROW_ADMISSION",
+  "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+  "candidate_checked_at": "bbf5aa51d6749c0808f7a00ba1f381947561bc35",
+  "disposition_ids": [
+    "disposition:findings:N-F09",
+    "disposition:machines:N17",
+    "disposition:transitions:N17:01",
+    "disposition:transitions:N17:02",
+    "disposition:transitions:N17:03",
+    "disposition:transitions:N17:04",
+    "disposition:transitions:N17:05",
+    "disposition:transitions:hooks:verifier:07"
+  ],
+  "original_Go_component": {
+    "source_commit": "94ca4e1e198b2a37ffe6f8a53a01580f2fe696c9",
+    "artifact_id": 14116138817,
+    "archive_sha256": "3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf",
+    "job_id": 132463972537,
+    "native_module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+    "semantic_groups": {
+      "disposition:transitions:N17:01": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact"
+        ],
+        "original_group": [
+          "native-completion-closure"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:transitions:N17:02": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact"
+        ],
+        "original_group": [
+          "native-completion-closure"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:transitions:N17:04": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact"
+        ],
+        "original_group": [
+          "native-completion-closure"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:transitions:N17:05": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact"
+        ],
+        "original_group": [
+          "native-completion-closure"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:transitions:N17:03": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence"
+        ],
+        "original_group": [
+          "native-review-reuse"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:findings:N-F09": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact"
+        ],
+        "original_group": [
+          "native-completion-closure"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:machines:N17": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact"
+        ],
+        "original_group": [
+          "native-completion-closure",
+          "native-review-reuse"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunCannotReuseReviewAfterItsSubjectChanges",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionRerunReusesTaskReviewWithoutRelabellingItsEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewMaterialBoundsAndClosedSchema",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewQualityPreservesExactTaskEvidence",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsDefinitionOnlyReceipt",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewRejectsSelectedEvidenceDrift",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/operations:TestCompletionReviewSelectionAndDecisionAreExact",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      },
+      "disposition:transitions:hooks:verifier:07": {
+        "status": "ORIGINAL_M94_GO_NAMED_COMPONENT_PASSED",
+        "selectors": [
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsBindingMutations",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure",
+          "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound"
+        ],
+        "original_group": [
+          "python-producer-native-consumer-role-bound"
+        ],
+        "original_results": [
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionAdmitsActualProducerLaunchBindingCounts",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/evidence:TestCompletionLaunchFileBoundMatchesContract",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsBindingMutations",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractRejectsInvalidWorkspaceManifestClosure",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          },
+          {
+            "id": "go:github.com/arbiterForge/codeArbiter/core/artifacts/internal/observation:TestQualifiedRunnerContractSharesLaunchFileBound",
+            "selected_population": 1,
+            "observed": [
+              "pass"
+            ]
+          }
+        ]
+      }
+    },
+    "cited_unique_parent_count": 12,
+    "every_cited_parent_selected_once_passed": true
+  },
+  "original_hosted_native_consumers": {
+    "run_id": 43599120794,
+    "job_id": 132466321636,
+    "name": "[CHECK] | [CORE] | Native authority <windows/amd64>",
+    "run_attempt": 1,
+    "terminal_events": [
+      {
+        "id": "unittest:test_artifact_authority_adapter.ClaudeEndToEndTest.test_native_npm_verification_is_accepted_by_real_engine",
+        "result": "pass",
+        "original_named_lines": [
+          "2026-11-14T13:59:34.8909269Z test_native_npm_verification_is_accepted_by_real_engine (test_artifact_authority_adapter.ClaudeEndToEndTest.test_native_npm_verification_is_accepted_by_real_engine)",
+          "2026-11-14T13:59:34.8910095Z The native argv and pinned launch files survive actual receipt capture. ... ok"
+        ]
+      },
+      {
+        "id": "unittest:test_artifact_authority_adapter.ClaudeEndToEndTest.test_native_npm_workspace_verification_is_accepted_by_real_engine",
+        "result": "pass",
+        "original_named_lines": [
+          "2026-11-14T13:59:34.8910929Z test_native_npm_workspace_verification_is_accepted_by_real_engine (test_artifact_authority_adapter.ClaudeEndToEndTest.test_native_npm_workspace_verification_is_accepted_by_real_engine)",
+          "2026-11-14T13:59:34.8912472Z Real npm delegation and named results reach the current Go receipt validator. ... ok"
+        ]
+      }
+    ],
+    "downloaded_builder_artifact": {
+      "id": 14116138817,
+      "name": "ci20-native-tested-windows-2025",
+      "sha256": "3ed85ca22ad796ae4ca4fa3b803cf7ef01e704629054222a7eb19fda49006cbf"
+    },
+    "before_and_after_native_verify": {
+      "module_sha256": "9e5ab665ce11bdb552c9f3dd56c87647f24fbf2994deba681e777255b7aec386",
+      "binary_sha256": "c36b4ca918f5f7e9568665ba894bc1e564a29183a0c5be7d7ea051f2e5e6f070",
+      "original_log_sha256": "ee15988f8808d0d10630549c26e9fc1467ee2e4f56986b4529183f43b38e99c4"
+    },
+    "steps": [
+      {
+        "name": "Download the actual native-tested candidate from this run",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-14T13:54:37Z",
+        "completed_at": "2026-11-14T13:54:37Z"
+      },
+      {
+        "name": "Verify tested candidate bytes, source and native toolchain",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-14T13:54:37Z",
+        "completed_at": "2026-11-14T13:54:40Z"
+      },
+      {
+        "name": "Run exhaustive authority partitions",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-14T13:54:40Z",
+        "completed_at": "2026-11-14T13:59:35Z"
+      },
+      {
+        "name": "Recheck tested candidate after authority coverage",
+        "status": "completed",
+        "conclusion": "success",
+        "started_at": "2026-11-14T13:59:35Z",
+        "completed_at": "2026-11-14T13:59:35Z"
+      }
+    ]
+  },
+  "current_source_relations": {
+    "pure120": {
+      "M94": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      },
+      "current": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      }
+    },
+    "hosted-Go-component": {
+      "M94": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      },
+      "current": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      }
+    },
+    "ce3-producer-component": {
+      "M94": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      },
+      "current": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      }
+    },
+    "local-installed-stage-component": {
+      "M94": {
+        "changed_inputs": [],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      },
+      "current": {
+        "changed_inputs": [
+          ".github/scripts/major_qualification_report.py",
+          ".github/scripts/major_readiness.py"
+        ],
+        "missing_inputs": [],
+        "whole_module_membership_changed": true
+      }
+    }
+  },
+  "nonclaims": [
+    "No 0/30/31/32 hidden Go subcase event is fabricated from parent-only observation.",
+    "Fresh named Go parents and two native consumer fixtures are actual original M94 hosted facts, not local reruns or synthetic admitted observations.",
+    "Old CE3 producer original ten terminal events remain history. Its full module membership244 differs from current245; no silent rebinding.",
+    "Old local installed-stage647 proof also binds two changed intake readers at current candidate. This packet does not rewrite or narrow that proof.",
+    "Root may combine only actual bounded parent/consumer assertions after owning checks; complete eight-row claims are not automatically asserted here.",
+    "Test npm --version is exit-only; separate workspace test runs real npm delegation and named unittest receipt capture. Neither is relabelled the four-workspace-boundary matrix."
+  ]
+}

@@ -1,0 +1,364 @@
+{
+ "schema": "bounded-independent-source-review/1",
+ "verdict": "PASS",
+ "findings": [],
+ "scope": "WF-15/WF-17/WF-19/WF-20/WF-22/WF-24 exact private source-conformance proposal",
+ "proposal_delivery": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\delivery.json",
+  "sha256": "08bb1f5af417b9f69b2939c167dd1abe72234a06842b5574a6a7b00c05145700",
+  "bytes": 10877
+ },
+ "source_epoch": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+ "observed_head": "cb76a2b7a0c04a8849293ccf91514ef1b0f1fd18",
+ "binding_check": {
+  "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow33-independent-review-jb760_5l\\bindings.json",
+  "sha256": "39c28c63b4ff9c1a8459957159ff9e64ad56b931d28d9322cb3d216814a9fe62"
+ },
+ "full_subjects": [
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\delivery.json",
+   "sha256": "08bb1f5af417b9f69b2939c167dd1abe72234a06842b5574a6a7b00c05145700",
+   "bytes": 10877
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\adoption-filemap.json",
+   "sha256": "582547179db467099cb3d08a26ee539957961fb47edf77d3356f55ec58cb1257",
+   "bytes": 3651
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\authored-clause-data.json",
+   "sha256": "c17a316d29a2eb4d3777a04c6498f782255ee5037743adfc514c92d19513842e",
+   "bytes": 23491
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\cas-proposal.json",
+   "sha256": "fab287031de0566eebf1bd3af6a09ddda4e3f2e78119caffa35e06f4c7d2cca1",
+   "bytes": 52325
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\clause-inspection.json",
+   "sha256": "1e82e8464047365a8d22f62634e1c18400aff11ccb908e6c04c887f865aba1ce",
+   "bytes": 111459
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\inherited-evidence-inventory.json",
+   "sha256": "c706481337dc118c3405105442cf9c891f04dc9fa50d15d66e08cecbda927f32",
+   "bytes": 7879
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\machine-coverage-selected.json",
+   "sha256": "95937105e3b52a812c1d64f655ad4a0778f1ad75625666ac0c38cbd4a7550e1a",
+   "bytes": 8491
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797",
+   "bytes": 15990
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\proofs\\WF-15-preserved.json",
+   "sha256": "2377d8b1eb7e0ec8611f2a55dde904a8eac89ccd7377111f2c5bbc5c13293657",
+   "bytes": 14335
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\proofs\\WF-17-preserved.json",
+   "sha256": "872688cd6bf27eebf4802192084c65d7a137e8256155707a2543e9ae8bf7051c",
+   "bytes": 21387
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\proofs\\WF-19-preserved.json",
+   "sha256": "dda3407ae1149415dd8b83de7448dea2851a3a1da5241aba884f8589250fb16e",
+   "bytes": 20232
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\proofs\\WF-20-preserved.json",
+   "sha256": "54704fcc56b4fca01dacc2b7db188dc0b23da9c6126a72aca9a2245936d9e300",
+   "bytes": 11988
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\proofs\\WF-22-preserved.json",
+   "sha256": "780e082d4b282dad48e2fca164407cf327f1370e25b41b40091a83d6ec113a23",
+   "bytes": 6441
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\proofs\\WF-24-preserved.json",
+   "sha256": "d7f8f17010bd220ad58495d9d63cf569400ca8a81a36e7accc9d0dd787a0bf89",
+   "bytes": 12824
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\source-bindings.json",
+   "sha256": "15a46800e7b462952fd4afa6911cefd0322d801c9c4c3013b23458f9b2b7c51d",
+   "bytes": 17703
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\source-config.json",
+   "sha256": "8e6052bbec57412565fef8a9efaa9e45b91843d382f15d6a3ce9a280b692339e",
+   "bytes": 4753
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\source-context.json",
+   "sha256": "26b911b77a6b04565ab1f47f089899fd747d600b3342fe769d6086e18f010c9d",
+   "bytes": 15021
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\source-input.txt",
+   "sha256": "880bf0532eba38897fc631fb1739082662a1fd418af14a49a9acf55b92e610ee",
+   "bytes": 19994
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\summary.json",
+   "sha256": "a22ef4701bb437a0cc05f58d364862c8570e4843e0b56db8eba40d81d4920db9",
+   "bytes": 3431
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\transition-coverage-selected.json",
+   "sha256": "d491799fd4136e9242794e99a1b1b6b032239a71796f1c1937f9208d9f235f24",
+   "bytes": 57667
+  },
+  {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\validation.json",
+   "sha256": "8d9809a391fdf33c8d56f5378c88ac66cdbc9a4c0d07783b617fdd16d9c351e5",
+   "bytes": 527
+  }
+ ],
+ "counts": {
+  "literal_clauses": 31,
+  "machine_proposals": 6,
+  "edge_proposals": 27,
+  "row_CAS": 33,
+  "retained_WF22_advanced": 4,
+  "witness_spans": 68,
+  "source_binding_inventory": 40,
+  "current_nonledger_positive_sources": 39,
+  "advisory_ledger_only": 1,
+  "baseline_files": 19,
+  "source_proofs": 6,
+  "adoption_files": 10
+ },
+ "semantic_review": {
+  "WF-15": "Read-only status mode is selected before authoring; user-attributed decisions/full stems, exact marker root/cleanup and committed acceptance/correction preserve source ancestry and append-only delivery history. Reviewer-name text is not genuine review proof.",
+  "WF-17": "Passive init does not establish identity/enforcement; scaffold preserves existing safe bytes/owners; six logical evidence categories are not a fleet requirement. HTML ordinary record writes are native journaled add/update; Markdown retains paired preview/apply and13-output finalization. No new permission ceremony or execution claim.",
+  "WF-19": "Current active native narrative differs from retired history. Scope/currentness/CAS remain separate from semantics. Context cutover and spec/plan migration remain separate; rollback checks all current after-images and refuses intervening edits. Same-record competing merge edits return unresolved/no write; no semantic side chosen.",
+  "WF-20": "Selected native/legacy work owner, stable IDs/origins/idempotent operation and exact expected state are preserved. Local progress does not become passing evidence or remote delivery; explicit mapped sends, bounded unknown membership/recovery counts and remote race caveats remain.",
+  "WF-22": "Four advanced rows/history retained exactly; source-only machine joins actual inventory, ff-only eligibility, named bounded archival selection and fresh-worktree/per-item CAS rules without claiming an actual pull/delete/archive or runtime renewal.",
+  "WF-24": "Audit append/lock precedes the selected bypass, critical acknowledgment stays user-owned, whole staged candidate/worktree differs from semantic review authority. Conflict repair exact path set includes target plus mandatory clean overrides.log sink for gate-events.log, one path for overrides.log; original prefix/rollback guards remain."
+ },
+ "special_evidence": {
+  "owner_baseline_current_diff": {
+   "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-next-six-source-59-6t2yp1s1\\owner-baseline-current.diff",
+   "sha256": "1fd32bc879928941cd8b953ffac9a86c1c8f97de530a6b4315108ce380e5a797",
+   "bytes": 15990
+  },
+  "raw_diff_read": true,
+  "whole_ledger_excluded_from_proof_inputs": true,
+  "CAS_preimages_and_retained_histories_match_current": true,
+  "all_current_nonledger_Git_and_physical_bytes_equal_source": true
+ },
+ "CAS_membership": [
+  {
+   "section": "machines",
+   "id": "WF-15",
+   "expected_row_sha256": "53d71382eb634d5022bdee25ef9bdebb878cec95b2a60b52df9ed4538a33327d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-15:01",
+   "expected_row_sha256": "53d71382eb634d5022bdee25ef9bdebb878cec95b2a60b52df9ed4538a33327d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-15:02",
+   "expected_row_sha256": "53d71382eb634d5022bdee25ef9bdebb878cec95b2a60b52df9ed4538a33327d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-15:03",
+   "expected_row_sha256": "53d71382eb634d5022bdee25ef9bdebb878cec95b2a60b52df9ed4538a33327d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-15:04",
+   "expected_row_sha256": "53d71382eb634d5022bdee25ef9bdebb878cec95b2a60b52df9ed4538a33327d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-15:05",
+   "expected_row_sha256": "53d71382eb634d5022bdee25ef9bdebb878cec95b2a60b52df9ed4538a33327d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "WF-17",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:01",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:02",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:03",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:04",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:05",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:06",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:07",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-17:08",
+   "expected_row_sha256": "10e6257cd71b6c3a3793c85c3fa5fcb475fb7f39709122ec12ea36879a0f93fa",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "WF-19",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-19:01",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-19:02",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-19:03",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-19:04",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-19:05",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-19:06",
+   "expected_row_sha256": "0683b5913919da851d05126ea820633f67e5c5d83f7c54cb653b7a8d69676fbb",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "WF-20",
+   "expected_row_sha256": "cf4ce8a0b75cfa3b32aa658383e70e4a2e68167ab1fac798706b425f331ae9a9",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-20:01",
+   "expected_row_sha256": "cf4ce8a0b75cfa3b32aa658383e70e4a2e68167ab1fac798706b425f331ae9a9",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-20:02",
+   "expected_row_sha256": "cf4ce8a0b75cfa3b32aa658383e70e4a2e68167ab1fac798706b425f331ae9a9",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-20:03",
+   "expected_row_sha256": "cf4ce8a0b75cfa3b32aa658383e70e4a2e68167ab1fac798706b425f331ae9a9",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-20:04",
+   "expected_row_sha256": "cf4ce8a0b75cfa3b32aa658383e70e4a2e68167ab1fac798706b425f331ae9a9",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "WF-22",
+   "expected_row_sha256": "cf4ce8a0b75cfa3b32aa658383e70e4a2e68167ab1fac798706b425f331ae9a9",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "machines",
+   "id": "WF-24",
+   "expected_row_sha256": "6648c6dda085ccf790ff9fdadac1c8363f68aebd7070c9ed35dcb56372d54f9d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-24:01",
+   "expected_row_sha256": "6648c6dda085ccf790ff9fdadac1c8363f68aebd7070c9ed35dcb56372d54f9d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-24:02",
+   "expected_row_sha256": "6648c6dda085ccf790ff9fdadac1c8363f68aebd7070c9ed35dcb56372d54f9d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-24:03",
+   "expected_row_sha256": "6648c6dda085ccf790ff9fdadac1c8363f68aebd7070c9ed35dcb56372d54f9d",
+   "set_status": "PRESERVED"
+  },
+  {
+   "section": "transitions",
+   "id": "WF-24:04",
+   "expected_row_sha256": "6648c6dda085ccf790ff9fdadac1c8363f68aebd7070c9ed35dcb56372d54f9d",
+   "set_status": "PRESERVED"
+  }
+ ],
+ "limits": [
+  "Read-only private proposal review, no staged/index object identity claim",
+  "No tests/owner validators/runtime/API/network/native/provider/install execution",
+  "No canonical/index/ref/marker/ledger/status writes",
+  "PRESERVED source conformance does not imply workflow/task/scenario/human/host/CI/main/publication acceptance",
+  "Reviewer-authored Farm successor and Darwin code hunks excluded; their receipts unchanged"
+ ]
+}

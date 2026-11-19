@@ -1,0 +1,295 @@
+{
+  "format": "prospective-disposition-owner-validation/1",
+  "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+  "owner": "C:\\Users\\brenn\\.codex\\worktrees\\program-governance-prep\\codeArbiter\\.github\\scripts\\major_readiness.py",
+  "owner_sha256": "217ffe45e7a812b0a3613626600afe4d9d98c0277f45e532cd1e15b88f77e2d1",
+  "argv": [
+    "authenticate-proposal.py"
+  ],
+  "cwd": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-packaging-final-source-553d",
+  "elapsed_seconds": 0.8873806999999942,
+  "results": [
+    {
+      "cell": "disposition:transitions:S71:01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:02",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:03",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:04",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S71:07",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S71",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+          "sha256": "3cce462e4eb122d4e12618310e466e1fc02dd15a3438b31de09c2d58588aaa93",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S72:07",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+          "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S72",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+          "sha256": "36da8aefdfdb1a49568696bb7a87e8fffd1e7d44da04b51b1143805f697b951a",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S73",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+          "sha256": "f3ae9766d5f5ec6d521d28644cccfb66f96286a81083fdbf591eeb9830bb2bc6",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S75:01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+          "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S75",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+          "sha256": "69ee8323cc1e504c917890867527a0df471121488daaafa1102ca2ca1215159e",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S76",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/sync-preserved.json",
+          "sha256": "d17ed13f530d1ddecc6c53ff28b7fe835b13db39ef098e5871f4d5eb39667d6d",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:01",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:02",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:03",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:04",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:05",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:06",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:07",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:08",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:transitions:S77:09",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    },
+    {
+      "cell": "disposition:machines:S77",
+      "state": "PASSED_PROSPECTIVE_OWNER_VALIDATION",
+      "bound": [
+        {
+          "ref": "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+          "sha256": "6e481bfbc0cc9ef18fd7fdd2923b0aededec7dc2583f4b9d1e42dab4ea89e848",
+          "source_commit": "553d07fefa2195ee1f137be2b452981a330ce54f",
+          "producer_class": "source-conformance"
+        }
+      ]
+    }
+  ],
+  "new_metadata_overlay_paths": [
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/channels-preserved.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cohort-preserved.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/cold-preserved.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/metadata-preserved.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/surface-preserved.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/proofs/sync-preserved.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/inspection.json",
+    "docs/state-contracts-major/execution/evidence/packaging-final-source-553d/raw/source-joins.json"
+  ],
+  "committed_source_and_existing_evidence_reads": 41,
+  "literal_source_physical_join_after": true,
+  "limits": [
+    "The explicit new-proof/raw path overlay is prospective metadata, not files already committed at553d.",
+    "All source/old evidence reads are actual immutable Git blobs; there is no missing-object fallback.",
+    "No runtime test, artifact fetch, publication or installed effect is executed or qualified.",
+    "Root must retain/admit and bind the eventual actual metadata commit; this is not final retained-history authentication."
+  ]
+}

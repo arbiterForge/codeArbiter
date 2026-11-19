@@ -1,0 +1,131 @@
+{
+  "schema": "codearbiter.major.source170-followup/1",
+  "recorded_at": "2026-11-17T03:51:17.687941+00:00",
+  "controller_anchor": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+  "canonical_writer": "/root",
+  "branch": "codex/state-contracts-source-and-shard-cleanup",
+  "integration_commit": "a7135d312e6f861703f14683f422d1f435260ebf",
+  "adopted": {
+    "cells": 170,
+    "machines": 33,
+    "transitions": 137,
+    "PRESERVED": 160,
+    "NOT_APPLICABLE": 10,
+    "planned": {
+      "findings": 49,
+      "machines": 116,
+      "transitions": 418,
+      "total": 583
+    },
+    "private_original_owner_projection_records": 259
+  },
+  "reviews": [
+    {
+      "scope": "Pi40",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi40-root-independent-review-eky5pity\\review.json",
+      "sha256": "dde817390218ca3502ed71477d76cbb65160b3035783e956be167bc5ce166cc3"
+    },
+    {
+      "scope": "WF02/03",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-entry-independent-review-jw8i473w\\review.json",
+      "sha256": "c6cbdf5338f66550dcbe5aa8673bf3ce9d590ca4c71fe3e8b2624dbc1ca62786"
+    },
+    {
+      "scope": "CI17 selective14",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-ci17-root-independent-review-psb485k6\\review.json",
+      "sha256": "f94ab14d24567d5b8503fe456c1758ac14d62a78145073b547b59b74d826e93a"
+    },
+    {
+      "scope": "Pi9 successor",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-pi-nine-successor-independent-review-jb8a9va_\\review.json",
+      "sha256": "8efcf7579ca5d4a293fb9f7c3356e666cf9e834efb2f4894345bc09d9efaa432"
+    },
+    {
+      "scope": "Workflow10",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-workflow-ten-independent-review-iwluf3g4\\review.json",
+      "sha256": "3d2a625190b92327e733bc772e8417146059489f5f257f382abb3a84dde73bdf"
+    },
+    {
+      "scope": "CurrentC06",
+      "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-c06-source-peer-ae_gxigz\\review.json",
+      "sha256": "32399b4126d62d443d87fbf3a3cb79e059bd144f0430a585cdf1bfb5bc4461ba"
+    }
+  ],
+  "epoch_choice": "Historical CI17 packet remains unchanged, but its three C06 clauses are omitted from adoption; five current C06 cells bind the independently reviewed repair commit EA9. Existing prior source/runtime/evidence histories remain unchanged.",
+  "source_corrections": "Four LOW Pi9 prose findings corrected in a fresh successor. Six clauses corrected; 56 reused; original proposals/review retained. No production Pi behavior changed and no unsupported guarantee is invented.",
+  "controller_correction": "C06 temporary receipt adapter expected a dictionary while independent review used a list. Root mistakenly committed before checking its failed exit. Postcommit binding verified the exact nine Git objects, patch and full tree against genuine precommit review/scans/integrity; adapter now validates both closed shapes with duplicate-path refusal. This is not represented as precommit adapter success.",
+  "current_hosted": {
+    "child1116": {
+      "head": "384269dc27e61b25ff967e43a6846ecf9a13139f",
+      "state": "MERGED",
+      "merge_commit": "a7135d312e6f861703f14683f422d1f435260ebf",
+      "CI": 44006510110,
+      "Docs": 44006509924,
+      "complete_results": "SUCCESS",
+      "passed": 92,
+      "skipped": 8,
+      "failed": 0
+    },
+    "normal_integration": {
+      "head": "a7135d312e6f861703f14683f422d1f435260ebf",
+      "CI": 44011128754,
+      "CI_result": "FAILURE",
+      "Docs": 44011128725,
+      "Docs_result": "SUCCESS",
+      "installed_Pi_parent_TUI": "RPC passed; bytes serialization failed before parent spawn; actual TUI not executed",
+      "combined_passed": 88,
+      "combined_failed": 4,
+      "combined_skipped": 10,
+      "terminal_receipt": "../immutable-positive-blob-reuse/normal-a713-terminal.json"
+    }
+  },
+  "task_status_promotion": false,
+  "runtime_epoch_renewal": false,
+  "main_merge": "HELD_FOR_USER_TESTING",
+  "publication": "NOT_AUTHORIZED",
+  "limits": [
+    "Reasoned source conformance and narrow supported inapplicability are not runtime, OS, human, model, installed, task or scenario acceptance.",
+    "Final staged fullowner/secret scan/review binding remains separate; private259 is not a fullowner claim.",
+    "Normal integration results apply to A713 only, not the unpushed C06/source follow-up.",
+    "Source13 supersedes four active source proofs with a new current source-only epoch; old packets remain intact and no runtime observation epoch is renewed."
+  ],
+  "shared_reader": {
+    "development": "../immutable-positive-blob-reuse/development.json",
+    "state": "Repaired framework owner; actual combined prospective source170 fixture PASSED1577 records/659applicable/918stale/105frozen, then code-only candidate PASSED1407/489/918. Final source13 prospective stage measured separately."
+  },
+  "code_repairs": {
+    "C06_commit": "ea9da763b33708c8533623568b7241eaaea0d153",
+    "shared_reader_and_Pi_observers_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+    "code_review_binding": "framework-code-review-binding.json",
+    "source13_revalidation": "source13-revalidation.json",
+    "code_candidate_fullowner": {
+      "actual_branch_head": "ea9da763b33708c8533623568b7241eaaea0d153",
+      "verification_fixture_commit": "f95c2dfa5392e98604cb81642740959a85b324c1",
+      "candidate": "candidate-v1:0d488228acac2fe92907703e60c18f16355e11ea69acab86f21b428930cbf628",
+      "result": "PASSED",
+      "frozen": 105,
+      "records": 1407,
+      "applicability": {
+        "APPLICABLE": 489,
+        "STALE": 918
+      },
+      "seconds": 38.999,
+      "source_ref_moved": false
+    },
+    "focused_checks": {
+      "reader": 16,
+      "debugger": 20,
+      "parent_fixture": 22,
+      "Pi_wiring": 17,
+      "all_failed": 0
+    },
+    "Windows_shutdown_cause": "UNKNOWN"
+  },
+  "source13_revalidation": {
+    "cells": 13,
+    "source_commit": "59d856cbabf2388c2fcfbf7ebf57641e6eec9d4d",
+    "status_changes": false,
+    "runtime_epoch_renewal": false,
+    "basis": "All declared non-CI inputs and cited CI literal spans unchanged; independently reviewed optional argument delta outside owning spans."
+  }
+}

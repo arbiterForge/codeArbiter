@@ -1,0 +1,30 @@
+test_public_release_missing_its_receipt_is_eligible_for_recovery (test_release_target.EligibleTests.test_public_release_missing_its_receipt_is_eligible_for_recovery) ... ok
+test_another_sources_finished_version_is_a_no_op (test_release_target.CompletionModelTests.test_another_sources_finished_version_is_a_no_op) ... ok
+test_another_sources_unfinished_version_is_refused_with_its_owner (test_release_target.CompletionModelTests.test_another_sources_unfinished_version_is_refused_with_its_owner) ... ok
+test_conflicting_or_interrupted_assets_are_never_papered_over (test_release_target.CompletionModelTests.test_conflicting_or_interrupted_assets_are_never_papered_over) ... ok
+test_eligible_and_plan_agree_for_every_publication_state (test_release_target.CompletionModelTests.test_eligible_and_plan_agree_for_every_publication_state) ... ok
+test_hostless_target_needs_only_tag_release_and_receipt (test_release_target.CompletionModelTests.test_hostless_target_needs_only_tag_release_and_receipt) ... ok
+test_malformed_tag_listing_is_refused (test_release_target.CompletionModelTests.test_malformed_tag_listing_is_refused) ... ok
+test_package_asset_names_mirror_the_ci_package_owner (test_release_target.CompletionModelTests.test_package_asset_names_mirror_the_ci_package_owner) ... ok
+test_plan_cli_refuses_a_cohort_file_that_is_not_the_declared_asset (test_release_target.CompletionModelTests.test_plan_cli_refuses_a_cohort_file_that_is_not_the_declared_asset) ... ::error::verified package file 'other.tar.gz' is not the declared ca asset 'codearbiter-ca-2.0.0.tar.gz'
+ok
+test_public_release_without_its_tag_is_an_inconsistent_observation (test_release_target.CompletionModelTests.test_public_release_without_its_tag_is_an_inconsistent_observation) ... ok
+test_matching_attached_receipt_is_accepted (test_release_target.ReceiptReadbackTests.test_matching_attached_receipt_is_accepted) ... ok
+test_same_named_receipt_with_other_content_is_refused (test_release_target.ReceiptReadbackTests.test_same_named_receipt_with_other_content_is_refused) ... ok
+test_every_phase_interruption_resumes_only_missing_effects (test_release_target.FaultInjectionTests.test_every_phase_interruption_resumes_only_missing_effects) ... ok
+test_moved_tag_after_interruption_is_refused_not_completed (test_release_target.FaultInjectionTests.test_moved_tag_after_interruption_is_refused_not_completed) ... ok
+test_pi_new_publish_still_requires_matching_workflow_commit (test_release_target.FaultInjectionTests.test_pi_new_publish_still_requires_matching_workflow_commit) ... ok
+test_public_pi_release_never_republishes_npm (test_release_target.FaultInjectionTests.test_public_pi_release_never_republishes_npm) ... ok
+test_receipt_failure_after_public_schedules_only_the_receipt (test_release_target.FaultInjectionTests.test_receipt_failure_after_public_schedules_only_the_receipt) ... ok
+test_receipt_recovery_survives_a_channel_that_moved_on (test_release_target.FaultInjectionTests.test_receipt_recovery_survives_a_channel_that_moved_on) ... ok
+test_registry_mismatch_is_not_completed (test_release_target.FaultInjectionTests.test_registry_mismatch_is_not_completed) ... ok
+test_wrong_package_bytes_on_rerun_are_refused (test_release_target.FaultInjectionTests.test_wrong_package_bytes_on_rerun_are_refused) ... ok
+test_channel_steps_promote_only_when_the_plan_schedules_it (test_release_target.CompositionContractTests.test_channel_steps_promote_only_when_the_plan_schedules_it) ... ok
+test_effect_steps_run_in_the_simulated_order (test_release_target.CompositionContractTests.test_effect_steps_run_in_the_simulated_order) ... ok
+test_existing_receipt_is_read_back_and_verified (test_release_target.CompositionContractTests.test_existing_receipt_is_read_back_and_verified) ... ok
+test_plan_receives_the_declared_assets_and_verified_digest (test_release_target.CompositionContractTests.test_plan_receives_the_declared_assets_and_verified_digest) ... ok
+
+----------------------------------------------------------------------
+Ran 24 tests in 0.008s
+
+OK

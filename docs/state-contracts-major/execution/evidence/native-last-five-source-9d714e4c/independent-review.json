@@ -1,0 +1,392 @@
+{
+  "verdict": "PASS",
+  "findings": [],
+  "scope": "Qualified finite SOURCE_ONLY N03/N04/N07/N10/N12 current accepted conformance; five private proposals, no staged integration/admission or runtime/task/platform/installed/client/user/model/scenario acceptance.",
+  "proposal_delivery_sha256": "4c8f8da173278681552b500813a449cabb1e14bfeb26e0b94004c05304eb2a71",
+  "proof_sha256": "d33e93621c57d49efd73155298fc74a7ed1c7113f6b4209c0b28b58e8f3676a2",
+  "matrix_sha256": "efd5868855a463c08970b478ca5d12ce23940bca1214e54e556aeb237d618ce8",
+  "source_joins_sha256": "364ce9b530688832b2c7fb29e9a234e7ab6a8bd27bdee07b9e2d0f4d622edf40",
+  "machine_fragments_sha256": "2858a671d69cca2a261893491cc06559a2fd252f990a33f7d65ddd2242c81cad",
+  "source_epoch": "9d714e4c09acac13b33bdd5623ec6b8e647873d1",
+  "baseline": "fd7eb34b2da439551443d09526ab48fd1d1bb9bf",
+  "input_count": 57,
+  "all_literal_source_physical_before_after_equal": true,
+  "input_bindings": {
+    "path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-last-five-independent-review-d8exrr2g\\input-bindings.json",
+    "sha256": "15c121175f51c956a37ecdebdb164b4ae0e26d3db5703c4332418f37bd01c96d"
+  },
+  "clause_bindings": {
+    "N03:01": {
+      "clause_sha256": "0aac7b31c507948a30d68bbdba6af1a09074543bfe9afe9d43bd8e03695c2b0a",
+      "matrix_entry_sha256": "0d8c786d9a8c2f561f03ee76b2bb13efd4a420adab8e5a0ae3e5e7b44785ea0e",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "store/transaction.go:424-539; operations/engine.go:139-145"
+    },
+    "N03:02": {
+      "clause_sha256": "bc294b231d2d012e2711dbb4a4ed478f80981b1de27be0caa579ef1d66fe9a08",
+      "matrix_entry_sha256": "32f7752bb6debaaa1bc59a442331d810142455319aba844bf5b4e4216fcb973e",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "store/transaction.go:424-539"
+    },
+    "N03:03": {
+      "clause_sha256": "51fc185636d48fa413bd76160dd4753ece05d5a0c872c0ac030479b82c539eb3",
+      "matrix_entry_sha256": "7f35856ec7464edffb6982992fee2335e148eb291b5e9ea22a25b4907a15c80b",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "store/transaction.go:424-434"
+    },
+    "N03:04": {
+      "clause_sha256": "f9a1cf5e19cdd7ab005a66c30d5cc201755525b027efd02f5558b7bc7b3b566e",
+      "matrix_entry_sha256": "a6a385971fa6cf866e7b1885b91b07dd3aa665d07e39b3f915d26e7c131912cb",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "store/transaction.go:435-469"
+    },
+    "N03:05": {
+      "clause_sha256": "a0296ee7d2b09b1eec20eebea394ca9592ceb3c075e6d8ec9e9d3c9603edcdc4",
+      "matrix_entry_sha256": "fc489af9cccd6e8b8626626eac0ef32929998e5af33439376e41a7fcb7390a84",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "store/transaction.go:82-185,213-259; store/infrastructure.go:125-146"
+    },
+    "N04:01": {
+      "clause_sha256": "2a1c88aa70ccc4bede53cd9fa327c99f2a8adb52f0b7aa0e50ec1f01a5c15f67",
+      "matrix_entry_sha256": "e676d7f14bc63fc87f9491c63ed8ce7f4f1ab73ac87b255ea5888ddb1743d31b",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/mutations.go:19-130; operations/engine.go:279-305,481-501; operations/protocol.go:RequestSchema create; repository/catalog.go:NewPath"
+    },
+    "N04:02": {
+      "clause_sha256": "f5b555c11525a33d06b81527b16abe5b2bcace4b7ddadd5d4d5f2e5a5bfe6e57",
+      "matrix_entry_sha256": "5cc2c62336e69cf11ff52cfc420cc8446737a7f80db8973baa658a1e9815b953",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "model/artifact.go:70-101; render/render.go:Parse; schema/schema.go"
+    },
+    "N04:03": {
+      "clause_sha256": "6f46ca269691a8d87d30b545123d46dd54b155d817c394b7351dafd5bddc1ee1",
+      "matrix_entry_sha256": "2257ad0dfbff4722b4d55ebce2f7aa314e30cdc1d40da5cc1cabaa27e5fe0abd",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "model/assistive.go:HasAssistiveFields,RequiredVersion,AtLeast; operations/mutations.go:394-405; operations/prerequisite_observation.go:54,99; operations/work_coordination.go:220-221; operations/lifecycle.go:278,407"
+    },
+    "N04:04": {
+      "clause_sha256": "51989ec779718413abe965fa6c59c1f46c4e2f842167f49debaeafc4627521c4",
+      "matrix_entry_sha256": "49e562c52b91c16b7b8838300b2a5cfd2b23094b0f0771a781331444ebe9a7a7",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "repository/catalog.go:55-156; kind/contracts.go:contracts/codecs; operations/work.go:readWorkWithProject"
+    },
+    "N07:01": {
+      "clause_sha256": "b3725ac55dc32d7aab12fc20582e11c789bf4cc6416f9e14f2e5a54778409aa6",
+      "matrix_entry_sha256": "afdeb55f44e846641c31c9bbc90bd7486b2e1443e2209e5a3b821f0a5e298dc7",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "validate/validate.go:97-154; operations/mutations.go:record.update; render/render.go:Prepare"
+    },
+    "N07:02": {
+      "clause_sha256": "cc9782caa391e539c3f91b7865ddd65fae38ccd9a3af3f62e5efec399aec956e",
+      "matrix_entry_sha256": "65469cb59f3bcc89bd8e9e2f0eafc235a2bec03560ae30f481207fa129e55098",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "validate/validate.go:450-509; operations/mutations.go:record.update; schema/common.schema.json"
+    },
+    "N07:03": {
+      "clause_sha256": "f41c5e230790eac52c72b19207d56cf16b7d17d1e22a9630b6026bba1a3e0b6d",
+      "matrix_entry_sha256": "ae128592690e03230c26f912900e8cc4bc80265ef374b2a3da57c01a26b831c0",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "validate/validate.go:249-449,450-555; validate/input_policy.go:InputPolicyErrors,InputIncludes,IsTestCommand"
+    },
+    "N07:04": {
+      "clause_sha256": "ad5d4854ab8c9e64b2a8bda90c58d17eeb620091752be4e14d46e8fad6e7a882",
+      "matrix_entry_sha256": "81424782d0eba97223f5b3c0023bd574f5a494929e2cbf8df6d634921222dd96",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "validate/validate.go:Ready applicability; Binding:557-611; operations/mutations.go:Changes"
+    },
+    "N10:01": {
+      "clause_sha256": "1762842749d9a8be0e5507a00665d576fc33fd3915539a3a5d4df537dad7a669",
+      "matrix_entry_sha256": "2222659e3390e64338f5920423d8016ffb14bffc81a943439ea44d571ea35d4b",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/lifecycle.go:251-270,292-386; evidence/verification.go:48-145; evidence/completion.go:115-162,370-392"
+    },
+    "N10:02": {
+      "clause_sha256": "e80d259f491ba7e1f757da43c2e3b118fb9907e760daf5e2e5e933e07bc77f0d",
+      "matrix_entry_sha256": "a4eb329d6e2827ea5e567bbd98454aaa648aba60904bdd661d8cbc2e701750f3",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/lifecycle.go:387-409; model/assistive.go:TaskProgress; operations/assistive.go:eligible"
+    },
+    "N10:03": {
+      "clause_sha256": "7e39035b4c1bf451f95ab435f4e67a7f4bb027ec7b332b8cb09b960be8c327e1",
+      "matrix_entry_sha256": "c3522877ad21d5c09e695bdac0197a8117923402315995a98fb3074f49df9201",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/lifecycle.go:410-432; authority/receipt.go:Load,Subject"
+    },
+    "N10:04": {
+      "clause_sha256": "57da8b5e813af32889bd946220992dc8303e8d885ed6e0a06de502f74a5a49a1",
+      "matrix_entry_sha256": "a23dad81d75a0102a7515e4f327627241b5b2b0030dd5fa18d959b0b787c9628",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/lifecycle.go:433-475; evidence/verification.go:148-212; evidence/completion.go:394-470"
+    },
+    "N10:05": {
+      "clause_sha256": "68f6a6287225148972dd46bfb32294494eb702a996b78afb4e16ef09d4d5446c",
+      "matrix_entry_sha256": "beb19ad41d9528737d69cf669624dcc177143699b0666d10f902b9df11434153",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/lifecycle.go:207-236; operations/task_check.go:151-285; evidence/verification.go:AcceptedFresh"
+    },
+    "N12:01": {
+      "clause_sha256": "ff902e3dac266d1f197f501d8df731e4a0e816d5fcdf5e7eaaedf0d522645ae8",
+      "matrix_entry_sha256": "aaac4f8168fc0535e40d481d99ff802b7f645c513b297249cb4904d2922815d3",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/prerequisite_observation.go:17-64; operations/lifecycle.go:251-266; operations/protocol.go:prerequisite observation"
+    },
+    "N12:02": {
+      "clause_sha256": "3182b96eea0baf3c89683fcdc78c26a308f193709b92249e0165dd0bd4c58927",
+      "matrix_entry_sha256": "567414897bae37dac2c6a9e4ddb32751fc26daca157b3a4aeea9e4d802721400",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "model/assistive.go:PrerequisiteDefinition,PrerequisiteAssessment"
+    },
+    "N12:03": {
+      "clause_sha256": "e7b2a98b81318aafb05f66b3073cb0cfe8ae85866bd3dd4085869f10c64ab798",
+      "matrix_entry_sha256": "9b632683107abd87d3246d893f1c54c0750b3b7cdbabcdff277cb5771c3d860b",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "model/assistive.go:PrerequisiteAssessment; operations/prerequisite_observation.go:17-64"
+    },
+    "N12:04": {
+      "clause_sha256": "8ff64ad6da5b0b5eda20235daf06f4e4920c979b77779badd7d2834d0d3e0f78",
+      "matrix_entry_sha256": "68861057573f4cf48eea6e54e95b8c04650fd8686d1668f3c5bc23ac91e3aaf5",
+      "assessment": "SUPPORTED_CURRENT_ACCEPTED_SOURCE_ONLY",
+      "source_spans": "operations/lifecycle.go:292-324; operations/lifecycle.go:157-180; validate/validate.go:418-423"
+    }
+  },
+  "independently_read_source_spans": {
+    "N03": [
+      {
+        "path": "core/artifacts/internal/store/transaction.go",
+        "first_line": 82,
+        "last_line": 259,
+        "sha256": "b5023a0fd0d01be3d236d515ec738eced85717879b1d855bf7af01493822cf47"
+      },
+      {
+        "path": "core/artifacts/internal/store/transaction.go",
+        "first_line": 424,
+        "last_line": 537,
+        "sha256": "ea880762a0cfa14691990cd96df2d1f3031da7bd856693abcf5127b94777d865"
+      }
+    ],
+    "N04": [
+      {
+        "path": "core/artifacts/internal/model/artifact.go",
+        "first_line": 15,
+        "last_line": 100,
+        "sha256": "820fea035845e1178a0d0ee8086f4e715db6796362ee4bacfb03d681415b9748"
+      },
+      {
+        "path": "core/artifacts/internal/model/assistive.go",
+        "first_line": 285,
+        "last_line": 335,
+        "sha256": "79ee5cb763221e8bfe43e1f60daa3aa195c4e671649d43ba2ef0bac2a7cdfb94"
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "first_line": 19,
+        "last_line": 125,
+        "sha256": "9d556db028d4bea37ca782c7a6eccaf1e6e677a3e60c80f038d536ba15f677da"
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "first_line": 380,
+        "last_line": 409,
+        "sha256": "84eb89b52ddf644311ee638bc655e0b2e5537c81d9a43b322081c5e8b6f5d86b"
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "first_line": 281,
+        "last_line": 299,
+        "sha256": "0f57447ec6d277177623de36895517e09b35d1537f6785aee79de1153b90bdf2"
+      },
+      {
+        "path": "core/artifacts/internal/operations/engine.go",
+        "first_line": 482,
+        "last_line": 499,
+        "sha256": "3e8f063af16b3c8aef84d839fe2a70953c0455072df896af5f42f34a07cb72ac"
+      },
+      {
+        "path": "core/artifacts/internal/repository/catalog.go",
+        "first_line": 55,
+        "last_line": 150,
+        "sha256": "9d20f6b020368836bda1f797f505e19d9923c5af749da42fc12f8cd85aeac130"
+      },
+      {
+        "path": "core/artifacts/internal/render/render.go",
+        "first_line": 50,
+        "last_line": 62,
+        "sha256": "f7378939103440648c875ccf1688ba241e8fce3c9f7fed274403d4d5b5ca69f1"
+      },
+      {
+        "path": "core/artifacts/internal/render/render.go",
+        "first_line": 532,
+        "last_line": 559,
+        "sha256": "1ec3295767396152e0b5794b1d3f3f4f1a94d3b37304f12dff101af421764e9d"
+      }
+    ],
+    "N07": [
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "first_line": 97,
+        "last_line": 155,
+        "sha256": "e1cf7acb719b917f2f8e004ca1623977242657a2b803b637299d121c5c2d5bc7"
+      },
+      {
+        "path": "core/artifacts/internal/validate/validate.go",
+        "first_line": 249,
+        "last_line": 611,
+        "sha256": "3965f1d37962620e1cb00ace2ddef52d38e94fc9a912f23f59f5a5eb73bee4b4"
+      },
+      {
+        "path": "core/artifacts/internal/validate/input_policy.go",
+        "first_line": 1,
+        "last_line": 129,
+        "sha256": "37753c70960afab70865e1994415426a2751b7c5048af109f00d4d1484216458"
+      },
+      {
+        "path": "core/artifacts/internal/operations/mutations.go",
+        "first_line": 279,
+        "last_line": 295,
+        "sha256": "8b1f2ecda3df473e4c0456c3271a22e35b9da73d8cef75bc4e5f5979299c7e99"
+      }
+    ],
+    "N10": [
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "first_line": 14,
+        "last_line": 40,
+        "sha256": "a7ffb8936e3fa6b74322de414d0cd8661ad249c54149a14eb701f603e8d3b413"
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "first_line": 157,
+        "last_line": 471,
+        "sha256": "0379dedeb7a0d63871c40b1b86fd2369b6a9b02e1026c6a5c1a3119dc96ab9c4"
+      },
+      {
+        "path": "core/artifacts/internal/evidence/verification.go",
+        "first_line": 48,
+        "last_line": 206,
+        "sha256": "e0b69addeb3819cd96b31d65cf31f43cd8e64362e3e1ffb8922a27b59c3ee941"
+      },
+      {
+        "path": "core/artifacts/internal/evidence/completion.go",
+        "first_line": 115,
+        "last_line": 162,
+        "sha256": "adbf5b33ac5fa383dbb57a9b3407e5cdda4891c0d53ee9a398d4d867c2ce34c7"
+      },
+      {
+        "path": "core/artifacts/internal/evidence/completion.go",
+        "first_line": 370,
+        "last_line": 454,
+        "sha256": "b6749e82ed66be6d0b022a93470cec89995ce5ee4f4b5db79fe970e4b85bad5c"
+      },
+      {
+        "path": "core/artifacts/internal/operations/task_check.go",
+        "first_line": 151,
+        "last_line": 282,
+        "sha256": "57b7941e1a54d2b3851468c8514ce9b2c5aad8221cb9676aedef568db73605e0"
+      },
+      {
+        "path": "core/artifacts/internal/operations/assistive.go",
+        "first_line": 150,
+        "last_line": 197,
+        "sha256": "5f336d5ce2ff98317a42c05765c5fcedc70ce9ec3ad9a0567d44909cf88e615d"
+      }
+    ],
+    "N12": [
+      {
+        "path": "core/artifacts/internal/operations/prerequisite_observation.go",
+        "first_line": 13,
+        "last_line": 60,
+        "sha256": "7e3ac3c2cf889c90f5ce5c1c989cf480ca8848321a08e1a731d69cec33c2b44f"
+      },
+      {
+        "path": "core/artifacts/internal/model/assistive.go",
+        "first_line": 72,
+        "last_line": 118,
+        "sha256": "8907200730aeafdc18f6073d45c4f96c0ed14065859a72174122cc7893ebf0a7"
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "first_line": 157,
+        "last_line": 180,
+        "sha256": "1eed8b2201199b1044f396a1deb1d4c4a4a2c0cc8c683161466f197db76ad2dc"
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "first_line": 252,
+        "last_line": 266,
+        "sha256": "da0cbf30756bb300a4b58c01b180080210f3c31346e7b9d158485ca906bfa306"
+      },
+      {
+        "path": "core/artifacts/internal/operations/lifecycle.go",
+        "first_line": 294,
+        "last_line": 324,
+        "sha256": "ad1f38f0bd4ef2a736b6faaf7aca188e1585edd8eb7c3e261256c5c95df12380"
+      }
+    ],
+    "accepted_decisions": [
+      {
+        "path": ".codearbiter/decisions/0043-assistive-state-engine.md",
+        "first_line": 18,
+        "last_line": 40,
+        "sha256": "757236b0d110a87eb43edf2676b012892e1922928bbd0f98f59021430c8c4c66"
+      },
+      {
+        "path": ".codearbiter/decisions/0046-independent-progress-derived-evidence.md",
+        "first_line": 15,
+        "last_line": 35,
+        "sha256": "5b519ff144aee33b1b91944e8fc2981cf66ecfccde070c6c378d5b08e859cac6"
+      }
+    ]
+  },
+  "literal_function_comparisons": {
+    "Recover": {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "baseline_equals_current": true,
+      "sha256": "ea880762a0cfa14691990cd96df2d1f3031da7bd856693abcf5127b94777d865"
+    },
+    "Pending": {
+      "path": "core/artifacts/internal/store/transaction.go",
+      "baseline_equals_current": true,
+      "sha256": "8fe362c84f8bccdbd354d54dabbf9d142e17991ffdb545a6b70b02cae8963019"
+    },
+    "New": {
+      "path": "core/artifacts/internal/operations/mutations.go",
+      "baseline_equals_current": true,
+      "sha256": "86f7fcc3dedcb8292d5d8ac178575e1b899f981c884162b3bfedb911ce29eeb5"
+    },
+    "Ready": {
+      "path": "core/artifacts/internal/validate/validate.go",
+      "baseline_equals_current": true,
+      "sha256": "5c4d1bb6866a33a2f9cacabd06212508554098008cb07bd0fdb0103b62673e90"
+    },
+    "Binding": {
+      "path": "core/artifacts/internal/validate/validate.go",
+      "baseline_equals_current": true,
+      "sha256": "4b6f501db8a3136fc93885d65ff8904fc6346a5ffc9ea504f3fa732f163f5c89"
+    }
+  },
+  "foundation_reuse": {
+    "count": 33,
+    "prior_review_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-n20-n27-n29-n38-independent-review-fdc6igbi\\review.json",
+    "prior_review_sha256": "f59a41dd9e1f65e7a572c4dbed29fe4c9b0d5bcc4568d6e6848dba6d9d226d71",
+    "all_inputs_equal_prior_reviewed_proof": true
+  },
+  "interpretations": {
+    "N03": "Literal baseline/current Recover+Pending bodies equal. Frozen diagnostic prose is overbroad: third digest RECOVERY_CONFLICT, missing required material CORRUPT_JOURNAL, early I/O may propagate while prepared persists, terminal metadata acknowledgement uncertainty COMMIT_OUTCOME_UNKNOWN. Complete all-target/material preflight, verified unused-stage cleanup, terminal replay/history remain; no blanket wrapper/general undo or race-free same-user claim.",
+    "N04": "Named accepted NT05/NT09 non-work0.3.4 typed retirement/progress semantics are feature-gated beside legacy0.3.0/1/2 and work0.3.3. Closed model/schema/render checks, finite old-render profile, no implicit read upgrade/re-certification; writers monotonically preserve supported versions.",
+    "N07": "Actual Structural/Ready/Binding guard/reference/decision/DAG/partition/input/criterion checks remain deterministic diagnostics, not approval or ADR43 ordinary-work permission. No executed user decision or universal command/parser/build-closure claim.",
+    "N10": "Optional strict receipt branch preserves approved_source/plan/spec/prerequisite/snapshot/receipt/currentness/completion and atomic acceptance guards. Accepted ADR0046 explicitly replaces N10:02 destructive dependent STALE overwrite with independent recorded progress/history and derived evidence. Ordinary no-receipt progress routes before strict guards; NT11 does not erase terminal evidence or imply host corrected-attempt qualification.",
+    "N12": "Ordinary caller-reported fact/decision observes exact definition/origin; nonunknown decision requires user_statement. Definition changes expose unknown without rewriting history; legacy satisfied remains unassessed ordinarily. Explicit strict receipted replacement deletes only selected observation, appends receipt, requires real current subject and structural evidence; no permission ceremony added to ordinary path."
+  },
+  "checks": {
+    "all22_frozen_clause_bodies_exact": true,
+    "all22_edge_rows_status_proofs_history_unchanged": true,
+    "all5_machine_PLANNED_preimages_match": true,
+    "mutable_ledger_not_proof_input": true,
+    "strict_receiving_owner_authentication": "NOT_RUN_PENDING_ROOT"
+  },
+  "limits": [
+    "No tests/validators/runtime/native/Go/Node/SDK/process probes or API/network calls. Only source/JSON/credential-blind immutable Git object reads and private receipt writes.",
+    "No canonical/index/ref/marker/ledger/status/proof/ADR changes or new Native route mapping.",
+    "All existing edge/runtime epochs retained, including PLANNED edges; source review does not promote them. Original Pi cause UNKNOWN remains separate."
+  ]
+}

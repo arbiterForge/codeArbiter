@@ -1,0 +1,614 @@
+{
+  "schema": "codearbiter-major-development-observations/1",
+  "recorded_at": "2026-11-16T13:37:13.000780+00:00",
+  "source_anchor": "a980c220ca4d66be552d06b84596dd56e8822eca",
+  "scope": "Coherent remaining CLI and Sandbox contract batch plus original Windows testbudget correction. ExistingPR1115 wasblocked andneedednewhead; combinepreparedwork toavoidseparateCI/reviewcycle.",
+  "hosted_history": {
+    "attempt1": "CI43852022192attempt1 terminal88PASS3FAIL1CANCEL8SKIP; WindowsRPCnativeexitfailure real. Docs43852021926attempt1SUCCESS.",
+    "diagnosis": "OwnedmatchingNode995a/Pi1.5 directCLIraw+passivecompanion2PASS3.876s/Python3.14.6, source737/SDK15178stable. NativeexitcauseUNKNOWN; localpassnotoriginalfailurefix.",
+    "attempt2": "Oneexplicitfailed-jobs-onlyretry, samea980, terminal90PASS2FAIL8SKIP. RPCWindowsPASS; actualWindowscoveragefarmcleanupcase hit5000msdefault (966PASS3SKIP). RepositorycoverageaggregateFAIL, requiredmergegatePASS; entireCI remainsFAILURE, mergeblocked.",
+    "transport": "Auxiliarylatest-jobsreadreturnedHTTP502 aftercompletepinnedCI/Docs/PR/checksnapshots; originalerrorretained. No workflow rerun on thattransportfailure."
+  },
+  "changes": {
+    "farm_budget": "Same14realGitworktree/refusalcases get30s suitebudget, eachownedGitfixtureprocesscapped15s. Allassertions/cases/sourcecleanupretry/permissions unchanged. Original5000msRED retained; owningV8suite14PASS6.886s andtypecheckPASS1.328s. Fullhostedcoveragepending.",
+    "native20": "AddexactN37CLIroute as20th globallysortedrecipe, original19/native16 andallauthorityguards unchanged. Actualparent+10childrenPASS5.416s at27dsource; finalGofileexact6d998a59. Newclosedrecipe1RED\u21923PASS privately. Rootcomposed22controls had21PASS andoneoldN11exact-policyexpectationFAIL; includeN37inthatcompleteexpectedset, thenaffectedN11+2CLIcontrols3PASS0.662s. Other21controls unchanged; noactualGo/native rerunborrowed. OriginalN11policycontrolreceivedonlytheadditiveCLI_EXPECTED union; no guard removed.",
+    "sandbox_guidance": "Actualhostbuildstagingandagentworkflowroleclarified; same17CLIcasesPASS, exactowneresbuildgeneratedclaude-inside.js; sandbox.jsbyteunchanged andactualshippednoargsusageexit2. Oneprivatecacheoutputwriteandinitialhelpercallfailure retainedbyoriginaldelivery.",
+    "unsupported": "Actualunsupportedfs_otherOpen sourceunit compiledjs/wasm thenunchangedartifactranPASSonceunderreviewedcachedLinuxNode20.20.2. Full250module/hash/shim/provenancebound; all3failedWindows/setupattempts remainseparate. No unsupportednativeOS/native-six/installed/wholeNT08claim. NewGo sourcehasunsupportedbuildtag; native-sixhostedexecutionremainsitsseparatecontract. FinalGo test isgofmt normalization of compiled28e3draft (twoalignmentspaces), verifiedsameformatteroutput; originaldraft retained, no recompile/claim ofnewactualruntime.",
+    "shell": "Actualshippedoriginalsandbox.js shell0and7 throughrealtoolPTY, innerstdin/stdouttest-tmarkers; samecontainerId/Created/Image/Pid/StartedAt/RestartCount runningtrue, samevolumeaftereach. Exactownedcleanup/absence; final69.432s source/toolsstable. Threepriorprivatecollector/fixturefailuresretained, noneproductfix.",
+    "S75": "Retainexactsourceproof0830da40/inspectiondff302c9 andindependentassessment554a379a. Onlyobsoletehistoricaldirectwrite/no-rollbackguardtuple supportedforfutureN/A; IOfailureevent/possiblepartialprojectionand4runtimeobligations remainAPPLICABLE. Noledgeradmission/statuschange yet; actualretentioncommitneededbeforefuture ref_commit."
+  },
+  "qualification_limits": [
+    "Localdevelopmentobservations only; no ledger/task/proof/sourceepoch renewal.",
+    "Parent1098main/publicationheld; nextfreshentireCI+Docs andseparatetrustednormalintegration remainrequired.",
+    "No native/model/human/parent/full-lifecyclequalification fromthese sourceunits.",
+    "OriginalHTTPendpointpolicydecision remainsawaitinguser; independentworkcontinues."
+  ],
+  "capture_format": "For nonJSONoutput, utf8_text preserves alloriginalnewlines/controlbytes losslessly; originalSHA/lengthbound. These envelopesaredevelopmentrecords, neverfinaloriginal-ownerqualificationarchives. One250inputmanifest usestransparent reversible git_oid fieldrename; priorfieldname containedapi andcaused239falsegeneric-key hits onactualGitobjectidentifiers. No ruleallowlist/override; values/source/hashidentityunchanged.",
+  "files": [
+    {
+      "path": "hosted/attempt1-terminal.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\terminal-receipt.json",
+      "original_sha256": "8af30b9cd0fd2f3ecdd39c857b9f6196e9cc0e15ccd4035b9c6d48b459871f9c",
+      "original_bytes": 25706,
+      "retained_sha256": "8af30b9cd0fd2f3ecdd39c857b9f6196e9cc0e15ccd4035b9c6d48b459871f9c",
+      "retained_bytes": 25706,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/attempt2-terminal.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980-attempt2-root-watch\\terminal-receipt.json",
+      "original_sha256": "7ce8980b1dd4768f1cc6b7e82d18b39d75728041dfea368ba2b1a3ca1251cd49",
+      "original_bytes": 25659,
+      "retained_sha256": "7ce8980b1dd4768f1cc6b7e82d18b39d75728041dfea368ba2b1a3ca1251cd49",
+      "retained_bytes": 25659,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/failure-disposition.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\failure-disposition.json",
+      "original_sha256": "e40b0d5dc59c215a1a8b016aacbcd73a7b13b24fa7723843f76e3c35439e77ee",
+      "original_bytes": 1979,
+      "retained_sha256": "e40b0d5dc59c215a1a8b016aacbcd73a7b13b24fa7723843f76e3c35439e77ee",
+      "retained_bytes": 1979,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/failed-job-133246847693.log.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\failed-job-133246847693.log",
+      "original_sha256": "b28237619e6cb21173bee591fd74a62a6043ca0b5339b7c27e4702689be3f630",
+      "original_bytes": 49907,
+      "retained_sha256": "0ecc264bcace0d613a3d8d0b2403473b7497e961a8dbcbf4ca186d8045fecd1a",
+      "retained_bytes": 53840,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "hosted/failed-job-133317752766.log.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980-attempt2-root-watch\\failed-job-133317752766.log",
+      "original_sha256": "dbbac94fe8807453fe9d2dbf1c6da28fc527ff945f77e22623bdb104c48026af",
+      "original_bytes": 77547,
+      "retained_sha256": "7c6422f6de75f4aa457c97b109fbfc7b418588f4ad29511a5843161e25d8bce1",
+      "retained_bytes": 91260,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-native-exit-3lag70nt.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-native-exit-3lag70nt.json",
+      "original_sha256": "21aea647e10a9142bc3dd4d472c429b3db30466897a741dd1aadefdbe3bb88a1",
+      "original_bytes": 500,
+      "retained_sha256": "21aea647e10a9142bc3dd4d472c429b3db30466897a741dd1aadefdbe3bb88a1",
+      "retained_bytes": 500,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-native-exit-_7soym64.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-native-exit-_7soym64.json",
+      "original_sha256": "9b5b10dceeb6322ba7a2bfe3b41e1e167b8da3417cee45a7006eb5b5a48f13dd",
+      "original_bytes": 500,
+      "retained_sha256": "9b5b10dceeb6322ba7a2bfe3b41e1e167b8da3417cee45a7006eb5b5a48f13dd",
+      "retained_bytes": 500,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-shutdown-7vpr9rzy.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-shutdown-7vpr9rzy.json",
+      "original_sha256": "fea82e41f2a52b855bea4c8c84dd2c352fda9101bce7e60088ab5ea078fb53e4",
+      "original_bytes": 843,
+      "retained_sha256": "fea82e41f2a52b855bea4c8c84dd2c352fda9101bce7e60088ab5ea078fb53e4",
+      "retained_bytes": 843,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-shutdown-observed-8ajkvin1.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-shutdown-observed-8ajkvin1.json",
+      "original_sha256": "a2cb89daa6a7987564bc97b8568e17e227a57cfb8dc99bdd63f30591a4ec3906",
+      "original_bytes": 971,
+      "retained_sha256": "a2cb89daa6a7987564bc97b8568e17e227a57cfb8dc99bdd63f30591a4ec3906",
+      "retained_bytes": 971,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-shutdown-observed-d047wjkm.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-shutdown-observed-d047wjkm.json",
+      "original_sha256": "c26c453030a28b75eddf8f122e0252754970d15ce772ffc56b007ac6f13328c9",
+      "original_bytes": 971,
+      "retained_sha256": "c26c453030a28b75eddf8f122e0252754970d15ce772ffc56b007ac6f13328c9",
+      "retained_bytes": 971,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-shutdown-observed-jxb9w_8i.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-shutdown-observed-jxb9w_8i.json",
+      "original_sha256": "f1bfcdebda52c392bb551fa84c9b8b7af2df1a2795355c6c345d8241881b77e2",
+      "original_bytes": 971,
+      "retained_sha256": "f1bfcdebda52c392bb551fa84c9b8b7af2df1a2795355c6c345d8241881b77e2",
+      "retained_bytes": 971,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-shutdown-observed-wbm40wld.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-shutdown-observed-wbm40wld.json",
+      "original_sha256": "6ebbd1809fac8a7d3032424c371941e4b77615b1a7fa2bef192787264cce466c",
+      "original_bytes": 974,
+      "retained_sha256": "6ebbd1809fac8a7d3032424c371941e4b77615b1a7fa2bef192787264cce466c",
+      "retained_bytes": 974,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "hosted/rpc/rpc-shutdown-od3wh99l.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-PR1115-a980c2-watch-z3kv1923\\rpc-diagnostics\\rpc-shutdown-od3wh99l.json",
+      "original_sha256": "c363319a3a6a4b62dee521bdb96a529f17bf9bda950d91276882e9258ffa399a",
+      "original_bytes": 1122,
+      "retained_sha256": "c363319a3a6a4b62dee521bdb96a529f17bf9bda950d91276882e9258ffa399a",
+      "retained_bytes": 1122,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "rpc-replay/result.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-a980-pi-rpc-bounded-replay\\result.json",
+      "original_sha256": "c133dbe185350b3c788373bb9391ebedc016699e8b4004fe151ff1b5629e61f6",
+      "original_bytes": 1005,
+      "retained_sha256": "c133dbe185350b3c788373bb9391ebedc016699e8b4004fe151ff1b5629e61f6",
+      "retained_bytes": 1005,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "rpc-replay/stderr.log.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-a980-pi-rpc-bounded-replay\\stderr.log",
+      "original_sha256": "870affc102f2dbddb93f8e1476d18ea7590b5125c55a1dba9930e0cca36e2279",
+      "original_bytes": 469,
+      "retained_sha256": "9d1be42900364c2c51aed2bdee420e5a49e610dc292b0b58295ab64915cb91b9",
+      "retained_bytes": 773,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "farm-budget/bug-origin.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\farm-cleanup-budget-bug-origin.json",
+      "original_sha256": "85d4807c51eb1bf65c4bd89639f720660b736c73130d2048b15ccf22041f8920",
+      "original_bytes": 1268,
+      "retained_sha256": "85d4807c51eb1bf65c4bd89639f720660b736c73130d2048b15ccf22041f8920",
+      "retained_bytes": 1268,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "farm-budget/result.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-cleanup-budget-verification\\result.json",
+      "original_sha256": "88e4054bb240b1aac83df6e302592961f0a4cc32b08ee8786b45ffbbe47e88a3",
+      "original_bytes": 1925,
+      "retained_sha256": "88e4054bb240b1aac83df6e302592961f0a4cc32b08ee8786b45ffbbe47e88a3",
+      "retained_bytes": 1925,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "farm-budget/owning-v8-suite.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-cleanup-budget-verification\\owning-v8-suite.json",
+      "original_sha256": "403545e5039c59f25e7ccfa61773fd96528c5da651ba434380ae278392879738",
+      "original_bytes": 826,
+      "retained_sha256": "403545e5039c59f25e7ccfa61773fd96528c5da651ba434380ae278392879738",
+      "retained_bytes": 826,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "farm-budget/typecheck.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-cleanup-budget-verification\\typecheck.json",
+      "original_sha256": "414196fd0753a6f510b1e76a21e4c92159c9e436fd0171018f5babe4b1af8859",
+      "original_bytes": 613,
+      "retained_sha256": "414196fd0753a6f510b1e76a21e4c92159c9e436fd0171018f5babe4b1af8859",
+      "retained_bytes": 613,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "farm-budget/owning-v8-suite.stdout.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-farm-cleanup-budget-verification\\owning-v8-suite.stdout",
+      "original_sha256": "2b48f1527ef58bdf5116228fe7167090159246fabe2f7628271c73f509d11494",
+      "original_bytes": 2335,
+      "retained_sha256": "249ffdabadf3bcd98c0a4508526a9ce5c40f9c8a728d8241133cec7d0da129e9",
+      "retained_bytes": 3428,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "native-cli/delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-cli37-unit-x83u2ntp\\delivery.json",
+      "original_sha256": "177f05a8adf98348034938c9d4576c99457bb5868eb5082e30135ad7f4999f63",
+      "original_bytes": 1423,
+      "retained_sha256": "177f05a8adf98348034938c9d4576c99457bb5868eb5082e30135ad7f4999f63",
+      "retained_bytes": 1423,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native-cli/focused.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-cli37-unit-x83u2ntp\\focused.json",
+      "original_sha256": "deda9b7e2394dc7284e9c037dbe5d1ff1597e56daed208b0330cad8e6bffe2d5",
+      "original_bytes": 123114,
+      "retained_sha256": "deda9b7e2394dc7284e9c037dbe5d1ff1597e56daed208b0330cad8e6bffe2d5",
+      "retained_bytes": 123114,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native-cli/focused.stdout.jsonl.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-cli37-unit-x83u2ntp\\focused.stdout.jsonl",
+      "original_sha256": "7e41b716b7259af3212f5b8cf36e528a30977d3feaeecd7f030033e5cd4a0269",
+      "original_bytes": 13253,
+      "retained_sha256": "b0239fc703246120c4ea5296d3cc882c53609319d696f55dad03abb123e04076",
+      "retained_bytes": 14593,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "native-cli/full-clause-witness-matrix.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-cli37-unit-x83u2ntp\\full-clause-witness-matrix.json",
+      "original_sha256": "a562dba1f2893dd05d643702d72a415e0eeb7868dc73b3f9e631009324fcfb17",
+      "original_bytes": 9696,
+      "retained_sha256": "a562dba1f2893dd05d643702d72a415e0eeb7868dc73b3f9e631009324fcfb17",
+      "retained_bytes": 9696,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\delivery.json",
+      "original_sha256": "b6c9166eb16175e0bc697139b65dfe3a6580b0c8f577e3bea4901ee712c0cd62",
+      "original_bytes": 2471,
+      "retained_sha256": "b6c9166eb16175e0bc697139b65dfe3a6580b0c8f577e3bea4901ee712c0cd62",
+      "retained_bytes": 2471,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/red.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\red.json",
+      "original_sha256": "368882e3a60a51a2bc9dc9c7d16b044f32a1ed33f61e6071be245fc410756d96",
+      "original_bytes": 506,
+      "retained_sha256": "368882e3a60a51a2bc9dc9c7d16b044f32a1ed33f61e6071be245fc410756d96",
+      "retained_bytes": 506,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/full-clause-witnesses.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\full-clause-witnesses.json",
+      "original_sha256": "83433b086731694ebca2335ca71ed57ec08894652fc0466366ddaa9f5601e6b1",
+      "original_bytes": 24105,
+      "retained_sha256": "83433b086731694ebca2335ca71ed57ec08894652fc0466366ddaa9f5601e6b1",
+      "retained_bytes": 24105,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/static-guards.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native20-cli-route-fix-fj92wr4m\\static-guards.json",
+      "original_sha256": "45380ac40c58e18692ff17841fd8815cba38351ea59c5c81240e8c08776901bc",
+      "original_bytes": 581,
+      "retained_sha256": "45380ac40c58e18692ff17841fd8815cba38351ea59c5c81240e8c08776901bc",
+      "retained_bytes": 581,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/native20-composed-authority.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native20-composed-authority.json",
+      "original_sha256": "8e4c0e03ab53ecf109eed646248e93acee25fd24c3ab04df6b9df741850ea83f",
+      "original_bytes": 3233,
+      "retained_sha256": "8e4c0e03ab53ecf109eed646248e93acee25fd24c3ab04df6b9df741850ea83f",
+      "retained_bytes": 3233,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/native20-composed-authority.stderr.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native20-composed-authority.stderr",
+      "original_sha256": "31e0a05e9776870f6584b352785f80d5c62f64631ef4a713d9dfdb6b35a62aa4",
+      "original_bytes": 1160,
+      "retained_sha256": "1d200abf955f4c784f4834d70b97b0d0ba6749603bda9f97389b79ba445dcb55",
+      "retained_bytes": 1520,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "native20/native20-final-composition-controls.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native20-final-composition-controls.json",
+      "original_sha256": "c969f42086b4e3f57ad49ebc5047ce51e2b66e5801c84e2b6cc3faf0c4d125d0",
+      "original_bytes": 3344,
+      "retained_sha256": "c969f42086b4e3f57ad49ebc5047ce51e2b66e5801c84e2b6cc3faf0c4d125d0",
+      "retained_bytes": 3344,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "native20/native20-final-composition-controls.stderr.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-host-observer-integration-root\\native20-final-composition-controls.stderr",
+      "original_sha256": "89fc2477c175d6032c23a4ab731b2319aea791976e36805e225db8b85d31542d",
+      "original_bytes": 106,
+      "retained_sha256": "d0fe993920fcaf52762fa3b8b71a19173b70cd6e42e5d026b0263094074de30f",
+      "retained_bytes": 442,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "sandbox-guidance/delivery-final.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\delivery-final.json",
+      "original_sha256": "1d73474e9d89c9be0067cf9b51bd66ae7d0b5309349efb7ed3de5600369f7146",
+      "original_bytes": 2760,
+      "retained_sha256": "1d73474e9d89c9be0067cf9b51bd66ae7d0b5309349efb7ed3de5600369f7146",
+      "retained_bytes": 2760,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "sandbox-guidance/outcome.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\outcome.json",
+      "original_sha256": "b0f2d7e5d4c3ce0dc5053fd7f8f8a30d6ee34a638eb0ad804e21b9e24c36ce65",
+      "original_bytes": 111,
+      "retained_sha256": "b0f2d7e5d4c3ce0dc5053fd7f8f8a30d6ee34a638eb0ad804e21b9e24c36ce65",
+      "retained_bytes": 111,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "sandbox-guidance/stdout.log.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw04-sw08-prose-repair\\stdout.log",
+      "original_sha256": "36d9c25ab47fd6af050f2dfd6359a2d25776973491ee09788789cb7a0d90ad9a",
+      "original_bytes": 96,
+      "retained_sha256": "8198fcbfd3a7f56fdffb142c941be715e9537755686b115b2215bbf41e678757",
+      "retained_bytes": 382,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "sandbox-build/delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-guidance-build-successor-xrm8ebyr\\delivery.json",
+      "original_sha256": "9d5448543997bbfd7b0b2e9a2669c1205bca13cac587644941f9f077ba61a1ba",
+      "original_bytes": 12084,
+      "retained_sha256": "9d5448543997bbfd7b0b2e9a2669c1205bca13cac587644941f9f077ba61a1ba",
+      "retained_bytes": 12084,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "sandbox-build/shipped-help.stderr.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-guidance-build-successor-xrm8ebyr\\shipped-help.stderr",
+      "original_sha256": "d4c9fb0a43c9a1ee554df1c3d2f683e48846611930d93b20961c597608bbb072",
+      "original_bytes": 658,
+      "retained_sha256": "30a0c241981739c6f5c2f5510dda5676b2ba7c1b27c97a0a9fb294e19c1b9611",
+      "retained_bytes": 980,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "unsupported/history/compile-missing-embedded-data.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-run\\delivery.json",
+      "original_sha256": "d74b2b2c57e04c9bde81266b72e3591a2467f8fb17c65df3f243068b82062709",
+      "original_bytes": 4003,
+      "retained_sha256": "d74b2b2c57e04c9bde81266b72e3591a2467f8fb17c65df3f243068b82062709",
+      "retained_bytes": 4003,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/history/compiled-runtime-init-failure.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\delivery.json",
+      "original_sha256": "e7c6268c227b8638a8d385bd56d0feec4819aa6efe402e905ce9ac5007f7cdca",
+      "original_bytes": 6688,
+      "retained_sha256": "e7c6268c227b8638a8d385bd56d0feec4819aa6efe402e905ce9ac5007f7cdca",
+      "retained_bytes": 6688,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/history/windows-directory-oracle-failure.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-single-thread\\delivery.json",
+      "original_sha256": "abae571995f17443d8af2eab71728dd6ba673e4875484423d3278b034176b8ff",
+      "original_bytes": 4628,
+      "retained_sha256": "abae571995f17443d8af2eab71728dd6ba673e4875484423d3278b034176b8ff",
+      "retained_bytes": 4628,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/compile/compile-outcome.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\compile-outcome.json",
+      "original_sha256": "ebb4cdb3875111623b03ed6e4d36b0fe2ffe9366fc2410c308e6773f52d6528e",
+      "original_bytes": 1013,
+      "retained_sha256": "ebb4cdb3875111623b03ed6e4d36b0fe2ffe9366fc2410c308e6773f52d6528e",
+      "retained_bytes": 1013,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/compile/wasm.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\wasm.json",
+      "original_sha256": "37df9a5744c19ac328ebe0d73d4211793e4271dcda779d4f2c3d04fa019267d6",
+      "original_bytes": 195,
+      "retained_sha256": "37df9a5744c19ac328ebe0d73d4211793e4271dcda779d4f2c3d04fa019267d6",
+      "retained_bytes": 195,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/compile/full-module-bindings.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\full-module-bindings.json",
+      "original_sha256": "cdd67b0e3984b4337367475ac35d22e4eb05412aa52035e64e98416008b9e8a8",
+      "original_bytes": 73194,
+      "retained_sha256": "6c7c91bd4de88ff2496ec7707a29061005e2ced06b68e6fcbf400c76e27cdc5d",
+      "retained_bytes": 69944,
+      "stored_as": "Lossless field-name projection: git_oid replaces git_oid_from_git_api; inverse key rename preserving order + json.dumps(indent2)+LF recovers exactoriginalSHA. All250content hashes verified atimmutable recordedGit epoch; originalraw retainedinTemp."
+    },
+    {
+      "path": "unsupported/compile/trace-path-addendum.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-wasm-full-module\\trace-path-addendum.json",
+      "original_sha256": "3f95b7becba5c5909f834747fe094b4e977874f4f5461a52914cd2091a6095b5",
+      "original_bytes": 454124,
+      "retained_sha256": "3f95b7becba5c5909f834747fe094b4e977874f4f5461a52914cd2091a6095b5",
+      "retained_bytes": 454124,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/linux/delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\delivery.json",
+      "original_sha256": "6c7f1a04ba8466799f48d8052f942b39dd0283dc8cad38d996e3ea31957e09ee",
+      "original_bytes": 16985,
+      "retained_sha256": "6c7f1a04ba8466799f48d8052f942b39dd0283dc8cad38d996e3ea31957e09ee",
+      "retained_bytes": 16985,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/linux/summary.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\summary.json",
+      "original_sha256": "4ae6bc0af81e145f71dc29b256d37009fb316c2e521656207dadfd054913995c",
+      "original_bytes": 4954,
+      "retained_sha256": "4ae6bc0af81e145f71dc29b256d37009fb316c2e521656207dadfd054913995c",
+      "retained_bytes": 4954,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/linux/unit-outcome.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit-outcome.json",
+      "original_sha256": "cf98537eee18cb387b4e87afd8520ac412e7f9cd947ea9d2759a5ef29d5c8a9a",
+      "original_bytes": 2069,
+      "retained_sha256": "cf98537eee18cb387b4e87afd8520ac412e7f9cd947ea9d2759a5ef29d5c8a9a",
+      "retained_bytes": 2069,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/linux/unit.stdout.log.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-nf08-linux-wasm-run\\unit.stdout.log",
+      "original_sha256": "96e0bf49d5da978f142e9d9085dcef65136c2e82128180a5b9ea155148ff8e08",
+      "original_bytes": 129,
+      "retained_sha256": "7fe0ebdf915d1b7ae763aba727f3a40f9b48abaa7d7d24629211a3354a829cf4",
+      "retained_bytes": 420,
+      "stored_as": "lossless UTF8 capture envelope; text.encodeUTF8 recovers exact original bytes"
+    },
+    {
+      "path": "shell/delivery.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\delivery.json",
+      "original_sha256": "1e5b7320e0efed0ab16e1c9089fc883f1fb19323ac5893daa324df1ac62194ee",
+      "original_bytes": 13440,
+      "retained_sha256": "1e5b7320e0efed0ab16e1c9089fc883f1fb19323ac5893daa324df1ac62194ee",
+      "retained_bytes": 13440,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/summary.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\summary.json",
+      "original_sha256": "3d290df3397eb51dedd6845b83503f9da82008b9433b11f0ac78a0b1f8631a1e",
+      "original_bytes": 1208,
+      "retained_sha256": "3d290df3397eb51dedd6845b83503f9da82008b9433b11f0ac78a0b1f8631a1e",
+      "retained_bytes": 1208,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/phase-0.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\phase-0.json",
+      "original_sha256": "3ae452c088e1c0e24b7507df351aa21507c2edaeae2d9026b8708f7f36b9b24c",
+      "original_bytes": 641,
+      "retained_sha256": "3ae452c088e1c0e24b7507df351aa21507c2edaeae2d9026b8708f7f36b9b24c",
+      "retained_bytes": 641,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/phase-7.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\phase-7.json",
+      "original_sha256": "19687146237945d00d12575aa2b4b4b77e53d1e05fe5f480663d7366af019066",
+      "original_bytes": 641,
+      "retained_sha256": "19687146237945d00d12575aa2b4b4b77e53d1e05fe5f480663d7366af019066",
+      "retained_bytes": 641,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/session-0-outcome.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\session-0-outcome.json",
+      "original_sha256": "e39e17fc279e95310aa73205a2a597a15867356440ec8492b14d6b6440b02d5f",
+      "original_bytes": 1095,
+      "retained_sha256": "e39e17fc279e95310aa73205a2a597a15867356440ec8492b14d6b6440b02d5f",
+      "retained_bytes": 1095,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/session-7-outcome.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\session-7-outcome.json",
+      "original_sha256": "21a045b8cbca5f0cf65796362cdc7dbaf23d2b95678818e5871e91ba364c9c9d",
+      "original_bytes": 1096,
+      "retained_sha256": "21a045b8cbca5f0cf65796362cdc7dbaf23d2b95678818e5871e91ba364c9c9d",
+      "retained_bytes": 1096,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/session-0-tool-transcript.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\session-0-tool-transcript.json",
+      "original_sha256": "5058443537ef0c18f0be57014e386aba3f0fc9762cc19cb4b8a4b48eb79ccb69",
+      "original_bytes": 900,
+      "retained_sha256": "5058443537ef0c18f0be57014e386aba3f0fc9762cc19cb4b8a4b48eb79ccb69",
+      "retained_bytes": 900,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/session-7-tool-transcript.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\session-7-tool-transcript.json",
+      "original_sha256": "ebbbecace86e2ba1d3b600bdd525ffa035e7392b40eb4518ca41b2f7502c5738",
+      "original_bytes": 900,
+      "retained_sha256": "ebbbecace86e2ba1d3b600bdd525ffa035e7392b40eb4518ca41b2f7502c5738",
+      "retained_bytes": 900,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/root-review-and-history.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-vt-capture\\root-review-and-history.json",
+      "original_sha256": "03a812615daff6c656c1c050c2953c7f0477fb539a6bfd8e3d6e6995e46b897c",
+      "original_bytes": 1536,
+      "retained_sha256": "03a812615daff6c656c1c050c2953c7f0477fb539a6bfd8e3d6e6995e46b897c",
+      "retained_bytes": 1536,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/history/tmpfs-option-reader.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-runtime\\summary",
+      "original_sha256": "79ec98886c803f1097ac57e5f928c892e932461b7c30ef6636b44d8784fce75e",
+      "original_bytes": 1021,
+      "retained_sha256": "79ec98886c803f1097ac57e5f928c892e932461b7c30ef6636b44d8784fce75e",
+      "retained_bytes": 1021,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/history/post-exit-image-reader.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-successor\\summary.json",
+      "original_sha256": "85a994144ccb602b0f3f271a3d2014f1636180b1a933ffe97fd51619344cc96e",
+      "original_bytes": 1022,
+      "retained_sha256": "85a994144ccb602b0f3f271a3d2014f1636180b1a933ffe97fd51619344cc96e",
+      "retained_bytes": 1022,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/history/terminal-cursor-reader.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-exit-observer\\summary.json",
+      "original_sha256": "de7ca46c2d94389d641c6ff998afdf744e8c9de43461455f8306b849320fa0bc",
+      "original_bytes": 1290,
+      "retained_sha256": "de7ca46c2d94389d641c6ff998afdf744e8c9de43461455f8306b849320fa0bc",
+      "retained_bytes": 1290,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "shell/history/cursor-decoder-diagnosis.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-sw-shell-root-exit-observer\\cursor-decoder-diagnosis.json",
+      "original_sha256": "fefb79a4a308df26b9fe4a300cf2a298e0b15e474cb780d06bba6e9b6a013562",
+      "original_bytes": 300,
+      "retained_sha256": "fefb79a4a308df26b9fe4a300cf2a298e0b15e474cb780d06bba6e9b6a013562",
+      "retained_bytes": 300,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "source-disposition/independent-S75-assessment.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-s75-source-assessment-ozsyav0i\\assessment.json",
+      "original_sha256": "554a379a65255fcdc7cb5ec986c708d969d1243fb3864b54aaa1a53d431bdd05",
+      "original_bytes": 5498,
+      "retained_sha256": "554a379a65255fcdc7cb5ec986c708d969d1243fb3864b54aaa1a53d431bdd05",
+      "retained_bytes": 5498,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "source-disposition/prospective-S75-authorization.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-S75-current-contract-inspection-ua1upm7c\\prospective-authorization.json",
+      "original_sha256": "f7126083913fa8f92c7c9aa4b03681dcc5c31ee74d49624ad2b8045cbfb1b74f",
+      "original_bytes": 5453,
+      "retained_sha256": "f7126083913fa8f92c7c9aa4b03681dcc5c31ee74d49624ad2b8045cbfb1b74f",
+      "retained_bytes": 5453,
+      "stored_as": "literal JSON bytes"
+    },
+    {
+      "path": "unsupported/compile/original-compiled-draft.capture.json",
+      "original_path": "C:\\Users\\brenn\\AppData\\Local\\Temp\\ca-native-unsupported-boundary-plan-c03bb9ae\\fs_other_boundary_test.go",
+      "original_sha256": "28e3dbea39cd63209f21362011644c64abc4a8ce00c66456fde56f37c9053856",
+      "original_bytes": 2794,
+      "retained_sha256": "773436707533aa4c372d0c1b2d1d1a5856b3e132caac26c660ea5bb229a71705",
+      "retained_bytes": 3379,
+      "stored_as": "losslessUTF8capture"
+    },
+    {
+      "path": "root-composition-checks.json",
+      "original_path": "Rootactualcompositionchecks",
+      "original_sha256": "7e801bdab1208249c99559336ace8e428d415e2f7ec4f1513123f3f4cf19554f",
+      "original_bytes": 1598,
+      "retained_sha256": "7e801bdab1208249c99559336ace8e428d415e2f7ec4f1513123f3f4cf19554f",
+      "retained_bytes": 1598,
+      "stored_as": "RootdevelopmentobservationJSON"
+    }
+  ]
+}
