@@ -18,6 +18,54 @@ SOURCE = subprocess.run(["git", "--no-lazy-fetch", "rev-parse", "HEAD"], cwd=REP
 C = owner.CORPUS
 
 
+
+class ProgramBootstrapTest(unittest.TestCase):
+    def test_resume_existing_integration_in_isolated_worktree(self):
+        with tempfile.TemporaryDirectory(prefix="ca-program-bootstrap-") as working:
+            base = Path(working)
+            primary, integration, hooks = (base / p for p in ("primary", "integration", "empty-hooks"))
+            primary.mkdir()
+            hooks.mkdir()
+            env = {k: os.environ[k] for k in ("PATH", "SystemRoot", "WINDIR", "TEMP", "TMP") if k in os.environ}
+            env.update(GIT_CONFIG_NOSYSTEM="1", GIT_CONFIG_GLOBAL=os.devnull, GIT_TERMINAL_PROMPT="0")
+
+            def git(repo, *args):
+                result = subprocess.run(
+                    ["git", "-c", "core.autocrlf=false", "-c", "core.hooksPath=" + str(hooks),
+                     "-c", "user.name=Program bootstrap fixture", "-c", "user.email=bootstrap@example.invalid",
+                     "-C", str(repo), *args],
+                    env=env, capture_output=True, timeout=15, check=True,
+                )
+                return result.stdout
+
+            git(primary, "init", "-q", "-b", "main")
+            tracked = primary / "tracked.txt"
+            tracked.write_bytes(b"baseline\n")
+            git(primary, "add", "--", "tracked.txt")
+            git(primary, "commit", "-qm", "Owned fixture baseline")
+            git(primary, "branch", "major/state-contracts")
+            tracked.write_bytes(b"uncommitted operator edit\n")
+            untracked = primary / "operator-note.txt"
+            untracked.write_bytes(b"untracked operator note\n")
+            status = git(primary, "status", "--porcelain=v1", "-uall")
+            refs = git(primary, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads", "refs/tags")
+            source = git(primary, "rev-parse", "refs/heads/major/state-contracts")
+            expected = {path.name: path.read_bytes() for path in (tracked, untracked)}
+            self.assertEqual(status.splitlines(), [b" M tracked.txt", b"?? operator-note.txt"])
+
+            git(primary, "worktree", "add", "--quiet", str(integration), "major/state-contracts")
+
+            self.assertEqual(git(integration, "branch", "--show-current").strip(), b"major/state-contracts")
+            self.assertEqual(git(integration, "rev-parse", "HEAD"), source)
+            self.assertEqual(git(integration, "status", "--porcelain=v1", "-uall"), b"")
+            self.assertEqual((integration / "tracked.txt").read_bytes(), b"baseline\n")
+            self.assertFalse((integration / "operator-note.txt").exists())
+            self.assertEqual(git(primary, "branch", "--show-current").strip(), b"main")
+            self.assertEqual(git(primary, "for-each-ref", "--format=%(refname) %(objectname)", "refs/heads", "refs/tags"), refs)
+            self.assertEqual(git(primary, "status", "--porcelain=v1", "-uall"), status)
+            self.assertEqual({path.name: path.read_bytes() for path in (tracked, untracked)}, expected)
+
+
 class IntegrationIntegrityTest(unittest.TestCase):
     @classmethod
     def setUpClass(cls):
