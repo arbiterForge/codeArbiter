@@ -552,12 +552,13 @@ class OriginalDocsSourceTests(unittest.TestCase):
                 with self.assertRaises(owner.ReadinessError): owner.load_verified_receipt(None,'a'*40,7)
 
     def test_workflow_preserves_original_lifecycle_and_step_local_read_only_emitter(self):
+        from test_ci_impact import SiteBrowserPublicationWorkflowTest, workflow_jobs
+
         root=Path(__file__).resolve().parents[2]
         text=(root/'.github/workflows/docs.yml').read_text()
-        job=text.split('\n  site-check:\n',1)[1].split('\n  build:\n',1)[0]
-        self.assertIn('permissions:\n      contents: read\n      actions: read',job)
-        self.assertEqual(job.count('GH_TOKEN:'),1)
-        self.assertIn('GH_TOKEN: ${{ github.token }}',job)
+        jobs=workflow_jobs(text)
+        job=jobs['site-check']
+        SiteBrowserPublicationWorkflowTest._assert_workflow_authority(self, jobs)
         self.assertIn('success() && steps.docs-source-mode.outputs.active',job)
         self.assertIn("github.event_name == 'push'",job)
         self.assertIn('["refs/heads/main","refs/heads/major/state-contracts"]',job)
