@@ -1,0 +1,150 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+ "kind": "hosted-run",
+ "result": "PASSED",
+ "producer": {
+  "class": "hosted",
+  "identity": "GitHub Actions Core original attempt 1, Workflow recovery ownership job 135230531921"
+ },
+ "disposition_ids": [
+  "disposition:findings:HOOK-B04",
+  "disposition:findings:W-F04"
+ ],
+ "inputs": {
+  ".github/scripts/_boundedproc.py": "671458a00f178ac690e4d1f4e0458da7b3833353384f9cb7546be711bab15f51",
+  ".github/scripts/_contextverificationlib.py": "361b29a202f8ff3fe4f35c58a42d53cf77c4f8fe05985b1e91b721fc8f2a0707",
+  ".github/scripts/_immutable_git_blobs.py": "847bb372cba7bc06247b6ab4deb7f8b7fde72ca723efdfbc539e6aa648416051",
+  ".github/scripts/ci20_native_binding.py": "8a927974424c7c18d3e2e28db0173de07c65e2f1bb068e08dd11e14614284c3f",
+  ".github/scripts/fixtures/claude-hooks/agent-posttooluse.json": "67b26c5e4f8e7b4842897dd7230293cc88972a957a76dcbb576076027d414602",
+  ".github/scripts/fixtures/claude-hooks/agent-pretooluse.json": "b01724d5301a9825cbdad1132ccc47ba3ac3d4de3f363be73fb503a24f6cdb68",
+  ".github/scripts/fixtures/claude-hooks/subagentstart.json": "de943801cb796f802c0ac7b8dcc46e4518d126f28dce61d362e340403571219b",
+  ".github/scripts/fixtures/claude-hooks/subagentstop-first.json": "575af14715d723b3b93829edfadfe18339881ba910c057416db4874413f80762",
+  ".github/scripts/major_qualification_report.py": "8c2d13f5fd62b915bf158b9a9b4361a9a71cdb8d08564087c7506ca692cd994b",
+  ".github/scripts/major_readiness.py": "817bab9b2edef68076e1b287afee32f3f2f0e8f7d1b68f6c0daf7952e6cb8ae1",
+  ".github/scripts/test_artifact_authoring.py": "c9b291ab9f5d027d554004e0020a471f26df422f40cd50d42b114a118ce94d40",
+  ".github/scripts/test_artifact_authority_adapter.py": "defd1257be6b1a21044d243c5747ebd27cd8b6b1577f816f65646f1e72addb7f",
+  ".github/scripts/test_review_resubmission.py": "152eea8b811bb1c78c1e4a8c76eb76953aecb4f22ddfd46f5099917ddf3831cd",
+  ".github/scripts/test_workflow_recovery.py": "ee48f8b6c11b9e75c13bfeb27082f9ba9092ea03de8aef513f7fb0f7cda3202f",
+  ".github/scripts/test_workflow_recovery_cli.py": "dcabdeb750fab02b973f331f3902ec93a716d7328539fb04718c6a66c27e12f5",
+  ".github/scripts/test_workflow_recovery_hosts.py": "c52a377ec888eac1142696be66afe983eb74583aad104d2159e76ae2b4cfff56",
+  ".github/workflows/ci.yml": "30d5cb480374a452b6664558b16c2a30c2aa6b39a23c10c3b2d3eba9d6813609",
+  "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+  "core/pysrc/_activationlib.py": "60c6391b4d8b143c5e59cf2320291a2d31063e8fbebe0fcf337dd83e07f8fd97",
+  "core/pysrc/_arbiterstatelib.py": "19ebd7d82fa56d2a4535043d3a163cfe9f0475aa5d457d5ad8953980d57f71c1",
+  "core/pysrc/_artifactauthoritylib.py": "93e835de7115474db697fc32aa5f2795d86fdefbdbc0843f74818fa93ab76e7c",
+  "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+  "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+  "core/pysrc/_artifactpromptlib.py": "03e0c4b32c806cc054ef34ae7ac58ed093cbe80521a8fea723b7ceb8ac72e1d9",
+  "core/pysrc/_gitexec.py": "81dddb3db3ab62c297a8431aa18a566146a931e0babd68ba1e869aa0044071b5",
+  "core/pysrc/_hooklib.py": "c4fb09bb14c49162e073f156aa37f7f5ccf8e9867f60bb49f6d8c4a75a7be895",
+  "core/pysrc/_knowledgelib.py": "abc1f93667faf5241c52931d33fc992e5627bd2c406298937d587c373659eeb9",
+  "core/pysrc/_modelib.py": "1988af5a7b374bc796a0d6744a85d50a8b1213a4039bc91b6fa5d434b3464a03",
+  "core/pysrc/_pathnorm.py": "f6a99cddf6277641316f5e8f9d86fb97691e535ba569aa6cb51c9e4f3ed52906",
+  "core/pysrc/_protectedlib.py": "3156e9ad47cf577476dfcae27fde1d4ebfd71fe33b5e1976d351b8f833ea53d3",
+  "core/pysrc/_protectedstatelib.py": "9703e5e777ab286df820dd14da8c0118c24335d41007abfa6f536b5b0b3f14e0",
+  "core/pysrc/_replylib.py": "127d9bcfd842bcea941f2d61b86963cd3e50fcb34a603e8a834fe18d2cc9bf0d",
+  "core/pysrc/_scopelib.py": "03d1f066863d08c952ebda8d9b6f1515813f53a4fd3fc0af560a735f63954e0b",
+  "core/pysrc/_sensitivelib.py": "a3902997c16d367a3c7e6e7247a42ba35d962e2c885f9ed3e8e1ab0ce98ec506",
+  "core/pysrc/_standuplib.py": "621d318ca6429c95bc45dadeb7fbebbfdd9bc3a5f94267d87fa692e69ef74169",
+  "core/pysrc/_taskboardlib.py": "3341d7451bd379c0f07a348738e7f411180bd3a379f21fa799502a31522531a1",
+  "core/pysrc/_workflowrecoverylib.py": "5ead32108da14310794f2b45795f23435fb6faf3cec173ebc20652c82740d51f",
+  "core/pysrc/_worklib.py": "4b08bdfdea85a96e1bde4bd7dc610bc61dd8ef31a42d530fb10437b1145818ce",
+  "core/pysrc/hostapi.py": "2aea81ad167a458c6053cb52880952521159a367eaa5baa7df6e2e35fea574e4",
+  "core/pysrc/knowledge.py": "7f2d4e06cb4109a6c3b50b556b71f623276192f7d14b881cd0af9174666b9f70",
+  "core/pysrc/session-start.py": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+  "core/pysrc/taskwrite.py": "c0f1b9406982457d6a52fa55f184efa255aed23ce48515fd99a3bda27adbec25",
+  "core/pysrc/work.py": "fe51520ff1faa8d94740fde5a8d73c0a2626841abc7eae5397e6969055b95722",
+  "core/pysrc/workflow-recovery.py": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+  "core/surface/commands/standup.md": "7e509ae3354c4c8db7365812991806efe467420844cbdb35635b283d686a96cb",
+  "core/surface/includes/harvest.md": "a3798c8362d1ee3b0f699503022f91a49a88daa2d9ccda44b1eaf7620f719388",
+  "core/surface/includes/knowledge.md": "269e1830434801736d32753c955683048ac7b6b8c84040c551f8e4068220505c",
+  "core/workflow-recovery-contract.json": "2b3bcd49600605fc5a49785c8df98fa3ef3d0704a2831b00d83a16752825dc72",
+  "plugins/ca-codex/.codex-plugin/plugin.json": "f8a491bf1477bfd1160b29545967abebf208bc36d79ff45ff3a66dd8e1c74d49",
+  "plugins/ca-codex/hooks/pre-tool-adapter.py": "0eb498bb9d319b029053b1160f9b7c9ea1b74506c97cf20cfed26ee3bb49d7c0",
+  "plugins/ca-codex/hooks/prompt-submit.py": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+  "plugins/ca-codex/hooks/session-start.py": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+  "plugins/ca-codex/hooks/workflow-recovery.py": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+  "plugins/ca-pi/hooks/pi-bridge.py": "ac922e71900aabcd43fc73a4e8c6c5479b309da8af7c7658512fcfd12514b6d4",
+  "plugins/ca-pi/hooks/workflow-recovery.py": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+  "plugins/ca-pi/package.json": "a6eaec07ab5b2f32ff61fcdae2adc8fc7914c5c7689ea97c2092493e15c0e657",
+  "plugins/ca/.claude-plugin/plugin.json": "67453bdff739a5760a0bf1e4093c103b7015e62b8cd5e19cc8d6a1b41b603348",
+  "plugins/ca/hooks/prompt-submit.py": "db4218a203d1078e7aecc887c8b522fc313a7c0cc29aa353f1065ed97a8adddf",
+  "plugins/ca/hooks/session-start.py": "cc79397431af3a0bf2ce28b2131a861b6a50e6e9f47c33fa9e3ef114a70816c2",
+  "plugins/ca/hooks/workflow-recovery.py": "7a8ccd6d5a21a2c3720a8fef9f73406a49e89d5ad4f0cf718e9160956f7c52a8",
+  "tools/build-artifacts.py": "74f4d1a73dcee6731b8d6211d8c715f518d4582ad8083485519b0dafb9389db4",
+  "tools/go_test_parallel.py": "8f5c4dfe363c023292d981fba58c41614e297cc40ae6872a7548cdec9c95f287"
+ },
+ "raw_evidence": [
+  {
+   "run_id": 44425846015,
+   "run_attempt": 1,
+   "job_id": 135230531921,
+   "artifact_id": 14484417831,
+   "sha256": "1a7e57d0c070b034ee46d95b2e3f16b61e18361934f5d9c545238fa08509b203"
+  },
+  {
+   "run_id": 44425846015,
+   "run_attempt": 1,
+   "job_id": 135230531921,
+   "artifact_id": 14484422838,
+   "sha256": "6c0a402f813ffb9782ed31f431ffb8d2acbc48e86a018da7781ff30fa20bdd34"
+  },
+  {
+   "run_id": 44425846015,
+   "run_attempt": 1,
+   "job_id": 135230531921,
+   "artifact_id": 14485020950,
+   "sha256": "3741642994a0d100d1e5cb59436d24c0973e8ab83a6aae0c5d3215c896f33a82"
+  },
+  {
+   "run_id": 44425846015,
+   "run_attempt": 1,
+   "job_id": 135230531921,
+   "artifact_id": 14484861450,
+   "sha256": "ee6f3d024e286cbf16d3c6eea7f6eb896f72fdae975c83b2d05bbba079d1c74b"
+  },
+  {
+   "run_id": 44425846015,
+   "run_attempt": 1,
+   "job_id": 135230531921,
+   "artifact_id": 14484926692,
+   "sha256": "3545465a3c9935546d097f747313739ea11d3a48798caa4cb05a7a1a96686d27"
+  },
+  {
+   "path": "docs/state-contracts-major/execution/evidence/original-recovery-findings-aebb53c9/source-observation-summary.json",
+   "sha256": "7543727b398d910d6e9c311ae22afebf50813189dc4095e9cbacd2f2105cadf4"
+  }
+ ],
+ "commands": [
+  {
+   "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+    "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_workflow_recovery.py"
+   ],
+   "exit_code": 0
+  },
+  {
+   "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+    "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_workflow_recovery_cli.py"
+   ],
+   "exit_code": 0
+  },
+  {
+   "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.14.10\\x64\\python.exe",
+    "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_workflow_recovery_hosts.py"
+   ],
+   "exit_code": 0
+  }
+ ],
+ "case_count": 21,
+ "claim_scope": "Original interruption, no duplicate target, native installed migration/readback and three host notices. Seven referenced intake owner paths were independently checked for byte parity at the successor. This closes these two tested finding dispositions.",
+ "absent_inputs": [
+  {
+   "path": "core/pysrc/_host.py",
+   "path_style": "windows"
+  }
+ ]
+}

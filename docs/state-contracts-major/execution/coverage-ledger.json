@@ -70,8 +70,15 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+     "ref": "docs/state-contracts-major/execution/evidence/original-recovery-findings-aebb53c9/terminal-harvest-recovery-tested.json",
+     "sha256": "1dc7c3c62f89c6d65e34a393e610fbe84083268246d824d6b99ea2bfbdf053dd"
+    }
+   ]
   },
   "W-F05": {
    "owner": "hooks-workflows",
@@ -877,8 +884,15 @@
     "HW-15",
     "HW-27"
    ],
-   "status": "PLANNED",
-   "evidence": []
+   "status": "TESTED",
+   "evidence": [
+    {
+     "kind": "hosted-run",
+     "commit": "aebb53c912e624da58fcda057c0ce1a88ca69509",
+     "ref": "docs/state-contracts-major/execution/evidence/original-recovery-findings-aebb53c9/terminal-harvest-recovery-tested.json",
+     "sha256": "1dc7c3c62f89c6d65e34a393e610fbe84083268246d824d6b99ea2bfbdf053dd"
+    }
+   ]
   },
   "HOOK-B05": {
    "owner": "hooks-workflows",
