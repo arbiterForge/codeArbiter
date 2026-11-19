@@ -110,10 +110,27 @@ class ReportTest(unittest.TestCase):
                         "members": [{"path": "candidate.exe", "sha256": "d" * 64}],
                         "native_bindings": [self.binding]}
 
-    def build(self):
+    def build(self, *, composed_cells=None):
         return owner.build_report(self.req, job_name="owning native job", job_id=9,
                                   selections=self.map, observations={"native": self.observation},
-                                  payloads={"candidate": self.payload})
+                                  payloads={"candidate": self.payload}, composed_cells=composed_cells)
+
+    def test_original_job_reports_direct_cells_when_it_also_supplies_a_composed_cell(self):
+        scenario = "scenario:SEQ-27"
+        self.req["cells"].append(scenario)
+        self.req["cell_jobs"][scenario] = "owning native job"
+        with self.assertRaisesRegex(ValueError, "composed source findings"):
+            self.build()
+        actual = self.build(composed_cells=[scenario])
+        self.assertEqual([row["cell"] for row in actual["results"]], [self.cell])
+
+        with self.assertRaisesRegex(ValueError, "outside the original requirement population"):
+            self.build(composed_cells=["scenario:SEQ-21", scenario])
+        with self.assertRaisesRegex(ValueError, "invalid original source finding composition selection"):
+            self.build(composed_cells=[self.cell])
+        self.map["groups"][0]["cells"].append(scenario)
+        with self.assertRaisesRegex(ValueError, "also has a direct report selection"):
+            self.build(composed_cells=[scenario])
 
     def test_one_actual_named_test_can_substantiate_explicit_semantic_rows_without_reexecution(self):
         self.req["cells"].append("disposition:transitions:N11:03")
