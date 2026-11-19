@@ -111,9 +111,11 @@ class ReportTest(unittest.TestCase):
                         "native_bindings": [self.binding]}
 
     def build(self, *, composed_cells=None):
-        return owner.build_report(self.req, job_name="owning native job", job_id=9,
+        req = self.req if composed_cells is None else {
+            **self.req, "declared_source_finding_cells": composed_cells}
+        return owner.build_report(req, job_name="owning native job", job_id=9,
                                   selections=self.map, observations={"native": self.observation},
-                                  payloads={"candidate": self.payload}, composed_cells=composed_cells)
+                                  payloads={"candidate": self.payload})
 
     def test_original_job_reports_direct_cells_when_it_also_supplies_a_composed_cell(self):
         scenario = "scenario:SEQ-27"
@@ -5180,7 +5182,10 @@ class StatuslineIsolationObservationTests(unittest.TestCase):
         self.assertEqual(set(rows), set(self.cells))
         self.assertEqual(set(artifacts), {110})
         self.assertEqual(sorted(len(row["source_components"][0]["selectors"]) for row in rows.values()),
-                         [3, 4, 8, 8, 12, 14, 16, 34, 67])
+                         [3, 4, 8, 8, 8, 12, 14, 16, 34, 67])
+        scenario_selectors = rows["scenario:SEQ-21"]["source_components"][0]["selectors"]
+        self.assertEqual(scenario_selectors, sorted(owner._statusline_test_id(case)
+                                                  for case in owner._STATUSLINE_CASES["scenario:SEQ-21"]))
         self.assertEqual({r["source_components"][0]["observation_artifact_id"] for r in rows.values()}, {111})
 
     def test_refuse_stale_foreign_filtered_missing_duplicate_or_nonpassing_observation(self):

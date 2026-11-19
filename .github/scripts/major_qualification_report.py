@@ -4708,7 +4708,7 @@ def validate_selections(document):
 
 
 def build_report(req, *, job_name, job_id, selections, observations, payloads,
-                 producer_job=None, runtime_acquisitions=None, native_components=None, composed_cells=None):
+                 producer_job=None, runtime_acquisitions=None, native_components=None):
     require(type(job_id) is int and job_id > 0, "positive actual job identity required")
     groups = validate_selections(selections)
     # One declared original-package role is source-bound; no general formatting
@@ -4734,9 +4734,10 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
         resolved.append(group)
     groups = resolved
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
-    if composed_cells is not None:
+    if "declared_source_finding_cells" in req:
         # The release collector reconstructs these cells from original components.
         # A job emits its direct rows even when it also supplies a component.
+        composed_cells = req["declared_source_finding_cells"]
         source_finding_profiles(composed_cells)
         composed = set(composed_cells)
         require(composed <= set(req["cells"]), "composed cells are outside the original requirement population")
@@ -5192,12 +5193,10 @@ def main(argv=None):
                 payloads[name] = authenticated_payload(
                     found[0], req, path, source_job=matching[0] if name in source_payload_names else None,
                 )
-        policy = json.loads(readiness.blob(args.repo, source, ".github/major-qualification-policy.json"),
-                            object_pairs_hook=unique)
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
                               producer_job=matching[0], observations=observations, payloads=payloads,
-                              native_components=native_components, composed_cells=policy.get("source_finding_composite_cells", []))
+                              native_components=native_components)
         new_output(args.output, report)
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, readiness.ReadinessError) as error:

@@ -1755,9 +1755,12 @@ class ProgramProducingGuardTest(unittest.TestCase):
             return raw
         with mock.patch.object(owner,"blob",side_effect=blob),mock.patch.object(owner,"command",return_value=b"b"*40):
             req=owner.producer_requirements(root,source,7)
-            self.assertEqual(set(req),{"source_commit","source_tree","ci_run_id","cells","cell_jobs"})
+            self.assertEqual(set(req),{"source_commit","source_tree","ci_run_id","cells","cell_jobs",
+                                       "declared_source_finding_cells"})
             self.assertIn("installed:claude:workflow",req["cells"])
             self.assertEqual(set(req["cells"]),set(req["cell_jobs"]))
+            policy = json.loads((root / ".github/major-qualification-policy.json").read_bytes())
+            self.assertEqual(req["declared_source_finding_cells"], policy["source_finding_composite_cells"])
             with self.assertRaisesRegex(owner.ReadinessError,"unfinished required task"):
                 owner.requirements(root,source,7)
 
