@@ -202,6 +202,23 @@ class ReadinessWaitTest(unittest.TestCase):
         self.assertEqual(process.wait(5), 3)
 
 
+def process_interrupted_during_output(command_start, admitted, interrupted):
+    process = command_start()
+    admitted.append(process)
+    communicate = process.communicate
+
+    def collecting(*_args, **_kwargs):
+        process.communicate = communicate
+        partial, reason = B.readline(process, 5)
+        if not partial:
+            raise AssertionError(f"fixture emitted no output before cancellation: {reason}")
+        interrupted.stdout = partial
+        raise interrupted
+
+    process.communicate = collecting
+    return process
+
+
 class BoundedRunTest(unittest.TestCase):
     def test_timeout_communication_does_not_duplicate_the_retained_prefix(self):
         process = Mock()
@@ -221,6 +238,32 @@ class BoundedRunTest(unittest.TestCase):
         self.assertEqual(result.containment, "terminated")
         self.assertIn("adding marketplace", result.stdout)
         self.assertIn("containment=terminated", result.diagnostic("install", 1.5))
+
+    def test_cancelled_collection_reaps_owned_child_and_retains_partial_output(self):
+        started = []
+        interrupted = KeyboardInterrupt()
+        original_start = B.start
+        command = [PY, "-c", "print('collector-before-cancel', flush=True)\n" + HANG]
+
+        def start(*args, **kwargs):
+            return process_interrupted_during_output(lambda: original_start(*args, **kwargs), started, interrupted)
+
+        try:
+            with patch.object(B, "start", side_effect=start), self.assertRaises(KeyboardInterrupt) as observed:
+                B.run(command, timeout=10)
+            process, = started
+            self.assertIs(observed.exception, interrupted)
+            self.assertIsNotNone(process.poll(), "owned child survived collection cancellation")
+            result = interrupted.bounded_diagnostics
+            self.assertFalse(result.timed_out)
+            self.assertEqual(result.containment, "terminated")
+            self.assertEqual(result.stdout, "collector-before-cancel\n")
+            self.assertEqual(result.stderr, "")
+        finally:
+            for process in started:
+                if process.poll() is None:
+                    B.terminate_tree(process)
+                process.communicate(timeout=B.GRACE_SECONDS)
 
     def test_finished_child_is_exited_not_terminated(self):
         result = B.run([PY, "-c", "print('ok')"], timeout=30)
@@ -300,6 +343,32 @@ class PiBenchmarkReadinessDeadlineTest(unittest.TestCase):
     def test_hang_after_ready_is_bounded(self):
         with self.assertRaisesRegex(RuntimeError, "completion.*containment=terminated"):
             self.session("print('{\"phase\":\"ready\"}', flush=True)\n" + HANG)
+
+    def test_cancelled_benchmark_keeps_readiness_and_partial_output(self):
+        started = []
+        interrupted = KeyboardInterrupt()
+        original_start = B.start
+        ready = '{"phase":"ready"}'
+        script = f"print({ready!r}, flush=True)\nprint('benchmark-before-cancel', flush=True)\n" + HANG
+
+        def start(*args, **kwargs):
+            return process_interrupted_during_output(lambda: original_start(*args, **kwargs), started, interrupted)
+
+        try:
+            with patch.object(B, "start", side_effect=start), self.assertRaises(KeyboardInterrupt) as observed:
+                self.session(script, ready=5, complete=10)
+            process, = started
+            self.assertIs(observed.exception, interrupted)
+            self.assertIsNotNone(process.poll(), "owned benchmark child survived collection cancellation")
+            result = interrupted.bounded_diagnostics
+            self.assertFalse(result.timed_out)
+            self.assertEqual(result.containment, "terminated")
+            self.assertEqual(result.stdout, ready + "\nbenchmark-before-cancel\n")
+        finally:
+            for process in started:
+                if process.poll() is None:
+                    B.terminate_tree(process)
+                process.communicate(timeout=B.GRACE_SECONDS)
 
     def test_well_behaved_boundary_completes(self):
         # Both records arrive in one OS write: TextIO may prefetch completion

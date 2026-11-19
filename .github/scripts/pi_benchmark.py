@@ -177,20 +177,25 @@ def _boundary_session(argv, cwd, ready_timeout=BOUNDARY_READY_SECONDS,
         argv, cwd=cwd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
         encoding="utf-8", errors="replace",
     )
-    ready_raw, reason = _boundedproc.readline(process, ready_timeout)
-    startup_ms = _round_ms(time.perf_counter_ns() - startup)
-    if ready_raw is None:
-        fail("readiness", reason)
-    if ready_raw == "":
-        fail("readiness", f"{reason} (exit {process.poll()})")
+    ready_raw = None
     try:
-        ready = json.loads(ready_raw)
-    except json.JSONDecodeError:
-        fail("readiness", "ready line is not one complete JSON record")
-    try:
-        remainder, _stderr = process.communicate(timeout=complete_timeout)
-    except subprocess.TimeoutExpired:
-        fail("completion", f"no completion within {complete_timeout:g}s")
+        ready_raw, reason = _boundedproc.readline(process, ready_timeout)
+        startup_ms = _round_ms(time.perf_counter_ns() - startup)
+        if ready_raw is None:
+            fail("readiness", reason)
+        if ready_raw == "":
+            fail("readiness", f"{reason} (exit {process.poll()})")
+        try:
+            ready = json.loads(ready_raw)
+        except json.JSONDecodeError:
+            fail("readiness", "ready line is not one complete JSON record")
+        try:
+            remainder, _stderr = process.communicate(timeout=complete_timeout)
+        except subprocess.TimeoutExpired:
+            fail("completion", f"no completion within {complete_timeout:g}s")
+    except KeyboardInterrupt as interrupted:
+        _boundedproc.retain_cancelled_diagnostics(process, interrupted, consumed_stdout=ready_raw or "")
+        raise
     if process.returncode != 0:
         raise RuntimeError("production Pi benchmark boundary failed")
     return startup_ms, ready, remainder
