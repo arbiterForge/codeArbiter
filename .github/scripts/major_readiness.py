@@ -1036,11 +1036,12 @@ def _producer_requirements(repo, source, run_id):
             # record. No status/evidence/currentness predicate is accepted here.
             jobs[cell] = disposition_job(cell, routing[group][identity], contract, task_owners)
     scenarios = read(CORPUS+"contracts/scenarios.json")["scenarios"]
-    cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, jobs,
-                                           read(".github/major-qualification-policy.json"))
+    policy = read(".github/major-qualification-policy.json")
+    cells, cell_jobs = qualification_routes(required, tasks, progress, scenarios, jobs, policy)
     tree = command(["git", "rev-parse", source + "^{tree}"], repo).decode().strip()
     require(SHA.fullmatch(tree), "producer source tree unavailable")
-    return {"source_commit":source,"source_tree":tree,"ci_run_id":run_id,"cells":cells,"cell_jobs":cell_jobs}
+    return {"source_commit":source,"source_tree":tree,"ci_run_id":run_id,"cells":cells,"cell_jobs":cell_jobs,
+            "declared_source_finding_cells": policy.get("source_finding_composite_cells", [])}
 
 
 def requirements(repo, source, run_id):

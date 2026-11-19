@@ -141,6 +141,30 @@ def terminate_tree(process: subprocess.Popen, grace: float = GRACE_SECONDS) -> s
     return "terminated" if signalled else "exited"
 
 
+def _collect_stopped(process, *, partial_out="", partial_err=""):
+    try:
+        containment = terminate_tree(process)
+    except OSError:
+        containment = "unconfirmed"
+    try:
+        rest_out, rest_err = process.communicate(timeout=GRACE_SECONDS)
+    except (subprocess.TimeoutExpired, OSError, ValueError):
+        rest_out, rest_err = "", ""
+    # communicate() retries include the already buffered prefix. Concatenating
+    # TimeoutExpired output with that stream would invent duplicate diagnostics.
+    return containment, rest_out or _text(partial_out), rest_err or _text(partial_err)
+
+
+def retain_cancelled_diagnostics(process, interruption, *, consumed_stdout=""):
+    """Contain the owned child and retain output before propagating Ctrl+C."""
+    containment, out, err = _collect_stopped(
+        process, partial_out=getattr(interruption, "stdout", None),
+        partial_err=getattr(interruption, "stderr", None),
+    )
+    interruption.bounded_diagnostics = Bounded(None, consumed_stdout + out, err, False, containment)
+    interruption.add_note(f"Child collection cancelled; containment={containment}")
+
+
 def run(argv, *, timeout: float, **kwargs) -> Bounded:
     """subprocess.run with a whole-tree deadline and partial-output retention."""
     process = start(argv, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
@@ -149,19 +173,13 @@ def run(argv, *, timeout: float, **kwargs) -> Bounded:
         stdout, stderr = process.communicate(timeout=timeout)
         return Bounded(process.returncode, stdout, stderr, False, "exited")
     except subprocess.TimeoutExpired as expired:
-        partial_out = _text(expired.stdout)
-        partial_err = _text(expired.stderr)
-        containment = terminate_tree(process)
-        try:
-            rest_out, rest_err = process.communicate(timeout=GRACE_SECONDS)
-        except (subprocess.TimeoutExpired, ValueError):
-            rest_out, rest_err = "", ""
-        # communicate() retries return the full buffered stream, including the
-        # prefix carried by TimeoutExpired. Keep the prefix only if cleanup
-        # could not finish communication; concatenating would invent output.
-        return Bounded(None, rest_out if rest_out else partial_out,
-                       rest_err if rest_err else partial_err,
-                       True, containment)
+        containment, stdout, stderr = _collect_stopped(
+            process, partial_out=expired.stdout, partial_err=expired.stderr,
+        )
+        return Bounded(None, stdout, stderr, True, containment)
+    except KeyboardInterrupt as interrupted:
+        retain_cancelled_diagnostics(process, interrupted)
+        raise
 
 
 def _text(value) -> str:

@@ -24,6 +24,7 @@ import stat
 import subprocess
 import sys
 import tempfile
+import time
 import traceback
 import unittest
 from unittest import mock
@@ -73,11 +74,45 @@ def new_output(path, document):
         stream.write("\n")
 
 
-def git(repo, *args, raw=False, input=None):
+def _git_argv(repo, args):
+    return ["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo), *args]
+
+
+def git(repo, *args, raw=False, input=None, timeout=30):
     env = local_read_git_env()
-    result = subprocess.run(["git", "--no-replace-objects", "--no-lazy-fetch", "-C", str(repo), *args],
-                            env=env, input=input, capture_output=True, timeout=30, check=True)
+    result = subprocess.run(_git_argv(repo, args), env=env, input=input,
+                            capture_output=True, timeout=timeout, check=True)
     return result.stdout if raw else result.stdout.decode("utf-8").strip()
+
+
+def _source_tree_rows(repo, source, paths):
+    # Windows CreateProcess limits the complete quoted UTF-16 command, not
+    # individual paths. Keep deterministic disjoint batches below that limit
+    # on every host, sharing the original query's 30-second budget.
+    deadline = time.monotonic() + 30
+    prefix = ("ls-tree", "-rz", "--full-tree", source, "--")
+    def fits(batch):
+        command = subprocess.list2cmdline(_git_argv(repo, (*prefix, *batch)))
+        return len(command.encode("utf-16-le")) // 2 + 1 <= 16384
+    batches, current = [], []
+    for path in sorted(paths):
+        if not fits([*current, path]):
+            require(current and fits([path]), "source tree argument exceeds launch bound")
+            batches.append(current)
+            current = []
+        current.append(path)
+    if current:
+        batches.append(current)
+    chunks, total = [], 0
+    for batch in batches:
+        remaining = deadline - time.monotonic()
+        require(remaining > 0, "source tree query deadline exceeded")
+        rows = git(repo, *prefix, *batch, raw=True, timeout=remaining)
+        total += len(rows)
+        require(total <= MAX_JSON, "source tree output exceeds bound")
+        require(time.monotonic() <= deadline, "source tree query deadline exceeded")
+        chunks.append(rows)
+    return b"".join(chunks)
 
 
 def ordinary_native_read_lock(repo):
@@ -3250,7 +3285,7 @@ def source_input_snapshot(repo, profile=SOURCE_PROFILE):
         current = {path.relative_to(repo).as_posix() for path in (repo / "plugins/ca/commands").glob("*.md")
                    if path.stem.upper() != "INDEX"}
         require(current == CATALOG_COMMAND_PATHS, "command catalog source namespace differs")
-    rows = git(repo, "ls-tree", "-rz", "--full-tree", identity["source_commit"], "--", *sorted(paths), raw=True)
+    rows = _source_tree_rows(repo, identity["source_commit"], paths)
     entries = []
     for row in rows.split(b"\0"):
         if not row: continue
@@ -3574,6 +3609,13 @@ RECOVERY_TRANSITION_CASES = {
 
 
 PROGRAM_INTEGRITY_CASES = {
+    "task:P-00": (
+        "ProgramBootstrapTest.test_resume_existing_integration_in_isolated_worktree",
+        "IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
+        "IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
+        "IntegrationIntegrityTest.test_missing_and_extra_population_refuse",
+        "IntegrationIntegrityTest.test_planned_and_implemented_partial_program_pass_without_publication",
+    ),
     "disposition:added_transitions:P02:added-frozen-anchor": (
         "IntegrationIntegrityTest.test_frozen_intake_changed_bytes_refuse",
         "IntegrationIntegrityTest.test_rehashed_frozen_file_and_manifest_cannot_rebaseline",
@@ -3712,6 +3754,20 @@ _STATUSLINE_CASES["disposition:machines:hooks:statusline-wiring"] = tuple(sorted
 ))
 
 
+# The installed settings journeys exercise the operator edit between install
+# and uninstall. Keep them independent of the wider statusline machine's cases.
+_STATUSLINE_CASES["scenario:SEQ-21"] = (
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_custom_spinner_after_install_survives_uninstall",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_user_removed_spinner_after_install_is_not_recreated",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_spinner_ownership_is_independent_of_statusline_replacement",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_still_owned_uninstall_restores_previous_value",
+    "test_wire_statusline.TestSpinnerOwnershipIsExact.test_repeated_uninstall_is_a_noop",
+    "test_wire_statusline.TestInstallWithPriorThirdParty.test_reinstall_then_uninstall_preserves_the_prior_statusline",
+    "test_wire_statusline.TestUninstall.test_stale_owner_marker_never_overwrites_user_replacement",
+    "test_wire_statusline.TestUninstall.test_stamped_owner_mismatch_preserves_recognizable_legacy_replacement",
+)
+
+
 def _statusline_test_id(name):
     module = name.partition(".")[0]
     require(module in STATUSLINE_TEST_MODULES, "foreign statusline discovery module")
@@ -3746,6 +3802,17 @@ SOURCE_FINDING_COMPOSITIONS = {
                 "ReviewResubmissionTest.test_denied_unknown_and_arbitrary_terminal_failure_cannot_be_cleared",
                 "ReviewResubmissionTest.test_exact_retry_after_each_persisted_boundary_never_creates_another_successor",
                 "ReviewResubmissionTest.test_malformed_first_report_gets_fresh_linked_capture_without_mutating_original",
+            )),
+    ),
+    "scenario:SEQ-27": (
+        source_component("hooks-single-owner-findings-v1", ".github/scripts/test_boundedproc.py",
+            "python-source-observations-", "Retain original Python source-test observations",
+            "python-finite-bounded-reader-observation.json", (
+                "ReadinessWaitTest.test_child_that_never_emits_a_ready_line_times_out_and_is_contained",
+                "BoundedRunTest.test_install_that_hangs_times_out_with_partial_diagnostics",
+                "BoundedRunTest.test_cancelled_collection_reaps_owned_child_and_retains_partial_output",
+                "PiBenchmarkReadinessDeadlineTest.test_hang_after_ready_is_bounded",
+                "PiBenchmarkReadinessDeadlineTest.test_cancelled_benchmark_keeps_readiness_and_partial_output",
             )),
     ),
     SF13_CELL: (
@@ -4667,6 +4734,16 @@ def build_report(req, *, job_name, job_id, selections, observations, payloads,
         resolved.append(group)
     groups = resolved
     expected = {cell for cell in req["cells"] if req["cell_jobs"][cell] == job_name}
+    if "declared_source_finding_cells" in req:
+        # The release collector reconstructs these cells from original components.
+        # A job emits its direct rows even when it also supplies a component.
+        composed_cells = req["declared_source_finding_cells"]
+        source_finding_profiles(composed_cells)
+        composed = set(composed_cells)
+        require(composed <= set(req["cells"]), "composed cells are outside the original requirement population")
+        require(not any(composed.intersection(group["cells"]) for group in groups),
+                "a composed cell also has a direct report selection")
+        expected.difference_update(composed)
     require(expected, "job has no required mapped cells")
     require(expected.isdisjoint({*SOURCE_FINDING_COMPOSITIONS, *RECOVERY_FINDING_CELLS}),
             "composed source findings require all original owners and components")
@@ -5118,8 +5195,8 @@ def main(argv=None):
                 )
         report = build_report(req, job_name=args.job_name, job_id=matching[0]["id"],
                               selections=load_json(args.repo / ".github/major-test-selections.json"),
-                              producer_job=matching[0],
-                              observations=observations, payloads=payloads, native_components=native_components)
+                              producer_job=matching[0], observations=observations, payloads=payloads,
+                              native_components=native_components)
         new_output(args.output, report)
         return 0
     except (OSError, ValueError, KeyError, TypeError, subprocess.SubprocessError, readiness.ReadinessError) as error:
