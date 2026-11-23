@@ -10,7 +10,6 @@ import hashlib
 import json
 import os
 from pathlib import Path
-import platform
 import re
 import subprocess
 import tempfile
@@ -310,10 +309,13 @@ def run_go_case(
 
 
 def _native_platform() -> str:
-    operating_system = {"Windows": "windows", "Linux": "linux", "Darwin": "darwin"}.get(platform.system())
-    architecture = {"amd64": "amd64", "x86_64": "amd64", "aarch64": "arm64", "arm64": "arm64"}.get(platform.machine().casefold())
-    if operating_system is None or architecture is None:
-        raise VerificationError("installed host platform is unsupported")
+    # Share the installed helper's native selection after fixture isolation.
+    from _artifactlib import ArtifactError, _host_platform
+
+    try:
+        operating_system, architecture = _host_platform()
+    except ArtifactError as error:
+        raise VerificationError("installed host platform is unsupported") from error
     return f"{operating_system}/{architecture}"
 
 
