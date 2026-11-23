@@ -3757,7 +3757,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn(f"expected_platform: {platform_name}", job)
 
         self.assertIn(
-            "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0",
+            "actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0",
             job,
         )
         self.assertIn(
