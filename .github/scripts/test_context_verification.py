@@ -41,6 +41,25 @@ def passing_output():
     ))
 
 
+class NativePlatformContract(unittest.TestCase):
+    def test_windows_native_architecture_survives_isolated_environment(self):
+        for architecture in ("amd64", "arm64"):
+            with (self.subTest(architecture=architecture),
+                  mock.patch.object(sys, "platform", "win32"),
+                  mock.patch.object(platform, "system", return_value="Windows"),
+                  mock.patch.object(platform, "machine", return_value=""),
+                  mock.patch("_artifactlib._windows_native_architecture", return_value=architecture)):
+                self.assertEqual(bridge._native_platform(), "windows/" + architecture)
+
+    def test_unknown_windows_native_architecture_refuses_process_architecture_fallback(self):
+        with (mock.patch.object(sys, "platform", "win32"),
+              mock.patch.object(platform, "system", return_value="Windows"),
+              mock.patch.object(platform, "machine", return_value="AMD64"),
+              mock.patch("_artifactlib._windows_native_architecture", return_value=None)):
+            with self.assertRaisesRegex(bridge.VerificationError, "installed host platform is unsupported"):
+                bridge._native_platform()
+
+
 class GoOutputContract(unittest.TestCase):
     def verify(self, raw, **changes):
         inputs = dict(raw_stdout=raw, raw_stderr=b'', exit_code=0,
@@ -146,8 +165,7 @@ class ContextVerificationBridge(unittest.TestCase):
         plugin.mkdir(exist_ok=True)
         installation = plugin / "helpers" / "artifacts"
         installation.mkdir(parents=True, exist_ok=True)
-        system = {"Windows": "windows", "Linux": "linux", "Darwin": "darwin"}[platform.system()]
-        machine = {"amd64": "amd64", "x86_64": "amd64", "aarch64": "arm64", "arm64": "arm64"}[platform.machine().casefold()]
+        system, machine = bridge._native_platform().split("/")
         name = f"ca-artifact-{system}-{machine}" + (".exe" if system == "windows" else "")
         binary = installation / name
         binary.write_bytes(b"inert test binary")
@@ -258,17 +276,16 @@ class ContextVerificationBridge(unittest.TestCase):
                     bridge.build_installed_invocation(**rebound)
 
     def test_installed_bridge_rejects_platform_filename_mismatch(self):
-        for system, machine, wrong_name in (
-            ("Windows", "AMD64", "ca-artifact-windows-amd64"),
-            ("Windows", "ARM64", "ca-artifact-windows-amd64.exe"),
-            ("Linux", "x86_64", "ca-artifact-linux-amd64.exe"),
-            ("Linux", "aarch64", "ca-artifact-linux-amd64"),
-            ("Darwin", "x86_64", "ca-artifact-darwin-amd64.exe"),
-            ("Darwin", "arm64", "ca-artifact-darwin-amd64"),
+        for native_platform, wrong_name in (
+            ("windows/amd64", "ca-artifact-windows-amd64"),
+            ("windows/arm64", "ca-artifact-windows-amd64.exe"),
+            ("linux/amd64", "ca-artifact-linux-amd64.exe"),
+            ("linux/arm64", "ca-artifact-linux-amd64"),
+            ("darwin/amd64", "ca-artifact-darwin-amd64.exe"),
+            ("darwin/arm64", "ca-artifact-darwin-amd64"),
         ):
-            with self.subTest(system=system, machine=machine):
-                with mock.patch.object(platform, "system", return_value=system), \
-                        mock.patch.object(platform, "machine", return_value=machine):
+            with self.subTest(native_platform=native_platform):
+                with mock.patch.object(bridge, "_native_platform", return_value=native_platform):
                     inputs = self.installed_inputs()
                     self.assertFalse(bridge.build_installed_invocation(**inputs).live_qualified)
                     installation = inputs["plugin_root"] / "helpers" / "artifacts"
@@ -292,8 +309,7 @@ class ContextVerificationBridge(unittest.TestCase):
             bridge.build_installed_invocation(**oversized)
 
     def test_windows_arm64_installed_inputs_bind_native_release(self):
-        with mock.patch.object(platform, "system", return_value="Windows"), \
-                mock.patch.object(platform, "machine", return_value="ARM64"):
+        with mock.patch.object(bridge, "_native_platform", return_value="windows/arm64"):
             inputs = self.installed_inputs()
             release = inputs["plugin_root"] / "helpers" / "artifacts" / "release.json"
             self.assertIn("windows/arm64", json.loads(release.read_text(
@@ -303,7 +319,8 @@ class ContextVerificationBridge(unittest.TestCase):
 
     def test_unknown_installed_architecture_remains_unsupported(self):
         inputs = self.installed_inputs()
-        with mock.patch.object(platform, "machine", return_value="unknown-cpu"):
+        with (mock.patch.object(sys, "platform", "linux"),
+              mock.patch.object(platform, "machine", return_value="unknown-cpu")):
             with self.assertRaisesRegex(bridge.VerificationError, "platform is unsupported"):
                 bridge.build_installed_invocation(**inputs)
 

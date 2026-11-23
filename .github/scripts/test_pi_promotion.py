@@ -178,7 +178,7 @@ class PromotionPolicyTests(unittest.TestCase):
         workflow = WORKFLOW_PATH.read_text(encoding="utf-8")
         for job in (validation_job(workflow), workflow.split("\n  open-pr:\n", 1)[1]):
             with self.subTest(job=job.splitlines()[0]):
-                self.assertIn("actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e", job)
+                self.assertIn("actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5", job)
                 self.assertIn('go-version: "1.27.1"', job)
                 builder = "python tools/build-artifacts.py --output plugins/ca/helpers/artifacts"
                 self.assertEqual(job.count(builder), 1)

@@ -18,7 +18,7 @@ from pathlib import Path
 DIRECT = 'python -m unittest discover -s plugins/ca/hooks/tests -p "test_*.py"'
 ISOLATION = 'python .github/scripts/test_suite_hermeticity.py'
 GUARD = 'python .github/scripts/test_hook_ci_partition.py'
-GO_SETUP = '''      - uses: actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0
+GO_SETUP = '''      - uses: actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0
         with:
           go-version: "1.27.1"
           check-latest: false
@@ -1259,7 +1259,7 @@ class PartitionContractTests(unittest.TestCase):
     def test_missing_full_history_fails(self): self.bad('fetch-depth: 0','fetch-depth: 1')
     def test_missing_tags_fails(self): self.bad('fetch-tags: true','fetch-tags: false')
     def test_missing_native_toolchain_fails(self): self.bad(GO_SETUP,'')
-    def test_changed_native_toolchain_pin_fails(self): self.bad('setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e','setup-go@'+'3'*40)
+    def test_changed_native_toolchain_pin_fails(self): self.bad('setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5','setup-go@'+'3'*40)
     def test_changed_native_toolchain_version_fails(self): self.bad('go-version: "1.27.1"','go-version: "latest"')
     def test_conditional_native_toolchain_fails(self): self.bad(GO_SETUP,GO_SETUP.replace('        with:', '        if: false\n        with:'))
     def test_lost_gate_dependency_fails(self): self.bad('      - hooks\n','')

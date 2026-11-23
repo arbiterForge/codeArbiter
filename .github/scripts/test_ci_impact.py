@@ -3052,7 +3052,7 @@ class WorkflowContractTest(unittest.TestCase):
         self.assertIn("  documentation-contract:\n", ci)
         self.assertIn('name: "[CHECK] | [REPO] | Documentation contract"', ci)
         document_job = workflow_jobs(ci)["documentation-contract"]
-        native_setup = "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e"
+        native_setup = "actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5"
         self.assertIn(native_setup, document_job)
         self.assertIn('go-version: "1.27.1"', document_job)
         self.assertLess(document_job.index(native_setup), document_job.index("run: python3 .github/scripts/check_docs_contract.py"))
@@ -5141,7 +5141,7 @@ class ArtifactEngineCIContractTest(unittest.TestCase):
             self.assertIn(f"expected_platform: {platform_name}", job)
 
         self.assertIn(
-            "actions/setup-go@b7ad1dad31e06c5925ef5d2fc7ad053ef454303e # v7.0.0",
+            "actions/setup-go@d8cbb8045d7f43706b9177cceb36c1f91a6644d5 # v7.1.0",
             job,
         )
         self.assertIn(

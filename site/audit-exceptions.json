@@ -1,20 +1,4 @@
 {
   "schema": "codearbiter-npm-audit-exceptions-v2",
-  "exceptions": [
-    {
-      "ghsa": "GHSA-fc5q-39xc-vjpf",
-      "package": "picomatch",
-      "severity": "high",
-      "reason": "No patched release as of approval. These exact graphs use picomatch during Docs builds and plugin builds or tests. The shipped plugin and static Docs artifacts do not include the package.",
-      "approved_by": "Brennon (@SUaDtL)",
-      "approved_on": "2026-11-17",
-      "backstop": "2026-11-24",
-      "lockfiles": {
-        "site/package-lock.json": "d81f1d4b54c0e2a0fc05815687fcb306e0a12f98c3e382032556e445c614787a",
-        "plugins/ca/tools/package-lock.json": "81ac5a03620575fa6e1ccbe2343d59092a7d998aa0ed0419147ecc1353f5ab05",
-        "plugins/ca-sandbox/tools/package-lock.json": "815b4523f446b39c6eb078a2e7249601432240582a444d0c48e2aff02179ef67",
-        "plugins/ca-pi/tools/package-lock.json": "16185d807538d2ba97eb57ef098512f667faeb879e7585950adbf013e5b2b5d8"
-      }
-    }
-  ]
+  "exceptions": []
 }
