@@ -1,0 +1,75 @@
+{
+ "schema": "codearbiter-disposition-evidence/1",
+ "source_commit": "b063e3b9b6cc3d3236f0418d48ba5e3afdc2e345",
+ "kind": "hosted-run",
+ "result": "PASSED",
+ "producer": {
+  "class": "hosted",
+  "identity": "GitHub CI original normal push 44473399830 attempt 1, [CHECK] | [CORE] | Hook contract  <os: windows-latest \u00b7 partition: contracts> job 135388182764"
+ },
+ "inputs": {
+  ".github/fixtures/artifact-release-manifest.json": "cd070ffff06083c25a79829ae71595199b0ffa907c45b1fb7188721a186b9927",
+  ".github/scripts/test_artifact_manifest_contract.py": "f1d2bba0af13981ef85fe3c53aaafbbb888f80b609eae589e81f9c5b94845ed5",
+  "core/artifact-release-manifest.json": "3ae933456e1275040f1c36ef4a0eaefac7f49fbff2c36a47867066527f3cb23e",
+  "core/pysrc/_artifactlib.py": "db10153f438023ca6eb7e32f77e1898fbd2f806cdc5ef98bdffb078e27e65187",
+  "core/pysrc/_artifactmanifestlib.py": "6cabbb10515fe9e6315452dd44e07114468d4150756a8f3eac9e568c16caa054",
+  "tools/build-artifact-manifest-contract.py": "5101eba17adae23ad847a3e71ad12790bf3a4630179a97ca38a82416bdb76134",
+  "tools/owned_output.py": "52ee664a00b4f66df8f585047cf38a839428c489762890208a9db1961060b22c"
+ },
+ "commands": [
+  {
+   "argv": [
+    "C:\\hostedtoolcache\\windows\\Python\\3.15.2\\x64\\python.exe",
+    "D:\\a\\codeArbiter\\codeArbiter\\.github\\scripts\\test_artifact_manifest_contract.py"
+   ],
+   "exit_code": 0
+  }
+ ],
+ "raw_evidence": [
+  {
+   "run_id": 44473399830,
+   "run_attempt": 1,
+   "job_id": 135388182764,
+   "artifact_id": 14506623066,
+   "sha256": "a9f88fde41abd630f52f591d3ccea0f14ec1cfe7efe00a41b2fba113112e91ce"
+  },
+  {
+   "run_id": 44473399830,
+   "run_attempt": 1,
+   "job_id": 135388182764,
+   "artifact_id": 14506792197,
+   "sha256": "c545434447abd76f98cc3aed31a9c973664b013247e5f1c12302423b0f8df8ab"
+  },
+  {
+   "run_id": 44473399830,
+   "run_attempt": 1,
+   "job_id": 135388182764,
+   "artifact_id": 14507205964,
+   "sha256": "ee864feb73546554fdf8b1f605b2e16a696c4e46170a12da877e851c0e9a9036"
+  }
+ ],
+ "disposition_ids": [
+  "disposition:transitions:hooks:native-client:02"
+ ],
+ "per_cell_assertion_mapping": [
+  {
+   "cell": "disposition:transitions:hooks:native-client:02",
+   "selectors": [
+    "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_duplicate_keys_are_not_lost_before_shape_validation",
+    "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_installed_contract_is_derived_from_canonical_source",
+    "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_parser_bounds_utf8_bytes_before_parsing",
+    "python:.github/scripts/test_artifact_manifest_contract.py:__main__.ManifestContract.test_shared_declarations_and_negative_cases"
+   ]
+  }
+ ],
+ "scope": "Four exact shared manifest contract assertions, including canonical declaration parity, malformed/duplicate and bounded-byte refusal. No native binary or install qualification.",
+ "execution_context": {
+  "run_id": 44473399830,
+  "run_attempt": 1,
+  "job_id": 135388182764,
+  "source_tree": "bc106c243e475a3f6c6e6486aa1aa29536c1769b"
+ },
+ "limits": [
+  "Full source archive and each original upload are attributed to the original epoch. Current finite source inputs are compared separately."
+ ]
+}
