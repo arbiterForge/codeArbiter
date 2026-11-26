@@ -1,0 +1,170 @@
+{
+  "zones": {
+    "you": {
+      "name": "You",
+      "blurb": "Where work starts and where decisions stay."
+    },
+    "model": {
+      "name": "The model",
+      "blurb": "A probabilistic engine that predicts one token at a time."
+    },
+    "harness": {
+      "name": "Agent harness",
+      "blurb": "The loop that lets a model use tools: Claude Code, Codex CLI or Pi."
+    },
+    "guards": {
+      "name": "Guard ring",
+      "blurb": "codeArbiter’s enforcement core: plain programs that run outside the model."
+    },
+    "skills": {
+      "name": "Routing, skills and agents",
+      "blurb": "The procedures the orchestrator follows and the agents it dispatches."
+    },
+    "lanes": {
+      "name": "Lanes",
+      "blurb": "Every codeArbiter lane, each with its own evidence, reviewers and stops."
+    },
+    "record": {
+      "name": "The record",
+      "blurb": "The .codearbiter/ store: memory that lives in your repository."
+    },
+    "world": {
+      "name": "Your repository",
+      "blurb": "The working tree, branches, the protected default branch and hosted CI."
+    },
+    "outside": {
+      "name": "Outside the machine",
+      "blurb": "Network touches and opt-in previews that reach beyond your machine."
+    }
+  },
+  "families": {
+    "initialize": {
+      "name": "Initialize",
+      "blurb": "Create or inspect the repository-owned state store."
+    },
+    "change": {
+      "name": "Change",
+      "blurb": "Build, repair, restructure, explore, or change the supply chain through the owning gate."
+    },
+    "ship": {
+      "name": "Ship",
+      "blurb": "Commit, stage a pull request, or prepare an authorized release."
+    },
+    "review": {
+      "name": "Review",
+      "blurb": "Run reviewers over a diff, the whole codebase, a design or a deep audit."
+    },
+    "decide": {
+      "name": "Decide",
+      "blurb": "Record, inspect and reconcile decisions; stop on conflicts."
+    },
+    "operate": {
+      "name": "Operate",
+      "blurb": "Inspect state, manage tasks, verify enforcement, or log an allowed bypass."
+    }
+  },
+  "states": {
+    "run": {
+      "label": "Activity",
+      "color": "#7cc4ff"
+    },
+    "gate": {
+      "label": "Gate check",
+      "color": "#f0b92f"
+    },
+    "ask": {
+      "label": "Waiting on you",
+      "color": "#f0b92f"
+    },
+    "pass": {
+      "label": "Passed",
+      "color": "#58d68d"
+    },
+    "block": {
+      "label": "Blocked",
+      "color": "#ff7b72"
+    },
+    "fail": {
+      "label": "Failing test (expected)",
+      "color": "#ff7b72"
+    },
+    "stop": {
+      "label": "Stopped",
+      "color": "#ff7b72"
+    },
+    "preview": {
+      "label": "Preview",
+      "color": "#ed946d"
+    }
+  },
+  "laneOrder": [
+    [
+      "initialize",
+      [
+        "init"
+      ]
+    ],
+    [
+      "change",
+      [
+        "feature",
+        "sprint",
+        "fix",
+        "refactor",
+        "chore",
+        "spike",
+        "add-dep",
+        "debug"
+      ]
+    ],
+    [
+      "ship",
+      [
+        "commit",
+        "pr",
+        "release"
+      ]
+    ],
+    [
+      "review",
+      [
+        "review",
+        "checkpoint",
+        "threat-model",
+        "tribunal"
+      ]
+    ],
+    [
+      "decide",
+      [
+        "adr",
+        "adr-status",
+        "reconcile",
+        "conflict"
+      ]
+    ],
+    [
+      "operate",
+      [
+        "status",
+        "task",
+        "doctor",
+        "override",
+        "standup",
+        "audit",
+        "statusline",
+        "prune"
+      ]
+    ]
+  ],
+  "hostOmissions": {
+    "claude": [],
+    "codex": [
+      "statusline",
+      "prune"
+    ],
+    "pi": [
+      "statusline"
+    ]
+  }
+}

@@ -1,0 +1,2677 @@
+{
+  "operator": {
+    "zone": "you",
+    "kind": "You",
+    "name": "You, at the console",
+    "tagline": "Where requests and commands enter, and where decisions stay.",
+    "what": "You start every piece of work, either by describing a goal in plain language or by invoking a command such as {{fix}}. You also own every decision the machine cannot make on its own: unresolved requirements, architecture choices, merges and releases. codeArbiter’s operating rule is that you decide and the repository enforces.",
+    "machine": "A console at the open end of the machine. Its conduit runs straight to the guard ring, so your request is framed by the operating rules before the model sees it.",
+    "how": [
+      "Type a goal or a command.",
+      "The router maps your intent to one owning lane.",
+      "The lane runs its phases and stops at the gates that need you.",
+      "You answer, approve or redirect, and your answers are recorded."
+    ],
+    "watch": "A question is not permission. “Can these changes be committed?” can be answered without committing. codeArbiter classifies the outcome you asked for, not the punctuation.",
+    "source": [
+      "plugins/ca/arbiter.md (§6 User interaction)"
+    ],
+    "related": [
+      "confirm",
+      "approval-key",
+      "persona-injector",
+      "router"
+    ],
+    "simple": "This is you. You give the agent work in plain words or with a command, and you keep the decisions that matter: what to build, what to approve, what ships."
+  },
+  "confirm": {
+    "zone": "you",
+    "kind": "You",
+    "name": "[CONFIRM-NN] decision lever",
+    "tagline": "Numbered questions only you can answer.",
+    "what": "When a requirement or decision is genuinely unknown, the agent does not guess. It records a numbered question such as `[CONFIRM-07]` in `.codearbiter/open-questions.md`, and work that depends on the answer pauses. Your answer is written back to the record, so a later session, or another host, inherits it instead of guessing again.",
+    "machine": "A gold lever on your console. Gold marks a decision point, and this lever can only be pulled from your side.",
+    "stops": "Dependent work stays paused until the answer is recorded. Resolving a `[CONFIRM-NN]` by guessing breaks a hard rule.",
+    "produces": "An answered, dated entry in `open-questions.md`.",
+    "watch": "Models are tuned to be helpful, which pulls them toward plausible guesses. This gate turns “sounds right” into “you said so”.",
+    "source": [
+      ".codearbiter/open-questions.md",
+      "plugins/ca/arbiter.md (§3 Hard rules)"
+    ],
+    "related": [
+      "operator",
+      "spec-plan",
+      "ca-adr",
+      "vault"
+    ],
+    "simple": "When the agent hits a question only you can answer, it writes the question down with a number and waits, instead of guessing and building the wrong thing."
+  },
+  "approval-key": {
+    "zone": "you",
+    "kind": "You",
+    "name": "Irreversible-action key",
+    "tagline": "Merges, deletions, releases and overrides always ask first.",
+    "what": "Some actions cannot be cleanly undone: merging to the default branch, deleting a branch or worktree, publishing a release or tag, and the logged bypass itself. codeArbiter asks for explicit confirmation before each of these, even when your intent is obvious. The confirmation is the gate, not friction.",
+    "machine": "A gold key switch beside the lever. The machine can bring work right up to the key, but only you can turn it.",
+    "how": [
+      "The lane prepares the action and shows exactly what will happen.",
+      "You confirm or decline in the conversation.",
+      "Only then does the action run, and the evidence is recorded."
+    ],
+    "stops": "No confirmation, no action. Green CI alone never authorizes a merge.",
+    "watch": "Clarity and risk are separate axes. A perfectly clear request to merge still asks first.",
+    "source": [
+      "plugins/ca/includes/safety-core.md (§6 Irreversible actions)",
+      "plugins/ca/arbiter.md (Destructive operations)"
+    ],
+    "related": [
+      "operator",
+      "ca-pr",
+      "ca-release",
+      "ca-override",
+      "main-vault"
+    ],
+    "simple": "Some actions cannot be undone, like merging into the main line of code or publishing a release. The machine brings the work right up to this key and waits for you to turn it."
+  },
+  "tokenizer": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Tokenizer",
+    "tagline": "Text is cut into tokens before the model sees it.",
+    "what": "A language model does not read characters or words. A tokenizer splits text into tokens (common fragments of words, code and punctuation) and maps each one to an integer from a fixed vocabulary. In English prose a token averages roughly three to four characters; code, rare words and other languages split differently. Context size, output length and cost are all counted in tokens.",
+    "machine": "A die cutter at the base of the core. The prompt arrives as a continuous strip and leaves as uniform pieces with numbers stamped on them.",
+    "watch": "Token counts are not word counts. A long log, a minified bundle or a lockfile can cost far more tokens than it looks.",
+    "related": [
+      "prompt-assembly",
+      "embedding",
+      "context-window"
+    ],
+    "simple": "Before a model reads anything, the text is chopped into small pieces called tokens, like cutting a sentence into Lego bricks. The model only ever sees the bricks."
+  },
+  "embedding": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Embedding and position",
+    "tagline": "Each token becomes a long vector of numbers.",
+    "what": "Each token ID is looked up in a learned table and becomes a vector of thousands of numbers. Tokens used in similar ways end up with similar vectors. The model also has to know where each token sits. Many current models handle this inside attention, by rotating each query and key according to its position (rotary position embeddings); older designs added a position vector to the embedding. Either way, “dog bites man” and “man bites dog” are processed differently.",
+    "machine": "The collar at the bottom of the column. Numbered pieces go in; charged rods come out and travel up the stack.",
+    "related": [
+      "tokenizer",
+      "transformer"
+    ],
+    "simple": "Each token becomes a long list of numbers that captures how it tends to be used. Words used in similar ways get similar numbers, which is how the model gets a feel for meaning."
+  },
+  "context-window": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Context window",
+    "tagline": "Everything the model can consider in one request.",
+    "what": "The context window is the maximum number of tokens a model can take into account in one request: system prompt, tool definitions, the conversation, file contents, tool results and the reply being written. Nothing outside it exists for the model. A coding agent’s harness rebuilds and resends the context on every turn, so what goes into it is the biggest single lever on the agent’s behavior.",
+    "machine": "A glass tank with a level gauge. The bands show what usually fills it: instructions, tool definitions, conversation and tool results. Near the top, the harness compacts it.",
+    "watch": "A larger window still dilutes. Instructions buried under a long transcript get less weight. That is why codeArbiter loads a lane’s instructions only when it is routed, and re-injects its rules after compaction.",
+    "related": [
+      "prompt-assembly",
+      "compaction",
+      "kv-cache",
+      "persona-injector"
+    ],
+    "simple": "The model’s short-term memory: everything it can see right now, measured in tokens. If something is not in the window, the model simply does not know it."
+  },
+  "transformer": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Transformer layer stack",
+    "tagline": "Dozens of identical layers refine every token’s representation.",
+    "what": "The model is a stack of identical layers. In each layer, attention lets every position gather information from itself and earlier positions, and a feed-forward network then transforms each position on its own. Each layer adds its result to a running representation called the residual stream, which flows up the stack. At the top, the vector at the last position encodes what should come next.",
+    "machine": "The glowing column at the center. Each ring is one layer; the bright shaft through them is the residual stream.",
+    "watch": "Each token gets the same fixed amount of computation, easy or hard. Reasoning tokens are how a model buys more computation for a hard step.",
+    "related": [
+      "attention",
+      "weights",
+      "embedding",
+      "logits"
+    ],
+    "simple": "The main engine: a tall stack of identical layers. Each layer looks at all the tokens so far, refines the picture a little, and passes it up."
+  },
+  "attention": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Attention heads",
+    "tagline": "How each token decides which earlier tokens matter.",
+    "what": "Every layer runs many attention heads in parallel. A head compares the current position’s query with the key of every position up to and including itself; the scores become weights, and the head takes a weighted mix of those positions’ values. Different heads learn different relationships, such as matching a closing bracket to its opener or a variable to its definition. In a decoder model, a causal mask hides every later position, so a token can attend only to itself and what came before it.",
+    "machine": "The small lenses orbiting inside each ring. Each lens focuses on a different relationship between tokens.",
+    "watch": "Attention is spread across everything in the window. Irrelevant context is not free: it competes with the instructions that matter.",
+    "related": [
+      "transformer",
+      "kv-cache",
+      "context-window"
+    ],
+    "simple": "How each word decides which earlier words matter to it, like a reader glancing back to check what “it” refers to. Many of these glances happen side by side."
+  },
+  "kv-cache": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "KV cache",
+    "tagline": "Saved keys and values make each new token cheaper.",
+    "what": "Without a cache, the model would recompute attention keys and values for every earlier token at every step. The KV cache stores them, so each new token computes only its own. This splits inference into prefill, which processes the whole prompt in parallel, and decode, which produces one token at a time. Providers also offer prompt caching, which reuses the work for an unchanged prompt prefix across requests.",
+    "machine": "The cartridge rack beside the column. Each lit cartridge holds the key and value for one earlier position.",
+    "watch": "Prompt caching rewards a stable prefix. Instructions that change every turn defeat it; instructions injected once per mode change do not.",
+    "related": [
+      "attention",
+      "context-window",
+      "persona-injector"
+    ],
+    "simple": "A scratchpad that saves work on everything already read, so writing each new word does not mean rereading the whole page from scratch."
+  },
+  "weights": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Weights (frozen parameters)",
+    "tagline": "Learned in training, fixed during your session.",
+    "what": "The model’s behavior comes from billions of numeric parameters learned during training. During inference they are frozen: the model does not learn from your session, your corrections or your repository. Anything it appears to remember across turns is text the harness put back into the context window.",
+    "machine": "The heavy cage around the stack. It shapes everything that passes through, and nothing in the session can bend it.",
+    "watch": "Saying “remember this next time” only works if something writes it down. codeArbiter writes it to `.codearbiter/` in your repository.",
+    "related": [
+      "transformer",
+      "context-window",
+      "vault"
+    ],
+    "simple": "Everything the model learned in training, frozen into billions of numbers. They do not change while you work, so the model is not learning from you as you go."
+  },
+  "logits": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Logits",
+    "tagline": "A score for every possible next token.",
+    "what": "At the top of the stack, the final vector is projected onto the whole vocabulary: one score, called a logit, per token. A softmax turns the scores into probabilities. The model does not produce an answer; it produces a probability distribution over possible next tokens.",
+    "machine": "The fan of bars above the column. Taller bars are more probable next tokens.",
+    "related": [
+      "sampler",
+      "transformer"
+    ],
+    "simple": "At the top of the stack, the model gives every possible next token a score. Turned into percentages, the scores say how likely each option is."
+  },
+  "sampler": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Sampler",
+    "tagline": "Picks one token from the distribution.",
+    "what": "The sampler draws the next token from the distribution. Temperature rescales it: lower values sharpen it toward the most likely token, higher values flatten it. Top-p keeps only the smallest set of tokens whose probabilities add up to p; top-k keeps the k most likely. Even at low temperature the same prompt can produce different output. Every reply, plan and tool call is a sample, not a guarantee.",
+    "machine": "The dial at the top of the core, with temperature and top-p knobs. Each cycle, the needle stops on one token.",
+    "watch": "This is the reason codeArbiter exists. If output is sampled, then “the tests pass” written by the model is a sample too. The gates check the repository, not the sentence.",
+    "related": [
+      "logits",
+      "autoregress",
+      "guard-ring"
+    ],
+    "simple": "A weighted dice roll. It picks the next token from those percentages. The likeliest option usually wins, but not always, so the same question can get different answers."
+  },
+  "autoregress": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Autoregressive loop",
+    "tagline": "Each chosen token is appended, and the model runs again.",
+    "what": "Generation is a loop: the sampled token is appended to the sequence, and the model runs again to predict the next one. A reply, a plan or a tool call is produced one token at a time, each conditioned on everything before it. An early wrong turn can steer everything that follows.",
+    "machine": "The spiral rail. Each chosen token rides down from the sampler and drops back into the context tank.",
+    "related": [
+      "sampler",
+      "context-window",
+      "tool-parser"
+    ],
+    "simple": "The model writes one token, adds it to the text, and goes again. Every answer, plan and command is built this way, one piece at a time."
+  },
+  "reasoning": {
+    "zone": "model",
+    "kind": "AI concept",
+    "name": "Reasoning tokens",
+    "tagline": "The model can think in tokens before it answers.",
+    "what": "Reasoning models can write intermediate reasoning, often called extended thinking, before the visible answer. That reasoning is ordinary generated text: it consumes tokens and context, and it gives the model more computation for a hard step. It improves planning and debugging. It is still generated text, so it is not evidence that anything was checked.",
+    "machine": "The side chamber near the top of the core, where draft reasoning collects before the answer leaves.",
+    "watch": "A confident chain of reasoning that ends with “so the change is safe” proves nothing. codeArbiter asks for fresh command output instead.",
+    "related": [
+      "autoregress",
+      "receipts"
+    ],
+    "simple": "Some models think out loud before answering. That thinking is still generated text: it helps on hard problems, but it is not proof that anything was checked."
+  },
+  "agent-loop": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Agent loop",
+    "tagline": "Model, tool, result, repeat.",
+    "what": "A model on its own only produces text. An agent is a loop around it: the harness sends the context to the model; if the reply contains a tool call, the harness runs the tool, appends the result and calls the model again. The loop ends when the model replies without a tool call or a limit is reached. Claude Code, Codex CLI and Pi are harnesses of this kind.",
+    "machine": "The ring track around the core. Pods travel around it: out to the tools, back with results, into the model again.",
+    "how": [
+      "Assemble the context and call the model.",
+      "Detect tool calls in the reply.",
+      "Check permissions and run hooks.",
+      "Execute the tool and capture its result.",
+      "Append the result and call the model again."
+    ],
+    "watch": "The loop is what turns text into action. Every governance question is a question about this loop: what it may do, what it must check, and when it must stop and ask.",
+    "related": [
+      "prompt-assembly",
+      "tool-parser",
+      "tool-router",
+      "tool-results",
+      "hook-bus"
+    ],
+    "simple": "What turns a model into an agent: a loop. The model asks for an action, the harness does it and shows the result, and the model decides what to do next."
+  },
+  "prompt-assembly": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Prompt assembly",
+    "tagline": "The harness builds the context for every turn.",
+    "what": "Before each model call, the harness assembles the request: a system prompt, the definitions of the tools the model may call, project instructions, the conversation so far and recent tool results. Hooks can add to it. codeArbiter’s prompt hook adds its operating rules here. The model sees only what this station sends.",
+    "machine": "The stacked hopper at the front of the loop, feeding the tokenizer.",
+    "related": [
+      "context-window",
+      "persona-injector",
+      "tokenizer"
+    ],
+    "simple": "Before every model call, the harness packs a briefcase: instructions, the list of tools, the conversation and recent results. The model sees only what is in the briefcase."
+  },
+  "tool-parser": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Tool-call detector",
+    "tagline": "Separates “reply to you” from “do something”.",
+    "what": "Models that support tool use emit structured tool calls: a tool name plus JSON arguments, such as the shell tool with the command `npm test`. The API marks such a reply as stopping for tool use. The harness detects the call, validates its arguments and passes it on; a plain text reply ends the turn instead.",
+    "machine": "The diverter valve on the loop. Text flows back to you; tool calls are switched toward the tool rack.",
+    "watch": "A tool call is still model output. The model chose the command; nothing has checked it yet.",
+    "related": [
+      "autoregress",
+      "permissions",
+      "tool-router"
+    ],
+    "simple": "A switch that reads the model’s reply and decides whether it is an answer for you or a request to do something, like run a command or open a file."
+  },
+  "permissions": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Host permissions",
+    "tagline": "The harness’s own allow, ask and deny rules.",
+    "what": "Each harness has its own permission system: rules that allow a tool call, ask you first or deny it, plus sandboxing options in some hosts. These rules are set per user or project. They match tools and command patterns. They do not know the state of your work, such as whether the tests ran or which branch you are on.",
+    "machine": "The valve wheel at the tool rack’s inlet. codeArbiter’s guards sit further out and add checks that know the repository’s state.",
+    "watch": "Frequent permission prompts train people to click “allow”. A gate that blocks with a named reason and offers a logged override path is harder to wave through.",
+    "related": [
+      "tool-router",
+      "guard-bash",
+      "hook-bus"
+    ],
+    "simple": "The agent tool’s own rulebook: allowed, ask first, or never. Useful, but it does not know whether your tests ran or which branch you are on."
+  },
+  "tool-router": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Tool executor",
+    "tagline": "Runs the tool the model asked for.",
+    "what": "The executor dispatches each permitted call to its tool and collects the output. Tools are the agent’s only hands: without them it can describe a change but cannot make one.",
+    "machine": "The hub that drives the four tool arms.",
+    "related": [
+      "tool-read",
+      "tool-write",
+      "tool-bash",
+      "tool-mcp",
+      "tool-results"
+    ],
+    "simple": "The dispatcher that actually runs the tool the model asked for and collects what happened."
+  },
+  "tool-read": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Read and search tools",
+    "tagline": "Read, Grep and Glob: how the agent observes.",
+    "what": "Read, search and list tools let the agent look at files without changing them. A good agent reads before it writes, and most of its tool calls are observation. In an enabled repository, codeArbiter’s read hook can add notices, such as pointers to the approved spec; it never blocks a read.",
+    "machine": "The sensor arm, the only arm without a barrier in front of it.",
+    "related": [
+      "tool-router",
+      "tool-write",
+      "guard-ring"
+    ],
+    "simple": "The agent’s eyes: tools that open files and search code without changing anything. A careful agent reads a lot before it writes."
+  },
+  "tool-write": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Write and edit tools",
+    "tagline": "How the agent changes files.",
+    "what": "Write replaces a whole file; Edit replaces an exact span of text. In an enabled repository, every write and edit passes codeArbiter’s write gate first and the post-write reminders afterwards.",
+    "machine": "The fabrication arm. It reaches the repository only through the write gate.",
+    "related": [
+      "guard-write",
+      "advisory-lamps",
+      "tool-router"
+    ],
+    "simple": "The agent’s hands for editing: tools that create or change files. In a governed repository, each edit passes codeArbiter’s write gate first."
+  },
+  "tool-bash": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Shell tool",
+    "tagline": "Bash or PowerShell: tests, builds and git.",
+    "what": "The shell tool runs commands: the test suite, the linter, git. It is the most capable tool and the riskiest, because one string can commit, push, delete or publish. In an enabled repository, every command passes codeArbiter’s shell gate first.",
+    "machine": "The heavy arm aimed at the shell gate.",
+    "related": [
+      "guard-bash",
+      "git-hooks",
+      "tool-router"
+    ],
+    "simple": "The most powerful tool: typing commands into a terminal, like running tests or using git. One line can also push, delete or publish, so it has the strictest gate."
+  },
+  "tool-mcp": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Connectors and other tools",
+    "tagline": "MCP servers, web access and subagent dispatch.",
+    "what": "Harnesses connect external tools through the Model Context Protocol (MCP), an open standard for exposing tools and data to AI applications, and add others such as web fetch and subagent dispatch. codeArbiter registers hooks for shell, write, edit and read, plus agent-dispatch events it uses for independent review receipts. Other tools fall under the host’s own permission rules.",
+    "machine": "The fourth arm, reaching out past the guard ring through the host’s permission valve.",
+    "watch": "Anything a tool returns is data, not instructions. A web page or file that says “ignore your rules” is a prompt-injection attempt, not a command.",
+    "related": [
+      "tool-results",
+      "permissions",
+      "subagents"
+    ],
+    "simple": "Plugs to the outside world: web pages, other apps and services. Whatever comes back is information to consider, never orders to follow."
+  },
+  "tool-results": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Tool results",
+    "tagline": "What came back is appended to the context.",
+    "what": "Each tool’s output (file contents, test results, an error, a block message) returns to the context as a tool result, and the model is called again. This is how an agent observes the consequences of its own actions. When codeArbiter blocks a call, the block message arrives here, so the model learns why it was stopped and which path is sanctioned.",
+    "machine": "The return chute from the guard ring back into the loop.",
+    "watch": "Tool results are the main door for prompt injection. A file, issue or web page can contain text aimed at the model. Treat it as data.",
+    "related": [
+      "context-window",
+      "guard-bash",
+      "agent-loop"
+    ],
+    "simple": "Whatever a tool returns (a file, test output, an error) goes back in front of the model. That is how the agent sees the effects of its own actions."
+  },
+  "hook-bus": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Hook event bus",
+    "tagline": "Lifecycle events that outside programs can intercept.",
+    "what": "Harnesses expose lifecycle events: session start, each prompt you submit, before and after each tool call, before compaction, subagent start and stop. A hook is a separate program registered for an event. It receives the event as JSON and, for blocking events, can refuse it. In Claude Code, a hook that exits with code 2 stops the tool call, and its message goes to the model. Hooks run outside the model, so the model cannot argue with them.",
+    "machine": "The thin cable ring between the loop and the guard ring. Every event travels on it, and codeArbiter’s guards are tapped onto it.",
+    "source": [
+      "plugins/ca/hooks/hooks.json",
+      "docs/hooks.md"
+    ],
+    "related": [
+      "guard-ring",
+      "session-start",
+      "persona-injector",
+      "guard-bash"
+    ],
+    "simple": "A wire that announces every important moment: session started, prompt sent, tool about to run. Small programs called hooks listen on it and can say “stop”."
+  },
+  "compaction": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Compaction",
+    "tagline": "When the window fills, the past is summarized.",
+    "what": "Long sessions eventually fill the context window. The harness then compacts: it replaces older turns with a summary and continues. Compaction is lossy. Exact instructions, file contents and decisions from early in the session can shrink to a sentence or disappear.",
+    "machine": "The press on the far side of the loop. It squeezes old transcript into a smaller block.",
+    "how": [
+      "Before compaction, codeArbiter’s PreCompact hook bumps the session’s compaction generation.",
+      "The first prompt afterwards re-injects the current mode’s rules in full.",
+      "Long interviews, such as greenfield initialization, persist drafts to disk so compaction cannot erase them."
+    ],
+    "watch": "Anything important that lives only in the conversation is at risk. Write it to the repository.",
+    "source": [
+      "plugins/ca/hooks/prompt-submit.py"
+    ],
+    "related": [
+      "context-window",
+      "persona-injector",
+      "ca-prune",
+      "vault"
+    ],
+    "simple": "When short-term memory fills up, older conversation is squeezed into a summary. Work continues, but details can be lost, like the notes from a very long meeting."
+  },
+  "subagents": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Subagents",
+    "tagline": "Fresh model sessions for focused tasks.",
+    "what": "A subagent is a separate model session with its own clean context window, started with a bounded task. It returns a result rather than its whole transcript. Subagents keep the main context small, allow parallel work and provide independence: a reviewer that never saw the author’s reasoning cannot simply agree with it.",
+    "machine": "The docking ring with detachable pods. Each pod leaves with one task and returns with one report.",
+    "watch": "Independence exists only if each subagent receives its own bounded input. codeArbiter treats “the reviewer saw it” from a coordinator as a claim, and asks for a receipt bound to the reviewer’s actual delivery.",
+    "source": [
+      "plugins/ca/skills/dispatching-parallel-agents/SKILL.md",
+      "plugins/ca/skills/subagent-driven-development/SKILL.md",
+      "plugins/ca/skills/using-git-worktrees/SKILL.md"
+    ],
+    "related": [
+      "authors",
+      "reviewer-fleet",
+      "receipts"
+    ],
+    "simple": "Helpers with a fresh, empty memory, sent off to do one focused job and report back. A fresh helper can review work without being swayed by the author’s reasoning."
+  },
+  "hosts": {
+    "zone": "harness",
+    "kind": "Harness",
+    "name": "Host adapters",
+    "tagline": "Claude Code, Codex CLI and Pi share one governance kernel.",
+    "what": "codeArbiter ships three governance hosts generated from one shared core: `ca` for Claude Code, `ca-codex` for Codex CLI and `ca-pi` for Pi, which is a Feature Forge preview. Each adapter maps its host’s events and tools onto the same Python enforcement core and the same `.codearbiter/` record, so a repository can move between hosts without losing specs, plans, decisions or audit history.",
+    "machine": "Three couplings under the loop. One is engaged at a time; the machine above them stays the same. The host switch in the toolbar changes every command’s spelling.",
+    "watch": "Hosts differ at the edges. Codex has no native read event and omits statusline and prune. Pi omits statusline, uses its native compaction and requires affirmative project trust.",
+    "source": [
+      "core/hosts.json",
+      "docs/parity.md",
+      "docs/architecture.md"
+    ],
+    "related": [
+      "agent-loop",
+      "guard-ring",
+      "vault"
+    ],
+    "simple": "codeArbiter plugs into three different agent tools: Claude Code, Codex CLI and Pi. The rules and the project record stay the same whichever one you use."
+  },
+  "guard-ring": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Enforcement core",
+    "tagline": "Small, readable Python guards that run outside the model.",
+    "what": "codeArbiter’s enforcement core is a set of small Python 3 scripts, standard library only, registered as host hooks. They read the event, repository files and local git state, then allow, block or remind. They write inside `.codearbiter/`, plus the statusline setting and the git hook shims that session start installs under `.git/hooks/`, and make no network calls while deciding. In a repository that has not opted in, every guard exits immediately and does nothing.",
+    "machine": "The ring wall between the agent and everything it can touch. Every shell command, write and edit leaves the loop through a gate in this wall.",
+    "watch": "Instructions in a prompt shape what the model tends to do. A hook decides what actually happens. codeArbiter uses both, and relies on the second for hard rules.",
+    "source": [
+      "plugins/ca/hooks/",
+      "docs/hooks.md"
+    ],
+    "related": [
+      "hook-bus",
+      "guard-bash",
+      "guard-write",
+      "fail-closed",
+      "activation"
+    ],
+    "simple": "A wall of small, plain programs between the agent and your code. Every command and edit must pass a gate in this wall, and the model cannot talk its way past them."
+  },
+  "activation": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Activation switch",
+    "tagline": "Dormant everywhere until a repository opts in.",
+    "what": "Install codeArbiter globally and it stays dormant. A repository opts in through `.codearbiter/CONTEXT.md` carrying `arbiter: enabled`. Without that flag, no rules are injected, no guard acts and no governance row appears. A malformed CONTEXT.md fails loud with a breadcrumb instead of silently going dormant. H-18 refuses any in-session edit that would drop the flag; disabling a repository takes an external editor and an audit record.",
+    "machine": "The master key switch on the ring. Its plate reads `arbiter: enabled`.",
+    "hooks": [
+      "H-18"
+    ],
+    "source": [
+      ".codearbiter/CONTEXT.md",
+      "plugins/ca/hooks/_activationlib.py"
+    ],
+    "related": [
+      "session-start",
+      "guard-ring",
+      "vault",
+      "ca-init"
+    ],
+    "simple": "The on switch. codeArbiter does nothing in a repository until that repository opts in, and the agent is not allowed to switch it off from the inside."
+  },
+  "session-start": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Session start",
+    "tagline": "Startup state, the daily briefing and a clean mode.",
+    "what": "At session start the hook clears this session’s mode marker, so every session begins in arbiter mode. It checks the activation flag and prints the live startup state: maturity stage, active mode, blocking `[CONFIRM-NN]` questions, tasks in flight and overrides since the last checkpoint. The first session of the day adds a read-only repository hygiene briefing. It installs or refreshes the git-level backstop hooks, and starts a detached, read-only git fetch for next time.",
+    "machine": "The beacon on the ring. It lights once per session and reports what is open.",
+    "source": [
+      "plugins/ca/hooks/session-start.py"
+    ],
+    "related": [
+      "activation",
+      "ca-standup",
+      "mode-selector",
+      "network"
+    ],
+    "simple": "A start-of-shift report. When a session begins, it lists open questions, tasks in progress and overrides, and makes sure the session starts in normal mode."
+  },
+  "persona-injector": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Rules injector",
+    "tagline": "Adds codeArbiter’s operating rules to the model’s context.",
+    "what": "On each prompt you submit, codeArbiter’s prompt hook composes its safety core with the current mode’s body (arbiter, dangerous or ops) and adds the result to the context. Injection is deduplicated per session, mode and compaction generation, so a steady session pays for it once per mode change rather than every turn. These rules tell the model how to route, when to stop and which rules are hard.",
+    "machine": "The injector over the request conduit. Your request and the rules travel into the model together.",
+    "watch": "Injected rules are guidance, and the model’s use of guidance is sampled like everything else. That is why the hard rules are also enforced by guards that do not depend on the model listening.",
+    "source": [
+      "plugins/ca/hooks/prompt-submit.py",
+      "plugins/ca/includes/safety-core.md",
+      "plugins/ca/arbiter.md"
+    ],
+    "related": [
+      "mode-selector",
+      "prompt-assembly",
+      "compaction",
+      "conflict-hierarchy"
+    ],
+    "simple": "Adds codeArbiter’s rulebook to what the model reads, so it knows how to behave. The rules guide the model; the gates are what enforce them."
+  },
+  "mode-selector": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Mode plane",
+    "tagline": "arbiter, dangerous or ops, and every switch is logged.",
+    "what": "Typing exactly `mode --dangerous`, `mode --ops` or `mode --arbiter` as the whole prompt flips this session’s mode. The hook intercepts it before the model runs and appends a MODE enter or exit line to `overrides.log`. The injector refuses to compose a non-arbiter body that the log does not back. Some rules survive every mode: no raw secrets, confirmations for irreversible actions, conflicts surfaced and the conflict hierarchy.",
+    "machine": "A three-position rotary switch with an interlock. Turning it prints a line on the audit tape.",
+    "source": [
+      "plugins/ca/includes/dangerous-mode.md",
+      "plugins/ca/includes/ops-mode.md",
+      "plugins/ca/includes/safety-core.md (What survives every mode)"
+    ],
+    "related": [
+      "persona-injector",
+      "audit-ledger",
+      "conflict-hierarchy"
+    ],
+    "simple": "A three-position switch that changes which rulebook the session runs under. Every change is written to the audit log, and a core set of rules holds in every position."
+  },
+  "guard-bash": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Shell gate (pre-bash)",
+    "tagline": "Blocks commands that would break a hard rule.",
+    "what": "Before any shell command runs, `pre-bash.py` inspects the command and blocks those that break a hard rule: committing to the default branch or pushing to a protected one (H-01), any force-push spelling (H-02), wildcard staging such as `git add -A` (H-03), rewriting append-only logs (H-05), shell writes to ADRs (H-11), committing crypto or secret changes without a line-bound security pass (H-09b, H-10b), a migration without a migration review (H-14), tampering with activation, markers or protected state (H-18, H-19, H-22) and `--no-verify` (H-20). A block exits with code 2 and a named reason; the command never runs.",
+    "machine": "The main gate in the ring, with a gold barrier arm. When it drops red, the command was stopped before it executed.",
+    "hooks": [
+      "H-01",
+      "H-02",
+      "H-03",
+      "H-05",
+      "H-09b",
+      "H-10b",
+      "H-11",
+      "H-14",
+      "H-18",
+      "H-19",
+      "H-20",
+      "H-22"
+    ],
+    "watch": "Ambiguity resolves closed: a few harmless spellings are blocked because they cannot be told apart from destructive ones without a full shell parse. A block that looks wrong is diagnosed, not bypassed.",
+    "source": [
+      "plugins/ca/hooks/pre-bash.py",
+      "plugins/ca/hooks/_bashguardlib.py"
+    ],
+    "related": [
+      "tool-bash",
+      "git-hooks",
+      "fail-closed",
+      "ca-override"
+    ],
+    "simple": "The gate for terminal commands. Force-pushing, staging everything at once, committing straight to main: blocked before they run, with the reason shown."
+  },
+  "guard-write": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Write gate (pre-write, pre-edit)",
+    "tagline": "Protects audit logs, ADRs, activation and markers.",
+    "what": "Before a Write or Edit lands, the write guards check the target. Audit logs accept only pure appends (H-05). ADRs can be written only while the adr lane holds a fresh authoring marker (H-11). CONTEXT.md cannot lose its activation flag (H-18). Gate-pass markers cannot be edited (H-19). Protected-state entries need their own marker (H-22). If the host adapter cannot map an operation, the guard blocks it rather than guessing (H-21).",
+    "machine": "The second gate, in front of the fabrication arm.",
+    "hooks": [
+      "H-05",
+      "H-11",
+      "H-18",
+      "H-19",
+      "H-21",
+      "H-22"
+    ],
+    "source": [
+      "plugins/ca/hooks/pre-write.py",
+      "plugins/ca/hooks/pre-edit.py",
+      "plugins/ca/hooks/_protectedlib.py"
+    ],
+    "related": [
+      "tool-write",
+      "adr-tablets",
+      "audit-ledger",
+      "activation"
+    ],
+    "simple": "The gate for file edits. It protects the things that keep everyone honest: the audit logs, the decision records and the on switch."
+  },
+  "advisory-lamps": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Post-write reminders",
+    "tagline": "Reminders after a change, so a later gate is no surprise.",
+    "what": "After a write or edit lands, `post-write-edit.py` checks what changed and lights a reminder. It never blocks. H-07: a dependency manifest changed, so the dependency review is owed. H-09 and H-10: crypto or a possible secret appeared, so the commit will block until the security pass is recorded. H-12: the file is governed by an accepted ADR. H-13: user-facing prose uses an em or en dash as a sentence separator. H-15, H-16 and H-17: CI, deployment or auth logic changed, so the security reviewer is owed before merge.",
+    "machine": "A lamp tree beside the write gate. A lit lamp names the review that is now owed.",
+    "hooks": [
+      "H-07",
+      "H-09",
+      "H-10",
+      "H-12",
+      "H-13",
+      "H-15",
+      "H-16",
+      "H-17"
+    ],
+    "source": [
+      "plugins/ca/hooks/post-write-edit.py"
+    ],
+    "related": [
+      "guard-write",
+      "security-skills",
+      "reviewer-fleet",
+      "ca-add-dep"
+    ],
+    "simple": "Warning lights. After an edit, a lamp lights to say a review is now owed, so the later check is no surprise. They remind; they do not block."
+  },
+  "security-pass": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Line-bound security pass",
+    "tagline": "Approval tied to the exact lines it approved.",
+    "what": "When a change adds crypto, TLS or secret-handling code, the commit is blocked (H-09b, H-10b) until the matching security skill records a pass. `security-pass.py` hashes the exact added lines it approved. If those lines change afterwards, the hash no longer matches and the commit blocks again. That closes the gap between “it was reviewed” and “what was reviewed is what is being committed”.",
+    "machine": "A stamping press. Each stamp is cut to fit one set of lines and no other.",
+    "hooks": [
+      "H-09b",
+      "H-10b"
+    ],
+    "source": [
+      "plugins/ca/hooks/security-pass.py",
+      "plugins/ca/hooks/_sensitivelib.py"
+    ],
+    "related": [
+      "security-skills",
+      "guard-bash",
+      "ca-commit"
+    ],
+    "simple": "A stamp of approval cut to fit exact lines of code. Change those lines after the security check and the stamp no longer fits, so the commit is blocked again."
+  },
+  "fail-closed": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Fail-closed breaker",
+    "tagline": "If a guard crashes, the action is blocked.",
+    "what": "A guard that crashes while scanning a command, write or edit blocks the action (H-00) rather than letting it through, and the blocking checks fail closed on git read errors. Activation fails loud: a malformed CONTEXT.md prints a breadcrumb instead of silently switching governance off. Purely advisory features degrade quietly, so one bad read never breaks your session.",
+    "machine": "The breaker box on the ring. When it trips, the gates stay shut.",
+    "hooks": [
+      "H-00"
+    ],
+    "source": [
+      "plugins/ca/hooks/_hooklib.py",
+      "plugins/ca/hooks/pre-bash.py"
+    ],
+    "related": [
+      "guard-bash",
+      "guard-write",
+      "activation"
+    ],
+    "simple": "A safety breaker. If a guard itself breaks, the action is blocked rather than allowed. A broken lock stays locked."
+  },
+  "conflict-hierarchy": {
+    "zone": "guards",
+    "kind": "Enforcement",
+    "name": "Conflict hierarchy",
+    "tagline": "The order in which rules win when they pull apart.",
+    "what": "When rules conflict, codeArbiter resolves them in a fixed order. First, security and correctness of the audit trail. Second, correctness and data integrity. Third, maintainability and reviewability. Fourth, performance. Fifth, developer velocity. A non-obvious tradeoff cites the level it was made at. If the order cannot resolve a conflict, work stops and goes to the conflict protocol rather than being reconciled silently.",
+    "machine": "A five-rung ladder on the back of the ring. A higher rung always wins.",
+    "source": [
+      "plugins/ca/includes/safety-core.md (§2 Conflict hierarchy)"
+    ],
+    "related": [
+      "ca-conflict",
+      "smarts",
+      "persona-injector"
+    ],
+    "simple": "The tie-breaker for when rules disagree: security and a trustworthy record first, speed last. If that cannot settle it, everything stops and you decide."
+  },
+  "router": {
+    "zone": "skills",
+    "kind": "Routing",
+    "name": "Router",
+    "tagline": "The orchestrator picks one owning lane.",
+    "what": "With the rules loaded, the model acts as an orchestrator: it reads your intent and routes it to exactly one owning lane using the routing table. Three tiers apply. An unambiguous, non-destructive request routes directly. A probable request asks once about the missing fact. A genuinely unclear one asks about the intended outcome. Irreversible or gate-bypassing requests always ask first. Only the routed lane’s instructions load, which keeps the context small.",
+    "machine": "The indexing head on top of the core. It turns to face the chosen lane and lights a beam to it. It sits on the model because routing is a model decision, guided by text.",
+    "watch": "Routing is probabilistic; enforcement is not. If the router ever picks the wrong lane, the guards still hold.",
+    "source": [
+      "plugins/ca/includes/routing-table.md",
+      "plugins/ca/arbiter.md (§6)",
+      "docs/architecture.md (Context minimization)"
+    ],
+    "related": [
+      "persona-injector",
+      "sampler",
+      "operator"
+    ],
+    "simple": "Reads your request and picks the one lane that owns it, like a dispatcher choosing the right department. Only that lane’s instructions get loaded."
+  },
+  "spec-plan": {
+    "zone": "skills",
+    "kind": "Skill",
+    "name": "Spec and plan",
+    "tagline": "brainstorming, writing-plans and executing-plans.",
+    "what": "Full-lane work starts with an agreed outcome. `brainstorming` shapes a specification with explicit acceptance criteria and keeps material decisions visible. `writing-plans` covers every criterion with tasks, dependencies and checks. `executing-plans` coordinates the batches and pauses only for real decisions. Specs and plans are stored in `.codearbiter/`, so intent survives the session.",
+    "machine": "The drafting table. Work arrives as a sketch and leaves as an approved blueprint.",
+    "stops": "Unknowns become `[CONFIRM-NN]` questions, not guesses. A sprint needs one real approval of its spec and plan pair, which the agent never issues to itself.",
+    "source": [
+      "plugins/ca/skills/brainstorming/",
+      "plugins/ca/skills/writing-plans/",
+      "plugins/ca/skills/executing-plans/"
+    ],
+    "related": [
+      "ca-feature",
+      "ca-sprint",
+      "specs-plans",
+      "confirm"
+    ],
+    "simple": "Before building anything big: agree on what “done” looks like, then plan how to get there. Both are saved, so the plan survives long sessions."
+  },
+  "skill-tdd": {
+    "zone": "skills",
+    "kind": "Skill",
+    "name": "TDD press",
+    "tagline": "Red first, then green, then proof.",
+    "what": "The `tdd` skill owns verification for features, fixes and refactors. Phase 1 states the obligations and how each will be checked. Phase 2 establishes the baseline: for a fix or new behavior, a test observed failing for the right reason. Only then is code written. Phase 4 verifies every obligation, Phase 5 checks coverage against the project’s maturity threshold, and Phase 6 runs lint and hands observed evidence to the commit owner.",
+    "machine": "A press with a lamp that must show red before it may show green.",
+    "how": [
+      "Phase 1: obligations and verification approach",
+      "Phase 2: establish the baseline (observed red)",
+      "Phase 3: implement and check",
+      "Phase 4: verify obligations",
+      "Phase 5: coverage at the maturity threshold",
+      "Phase 6: lint and handoff"
+    ],
+    "stops": "No feature code before Phase 1 completes. A setup, import or unrelated failure is not a valid red.",
+    "source": [
+      "plugins/ca/skills/tdd/SKILL.md",
+      "plugins/ca/includes/maturity-coverage.md"
+    ],
+    "related": [
+      "authors",
+      "maturity",
+      "ca-fix",
+      "ca-feature",
+      "ca-refactor"
+    ],
+    "simple": "Prove it is broken, then fix it. A test must fail first, for the right reason; only then is code written; then the test must pass. Red, then green."
+  },
+  "authors": {
+    "zone": "skills",
+    "kind": "Agent",
+    "name": "Author agents",
+    "tagline": "backend-author, frontend-author and infra-author.",
+    "what": "Author agents write the code, test-first. A fresh author is dispatched per task with its own bounded context: the task, its paths, constraints and observed evidence. `backend-author` handles APIs and services, `frontend-author` handles UI and calls the design-quality reviewer on user-facing output, and `infra-author` handles IaC, containers and CI. Each dispatches a specialist reviewer when it touches auth, crypto, secrets, migrations or dependencies.",
+    "machine": "Three robot arms on one base. Each picks up one task, builds it and sets it down.",
+    "stops": "Failing tests and lint errors block the author’s handoff.",
+    "source": [
+      "plugins/ca/agents/backend-author.md",
+      "plugins/ca/agents/frontend-author.md",
+      "plugins/ca/agents/infra-author.md"
+    ],
+    "related": [
+      "skill-tdd",
+      "subagents",
+      "reviewer-fleet"
+    ],
+    "simple": "Specialist builders for back end, front end and infrastructure. Each task gets a fresh one, with just the information that task needs."
+  },
+  "security-skills": {
+    "zone": "skills",
+    "kind": "Skill",
+    "name": "Crypto and secret checks",
+    "tagline": "crypto-compliance and secret-handling.",
+    "what": "When changed code uses crypto, hashing, signing, TLS or randomness, `crypto-compliance` scans for banned primitives, disabled TLS verification and home-made crypto against the approved list in `security-controls.md`. When code reads, writes or passes a secret, `secret-handling` classifies its origin, transport, sinks and lifetime. Both dispatch the `auth-crypto-reviewer` and, on a pass, record the line-bound marker the commit needs.",
+    "machine": "A sealed inspection booth beside the stamping press.",
+    "stops": "No raw secret in source, logs, errors, telemetry, images or LLM prompts, in any mode.",
+    "source": [
+      "plugins/ca/skills/crypto-compliance/",
+      "plugins/ca/skills/secret-handling/",
+      "plugins/ca/agents/auth-crypto-reviewer.md"
+    ],
+    "related": [
+      "security-pass",
+      "advisory-lamps",
+      "reviewer-fleet"
+    ],
+    "simple": "Specialist checks for code that touches encryption or secrets like passwords and keys. Raw secrets never go into code, logs or prompts."
+  },
+  "reviewer-fleet": {
+    "zone": "skills",
+    "kind": "Agent",
+    "name": "Reviewer fleet",
+    "tagline": "Independent, read-only reviewers chosen by the paths you touched.",
+    "what": "Reviewers are read-only agents with fixed specialties: security, auth-crypto, dependency, migration, coverage, architecture drift and design quality. A path matrix decides who is dispatched: auth, middleware or CI paths call security; a lockfile calls dependency; a migration calls migration; any source change calls coverage. Each reviewer receives its own bounded context, not the author’s notes.",
+    "machine": "A row of scanner towers. Each looks for one kind of problem, and only the towers the diff needs switch on.",
+    "stops": "CRITICAL or HIGH findings block the current change. A predicted fleet or a missing result is not a completed review.",
+    "source": [
+      "plugins/ca/includes/review-matrix.md",
+      "plugins/ca/agents/INDEX.md"
+    ],
+    "related": [
+      "triage",
+      "ca-review",
+      "ca-pr",
+      "receipts"
+    ],
+    "simple": "A team of independent inspectors, each with one specialty. Only the inspectors relevant to the files you changed are called in."
+  },
+  "triage": {
+    "zone": "skills",
+    "kind": "Agent",
+    "name": "Triage and verdict",
+    "tagline": "finding-triage, then verdict-aggregator.",
+    "what": "Reviewer reports funnel into `finding-triage`, which classifies each finding by severity (CRITICAL, HIGH, MEDIUM, LOW) and by whether it blocks the current change. Out-of-scope findings are set aside as `[NEEDS-TRIAGE]` instead of being fixed in place. `verdict-aggregator` composes one structured verdict without dropping a finding. For a checkpoint, `checkpoint-aggregator` then writes it as a dated report.",
+    "machine": "A funnel that sorts findings into bins. Only the blocking bin can stop the line.",
+    "source": [
+      "plugins/ca/agents/finding-triage.md",
+      "plugins/ca/agents/verdict-aggregator.md",
+      "plugins/ca/agents/checkpoint-aggregator.md"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "ca-review",
+      "ca-checkpoint",
+      "evidence-shelf"
+    ],
+    "simple": "Sorts every inspector’s findings by how serious they are. Critical and high findings stop the change until they are fixed."
+  },
+  "smarts": {
+    "zone": "skills",
+    "kind": "Skill",
+    "name": "SMARTS evaluator",
+    "tagline": "Six lenses for material engineering choices.",
+    "what": "SMARTS is codeArbiter’s design rubric: Scalable, Maintainable, Available, Reliable, Testable and Securable. Each option gets a verdict and evidence per lens, then a recommendation labeled strong, moderate or tied. It runs at three depths: a quick scan, a full comparison table, and a delegated decision during a sprint, logged with a confidence flag. Before scoring, it checks whether your recorded intent (a decision, an ADR, the approved spec) already answers the question.",
+    "machine": "A six-faced prism. A choice goes in and comes out split into six readable lenses.",
+    "watch": "SMARTS recommends; it does not decide. The rubric grants no authority on its own.",
+    "source": [
+      "plugins/ca/includes/smarts/core.md",
+      "plugins/ca/includes/smarts/lenses.md"
+    ],
+    "related": [
+      "ca-sprint",
+      "ca-reconcile",
+      "conflict-hierarchy",
+      "audit-ledger"
+    ],
+    "simple": "A six-point checklist for comparing options: Scalable, Maintainable, Available, Reliable, Testable, Securable. It recommends; you decide."
+  },
+  "vault": {
+    "zone": "record",
+    "kind": "Record",
+    "name": ".codearbiter/ project record",
+    "tagline": "The repository is the memory.",
+    "what": "The project record lives beside the code in `.codearbiter/`: CONTEXT.md (activation, vocabulary, maturity, current objective), knowledge documents such as the tech stack, coding standards and security controls, the task board, open questions, ADRs, specs and plans, the sprint log, checkpoints, audits and the append-only logs. It is checked in, so it travels with the repository and every host reads the same store.",
+    "machine": "The archive tower behind the machine. Whatever a session must not forget is shelved here.",
+    "watch": "Models forget when the window ends. Files do not. “State is read, not remembered”: a claim about now comes from an instrument run now.",
+    "source": [
+      ".codearbiter/",
+      "README.md (How governance works)"
+    ],
+    "related": [
+      "specs-plans",
+      "adr-tablets",
+      "audit-ledger",
+      "task-board",
+      "maturity"
+    ],
+    "simple": "The project’s long-term memory, saved as files inside your repository: plans, decisions, open questions and logs. Any future session can read it."
+  },
+  "maturity": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Maturity stage",
+    "tagline": "A rigor knob from stage 1 to stage 4.",
+    "what": "CONTEXT.md records the project’s stage. Higher stages demand more: minimum test coverage rises from 60% at stage 1 to 70%, 85% and then 90% at stage 4. Every required metric in the declared coverage profile must clear it. For line-and-branch profiles both must pass, so 85% lines with 78% branches fails stage 3.",
+    "machine": "A four-position dial on the face of the archive.",
+    "source": [
+      "plugins/ca/includes/maturity-coverage.md"
+    ],
+    "related": [
+      "skill-tdd",
+      "reviewer-fleet",
+      "vault"
+    ],
+    "simple": "A strictness dial for the project. The higher the stage, the more of the code the tests must cover, from 60% at stage 1 up to 90% at stage 4."
+  },
+  "specs-plans": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Specs and plans",
+    "tagline": "Approved intent, and how it will be carried out.",
+    "what": "Approved specifications and plans are stored under `.codearbiter/`. New full-lane work uses typed HTML artifacts produced by a native engine with independent review receipts; existing Markdown pairs continue in their own format. Because the intent is on disk, a resumed or compacted session continues the same plan rather than inventing a new one.",
+    "machine": "Rolled blueprints on the archive rack.",
+    "source": [
+      "plugins/ca/includes/artifacts.md",
+      ".codearbiter/specs/",
+      ".codearbiter/plans/"
+    ],
+    "related": [
+      "spec-plan",
+      "ca-feature",
+      "ca-sprint",
+      "receipts"
+    ],
+    "simple": "The saved blueprints: what was agreed and how it will be built. A new session picks up the same plan instead of reinventing it."
+  },
+  "adr-tablets": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Architecture decisions (ADRs)",
+    "tagline": "Numbered, dated, attributed and immutable.",
+    "what": "ADRs in `.codearbiter/decisions/` record architecture decisions with context, alternatives and the person who decided. Only the adr lane writes them. Once accepted they are immutable history: a changed decision is a new ADR that supersedes the old one. An ADR can declare the paths it governs, and edits to those paths light the H-12 reminder.",
+    "machine": "Engraved tablets standing in front of the archive.",
+    "hooks": [
+      "H-11",
+      "H-12"
+    ],
+    "source": [
+      ".codearbiter/decisions/",
+      "plugins/ca/skills/decision-lifecycle/"
+    ],
+    "related": [
+      "ca-adr",
+      "ca-adr-status",
+      "ca-reconcile",
+      "guard-write"
+    ],
+    "simple": "Decision records: what was decided, why, and by whom. Once accepted they are never edited; a new decision replaces an old one, so the history of why survives."
+  },
+  "task-board": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Task board",
+    "tagline": "Work items, written by one sanctioned writer.",
+    "what": "The task board records work to do, in progress and done. It changes only through the task lane’s writer, which validates each transition under an OS lock: start stamps a date, done requires in progress, and nothing is deleted to complete it. Newer repositories keep native work items under `.codearbiter/work/`; existing Markdown boards continue in `open-tasks.md`.",
+    "machine": "A kanban board on the side of the archive, with a single pen chained to it.",
+    "source": [
+      "plugins/ca/hooks/taskwrite.py",
+      "plugins/ca/hooks/_taskboardlib.py",
+      "plugins/ca/hooks/work.py"
+    ],
+    "related": [
+      "ca-task",
+      "ca-standup",
+      "vault"
+    ],
+    "simple": "The to-do board, changed only through one approved pen, so tasks are never silently deleted or skipped ahead."
+  },
+  "audit-ledger": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Append-only audit logs",
+    "tagline": "Overrides, triage, gate events, sprint and decision logs.",
+    "what": "Five logs are append-only: `overrides.log`, `triage.log`, `gate-events.log`, `sprint-log.md` and `decisions/decision-log.md`. Lines can be added, never rewritten or deleted; the guards block truncation and overwrites (H-05). Mode switches, overrides, sprint decisions and gate events therefore stay durable and attributable long after the session ends.",
+    "machine": "A ledger printer whose paper only moves forward.",
+    "hooks": [
+      "H-05"
+    ],
+    "source": [
+      "plugins/ca/includes/safety-core.md (§7)",
+      "plugins/ca/hooks/append-override.py"
+    ],
+    "related": [
+      "ca-override",
+      "mode-selector",
+      "ca-audit",
+      "smarts"
+    ],
+    "simple": "Logs you can only add to, never edit or delete. They record every override, mode change and gate event, so anyone can check later what happened."
+  },
+  "evidence-shelf": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Checkpoints, audits and reports",
+    "tagline": "Assembled evidence, dated and never overwritten.",
+    "what": "Checkpoint sweeps, audit packets and tribunal reports are written as dated documents that never overwrite an earlier one. They are evidence you can hand to a reviewer, an assessor or your future self, assembled from the source records rather than from anyone’s recollection.",
+    "machine": "Bound volumes on the archive shelf.",
+    "source": [
+      ".codearbiter/checkpoints/",
+      ".codearbiter/audits/",
+      ".codearbiter/reports/"
+    ],
+    "related": [
+      "ca-checkpoint",
+      "ca-audit",
+      "ca-tribunal"
+    ],
+    "simple": "Bound reports from sweeps, audits and deep reviews, dated and never overwritten. Evidence you can hand to someone else."
+  },
+  "receipts": {
+    "zone": "record",
+    "kind": "Record",
+    "name": "Fresh evidence and receipts",
+    "tagline": "Predicted is not observed; claimed is not received.",
+    "what": "codeArbiter separates what someone says happened from evidence that it happened. A previously green suite or a predicted review is not current evidence. Verification must be fresh for the exact change, and an independent review needs a receipt bound to the actual reviewer, the input it received and the current head. A coordinator reporting “reviewed” is a claim.",
+    "machine": "A rack of stamped receipts. Each stamp carries the commit it belongs to.",
+    "source": [
+      "plugins/ca/includes/fresh-verification.md",
+      "plugins/ca/includes/artifacts.md",
+      "plugins/ca/agents/authority-reviewer.md"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "ca-commit",
+      "reasoning",
+      "subagents"
+    ],
+    "simple": "Proof that something actually happened, tied to the exact version of the code. “It passed earlier” or “someone reviewed it” is not enough."
+  },
+  "repo": {
+    "zone": "world",
+    "kind": "World",
+    "name": "Working tree",
+    "tagline": "Your codebase: what all of this protects.",
+    "what": "The repository’s files and local git state. The agent reads and changes it through tools, and codeArbiter’s guards read it too, to decide what a command or write would really do. Source, tests and the `.codearbiter/` record are versioned together.",
+    "machine": "The block city to the right of the machine. Each block is a file.",
+    "related": [
+      "branch-rails",
+      "git-hooks",
+      "vault"
+    ],
+    "simple": "Your code. Everything else in this machine exists to change it safely."
+  },
+  "branch-rails": {
+    "zone": "world",
+    "kind": "World",
+    "name": "Feature branches",
+    "tagline": "Every change travels on a branch.",
+    "what": "Work happens on branches and reaches the default branch only through a pull request. Spike branches (`spike/*`) are disposable and can never merge. When asked, codeArbiter isolates parallel units in git worktrees and integrates them back for independent commit-gate checks.",
+    "machine": "The rails leading from the working tree toward the vault.",
+    "related": [
+      "main-vault",
+      "ca-spike",
+      "ca-commit"
+    ],
+    "simple": "Side tracks where changes are built and tested before they are allowed near the main line."
+  },
+  "main-vault": {
+    "zone": "world",
+    "kind": "World",
+    "name": "Protected default branch",
+    "tagline": "No direct writes. No force-push.",
+    "what": "The default branch (`main` or `master`) is protected by hard rules: no direct commit or push (H-01) and no force-push in any spelling (H-02). Changes arrive by pull request and merge only with your confirmation, green hosted CI on the exact head and verified ADR source ancestry.",
+    "machine": "The vault at the end of the rails. Its door is trimmed in gold because opening it is a decision.",
+    "hooks": [
+      "H-01",
+      "H-02"
+    ],
+    "related": [
+      "ca-pr",
+      "remote-ci",
+      "approval-key",
+      "guard-bash"
+    ],
+    "simple": "The main line of code that everyone relies on. Nothing is pushed straight into it and its history is never rewritten; changes arrive by reviewed pull request."
+  },
+  "git-hooks": {
+    "zone": "world",
+    "kind": "World",
+    "name": "Git-level backstop",
+    "tagline": "pre-commit and pre-push hooks underneath the agent.",
+    "what": "codeArbiter also installs `.git/hooks/pre-commit` and `pre-push`, which run `git-enforce.py` at the git operation itself, outside any AI host. The shell gate sees only the literal command string, so a commit built through shell indirection could slip past it; the git hook cannot be fooled by spelling. That is why `--no-verify`, which skips git hooks, is itself blocked (H-20). Existing hook managers such as husky are preserved.",
+    "machine": "A lock box under the rails. A command that slips past the shell gate still meets it.",
+    "hooks": [
+      "H-20"
+    ],
+    "source": [
+      "plugins/ca/hooks/git-enforce.py",
+      "plugins/ca/hooks/_githooks.py"
+    ],
+    "related": [
+      "guard-bash",
+      "repo",
+      "main-vault"
+    ],
+    "simple": "A second lock built into git itself. If a command sneaks past the first check with a trick spelling, this one still catches it."
+  },
+  "remote-ci": {
+    "zone": "world",
+    "kind": "World",
+    "name": "Hosted CI and pull requests",
+    "tagline": "Exact-head proof before a merge.",
+    "what": "Your git host runs CI on the pull request. codeArbiter treats green CI on the exact head commit as a prerequisite for merge, never as permission: a merge still needs your explicit choice and the ADR ancestry check. On red, {{pr --watch}} diagnoses within its authority and routes a fix.",
+    "machine": "The test rig and signal tower at the edge of your repository.",
+    "related": [
+      "ca-pr",
+      "main-vault",
+      "ca-release"
+    ],
+    "simple": "The shared test lab where every pull request is tested automatically. A green result is required before merging, but it is not permission on its own."
+  },
+  "network": {
+    "zone": "outside",
+    "kind": "Outside",
+    "name": "Network boundary",
+    "tagline": "Exactly two background reads, neither blocking.",
+    "what": "The enforcement core makes no network call while deciding. Two background touches exist: a detached, read-only git fetch against your own configured remote at session start, and a once-daily, fail-silent check of the public GitHub Releases API for a newer version. Neither sends repository content and neither delays your session. There is no hosted codeArbiter control plane.",
+    "machine": "A small antenna outside the ring. It carries only the session-start beacon’s two background reads.",
+    "source": [
+      "docs/hooks.md (The short version)",
+      "plugins/ca/hooks/_updatelib.py"
+    ],
+    "related": [
+      "session-start",
+      "farm"
+    ],
+    "simple": "codeArbiter barely talks to the internet: a once-a-day update check and a background fetch from your own git server. None of your code is sent anywhere."
+  },
+  "farm": {
+    "zone": "outside",
+    "kind": "Outside",
+    "name": "Execution farm",
+    "preview": true,
+    "tagline": "Opt-in offload of sprint tasks.",
+    "what": "{{sprint --farm}} is an off-by-default Feature Forge preview. It sends byte-capped, secret-redacted task context to an OpenAI-compatible endpoint you configure, and it is inert without the flag and a provider key. Results come back through the same gates. Farm dispatch from typed HTML plans is blocked; the legacy Markdown path is the preview.",
+    "machine": "A remote rack beyond the floor, painted preview orange, reached by one narrow filtered pipe.",
+    "source": [
+      "plugins/ca/includes/farm.md",
+      "README.md (Feature Forge)"
+    ],
+    "related": [
+      "ca-sprint",
+      "network"
+    ],
+    "simple": "An optional, experimental way to send sprint tasks to an outside AI service you choose, with secrets removed. It stays off unless you turn it on."
+  },
+  "sandbox": {
+    "zone": "outside",
+    "kind": "Outside",
+    "name": "ca-sandbox",
+    "preview": true,
+    "tagline": "An isolated local Codespace for untrusted repositories.",
+    "what": "`ca-sandbox` is the sibling infrastructure plugin for running work in an isolated local Codespace. It is a Feature Forge preview: promotion still needs evidence from real untrusted repositories and interactive use.",
+    "machine": "A sealed glass chamber with its own small agent inside.",
+    "source": [
+      "plugins/ca-sandbox/",
+      "README.md (Feature Forge)"
+    ],
+    "related": [
+      "hosts",
+      "permissions"
+    ],
+    "simple": "An experimental sealed room for running an agent on code you do not trust."
+  },
+  "ca-init": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "init",
+    "family": "initialize",
+    "tier": "core",
+    "args": "[--stage N] [--greenfield | --brownfield] | --check",
+    "tagline": "Create or inspect the repository’s governed state.",
+    "what": "{{init}} scaffolds the `.codearbiter/` store and starts the right onboarding. In an existing codebase (brownfield), qualified read-only scouts inspect bounded source and you approve each proposed context document. In a new project (greenfield), a six-layer architect interview records answers and draft ADRs to disk. {{init --check}} only reports. After finalization, run {{doctor}} before treating the repository as governed.",
+    "machine": "The foundation block at the start of the ring, with two chutes: brownfield and greenfield.",
+    "stops": "Each document preview and the finalization have their own approval. A stub alone is not ready.",
+    "produces": "An initialized, activated `.codearbiter/` record.",
+    "aliases": "Compatibility routes: {{decompose}} is {{init --greenfield}}; {{create-context}} is {{init --brownfield}}.",
+    "source": [
+      "plugins/ca/commands/init.md",
+      "plugins/ca/hooks/init-codearbiter.py",
+      "plugins/ca/skills/context-creation/",
+      "plugins/ca/skills/decompose/"
+    ],
+    "related": [
+      "vault",
+      "activation",
+      "ca-doctor"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{init}} in the repository you want governed."
+      ],
+      [
+        "ca-init",
+        "run",
+        "{{init --check}} only reports. A plain {{init}} scaffolds the store."
+      ],
+      [
+        "vault",
+        "run",
+        "`.codearbiter/` is created beside your code."
+      ],
+      [
+        "subagents",
+        "run",
+        "Brownfield: qualified read-only scouts inspect bounded source and return closed reports."
+      ],
+      [
+        "confirm",
+        "ask",
+        "You approve each proposed document. Greenfield runs a six-layer interview instead, saving drafts to disk."
+      ],
+      [
+        "activation",
+        "gate",
+        "Finalization has its own approval. CONTEXT.md is locked as initialized with `arbiter: enabled`."
+      ],
+      [
+        "ca-doctor",
+        "pass",
+        "Run {{doctor}}: a harmless live-fire probe proves the guards are enforcing."
+      ]
+    ],
+    "simple": "Sets a repository up for governance: creates the record folder, learns the existing code (or interviews you about a new project) and switches the guards on."
+  },
+  "ca-feature": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "feature",
+    "family": "change",
+    "tier": "core",
+    "args": "\"description\"",
+    "tagline": "New behavior: spec, plan, test-first build.",
+    "what": "{{feature}} is the entry to new behavior. It clarifies the outcome and takes one of two lanes. Small lane: you confirm one to three acceptance criteria inline, the triage is logged, and the change goes straight to test-first work. Full lane: you approve a specification and a plan; the work runs in batches with a fresh author per task, proof per criterion and an independent quality review of the combined scope. It ends with an authorized commit and the PR outcome you select.",
+    "machine": "The main assembly line: a sketch station, a blueprint station, then the build press.",
+    "stops": "No guessed unknowns. No implementation before an observed failing test. Batch checkpoints. No resuming across mixed artifact formats.",
+    "produces": "Full lane: spec, plan, accepted code and tests, evidence and a PR outcome. Small lane: an inline mini-spec, code, tests and evidence.",
+    "source": [
+      "plugins/ca/commands/feature.md",
+      "plugins/ca/skills/brainstorming/",
+      "plugins/ca/skills/executing-plans/"
+    ],
+    "related": [
+      "spec-plan",
+      "skill-tdd",
+      "ca-sprint",
+      "ca-commit"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You ask for new behavior, or run {{feature}} with a description."
+      ],
+      [
+        "router",
+        "run",
+        "The router selects the feature lane and loads only its instructions."
+      ],
+      [
+        "ca-feature",
+        "run",
+        "A matching spec and plan resumes; otherwise the request is triaged as small or full."
+      ],
+      [
+        "spec-plan",
+        "run",
+        "Full lane: acceptance criteria are shaped, then a plan covers each with tasks and checks."
+      ],
+      [
+        "confirm",
+        "ask",
+        "Unknowns become `[CONFIRM-NN]` questions. You approve the spec, then the plan."
+      ],
+      [
+        "skill-tdd",
+        "fail",
+        "Each task starts with a test observed failing for the right reason."
+      ],
+      [
+        "authors",
+        "run",
+        "A fresh author per task builds against its own bounded context."
+      ],
+      [
+        "guard-write",
+        "pass",
+        "Every write passes the write gate."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "After per-task proof, an independent quality review covers the combined scope."
+      ],
+      [
+        "receipts",
+        "pass",
+        "Acceptance is recorded against the exact current head."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "With your authorization, the nine-phase commit gate runs."
+      ],
+      [
+        "ca-pr",
+        "gate",
+        "The lane ends with the PR outcome you select."
+      ]
+    ],
+    "simple": "For building something new. Agree what it should do, plan it, then build it test-first with independent review, ending in a commit and a pull request you approve."
+  },
+  "ca-sprint": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "sprint",
+    "family": "change",
+    "tier": "core",
+    "args": "[\"goal\"] [--farm]",
+    "tagline": "An approved plan, executed autonomously, with every decision logged.",
+    "what": "{{sprint}} executes an approved plan without pausing between batches. You approve the spec and plan pair once; the agent never issues that approval to itself. Inside the agreed scope, SMARTS governs the method choices the agent makes on your behalf, and each one is appended to `sprint-log.md` with a confidence flag. A failing test is fixed and rerun, not turned into a permission question. Security boundaries, irreversible operations, gate bypasses, merges and unresolved product decisions remain real stops.",
+    "machine": "An automated line with a ticker tape. The tape is `sprint-log.md`.",
+    "stops": "The initial approval is never self-issued. By default a sprint ends with an open PR; it merges only under an explicit grant from you, after exact-head checks and review.",
+    "produces": "Accepted implementation, the sprint decision log, an open PR and an honest summary of what actually ran.",
+    "source": [
+      "plugins/ca/SPRINT.md",
+      "plugins/ca/skills/subagent-driven-development/",
+      "plugins/ca/includes/smarts/core.md"
+    ],
+    "related": [
+      "smarts",
+      "audit-ledger",
+      "subagents",
+      "farm"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{sprint}} with a goal."
+      ],
+      [
+        "ca-sprint",
+        "run",
+        "The spec and plan are resolved; missing ones are prepared."
+      ],
+      [
+        "spec-plan",
+        "ask",
+        "You approve the spec and plan pair once. The agent never approves it for you."
+      ],
+      [
+        "subagents",
+        "run",
+        "Tasks run in dependency order without batch pauses, delegated where useful."
+      ],
+      [
+        "smarts",
+        "gate",
+        "In-scope method choices are scored with SMARTS, after checking your recorded intent."
+      ],
+      [
+        "audit-ledger",
+        "run",
+        "Each delegated decision is appended to `sprint-log.md` with a confidence flag."
+      ],
+      [
+        "skill-tdd",
+        "pass",
+        "Failures are fixed and rerun. They are not new permission questions."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "Independent review covers the accepted scope."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "Authorized commits go through the commit gate."
+      ],
+      [
+        "ca-pr",
+        "pass",
+        "The sprint ends with an open PR and a summary. It does not merge on its own authority."
+      ]
+    ],
+    "simple": "Hands-off mode for an approved plan. The agent works through the tasks on its own, writes down every judgement call and stops at anything risky."
+  },
+  "ca-fix": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "fix",
+    "family": "change",
+    "tier": "core",
+    "args": "\"bug description\"",
+    "tagline": "Prove the bug with a failing test, then make the smallest fix.",
+    "what": "{{fix}} starts from a confirmed defect: a current reproduction or supported causal evidence. A named regression test must be observed failing for the correct defect before any code changes. Then the author makes the minimal fix, `tdd` completes its phases and the proof comes back. If the cause is unknown, one bounded internal debug step can diagnose it and hand back to the same fix.",
+    "machine": "A regression press. Its lamp must show red before the press may move.",
+    "stops": "No repair from intent alone. A setup, import or unrelated failure is not proof of the target defect.",
+    "produces": "A minimal correction with failing-before and passing-after evidence.",
+    "source": [
+      "plugins/ca/commands/fix.md",
+      "plugins/ca/skills/tdd/SKILL.md"
+    ],
+    "related": [
+      "skill-tdd",
+      "ca-debug",
+      "ca-commit"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You describe the bug, or run {{fix}} with it."
+      ],
+      [
+        "router",
+        "run",
+        "The router selects the fix lane: regression test first."
+      ],
+      [
+        "ca-fix",
+        "run",
+        "A confirmed defect is established from a reproduction or causal evidence."
+      ],
+      [
+        "ca-debug",
+        "run",
+        "If the cause is unknown, one bounded internal diagnosis runs and hands back to this fix."
+      ],
+      [
+        "skill-tdd",
+        "fail",
+        "A named regression test is observed failing for the correct defect."
+      ],
+      [
+        "authors",
+        "run",
+        "The author makes the smallest change that fixes it."
+      ],
+      [
+        "guard-write",
+        "pass",
+        "Each edit passes the write gate."
+      ],
+      [
+        "skill-tdd",
+        "pass",
+        "The regression passes and verification is green."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "The proof returns to you. Commit and PR keep their own authority."
+      ]
+    ],
+    "simple": "For bugs. First prove the bug with a failing test, then make the smallest change that fixes it, then prove the test passes."
+  },
+  "ca-refactor": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "refactor",
+    "family": "change",
+    "tier": "core",
+    "args": "\"surface and motivation\"",
+    "tagline": "Restructure behind proof that behavior did not change.",
+    "what": "{{refactor}} changes structure, not behavior. It names the scope, proves parity coverage with pre-existing tests (backfilling through `tdd` where coverage is missing), restructures, and verifies that the unchanged tests still pass. If the diff starts changing behavior, the work belongs in {{feature}} or {{fix}}.",
+    "machine": "A parity jig: two identical blocks on a balance beam that must stay level.",
+    "stops": "No parity proof, no refactor.",
+    "produces": "A restructured implementation with behavioral parity evidence.",
+    "source": [
+      "plugins/ca/skills/refactor/SKILL.md"
+    ],
+    "related": [
+      "skill-tdd",
+      "ca-feature",
+      "ca-fix"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{refactor}}, naming the surface and the motivation."
+      ],
+      [
+        "ca-refactor",
+        "run",
+        "A behavior-preserving scope is named."
+      ],
+      [
+        "skill-tdd",
+        "gate",
+        "Parity is proven with pre-existing tests; missing coverage is backfilled test-first."
+      ],
+      [
+        "authors",
+        "run",
+        "The structure changes; the behavior must not."
+      ],
+      [
+        "skill-tdd",
+        "pass",
+        "The unchanged pre-existing tests still pass."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "The change commits only through the commit gate."
+      ]
+    ],
+    "simple": "Tidy code up without changing what it does, proven by tests that already existed and still pass afterwards."
+  },
+  "ca-chore": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "chore",
+    "family": "change",
+    "tier": "core",
+    "args": "<docs | deps | revert> …",
+    "tagline": "Docs, dependency bumps and reverts, with gates sized to the type.",
+    "what": "{{chore}} routes non-behavioral work through gates scaled to its type. docs: prose and copy review, secret and diff checks, no TDD for prose. deps: a manifest and lockfile change, dependency review and the affected tests. revert: a named git revert, the affected tests and the referenced reason. All three still commit through the commit gate.",
+    "machine": "A utility cart with three bins: docs, deps and revert.",
+    "stops": "Behavioral work hidden inside a chore is redirected to {{feature}} or {{fix}}.",
+    "produces": "Reviewed prose, a dependency bump or a named revert, then an authorized commit and PR.",
+    "source": [
+      "plugins/ca/commands/chore.md"
+    ],
+    "related": [
+      "ca-add-dep",
+      "ca-commit",
+      "reviewer-fleet"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{chore docs}}, {{chore deps}} or {{chore revert}}."
+      ],
+      [
+        "ca-chore",
+        "run",
+        "The type sets the gates: prose review, dependency review or a named revert."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "For deps, the dependency reviewer checks the manifest and lockfile change."
+      ],
+      [
+        "guard-bash",
+        "pass",
+        "Affected tests and scans run. Behavioral changes are redirected."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "The commit gate, then the PR flow."
+      ]
+    ],
+    "simple": "Housekeeping: documentation, dependency updates and undoing a change, each with checks sized to the job."
+  },
+  "ca-spike": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "spike",
+    "family": "change",
+    "tier": "core",
+    "args": "\"question\" [timebox]",
+    "tagline": "Explore on a disposable branch that never merges.",
+    "what": "{{spike}} answers a question by experiment. It frames the question and a timebox, works on a disposable `spike/<slug>` branch and captures findings under `.codearbiter/spikes/`. The spike branch is the one place the commit gate is exempt, and in exchange it can never be merged or opened as a PR. Production work starts fresh through {{feature}}.",
+    "machine": "A test bench with a sealed disposal bin.",
+    "stops": "The spike branch never merges and never opens a PR.",
+    "produces": "Findings, or a new feature request.",
+    "source": [
+      "plugins/ca/commands/spike.md"
+    ],
+    "related": [
+      "branch-rails",
+      "ca-feature",
+      "ca-debug"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{spike}} with a question and a timebox."
+      ],
+      [
+        "ca-spike",
+        "run",
+        "The question and its bounds are framed."
+      ],
+      [
+        "branch-rails",
+        "run",
+        "Work happens on a disposable `spike/<slug>` branch, exempt from the commit gate."
+      ],
+      [
+        "vault",
+        "pass",
+        "Findings are written to `.codearbiter/spikes/`."
+      ],
+      [
+        "ca-feature",
+        "gate",
+        "Production work starts fresh through {{feature}}. The spike never merges."
+      ]
+    ],
+    "simple": "A throwaway experiment to answer a question. It lives on a branch that can never be merged."
+  },
+  "ca-add-dep": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "add-dep",
+    "family": "change",
+    "tier": "core",
+    "args": "\"package\"",
+    "tagline": "Vet a package before it enters the supply chain.",
+    "what": "{{add-dep}} vets a dependency before install: license, provenance, maintenance signals, known vulnerabilities and supply-chain risk, checked by the dependency reviewer against `tech-stack.md` and `security-controls.md`. It separates durable adoption from a single pinned tool run, which must not quietly become adoption.",
+    "machine": "A customs booth with a scanning arch. Every crate is inspected before it enters.",
+    "stops": "A denied license or a supply-chain concern blocks.",
+    "produces": "A vetted adoption decision, or a verified one-off tool result.",
+    "source": [
+      "plugins/ca/commands/add-dep.md",
+      "plugins/ca/agents/dependency-reviewer.md"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "advisory-lamps",
+      "ca-chore"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{add-dep}} with the package."
+      ],
+      [
+        "ca-add-dep",
+        "run",
+        "Durable adoption and a one-off pinned tool run are told apart."
+      ],
+      [
+        "reviewer-fleet",
+        "gate",
+        "The dependency reviewer checks license, provenance, maintenance, vulnerabilities and supply chain."
+      ],
+      [
+        "advisory-lamps",
+        "gate",
+        "When the manifest changes, H-07 records that the review is owed before commit."
+      ],
+      [
+        "ca-feature",
+        "run",
+        "Using the package for new behavior is still feature or fix work."
+      ]
+    ],
+    "simple": "Customs control for other people’s code: checks license, origin, upkeep and known problems before a package comes in."
+  },
+  "ca-debug": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "debug",
+    "family": "change",
+    "tier": "advanced",
+    "args": "\"symptom\"",
+    "tagline": "Investigate an unknown cause. Diagnosis is not repair.",
+    "what": "{{debug}} investigates a symptom without changing code. It captures the symptom, the expectation and the reproduction state, tests evidence-backed hypotheses with safe discriminators, and returns exactly one disposition: confirmed code defect, confirmed non-code cause, design question, no action, or unresolved. Only an already-authorized fix can continue from a confirmed code defect.",
+    "machine": "A diagnostic bay with five output chutes, one per disposition.",
+    "stops": "Diagnosis never authorizes repair. “No action” needs positive closure evidence. A design question is not an automatic ADR.",
+    "produces": "One evidence-backed disposition and a bounded summary.",
+    "source": [
+      "plugins/ca/skills/debug/SKILL.md",
+      "plugins/ca/hooks/debug-handoff.py"
+    ],
+    "related": [
+      "ca-fix",
+      "ca-task",
+      "ca-adr"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{debug}} with the symptom."
+      ],
+      [
+        "ca-debug",
+        "run",
+        "The symptom, the expectation and the reproduction state are captured."
+      ],
+      [
+        "tool-bash",
+        "run",
+        "Hypotheses are tested with safe discriminators. Inconclusive results are kept."
+      ],
+      [
+        "ca-debug",
+        "gate",
+        "Exactly one disposition: code defect, non-code cause, design question, no action or unresolved."
+      ],
+      [
+        "ca-fix",
+        "gate",
+        "Only an already-authorized fix can continue from a confirmed code defect."
+      ]
+    ],
+    "simple": "Detective work on an unknown problem. It finds and reports the cause, but does not change any code itself."
+  },
+  "ca-commit": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "commit",
+    "family": "ship",
+    "tier": "core",
+    "args": "",
+    "tagline": "The nine-phase commit gate.",
+    "what": "{{commit}} runs the full commit gate: nine phases, each a blocking gate. It needs an explicit instruction to commit, refuses the protected default branch, splits mixed changes so each commit has one type, runs focused tests, lint and a secrets scan over every staged file, proves the behavior with current command output, reviews the whole diff, stages each path by name and writes a Conventional Commits message.",
+    "machine": "A nine-ring airlock. The change passes one ring at a time, and any ring can seal the lock.",
+    "how": [
+      "Permission",
+      "Branch",
+      "Classification",
+      "Verification",
+      "Behavioral proof",
+      "Diff review",
+      "Selective stage",
+      "Message",
+      "Commit"
+    ],
+    "stops": "No commit on a red suite, no wildcard staging, no protected-branch commit. “Looks good” is not permission. A stale acceptance blocks before staging.",
+    "produces": "A local commit, its explicit paths and a gate report. Not a push or PR by itself.",
+    "source": [
+      "plugins/ca/skills/commit-gate/SKILL.md"
+    ],
+    "related": [
+      "ca-pr",
+      "guard-bash",
+      "security-pass",
+      "receipts"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You ask for a commit, or run {{commit}}."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "Phase 1, permission: an explicit instruction is on record. “Looks good” is not one."
+      ],
+      [
+        "branch-rails",
+        "gate",
+        "Phase 2, branch: never the protected default branch."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "Phase 3, classification: one commit type and scope. Mixed changes are split."
+      ],
+      [
+        "skill-tdd",
+        "gate",
+        "Phase 4, verification: focused tests, lint and a secrets scan of every staged file."
+      ],
+      [
+        "receipts",
+        "gate",
+        "Phase 5, behavioral proof: current output proves the acceptance criterion."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "Phase 6, diff review: no unexpected files, secrets, stubs, skipped tests or scope creep."
+      ],
+      [
+        "guard-bash",
+        "pass",
+        "Phase 7, selective stage: every path is named. Wildcards are blocked (H-03)."
+      ],
+      [
+        "ca-commit",
+        "pass",
+        "Phases 8 and 9: a Conventional Commits message, then the local commit."
+      ]
+    ],
+    "simple": "The nine-step commit gate before a change is saved to history: permission, branch, tests, proof, review and more. Any step can stop it."
+  },
+  "ca-pr": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "pr",
+    "family": "ship",
+    "tier": "core",
+    "args": "[\"title\"] | --watch [PR] | --cleanup",
+    "tagline": "Open or finish a pull request, watch CI, clean up.",
+    "what": "{{pr}} opens a pull request once the current-head commit and acceptance check out, runs the applicable diff reviewers and clears blockers. {{pr --watch}} attaches a hosted-CI watcher that diagnoses red and offers the merge on green. {{pr --cleanup}} finishes a merged branch with proof of containment and consent per item. A merge happens only when you select it, hosted CI is green on the exact head and ADR source ancestry checks out.",
+    "machine": "The shipping dock, with a crane that only you can release.",
+    "stops": "Never writes to the default branch directly. No inferred merge or discard authority.",
+    "produces": "An open PR, and optionally an explicitly authorized merge.",
+    "aliases": "Compatibility routes: {{watch}} is {{pr --watch}}; {{cleanup}} is {{pr --cleanup}}.",
+    "source": [
+      "plugins/ca/skills/finishing-a-development-branch/SKILL.md",
+      "plugins/ca/skills/post-merge-cleanup/SKILL.md"
+    ],
+    "related": [
+      "remote-ci",
+      "main-vault",
+      "approval-key",
+      "reviewer-fleet"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{pr}}."
+      ],
+      [
+        "ca-pr",
+        "run",
+        "Creation checks the current-head commit and acceptance."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "The applicable reviewers challenge the exact diff."
+      ],
+      [
+        "triage",
+        "gate",
+        "Blocking findings are resolved before the PR advances."
+      ],
+      [
+        "remote-ci",
+        "run",
+        "The PR opens and hosted CI runs on the exact head. {{pr --watch}} diagnoses red."
+      ],
+      [
+        "approval-key",
+        "ask",
+        "Merge only if you select it, with green exact-head CI and verified ADR source ancestry."
+      ],
+      [
+        "main-vault",
+        "pass",
+        "The change reaches the default branch by pull request, never by direct push."
+      ]
+    ],
+    "simple": "Packages the change for review as a pull request, watches the shared tests and merges only when you say so."
+  },
+  "ca-release": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "release",
+    "family": "ship",
+    "tier": "core",
+    "args": "[--dry-run]",
+    "tagline": "Prepare a release; publish only with authority.",
+    "what": "{{release}} resolves the declared target and version policy, prepares the version bump and changelog through the ordinary commit gate on a non-default branch, opens the release PR and stops. Only after that PR merges may a qualifying hosted publisher compose the tag and publish from the exact verified default-branch commit, then read the published release back. {{release --dry-run}} only reports.",
+    "machine": "A launch gantry with a hold-down clamp. The clamp is the release PR stop.",
+    "stops": "A mandatory stop at the release PR. No local tag fallback, no publishing a red or stale head, no implicit consent. CI success alone is not publication permission.",
+    "produces": "A release-preparation PR, then a separately authorized publication and its readback.",
+    "source": [
+      "plugins/ca/skills/release/SKILL.md",
+      "plugins/ca/commands/release.md"
+    ],
+    "related": [
+      "ca-commit",
+      "ca-pr",
+      "remote-ci",
+      "approval-key"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{release}} when release authority is explicit. {{release --dry-run}} only reports."
+      ],
+      [
+        "ca-release",
+        "run",
+        "The declared target, version policy and payload are resolved."
+      ],
+      [
+        "ca-commit",
+        "gate",
+        "The version bump and changelog go through the ordinary commit gate on a non-default branch."
+      ],
+      [
+        "ca-pr",
+        "stop",
+        "The release PR opens and the lane stops. No local tag is made."
+      ],
+      [
+        "remote-ci",
+        "gate",
+        "After the PR merges, a qualifying hosted publisher works from the exact verified commit."
+      ],
+      [
+        "approval-key",
+        "ask",
+        "Publication needs its own authority. CI success alone is not permission."
+      ],
+      [
+        "ca-release",
+        "pass",
+        "The published release is read back against the declared inventory."
+      ]
+    ],
+    "simple": "Prepares a new version of the software and stops for review. Publishing happens later, and only with explicit permission."
+  },
+  "ca-review": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "review",
+    "family": "review",
+    "tier": "core",
+    "args": "[path or scope]",
+    "tagline": "Run the reviewer fleet over the current diff.",
+    "what": "{{review}} selects reviewers by the actual paths in the diff, gives each one its own bounded context, runs them as independent read-only units and funnels their reports through triage into one verdict. CRITICAL and HIGH findings block the current change.",
+    "machine": "An inspection gantry spanning the line.",
+    "stops": "A prediction or a missing result cannot stand in for a completed review. Missing critical context blocks a substantive verdict.",
+    "produces": "A triaged verdict with blocking findings separated from the rest.",
+    "source": [
+      "plugins/ca/commands/review.md",
+      "plugins/ca/includes/review-matrix.md"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "triage",
+      "ca-checkpoint"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{review}} on the current diff or a path."
+      ],
+      [
+        "ca-review",
+        "run",
+        "Reviewers are selected by the actual diff paths."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "Each reviewer gets its own bounded context and runs as an independent read-only unit."
+      ],
+      [
+        "triage",
+        "gate",
+        "Findings are classified by severity and by whether they block this change."
+      ],
+      [
+        "triage",
+        "block",
+        "A CRITICAL or HIGH finding blocks the change until it is resolved."
+      ]
+    ],
+    "simple": "Calls in the relevant inspectors for the current changes and gives one verdict. Serious problems block."
+  },
+  "ca-checkpoint": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "checkpoint",
+    "family": "review",
+    "tier": "advanced",
+    "args": "[focus]",
+    "tagline": "A periodic whole-codebase sweep.",
+    "what": "{{checkpoint}} runs the reviewer fleet across the whole codebase, adds the architecture-drift reviewer to compare the code with accepted ADRs, triages the findings and writes a dated, non-overwriting report to `.codearbiter/checkpoints/`. It is informational, not a promotion or merge gate.",
+    "machine": "A radar dish that sweeps the whole floor.",
+    "produces": "A dated checkpoint report.",
+    "source": [
+      "plugins/ca/commands/checkpoint.md",
+      "plugins/ca/agents/architecture-drift-reviewer.md"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "triage",
+      "evidence-shelf"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{checkpoint}}, optionally with a focus."
+      ],
+      [
+        "ca-checkpoint",
+        "run",
+        "A whole-codebase sweep starts."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "The fleet runs, plus the architecture-drift reviewer comparing code with accepted ADRs."
+      ],
+      [
+        "triage",
+        "run",
+        "Findings are triaged into one verdict."
+      ],
+      [
+        "evidence-shelf",
+        "pass",
+        "A dated report is written to `.codearbiter/checkpoints/`. It is informational, not a merge gate."
+      ]
+    ],
+    "simple": "A periodic health check of the whole codebase, saved as a dated report."
+  },
+  "ca-threat-model": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "threat-model",
+    "family": "review",
+    "tier": "advanced",
+    "args": "\"scope\"",
+    "tagline": "An opt-in STRIDE pass for a sensitive design.",
+    "what": "{{threat-model}} runs a lightweight STRIDE analysis (spoofing, tampering, repudiation, information disclosure, denial of service, elevation of privilege) over a sensitive design’s assets and trust boundaries, and returns threats and mitigations to the design owner. It is opt-in, never a routine change gate.",
+    "machine": "A shield with six facets, one per STRIDE category.",
+    "stops": "A critical unmitigated threat stops the pass.",
+    "produces": "A threat and mitigation analysis that constrains the design.",
+    "source": [
+      "plugins/ca/skills/security-architecture/SKILL.md"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "spec-plan",
+      "ca-adr"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{threat-model}} for a sensitive design."
+      ],
+      [
+        "ca-threat-model",
+        "run",
+        "Assets, trust boundaries and `security-controls.md` frame the analysis."
+      ],
+      [
+        "reviewer-fleet",
+        "run",
+        "A lightweight STRIDE pass runs with the applicable specialists."
+      ],
+      [
+        "spec-plan",
+        "pass",
+        "Threats and mitigations return to the design owner as constraints."
+      ]
+    ],
+    "simple": "An optional security brainstorm for a sensitive design: how could someone attack this, and what stops them?"
+  },
+  "ca-tribunal": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "tribunal",
+    "family": "review",
+    "tier": "advanced",
+    "args": "[scope-path] [--tag <label>]",
+    "tagline": "A deep, resumable, multi-lens audit. Never a routine gate.",
+    "what": "{{tribunal}} is a deliberate deep audit. It estimates cost from a deterministic inventory and waits for your acknowledgement before any model is dispatched. Each applicable lens card (thirteen ship today, from appsec to typesafety) runs as a read-only reviewer, at most five at once, and findings persist immediately so an interrupted run can resume. Serious claims get an independent verify pass. Issue filing and telemetry each need separate approval.",
+    "machine": "A ring of lenses turning around one subject.",
+    "stops": "Cost acknowledgement before dispatch. Never a commit or merge gate. No automatic repair, ADR or task write.",
+    "produces": "A source-bound audit run and report.",
+    "source": [
+      "plugins/ca/skills/tribunal/SKILL.md",
+      "plugins/ca/skills/tribunal/references/lenses/"
+    ],
+    "related": [
+      "reviewer-fleet",
+      "evidence-shelf",
+      "subagents"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You deliberately ask for a deep audit with {{tribunal}}."
+      ],
+      [
+        "ca-tribunal",
+        "run",
+        "Scope and evidence are bound to the current source. A matching unfinished run can resume."
+      ],
+      [
+        "approval-key",
+        "ask",
+        "A cost estimate is shown. Nothing is dispatched until you acknowledge it."
+      ],
+      [
+        "ca-tribunal",
+        "run",
+        "Each applicable lens runs as a read-only reviewer, at most five at once. Findings persist immediately."
+      ],
+      [
+        "subagents",
+        "run",
+        "Serious claims get a fresh, independent verify pass."
+      ],
+      [
+        "evidence-shelf",
+        "pass",
+        "The report is written. Issue filing and telemetry each need their own approval."
+      ]
+    ],
+    "simple": "A deep, expensive audit through many lenses at once. It shows the cost first and never blocks routine work."
+  },
+  "ca-adr": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "adr",
+    "family": "decide",
+    "tier": "core",
+    "args": "\"title\"",
+    "tagline": "Record a numbered, user-attributed architecture decision.",
+    "what": "{{adr}} writes an Architecture Decision Record. It reads the current decision context, presents the decision and its alternatives, takes your explicit choice and attribution, and writes the numbered ADR. While authoring it holds a fresh marker that lets the write gate admit the file; at any other time, writes to `decisions/` are blocked (H-11). Accepted ADRs are immutable.",
+    "machine": "An engraving station. Only this station holds the stylus.",
+    "stops": "A `[CONFIRM-NN]` answer is never guessed. Accepted or planned is not evidence of delivery.",
+    "produces": "A durable, attributed decision.",
+    "source": [
+      "plugins/ca/skills/decision-lifecycle/"
+    ],
+    "related": [
+      "adr-tablets",
+      "confirm",
+      "ca-adr-status",
+      "ca-reconcile"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{adr}} with a title."
+      ],
+      [
+        "ca-adr",
+        "run",
+        "The current decision context, related ADRs and open questions are read."
+      ],
+      [
+        "confirm",
+        "ask",
+        "The decision and its alternatives are presented. You choose, and the choice is attributed to you."
+      ],
+      [
+        "guard-write",
+        "gate",
+        "The lane holds a fresh authoring marker, so the write gate admits the ADR (H-11)."
+      ],
+      [
+        "adr-tablets",
+        "pass",
+        "A numbered, dated ADR is written. Once accepted, it is immutable."
+      ]
+    ],
+    "simple": "Writes down an architecture decision with your name on it, so the why is never lost."
+  },
+  "ca-adr-status": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "adr-status",
+    "family": "decide",
+    "tier": "advanced",
+    "args": "[--adr N]",
+    "tagline": "Inspect ADR health without writing.",
+    "what": "{{adr-status}} reads the ADRs and reports their age, challenges and supersession chains. It grants no writing authority and is not evidence of delivery.",
+    "machine": "An archive reader with a magnifier.",
+    "produces": "A read-only ADR health report.",
+    "source": [
+      "plugins/ca/skills/decision-lifecycle/"
+    ],
+    "related": [
+      "adr-tablets",
+      "ca-adr"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{adr-status}}."
+      ],
+      [
+        "ca-adr-status",
+        "run",
+        "Status mode is selected before any authoring step."
+      ],
+      [
+        "adr-tablets",
+        "pass",
+        "Age, challenges and supersession chains are reported. Nothing is written."
+      ]
+    ],
+    "simple": "Reads the decision records and reports on their health, without changing anything."
+  },
+  "ca-reconcile": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "reconcile",
+    "family": "decide",
+    "tier": "advanced",
+    "args": "[\"scope\"]",
+    "tagline": "Resolve architectural variance with explicit, attributed choices.",
+    "what": "{{reconcile}} compares architectural records (plans, the decision log, ADRs) with the code. Restricted scouts gather cited evidence, the grader produces a SMARTS comparison and an optional decision-challenger red-teams it. You select the ruling. Report-only mode writes nothing; reconciliation mode appends only your attributed choice to the decision log.",
+    "machine": "A balance scale with the SMARTS prism at its pivot.",
+    "stops": "The grader recommends and never decides. Contradictory governing rules go to the conflict protocol instead.",
+    "produces": "A variance report, or an attributed architectural ruling.",
+    "source": [
+      "plugins/ca/skills/decision-variance/",
+      "plugins/ca/agents/grader.md",
+      "plugins/ca/agents/decision-challenger.md"
+    ],
+    "related": [
+      "smarts",
+      "ca-conflict",
+      "ca-adr"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{reconcile}}, optionally with a scope."
+      ],
+      [
+        "ca-reconcile",
+        "run",
+        "Report-only or reconciliation mode is chosen."
+      ],
+      [
+        "subagents",
+        "run",
+        "Restricted scouts gather cited evidence as paths and line numbers."
+      ],
+      [
+        "smarts",
+        "gate",
+        "The grader produces a SMARTS comparison; an optional challenger red-teams it."
+      ],
+      [
+        "confirm",
+        "ask",
+        "You select the ruling. The grader recommends; it never decides."
+      ],
+      [
+        "audit-ledger",
+        "pass",
+        "In reconciliation mode, your attributed choice is appended to the decision log."
+      ]
+    ],
+    "simple": "When the code and the recorded decisions drift apart, it lays out the evidence and the options so you can rule."
+  },
+  "ca-conflict": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "conflict",
+    "family": "decide",
+    "tier": "internal",
+    "args": "\"description\"",
+    "tagline": "Stop everything and surface both sides.",
+    "what": "When governing rules, documents and code contradict each other, the conflict protocol stops other work, presents both sides with the conflict hierarchy and waits for you. It is an internal protocol: the orchestrator invokes it, and you rarely type it. When it is unclear whether to reconcile or stop, it stops.",
+    "machine": "The red emergency stop. It halts the line until you clear it.",
+    "stops": "No silent reconciliation, ever.",
+    "produces": "A visible stopped state and a specific decision request.",
+    "source": [
+      "plugins/ca/commands/conflict.md",
+      "plugins/ca/includes/safety-core.md (§2)"
+    ],
+    "related": [
+      "conflict-hierarchy",
+      "confirm",
+      "ca-reconcile"
+    ],
+    "route": [
+      [
+        "guard-ring",
+        "stop",
+        "Governing rules, documents or code contradict each other."
+      ],
+      [
+        "ca-conflict",
+        "stop",
+        "All other work stops."
+      ],
+      [
+        "conflict-hierarchy",
+        "gate",
+        "Both sides are shown with the conflict hierarchy and the exact evidence."
+      ],
+      [
+        "confirm",
+        "ask",
+        "You decide. Nothing is reconciled silently."
+      ]
+    ],
+    "simple": "The emergency stop. When the rules themselves contradict each other, everything halts until you decide."
+  },
+  "ca-status": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "status",
+    "family": "operate",
+    "tier": "core",
+    "args": "(none) | drift",
+    "tagline": "Read project state; inspect provenance drift.",
+    "what": "{{status}} shows the project’s live state and changes nothing. {{status drift}} compares governed documents with their recorded provenance and reports each as current, stale or unknown. A refresh happens only for documents you explicitly select, and it never stages or commits.",
+    "machine": "A panel of gauges that reads the record.",
+    "produces": "A read-only state or drift report.",
+    "aliases": "Compatibility route: {{context-check}} is {{status drift}}.",
+    "source": [
+      "plugins/ca/commands/status.md",
+      "plugins/ca/skills/context-check/"
+    ],
+    "related": [
+      "vault",
+      "ca-init"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{status}}, or {{status drift}}."
+      ],
+      [
+        "ca-status",
+        "run",
+        "The default path reads live project state and changes nothing."
+      ],
+      [
+        "vault",
+        "run",
+        "Drift compares each governed document with its provenance: current, stale or unknown."
+      ],
+      [
+        "confirm",
+        "ask",
+        "A refresh happens only for documents you select. It never stages or commits."
+      ]
+    ],
+    "simple": "A dashboard of the project’s current state. It only reads."
+  },
+  "ca-task": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "task",
+    "family": "operate",
+    "tier": "core",
+    "args": "add \"<desc>\" | start <id> | done <id>",
+    "tagline": "Add, start and finish tasks through the only sanctioned writer.",
+    "what": "{{task}} changes the task board through one sanctioned writer, which validates every transition. start stamps a date, done requires the task to be in progress, and a task is never deleted to complete it. A debug result alone never writes a task; a follow-up needs its own authority.",
+    "machine": "A kanban board with a single pen.",
+    "produces": "A task entry or a valid state transition.",
+    "source": [
+      "plugins/ca/hooks/taskwrite.py",
+      "plugins/ca/hooks/_taskboardlib.py"
+    ],
+    "related": [
+      "task-board",
+      "ca-standup"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{task add}}, {{task start}} or {{task done}}."
+      ],
+      [
+        "ca-task",
+        "run",
+        "The transition is validated by the only sanctioned writer, under an OS lock."
+      ],
+      [
+        "task-board",
+        "pass",
+        "start stamps a date; done requires in progress; nothing is deleted to complete it."
+      ]
+    ],
+    "simple": "Adds, starts and finishes tasks on the board through the one approved pen."
+  },
+  "ca-doctor": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "doctor",
+    "family": "operate",
+    "tier": "core",
+    "args": "",
+    "tagline": "Prove the install is actually enforcing.",
+    "what": "{{doctor}} verifies the active install: interpreter, payload version, package ownership, hook wiring, and a harmless live-fire probe that triggers a real H-03 block. It reports capability gaps. Run it after installing, after updating and whenever a gate seems to be missing.",
+    "machine": "A probe that fires one harmless test charge into the shell gate.",
+    "stops": "A healthy report does not prove that any lane completed.",
+    "produces": "An installation and enforcement diagnostic report.",
+    "source": [
+      "plugins/ca/hooks/doctor.py"
+    ],
+    "related": [
+      "guard-bash",
+      "ca-init",
+      "hosts"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{doctor}} after install, or when a gate seems missing."
+      ],
+      [
+        "ca-doctor",
+        "run",
+        "Interpreter, payload, package ownership and hook wiring are inspected."
+      ],
+      [
+        "guard-bash",
+        "block",
+        "A harmless live-fire probe triggers a real H-03 block. Seeing it block is the proof."
+      ],
+      [
+        "ca-doctor",
+        "pass",
+        "Capability gaps are reported."
+      ]
+    ],
+    "simple": "Checks that the guards are really installed and working, by setting one off harmlessly."
+  },
+  "ca-override": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "override",
+    "family": "operate",
+    "tier": "core",
+    "args": "\"reason\"",
+    "tagline": "One logged, attributed bypass where a rule permits it.",
+    "what": "{{override}} is the sanctioned exception. The reason must name the gate and justify the bypass; a vague reason is rejected. A routine gate takes one confirmation and one attributed line in `overrides.log`. Security-critical stops (a CRITICAL security finding, the crypto and secret commit gates, irreversible operations) take a heavier path: the finding stated verbatim and your acknowledgement of that specific finding, logged as a security override.",
+    "machine": "A key switch wired to the audit tape. Every turn prints a line.",
+    "stops": "Not universal bypass authority. The raw-secret prohibition has no exception in any mode.",
+    "produces": "An attributed audit line and a bounded continuation.",
+    "source": [
+      "plugins/ca/commands/override.md",
+      "plugins/ca/hooks/append-override.py"
+    ],
+    "related": [
+      "audit-ledger",
+      "approval-key",
+      "guard-bash"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{override}} with a specific reason naming the gate."
+      ],
+      [
+        "ca-override",
+        "gate",
+        "The governing rule must permit a bypass. A vague reason is rejected."
+      ],
+      [
+        "approval-key",
+        "ask",
+        "Routine gates take one confirmation. Security-critical stops need the finding stated verbatim and your acknowledgement of it."
+      ],
+      [
+        "audit-ledger",
+        "pass",
+        "One line is appended to `overrides.log`: time, your email, the gate and the reason."
+      ],
+      [
+        "ca-override",
+        "run",
+        "Work proceeds only within that boundary. The statusline counts overrides since the last checkpoint."
+      ]
+    ],
+    "simple": "A signed exception. Where a rule allows it, you can bypass a gate once, and your name and reason go into the permanent log."
+  },
+  "ca-standup": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "standup",
+    "family": "operate",
+    "tier": "advanced",
+    "args": "",
+    "tagline": "Repository hygiene, confirmed one action at a time.",
+    "what": "{{standup}} inspects branches, worktrees, stashes and the working tree, reports unsafe or ambiguous residue and offers safe cleanups. You confirm each one separately; only fast-forward and permitted cleanups run. A read-only version runs as the first-of-day briefing at session start.",
+    "machine": "A morning bell beside a clipboard.",
+    "stops": "Dirty, stashed or unpushed work is never silently discarded.",
+    "produces": "A hygiene briefing and individually authorized cleanup results.",
+    "source": [
+      "plugins/ca/commands/standup.md",
+      "plugins/ca/hooks/_standuplib.py"
+    ],
+    "related": [
+      "session-start",
+      "repo",
+      "ca-task"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{standup}}, or accept the offer from the daily briefing."
+      ],
+      [
+        "ca-standup",
+        "run",
+        "Branches, worktrees, stashes and the working tree are inspected."
+      ],
+      [
+        "repo",
+        "gate",
+        "Unsafe or ambiguous residue is reported, never silently discarded."
+      ],
+      [
+        "approval-key",
+        "ask",
+        "Each cleanup is confirmed separately. Only fast-forward and permitted cleanups run."
+      ]
+    ],
+    "simple": "A morning tidy-up: finds old branches and leftovers and asks before cleaning up each one."
+  },
+  "ca-audit": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "audit",
+    "family": "operate",
+    "tier": "advanced",
+    "args": "[range]",
+    "tagline": "Assemble a dated governance packet.",
+    "what": "{{audit}} reads the source governance records for a window (overrides, triage, decisions, checkpoints) and assembles a dated, non-overwriting evidence packet. It quotes audit lines exactly and changes nothing at the source.",
+    "machine": "A records press that binds pages into a packet.",
+    "produces": "A dated governance evidence packet.",
+    "source": [
+      "plugins/ca/commands/audit.md"
+    ],
+    "related": [
+      "audit-ledger",
+      "evidence-shelf"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{audit}}, optionally with a range."
+      ],
+      [
+        "ca-audit",
+        "run",
+        "The source governance records for the window are read."
+      ],
+      [
+        "audit-ledger",
+        "run",
+        "Audit lines are quoted exactly."
+      ],
+      [
+        "evidence-shelf",
+        "pass",
+        "A dated packet is assembled. Existing packets and source records are never overwritten."
+      ]
+    ],
+    "simple": "Gathers the governance records for a period into one dated evidence packet."
+  },
+  "ca-statusline": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "statusline",
+    "family": "operate",
+    "tier": "advanced",
+    "args": "install | uninstall | status",
+    "tagline": "A Claude Code statusline with a governance row.",
+    "what": "{{statusline}} installs, removes or reports the optional Claude Code statusline: folder, git state, rate limits, token use, cost, context headroom, model and session age, plus a governance row in enabled repositories. It backs up and restores any previous statusline. Claude Code only.",
+    "machine": "The LED strip along the edge of the ring.",
+    "produces": "Statusline configuration or a status report.",
+    "source": [
+      "plugins/ca/hooks/statusline.py",
+      "plugins/ca/hooks/wire-statusline.py"
+    ],
+    "related": [
+      "session-start",
+      "context-window"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{statusline install}} in Claude Code."
+      ],
+      [
+        "ca-statusline",
+        "run",
+        "A ca-owned statusline entry is installed, backing up any previous one."
+      ],
+      [
+        "session-start",
+        "pass",
+        "In enabled repositories a governance row appears. Session start keeps the path current after updates."
+      ]
+    ],
+    "simple": "A status bar for Claude Code that shows usage, cost and the governance state at a glance."
+  },
+  "ca-prune": {
+    "zone": "lanes",
+    "kind": "Lane",
+    "cmd": "prune",
+    "family": "operate",
+    "tier": "advanced",
+    "args": "status | dry | run <path> | audit <path> | on | off",
+    "preview": true,
+    "tagline": "Trim transcript bulk. Live pruning is a preview.",
+    "what": "{{prune}} inspects or trims redundant transcript content so long sessions last longer before compaction. Dry-run is the default. On Claude Code it never rewrites the live transcript; gains apply after resume or compaction. Pi uses its native compaction instead. Live pruning is an opt-in Feature Forge preview enabled with `CODEARBITER_PRUNE`.",
+    "machine": "A compactor beside the press, painted preview orange.",
+    "produces": "A report, or reduced transcript bulk after resume or compaction.",
+    "source": [
+      "plugins/ca/hooks/prune-transcript.py",
+      "plugins/ca/hooks/_prunelib.py"
+    ],
+    "related": [
+      "compaction",
+      "context-window"
+    ],
+    "route": [
+      [
+        "operator",
+        "run",
+        "You run {{prune status}} or {{prune dry}}."
+      ],
+      [
+        "ca-prune",
+        "preview",
+        "Live pruning is an opt-in preview. Dry-run is the default."
+      ],
+      [
+        "context-window",
+        "run",
+        "Redundant transcript bulk is identified. On Claude Code the live transcript is never rewritten."
+      ],
+      [
+        "compaction",
+        "pass",
+        "Savings apply after resume or compaction. Pi uses native compaction instead."
+      ]
+    ],
+    "simple": "Finds redundant content in long session transcripts so sessions last longer before compaction. It only reports unless you opt in to the preview."
+  }
+}

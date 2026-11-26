@@ -1,0 +1,192 @@
+---
+/* codeArbiter as a machine: the static reading path.
+
+   Every part, lane, tour and failure scenario renders here as plain HTML from
+   the validated model (scripts/machine/machine-model.ts), so search, screen
+   readers and readers without JavaScript get the complete explanation. Gate
+   messages are the hook sources' own text, resolved at build time.
+   `section="trace"` renders the one traced example used near the top of the page. */
+import { loadMachine } from '../../scripts/machine/machine-model';
+import { frameSvg, renderText, spellCommand } from '../../scripts/machine/machine-render';
+import '../styles/machine.css';
+
+interface Props {
+  section?: 'catalog' | 'trace';
+}
+const { section = 'catalog' } = Astro.props;
+
+const base = import.meta.env.BASE_URL.replace(/\/$/, '');
+const machine = loadMachine();
+const claude = machine.hosts.find((host) => host.name === 'claude')!;
+const t = (text: string) => renderText(text, { base, form: claude.commandForm });
+const shapeOf = (kind: string) => machine.key.kindFrames[kind] ?? 'square';
+const kindLabel = (kind: string) => machine.key.frames.find((frame) => frame.shape === shapeOf(kind))?.name ?? kind;
+const partLink = (id: string) => `#part-${id}`;
+const nameOf = (id: string) => {
+  const part = machine.parts[id];
+  return part.cmd ? spellCommand(claude.commandForm, part.cmd) : part.name;
+};
+const sourceUrl = (path: string) => `https://github.com/arbiterForge/codeArbiter/blob/main/${path}`;
+const zones = Object.entries(machine.layout.zones).filter(([id]) => id !== 'lanes');
+const partsIn = (zone: string) => Object.entries(machine.parts).filter(([, part]) => part.zone === zone);
+const scenarios = machine.faults.filter((fault) => !fault.ref);
+
+const gateMessage = (tag: string, backstop: boolean) =>
+  machine.gates[tag]?.sites.find((site) => site.backstop === backstop && !site.message.includes('could not be determined'))?.message ?? '';
+const trace = [
+  { at: 'autoregress', title: 'The model writes the call', text: 'Asked to publish a branch whose history was rewritten, the model writes `bash: git push --force` one token at a time. It is a likely continuation, not a checked decision.' },
+  { at: 'tool-parser', title: 'The harness reads it as a tool call', text: 'The agent harness parses the text into a Bash tool call and routes it to the shell tool. Nothing has run yet.' },
+  { at: 'guard-bash', title: 'The shell gate checks it first', text: '`pre-bash.py` inspects the command before the shell sees it, recognizes a force-push, and exits with status 2. The command never runs.', output: `BLOCKED [H-02]: ${gateMessage('H-02', false)}` },
+  { at: 'audit-ledger', title: 'The block is recorded', text: 'Before refusing, the hook appends a BLOCK line to `.codearbiter/gate-events.log`, an append-only file in the repository.' },
+  { at: 'tool-results', title: 'The model is told why', text: 'The refusal returns to the model as the tool result, so its next tokens can take a different route, such as asking you or opening a pull request.' },
+  { at: 'git-hooks', title: 'A second check outside the agent', text: 'The same push typed in a terminal never reaches `pre-bash.py`. The git `pre-push` hook (`git-enforce.py`) refuses it with its own message. That backstop does not write to `gate-events.log`.', output: `BLOCKED [H-02]: ${gateMessage('H-02', true)}` },
+];
+---
+
+{section === 'trace' ? (
+  <ol class="ca-machine__trace">
+    {trace.map((step) => (
+      <li>
+        <p><strong>{step.title}.</strong> <span set:html={t(step.text)} /> <a class="ca-machine__at" href={partLink(step.at)}>{machine.parts[step.at].name}</a></p>
+        {step.output && <pre class="ca-machine__output"><code>{step.output}</code></pre>}
+      </li>
+    ))}
+  </ol>
+) : (
+  <div class="ca-machine" data-machine>
+    <nav class="ca-machine__index" aria-label="Machine sections">
+      <a href="#machine-key">How to read the parts</a>
+      {zones.map(([id, zone]) => <a href={`#zone-${id}`}>{zone.name}</a>)}
+      <a href="#zone-lanes">{machine.layout.zones.lanes.name}</a>
+      <a href="#machine-tours">Guided tours</a>
+      <a href="#machine-scenarios">What can go wrong</a>
+    </nav>
+
+    <section id="machine-key" class="ca-machine__section" aria-labelledby="machine-key-title">
+      <h2 id="machine-key-title">How to read the parts</h2>
+      <p>Like map symbols, each frame shape means one kind of part wherever it appears. Every fact about the plugin on this page was checked against codeArbiter {machine.version} when the page was built.</p>
+      <ul class="ca-machine__key">
+        {machine.key.frames.map((frame) => (
+          <li><span class="ca-machine__glyph" set:html={frameSvg(frame.shape)} /><span><strong>{frame.name}</strong> {frame.meaning}</span></li>
+        ))}
+      </ul>
+    </section>
+
+    {zones.map(([zoneId, zone]) => (
+      <section id={`zone-${zoneId}`} class="ca-machine__section" aria-labelledby={`zone-${zoneId}-title`}>
+        <h2 id={`zone-${zoneId}-title`}>{zone.name}</h2>
+        <p class="ca-machine__blurb">{zone.blurb}</p>
+        <div class="ca-machine__parts">
+          {partsIn(zoneId).map(([id, part]) => (
+            <article id={`part-${id}`} class="ca-machine__part" data-kind={part.kind}>
+              <header class="ca-machine__head">
+                <span class="ca-machine__glyph" set:html={frameSvg(shapeOf(part.kind))} />
+                <h3>{part.name}</h3>
+                <span class="ca-machine__kind">{kindLabel(part.kind)}</span>
+                {part.preview && <span class="ca-machine__kind ca-machine__kind--preview">Feature Forge preview</span>}
+              </header>
+              <p class="ca-machine__tagline" set:html={t(part.tagline)} />
+              <p set:html={t(part.simple)} />
+              <details class="ca-machine__more">
+                <summary>How it works<span class="sr-only">: {part.name}</span></summary>
+                <p set:html={t(part.what)} />
+                {part.how && <ol>{part.how.map((step) => <li set:html={t(step)} />)}</ol>}
+                {part.watch && <p><strong>Watch for.</strong> <span set:html={t(part.watch)} /></p>}
+                {part.hooks?.length ? (
+                  <p class="ca-machine__refs"><strong>Gates.</strong> {part.hooks.map((tag) => <a href={`${base}/reference/hooks-gates/#${tag.toLowerCase()}`}>{tag}</a>)}</p>
+                ) : null}
+                {part.source?.length ? (
+                  <p class="ca-machine__refs"><strong>Source.</strong> {part.source.map((cited) => {
+                    const path = cited.replace(/\s+\(.*\)$/, '');
+                    return path.startsWith('.codearbiter/') ? <code>{cited}</code> : <a href={sourceUrl(path)}><code>{cited}</code></a>;
+                  })}</p>
+                ) : null}
+                {part.related.length ? (
+                  <p class="ca-machine__refs"><strong>Related.</strong> {part.related.map((other) => <a href={partLink(other)}>{nameOf(other)}</a>)}</p>
+                ) : null}
+              </details>
+            </article>
+          ))}
+        </div>
+      </section>
+    ))}
+
+    <section id="zone-lanes" class="ca-machine__section" aria-labelledby="zone-lanes-title">
+      <h2 id="zone-lanes-title">{machine.layout.zones.lanes.name}</h2>
+      <p class="ca-machine__blurb">{machine.layout.zones.lanes.blurb}</p>
+      {machine.layout.laneOrder.map(([familyId, commands]) => (
+        <div class="ca-machine__family" id={`family-${familyId}`}>
+          <h3>{machine.layout.families[familyId].name}</h3>
+          <p class="ca-machine__blurb">{machine.layout.families[familyId].blurb}</p>
+          <div class="ca-machine__parts">
+            {commands.map((cmd) => {
+              const id = `ca-${cmd}`;
+              const lane = machine.parts[id];
+              return (
+                <article id={`part-${id}`} class="ca-machine__part" data-kind="Lane">
+                  <header class="ca-machine__head">
+                    <span class="ca-machine__glyph" set:html={frameSvg(shapeOf(lane.kind))} />
+                    <h4><code>{spellCommand(claude.commandForm, cmd)}</code></h4>
+                    <span class="ca-machine__kind">{lane.tier}</span>
+                    {lane.preview && <span class="ca-machine__kind ca-machine__kind--preview">Feature Forge preview</span>}
+                  </header>
+                  <p class="ca-machine__tagline" set:html={t(lane.tagline)} />
+                  <dl class="ca-machine__hosts">
+                    {machine.hosts.map((host) => (
+                      <div><dt>{host.label}</dt><dd>{host.omits.includes(cmd) ? 'Not available' : <code>{spellCommand(host.commandForm, cmd, lane.args)}</code>}</dd></div>
+                    ))}
+                  </dl>
+                  <details class="ca-machine__more">
+                    <summary>Route and stops<span class="sr-only">: {spellCommand(claude.commandForm, cmd)}</span></summary>
+                    <p set:html={t(lane.what)} />
+                    {lane.route?.length ? (
+                      <ol class="ca-machine__route">
+                        {lane.route.map(([at, state, text]) => (
+                          <li><a href={partLink(at)}>{nameOf(at)}</a> <span class="ca-machine__state" data-state={state}>{machine.layout.states[state].label}</span> <span set:html={t(text)} /></li>
+                        ))}
+                      </ol>
+                    ) : null}
+                    {lane.stops && <p><strong>Where it stops.</strong> <span set:html={t(lane.stops)} /></p>}
+                    {lane.produces && <p><strong>What it leaves behind.</strong> <span set:html={t(lane.produces)} /></p>}
+                    <p class="ca-machine__refs"><a href={`${base}/reference/commands/${cmd}/`}>Command reference for <code>{spellCommand(claude.commandForm, cmd)}</code></a></p>
+                  </details>
+                </article>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </section>
+
+    <section id="machine-tours" class="ca-machine__section" aria-labelledby="machine-tours-title">
+      <h2 id="machine-tours-title">Guided tours</h2>
+      <p class="ca-machine__blurb">Each tour follows one idea through the parts above, stop by stop.</p>
+      {machine.tours.map((tour) => (
+        <details id={tour.id} class="ca-machine__tour">
+          <summary><strong>{tour.title}</strong> <span>{tour.summary}</span></summary>
+          <ol>
+            {tour.steps.map((step) => (
+              <li><strong>{step.title}.</strong> <span set:html={t(step.text)} />{step.at && <> <a class="ca-machine__at" href={partLink(step.at)}>{nameOf(step.at)}</a></>}</li>
+            ))}
+          </ol>
+        </details>
+      ))}
+    </section>
+
+    <section id="machine-scenarios" class="ca-machine__section" aria-labelledby="machine-scenarios-title">
+      <h2 id="machine-scenarios-title">What can go wrong</h2>
+      <p class="ca-machine__blurb">Realistic mistakes an AI agent can make, and the part that catches each one.</p>
+      {scenarios.map((fault) => (
+        <details id={fault.id} class="ca-machine__tour">
+          <summary><strong>{fault.title}</strong>{fault.catcher && <span> Caught by {nameOf(fault.catcher)}{fault.outcome ? `: ${fault.outcome.toLowerCase()}` : ''}.</span>}</summary>
+          {fault.why && <p set:html={t(fault.why)} />}
+          <ol>
+            {(fault.steps ?? []).map((step) => (
+              <li><strong>{step.title}.</strong> <span set:html={t(step.text)} />{step.at && <> <a class="ca-machine__at" href={partLink(step.at)}>{nameOf(step.at)}</a></>}</li>
+            ))}
+          </ol>
+        </details>
+      ))}
+    </section>
+  </div>
+)}

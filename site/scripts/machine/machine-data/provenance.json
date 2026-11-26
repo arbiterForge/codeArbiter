@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "model": "codeArbiter as a machine",
+  "authoredAgainst": { "release": "ca 3.8.7", "commit": "33abc347720879bade0494ef0a68ef0d0319236a" },
+  "reviewedAt": { "commit": "fd44d5b6d18d16016aa82dbb1df86e8faee962cc", "date": "2026-11-26" },
+  "checkedOnEveryBuild": [
+    "every hook gate ID the machine names exists in plugins/ca/hooks, with the blocking or reminder kind the machine shows",
+    "every command, lane and lane family matches core/surface/command-routes.json, and every core, advanced and internal command has a lane",
+    "every host spelling and host omission comes from core/hosts.json",
+    "every repository path a part cites exists",
+    "the behavior claims in claims.json still hold in the hook sources"
+  ],
+  "illustrative": [
+    "token splits, token IDs, probabilities and attention weights",
+    "the example session, which is scripted and slowed down",
+    "the Guard lab, a simplified re-implementation of a few pre-bash.py and git-enforce.py rules"
+  ]
+}

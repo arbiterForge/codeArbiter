@@ -1,0 +1,86 @@
+---
+title: codeArbiter as a Machine
+description: "See how a language model, the agent harness around it, and codeArbiter's hooks, lanes and records fit together as one machine, part by part."
+tableOfContents: false
+journey:
+  level: Foundation
+  time: "15 min to read the trace; explore the parts as needed"
+  outcome: "Explain where a model's text becomes an action, which part checks that action before it runs, and which decisions stay with you."
+  prerequisites: []
+  proof: "You can trace one blocked command from the model's tokens to the gate that refused it and the record it left."
+---
+
+import CodeArbiterMachine from '../../../components/CodeArbiterMachine.astro';
+import LimitsAndEvidence from '../../../components/LimitsAndEvidence.astro';
+
+A coding agent is a language model inside a loop that can run tools. The model writes the most
+likely next text, and some of that text is a request to act: run a command, edit a file, push a
+branch. A likely request is not a checked one, so something outside the model has to decide what is
+allowed to run. In codeArbiter, that decision belongs to plain programs called hooks, to lanes that
+give each kind of work its own route, and to you.
+
+## The mental model
+
+This page lays the whole system out as one machine. Every part is either a concept from AI
+inference or a codeArbiter component, and every lane is one command's route.
+
+- **The model** sits at the center. It turns text into tokens, predicts a probability for every
+  possible next token, and samples one. Repeating that writes every sentence and every tool call.
+- **The agent harness** (Claude Code, Codex CLI or Pi) reads the model's output, recognizes tool
+  calls, and runs the tools it allows.
+- **The guard ring** is codeArbiter's enforcement core. Its hooks check each tool call before it
+  runs and refuse the ones that break a hard rule, the same way every time.
+- **Routing, skills and agents** decide which lane owns a request and which specialist helpers it
+  calls in.
+- **The record** is what outlives the session: plans, decisions, the audit log and evidence.
+- **You** start the work and keep the decisions the machine cannot make: requirements,
+  architecture, merges and releases.
+
+## One command, traced
+
+Here is what happens when the model asks to force-push. The block messages below are the hook
+sources' own text, read when this page was built.
+
+<CodeArbiterMachine section="trace" />
+
+Two different checks stopped the same push, and only the first one wrote to the audit log. That
+difference matters when you later ask the record what happened: `gate-events.log` holds what the
+hooks refused inside an agent session, not every refusal git ever made.
+
+## What this changes in daily use
+
+- A `BLOCKED [H-xx]` line names its gate. Look it up in [Hook Gates](/reference/hooks-gates/) to
+  see every message that gate can print and the source line that prints it.
+- A `REMINDER [H-xx]` line is advisory: the call goes ahead, and the reminder is not written to
+  `gate-events.log`. Some reminders come before a blocking gate, such as H-10 after a write that
+  looks like a secret and H-10b when that change is committed.
+- The model's text is a sample, so the same request can produce a different plan. The gates
+  respond to the action that reaches them, whatever wording produced it.
+- When a lane stops and asks you, the question is the product working as designed. An answer from
+  you is the authorization the model cannot give itself.
+
+<LimitsAndEvidence>
+Each part's explanation is curated, but every fact this page states about the shipped plugin is
+checked against the plugin sources whenever the site is built: gate IDs and whether they block or
+remind, the block messages, command names, lanes and their families, host spellings, and the
+repository paths each part cites. Four behavior statements (which calls write to
+`gate-events.log`, and when the rules are injected again) are checked against the specific hook
+functions they describe. A disagreement fails the build. See `site/MACHINE.md` for the checks and
+how to update the model.
+
+The parts that describe AI inference explain general mechanisms. Token splits, probabilities and
+attention patterns used as examples are illustrative, not measurements of a particular model.
+</LimitsAndEvidence>
+
+## Explore the parts
+
+Open any part for how it works, the gates it enforces, the source it comes from and the parts it
+works with. The lanes show each command's spelling on every host and the stops along its route.
+
+<CodeArbiterMachine />
+
+## Next
+
+- Follow one request end to end in [Complete One Feature](/guides/first-feature/).
+- Compare how other lanes reach their endpoints in [Compare Workflow Routes](/concepts/workflow-routes/).
+- Read every gate a hook can print in [Hook Gates](/reference/hooks-gates/).

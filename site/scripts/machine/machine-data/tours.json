@@ -1,0 +1,654 @@
+[
+  {
+    "id": "tour-overview",
+    "title": "Start here: the whole machine",
+    "summary": "Nine stops from the model at the center to you at the console.",
+    "steps": [
+      {
+        "view": "overview",
+        "title": "One model, a lot of machinery",
+        "text": "At the center is a language model. It predicts text one token at a time, and each output is a sample from a probability distribution. Everything around it exists to turn those samples into safe, verified changes to a real repository."
+      },
+      {
+        "at": "transformer",
+        "view": "model",
+        "title": "The model",
+        "text": "The tall column is the model: tokenizer at the base, transformer layers in the middle, sampler at the top. It is capable and it is probabilistic. It knows nothing beyond what is in its context window."
+      },
+      {
+        "at": "agent-loop",
+        "view": "harness",
+        "title": "The agent loop",
+        "text": "The ring around it is the harness, such as Claude Code. It feeds the model context, runs the tools the model asks for and feeds the results back. This loop is what lets a model act."
+      },
+      {
+        "at": "guard-ring",
+        "view": "guards",
+        "state": "gate",
+        "title": "The guard ring",
+        "text": "codeArbiter’s enforcement core sits between the loop and everything it can touch. Every shell command, write and edit passes a gate here first. The guards are plain programs; the model cannot talk its way past them."
+      },
+      {
+        "at": "router",
+        "title": "Routing",
+        "text": "On top of the core, the router picks one lane for your request. Only that lane’s instructions load into the context.",
+        "fx": "route:ca-fix"
+      },
+      {
+        "view": "lanes",
+        "title": "The lanes",
+        "text": "The outer ring holds every codeArbiter lane, grouped as Initialize, Change, Ship, Review, Decide and Operate. Each lane defines the evidence it must produce, the reviewers it dispatches and the conditions that stop it. Select a lane and press Run to watch its route."
+      },
+      {
+        "at": "vault",
+        "title": "The record",
+        "text": "Behind the machine is `.codearbiter/`, the project record. Decisions, plans, questions and append-only logs live in your repository, so they outlast any session and any host."
+      },
+      {
+        "at": "repo",
+        "title": "Your repository",
+        "text": "To the right is what all of this protects: the working tree, branches, the protected default branch and hosted CI."
+      },
+      {
+        "at": "operator",
+        "state": "ask",
+        "title": "You",
+        "text": "At the front is you. You start the work, answer the questions only you can answer and turn the key on anything irreversible. You decide; codeArbiter enforces."
+      }
+    ]
+  },
+  {
+    "id": "tour-inference",
+    "title": "Inside the model: one token at a time",
+    "summary": "How a prompt becomes a sampled next token, and why that matters for agents.",
+    "steps": [
+      {
+        "at": "prompt-assembly",
+        "fx": "input:Fix the failing login test",
+        "title": "The prompt arrives",
+        "text": "Every turn, the harness sends the model one long text: instructions, tool definitions, the conversation and tool results. Before anything else, that text is cut into tokens."
+      },
+      {
+        "at": "tokenizer",
+        "fx": "input:getUserAuthenticationToken",
+        "title": "Tokens",
+        "text": "A token is a common fragment such as “test”, “ing” or part of a long identifier. Each one has an ID in a fixed vocabulary. Limits and costs are counted in tokens, not words."
+      },
+      {
+        "at": "embedding",
+        "fx": "input:the tests pass",
+        "title": "From IDs to vectors",
+        "text": "Each ID becomes a long vector of learned numbers. From here on, the model works with numbers, not text. Word order is tracked too; most current models do it inside attention."
+      },
+      {
+        "at": "transformer",
+        "fx": "pass",
+        "title": "Up through the layers",
+        "text": "The vectors rise through dozens of identical layers. Each layer reads the running representation, adds its contribution and passes it up."
+      },
+      {
+        "at": "attention",
+        "fx": "gen:The closing brace matches its opener.",
+        "title": "Attention",
+        "text": "Inside each layer, attention heads let each position pull information from itself and earlier ones: a closing brace finds its opener, a call finds its definition. This is how context shapes the next token."
+      },
+      {
+        "at": "kv-cache",
+        "fx": "gen:I’ll run the tests first.",
+        "title": "Caching the past",
+        "text": "Keys and values for earlier tokens are kept in the KV cache, so each new token is incremental work. Reading the prompt (prefill) runs in parallel; writing the reply (decode) runs one token at a time."
+      },
+      {
+        "at": "logits",
+        "fx": "dist",
+        "title": "A distribution, not an answer",
+        "text": "At the top, the model scores every token in its vocabulary. After a softmax, the scores are probabilities. This distribution is the model’s real output."
+      },
+      {
+        "at": "sampler",
+        "fx": "spin",
+        "title": "Sampling",
+        "text": "The sampler draws one token. Temperature and top-p shape how adventurous the draw is. The same prompt can produce a different result on another run."
+      },
+      {
+        "at": "autoregress",
+        "fx": "gen:The tests pass.",
+        "title": "Append and repeat",
+        "text": "The chosen token is appended and the whole process runs again for the next one. Replies, plans and tool calls are all built this way."
+      },
+      {
+        "at": "reasoning",
+        "title": "Thinking is tokens too",
+        "text": "Reasoning models write intermediate reasoning before they answer. It buys computation for hard steps. It is generated text, not evidence that anything was checked."
+      },
+      {
+        "at": "weights",
+        "title": "Nothing is learned here",
+        "text": "The weights are frozen. The model does not learn from your session. Whatever it should know next time must be written down and put back into the context."
+      }
+    ]
+  },
+  {
+    "id": "tour-agent-loop",
+    "title": "The agent loop",
+    "summary": "How a text predictor becomes something that reads, runs and edits.",
+    "steps": [
+      {
+        "at": "operator",
+        "fx": "say:The statusline shows an old version",
+        "title": "A request",
+        "text": "You ask: “the statusline shows an old version after updates”. The harness adds your message to the conversation."
+      },
+      {
+        "at": "prompt-assembly",
+        "title": "Context assembled",
+        "text": "The harness builds the request: system prompt, tool definitions, project instructions and the conversation. Hooks may add to it here."
+      },
+      {
+        "at": "sampler",
+        "fx": "gen:read: scripts/statusline.py",
+        "title": "The model chooses to act",
+        "text": "Instead of answering in prose, the model decides to look first. It emits a structured tool call: read this file."
+      },
+      {
+        "at": "tool-parser",
+        "fx": "call:read;allow;;scripts/statusline.py",
+        "title": "Detected",
+        "text": "The harness sees that the reply stops for tool use, validates the arguments and routes the call."
+      },
+      {
+        "at": "permissions",
+        "state": "gate",
+        "title": "Permitted?",
+        "text": "The host’s permission rules decide whether the call may run without asking you. Hooks registered for this event run now as well."
+      },
+      {
+        "at": "tool-read",
+        "title": "Observe",
+        "text": "The read tool returns the file. Most of an agent’s calls look like this: observing before acting."
+      },
+      {
+        "at": "tool-results",
+        "fx": "ring:VERSION = \"3.8.6\" is cached",
+        "title": "Back into context",
+        "text": "The result is appended to the context and the model runs again, now knowing what the file says."
+      },
+      {
+        "at": "tool-bash",
+        "fx": "call:bash;allow;;npm test",
+        "title": "Act, then check",
+        "text": "Next it might run the tests, edit a file and run the tests again. Each step is one trip around the loop."
+      },
+      {
+        "at": "subagents",
+        "title": "Delegate",
+        "text": "For a focused job, the agent can start a subagent with a fresh context window. It comes back with a report, not its whole transcript."
+      },
+      {
+        "at": "compaction",
+        "fx": "compact",
+        "title": "When the tank fills",
+        "text": "After many trips the window fills, and the harness compacts older turns into a summary. Details can be lost. This is a real limit of long agent sessions."
+      }
+    ]
+  },
+  {
+    "id": "tour-why-gates",
+    "title": "Why a probabilistic engine needs gates",
+    "summary": "The case for enforcement that does not depend on the model listening.",
+    "steps": [
+      {
+        "at": "sampler",
+        "fx": "gen:git push --force",
+        "title": "Samples, not guarantees",
+        "text": "Every action an agent takes starts as sampled text. Most samples are good. Some are confidently wrong: a force-push to get past a rejected push, “tests pass” without running them, a guessed requirement, a token pasted into a config file."
+      },
+      {
+        "at": "persona-injector",
+        "title": "Instructions help",
+        "text": "codeArbiter injects its operating rules into the context, and again after every mode change or compaction. That makes good behavior much more likely. It cannot make it certain."
+      },
+      {
+        "at": "guard-ring",
+        "state": "gate",
+        "title": "Guards decide",
+        "text": "So the hard rules are also enforced by guards: separate programs that inspect each command or write before it runs. They do not read the model’s reasoning. They read the action."
+      },
+      {
+        "at": "activation",
+        "state": "gate",
+        "title": "Only where you opt in",
+        "text": "Nothing acts until a repository opts in with `arbiter: enabled` in `.codearbiter/CONTEXT.md`. Once it is on, the agent cannot switch it off from inside the session."
+      },
+      {
+        "at": "guard-bash",
+        "state": "block",
+        "fx": "call:bash;block;H-02;git push --force",
+        "title": "A block is final",
+        "text": "When a command breaks a hard rule, the guard exits with code 2 and a named reason. The command never runs. The model sees the reason and must take a sanctioned path."
+      },
+      {
+        "at": "git-hooks",
+        "state": "gate",
+        "fx": "guard:g=git; $g push -f origin feature/login",
+        "title": "Defense in depth",
+        "text": "A clever spelling could slip past a string check, so git’s own pre-commit and pre-push hooks run the same checks at the git operation. Skipping them with `--no-verify` is itself blocked."
+      },
+      {
+        "at": "fail-closed",
+        "state": "block",
+        "title": "Fail closed",
+        "text": "If a guard crashes, the action is blocked. A broken safety check never becomes a silent pass."
+      },
+      {
+        "at": "audit-ledger",
+        "state": "pass",
+        "fx": "print",
+        "title": "And a record",
+        "text": "Overrides, mode changes and gate events go to append-only logs. After the session, anyone can see what was allowed, what was blocked and who decided."
+      }
+    ]
+  },
+  {
+    "id": "tour-force-push",
+    "title": "Caught: a force-push",
+    "summary": "Six steps through one real hard-rule block.",
+    "steps": [
+      {
+        "at": "tool-bash",
+        "fx": "gen:bash: git push --force",
+        "title": "The setup",
+        "text": "A push was rejected because the remote moved on. The model’s most probable next move is to force it, and it emits a shell call: `git push --force`."
+      },
+      {
+        "at": "tool-parser",
+        "title": "The call heads out",
+        "text": "The harness parses the call and sends it toward the shell. The host’s own permission rules may well allow `git push`."
+      },
+      {
+        "at": "guard-bash",
+        "state": "block",
+        "fx": "call:bash;block;H-02;git push --force",
+        "title": "BLOCKED [H-02]",
+        "text": "`pre-bash.py` matches a force-push spelling and exits with code 2. The command is never executed, and nothing reaches the remote."
+      },
+      {
+        "at": "tool-results",
+        "fx": "ring:BLOCKED [H-02]: Force-push is prohibited",
+        "title": "The model is told why",
+        "text": "The block message comes back as the tool result. The model now knows force-push is a hard rule and has to find another route."
+      },
+      {
+        "at": "main-vault",
+        "state": "pass",
+        "title": "What was protected",
+        "text": "A force-push rewrites history other people may already have pulled. The protected branch, and everyone’s clones of it, are untouched."
+      },
+      {
+        "at": "ca-pr",
+        "state": "pass",
+        "title": "The sanctioned path",
+        "text": "Integrate the remote changes on the feature branch, push normally and update the pull request. If a block ever looks wrong, it is diagnosed as a guard defect, not bypassed."
+      }
+    ]
+  },
+  {
+    "id": "tour-fix",
+    "title": "A fix, end to end",
+    "summary": "From a bug report to a merged pull request, gate by gate.",
+    "steps": [
+      {
+        "at": "operator",
+        "title": "Report the bug",
+        "text": "You run {{fix}} “statusline keeps running the old version after an update”, or say the same thing in plain language."
+      },
+      {
+        "at": "router",
+        "fx": "route:ca-fix",
+        "title": "Routed",
+        "text": "With the rules in context, the router selects the fix lane: regression test first, minimal fix, focused proof, full verification."
+      },
+      {
+        "at": "ca-fix",
+        "title": "Confirm the defect",
+        "text": "A fix needs a confirmed defect: a current reproduction or supported causal evidence. If the cause is unknown, a bounded debug step can diagnose it first."
+      },
+      {
+        "at": "skill-tdd",
+        "state": "fail",
+        "title": "Red first",
+        "text": "A named regression test is written and observed failing for the right reason. An import error or an unrelated failure does not count."
+      },
+      {
+        "at": "authors",
+        "title": "Smallest fix",
+        "text": "A fresh author agent receives bounded context (the task, its paths, the constraints, the evidence) and makes the minimal change."
+      },
+      {
+        "at": "guard-write",
+        "state": "pass",
+        "fx": "open:guard-write",
+        "title": "Through the write gate",
+        "text": "Each edit passes the write gate. Nothing protected is touched, so the gate opens."
+      },
+      {
+        "at": "skill-tdd",
+        "state": "pass",
+        "title": "Green, then proof",
+        "text": "The regression passes, the suite stays green, coverage meets the stage threshold and lint is clean. The evidence goes to the commit owner."
+      },
+      {
+        "at": "ca-commit",
+        "state": "gate",
+        "title": "The commit gate",
+        "text": "You ask for a commit. Nine phases run: permission, branch, classification, verification, behavioral proof, diff review, selective stage, message, commit."
+      },
+      {
+        "at": "guard-bash",
+        "state": "pass",
+        "fx": "open:guard-bash",
+        "title": "Named paths only",
+        "text": "`git add` names each file; a wildcard would be blocked (H-03). The commit lands on the feature branch."
+      },
+      {
+        "at": "ca-pr",
+        "title": "Pull request",
+        "text": "{{pr}} runs the applicable reviewers on the exact diff, clears blockers and opens the PR."
+      },
+      {
+        "at": "remote-ci",
+        "state": "pass",
+        "title": "Hosted CI",
+        "text": "CI runs on the exact head. Green is a prerequisite for merging, not permission."
+      },
+      {
+        "at": "approval-key",
+        "state": "ask",
+        "title": "Your key",
+        "text": "The merge happens only if you choose it. The record keeps the evidence of every step."
+      }
+    ]
+  },
+  {
+    "id": "tour-feature",
+    "title": "A feature, full lane",
+    "summary": "Specification, plan, test-first batches and independent review.",
+    "steps": [
+      {
+        "at": "operator",
+        "title": "Ask for new behavior",
+        "text": "You run {{feature}} “export the audit packet as JSON”."
+      },
+      {
+        "at": "ca-feature",
+        "fx": "route:ca-feature",
+        "title": "Small or full",
+        "text": "A small change confirms one to three criteria inline and goes straight to test-first work. This one is bigger, so it takes the full lane."
+      },
+      {
+        "at": "spec-plan",
+        "title": "Specification",
+        "text": "`brainstorming` shapes the outcome into acceptance criteria. Anything unknown is not guessed."
+      },
+      {
+        "at": "confirm",
+        "state": "ask",
+        "title": "[CONFIRM-03]",
+        "text": "Should the export include override reasons? Only you can answer. Dependent work waits, and your answer is recorded."
+      },
+      {
+        "at": "specs-plans",
+        "state": "pass",
+        "title": "Approved and stored",
+        "text": "You approve the spec, then the plan. Both are stored in `.codearbiter/`, so the intent survives compaction and new sessions."
+      },
+      {
+        "at": "skill-tdd",
+        "state": "fail",
+        "title": "Red first, per task",
+        "text": "Each task starts with failing tests for its criterion."
+      },
+      {
+        "at": "authors",
+        "title": "Fresh authors",
+        "text": "A fresh author per task builds against its own bounded context."
+      },
+      {
+        "at": "advisory-lamps",
+        "state": "gate",
+        "title": "A reminder lights",
+        "text": "One task adds a dependency. H-07 lights: the dependency review is now owed before the commit."
+      },
+      {
+        "at": "reviewer-fleet",
+        "title": "Independent review",
+        "text": "After per-task proof and fresh verification, independent reviewers check the combined scope once."
+      },
+      {
+        "at": "receipts",
+        "state": "pass",
+        "title": "Current acceptance",
+        "text": "Acceptance is bound to the exact current head. A stale acceptance blocks before anything is staged."
+      },
+      {
+        "at": "ca-commit",
+        "state": "gate",
+        "title": "Commit",
+        "text": "The nine-phase commit gate runs."
+      },
+      {
+        "at": "ca-pr",
+        "state": "pass",
+        "title": "Your PR outcome",
+        "text": "The lane ends with the pull-request outcome you select."
+      }
+    ]
+  },
+  {
+    "id": "tour-review",
+    "title": "The review fleet",
+    "summary": "Independent reviewers, chosen by path, funneled into one verdict.",
+    "steps": [
+      {
+        "at": "ca-review",
+        "fx": "route:ca-review",
+        "title": "Review the diff",
+        "text": "{{review}} runs over the current diff, or over a bounded path."
+      },
+      {
+        "at": "reviewer-fleet",
+        "title": "Chosen by path",
+        "text": "A path matrix decides who reviews. Auth, middleware or CI paths call security; a lockfile calls dependency; a migration calls migration; any source change calls coverage."
+      },
+      {
+        "at": "subagents",
+        "title": "Independent units",
+        "text": "Each reviewer runs as its own read-only unit with its own bounded context, not the author’s notes. Independence is what makes a review worth having."
+      },
+      {
+        "at": "triage",
+        "state": "gate",
+        "title": "Triage",
+        "text": "`finding-triage` classifies each finding by severity and by whether it blocks this change. Out-of-scope items are set aside as `[NEEDS-TRIAGE]`, not fixed in place."
+      },
+      {
+        "at": "triage",
+        "state": "block",
+        "title": "Verdict",
+        "text": "`verdict-aggregator` composes one verdict. A CRITICAL or HIGH finding blocks the change until it is resolved."
+      },
+      {
+        "at": "receipts",
+        "title": "No predicted reviews",
+        "text": "A predicted fleet or a missing report is not a review. Only completed results count."
+      },
+      {
+        "at": "ca-checkpoint",
+        "title": "Periodic sweeps",
+        "text": "{{checkpoint}} runs the same fleet over the whole codebase, adds the architecture-drift reviewer and writes a dated report."
+      },
+      {
+        "at": "ca-tribunal",
+        "title": "The deep audit",
+        "text": "{{tribunal}} is the opt-in deep audit: many lenses, cost acknowledged first, findings persisted and serious claims verified independently. It is never a routine gate."
+      }
+    ]
+  },
+  {
+    "id": "tour-sprint",
+    "title": "Autonomy with a record",
+    "summary": "What /ca:sprint may decide on its own, and what it never may.",
+    "steps": [
+      {
+        "at": "ca-sprint",
+        "fx": "route:ca-sprint",
+        "title": "Hand over the keyboard, not the decisions",
+        "text": "{{sprint}} executes an approved plan without pausing between batches."
+      },
+      {
+        "at": "spec-plan",
+        "state": "ask",
+        "title": "One real approval",
+        "text": "You approve the spec and plan pair. The agent never issues that approval to itself."
+      },
+      {
+        "at": "smarts",
+        "state": "gate",
+        "title": "Delegated method choices",
+        "text": "Inside the agreed scope, SMARTS scores method choices on six lenses, after first checking your recorded intent."
+      },
+      {
+        "at": "audit-ledger",
+        "title": "Every call is logged",
+        "text": "Each delegated decision is appended to `sprint-log.md` with its reasoning and a confidence flag."
+      },
+      {
+        "at": "subagents",
+        "title": "Parallel work",
+        "text": "Tasks run in real dependency order and are delegated where useful. Checks are recorded separately from “done”."
+      },
+      {
+        "at": "guard-bash",
+        "state": "stop",
+        "title": "Real stops remain",
+        "text": "Security boundaries, irreversible operations, gate bypasses, merges and unresolved product decisions still stop the sprint and wait for you."
+      },
+      {
+        "at": "farm",
+        "state": "preview",
+        "title": "Optional farm",
+        "text": "With `--farm` (preview), tasks can go to an endpoint you configure, byte-capped and secret-redacted. Results return through the same gates."
+      },
+      {
+        "at": "ca-pr",
+        "state": "pass",
+        "title": "Open, not merged",
+        "text": "The sprint ends with an open PR and an honest summary of what actually ran. It does not merge on its own authority."
+      }
+    ]
+  },
+  {
+    "id": "tour-decisions",
+    "title": "Decisions belong to you",
+    "summary": "Questions, recommendations, ADRs, conflicts and the irreversible key.",
+    "steps": [
+      {
+        "at": "confirm",
+        "state": "ask",
+        "title": "Unknowns become questions",
+        "text": "When a fact or requirement is unknown, the agent writes a numbered `[CONFIRM-NN]` question instead of guessing."
+      },
+      {
+        "at": "router",
+        "title": "Ask once, fully",
+        "text": "When intent is probable but a material fact is missing, the orchestrator inspects the evidence and then asks once, with a recommendation and its strongest counterpoint."
+      },
+      {
+        "at": "smarts",
+        "state": "gate",
+        "title": "Recommendations, not rulings",
+        "text": "SMARTS produces a labeled recommendation: strong, moderate or tied. You still decide."
+      },
+      {
+        "at": "ca-adr",
+        "title": "Decisions are written down",
+        "text": "An architecture decision becomes a numbered ADR with your name on it. Only the adr lane can write one (H-11)."
+      },
+      {
+        "at": "adr-tablets",
+        "state": "pass",
+        "title": "Immutable history",
+        "text": "Accepted ADRs are never edited. A new decision supersedes the old one, so the history of why stays intact."
+      },
+      {
+        "at": "ca-conflict",
+        "state": "stop",
+        "title": "When rules contradict",
+        "text": "If rules, documents and code disagree, work stops and both sides are shown with the conflict hierarchy. Nothing is reconciled silently."
+      },
+      {
+        "at": "approval-key",
+        "state": "ask",
+        "title": "Irreversible actions",
+        "text": "Merges, deletions, releases and overrides always ask, even when the intent is obvious."
+      },
+      {
+        "at": "ca-override",
+        "state": "gate",
+        "title": "Exceptions are logged",
+        "text": "Where a rule permits an exception, {{override}} records who allowed it and why, in an append-only log."
+      }
+    ]
+  },
+  {
+    "id": "tour-memory",
+    "title": "Memory is the repository",
+    "summary": "Context windows, compaction, and why codeArbiter writes things down.",
+    "steps": [
+      {
+        "at": "weights",
+        "title": "The model forgets",
+        "text": "Weights are frozen, and the model knows only what is in its context window right now."
+      },
+      {
+        "at": "context-window",
+        "fx": "fill:0.94",
+        "title": "The window fills",
+        "text": "A long session fills the window with transcript, file contents and tool results. Attention is spread across all of it."
+      },
+      {
+        "at": "compaction",
+        "fx": "compact",
+        "title": "Compaction is lossy",
+        "text": "The harness summarizes older turns. Exact rules and decisions from early in the session can blur."
+      },
+      {
+        "at": "persona-injector",
+        "state": "pass",
+        "title": "The rules come back",
+        "text": "codeArbiter’s PreCompact hook bumps the compaction generation, so the next prompt re-injects the current mode’s rules in full."
+      },
+      {
+        "at": "router",
+        "title": "Load only what is needed",
+        "text": "Lane, skill and agent bodies load only when routed, which keeps the window for the work. A typical fix loads the rules, `tdd` and one author, not the whole framework."
+      },
+      {
+        "at": "vault",
+        "state": "pass",
+        "title": "Write it down",
+        "text": "Specs, plans, decisions, questions and logs live in `.codearbiter/`. A new session, or a different host, reads them rather than remembering."
+      },
+      {
+        "at": "hosts",
+        "title": "Same record, any host",
+        "text": "Claude Code, Codex CLI and Pi all read the same store. You can switch hosts without losing specs, plans, decisions or audit history."
+      },
+      {
+        "at": "receipts",
+        "title": "Read, not remembered",
+        "text": "A claim about now uses an instrument run now. Old test results and remembered reviews are not current evidence."
+      }
+    ]
+  }
+]
