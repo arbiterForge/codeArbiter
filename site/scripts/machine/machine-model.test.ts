@@ -6,6 +6,7 @@ import {
   loadMachine,
   readMachineData,
   readMachineSources,
+  siteGlossaryTerms,
   validateMachine,
   type MachineData,
   type MachineSources,
@@ -35,6 +36,22 @@ describe("the committed machine model", () => {
     expect(machine.gates["H-02"].sites.some((site) => site.message.startsWith("Force-push is prohibited"))).toBe(true);
     expect(machine.gates["H-10"].kind).toBe("remind");
     expect(machine.hosts.map((host) => host.name)).toEqual(["claude", "codex", "pi"]);
+  });
+});
+
+describe("the site glossary stays the reference for codeArbiter's terms", () => {
+  it("links each machine term the site glossary also defines, and only those", () => {
+    const machine = loadMachine();
+    const linked = machine.glossary.filter((entry) => entry.siteGlossary).map((entry) => [entry.term, entry.siteGlossary]);
+    expect(linked).toEqual(expect.arrayContaining([["Gate", "gate"], ["Lane", "lane"], ["Override", "override"], ["Hook", "hook"]]));
+    expect(machine.glossary.find((entry) => entry.term.startsWith("Token"))?.siteGlossary).toBeUndefined();
+  });
+
+  it("derives Starlight's anchors from the headings", () => {
+    expect(siteGlossaryTerms("## Arbiter (enabled flag)\n\ntext\n\n## CONFIRM-NN\n")).toEqual([
+      { term: "Arbiter (enabled flag)", anchor: "arbiter-enabled-flag" },
+      { term: "CONFIRM-NN", anchor: "confirm-nn" },
+    ]);
   });
 });
 

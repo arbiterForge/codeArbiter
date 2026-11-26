@@ -33,6 +33,7 @@ async function start(route: string, session: boolean): Promise<void> {
       const model = await response.json();
       if (stageOf() !== stage) return null; // the reader navigated away while it loaded
       return await mountMachine(stage, model, {
+        base: stage.dataset.machineBase ?? '',
         route,
         session,
         debug: new URLSearchParams(location.search).has('debug'),

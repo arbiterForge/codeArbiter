@@ -471,3 +471,4 @@ svg.fr{width:13px;height:13px;flex:none;fill:none;display:inline-block;vertical-
 .app.still .ks::before,.app.still .ks *,.app.still .live{animation-play-state:paused!important}
 @media (prefers-reduced-motion:reduce){*{transition:none!important}}
 @media (forced-colors:active){.lbl,.btn,.tb,.chip{border:1px solid CanvasText}}
+.gl-site{display:inline-block;margin-top:4px;font-size:13px}

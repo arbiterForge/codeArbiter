@@ -106,6 +106,18 @@ test.describe('codeArbiter as a machine: 3D viewer', () => {
     await expect(stage(page).locator('#drawer')).toBeHidden();
   });
 
+  test('links codeArbiter terms to the site glossary, which stays their reference', async ({ page }) => {
+    await page.goto(route);
+    await page.getByRole('button', { name: 'Start the 3D machine' }).click();
+    await running(page);
+    await stage(page).locator('#b-parts').click();
+    await stage(page).locator('#t-glossary').click();
+    const gate = stage(page).locator('.gi', { has: page.locator('dt', { hasText: /^Gate$/ }) });
+    await expect(gate.locator('a.gl-site')).toHaveAttribute('href', '/glossary/#gate');
+    const response = await page.request.get('/glossary/');
+    expect(await response.text()).toContain('id="gate"');
+  });
+
   test('has no axe violations in the viewer and its panels', async ({ page }) => {
     await page.goto(route);
     await page.getByRole('button', { name: 'Start the 3D machine' }).click();

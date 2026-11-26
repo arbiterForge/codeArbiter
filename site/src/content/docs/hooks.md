@@ -48,12 +48,16 @@ case in active work just to exercise a gate.
    registrations, or Pi's wrapper lifecycle.
 4. Follow the source link into the shared guard and read its fail posture. A blocking pre-tool hook,
    an advisory post-write reminder, and a SessionStart diagnostic do not make the same promise.
-5. Confirm the durable effect. A block or reminder may append to `gate-events.log`; an approved
+5. Confirm the durable effect. A block from the shared guard appends one line to `gate-events.log`
+   on a best-effort basis (a write failure never changes the block); a reminder is printed but not
+   written there; the git-level backstop's own blocks are not written there either; an approved
    override writes `overrides.log`; a read-context injection deliberately writes neither.
 
 For H-03, that trail is: doctor or a denied broad-stage attempt, the `H-03` Hook Gates entry,
 `pre-bash.py`, the host's shell registration, and an explicit-file staging remediation. If any
-link in that chain is missing, the result is not proven end to end.
+link in that chain is missing, the result is not proven end to end. For the same path drawn as one
+system, from the model's tokens to the gate and the audit line, see the traced force-push in
+[codeArbiter as a Machine](/concepts/machine/).
 
 For the exact message text emitted at each shared guard call site, see the generated
 [Hook Gates reference](/reference/hooks-gates/). That page is generated from the Python
