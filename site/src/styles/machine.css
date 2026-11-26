@@ -235,3 +235,137 @@
     display: none;
   }
 }
+
+/* Wide page, like the workflow atlas: the 3D stage needs the room, prose keeps a readable measure. */
+:root:has(.ca-machine-stage) {
+  --sl-content-width: 90rem;
+}
+
+:root:has(.ca-machine-stage) .sl-markdown-content > :is(p, ul, ol) {
+  max-inline-size: 75ch;
+}
+
+.ca-machine-stage {
+  position: relative;
+  display: block;
+  block-size: clamp(30rem, 74vh, 52rem);
+  margin-block: var(--ca-space-6);
+  border: 1px solid var(--ca-line);
+  border-radius: var(--ca-radius-md);
+  background: radial-gradient(ellipse at 50% 55%, rgb(122 183 255 / 10%), transparent 60%), var(--ca-bg);
+  overflow: hidden;
+  scroll-margin-top: calc(var(--sl-nav-height, 4rem) + var(--ca-space-3));
+}
+
+.ca-machine-stage:focus-visible {
+  outline: 2px solid var(--ca-info);
+  outline-offset: 2px;
+}
+
+.ca-machine-stage__poster {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  gap: var(--ca-space-4);
+  block-size: 100%;
+  padding: var(--ca-space-6);
+  text-align: center;
+}
+
+.ca-machine-stage__lead {
+  max-inline-size: 42rem;
+  margin: 0;
+  font-size: var(--ca-text-lg);
+  color: var(--ca-ink);
+}
+
+.ca-machine-stage__actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: var(--ca-space-3);
+}
+
+.ca-machine-stage__note {
+  margin: 0;
+  max-inline-size: 36rem;
+  font-size: var(--ca-text-sm);
+  color: var(--ca-ink-muted);
+}
+
+.ca-machine-stage__loading,
+.ca-machine-stage__failed {
+  display: none;
+  margin: 0;
+  font-size: var(--ca-text-sm);
+}
+
+.ca-machine-stage[data-state="loading"] .ca-machine-stage__loading,
+.ca-machine-stage[data-state="failed"] .ca-machine-stage__failed {
+  display: block;
+}
+
+.ca-machine-stage[data-state="loading"] [data-machine-start] {
+  visibility: hidden;
+}
+
+.ca-machine-stage:fullscreen {
+  border-radius: 0;
+  block-size: 100%;
+}
+
+.ca-machine__swatch {
+  flex: none;
+  inline-size: 0.9rem;
+  block-size: 0.9rem;
+  margin-top: 0.3rem;
+  border-radius: 50%;
+  background: var(--ca-machine-state);
+}
+
+.ca-machine__swatch[data-state="run"] { --ca-machine-state: var(--ca-info); }
+.ca-machine__swatch[data-state="gate"] { --ca-machine-state: var(--ca-brand); }
+.ca-machine__swatch[data-state="pass"] { --ca-machine-state: var(--ca-positive); }
+.ca-machine__swatch[data-state="block"] { --ca-machine-state: var(--ca-danger); }
+.ca-machine__swatch[data-state="preview"] { --ca-machine-state: var(--ca-preview); }
+
+.ca-machine__swatch--motion {
+  border-radius: 2px;
+  background: none;
+  border: 1px dashed var(--ca-line-strong);
+}
+
+.ca-machine__play {
+  margin-top: var(--ca-space-3);
+}
+
+.ca-machine__labs {
+  display: grid;
+  gap: var(--ca-space-3);
+  padding-left: 1.2em;
+}
+
+.ca-machine__labs li {
+  margin: 0;
+  scroll-margin-top: calc(var(--sl-nav-height, 4rem) + var(--ca-space-4));
+}
+
+.ca-machine__labs .ca-machine__play {
+  display: flex;
+  margin-top: var(--ca-space-2);
+}
+
+.ca-machine__labs .ca-machine__play[hidden],
+.ca-machine__play[hidden] {
+  display: none;
+}
+
+@media (forced-colors: active) {
+  .ca-machine-stage {
+    border-color: CanvasText;
+  }
+
+  .ca-machine__swatch {
+    forced-color-adjust: none;
+  }
+}

@@ -13,7 +13,8 @@ the page owns, what it borrows from the plugin sources, and what to do when the 
 | Curated model | `scripts/machine/machine-data/*.json` |
 | Loader and drift checks | `scripts/machine/machine-model.ts`, `scripts/machine/machine-claims.ts` |
 | Shared text and frame rendering | `scripts/machine/machine-render.ts` |
-| Tests | `scripts/machine/*.test.ts`, `test/browser/machine.spec.ts` |
+| 3D viewer (loads only when a reader starts it) | `src/scripts/machine-stage.ts`, `src/scripts/machine/*.js`, `src/pages/machine-model.json.ts` |
+| Tests | `scripts/machine/*.test.ts`, `test/browser/machine.spec.ts`, `test/browser/machine-viewer.spec.ts` |
 
 ## What is curated and what is derived
 
@@ -58,6 +59,34 @@ For each finding:
 
 Do not weaken a check to silence a finding. If a claim is no longer true, change the sentence the
 page shows, then change its check to match the new behavior.
+
+## The 3D viewer
+
+The page is complete as HTML. The viewer is progressive enhancement on top of it:
+
+- **Nothing loads or plays until a reader asks.** The start controls stay hidden without JavaScript.
+  Starting fetches the viewer chunk and `machine-model.json` (the same validated model, built by
+  `loadMachine()`), then mounts into a shadow root on the stage, so the viewer's styles and the docs
+  site's cannot collide. The example session, the intro and every tour start only from a control.
+- **Bundled, local-first.** three.js is an exact-pinned npm dependency bundled by the site build, and
+  text uses the site's bundled fonts and `--ca-*` tokens. The viewer makes no request to another host.
+- **Astro lifecycle.** `machine-stage.ts` disposes the viewer before every client-side page swap and
+  wires the page again on `astro:page-load`. `dispose()` releases the WebGL context, listeners, timers
+  and speech. The viewer does not read or write the address bar; tours, labs, lane runs and parts
+  open through their controls.
+- **Nothing is stored.** No preferences, progress or completion state survive a visit.
+- **Gold means gates and decisions.** Model output, the newest token and sampler picks use the model
+  blue; context bands and wheel slices use categorical colours that borrow no state colour.
+- **Messages come from the hooks.** The Guard lab and the example session print block messages
+  through `src/scripts/machine/messages.js`, which names one `block()` call site per key;
+  `scripts/machine/machine-viewer.test.ts` fails if a key stops matching exactly one call site.
+
+The viewer stays JavaScript, ported from the standalone explainer; `viewer.d.ts` and `messages.d.ts`
+are its typed boundary. Converting it to TypeScript is a known follow-up, not part of this
+integration.
+
+The Learning Path and Arbiter Academy are the curriculum. The standalone explainer's own levels and
+quizzes were not carried over; its tours, labs and failure scenarios were.
 
 ## What stays illustrative
 
