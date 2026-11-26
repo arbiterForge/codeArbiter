@@ -110,8 +110,22 @@ test.describe('codeArbiter as a machine: 3D viewer', () => {
     await page.goto(route);
     await page.getByRole('button', { name: 'Start the 3D machine' }).click();
     await running(page);
+    const scan = async (state: string) => {
+      const result = await new AxeBuilder({ page }).include('[data-machine-stage]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
+      return result.violations.map((violation) => `${state} ${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).slice(0, 3).join(' | ')}`);
+    };
+    const violations: string[] = [];
     await stage(page).locator('#b-tours').click();
-    const result = await new AxeBuilder({ page }).include('[data-machine-stage]').withTags(['wcag2a', 'wcag2aa', 'wcag21aa']).analyze();
-    expect(result.violations.map((violation) => `${violation.id}: ${violation.nodes.map((node) => node.target.join(' ')).slice(0, 3).join(' | ')}`)).toEqual([]);
+    violations.push(...await scan('tours'));
+    await stage(page).locator('#b-labs').click();
+    await stage(page).locator('#lab [data-lab="guard"]').click();
+    violations.push(...await scan('guard lab'));
+    await stage(page).locator('#lab [data-lab="tokens"]').click();
+    violations.push(...await scan('tokens lab'));
+    await stage(page).locator('#lab [data-act="close"]').click();
+    await stage(page).locator('#b-session').click();
+    await expect(stage(page).locator('.bubble')).toBeVisible({ timeout: 15_000 });
+    violations.push(...await scan('example session'));
+    expect(violations).toEqual([]);
   });
 });

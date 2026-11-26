@@ -234,7 +234,7 @@ export function createStory({ scene, camera, M, fx, C, tokenize, tokId, esc, fra
 
   /* ---------------------------------------------------------- the live transcript above the model */
   const bub = document.createElement('div'); bub.className = 'bubble';
-  bub.innerHTML = `<div class="bb-h"><i class="live"></i><b>Example session</b><span class="bb-t"></span><span class="bb-s">scripted<i> · slowed down</i></span></div><div class="bb-l"></div><div class="bb-f" aria-label="Agent loop phase"><span data-ph="think">Think</span><u>›</u><span data-ph="act">Act</span><u>›</u><span data-ph="check">Check</span><u>›</u><span data-ph="observe">Observe</span><em></em></div>`;
+  bub.innerHTML = `<div class="bb-h"><i class="live"></i><b>Example session</b><span class="bb-t"></span><span class="bb-s">scripted<i> · slowed down</i></span></div><div class="bb-l"></div><div class="bb-f" role="group" aria-label="Agent loop phase"><span data-ph="think">Think</span><u>›</u><span data-ph="act">Act</span><u>›</u><span data-ph="check">Check</span><u>›</u><span data-ph="observe">Observe</span><em></em></div>`;
   const bubO = new THREE.CSS2DObject(bub); bubO.position.set(0, 29, 0); bubO.center.set(0.5, 1); bubO.visible = false; scene.add(bubO);
   const bubLines = bub.querySelector('.bb-l');
   const bubbleOv = { id: 'bubble', o: bubO, el: bub, want: false, pr: 0.2, ok: false, hud: true };
