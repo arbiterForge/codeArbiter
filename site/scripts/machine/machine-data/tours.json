@@ -37,7 +37,7 @@
       {
         "view": "lanes",
         "title": "The lanes",
-        "text": "The outer ring holds every codeArbiter lane, grouped as Initialize, Change, Ship, Review, Decide and Operate. Each lane defines the evidence it must produce, the reviewers it dispatches and the conditions that stop it. Select a lane and press Run to watch its route."
+        "text": "The outer ring holds every codeArbiter lane, grouped as Initialize, Change, Ship, Review, Decide and Operate. Each lane defines the evidence it must produce, the reviewers it dispatches and the conditions that stop it. Each lane also has its own run, which follows its route stop by stop."
       },
       {
         "at": "vault",

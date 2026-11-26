@@ -459,7 +459,7 @@
     "name": "Host adapters",
     "tagline": "Claude Code, Codex CLI and Pi share one governance kernel.",
     "what": "codeArbiter ships three governance hosts generated from one shared core: `ca` for Claude Code, `ca-codex` for Codex CLI and `ca-pi` for Pi, which is a Feature Forge preview. Each adapter maps its host’s events and tools onto the same Python enforcement core and the same `.codearbiter/` record, so a repository can move between hosts without losing specs, plans, decisions or audit history.",
-    "machine": "Three couplings under the loop. One is engaged at a time; the machine above them stays the same. The host switch in the toolbar changes every command’s spelling.",
+    "machine": "Three couplings under the loop. One is engaged at a time; the machine above them stays the same. Every command’s spelling follows the host, and each lane lists all three.",
     "watch": "Hosts differ at the edges. Codex has no native read event and omits statusline and prune. Pi omits statusline, uses its native compaction and requires affirmative project trust.",
     "source": [
       "core/hosts.json",

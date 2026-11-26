@@ -41,6 +41,21 @@ describe("pythonFunctionBody", () => {
   });
 });
 
+describe("pythonFunctionBody with real-world layouts", () => {
+  it("keeps a multi-line signature out of the body and the whole body in", () => {
+    const source = "def block(\n    tag,\n    msg,\n):\n    _log_gate_event(\"BLOCK\", tag, msg)\n    sys.exit(2)\n\nX = 1\n";
+    const body = pythonFunctionBody(source, "block")!;
+    expect(body).toContain("_log_gate_event");
+    expect(body).toContain("sys.exit(2)");
+    expect(body).not.toContain("X = 1");
+  });
+
+  it("does not end the body at a comment that starts in column 0", () => {
+    const source = "def block(tag, msg):\n    first()\n# a column-0 comment inside the body\n    _log_gate_event(\"BLOCK\", tag, msg)\n\ndef remind(tag, msg):\n    pass\n";
+    expect(pythonFunctionBody(source, "block")).toContain("_log_gate_event");
+  });
+});
+
 describe("checkClaims", () => {
   const files = { "hooks/_hooklib.py": HOOKLIB, "hooks/prompt.py": "MODEINJECT_PREFIX = 'x'\nkey = 'compaction-generation'\n" };
 
@@ -68,6 +83,29 @@ describe("checkClaims", () => {
       read(files),
     );
     expect(findings[0]).toMatch(/block\(\) in hooks\/_hooklib.py now calls _log_gate_event/);
+  });
+
+  it("ignores calls that only appear in comments, docstrings or strings", () => {
+    const disabled = [
+      "def block(tag, msg):",
+      '    """Calls _log_gate_event(kind, tag, msg) before refusing."""',
+      '    # _log_gate_event("BLOCK", tag, msg)',
+      '    note = "_log_gate_event(BLOCK)"',
+      "    sys.exit(2)",
+    ].join("\n");
+    const findings = checkClaims(
+      [claim({ type: "python-function-calls", file: "hooks/off.py", function: "block", call: "_log_gate_event" })],
+      read({ "hooks/off.py": disabled }),
+    );
+    expect(findings[0]).toMatch(/block\(\) in hooks\/off.py does not call _log_gate_event/);
+  });
+
+  it("checks code text inside one function, ignoring the same text in comments", () => {
+    const exits = "def block(tag, msg):\n    sys.exit(2)\n";
+    const commented = "def block(tag, msg):\n    # sys.exit(2)\n    return 0\n";
+    const check = { type: "python-function-contains", file: "hooks/b.py", function: "block", text: "sys.exit(2)" } as const;
+    expect(checkClaims([claim(check)], read({ "hooks/b.py": exits }))).toEqual([]);
+    expect(checkClaims([claim(check)], read({ "hooks/b.py": commented }))[0]).toMatch(/block\(\) in hooks\/b.py no longer contains sys.exit\(2\)/);
   });
 
   it("reports a missing function, a missing file and missing text instead of passing silently", () => {

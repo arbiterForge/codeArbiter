@@ -296,7 +296,7 @@ export function validateMachine(data: MachineData, sources: MachineSources): str
     if (fault.catcher && !partIds.has(fault.catcher)) findings.push(`scenario ${fault.id} is caught by unknown part ${fault.catcher}`);
     if (fault.ref && !tourIds.has(fault.id)) findings.push(`scenario ${fault.id} reuses a tour, but no tour has that id`);
     checkSteps(`scenario ${fault.id}`, fault.steps);
-    checkText(`scenario ${fault.id}`, [fault.title, fault.why, fault.outcome].filter((t): t is string => !!t));
+    checkText(`scenario ${fault.id}`, [fault.title, fault.why, fault.outcome, fault.tag].filter((t): t is string => !!t));
   }
   for (const entry of data.glossary) {
     if (entry.part && !partIds.has(entry.part)) findings.push(`glossary term ${entry.term} points at unknown part ${entry.part}`);

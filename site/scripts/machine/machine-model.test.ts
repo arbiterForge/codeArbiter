@@ -104,6 +104,13 @@ describe("validateMachine refuses drift", () => {
     expect(findings).toMatch(/sampler sits in zone attic, which the layout does not define/);
   });
 
+  it("names an unknown gate in a scenario's catcher tag", () => {
+    const d = data();
+    const scenario = d.faults.find((fault) => fault.ref)!;
+    scenario.tag = "Blocked by H-99";
+    expect(validateMachine(d, sources()).join("\n")).toMatch(new RegExp(`scenario ${scenario.id} names gate H-99`));
+  });
+
   it("reports a behavior claim that stopped holding", () => {
     const s = sources();
     const read = s.read;

@@ -18,8 +18,8 @@ the page owns, what it borrows from the plugin sources, and what to do when the 
 ## What is curated and what is derived
 
 The explanations are curated: part names, taglines, plain-terms summaries, how each part works,
-tours and failure scenarios. Everything the page states about the shipped plugin is resolved from
-the sources the reference generator already reads, every time the site builds:
+tours and failure scenarios. These facts in them are checked against the sources the reference
+generator already reads, every time the site builds:
 
 - **Gates.** Gate IDs, whether each blocks or reminds, and the block messages come from the
   `block()` and `remind()` call sites in `plugins/ca/hooks` (`scripts/generator/extract-hook-gates.ts`).
@@ -32,7 +32,13 @@ the sources the reference generator already reads, every time the site builds:
 - **Behavior claims.** `machine-data/claims.json` lists the statements that describe behavior
   rather than names: which calls write to `gate-events.log`, and when the rules are injected again.
   Each claim names the smallest source fact it depends on (a function that must or must not make a
-  call, or text a file must contain), so unrelated edits to the same file do not fail the build.
+  call, code a function must contain, or text a file must contain), so unrelated edits to the same
+  file do not fail the build. Comments and strings never satisfy a check.
+
+What the build does not check is the curated prose about how a hook decides: for example, which
+command spellings count as a force-push for H-02, or which paths H-05 protects. That prose is written
+from a review of the hook source and is re-read whenever `reviewedAt` advances. The landing page's
+hook proof is a captured run of one real block (H-03); the machine page makes no captured-run claim.
 
 `provenance.json` records the release the model was written against and the commit it was last
 reviewed at. It is a record for reviewers, not a pin: the checks above run against the working tree.

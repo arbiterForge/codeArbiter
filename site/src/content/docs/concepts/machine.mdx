@@ -60,13 +60,14 @@ hooks refused inside an agent session, not every refusal git ever made.
   you is the authorization the model cannot give itself.
 
 <LimitsAndEvidence>
-Each part's explanation is curated, but every fact this page states about the shipped plugin is
-checked against the plugin sources whenever the site is built: gate IDs and whether they block or
-remind, the block messages, command names, lanes and their families, host spellings, and the
-repository paths each part cites. Four behavior statements (which calls write to
-`gate-events.log`, and when the rules are injected again) are checked against the specific hook
-functions they describe. A disagreement fails the build. See `site/MACHINE.md` for the checks and
-how to update the model.
+Each part's explanation is curated. When the site is built, the facts that can be checked are
+compared with the plugin sources: gate IDs and whether they block or remind, the block messages,
+command names, lanes and their families, host spellings, and the repository paths each part cites.
+Five behavior statements are checked against the hook functions they describe: which calls write
+to `gate-events.log`, that a block exits with status 2, and when the rules are injected again. A
+disagreement fails the build. How each hook decides what to block, such as which spellings count as
+a force-push, is described from a review of its source and is not checked on every build. See
+`site/MACHINE.md` for the checks and how to update the model.
 
 The parts that describe AI inference explain general mechanisms. Token splits, probabilities and
 attention patterns used as examples are illustrative, not measurements of a particular model.
