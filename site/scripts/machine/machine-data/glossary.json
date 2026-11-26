@@ -1,0 +1,696 @@
+[
+  {
+    "term": "Language model (LLM)",
+    "aliases": [
+      "language model",
+      "language models",
+      "LLM",
+      "LLMs",
+      "large language model"
+    ],
+    "definition": "A program trained on huge amounts of text to predict what text comes next. Chat assistants and coding agents are built around one.",
+    "part": "transformer"
+  },
+  {
+    "term": "Inference",
+    "aliases": [
+      "inference"
+    ],
+    "definition": "Running a trained model to get output. Training builds the model once; inference is every time you use it.",
+    "part": "sampler"
+  },
+  {
+    "term": "Training",
+    "aliases": [
+      "training",
+      "trained"
+    ],
+    "definition": "The one-time, expensive process that sets a model’s weights by showing it vast amounts of text. Using the model does not train it.",
+    "part": "weights"
+  },
+  {
+    "term": "Weights",
+    "aliases": [
+      "weights",
+      "parameters"
+    ],
+    "definition": "The billions of numbers a model learned in training. They stay fixed while you use it.",
+    "part": "weights"
+  },
+  {
+    "term": "Token",
+    "aliases": [
+      "token",
+      "tokens"
+    ],
+    "definition": "A small chunk of text, often part of a word, that a model reads and writes. Limits and prices are counted in tokens.",
+    "part": "tokenizer"
+  },
+  {
+    "term": "Tokenizer",
+    "aliases": [
+      "tokenizer",
+      "tokenizers"
+    ],
+    "definition": "The step that cuts text into tokens and gives each one an ID number.",
+    "part": "tokenizer"
+  },
+  {
+    "term": "Vocabulary",
+    "aliases": [
+      "vocabulary"
+    ],
+    "definition": "The fixed list of every token a model knows. Each has an ID number.",
+    "part": "logits"
+  },
+  {
+    "term": "Embedding",
+    "aliases": [
+      "embedding",
+      "embeddings"
+    ],
+    "definition": "A long list of numbers that stands for a token. Tokens used in similar ways get similar numbers.",
+    "part": "embedding"
+  },
+  {
+    "term": "Transformer",
+    "aliases": [
+      "transformer"
+    ],
+    "definition": "The design behind today’s language models: a stack of layers built around attention.",
+    "part": "transformer"
+  },
+  {
+    "term": "Attention",
+    "aliases": [
+      "attention",
+      "attention heads"
+    ],
+    "definition": "The mechanism that lets each token pull in information from the tokens that matter to it: itself and anything before it, never anything after.",
+    "part": "attention"
+  },
+  {
+    "term": "Context window",
+    "aliases": [
+      "context window",
+      "context windows"
+    ],
+    "definition": "Everything a model can see in one request, measured in tokens. Anything outside it does not exist for the model.",
+    "part": "context-window"
+  },
+  {
+    "term": "Prompt",
+    "aliases": [
+      "prompt",
+      "prompts"
+    ],
+    "definition": "The text sent to a model: instructions, the conversation and any attached material.",
+    "part": "prompt-assembly"
+  },
+  {
+    "term": "System prompt",
+    "aliases": [
+      "system prompt"
+    ],
+    "definition": "Instructions the application places at the start of every request, before your messages.",
+    "part": "prompt-assembly"
+  },
+  {
+    "term": "Logit",
+    "aliases": [
+      "logit",
+      "logits"
+    ],
+    "definition": "The raw score a model gives each possible next token, before it is turned into a probability.",
+    "part": "logits"
+  },
+  {
+    "term": "Probability distribution",
+    "aliases": [
+      "probability distribution",
+      "distribution"
+    ],
+    "definition": "A list of options with percentages that add up to 100%.",
+    "part": "logits"
+  },
+  {
+    "term": "Sampling",
+    "aliases": [
+      "sampling",
+      "sampled",
+      "sampler"
+    ],
+    "definition": "Picking the next token at random, weighted by the model’s probabilities. Likely tokens win most of the time, not every time.",
+    "part": "sampler"
+  },
+  {
+    "term": "Temperature",
+    "aliases": [
+      "temperature"
+    ],
+    "definition": "A setting that makes sampling more predictable (low) or more varied (high). At zero, the top token is always chosen.",
+    "part": "sampler"
+  },
+  {
+    "term": "Top-p",
+    "aliases": [
+      "top-p"
+    ],
+    "definition": "A setting that lets the sampler choose only among the most likely tokens that together make up p of the probability.",
+    "part": "sampler"
+  },
+  {
+    "term": "Autoregressive",
+    "aliases": [
+      "autoregressive",
+      "one token at a time"
+    ],
+    "definition": "Producing output one token at a time, each based on everything before it.",
+    "part": "autoregress"
+  },
+  {
+    "term": "Reasoning tokens",
+    "aliases": [
+      "reasoning tokens",
+      "extended thinking"
+    ],
+    "definition": "Text a model writes to think through a problem before answering. It is still generated text, not a check.",
+    "part": "reasoning"
+  },
+  {
+    "term": "Hallucination",
+    "aliases": [
+      "hallucination",
+      "hallucinate"
+    ],
+    "definition": "When a model states something fluent and confident that is not true. It happens because the model predicts likely text, not verified facts.",
+    "part": "sampler"
+  },
+  {
+    "term": "KV cache",
+    "aliases": [
+      "KV cache"
+    ],
+    "definition": "Stored intermediate results for tokens already processed, so each new token is cheaper to produce.",
+    "part": "kv-cache"
+  },
+  {
+    "term": "Prompt caching",
+    "aliases": [
+      "prompt caching"
+    ],
+    "definition": "A provider feature that reuses work for an unchanged beginning of a prompt across requests, saving time and cost.",
+    "part": "kv-cache"
+  },
+  {
+    "term": "Agent",
+    "aliases": [
+      "agent",
+      "agents",
+      "coding agent",
+      "coding agents",
+      "AI agent"
+    ],
+    "definition": "A model in a loop that can use tools to take actions. In codeArbiter, “agent” also names the specialist helpers (authors and reviewers) a lane sends out.",
+    "part": "agent-loop"
+  },
+  {
+    "term": "Harness",
+    "aliases": [
+      "harness",
+      "harnesses"
+    ],
+    "definition": "The program around a model that runs the agent loop and its tools. Claude Code, Codex CLI and Pi are harnesses.",
+    "part": "agent-loop"
+  },
+  {
+    "term": "Tool call",
+    "aliases": [
+      "tool call",
+      "tool calls",
+      "tool use"
+    ],
+    "definition": "A structured request from the model to run a tool, such as a command or a file edit.",
+    "part": "tool-parser"
+  },
+  {
+    "term": "Tool result",
+    "aliases": [
+      "tool result",
+      "tool results"
+    ],
+    "definition": "What a tool returns to the model: file contents, command output, an error or a block message.",
+    "part": "tool-results"
+  },
+  {
+    "term": "Subagent",
+    "aliases": [
+      "subagent",
+      "subagents"
+    ],
+    "definition": "A separate model session with a fresh context, given one focused task. It reports back a result, not its whole transcript.",
+    "part": "subagents"
+  },
+  {
+    "term": "MCP",
+    "aliases": [
+      "MCP",
+      "Model Context Protocol"
+    ],
+    "definition": "Model Context Protocol: an open standard for connecting AI applications to outside tools and data.",
+    "part": "tool-mcp"
+  },
+  {
+    "term": "Prompt injection",
+    "aliases": [
+      "prompt injection",
+      "prompt-injection"
+    ],
+    "definition": "Text hidden in a web page, file or issue that tries to give an agent orders. Tool results should be treated as information, never as instructions.",
+    "part": "tool-results"
+  },
+  {
+    "term": "Compaction",
+    "aliases": [
+      "compaction",
+      "compacts",
+      "compacted"
+    ],
+    "definition": "Summarizing older parts of a long session to free room in the context window. Details can be lost.",
+    "part": "compaction"
+  },
+  {
+    "term": "Hook",
+    "aliases": [
+      "hook",
+      "hooks"
+    ],
+    "definition": "A small program the harness runs at a set moment, such as just before a command. It can let the action through or block it.",
+    "part": "hook-bus"
+  },
+  {
+    "term": "Exit code",
+    "aliases": [
+      "exit code",
+      "exit codes"
+    ],
+    "definition": "The number a program returns when it finishes. 0 means fine; for a Claude Code hook, 2 means “block this”.",
+    "part": "guard-bash"
+  },
+  {
+    "term": "Deterministic",
+    "aliases": [
+      "deterministic"
+    ],
+    "definition": "Always gives the same result for the same input. codeArbiter’s guards are deterministic; a model is not.",
+    "part": "guard-ring"
+  },
+  {
+    "term": "Probabilistic",
+    "aliases": [
+      "probabilistic"
+    ],
+    "definition": "Involving chance. A model’s output is a sample, so it can differ from run to run.",
+    "part": "sampler"
+  },
+  {
+    "term": "Orchestrator",
+    "aliases": [
+      "orchestrator"
+    ],
+    "definition": "The model acting under codeArbiter’s rules, reading your request and routing it to the right lane.",
+    "part": "router"
+  },
+  {
+    "term": "Repository",
+    "aliases": [
+      "repository",
+      "repositories",
+      "repo"
+    ],
+    "definition": "A project’s folder of code together with its full history, tracked by git.",
+    "part": "repo"
+  },
+  {
+    "term": "Git",
+    "aliases": [
+      "git"
+    ],
+    "definition": "The tool that records every change to code as history and lets people work on separate copies called branches.",
+    "part": "repo"
+  },
+  {
+    "term": "Branch",
+    "aliases": [
+      "branch",
+      "branches",
+      "feature branch",
+      "feature branches"
+    ],
+    "definition": "A separate line of work in git, so changes can be built without touching the main line.",
+    "part": "branch-rails"
+  },
+  {
+    "term": "Default branch",
+    "aliases": [
+      "default branch",
+      "main branch",
+      "protected branch",
+      "protected default branch"
+    ],
+    "definition": "The main line of code everyone relies on, usually called main. codeArbiter never writes to it directly.",
+    "part": "main-vault"
+  },
+  {
+    "term": "Commit",
+    "aliases": [
+      "commit",
+      "commits",
+      "committing",
+      "committed"
+    ],
+    "definition": "A saved snapshot of changes in git’s history, with a message explaining it.",
+    "part": "ca-commit"
+  },
+  {
+    "term": "Staging",
+    "aliases": [
+      "staging",
+      "staged",
+      "git add"
+    ],
+    "definition": "Choosing exactly which changed files go into the next commit.",
+    "part": "guard-bash"
+  },
+  {
+    "term": "Push",
+    "aliases": [
+      "push",
+      "pushes",
+      "pushing"
+    ],
+    "definition": "Sending your commits to the shared server so others can see them.",
+    "part": "branch-rails"
+  },
+  {
+    "term": "Force-push",
+    "aliases": [
+      "force-push",
+      "force push",
+      "force-pushing"
+    ],
+    "definition": "Overwriting the shared history with your own version. It can erase other people’s work.",
+    "part": "guard-bash"
+  },
+  {
+    "term": "Pull request",
+    "aliases": [
+      "pull request",
+      "pull requests",
+      "PR",
+      "PRs"
+    ],
+    "definition": "A proposal to merge a branch into the main line, where it is reviewed and tested first.",
+    "part": "ca-pr"
+  },
+  {
+    "term": "Merge",
+    "aliases": [
+      "merge",
+      "merges",
+      "merging",
+      "merged"
+    ],
+    "definition": "Combining one branch’s changes into another, usually into the main line.",
+    "part": "main-vault"
+  },
+  {
+    "term": "CI",
+    "aliases": [
+      "CI",
+      "hosted CI",
+      "continuous integration"
+    ],
+    "definition": "Continuous integration: automatic tests that run on a shared server for every change.",
+    "part": "remote-ci"
+  },
+  {
+    "term": "Regression test",
+    "aliases": [
+      "regression test",
+      "regression tests",
+      "regression"
+    ],
+    "definition": "A test that captures a bug, so the bug can never quietly come back.",
+    "part": "skill-tdd"
+  },
+  {
+    "term": "TDD",
+    "aliases": [
+      "TDD",
+      "test-first",
+      "test-driven development"
+    ],
+    "definition": "Test-driven development: write a failing test first, then the code that makes it pass.",
+    "part": "skill-tdd"
+  },
+  {
+    "term": "Lint",
+    "aliases": [
+      "lint",
+      "linter"
+    ],
+    "definition": "An automatic check for style mistakes and suspicious code patterns.",
+    "part": "skill-tdd"
+  },
+  {
+    "term": "Coverage",
+    "aliases": [
+      "coverage"
+    ],
+    "definition": "How much of the code the tests actually run, as a percentage.",
+    "part": "maturity"
+  },
+  {
+    "term": "Refactor",
+    "aliases": [
+      "refactor",
+      "refactoring"
+    ],
+    "definition": "Restructuring code without changing what it does.",
+    "part": "ca-refactor"
+  },
+  {
+    "term": "Dependency",
+    "aliases": [
+      "dependency",
+      "dependencies"
+    ],
+    "definition": "Someone else’s code that your project uses.",
+    "part": "ca-add-dep"
+  },
+  {
+    "term": "Lockfile",
+    "aliases": [
+      "lockfile",
+      "lockfiles"
+    ],
+    "definition": "A file that pins the exact version of every dependency.",
+    "part": "ca-add-dep"
+  },
+  {
+    "term": "Supply chain",
+    "aliases": [
+      "supply chain",
+      "supply-chain"
+    ],
+    "definition": "All the outside code and tools your software depends on. Attackers target it because one bad package reaches many projects.",
+    "part": "ca-add-dep"
+  },
+  {
+    "term": "Migration",
+    "aliases": [
+      "migration",
+      "migrations",
+      "database migration"
+    ],
+    "definition": "A script that changes the structure of a database. A wrong one can destroy data.",
+    "part": "reviewer-fleet"
+  },
+  {
+    "term": "Secret",
+    "aliases": [
+      "secret",
+      "secrets",
+      "API key",
+      "API keys",
+      "credential",
+      "credentials"
+    ],
+    "definition": "A password, key or token that grants access. It must never be stored in code, logs or prompts.",
+    "part": "security-skills"
+  },
+  {
+    "term": "Cryptography",
+    "aliases": [
+      "crypto",
+      "cryptography",
+      "TLS",
+      "encryption"
+    ],
+    "definition": "The math that protects data. Mistakes here are easy to make and hard to see.",
+    "part": "security-skills"
+  },
+  {
+    "term": "Infrastructure as code",
+    "aliases": [
+      "IaC",
+      "infrastructure as code"
+    ],
+    "definition": "Server and network setup written as code files, so it can be reviewed and repeated.",
+    "part": "authors"
+  },
+  {
+    "term": "ADR",
+    "aliases": [
+      "ADR",
+      "ADRs",
+      "architecture decision record",
+      "architecture decision"
+    ],
+    "definition": "Architecture Decision Record: a short, numbered note of what was decided, why, and by whom.",
+    "part": "adr-tablets"
+  },
+  {
+    "term": "SemVer",
+    "aliases": [
+      "SemVer",
+      "semantic versioning"
+    ],
+    "definition": "Semantic versioning: version numbers like 3.8.7 where each position signals the kind of change.",
+    "part": "ca-release"
+  },
+  {
+    "term": "Conventional Commits",
+    "aliases": [
+      "Conventional Commits"
+    ],
+    "definition": "A standard format for commit messages, such as “fix: handle empty input”, so history is easy to read and automate.",
+    "part": "ca-commit"
+  },
+  {
+    "term": "Release",
+    "aliases": [
+      "release",
+      "releases"
+    ],
+    "definition": "A published, numbered version of the software.",
+    "part": "ca-release"
+  },
+  {
+    "term": "Worktree",
+    "aliases": [
+      "worktree",
+      "worktrees"
+    ],
+    "definition": "An extra working folder for the same git repository, so parallel work does not collide.",
+    "part": "branch-rails"
+  },
+  {
+    "term": "Spike",
+    "aliases": [
+      "spike"
+    ],
+    "definition": "A short, throwaway experiment to answer a question before committing to an approach.",
+    "part": "ca-spike"
+  },
+  {
+    "term": "STRIDE",
+    "aliases": [
+      "STRIDE"
+    ],
+    "definition": "A checklist of six ways systems get attacked: Spoofing, Tampering, Repudiation, Information disclosure, Denial of service, Elevation of privilege.",
+    "part": "ca-threat-model"
+  },
+  {
+    "term": "SMARTS",
+    "aliases": [
+      "SMARTS"
+    ],
+    "definition": "codeArbiter’s six-lens checklist for comparing options: Scalable, Maintainable, Available, Reliable, Testable, Securable.",
+    "part": "smarts"
+  },
+  {
+    "term": "Audit log",
+    "aliases": [
+      "audit log",
+      "audit logs",
+      "audit trail",
+      "append-only"
+    ],
+    "definition": "A record you can only add to. Nothing in it can be edited or deleted, so it stays trustworthy.",
+    "part": "audit-ledger"
+  },
+  {
+    "term": "Lane",
+    "aliases": [
+      "lane",
+      "lanes"
+    ],
+    "definition": "codeArbiter’s word for a sanctioned path: the route a kind of work takes, with its own evidence, reviewers and stops.",
+    "part": "ca-feature"
+  },
+  {
+    "term": "Skill",
+    "aliases": [
+      "skill",
+      "skills"
+    ],
+    "definition": "In codeArbiter, a routine with phases that a lane follows, such as tdd or commit-gate.",
+    "part": "skill-tdd"
+  },
+  {
+    "term": "Gate",
+    "aliases": [
+      "gate",
+      "gates"
+    ],
+    "definition": "A phase exit condition that work must meet to move on. A STOP gate waits for you; a BLOCK gate halts until its condition is met.",
+    "part": "guard-bash"
+  },
+  {
+    "term": "Hard rule",
+    "aliases": [
+      "hard rule",
+      "hard rules"
+    ],
+    "definition": "A rule codeArbiter treats as non-negotiable, such as never force-pushing or never storing a raw secret.",
+    "part": "guard-bash"
+  },
+  {
+    "term": "Override",
+    "aliases": [
+      "override",
+      "overrides"
+    ],
+    "definition": "A logged, attributed exception to a gate, allowed only where the rule permits one.",
+    "part": "ca-override"
+  },
+  {
+    "term": "Receipt",
+    "aliases": [
+      "receipt",
+      "receipts"
+    ],
+    "definition": "Evidence that a check really happened, bound to the exact version of the code it covered.",
+    "part": "receipts"
+  },
+  {
+    "term": "Feature Forge",
+    "aliases": [
+      "Feature Forge"
+    ],
+    "definition": "codeArbiter’s label for preview features: built and shipping, but opt-in until real-world evidence earns them stable status.",
+    "part": "farm"
+  }
+]

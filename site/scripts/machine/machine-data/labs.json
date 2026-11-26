@@ -1,0 +1,27 @@
+{
+  "faults": {
+    "tab": "Break it",
+    "title": "Break it",
+    "blurb": "Pick a mistake an AI agent could plausibly make, and watch where the machine catches it."
+  },
+  "guard": {
+    "tab": "Guard",
+    "title": "Get past the guard",
+    "blurb": "Type a command an agent might run, and see what the shell gate does with it."
+  },
+  "sampler": {
+    "tab": "Sampler",
+    "title": "Roll the dice",
+    "blurb": "Change temperature and top-p, sample the next word, and see why output is a guess."
+  },
+  "tokens": {
+    "tab": "Tokens",
+    "title": "See the tokens",
+    "blurb": "Type anything and watch it cut into the pieces a model actually reads."
+  },
+  "context": {
+    "tab": "Context",
+    "title": "Fill the window",
+    "blurb": "Run a long session and watch short-term memory fill, compact and forget."
+  }
+}

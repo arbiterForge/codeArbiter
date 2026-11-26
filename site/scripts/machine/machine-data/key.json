@@ -1,0 +1,104 @@
+{
+  "frames": [
+    {
+      "shape": "circle",
+      "name": "AI concept",
+      "meaning": "Predicts. What it produces is a likely guess, never a checked fact."
+    },
+    {
+      "shape": "square",
+      "name": "Agent harness",
+      "meaning": "Acts. Runs the loop and the tools the model asks for."
+    },
+    {
+      "shape": "shield",
+      "name": "Guard",
+      "meaning": "Blocks. A plain program that allows or refuses, the same way every time."
+    },
+    {
+      "shape": "hex",
+      "name": "Skill or agent",
+      "meaning": "A specialist routine or helper that a lane calls in."
+    },
+    {
+      "shape": "chevron",
+      "name": "Lane",
+      "meaning": "A route that one kind of work travels, with its own stops."
+    },
+    {
+      "shape": "doc",
+      "name": "Record",
+      "meaning": "Remembers. Files in your repository that outlive any session."
+    },
+    {
+      "shape": "rect",
+      "name": "Your systems",
+      "meaning": "What all of this protects: your code and its history."
+    },
+    {
+      "shape": "diamond",
+      "name": "You",
+      "meaning": "Decides. The choices only a person makes."
+    },
+    {
+      "shape": "dashed",
+      "name": "Outside",
+      "meaning": "Beyond the machine. Optional, and off unless you turn it on."
+    }
+  ],
+  "kindFrames": {
+    "AI concept": "circle",
+    "Harness": "square",
+    "Enforcement": "shield",
+    "Skill": "hex",
+    "Agent": "hex",
+    "Routing": "hex",
+    "Lane": "chevron",
+    "Record": "doc",
+    "World": "rect",
+    "You": "diamond",
+    "Outside": "dashed"
+  },
+  "motions": [
+    {
+      "motion": "m-chip",
+      "name": "Token tiles",
+      "meaning": "Pieces of text the model reads or writes. A dot (·) marks a space."
+    },
+    {
+      "motion": "m-wheel",
+      "name": "Spinning wheel",
+      "meaning": "The sampler choosing the next token by weighted chance."
+    },
+    {
+      "motion": "m-pod",
+      "name": "Glowing pod with a tag",
+      "meaning": "A tool call travelling out to do something. The tag says what."
+    },
+    {
+      "motion": "m-tag",
+      "name": "Floating verdict",
+      "meaning": "What a gate decided, and the rule that decided it."
+    },
+    {
+      "motion": "m-shock",
+      "name": "Red flash and shockwave",
+      "meaning": "A guard refused an action. It never ran."
+    },
+    {
+      "motion": "m-ripple",
+      "name": "Ring ripple",
+      "meaning": "Green: allowed or passed. Gold: waiting at a gate or on you."
+    },
+    {
+      "motion": "m-ledger",
+      "name": "Ledger line",
+      "meaning": "A block written to the append-only audit log, which never rewinds."
+    },
+    {
+      "motion": "m-bands",
+      "name": "Tank bands",
+      "meaning": "What fills the context window, layer by layer, and what compaction squeezes."
+    }
+  ]
+}

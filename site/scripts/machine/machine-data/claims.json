@@ -1,0 +1,54 @@
+[
+  {
+    "id": "block-appends-gate-event",
+    "statement": "A blocking hook appends a BLOCK line to .codearbiter/gate-events.log, then refuses the tool call.",
+    "check": {
+      "type": "python-function-calls",
+      "file": "plugins/ca/hooks/_hooklib.py",
+      "function": "block",
+      "call": "_log_gate_event"
+    }
+  },
+  {
+    "id": "block-exits-2",
+    "statement": "A blocking hook exits with status 2, which the host treats as a refusal of the tool call.",
+    "check": {
+      "type": "python-function-contains",
+      "file": "plugins/ca/hooks/_hooklib.py",
+      "function": "block",
+      "text": "sys.exit(2)"
+    }
+  },
+  {
+    "id": "reminder-not-logged",
+    "statement": "A reminder is printed to the model but is not written to gate-events.log.",
+    "check": {
+      "type": "python-function-avoids",
+      "file": "plugins/ca/hooks/_hooklib.py",
+      "function": "remind",
+      "call": "_log_gate_event"
+    }
+  },
+  {
+    "id": "git-backstop-not-logged",
+    "statement": "The git-level backstop prints its own BLOCKED line and does not write to gate-events.log.",
+    "check": {
+      "type": "python-function-avoids",
+      "file": "plugins/ca/hooks/git-enforce.py",
+      "function": "block",
+      "call": "_log_gate_event"
+    }
+  },
+  {
+    "id": "rules-reinjected-after-compaction",
+    "statement": "The rules are injected once per session and mode, and again on the first prompt after compaction.",
+    "check": {
+      "type": "contains",
+      "file": "plugins/ca/hooks/prompt-submit.py",
+      "text": [
+        "MODEINJECT_PREFIX",
+        "compaction-generation"
+      ]
+    }
+  }
+]
