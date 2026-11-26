@@ -40,7 +40,8 @@
   "dependencies": {
     "@astrojs/markdown-remark": "^7.2.1",
     "@astrojs/starlight": "^0.41.1",
-    "astro": "^7.4.12"
+    "astro": "^7.4.12",
+    "three": "0.187.0"
   },
   "optionalDependencies": {
     "sharp": "^0.35.5"

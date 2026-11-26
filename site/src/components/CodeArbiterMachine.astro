@@ -5,13 +5,15 @@
    the validated model (scripts/machine/machine-model.ts), so search, screen
    readers and readers without JavaScript get the complete explanation. Gate
    messages are the hook sources' own text, resolved at build time.
-   `section="trace"` renders the one traced example used near the top of the page. */
+   `section="trace"` renders the one traced example used near the top of the page, and
+   `section="stage"` the place where the 3D viewer starts when a reader asks for it
+   (src/scripts/machine-stage.ts). Controls that need the viewer stay hidden until its script runs. */
 import { loadMachine } from '../../scripts/machine/machine-model';
 import { frameSvg, renderText, spellCommand } from '../../scripts/machine/machine-render';
 import '../styles/machine.css';
 
 interface Props {
-  section?: 'catalog' | 'trace';
+  section?: 'catalog' | 'trace' | 'stage';
 }
 const { section = 'catalog' } = Astro.props;
 
@@ -30,6 +32,14 @@ const sourceUrl = (path: string) => `https://github.com/arbiterForge/codeArbiter
 const zones = Object.entries(machine.layout.zones).filter(([id]) => id !== 'lanes');
 const partsIn = (zone: string) => Object.entries(machine.parts).filter(([, part]) => part.zone === zone);
 const scenarios = machine.faults.filter((fault) => !fault.ref);
+// The live view's colours: the site's meaning tokens, one meaning each.
+const colours = [
+  ['gate', 'Gate or decision', 'Something waits at a check, or on you.'],
+  ['pass', 'Verified or passed', 'Allowed, or proven with current evidence.'],
+  ['block', 'Blocked or failing', 'Refused, or a test failing on purpose (red before green).'],
+  ['run', 'Model and agent activity', 'Work in progress: tokens, tool calls, results.'],
+  ['preview', 'Feature Forge preview', 'Shipping, but off until you opt in.'],
+];
 
 const gateMessage = (tag: string, backstop: boolean) =>
   machine.gates[tag]?.sites.find((site) => site.backstop === backstop && !site.message.includes('could not be determined'))?.message ?? '';
@@ -43,7 +53,25 @@ const trace = [
 ];
 ---
 
-{section === 'trace' ? (
+{section === 'stage' ? (
+  <>
+    <div class="ca-machine-stage" data-machine-stage data-machine-model={`${base}/machine-model.json`} data-state="idle" tabindex="-1" role="region" aria-label="3D view of the machine">
+      <div class="ca-machine-stage__poster">
+        <p class="ca-machine-stage__lead">Explore the machine in 3D: orbit and zoom, select any part, take a guided tour, try a lab, or watch a scripted agent session move through it.</p>
+        <div class="ca-machine-stage__actions">
+          <button type="button" class="ca-button ca-button--primary" data-machine-start hidden>Start the 3D machine</button>
+          <button type="button" class="ca-button" data-machine-start data-machine-session="true" hidden>Watch the example session</button>
+        </div>
+        <p class="ca-machine-stage__note">The 3D view loads when you start it and needs WebGL. Everything it shows is also written out on this page.</p>
+        <p class="ca-machine-stage__loading" aria-live="polite"><span>Building the machine…</span></p>
+        <p class="ca-machine-stage__failed">The 3D view could not start in this browser. Every part, lane, tour and scenario is written out below.</p>
+      </div>
+    </div>
+    <script>
+      import '../scripts/machine-stage';
+    </script>
+  </>
+) : section === 'trace' ? (
   <ol class="ca-machine__trace">
     {trace.map((step) => (
       <li>
@@ -55,19 +83,32 @@ const trace = [
 ) : (
   <div class="ca-machine" data-machine>
     <nav class="ca-machine__index" aria-label="Machine sections">
-      <a href="#machine-key">How to read the parts</a>
+      <a href="#machine-key">How to read the machine</a>
       {zones.map(([id, zone]) => <a href={`#zone-${id}`}>{zone.name}</a>)}
       <a href="#zone-lanes">{machine.layout.zones.lanes.name}</a>
       <a href="#machine-tours">Guided tours</a>
       <a href="#machine-scenarios">What can go wrong</a>
+      <a href="#machine-labs">Labs</a>
     </nav>
 
     <section id="machine-key" class="ca-machine__section" aria-labelledby="machine-key-title">
-      <h2 id="machine-key-title">How to read the parts</h2>
+      <h2 id="machine-key-title">How to read the machine</h2>
       <p>Like map symbols, each frame shape means one kind of part wherever it appears. Every fact about the plugin on this page was checked against codeArbiter {machine.version} when the page was built.</p>
       <ul class="ca-machine__key">
         {machine.key.frames.map((frame) => (
           <li><span class="ca-machine__glyph" set:html={frameSvg(frame.shape)} /><span><strong>{frame.name}</strong> {frame.meaning}</span></li>
+        ))}
+      </ul>
+      <h3>In the 3D view, colour says what is happening</h3>
+      <ul class="ca-machine__key">
+        {colours.map(([state, name, meaning]) => (
+          <li><span class="ca-machine__swatch" data-state={state} aria-hidden="true" /><span><strong>{name}</strong> {meaning}</span></li>
+        ))}
+      </ul>
+      <h3>Each kind of motion means one thing</h3>
+      <ul class="ca-machine__key">
+        {machine.key.motions.map((motion) => (
+          <li><span class="ca-machine__swatch ca-machine__swatch--motion" aria-hidden="true" /><span><strong>{motion.name}</strong> {motion.meaning}</span></li>
         ))}
       </ul>
     </section>
@@ -149,6 +190,7 @@ const trace = [
                     {lane.stops && <p><strong>Where it stops.</strong> <span set:html={t(lane.stops)} /></p>}
                     {lane.produces && <p><strong>What it leaves behind.</strong> <span set:html={t(lane.produces)} /></p>}
                     <p class="ca-machine__refs"><a href={`${base}/reference/commands/${cmd}/`}>Command reference for <code>{spellCommand(claude.commandForm, cmd)}</code></a></p>
+                    {lane.route?.length ? <button type="button" class="ca-button ca-machine__play" data-machine-start data-machine-route={`run-${id}`} hidden>Run this lane in 3D</button> : null}
                   </details>
                 </article>
               );
@@ -169,6 +211,7 @@ const trace = [
               <li><strong>{step.title}.</strong> <span set:html={t(step.text)} />{step.at && <> <a class="ca-machine__at" href={partLink(step.at)}>{nameOf(step.at)}</a></>}</li>
             ))}
           </ol>
+          <button type="button" class="ca-button ca-machine__play" data-machine-start data-machine-route={tour.id} hidden>Play this tour in 3D</button>
         </details>
       ))}
     </section>
@@ -185,8 +228,22 @@ const trace = [
               <li><strong>{step.title}.</strong> <span set:html={t(step.text)} />{step.at && <> <a class="ca-machine__at" href={partLink(step.at)}>{nameOf(step.at)}</a></>}</li>
             ))}
           </ol>
+          <button type="button" class="ca-button ca-machine__play" data-machine-start data-machine-route={fault.id} hidden>Watch it in 3D</button>
         </details>
       ))}
+    </section>
+
+    <section id="machine-labs" class="ca-machine__section" aria-labelledby="machine-labs-title">
+      <h2 id="machine-labs-title">Labs</h2>
+      <p class="ca-machine__blurb">Hands-on experiments that run inside the 3D view. Each one says what it simplifies.</p>
+      <ul class="ca-machine__labs">
+        {Object.entries(machine.labs).map(([id, lab]) => (
+          <li id={`lab-${id}`}>
+            <strong>{lab.title}.</strong> {lab.blurb}
+            <button type="button" class="ca-button ca-machine__play" data-machine-start data-machine-route={`lab-${id}`} hidden>Open this lab in 3D</button>
+          </li>
+        ))}
+      </ul>
     </section>
   </div>
 )}
