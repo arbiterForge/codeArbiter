@@ -190,7 +190,7 @@ export function createLabs(ctx) {
       <form id="g-form" class="g-form"><label for="g-cmd" class="sr">Command</label><input id="g-cmd" class="mono-in" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="git push --force"><button class="btn primary" type="submit">Run</button></form>
       <div id="g-out" aria-live="polite">${st.lastGuard || '<p class="muted">Pick an example or type a command, then press Run.</p>'}</div>
       <h3>Try these</h3>
-      <div class="chips ex" aria-label="Example commands">${EXAMPLES.map((c) => `<button class="chip mono" data-ex="${esc(c)}">${esc(c)}</button>`).join('')}</div>
+      <div class="chips ex" role="group" aria-label="Example commands">${EXAMPLES.map((c) => `<button class="chip mono" data-ex="${esc(c)}">${esc(c)}</button>`).join('')}</div>
       <p class="note">A simplified re-implementation of a few rules from codeArbiter’s <code>pre-bash.py</code> and <code>git-enforce.py</code>, using their patterns and messages. The real guards cover many more spellings, read real git state and run outside the model.</p>`;
   }
   function runGuard(raw) {
@@ -272,7 +272,7 @@ export function createLabs(ctx) {
   function tokensBody() {
     return `<label for="t-in" class="sr">Text to cut into tokens</label><textarea id="t-in" rows="3" spellcheck="false"></textarea>
       <div class="chips ex">${PRESETS.map(([k, v]) => `<button class="chip" data-preset="${esc(v)}">${esc(k)}</button>`).join('')}</div>
-      <div class="toks" id="t-toks" aria-label="Tokens"></div>
+      <div class="toks" id="t-toks" role="group" aria-label="Tokens"></div>
       <p class="tstat" id="t-stat"></p>
       ${ctx.has3d ? '<div class="actions"><button class="btn" data-act="sendtok">Send it into the machine</button></div>' : ''}
       <p class="insight">Code, long names, numbers and other languages cut into more, smaller pieces. Every limit and every price is counted in these pieces, not in words.</p>
