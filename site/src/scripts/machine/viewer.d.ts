@@ -10,6 +10,8 @@ export interface MachineHandle {
 }
 
 export interface MountOptions {
+  /** The site base path without a trailing slash, for links back into the docs. */
+  base?: string;
   route?: string;
   session?: boolean;
   debug?: boolean;

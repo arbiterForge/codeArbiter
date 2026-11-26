@@ -30,6 +30,9 @@ export async function mountMachine(hostEl, model, options = {}) {
   let rafId = 0, resizeObs = null;
 
   const $ = (s) => root.querySelector(s);
+  const base = options.base ?? '';
+  // codeArbiter terms link to their entry in the site glossary, which stays the reference for their meaning
+  const siteTerm = (g) => (g[4] ? ` <a class="gl-site" href="${esc(base)}/glossary/#${esc(g[4])}">codeArbiter glossary entry</a>` : '');
   const rad = (d) => (d * Math.PI) / 180;
   const clamp = (v, a, b) => Math.max(a, Math.min(b, v));
   const esc = (s) => String(s ?? '').replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[c]);
@@ -130,7 +133,7 @@ export async function mountMachine(hostEl, model, options = {}) {
     const g = GLOSSARY[+b.dataset.g]; if (!g) return;
     popFor?.setAttribute('aria-expanded', 'false');
     popFor = b; popPinned = !!pin;
-    pop.innerHTML = `<b>${esc(g[0])}</b><p>${fmt(g[2])}</p>${g[3] && PARTS[g[3]] && G ? `<button class="chip" data-go="${esc(g[3])}">Show it in the machine</button>` : ''}`;
+    pop.innerHTML = `<b>${esc(g[0])}</b><p>${fmt(g[2])}</p>${g[3] && PARTS[g[3]] && G ? `<button class="chip" data-go="${esc(g[3])}">Show it in the machine</button>` : ''}${siteTerm(g)}`;
     pop.hidden = false;
     const r = b.getBoundingClientRect(), w = pop.offsetWidth, h = pop.offsetHeight;
     const hb = hostEl.getBoundingClientRect();
@@ -809,7 +812,7 @@ export async function mountMachine(hostEl, model, options = {}) {
       .filter(([g]) => !words.length || words.every((w) => `${g[0]} ${g[1].join(' ')} ${g[2]}`.toLowerCase().includes(w)))
       .sort((a, b) => a[0][0].localeCompare(b[0][0]));
     body.innerHTML = list.length
-      ? `<p class="gl-intro">${GLOSSARY.length} terms in plain language.</p><dl class="gloss">${list.map(([g]) => `<div class="gi"><dt>${esc(g[0])}</dt><dd>${fmt(g[2])}${g[3] && PARTS[g[3]] ? ` <button class="linkbtn" data-id="${esc(g[3])}">Show in the machine</button>` : ''}</dd></div>`).join('')}</dl>`
+      ? `<p class="gl-intro">${GLOSSARY.length} terms in plain language. For codeArbiter’s own terms, the <a href="${esc(base)}/glossary/">site glossary</a> is the reference.</p><dl class="gloss">${list.map(([g]) => `<div class="gi"><dt>${esc(g[0])}</dt><dd>${fmt(g[2])}${g[3] && PARTS[g[3]] ? ` <button class="linkbtn" data-id="${esc(g[3])}">Show in the machine</button>` : ''}${siteTerm(g)}</dd></div>`).join('')}</dl>`
       : `<p class="note">No term matches “${esc($('#q').value)}”.</p>`;
   }
   function markIndex() { if (S.drawer && S.tab === 'parts') body.querySelectorAll('.item').forEach((b) => b.toggleAttribute('aria-current', b.dataset.id === S.sel)); }

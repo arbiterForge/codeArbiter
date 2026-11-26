@@ -113,6 +113,27 @@ export interface GlossaryEntry {
   aliases: string[];
   definition: string;
   part?: string;
+  /** Anchor of the same term in the site glossary, which stays the reference for codeArbiter's meaning. */
+  siteGlossary?: string;
+}
+
+/** `## Term` headings of the site glossary, with the anchor Starlight gives each. */
+export function siteGlossaryTerms(markdown: string): { term: string; anchor: string }[] {
+  return [...markdown.matchAll(/^## (.+)$/gm)].map(([, heading]) => ({
+    term: heading.trim(),
+    anchor: heading.trim().toLowerCase().replace(/[^\p{L}\p{N}\s-]/gu, "").trim().replace(/\s+/g, "-"),
+  }));
+}
+
+const termKey = (term: string) => term.replace(/\s*\(.*\)\s*$/, "").trim().toLowerCase();
+
+/** Link every machine glossary term that the site glossary also defines to that entry. */
+export function linkSiteGlossary(entries: GlossaryEntry[], site: { term: string; anchor: string }[]): GlossaryEntry[] {
+  const anchors = new Map(site.map((entry) => [termKey(entry.term), entry.anchor]));
+  return entries.map((entry) => {
+    const anchor = [entry.term, ...entry.aliases].map((name) => anchors.get(termKey(name))).find(Boolean);
+    return anchor ? { ...entry, siteGlossary: anchor } : entry;
+  });
 }
 
 export interface MachineProvenance {
@@ -323,6 +344,7 @@ export function loadMachine(repoRoot = REPO_ROOT): MachineModel {
   }
   return {
     ...data,
+    glossary: linkSiteGlossary(data.glossary, siteGlossaryTerms(sources.read("site/src/content/docs/glossary.md"))),
     version: sources.version,
     hosts: sources.hosts.map((host) => ({ name: host.name, label: HOST_LABELS[host.name], commandForm: host.commandForm, omits: data.layout.hostOmissions[host.name] ?? [] })),
     gates,

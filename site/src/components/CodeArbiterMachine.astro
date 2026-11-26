@@ -47,7 +47,7 @@ const trace = [
   { at: 'autoregress', title: 'The model writes the call', text: 'Asked to publish a branch whose history was rewritten, the model writes `bash: git push --force` one token at a time. It is a likely continuation, not a checked decision.' },
   { at: 'tool-parser', title: 'The harness reads it as a tool call', text: 'The agent harness parses the text into a Bash tool call and routes it to the shell tool. Nothing has run yet.' },
   { at: 'guard-bash', title: 'The shell gate checks it first', text: '`pre-bash.py` inspects the command before the shell sees it, recognizes a force-push, and exits with status 2. The command never runs.', output: `BLOCKED [H-02]: ${gateMessage('H-02', false)}` },
-  { at: 'audit-ledger', title: 'The block is recorded', text: 'Before refusing, the hook appends a BLOCK line to `.codearbiter/gate-events.log`, an append-only file in the repository.' },
+  { at: 'audit-ledger', title: 'The block is recorded', text: 'Before refusing, the hook appends a BLOCK line to `.codearbiter/gate-events.log`, an append-only file in the repository. The append is best effort: if the file cannot be written, the block still happens.' },
   { at: 'tool-results', title: 'The model is told why', text: 'The refusal returns to the model as the tool result, so its next tokens can take a different route, such as asking you or opening a pull request.' },
   { at: 'git-hooks', title: 'A second check outside the agent', text: 'The same push typed in a terminal never reaches `pre-bash.py`. The git `pre-push` hook (`git-enforce.py`) refuses it with its own message. That backstop does not write to `gate-events.log`.', output: `BLOCKED [H-02]: ${gateMessage('H-02', true)}` },
 ];
@@ -55,7 +55,7 @@ const trace = [
 
 {section === 'stage' ? (
   <>
-    <div class="ca-machine-stage" data-machine-stage data-machine-model={`${base}/machine-model.json`} data-state="idle" tabindex="-1" role="region" aria-label="3D view of the machine">
+    <div class="ca-machine-stage" data-machine-stage data-machine-base={base} data-machine-model={`${base}/machine-model.json`} data-state="idle" tabindex="-1" role="region" aria-label="3D view of the machine">
       <div class="ca-machine-stage__poster">
         <p class="ca-machine-stage__lead">Explore the machine in 3D: orbit and zoom, select any part, take a guided tour, try a lab, or watch a scripted agent session move through it.</p>
         <div class="ca-machine-stage__actions">

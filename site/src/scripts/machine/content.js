@@ -19,7 +19,7 @@ export function setModel(model) {
   }]));
   META = { version: `codeArbiter ${model.version}`, checked: model.provenance.reviewedAt.date, repo: 'https://github.com/arbiterForge/codeArbiter' };
   SIMPLE = Object.fromEntries(Object.entries(model.parts).map(([id, part]) => [id, part.simple]));
-  GLOSSARY = model.glossary.map((entry) => [entry.term, entry.aliases, entry.definition, entry.part]);
+  GLOSSARY = model.glossary.map((entry) => [entry.term, entry.aliases, entry.definition, entry.part, entry.siteGlossary]);
   FAULTS = model.faults;
   LABS = model.labs;
   GATES = model.gates;
