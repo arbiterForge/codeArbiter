@@ -21,7 +21,12 @@ interface StepPlan {
 }
 
 const HOLD_AT_END = 4600;
+/** Share of the scene that must be on screen to keep it playing. */
+const ON_SCREEN = 0.34;
 const reducedMotion = () => matchMedia('(prefers-reduced-motion: reduce)').matches;
+/** Scenes a reader paused or took over during this visit, so a remount (navigation back, a
+ * reduced-motion toggle) does not start them again. In memory only: no storage. */
+const heldByReader = new Set<string>();
 
 class ScenePlayer {
   private readonly plan: StepPlan[];
@@ -32,6 +37,7 @@ class ScenePlayer {
   private readonly toggleLabel: HTMLElement;
   private readonly counter: HTMLElement | null;
   private readonly controls: HTMLElement;
+  private readonly live: HTMLElement | null;
   private readonly abort = new AbortController();
   private readonly timers = new Set<number>();
   private observer: IntersectionObserver | null = null;
@@ -39,6 +45,8 @@ class ScenePlayer {
   private generation = 0;
   private frame = 0;
   private playing = false;
+  /** The reader pressed Play; resume when the scene is back on screen. */
+  private wanted = false;
   private autoplay: boolean;
   private onScreen = false;
 
@@ -51,7 +59,8 @@ class ScenePlayer {
     this.toggleLabel = root.querySelector<HTMLElement>('[data-scene-toggle-label]')!;
     this.counter = root.querySelector<HTMLElement>('[data-scene-num]');
     this.controls = root.querySelector<HTMLElement>('[data-scene-controls]')!;
-    this.autoplay = root.dataset.autoplay === 'true';
+    this.live = root.querySelector<HTMLElement>('[data-scene-live]');
+    this.autoplay = root.dataset.autoplay === 'true' && !heldByReader.has(root.dataset.scene ?? '');
 
     const { signal } = this.abort;
     this.toggle.addEventListener('click', () => (this.playing ? this.pause() : this.play()), { signal });
@@ -66,22 +75,36 @@ class ScenePlayer {
     this.show(0);
     this.label();
 
-    if (this.autoplay) {
-      this.observer = new IntersectionObserver(([entry]) => {
-        this.onScreen = entry.isIntersecting;
-        this.sync();
-      }, { threshold: 0.34 });
-      this.observer.observe(root);
-    }
+    // Any play, automatic or the reader's, runs only while a third of the scene is on screen.
+    this.observer = new IntersectionObserver((entries) => {
+      const entry = entries[entries.length - 1];
+      this.onScreen = entry.isIntersecting && entry.intersectionRatio >= ON_SCREEN;
+      this.sync();
+    }, { threshold: [0, ON_SCREEN] });
+    this.observer.observe(root);
+  }
+
+  /** The reader now owns this scene for the rest of the visit. */
+  private hold(): void {
+    this.autoplay = false;
+    heldByReader.add(this.root.dataset.scene ?? '');
   }
 
   /** The reader takes the steps: autoplay ends for this visit. */
   private take(target: number): void {
-    this.autoplay = false;
+    this.hold();
     this.playing = false;
+    this.wanted = false;
     this.label();
     const last = this.plan.length - 1;
     this.run(Math.max(0, Math.min(last, target)));
+    this.announce();
+  }
+
+  /** Name the step a reader moved to. Never during play, which would talk over the page. */
+  private announce(): void {
+    const step = this.steps[this.index];
+    if (this.live && step) this.live.textContent = step.querySelector('.ca-scene__step-head')?.textContent?.replace(/\s+/g, ' ').trim() ?? '';
   }
 
   private onKey(event: KeyboardEvent): void {
@@ -94,23 +117,24 @@ class ScenePlayer {
   }
 
   play(): void {
+    this.wanted = true;
     this.playing = true;
     this.label();
     this.run(this.index >= this.plan.length - 1 ? 0 : this.index + 1);
   }
 
   pause(): void {
-    this.autoplay = false;
+    this.hold();
+    this.wanted = false;
     this.playing = false;
     this.clearTimers();
     this.label();
   }
 
-  /** Autoplay follows visibility: on screen and tab visible, or not at all. */
+  /** Play follows visibility: on screen and tab visible, or suspended until it is again. */
   private sync(): void {
-    if (!this.autoplay) return;
     const allowed = this.onScreen && document.visibilityState === 'visible';
-    if (allowed && !this.playing) {
+    if (allowed && !this.playing && (this.autoplay || this.wanted)) {
       this.playing = true;
       this.label();
       this.run(this.index === 0 && !this.root.dataset.started ? 0 : this.index);
@@ -130,7 +154,9 @@ class ScenePlayer {
   private show(index: number): void {
     this.index = index;
     this.root.dataset.step = String(index);
-    const { focus } = this.plan[index];
+    const { focus, verdict } = this.plan[index];
+    // The live handoff takes the colour of what the step means, like the token on it.
+    this.root.dataset.verdict = verdict;
     for (const element of this.elements) {
       const from = Number(element.dataset.fromStep);
       element.dataset.state = from < index ? 'past' : from === index ? 'active' : 'future';
@@ -221,6 +247,11 @@ class ScenePlayer {
     this.playing = false;
     this.clearTimers();
     cancelAnimationFrame(this.frame);
+    for (const token of this.root.querySelectorAll<SVGGElement>('[data-token]')) {
+      delete token.dataset.on;
+      token.removeAttribute('transform');
+    }
+    delete this.root.dataset.verdict;
     this.observer?.disconnect();
     this.abort.abort();
   }

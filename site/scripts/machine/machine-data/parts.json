@@ -1678,7 +1678,7 @@
       ],
       [
         "advisory-lamps",
-        "gate",
+        "run",
         "When the manifest changes, H-07 records that the review is owed before commit."
       ],
       [

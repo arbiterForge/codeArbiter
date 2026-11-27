@@ -31,11 +31,11 @@ const zones = Object.entries(layout.zones as Record<string, { name: string; blur
   id,
   ...zone,
   shape: frameOf(id),
-  count: allParts.filter((part) => part.zone === id).length,
 }));
 const stats = computeLandingStats();
 const facts = [
-  { value: stats.gateCount, label: 'gate IDs enforced', href: `${base}/reference/hooks-gates/` },
+  // Reminders never block (enforcement.md), so the label says how many of the IDs can.
+  { value: stats.gateCount, label: `gate IDs: ${stats.blockingGateCount} block, ${stats.reminderGateCount} remind`, href: `${base}/reference/hooks-gates/` },
   { value: stats.coreLaneCount, label: 'core lanes', href: `${base}/reference/` },
   { value: stats.agentCount, label: 'specialist agents', href: `${base}/reference/` },
   { value: stats.skillCount, label: 'skills', href: `${base}/reference/` },
@@ -46,7 +46,7 @@ const facts = [
   <a class="ca-machine-teaser__poster" href={`${base}/concepts/machine/`}>
     <Image
       src={poster}
-      alt="A render of codeArbiter's 3D machine: the model glowing at the center inside the guard ring, lanes such as /ca:feature, /ca:fix and /ca:pr around it, the record and your repository at the edges, and you at the console in front."
+      alt="A render of codeArbiter's 3D machine: the model glowing at the center inside the guard ring, lanes such as /ca:feature, /ca:sprint and /ca:pr around it, the record and your repository at the edges, and you at the console in front."
       widths={[640, 1024, 1600, 2504]}
       sizes="(min-width: 80rem) 72rem, 94vw"
       loading="lazy"

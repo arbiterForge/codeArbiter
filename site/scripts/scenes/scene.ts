@@ -41,9 +41,14 @@ export interface SceneEdge {
   path: Record<Layout, string>;
 }
 
-/** Terminal output drawn beside the parts in the wide composition. Phones read it in the step text. */
+/**
+ * Text drawn beside the parts in the wide composition; phones read it in the step text.
+ * A terminal note is output and sits in a terminal box; an annotation is the site's own words
+ * about that output, drawn as plain text so it is never mistaken for captured output.
+ */
 export interface SceneNote {
   id: string;
+  kind?: "terminal" | "annotation";
   tone: Tone;
   lines: string[];
   at: NoteBox;
@@ -52,7 +57,7 @@ export interface SceneNote {
 export interface SceneStep {
   id: string;
   title: string;
-  /** One or two sentences; `code` spans and H-xx gate IDs are rendered as such. */
+  /** One or two sentences; `code` spans render as code. */
   caption: string;
   /** Elements that light up at this step. Everything is revealed exactly once. */
   reveal: string[];
@@ -62,9 +67,9 @@ export interface SceneStep {
   verdict?: Verdict;
   /** Exact terminal text for the step's reading path. */
   terminal?: string;
-  /** The terminal text is real captured output. */
+  /** The terminal text is real captured output. Every step is captured or illustrative. */
   captured?: boolean;
-  /** The step shows what happens next but was not captured. */
+  /** The step shows what happens but was not captured. */
   illustrative?: boolean;
   /** Dwell time in milliseconds while playing. */
   ms?: number;
@@ -89,6 +94,7 @@ export const METRICS = {
   labelTall: { size: 14, char: 7.7 },
   sub: { size: 12, char: 7.2 },
   note: { size: 13, char: 7.8, line: 18, padX: 12, padY: 11 },
+  annotation: { size: 12.5, char: 7.1, line: 16 },
   glyph: 22,
   textInset: 50,
 } as const;
@@ -100,8 +106,8 @@ export function noteColumns(width: number): number {
   return Math.floor((width - METRICS.note.padX * 2) / METRICS.note.char);
 }
 
-export function noteHeight(lines: number): number {
-  return lines * METRICS.note.line + METRICS.note.padY * 2;
+export function noteHeight(lines: number, kind: SceneNote["kind"] = "terminal"): number {
+  return kind === "annotation" ? lines * METRICS.annotation.line + 4 : lines * METRICS.note.line + METRICS.note.padY * 2;
 }
 
 /** Exact length of a path made of absolute straight segments. */
@@ -216,11 +222,12 @@ export function validateScene(scene: Scene): string[] {
   }
 
   for (const note of scene.notes) {
-    const cols = noteColumns(note.at.w);
+    const fits = (line: string) =>
+      note.kind === "annotation" ? line.length * METRICS.annotation.char <= note.at.w : line.length <= noteColumns(note.at.w);
     note.lines.forEach((line, index) => {
-      if (line.length > cols) findings.push(`note ${note.id} line ${index + 1} is wider than its box`);
+      if (!fits(line)) findings.push(`note ${note.id} line ${index + 1} is wider than its box`);
     });
-    if (!inside({ ...note.at, h: noteHeight(note.lines.length) }, scene.size.wide)) findings.push(`note ${note.id} leaves the wide composition`);
+    if (!inside({ ...note.at, h: noteHeight(note.lines.length, note.kind) }, scene.size.wide)) findings.push(`note ${note.id} leaves the wide composition`);
   }
 
   if (scene.steps.length === 0) findings.push("scene has no steps");
@@ -255,6 +262,7 @@ export function validateScene(scene: Scene): string[] {
       }
     }
     if (step.captured && step.illustrative) findings.push(`step ${step.id} cannot be both captured and illustrative`);
+    if (!step.captured && !step.illustrative) findings.push(`step ${step.id} is labelled neither captured nor illustrative`);
     if (step.captured && !step.terminal) findings.push(`step ${step.id} is captured but shows no terminal text`);
   });
 

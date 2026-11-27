@@ -106,6 +106,8 @@ describe("M3 landing structure, superseded by SITE-OVERHAUL.md S1", () => {
     );
     expect(sections).toEqual(["ca-splash", "ca-proof", "ca-machine-section", "ca-guarantees", "ca-lanes", "ca-hosts", "ca-final-cta"]);
     expect(landing.match(/class="ca-eyebrow"/g)).toHaveLength(1);
+    // .ca-kicker is styled like an eyebrow, so none may sit above a section heading either.
+    expect(landing).not.toMatch(/<p class="ca-(?:eyebrow|kicker)"[^>]*>[^<]*<\/p>\s*<h2\b/);
     expect(read("SITE-OVERHAUL.md")).toContain("supersedes `DOCS-OVERHAUL.md` M3");
   });
 

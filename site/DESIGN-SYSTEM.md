@@ -68,8 +68,8 @@ Shared tokens and primitives live in `src/styles/design-system.css`.
 - **Meaning:** `--ca-brand` for gates/actions, `--ca-positive` for verified state,
   `--ca-danger` for blocks, `--ca-preview` for Feature Forge status, and the machine's
   `--ca-info` (the model), `--ca-record` (records) and `--ca-steel` (structure).
-- **Motion and depth:** `--ca-ease-out`, `--ca-dur-*`, the `--ca-glow-*` shadows, `--ca-edge-light`
-  and the `--ca-blueprint` grid. A glow follows the meaning of what it lights.
+- **Motion and depth:** `--ca-ease-out`, `--ca-dur-*`, the `--ca-glow-*` shadows and the
+  `--ca-blueprint` grid. A glow, and a scene's live handoff, follows the meaning of what it lights.
 - **Components:** `.ca-button`, `.ca-panel`, `.ca-pill`, `.ca-eyebrow`, and
   `.ca-reference-lead`.
 
@@ -95,7 +95,7 @@ The plan and its acceptance tests are in `DOCS-OVERHAUL.md` and
   of the 3D viewer, its zones and source-computed counts); outcomes as a three-item list, each with
   a drawing in the machine's frames; lane cards, each carrying its lane's real route; host cards
   with a spelling picker; the final call to action with the fit lists. Only the splash has an
-  eyebrow. Digests, tags and publication commits stay inside the replay's disclosure. The artifact
+  eyebrow, or any label styled like one. Digests, tags and publication commits stay inside the replay's disclosure. The artifact
   workbench, trust row and curriculum live on the product tour, the first-feature guide and the
   Academy.
 - **Orientation strip.** `PageContext` renders one line (level, time, outcome). A guide or concept
@@ -371,9 +371,11 @@ each step carries its full terminal text, which the phone layout shows in the st
 - **Symbols.** A node is a machine part. Its frame comes from the machine key's kind frames and its
   zone label from the machine layout; tests fail when either drifts. Use the same frames for any
   site drawing of a part (`framePath` in `machine-render.ts`).
-- **Evidence.** A step showing real output is `captured` and its text must equal the capture; a
-  step showing what happens next is `illustrative`. The scene's evidence line names both by step
-  number, computed from those flags.
+- **Evidence.** Every step is labelled. A step is `captured` only when its terminal text is real
+  output and equals the capture; anything else, including the input a capture sent, is
+  `illustrative`. The site's own words about captured output (an exit code, say) are an
+  `annotation`, drawn as plain text outside the terminal box. The evidence line accounts for every
+  step by number, computed from those labels.
 - **Reading path.** `SceneStage.astro` renders both drawings aria-hidden and an ordered step list
   that is the accessible content. Without JavaScript, in print and under reduced motion every part
   is drawn and every step listed. With the player one step shows at a time; the others stay in the

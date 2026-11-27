@@ -16,8 +16,8 @@ function minimal(): Scene {
     edges: [{ id: "ab", from: "a", to: "b", path: { wide: "M180,88 H300", tall: "M100,66 V200" } }],
     notes: [{ id: "n", tone: "danger", lines: ["BLOCKED [H-03]"], at: { x: 200, y: 10, w: 190 } }],
     steps: [
-      { id: "ask", title: "You ask", caption: "You describe the change.", reveal: ["a", "b", "ab"], focus: "a", travel: ["ab"], verdict: "run" },
-      { id: "block", title: "Blocked", caption: "The gate refuses.", reveal: ["n"], focus: "b", verdict: "block", terminal: "BLOCKED [H-03]" },
+      { id: "ask", title: "You ask", caption: "You describe the change.", reveal: ["a", "b", "ab"], focus: "a", travel: ["ab"], verdict: "run", illustrative: true },
+      { id: "block", title: "Blocked", caption: "The gate refuses.", reveal: ["n"], focus: "b", verdict: "block", terminal: "BLOCKED [H-03]", captured: true },
     ],
     evidence: "Illustrative.",
   };
@@ -93,6 +93,16 @@ describe("validateScene", () => {
     expect(findings).toMatch(/note n line 1 is wider than its box/);
   });
 
+  it("requires every step to say whether it is captured or illustrative", () => {
+    const scene = minimal();
+    delete scene.steps[0].illustrative;
+    expect(validateScene(scene).join("\n")).toMatch(/step ask is labelled neither captured nor illustrative/);
+    scene.steps[0].illustrative = true;
+    scene.steps[0].captured = true;
+    scene.steps[0].terminal = "x";
+    expect(validateScene(scene).join("\n")).toMatch(/step ask cannot be both captured and illustrative/);
+  });
+
   it("rejects an empty caption or a title too long for the step rail", () => {
     const scene = minimal();
     scene.steps[0].caption = " ";
@@ -119,6 +129,17 @@ describe("renderSceneSvg", () => {
     const scene = minimal();
     scene.nodes[0].label = "<you & me>";
     expect(renderSceneSvg(scene, "tall")).toContain("&lt;you &amp; me&gt;");
+  });
+
+  it("draws an annotation as plain text, never inside a terminal box", () => {
+    const scene = minimal();
+    scene.notes.push({ id: "x", kind: "annotation", tone: "danger", lines: ["exit 2"], at: { x: 200, y: 60, w: 190 } });
+    scene.steps[1].reveal.push("x");
+    expect(validateScene(scene)).toEqual([]);
+    const svg = renderSceneSvg(scene, "wide");
+    const annotation = svg.slice(svg.indexOf('data-el="x"'));
+    expect(annotation.slice(0, annotation.indexOf("</g>"))).not.toContain("<rect");
+    expect(svg).toContain("ca-scene__note--annotation");
   });
 
   it("omits terminal notes from the tall composition, where the step text carries them", () => {
