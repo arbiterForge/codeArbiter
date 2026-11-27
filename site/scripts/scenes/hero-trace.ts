@@ -113,12 +113,9 @@ export function buildHeroTrace(input: HeroTraceInput): Scene {
     ],
     notes: [
       { id: "n-call", tone: "signal", lines: [`$ ${invocation.attemptedCommand}`], at: { x: 290, y: 122, w: 190 } },
-      {
-        id: "n-block",
-        tone: "danger",
-        lines: [...wrapMono(invocation.stderr, noteColumns(blockWidth)), `exit ${invocation.exitCode} · the command never ran`],
-        at: { x: 452, y: 24, w: blockWidth },
-      },
+      { id: "n-block", tone: "danger", lines: wrapMono(invocation.stderr, noteColumns(blockWidth)), at: { x: 452, y: 24, w: blockWidth } },
+      // The site's words about the capture, drawn outside the captured box.
+      { id: "n-exit", kind: "annotation", tone: "danger", lines: [`exit ${invocation.exitCode} · the command never ran`], at: { x: 464, y: 88, w: 420 } },
       { id: "n-log", tone: "record", lines: excerpt(fixture.gateEvent, noteColumns(logWidth), 3), at: { x: 176, y: 384, w: logWidth } },
       { id: "n-retry", tone: "signal", lines: [`$ git add ${retryFile}`], at: { x: 290, y: 300, w: 190 } },
       { id: "n-allow", tone: "positive", lines: ["allowed"], at: { x: 762, y: 146, w: 120 } },
@@ -132,6 +129,7 @@ export function buildHeroTrace(input: HeroTraceInput): Scene {
         focus: "you",
         travel: ["e-ask"],
         verdict: "run",
+        illustrative: true,
       },
       {
         id: "call",
@@ -141,7 +139,8 @@ export function buildHeroTrace(input: HeroTraceInput): Scene {
         focus: "agent",
         verdict: "run",
         terminal: `$ ${invocation.attemptedCommand}`,
-        captured: true,
+        // The exact command the capture sent to the hook. No model proposed it there.
+        illustrative: true,
       },
       {
         id: "hook",
@@ -151,12 +150,13 @@ export function buildHeroTrace(input: HeroTraceInput): Scene {
         focus: "guard",
         travel: ["e-call"],
         verdict: "decide",
+        illustrative: true,
       },
       {
         id: "block",
         title: "BLOCKED [H-03]",
         caption: `The gate refuses with exit code ${invocation.exitCode}. The command never runs, so nothing is staged.`,
-        reveal: ["n-block"],
+        reveal: ["n-block", "n-exit"],
         focus: "guard",
         verdict: "block",
         terminal: invocation.stderr,
@@ -206,7 +206,8 @@ export function buildHeroTrace(input: HeroTraceInput): Scene {
   const illustrative = scene.steps.filter((step) => step.illustrative).map((step) => number(step.id));
   const list = (items: number[]) => (items.length > 1 ? `${items.slice(0, -1).join(", ")} and ${items.at(-1)}` : `${items[0]}`);
   scene.evidence =
-    `The command, the refusal and the log line in steps ${list(captured)} are the real output captured from the shipped \`${hook}\` hook on ${input.proof.capturedAt.slice(0, 10)}. ` +
+    `Steps ${list(captured)} are the real output of the shipped \`${hook}\`, captured on ${input.proof.capturedAt.slice(0, 10)} ` +
+    `by sending it the command in step ${number("call")} directly in a disposable test repository. ` +
     `Steps ${list(illustrative)} are illustrative.`;
   return scene;
 }

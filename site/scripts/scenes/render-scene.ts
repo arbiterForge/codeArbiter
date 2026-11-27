@@ -59,8 +59,17 @@ export function renderSceneSvg(scene: Scene, layout: Layout): string {
   if (layout === "wide" && scene.notes.length) {
     out.push('<g class="ca-scene__notes">');
     for (const note of scene.notes) {
+      const annotation = note.kind === "annotation";
       const { padX, padY, size, line } = METRICS.note;
-      out.push(`<g class="ca-scene__note" data-el="${escapeHtml(note.id)}" data-from-step="${from(note.id)}" data-tone="${note.tone}">`);
+      out.push(`<g class="ca-scene__note${annotation ? " ca-scene__note--annotation" : ""}" data-el="${escapeHtml(note.id)}" data-from-step="${from(note.id)}" data-tone="${note.tone}">`);
+      if (annotation) {
+        out.push("<text>");
+        note.lines.forEach((text, index) => {
+          out.push(`<tspan x="${num(note.at.x)}" y="${num(note.at.y + METRICS.annotation.size + index * METRICS.annotation.line)}">${escapeHtml(text)}</tspan>`);
+        });
+        out.push("</text></g>");
+        continue;
+      }
       out.push(`<rect x="${num(note.at.x)}" y="${num(note.at.y)}" width="${num(note.at.w)}" height="${num(noteHeight(note.lines.length))}" rx="10"/>`);
       out.push("<text>");
       note.lines.forEach((text, index) => {

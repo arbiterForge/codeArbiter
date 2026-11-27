@@ -44,11 +44,11 @@ const toneOf = (verdict?: string) => (verdict === 'block' ? 'danger' : verdict =
     <Fragment set:html={renderSceneSvg(scene, 'tall')} />
   </div>
   <div class="ca-scene__track">
-    <ol class="ca-scene__steps">
+    <ol class="ca-scene__steps" role="list">
       {scene.steps.map((step, index) => (
         <li class="ca-scene__step" data-index={index}>
           <p class="ca-scene__step-head">
-            <span class="ca-scene__step-num" aria-hidden="true">{index + 1}</span>
+            <span class="ca-scene__step-num"><span class="ca-scene__sr">Step </span>{index + 1}<span class="ca-scene__sr">:</span></span>
             <span class="ca-scene__step-title" set:html={inlineCode(step.title)} />
             {step.captured && <span class="ca-scene__badge ca-scene__badge--captured">Captured output</span>}
             {step.illustrative && <span class="ca-scene__badge">Illustrative</span>}
@@ -58,6 +58,7 @@ const toneOf = (verdict?: string) => (verdict === 'block' ? 'danger' : verdict =
         </li>
       ))}
     </ol>
+    <p class="ca-scene__sr" aria-live="polite" data-scene-live></p>
     <div class="ca-scene__controls" data-scene-controls hidden>
       <button type="button" class="ca-scene__btn ca-scene__btn--toggle" data-scene-toggle>
         <svg class="ca-scene__icon ca-scene__icon--pause" viewBox="0 0 16 16" aria-hidden="true"><path d="M4.5 3h2.4v10H4.5zM9.1 3h2.4v10H9.1z" /></svg>

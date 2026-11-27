@@ -99,6 +99,63 @@ test('the machine section opens the 3D machine page', async ({ page }) => {
   await expect(page).toHaveURL(/\/concepts\/machine\/$/);
 });
 
+test('play stops while less than a third of the hero is on screen', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const root = page.locator(scene);
+  await expect(root).toHaveAttribute('data-js', 'on');
+  await page.evaluate(() => {
+    const box = document.querySelector('[data-scene="hero-trace"]')!.getBoundingClientRect();
+    window.scrollTo(0, window.scrollY + box.top + box.height * 0.8);
+  });
+  await expect(root.locator('[data-scene-toggle]')).toHaveText(/Play/);
+  const held = await step(page);
+  await page.waitForTimeout(5500);
+  expect(await step(page)).toBe(held);
+});
+
+test('forced colours keep the running scene readable', async ({ page }) => {
+  await page.emulateMedia({ forcedColors: 'active' });
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const root = page.locator(scene);
+  await expect(root).toHaveAttribute('data-js', 'on');
+  await root.locator('[data-scene-go="3"]').click();
+  const colours = await page.evaluate(() => {
+    const ink = getComputedStyle(document.body).color;
+    const note = document.querySelector('.ca-scene__svg--wide [data-el="n-block"] text')!;
+    const box = document.querySelector('.ca-scene__svg--wide [data-el="guard"] .ca-scene__box')!;
+    const canvas = getComputedStyle(document.body).backgroundColor;
+    return { ink, note: getComputedStyle(note).fill, box: getComputedStyle(box).fill, canvas };
+  });
+  expect(colours.note).toBe(colours.ink);
+  expect(colours.box).toBe(colours.canvas);
+  await expect(root.locator('.ca-scene__step[aria-current="step"] .ca-scene__terminal')).toBeVisible();
+});
+
+test('turning on reduced motion mid-play returns the still scene', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const root = page.locator(scene);
+  await expect(root).toHaveAttribute('data-js', 'on');
+  await page.emulateMedia({ reducedMotion: 'reduce' });
+  await expect(root).not.toHaveAttribute('data-js', /.*/);
+  await expect(root.locator('[data-scene-controls]')).toBeHidden();
+  await expect(root.locator('[data-token][data-on]')).toHaveCount(0);
+  await expect(root.locator('[data-state]')).toHaveCount(0);
+});
+
+test('print shows every step and every note, without the token', async ({ page }) => {
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.goto('/');
+  const root = page.locator(scene);
+  await expect(root).toHaveAttribute('data-js', 'on');
+  await page.emulateMedia({ media: 'print' });
+  for (const item of await root.locator('.ca-scene__step').all()) await expect(item).toHaveCSS('opacity', '1');
+  await expect(root.locator('.ca-scene__svg--wide [data-el="n-block"] text')).toHaveCSS('opacity', '1');
+  await expect(root.locator('.ca-scene__svg--wide [data-token]').first()).toBeHidden();
+});
+
 test('the landing passes automated accessibility checks', async ({ page }) => {
   await page.setViewportSize({ width: 1440, height: 900 });
   await page.goto('/');

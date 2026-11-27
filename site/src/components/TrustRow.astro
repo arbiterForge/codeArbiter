@@ -18,7 +18,8 @@ const base = import.meta.env.BASE_URL.replace(/\/$/, "");
 const tiles = [
   {
     value: String(stats.gateCount),
-    label: stats.gateCount === 1 ? "gate ID enforced" : "gate IDs enforced",
+    // Reminders never block (enforcement.md), so the label says how many of the IDs can.
+    label: `gate IDs: ${stats.blockingGateCount} block, ${stats.reminderGateCount} remind`,
     href: `${base}/reference/hooks-gates/`,
   },
   {

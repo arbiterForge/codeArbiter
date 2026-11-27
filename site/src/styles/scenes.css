@@ -58,7 +58,7 @@
   margin-inline: auto;
 }
 
-@container ca-scene (max-width: 50rem) {
+@container ca-scene (width < 60rem) {
   .ca-scene__svg--wide {
     display: none;
   }
@@ -168,6 +168,15 @@
   transform-origin: left center;
 }
 
+.ca-scene__note--annotation text,
+.ca-scene__note--annotation[data-tone] text {
+  fill: var(--ca-ink-muted);
+  font-family: var(--ca-font-sans);
+  font-size: 12.5px;
+  font-style: italic;
+  font-weight: 600;
+}
+
 .ca-scene__token {
   opacity: 0;
   pointer-events: none;
@@ -223,12 +232,18 @@
   transition: opacity var(--ca-dur-slow) var(--ca-ease-out);
 }
 
+.ca-scene { --edge: var(--scene-signal); }
+.ca-scene[data-verdict="decide"] { --edge: var(--scene-brand); }
+.ca-scene[data-verdict="block"] { --edge: var(--scene-danger); }
+.ca-scene[data-verdict="pass"] { --edge: var(--scene-positive); }
+.ca-scene[data-verdict="record"] { --edge: var(--scene-record); }
+
 .ca-scene[data-js] .ca-scene__edge[data-state="active"] {
-  stroke: var(--scene-brand);
+  stroke: var(--edge);
   stroke-dasharray: var(--len);
   stroke-dashoffset: var(--len);
   animation: ca-scene-draw 720ms var(--ca-ease-out) forwards;
-  filter: drop-shadow(0 0 6px rgb(240 185 47 / 55%));
+  filter: drop-shadow(0 0 6px color-mix(in srgb, var(--edge) 55%, transparent));
 }
 
 .ca-scene[data-js] .ca-scene__node[data-state="active"] .ca-scene__box,
@@ -517,13 +532,16 @@
   pointer-events: auto;
 }
 
-@container ca-scene (min-width: 50.01rem) {
+@container ca-scene (width >= 60rem) {
   .ca-scene[data-js] .ca-scene__track {
     grid-template-columns: minmax(0, 1fr) auto;
     align-items: center;
   }
+}
 
-  /* The wide drawing shows the terminal text beside the parts. */
+/* Near full size, the wide drawing shows the terminal text beside the parts; below that the
+ * step text keeps a readable copy. */
+@container ca-scene (width >= 75rem) {
   .ca-scene[data-js] .ca-scene__terminal {
     position: absolute;
     width: 1px;
@@ -549,11 +567,17 @@
     break-inside: avoid;
   }
 
-  .ca-scene [data-state] {
+  .ca-scene [data-state],
+  .ca-scene [data-state] text {
     opacity: 1 !important;
     animation: none !important;
   }
 
+  .ca-scene__note rect {
+    stroke-dasharray: none !important;
+  }
+
+  .ca-scene__token,
   .ca-scene__controls {
     display: none !important;
   }
@@ -568,38 +592,51 @@
     grid-area: auto;
     opacity: 1;
   }
+
+  .ca-scene[data-js] .ca-scene__terminal {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+    white-space: pre-wrap;
+  }
 }
 
+/* Forced colours: browsers do not force SVG fills and strokes, so this block does it, and it
+ * must win over every tone and state rule above. The HTML step text stays readable too. */
 @media (forced-colors: active) {
   .ca-scene {
     border-color: CanvasText;
   }
 
-  .ca-scene__box,
-  .ca-scene__note rect {
-    fill: Canvas;
-    stroke: CanvasText;
+  .ca-scene .ca-scene__box,
+  .ca-scene .ca-scene__note rect {
+    fill: Canvas !important;
+    stroke: CanvasText !important;
+    filter: none !important;
   }
 
-  .ca-scene__edge,
-  .ca-scene__rail,
-  .ca-scene__ring {
-    stroke: CanvasText;
+  .ca-scene .ca-scene__edge,
+  .ca-scene .ca-scene__rail,
+  .ca-scene .ca-scene__ring {
+    stroke: CanvasText !important;
+    filter: none !important;
   }
 
-  .ca-scene__label,
-  .ca-scene__sub,
-  .ca-scene__zone,
-  .ca-scene__note text {
-    fill: CanvasText;
+  .ca-scene .ca-scene__label,
+  .ca-scene .ca-scene__sub,
+  .ca-scene .ca-scene__zone,
+  .ca-scene .ca-scene__note text {
+    fill: CanvasText !important;
   }
 
-  .ca-scene__glyph {
-    color: CanvasText;
+  .ca-scene .ca-scene__glyph {
+    color: CanvasText !important;
   }
 
-  .ca-scene__gridline {
-    stroke: transparent;
+  .ca-scene .ca-scene__gridline {
+    stroke: transparent !important;
   }
 
   .ca-scene[data-js] [data-state="future"] {
@@ -607,14 +644,24 @@
   }
 
   .ca-scene[data-js] .ca-scene__node[data-focus] .ca-scene__box,
+  .ca-scene[data-js] .ca-scene__node[data-state="active"] .ca-scene__box,
   .ca-scene[data-js] .ca-scene__edge[data-state="active"] {
-    stroke: Highlight;
-    filter: none;
+    stroke: Highlight !important;
+    stroke-width: 3;
   }
 
-  .ca-scene__token-core,
-  .ca-scene__token-halo {
-    fill: Highlight;
+  .ca-scene .ca-scene__token-core,
+  .ca-scene .ca-scene__token-halo {
+    fill: Highlight !important;
+  }
+
+  .ca-scene[data-js] .ca-scene__terminal {
+    position: static !important;
+    width: auto !important;
+    height: auto !important;
+    overflow: visible !important;
+    clip: auto !important;
+    white-space: pre-wrap !important;
   }
 
   .ca-scene__dot span {

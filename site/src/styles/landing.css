@@ -219,7 +219,7 @@ ca-splash-docs {
 
 @supports (background-clip: text) or (-webkit-background-clip: text) {
   .ca-splash__copy h1 {
-    background: linear-gradient(105deg, #ffffff 0%, var(--ca-ink) 40%, var(--ca-brand-bright) 76%, var(--ca-brand) 100%);
+    background: linear-gradient(100deg, #ffffff 0%, var(--ca-ink) 46%, #bcdcff 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -455,7 +455,6 @@ ca-splash-docs {
 .ca-zone-list [data-zone="model"] { --tone: var(--ca-info); }
 .ca-zone-list [data-zone="guards"] { --tone: var(--ca-danger); }
 .ca-zone-list [data-zone="skills"] { --tone: var(--ca-info); }
-.ca-zone-list [data-zone="lanes"] { --tone: var(--ca-brand); }
 .ca-zone-list [data-zone="record"] { --tone: var(--ca-record); }
 .ca-zone-list [data-zone="outside"] { --tone: var(--ca-preview); }
 
@@ -615,7 +614,6 @@ ca-splash-docs {
 .ca-vignette__decide { color: var(--ca-brand); filter: drop-shadow(0 0 10px rgb(240 185 47 / 50%)); }
 .ca-vignette__ledger { fill: rgb(232 220 192 / 5%); stroke: color-mix(in srgb, var(--ca-record) 50%, transparent); stroke-width: 1.5; }
 .ca-vignette__line { fill: none; stroke: var(--ca-record); stroke-width: 3; stroke-linecap: round; opacity: 0.85; }
-.ca-vignette__line:first-of-type { stroke: var(--ca-brand); }
 
 /* Where the browser links animation to scrolling and motion is allowed, each drawing assembles
  * as it scrolls into view. Elsewhere the finished drawing above is what shows. */

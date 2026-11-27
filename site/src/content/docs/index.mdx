@@ -53,7 +53,6 @@ import heroArt from '../../assets/hero-gates.webp';
 
 <section class="ca-section ca-proof" aria-labelledby="ca-proof-title">
   <div class="ca-proof__copy">
-    <p class="ca-kicker">Real output</p>
     <h2 id="ca-proof-title">Watch the shipped hook refuse a real command.</h2>
     <p>The trace above is drawn. This is the hook itself: its real output for the same command, captured by running the shipped <code>pre-bash.py</code> in a disposable test repository, with the exact text it printed one click away.</p>
     <a class="ca-text-link" href="./enforcement/">See what is enforced, and where</a>
@@ -73,7 +72,6 @@ import heroArt from '../../assets/hero-gates.webp';
 
 <section class="ca-section ca-machine-section" aria-labelledby="ca-machine-title">
   <div class="ca-section-heading">
-    <p class="ca-kicker">The whole picture</p>
     <h2 id="ca-machine-title">Every gate, lane and record, as one machine.</h2>
     <p>The model sits at the center. The guard ring surrounds it, the lanes carry your work around it, and the record remembers what happened. Tour it in 3D, watch an agent session move through it, or try the labs.</p>
   </div>
@@ -111,7 +109,7 @@ import heroArt from '../../assets/hero-gates.webp';
 <section class="ca-section ca-lanes" aria-labelledby="ca-lanes-title">
   <div class="ca-section-heading">
     <h2 id="ca-lanes-title">Start from the job in front of you.</h2>
-    <p>Each lane carries its own stops. The line under each card is that lane's real route through the machine: gold waits on a gate or on you, green passes, red fails first or refuses.</p>
+    <p>Each lane carries its own stops. The line under each card is the lane's route as the machine traces it: steel moves the work along, gold waits on a gate or on you, green passes, red fails first or refuses.</p>
   </div>
   <div class="ca-lane-grid" data-ca-layout="peers">
     <a class="ca-lane-card ca-panel" href="./guides/feature-lane/">
@@ -149,7 +147,7 @@ import heroArt from '../../assets/hero-gates.webp';
       <p>Capture a numbered, user-attributed decision with its governed paths and supersession chain.</p>
       <LaneRoute lane="ca-adr" />
     </a>
-    <a class="ca-lane-card ca-panel ca-lane-card--reference" href="./reference/">
+    <a class="ca-lane-card ca-panel" href="./reference/">
       <span class="ca-lane-card__icon"><ArbiterIcon name="reference" size="1.35rem" /></span>
       <code>Grouped reference</code>
       <h3>Find the exact route</h3>
@@ -161,7 +159,7 @@ import heroArt from '../../assets/hero-gates.webp';
 <section class="ca-section ca-hosts" aria-labelledby="ca-hosts-title">
   <div class="ca-section-heading">
     <h2 id="ca-hosts-title">Choose your host.</h2>
-    <p>One policy core and one shared record. Each host keeps its own command spelling; pick a command to see it in all three.</p>
+    <p>One policy core and one shared record. Each host keeps its own command spelling.</p>
   </div>
   <HostSpellings
     commands={["feature", "fix", "sprint", "commit", "pr", "statusline"]}

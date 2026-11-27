@@ -36,6 +36,10 @@ export const DEFAULT_PLUGIN_ROOT = join(REPO_ROOT, "plugins", "ca");
 export interface LandingStats {
   /** Distinct `H-xx` gate IDs found across `block()`/`remind()` call sites. */
   gateCount: number;
+  /** Gate IDs with at least one `block()` call site: these can stop an action. */
+  blockingGateCount: number;
+  /** Gate IDs whose every call site is `remind()`: advisory, never a block. */
+  reminderGateCount: number;
   /** Canonical core lanes from the generated command registry. */
   coreLaneCount: number;
   /** Installed compatibility aliases from the generated command registry. */
@@ -187,6 +191,8 @@ function countDirectories(dir: string): number {
 export function computeLandingStats(pluginRoot: string = DEFAULT_PLUGIN_ROOT): LandingStats {
   const { callSites } = extractHookGates(join(pluginRoot, "hooks"));
   const gateCount = new Set(callSites.map((site) => site.tag)).size;
+  const blockingGateCount = new Set(callSites.filter((site) => site.kind === "block").map((site) => site.tag)).size;
+  const reminderGateCount = gateCount - blockingGateCount;
   const routeNames = readdirSync(join(pluginRoot, "commands"), { withFileTypes: true })
     .filter((entry) => entry.isFile() && entry.name.endsWith(".md"))
     .map((entry) => entry.name.slice(0, -".md".length));
@@ -195,5 +201,5 @@ export function computeLandingStats(pluginRoot: string = DEFAULT_PLUGIN_ROOT): L
   const aliasCount = Object.values(catalog.commands).filter((entry) => entry.visibility === "alias").length;
   const agentCount = countMarkdownFiles(join(pluginRoot, "agents"), true);
   const skillCount = countDirectories(join(pluginRoot, "skills"));
-  return { gateCount, coreLaneCount, aliasCount, agentCount, skillCount };
+  return { gateCount, blockingGateCount, reminderGateCount, coreLaneCount, aliasCount, agentCount, skillCount };
 }
